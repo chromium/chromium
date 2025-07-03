@@ -179,6 +179,7 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   allow_cookies_from_browser = other.allow_cookies_from_browser;
   include_request_cookies_with_response =
       other.include_request_cookies_with_response;
+  enabled_client_hints = other.enabled_client_hints;
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
@@ -217,6 +218,7 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
          allow_cookies_from_browser == other.allow_cookies_from_browser &&
          include_request_cookies_with_response ==
              other.include_request_cookies_with_response &&
+         enabled_client_hints == other.enabled_client_hints &&
          client_security_state == other.client_security_state;
 }
 

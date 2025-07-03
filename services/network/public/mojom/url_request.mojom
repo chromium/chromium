@@ -37,6 +37,7 @@ import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
+import "services/network/public/mojom/web_client_hints_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -86,6 +87,11 @@ struct TrustedUrlRequestParams {
   // should take care to remove them if they forward the response head to a
   // client which should not be able to see them.
   bool include_request_cookies_with_response = false;
+
+  // Enabled Client Hints to be evaluated quickly within the network layer
+  // when it receives the AcceptCHFrame.
+  // The value is set only if the flag is enabled.
+  array<WebClientHintsType>? enabled_client_hints;
 
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to

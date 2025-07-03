@@ -125,6 +125,10 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trusted_params->disable_secure_dns = true;
   original.trusted_params->allow_cookies_from_browser = true;
   original.trusted_params->include_request_cookies_with_response = true;
+  original.trusted_params->enabled_client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
 
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(
@@ -168,6 +172,32 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   network::ResourceRequest copied;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
+  EXPECT_TRUE(original.EqualsForTesting(copied));
+}
+
+TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
+  network::ResourceRequest::TrustedParams original;
+  original.disable_secure_dns = true;
+  original.allow_cookies_from_browser = true;
+  original.include_request_cookies_with_response = true;
+  original.enabled_client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  network::ResourceRequest::TrustedParams copied;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::TrustedUrlRequestParams>(
+          original, copied));
+  EXPECT_TRUE(original.EqualsForTesting(copied));
+}
+
+TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams_NullOpt) {
+  network::ResourceRequest::TrustedParams original;
+  original.enabled_client_hints = std::nullopt;
+  network::ResourceRequest::TrustedParams copied;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::TrustedUrlRequestParams>(
+          original, copied));
   EXPECT_TRUE(original.EqualsForTesting(copied));
 }
 

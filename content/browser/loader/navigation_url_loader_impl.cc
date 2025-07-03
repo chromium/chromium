@@ -236,6 +236,7 @@ const net::NetworkTrafficAnnotationTag kNavigationUrlLoaderTrafficAnnotation =
 std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     const NavigationRequestInfo& request_info,
     FrameTreeNode* frame_tree_node,
+    ClientHintsControllerDelegate* client_hints_controller_delegate,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
         trust_token_observer,
@@ -342,6 +343,16 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       frame_tree_node->current_frame_host()->GetPermissionsPolicy()) {
     new_request->permissions_policy =
         *frame_tree_node->current_frame_host()->GetPermissionsPolicy();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kOffloadAcceptCHFrameCheck)) {
+    CHECK(client_hints_controller_delegate);
+    // TODO(crbug.com/406407746): rename the function name upon
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6677314/comment/781e24f0_4b7eebc7/
+    new_request->trusted_params->enabled_client_hints =
+        GetAddedClientHints(url::Origin::Create(new_request->url),
+                            frame_tree_node, client_hints_controller_delegate);
   }
 
   return new_request;
@@ -1712,8 +1723,10 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   DCHECK(frame_tree_node->navigation_request());
 
   resource_request_ = CreateResourceRequest(
-      *request_info_, frame_tree_node, std::move(cookie_observer),
-      std::move(trust_token_observer), std::move(shared_dictionary_observer),
+      *request_info_, frame_tree_node,
+      browser_context_->GetClientHintsControllerDelegate(),
+      std::move(cookie_observer), std::move(trust_token_observer),
+      std::move(shared_dictionary_observer),
       std::move(url_loader_network_observer), std::move(devtools_observer),
       std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer));

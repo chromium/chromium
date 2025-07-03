@@ -44,6 +44,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -71,6 +72,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool include_request_cookies_with_response(
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.include_request_cookies_with_response;
+  }
+  static const std::optional<std::vector<network::mojom::WebClientHintsType>>&
+  enabled_client_hints(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.enabled_client_hints;
   }
   static mojo::PendingRemote<network::mojom::CookieAccessObserver>
   cookie_observer(

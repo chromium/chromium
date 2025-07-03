@@ -29,6 +29,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -220,6 +221,10 @@ class NavigationURLLoaderImplTest : public testing::Test {
   void TearDown() override {
     pending_navigation_.reset();
     web_contents_.reset();
+    if (client_hints_controller_delegate_.get()) {
+      browser_context_->SetClientHintsControllerDelegate(nullptr);
+      client_hints_controller_delegate_.reset();
+    }
     rvh_test_enabler_.reset();
   }
 
@@ -391,9 +396,21 @@ class NavigationURLLoaderImplTest : public testing::Test {
   }
 
  protected:
+  void SetupClientHintsControllerDelegate(
+      const std::vector<network::mojom::WebClientHintsType>& client_hints) {
+    blink::UserAgentMetadata ua_metadata;
+    client_hints_controller_delegate_ =
+        std::make_unique<MockClientHintsControllerDelegate>(ua_metadata);
+    client_hints_controller_delegate_->SetAdditionalClientHints(client_hints);
+    browser_context_->SetClientHintsControllerDelegate(
+        client_hints_controller_delegate_.get());
+  }
+
   std::unique_ptr<BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
       network_change_notifier_;
+  std::unique_ptr<MockClientHintsControllerDelegate>
+      client_hints_controller_delegate_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   net::EmbeddedTestServer http_test_server_;
   std::optional<network::ResourceRequest> most_recent_resource_request_;
@@ -448,6 +465,63 @@ TEST_F(NavigationURLLoaderImplTest,
                                  net::SiteForCookies::FromOrigin(origin))
           .IsEqualForTesting(
               most_recent_resource_request_->trusted_params->isolation_info));
+}
+
+TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHints) {
+  base::test::ScopedFeatureList feature_list{
+      network::features::kOffloadAcceptCHFrameCheck};
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  std::vector<network::mojom::WebClientHintsType> expected_client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  SetupClientHintsControllerDelegate(expected_client_hints);
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader =
+      CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
+  EXPECT_TRUE(most_recent_resource_request_->trusted_params
+                  ->enabled_client_hints.has_value());
+  // The default types are added in addition, and that is why `IsSupersetOf()`
+  // is used.
+  EXPECT_THAT(
+      *most_recent_resource_request_->trusted_params->enabled_client_hints,
+      testing::IsSupersetOf(expected_client_hints));
+}
+
+TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {network::features::kOffloadAcceptCHFrameCheck});
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  std::vector<network::mojom::WebClientHintsType> client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  SetupClientHintsControllerDelegate(client_hints);
+  blink::UserAgentMetadata ua_metadata;
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader =
+      CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
+  EXPECT_FALSE(most_recent_resource_request_->trusted_params
+                   ->enabled_client_hints.has_value());
 }
 
 TEST_F(NavigationURLLoaderImplTest, Redirect301Tests) {

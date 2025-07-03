@@ -54,8 +54,6 @@ namespace network {
 //
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
-//
-// LINT.IfChange(ResourceRequest)
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // Typemapped to network.mojom.TrustedUrlRequestParams, see comments there
   // for details of each field.
@@ -79,6 +77,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
     bool include_request_cookies_with_response = false;
+    std::optional<std::vector<network::mojom::WebClientHintsType>>
+        enabled_client_hints;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -138,6 +138,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
   // See comments in network.mojom.URLRequest in url_request.mojom for details
   // of each field.
+  // LINT.IfChange(ResourceRequestFields)
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
   net::SiteForCookies site_for_cookies;
@@ -256,8 +257,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<network::PermissionsPolicy> permissions_policy;
 
   std::optional<network::FetchRetryOptions> fetch_retry_options;
+  // LINT.ThenChange(//services/network/prefetch_matches.cc)
 };
-// LINT.ThenChange(//services/network/prefetch_matches.cc)
 
 // This does not accept |kDefault| referrer policy.
 COMPONENT_EXPORT(NETWORK_CPP_BASE)
