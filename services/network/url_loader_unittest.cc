@@ -848,6 +848,8 @@ class URLLoaderTest : public testing::Test {
     request.trusted_params->client_security_state.Swap(
         &request_client_security_state_);
 
+    request.trusted_params->enabled_client_hints.swap(enabled_client_hints_);
+
     request.headers.MergeFrom(additional_headers_);
 
     request.target_ip_address_space = target_ip_address_space_;
@@ -1125,6 +1127,10 @@ class URLLoaderTest : public testing::Test {
       MockAcceptCHFrameObserver* observer) {
     accept_ch_frame_observer_ = observer;
   }
+  void set_enabled_client_hints_for_next_request(
+      std::vector<mojom::WebClientHintsType> enabled_client_hints) {
+    enabled_client_hints_ = std::move(enabled_client_hints);
+  }
   void set_cookie_setting_overrides(
       const net::CookieSettingOverrides& overrides) {
     cookie_setting_overrides_ = overrides;
@@ -1284,6 +1290,7 @@ class URLLoaderTest : public testing::Test {
   TestURLLoaderClient client_;
 
   raw_ptr<MockAcceptCHFrameObserver> accept_ch_frame_observer_ = nullptr;
+  std::optional<std::vector<mojom::WebClientHintsType>> enabled_client_hints_;
 };
 
 class URLLoaderMockSocketTest : public URLLoaderTest {
@@ -8322,6 +8329,62 @@ TEST_F(URLLoaderTest, DoNotSetLoadTimingInternalInfoForUntrustedLoaders) {
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_FALSE(client()->response_head()->load_timing_internal_info);
+}
+
+TEST_F(URLLoaderTest, AcceptCHFrameHintsAlreadyEnabledSkipsObserver) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOffloadAcceptCHFrameCheck);
+
+  // 1. Prepare TransportInfo with the ACCEPT_CH frame.
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.accept_ch_frame = "Sec-CH-UA-Platform";
+
+  const GURL url("https://fake-endpoint");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<FakeTransportInfoInterceptor>(info));
+
+  // 2. Set up MockAcceptCHFrameObserver.
+  MockAcceptCHFrameObserver accept_ch_frame_observer;
+  set_accept_ch_frame_observer_for_next_request(&accept_ch_frame_observer);
+
+  // 3. Set enabled_client_hints.
+  set_enabled_client_hints_for_next_request(
+      std::vector<mojom::WebClientHintsType>{
+          mojom::WebClientHintsType::kUAPlatform});
+
+  // 4. Load, expecting net::OK.
+  EXPECT_THAT(Load(url), IsOk());
+
+  // 5. the observer should not be called because NeedsObserverCheck() returns
+  // false.
+  EXPECT_FALSE(accept_ch_frame_observer.called());
+}
+
+TEST_F(URLLoaderTest, AcceptCHFrameNewHintsCallsObserver) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOffloadAcceptCHFrameCheck);
+
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.accept_ch_frame = "Sec-CH-UA-Platform";
+
+  const GURL url("https://fake-endpoint");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<FakeTransportInfoInterceptor>(info));
+
+  MockAcceptCHFrameObserver accept_ch_frame_observer;
+  set_accept_ch_frame_observer_for_next_request(&accept_ch_frame_observer);
+
+  // Ensure the client hints is an empty, and not hitting the hints.
+  set_enabled_client_hints_for_next_request(
+      std::vector<mojom::WebClientHintsType>{});
+
+  EXPECT_THAT(Load(url), IsOk());
+
+  // The observer should not be called because `NeedsObserverCheck()`
+  // returns true.
+  EXPECT_TRUE(accept_ch_frame_observer.called());
+  EXPECT_THAT(accept_ch_frame_observer.accept_ch_frame(),
+              testing::ElementsAre(mojom::WebClientHintsType::kUAPlatform));
 }
 
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {
