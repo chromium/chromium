@@ -153,6 +153,10 @@ class SafariDataImporter {
   std::optional<base::FilePath> WriteBookmarksToTmpFile(
       const std::string& html_data);
 
+  // Launches the task to delete the bookmarks temp directory on a worker
+  // thread. Called after bookmarks parsing is completed.
+  void LaunchDeleteBookmarksDir();
+
   // Launches the task which will call "ImportBookmarks".
   void LaunchImportBookmarksTask(ImportCallback bookmarks_callback);
 
@@ -202,7 +206,7 @@ class SafariDataImporter {
   std::vector<autofill::CreditCard> cards_to_import_;
 
   // Stores bookmarks data on disk after unzip but before parsing.
-  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<base::ScopedTempDir> bookmarks_temp_dir_;
 
   // Bookmarks which have been parsed, but not yet committed to permanent
   // storage.

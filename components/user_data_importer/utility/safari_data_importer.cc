@@ -129,7 +129,17 @@ SafariDataImporter::SafariDataImporter(
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       app_locale_(std::move(app_locale)) {}
 
-SafariDataImporter::~SafariDataImporter() = default;
+SafariDataImporter::~SafariDataImporter() {
+  // If bookmarks_temp_dir_ is not empty, deleting the object will result in a
+  // directory (and file) deletion operation on this thread, which is not
+  // allowed, since any file IO operation must be done in a worker thread. To
+  // make sure this isn't an issue, call LaunchDeleteBookmarksDir(), which will
+  // transfer the ownership of the ScopedTempDir object to a worker thread to
+  // perform the deletion there.
+  if (bookmarks_temp_dir_) {
+    LaunchDeleteBookmarksDir();
+  }
+}
 
 void SafariDataImporter::StartImport(const base::FilePath& path,
                                      PasswordImportCallback passwords_callback,
@@ -262,16 +272,36 @@ void SafariDataImporter::ImportInWorkerThread(
 
 std::optional<base::FilePath> SafariDataImporter::WriteBookmarksToTmpFile(
     const std::string& html_data) {
-  if (html_data.empty() || !temp_dir_.CreateUniqueTempDir()) {
+  if (html_data.empty()) {
     return std::nullopt;
   }
 
-  base::FilePath path = temp_dir_.GetPath().AppendASCII("bookmarks.html");
+  bookmarks_temp_dir_ = std::make_unique<base::ScopedTempDir>();
+  if (!bookmarks_temp_dir_->CreateUniqueTempDir()) {
+    return std::nullopt;
+  }
+
+  base::FilePath path =
+      bookmarks_temp_dir_->GetPath().AppendASCII("bookmarks.html");
 
   if (!base::WriteFile(path, html_data)) {
+    bookmarks_temp_dir_ = nullptr;
     return std::nullopt;
   }
   return path;
+}
+
+void SafariDataImporter::LaunchDeleteBookmarksDir() {
+  // Launch a low priority task to delete the bookmarks temp directory. Note
+  // that bookmarks_temp_dir_ will be nullptr after std::move() is done, as the
+  // ownership of the ScopedTempDir object will be transferred to temp_dir.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](std::unique_ptr<base::ScopedTempDir> temp_dir) {
+            temp_dir = nullptr;
+          },
+          std::move(bookmarks_temp_dir_)));
 }
 
 void SafariDataImporter::LaunchImportBookmarksTask(
@@ -412,6 +442,8 @@ void SafariDataImporter::ImportBookmarks(base::FilePath bookmarks_html,
 void SafariDataImporter::OnBookmarksParsed(
     ImportCallback callback,
     BookmarkParser::BookmarkParsingResult result) {
+  LaunchDeleteBookmarksDir();
+
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
                    [this, &callback](auto) {
                      // TODO(crbug.com/407587751): Log error to UMA.
