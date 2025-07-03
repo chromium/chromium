@@ -47,6 +47,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
@@ -514,10 +515,27 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testOnSpeedChange() {
+      doReturn(PlaybackMode.CLASSIC).when(mPlaybackMetadata).playbackMode();
+
         mMediator.setPlayback(mPlayback);
         mMediator.onSpeedChange(0.5f);
         verify(mPlayback).setRate(0.5f);
         mMediator.onSpeedChange(2f);
+        assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
+        assertEquals(2f, mModel.get(PlayerProperties.SPEED), /* delta= */ 0f);
+    }
+
+    @Test
+    @EnableFeatures(
+            "ReadAloudAudioOverviews:read_aloud_audio_overviews_speed_addition_percentage/30")
+    public void testOnSpeedChange_overview() {
+        doReturn(PlaybackMode.OVERVIEW).when(mPlaybackMetadata).playbackMode();
+
+        mMediator.setPlayback(mPlayback);
+        mMediator.onSpeedChange(0.5f);
+        verify(mPlayback).setRate(0.8f);
+        mMediator.onSpeedChange(2f);
+        verify(mPlayback).setRate(2.3f);
         assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
         assertEquals(2f, mModel.get(PlayerProperties.SPEED), /* delta= */ 0f);
     }

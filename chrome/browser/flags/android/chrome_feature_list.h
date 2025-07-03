@@ -302,6 +302,12 @@ constexpr base::FeatureParam<bool> kFallbackToModerateParam(
     "fallback_to_moderate",
     /*default_value=*/false);
 
+constexpr base::FeatureParam<int>
+    kReadAloudAudioOverviewsSpeedAdditionPercentage(
+        &kReadAloudAudioOverviews,
+        "read_aloud_audio_overviews_speed_addition_percentage",
+        /* default_value=*/20);
+
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,
     "trigger_id",
