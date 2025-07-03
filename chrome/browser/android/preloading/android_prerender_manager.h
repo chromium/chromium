@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/containers/flat_map.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "url/android/gurl_android.h"
 
@@ -29,11 +29,6 @@ class AndroidPrerenderManager {
   void StopPrerendering(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_web_contents);
-
- private:
-  base::flat_map<raw_ptr<content::WebContents>,
-                 base::WeakPtr<content::PrerenderHandle>>
-      prerender_handle_map_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_

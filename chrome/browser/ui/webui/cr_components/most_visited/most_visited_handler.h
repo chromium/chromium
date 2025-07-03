@@ -10,13 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/ntp_tiles/section_type.h"
-#include "content/public/browser/prerender_handle.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
@@ -98,8 +98,6 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   base::Time ntp_navigation_start_time_;
   GURL last_blocklisted_;
 
-  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
-
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandler> page_handler_;
   mojo::Remote<most_visited::mojom::MostVisitedPage> page_;
 
@@ -107,6 +105,7 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                           web_app::PreinstalledWebAppManager::Observer>
       preinstalled_web_app_observer_{this};
 
+  base::WeakPtr<NewTabPagePreloadPipelineManager> new_tab_page_preload_manager_;
   base::WeakPtrFactory<MostVisitedHandler> weak_ptr_factory_{this};
 };
 

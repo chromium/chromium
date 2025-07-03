@@ -16,7 +16,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
-#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -230,10 +230,10 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
         "when kPrerenderNewTabPageOnMousePressedTrigger is true.");
     return;
   }
-  PrerenderManager::CreateForWebContents(web_contents_);
-  auto* prerender_manager = PrerenderManager::FromWebContents(web_contents_);
-
-  prerender_handle_ = prerender_manager->StartPrerenderNewTabPage(
+  new_tab_page_preload_manager_ =
+      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
+          ->GetWeakPtr();
+  new_tab_page_preload_manager_->StartPrerender(
       tile->url,
       chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
 }
@@ -267,9 +267,9 @@ void MostVisitedHandler::CancelPrerender() {
     return;
   }
 
-  auto* prerender_manager = PrerenderManager::FromWebContents(web_contents_);
-  prerender_manager->StopPrerenderNewTabPage(prerender_handle_);
-  prerender_handle_ = nullptr;
+  if (new_tab_page_preload_manager_) {
+    new_tab_page_preload_manager_->ResetPrerender();
+  }
 }
 
 void MostVisitedHandler::OnURLsAvailable(

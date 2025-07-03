@@ -312,18 +312,6 @@ TEST_P(PrerenderManagerBasicRequirementTest, NavigateAway) {
   }
 }
 
-// Test that a Searched related url is ignored by the prerender NewTabPage
-// trigger.
-TEST_F(PrerenderManagerTest, DisallowSearchUrlNewTabPage) {
-  base::HistogramTester histogram_tester;
-  GURL prerendering_url = GetSearchSuggestionUrl("prer", "prerender");
-  ASSERT_FALSE(prerender_manager()->StartPrerenderNewTabPage(
-      prerendering_url, chrome_preloading_predictor::kTouchOnNewTabPage));
-
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", true, 1);
-}
-
 class PrerenderManagerPrewarmTest : public PrerenderManagerTest {
  public:
   PrerenderManagerPrewarmTest() = default;

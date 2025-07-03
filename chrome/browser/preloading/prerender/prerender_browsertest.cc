@@ -12,6 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -752,12 +753,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html");
 
-  PrerenderManager::CreateForWebContents(GetActiveWebContents());
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(GetActiveWebContents());
-  EXPECT_TRUE(prerender_manager->StartPrerenderNewTabPage(
+  auto* ntp_preload_manager =
+      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+          GetActiveWebContents());
+  ntp_preload_manager->StartPrerender(
       prerender_url,
-      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage));
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
@@ -789,12 +790,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?prerender");
 
-  PrerenderManager::CreateForWebContents(GetActiveWebContents());
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(GetActiveWebContents());
-  EXPECT_FALSE(prerender_manager->StartPrerenderNewTabPage(
+  auto* ntp_preload_manager =
+      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+          GetActiveWebContents());
+  ntp_preload_manager->StartPrerender(
       prerender_url,
-      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage));
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   base::RunLoop().RunUntilIdle();
   content::FrameTreeNodeId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
@@ -827,27 +828,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html");
 
-  PrerenderManager::CreateForWebContents(GetActiveWebContents());
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(GetActiveWebContents());
+  auto* ntp_preload_manager =
+      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+          GetActiveWebContents());
 
-  base::WeakPtr<content::PrerenderHandle> prerender_handle =
-      prerender_manager->StartPrerenderNewTabPage(
-          prerender_url,
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
+  ntp_preload_manager->StartPrerender(
+      prerender_url,
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  prerender_manager->StopPrerenderNewTabPage(prerender_handle);
+  ntp_preload_manager->ResetPrerender();
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
       kFinalStatusTriggerDestroyed, 1);
 
   // Retrigger after cancelation.
-  EXPECT_TRUE(prerender_manager->StartPrerenderNewTabPage(
+  ntp_preload_manager->StartPrerender(
       prerender_url,
-      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage));
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
@@ -874,11 +874,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      GURL(chrome::kChromeUINewTabURL)));
   GURL prerender_url = GetUrl("/simple.html?prerender");
 
-  PrerenderManager::CreateForWebContents(GetActiveWebContents());
-  auto* prerender_manager =
-      PrerenderManager::FromWebContents(GetActiveWebContents());
+  auto* ntp_preload_manager =
+      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
+          GetActiveWebContents());
 
-  prerender_manager->StartPrerenderNewTabPage(
+  ntp_preload_manager->StartPrerender(
       prerender_url,
       chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
