@@ -112,11 +112,15 @@ class FakeContentFiltersObserverBridge final
   // Set mocked value.
   void SetEnabled(bool enabled);
 
+  base::WeakPtr<FakeContentFiltersObserverBridge> GetWeakPtr();
+
  private:
   // Stores actual value (in place of secure settings storage). Note: In prod
   // environment there is one setting value for all profiles, but this fake
   // is bound to a specific profile.
   bool enabled_ = false;
+  base::WeakPtrFactory<FakeContentFiltersObserverBridge> weak_ptr_factory_{
+      this};
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -141,9 +145,12 @@ class SupervisedUserTestEnvironment {
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
+
 #if BUILDFLAG(IS_ANDROID)
-  FakeContentFiltersObserverBridge* browser_content_filters_observer();
-  FakeContentFiltersObserverBridge* search_content_filters_observer();
+  base::WeakPtr<FakeContentFiltersObserverBridge>
+  browser_content_filters_observer();
+  base::WeakPtr<FakeContentFiltersObserverBridge>
+  search_content_filters_observer();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Simulators of parental controls. Instance methods use services from this
@@ -174,14 +181,28 @@ class SupervisedUserTestEnvironment {
   void Shutdown();
 
  private:
+  // Offers access to the protected constructor of SupervisedUserService, used
+  // to inject fake content filters observers.
+  class TestSupervisedUserService : public SupervisedUserService {
+   public:
+    // Matching constructor of SupervisedUserService.
+    TestSupervisedUserService(
+        signin::IdentityManager* identity_manager,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        PrefService& user_prefs,
+        SupervisedUserSettingsService& settings_service,
+        syncer::SyncService* sync_service,
+        std::unique_ptr<SupervisedUserURLFilter> url_filter,
+        std::unique_ptr<SupervisedUserService::PlatformDelegate>
+            platform_delegate);
 #if BUILDFLAG(IS_ANDROID)
-  // Two fake content filters observers are created for testing purposes. One
-  // for the browser content filters and one for the search content filters.
-  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled);
+    base::WeakPtr<FakeContentFiltersObserverBridge>
+    browser_content_filters_observer_weak_ptr();
+    base::WeakPtr<FakeContentFiltersObserverBridge>
+    search_content_filters_observer_weak_ptr();
 #endif  // BUILDFLAG(IS_ANDROID)
+  };
+
   SupervisedUserPrefStoreTestEnvironment pref_store_environment_;
 
   signin::IdentityTestEnvironment identity_test_env_;
@@ -189,16 +210,12 @@ class SupervisedUserTestEnvironment {
   syncer::MockSyncService sync_service_;
 
   // Core services under test
-  std::unique_ptr<SupervisedUserService> service_;
+  std::unique_ptr<TestSupervisedUserService> service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
 
   // The objects are actually owned by the service_, but are referenced here for
   // convenience.
   raw_ptr<safe_search_api::FakeURLCheckerClient> url_checker_client_;
-#if BUILDFLAG(IS_ANDROID)
-  raw_ptr<FakeContentFiltersObserverBridge> browser_content_filters_observer_;
-  raw_ptr<FakeContentFiltersObserverBridge> search_content_filters_observer_;
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 }  // namespace supervised_user
 

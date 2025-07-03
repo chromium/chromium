@@ -440,6 +440,16 @@ void SupervisedUserService::DisableBrowserContentFilters() {
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }
 
+ContentFiltersObserverBridge*
+SupervisedUserService::browser_content_filters_observer() {
+  return browser_content_filters_observer_.get();
+}
+
+ContentFiltersObserverBridge*
+SupervisedUserService::search_content_filters_observer() {
+  return search_content_filters_observer_.get();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace supervised_user
