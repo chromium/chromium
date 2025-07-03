@@ -316,8 +316,8 @@ bool AreTextStyleEqual(FPDF_PAGEOBJECT text_object,
   // has upper case or tall letters or not.
   // Comparing the font size is done heuristically, as the smaller value should
   // not be less than half the larger one.
-  // TODO(crbug.com/360803943): Add unittests with OCRed PDF data.
-  // TODO(crbug.com/360803943): Add block information from OCR results to
+  // TODO(crbug.com/398064843): Add unittests with OCRed PDF data.
+  // TODO(crbug.com/398064843): Add block information from OCR results to
   // objects and create text runs based on them.
   bool font_size_match =
       is_searchified ? FloatAtLeastHalf(char_style.font_size, style.font_size)
