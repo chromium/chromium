@@ -99,8 +99,7 @@ void SetSinkIdResolver::Start() {
   }
 
   // Validate that sink_id_ is a valid UTF8 - see https://crbug.com/1420170.
-  if (sink_id_.Utf8(WTF::Utf8ConversionMode::kStrict).empty() !=
-      sink_id_.empty()) {
+  if (sink_id_.Utf8(Utf8ConversionMode::kStrict).empty() != sink_id_.empty()) {
     resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidCharacterError, "Invalid sink id."));
     return;

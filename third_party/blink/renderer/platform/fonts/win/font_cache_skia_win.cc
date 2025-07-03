@@ -324,7 +324,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
 static inline bool DeprecatedEqualIgnoringCase(const AtomicString& a,
                                                const SkString& b) {
-  return WTF::DeprecatedEqualIgnoringCase(a, ToAtomicString(b));
+  return DeprecatedEqualIgnoringCase(a, ToAtomicString(b));
 }
 
 static bool TypefacesMatchesFamily(const SkTypeface* tf,

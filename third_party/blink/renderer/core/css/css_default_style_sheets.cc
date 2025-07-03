@@ -58,7 +58,7 @@ namespace blink {
 
 namespace {
 String MaybeRemoveCSSImportant(String string) {
-  const StringView kImportantSuffix(" !important");
+  const blink::StringView kImportantSuffix(" !important");
   return string.EndsWith(kImportantSuffix)
              ? string.Substring(0, string.length() - kImportantSuffix.length())
              : string;

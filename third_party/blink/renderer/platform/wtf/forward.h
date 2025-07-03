@@ -34,6 +34,7 @@ namespace blink {
 class AtomicString;
 class String;
 class StringBuilder;
+class StringView;
 
 template <typename T>
 class StringBuffer;
@@ -52,11 +53,11 @@ class OrdinalNumber;
 class SegmentedBuffer;
 class SharedBuffer;
 class StringImpl;
-class StringView;
 class TextPosition;
 
-// TODO(crbug.com/422768753): Remove this `using` directive;
+// TODO(crbug.com/422768753): Remove these `using` directives.
 using blink::String;
+using blink::StringView;
 
 }  // namespace WTF
 
@@ -65,6 +66,5 @@ using WTF::Vector;
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;
 using WTF::StringImpl;
-using WTF::StringView;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FORWARD_H_

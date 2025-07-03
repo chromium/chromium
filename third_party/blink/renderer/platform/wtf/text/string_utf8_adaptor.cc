@@ -7,7 +7,7 @@
 namespace blink {
 
 StringUtf8Adaptor::StringUtf8Adaptor(StringView string,
-                                     WTF::Utf8ConversionMode mode) {
+                                     Utf8ConversionMode mode) {
   if (string.empty())
     return;
   // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses

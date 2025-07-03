@@ -118,13 +118,15 @@ void TextResourceDecoder::SetEncoding(const TextEncoding& encoding,
   // When encoding comes from meta tag (i.e. it cannot be XML files sent via
   // XHR), treat x-user-defined as windows-1252 (bug 18270)
   if (source == kEncodingFromMetaTag &&
-      WTF::EqualIgnoringASCIICase(encoding.GetName(), "x-user-defined"))
+      EqualIgnoringASCIICase(encoding.GetName(), "x-user-defined")) {
     encoding_ = TextEncoding("windows-1252");
-  else if (source == kEncodingFromMetaTag || source == kEncodingFromXMLHeader ||
-           source == kEncodingFromCSSCharset)
+  } else if (source == kEncodingFromMetaTag ||
+             source == kEncodingFromXMLHeader ||
+             source == kEncodingFromCSSCharset) {
     encoding_ = encoding.ClosestByteBasedEquivalent();
-  else
+  } else {
     encoding_ = encoding;
+  }
 
   codec_.reset();
   source_ = source;

@@ -951,6 +951,8 @@ struct HashTraits<scoped_refptr<StringImpl>>;
 
 namespace blink {
 using WTF::CharacterMatchFunctionPtr;
+using WTF::DeprecatedEqualIgnoringCase;
+using WTF::EqualIgnoringASCIICase;
 using WTF::IsWhiteSpaceFunctionPtr;
 using WTF::kStripExtraWhiteSpace;
 using WTF::StripBehavior;

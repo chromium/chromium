@@ -122,10 +122,10 @@ static bool IsCrLfOrTabChar(UChar c) {
 
 std::optional<mojom::blink::ManifestFileHandler::LaunchType>
 FileHandlerLaunchTypeFromString(const std::string& launch_type) {
-  if (WTF::EqualIgnoringASCIICase(String(launch_type), "single-client")) {
+  if (EqualIgnoringASCIICase(String(launch_type), "single-client")) {
     return mojom::blink::ManifestFileHandler::LaunchType::kSingleClient;
   }
-  if (WTF::EqualIgnoringASCIICase(String(launch_type), "multiple-clients")) {
+  if (EqualIgnoringASCIICase(String(launch_type), "multiple-clients")) {
     return mojom::blink::ManifestFileHandler::LaunchType::kMultipleClients;
   }
   return std::nullopt;

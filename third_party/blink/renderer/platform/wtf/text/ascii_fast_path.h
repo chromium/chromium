@@ -155,7 +155,7 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertAsciiCase(
     Converter&& converter,
     Allocator&& allocator) {
   CHECK_LE(string.length(), std::numeric_limits<wtf_size_t>::max());
-  return VisitCharacters(string, [&](auto chars) {
+  return WTF::VisitCharacters(string, [&](auto chars) {
     // First scan the string for the desired case.
     if (converter.IsCorrectCase(chars)) {
       return allocator.CoerceOriginal(string);

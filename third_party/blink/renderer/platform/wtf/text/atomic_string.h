@@ -258,7 +258,7 @@ inline bool operator==(const String& a, const AtomicString& b) {
   return b == a;
 }
 inline bool operator==(const AtomicString& a, const char* b) {
-  return WTF::EqualStringView(a, b);
+  return EqualStringView(a, b);
 }
 inline bool operator==(const char* a, const AtomicString& b) {
   return b == a;
@@ -295,6 +295,16 @@ WTF_EXPORT extern const AtomicString& g_https_atom;
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const AtomicString&);
 
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
+                              unsigned offset,
+                              unsigned length)
+    : StringView(string.Impl(), offset, length) {}
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
+                              unsigned offset)
+    : StringView(string.Impl(), offset) {}
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
+    : StringView(string.Impl()) {}
+
 }  // namespace blink
 
 namespace WTF {
@@ -304,16 +314,6 @@ struct HashTraits;
 // Defined in atomic_string_hash.h.
 template <>
 struct HashTraits<blink::AtomicString>;
-
-inline StringView::StringView(const blink::AtomicString& string LIFETIME_BOUND,
-                              unsigned offset,
-                              unsigned length)
-    : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const blink::AtomicString& string LIFETIME_BOUND,
-                              unsigned offset)
-    : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const blink::AtomicString& string LIFETIME_BOUND)
-    : StringView(string.Impl()) {}
 
 }  // namespace WTF
 

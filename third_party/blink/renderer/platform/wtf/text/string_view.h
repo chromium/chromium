@@ -23,10 +23,8 @@
 #endif
 
 namespace blink {
-class CodePointIterator;
-}
 
-namespace WTF {
+class CodePointIterator;
 
 enum class Utf8ConversionMode : uint8_t {
   // Unpaired surrogates are encoded using the standard UTF-8 encoding scheme,
@@ -132,13 +130,12 @@ class WTF_EXPORT StringView {
   inline StringView(const String& string LIFETIME_BOUND);
 
   // From an AtomicString, implemented in atomic_string.h
-  inline StringView(const blink::AtomicString& string LIFETIME_BOUND,
+  inline StringView(const AtomicString& string LIFETIME_BOUND,
                     unsigned offset,
                     unsigned length);
-  inline StringView(const blink::AtomicString& string LIFETIME_BOUND,
-                    unsigned offset);
+  inline StringView(const AtomicString& string LIFETIME_BOUND, unsigned offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
-  inline StringView(const blink::AtomicString& string LIFETIME_BOUND);
+  inline StringView(const AtomicString& string LIFETIME_BOUND);
 
   // From a literal string or LChar buffer:
   explicit StringView(base::span<const LChar> chars)
@@ -280,7 +277,7 @@ class WTF_EXPORT StringView {
   StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
 
   String ToString() const;
-  blink::AtomicString ToAtomicString() const;
+  AtomicString ToAtomicString() const;
 
   // Returns a version suitable for gtest and base/logging.*.  It prepends and
   // appends double-quotes, and escapes characters other than ASCII printables.
@@ -305,8 +302,8 @@ class WTF_EXPORT StringView {
   // * Iterate code points
   //    for (UChar32 code_point : view) {
   //      ...
-  blink::CodePointIterator begin() const;
-  blink::CodePointIterator end() const;
+  CodePointIterator begin() const;
+  CodePointIterator end() const;
 
  private:
   void Set(const StringImpl&, unsigned offset, unsigned length);
@@ -444,15 +441,11 @@ inline bool StringView::IsAllSpecialCharacters() const {
 
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::EqualStringView;
-using WTF::Utf8ConversionMode;
 }  // namespace blink
 
-using WTF::StringView;
-using WTF::EqualIgnoringASCIICase;
-using WTF::DeprecatedEqualIgnoringCase;
+// TODO(crbug.com/422768753): Remove this `using` directive.
+namespace WTF {
+using blink::StringView;
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_

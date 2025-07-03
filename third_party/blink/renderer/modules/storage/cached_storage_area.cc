@@ -823,8 +823,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
 
       // TODO(dmurph): Figure out how to avoid a copy here.
       // TODO(dmurph): Handle invalid UTF16 better. https://crbug.com/873280.
-      StringUtf8Adaptor utf8(input,
-                             WTF::Utf8ConversionMode::kStrictReplacingErrors);
+      StringUtf8Adaptor utf8(input, Utf8ConversionMode::kStrictReplacingErrors);
       Vector<uint8_t> result(utf8.size());
       UNSAFE_TODO(std::memcpy(result.data(), utf8.data(), utf8.size()));
       return result;

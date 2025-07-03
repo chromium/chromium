@@ -54,7 +54,7 @@ class WTF_EXPORT StringUtf8Adaptor final {
 
   explicit StringUtf8Adaptor(
       StringView string,
-      WTF::Utf8ConversionMode mode = WTF::Utf8ConversionMode::kLenient);
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient);
   ~StringUtf8Adaptor();
 
   const char* data() const { return span_.data(); }

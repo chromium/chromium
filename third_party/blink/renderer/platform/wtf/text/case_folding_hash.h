@@ -131,13 +131,13 @@ class CaseFoldingHash {
     // Save one branch inside each StringView by derefing the StringImpl,
     // and another branch inside the compare function by skipping the null
     // checks.
-    return DeprecatedEqualIgnoringCaseAndNullity(*a, *b);
+    return blink::DeprecatedEqualIgnoringCaseAndNullity(*a, *b);
   }
 
   static inline bool Equal(const char* a, const char* b) {
     DCHECK(a);
     DCHECK(b);
-    return DeprecatedEqualIgnoringCaseAndNullity(a, b);
+    return blink::DeprecatedEqualIgnoringCaseAndNullity(a, b);
   }
 
   static unsigned GetHash(const scoped_refptr<StringImpl>& key) {

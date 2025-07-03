@@ -974,7 +974,7 @@ bool Color::ParseHexColor(base::span<const UChar> name, Color& color) {
 bool Color::ParseHexColor(const StringView& name, Color& color) {
   if (name.empty())
     return false;
-  return VisitCharacters(name, [&color](auto chars) {
+  return WTF::VisitCharacters(name, [&color](auto chars) {
     return ParseHexColorInternal(chars, color);
   });
 }

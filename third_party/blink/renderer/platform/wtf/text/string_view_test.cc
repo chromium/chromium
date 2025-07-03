@@ -14,11 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-
-using blink::AtomicString;
-using blink::g_empty_atom;
-using blink::g_null_atom;
+namespace blink {
 
 const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
@@ -563,4 +559,4 @@ TEST(StringViewTest, NextCodePointOffset) {
   EXPECT_EQ(1u, broken3.NextCodePointOffset(0));
 }
 
-}  // namespace WTF
+}  // namespace blink

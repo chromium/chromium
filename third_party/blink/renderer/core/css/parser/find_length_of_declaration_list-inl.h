@@ -462,7 +462,7 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
 }
 
 __attribute__((target("avx2,pclmul"))) inline size_t
-FindLengthOfDeclarationListAVX2(StringView str) {
+FindLengthOfDeclarationListAVX2(blink::StringView str) {
   if (str.Is8Bit()) {
     return FindLengthOfDeclarationListAVX2(str.Span8());
   } else {
@@ -634,7 +634,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
 
 #endif
 
-ALWAYS_INLINE static size_t FindLengthOfDeclarationList(StringView str) {
+ALWAYS_INLINE static size_t FindLengthOfDeclarationList(blink::StringView str) {
   if (str.Is8Bit()) {
     return FindLengthOfDeclarationList(str.Span8());
   } else {

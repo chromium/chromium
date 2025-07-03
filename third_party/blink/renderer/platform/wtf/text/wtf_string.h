@@ -700,6 +700,16 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);
 
+inline StringView::StringView(const String& string LIFETIME_BOUND,
+                              unsigned offset,
+                              unsigned length)
+    : StringView(string.Impl(), offset, length) {}
+inline StringView::StringView(const String& string LIFETIME_BOUND,
+                              unsigned offset)
+    : StringView(string.Impl(), offset) {}
+inline StringView::StringView(const String& string LIFETIME_BOUND)
+    : StringView(string.Impl()) {}
+
 }  // namespace blink
 
 namespace WTF {
@@ -719,16 +729,6 @@ struct HashTraits;
 // Defined in string_hash.h.
 template <>
 struct HashTraits<String>;
-
-inline StringView::StringView(const String& string LIFETIME_BOUND,
-                              unsigned offset,
-                              unsigned length)
-    : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const String& string LIFETIME_BOUND,
-                              unsigned offset)
-    : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const String& string LIFETIME_BOUND)
-    : StringView(string.Impl()) {}
 
 }  // namespace WTF
 
