@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -61,6 +62,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -1005,6 +1007,33 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
                    .value()},
               {UkmSuggestionsShownType::kFormSignatureName,
                Collapse(CalculateFormSignature(form)).value()}}});
+}
+
+// Test that the loyalty card checkout flow user actions are correctly logged.
+TEST_F(AutofillMetricsTest, LoyaltyCardCheckoutFlowUserActions) {
+  // Set up test loyalty cards.
+  const LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  test_api(valuables_data_manager()).SetLoyaltyCards({loyalty_card});
+
+  FormData form =
+      CreateForm({CreateTestFormField("Loyalty Program", "loyalty-program", "",
+                                      FormControlType::kInputText),
+                  CreateTestFormField("Loyalty Number", "loyalty-number", "",
+                                      FormControlType::kInputText)});
+  autofill_manager().AddSeenForm(
+      form, {LOYALTY_MEMBERSHIP_PROGRAM, LOYALTY_MEMBERSHIP_ID});
+
+  // Simulate an Autofill query on a loyalty card field.
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[1].global_id());
+  // Simulate showing a loyalty card suggestion polled from "Loyalty Number"
+  // field.
+  {
+    base::UserActionTester user_action_tester;
+    DidShowAutofillSuggestions(form);
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "Autofill_ShowedLoyaltyCardSuggestions"));
+  }
 }
 
 // Tests that the Autofill_PolledCreditCardSuggestions user action is only

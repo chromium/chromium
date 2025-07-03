@@ -4789,6 +4789,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_ShowedLoyaltyCardSuggestions">
+  <owner>vizcay@google.com</owner>
+  <description>
+    This user action is logged when the user is shown some loyalty card
+    suggestions.
+  </description>
+</action>
+
 <action name="Autofill_ShowedProfileSuggestions">
   <owner>battre@chromium.org</owner>
   <description>

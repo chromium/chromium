@@ -97,7 +97,10 @@ void LoyaltyCardFormEventLogger::RecordPollSuggestions() {}
 
 void LoyaltyCardFormEventLogger::RecordParseForm() {}
 
-void LoyaltyCardFormEventLogger::RecordShowSuggestions() {}
+void LoyaltyCardFormEventLogger::RecordShowSuggestions() {
+  base::RecordAction(
+      base::UserMetricsAction("Autofill_ShowedLoyaltyCardSuggestions"));
+}
 
 void LoyaltyCardFormEventLogger::RecordFillingReadiness(LogBuffer& logs) const {
   FormEventLoggerBase::RecordFillingReadiness(logs);
