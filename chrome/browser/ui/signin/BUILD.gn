@@ -37,6 +37,8 @@ source_set("signin") {
   if (enable_dice_support) {
     sources += [
       "chrome_signout_confirmation_prompt.h",
+      "dice_migration_service.h",
+      "dice_migration_service_factory.h",
       "dice_web_signin_interceptor_delegate.h",
       "promos/bubble_signin_promo_delegate.h",
       "promos/bubble_signin_promo_signin_button_view.h",
@@ -87,6 +89,8 @@ source_set("impl") {
   if (enable_dice_support) {
     sources += [
       "chrome_signout_confirmation_prompt.cc",
+      "dice_migration_service.cc",
+      "dice_migration_service_factory.cc",
       "dice_web_signin_interceptor_delegate.cc",
       "promos/bubble_signin_promo_delegate.cc",
       "promos/bubble_signin_promo_signin_button_view.cc",

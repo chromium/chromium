@@ -223,6 +223,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
@@ -842,6 +843,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DevToolsAndroidBridge::Factory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DiceMigrationServiceFactory::GetInstance();
   DiceResponseHandlerFactory::GetInstance();
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
