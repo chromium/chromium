@@ -67,7 +67,7 @@ suite('AiPage', function() {
     assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
-  test('FeaturesVisibilityWithRefreshEnabled', async () => {
+  test('FeatureRowsVisibility', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showAutofillAiControl: true,
