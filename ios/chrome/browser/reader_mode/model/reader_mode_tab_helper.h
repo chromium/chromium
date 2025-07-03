@@ -55,6 +55,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Returns whether Reader mode is active in the current tab. If so, the Reader
   // mode UI should be presented.
+  // GetReaderModeWebState() may still return null.
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);

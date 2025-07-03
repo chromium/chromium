@@ -231,12 +231,9 @@
   // Check if there is an alternate webState.
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(webState);
-  if (readerModeTabHelper && readerModeTabHelper->IsActive()) {
-    web::WebState* readerModeWebState =
-        readerModeTabHelper->GetReaderModeWebState();
-    if (readerModeWebState) {
-      webState = readerModeWebState;
-    }
+  if (readerModeTabHelper &&
+      readerModeTabHelper->IsReaderModeWebStateAvailable()) {
+    webState = readerModeTabHelper->GetReaderModeWebState();
   }
   [_browserEditMenuHandler buildEditMenuWithBuilder:builder
                                          inWebState:webState];
