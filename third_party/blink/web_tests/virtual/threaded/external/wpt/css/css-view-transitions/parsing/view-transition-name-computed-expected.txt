@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property view-transition-name value 'match-element'
-  assert_equals: expected "match-element" but got "auto"
-[FAIL] Property view-transition-name value 'maTch-element'
-  assert_equals: expected "match-element" but got "auto"
-Harness: the test ran to completion.
-
