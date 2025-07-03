@@ -52,6 +52,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -397,6 +398,13 @@ void GlicWindowControllerImpl::OnWidgetUserResizeEnded() {
 
   glic_window_animator_->ResetLastTargetSize();
   user_resizing_ = false;
+}
+
+void GlicWindowControllerImpl::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  MaybeAdjustSizeForDisplay(/*animate=*/false);
+  AdjustPositionIfNeeded();
 }
 
 void GlicWindowControllerImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
@@ -1167,6 +1175,7 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
     // request.
     glic_window_animator_->MaybeAnimateToTargetSize();
 
+    MaybeAdjustSizeForDisplay(/*animate=*/false);
     AdjustPositionIfNeeded();
     SaveWidgetPosition(/*user_modified=*/true);
 
@@ -1185,6 +1194,9 @@ const mojom::PanelState& GlicWindowControllerImpl::GetPanelState() const {
 }
 
 void GlicWindowControllerImpl::AdjustPositionIfNeeded() {
+  if (!GetGlicWidget()) {
+    return;
+  }
   // Always have at least `kMinimumVisible` px visible from glic window in
   // both vertical and horizontal directions.
   constexpr int kMinimumVisible = 40;
