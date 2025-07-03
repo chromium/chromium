@@ -221,8 +221,16 @@ std::string DevToolsDataSource::GetMimeType(const GURL& url) {
   return GetMimeTypeForUrl(url);
 }
 
-bool DevToolsDataSource::ShouldAddContentSecurityPolicy() {
-  return false;
+std::string DevToolsDataSource::GetContentSecurityPolicy(
+    network::mojom::CSPDirectiveName directive) {
+  switch (directive) {
+    case network::mojom::CSPDirectiveName::ObjectSrc:
+      return "object-src 'none';";
+    case network::mojom::CSPDirectiveName::ScriptSrc:
+      return "script-src 'self' https://chrome-devtools-frontend.appspot.com;";
+    default:
+      return std::string();
+  }
 }
 
 bool DevToolsDataSource::ShouldDenyXFrameOptions() {

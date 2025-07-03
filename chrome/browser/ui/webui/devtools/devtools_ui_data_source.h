@@ -52,7 +52,8 @@ class DevToolsDataSource : public content::URLDataSource {
 
   // content::URLDataSource overrides.
   std::string GetMimeType(const GURL& url) override;
-  bool ShouldAddContentSecurityPolicy() override;
+  std::string GetContentSecurityPolicy(
+      network::mojom::CSPDirectiveName directive) override;
   bool ShouldDenyXFrameOptions() override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
 
