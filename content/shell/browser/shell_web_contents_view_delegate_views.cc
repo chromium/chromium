@@ -90,6 +90,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
                                                  &screen_point);
   }
 
+#if defined(SHELL_USE_TOOLKIT_VIEWS)
   context_menu_model_ =
       std::make_unique<ContextMenuModel>(web_contents_, params);
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -100,6 +101,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
   context_menu_runner_->RunMenuAt(
       widget, nullptr, gfx::Rect(screen_point, gfx::Size()),
       views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone);
+#endif
 }
 
 }  // namespace content
