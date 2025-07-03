@@ -6,6 +6,9 @@
 
 #include <cstddef>
 
+#include "base/feature_list.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
@@ -16,6 +19,34 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
+
+namespace {
+
+// When this is enabled, the browser stores response headers for synthetic
+// responses even if there is no opt-in header in its response. This is for
+// local development and testing.
+BASE_FEATURE(kServiceWorkerBypassSyntheticResponseHeaderCheck,
+             "ServiceWorkerBypassSyntheticResponseHeaderCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string>
+    kServiceWorkerBypassSyntheticResponseIgnoredHeaders{
+        &kServiceWorkerBypassSyntheticResponseHeaderCheck, "ignored_headers",
+        ""};
+
+bool IsBypassSyntheticResponseHeaderCheckEnabled() {
+  static const bool kIsEnabled = base::FeatureList::IsEnabled(
+      kServiceWorkerBypassSyntheticResponseHeaderCheck);
+  return kIsEnabled;
+}
+
+const std::string& GetIgnoredHeadersForBypass() {
+  static const base::NoDestructor<std::string> ignored_headers(
+      kServiceWorkerBypassSyntheticResponseIgnoredHeaders.Get());
+  return *ignored_headers;
+}
+
+}  // namespace
 
 namespace content {
 namespace {
@@ -29,7 +60,8 @@ constexpr std::string_view kOptInHeaderValue = "?1";
 // TODO(crbug.com/352578800): Ensure converted fields are really sufficient.
 blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
     network::mojom::URLResponseHeadPtr head) {
-  CHECK(head->headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
+  CHECK(IsBypassSyntheticResponseHeaderCheckEnabled() ||
+        head->headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
   auto out_response = blink::mojom::FetchAPIResponse::New();
   out_response->status_code = net::HTTP_OK;
   out_response->response_time = base::Time::Now();
@@ -189,7 +221,8 @@ void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
     // If the response is not successful, do not update the response head.
     return;
   }
-  if (!response_head->headers->HasHeaderValue(kOptInHeaderName,
+  if (!IsBypassSyntheticResponseHeaderCheckEnabled() &&
+      !response_head->headers->HasHeaderValue(kOptInHeaderName,
                                               kOptInHeaderValue)) {
     // If there is no opt-in header, do not update the response head.
     return;
@@ -254,7 +287,16 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   CHECK(version_->GetResponseHeadForSyntheticResponse());
   // TODO(crbug.com/352578800): Handle other necessary headers e.g. encoding.
-  const base::flat_set<std::string_view> ignored_headers = {"date", "alt-svc"};
+  base::flat_set<std::string_view> ignored_headers = {"date", "alt-svc"};
+  if (IsBypassSyntheticResponseHeaderCheckEnabled()) {
+    const std::string& ignored_headers_str = GetIgnoredHeadersForBypass();
+    std::vector<std::string_view> testing_ignored_headers =
+        base::SplitStringPiece(ignored_headers_str, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    for (const auto& header : testing_ignored_headers) {
+      ignored_headers.insert(base::ToLowerASCII(header));
+    }
+  }
   auto collect_significant_headers =
       [&](const net::HttpResponseHeaders& headers) {
         base::flat_map<std::string, std::multiset<std::string>> collected;
