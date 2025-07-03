@@ -204,8 +204,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   divider_line_ = local_answer_header_and_suggestion_and_buttons_->AddChildView(
       std::make_unique<views::Separator>());
   divider_line_->SetOrientation(views::Separator::Orientation::kHorizontal);
-  divider_line_->SetProperty(views::kMarginsKey,
-                             gfx::Insets::TLBR(8, 0, 8, 0));
+  divider_line_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 2, 0));
 
   auto* suggestion_and_buttons =
       local_answer_header_and_suggestion_and_buttons_->AddChildView(
