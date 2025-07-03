@@ -16,7 +16,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_set>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"

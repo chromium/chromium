@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"

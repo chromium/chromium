@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_MODES_WITH_MEDIA_SOURCES_H_
 
 #include <map>
-#include <unordered_set>
 
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/media_sink.h"

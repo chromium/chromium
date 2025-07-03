@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"

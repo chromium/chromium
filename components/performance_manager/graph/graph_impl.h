@@ -10,7 +10,6 @@
 #include <array>
 #include <map>
 #include <memory>
-#include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

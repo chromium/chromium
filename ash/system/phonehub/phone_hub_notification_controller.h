@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"

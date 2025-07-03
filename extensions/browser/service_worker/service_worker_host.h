@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_HOST_H_
 
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

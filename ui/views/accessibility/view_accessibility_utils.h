@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_UTILS_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_UTILS_H_
 
-#include <unordered_set>
 
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
