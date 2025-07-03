@@ -95,6 +95,13 @@ TEST(AutofillEntityTypeTest, Syncable) {
   EXPECT_FALSE(EntityType(kPassport).syncable());
 }
 
+TEST(AutofillEntityTypeTest, Disabled) {
+  using enum EntityTypeName;
+  EXPECT_TRUE(EntityType(kPassport).enabled());
+  EXPECT_TRUE(EntityType(kDriversLicense).enabled());
+  EXPECT_TRUE(EntityType(kVehicle).enabled());
+}
+
 TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
   using enum EntityTypeName;
   EntityType a = EntityType(kPassport);

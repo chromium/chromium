@@ -193,6 +193,19 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
+  yield 'bool EntityType::enabled() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}:'
+    feature_name = entity.get('experiment feature', '')
+    if feature_name:
+      yield f'      return base::FeatureList::IsEnabled(features::k{feature_name});'
+    else:
+      yield f'      return true;'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
   yield '// static'
   yield 'bool AttributeType::DisambiguationOrder(const AttributeType& lhs, const AttributeType& rhs) {'
   yield '  constexpr auto rank = [](const AttributeType& a) {'
@@ -242,6 +255,7 @@ def generate_cpp_functions_header(schema, include_guard):
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {{
