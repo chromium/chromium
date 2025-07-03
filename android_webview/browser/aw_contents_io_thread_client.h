@@ -14,7 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
-#include "components/safe_browsing/content/browser/web_contents_key.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -31,9 +31,9 @@ namespace android_webview {
 class AwWebResourceInterceptResponse;
 struct AwWebResourceRequest;
 
-// TODO(crbug.com/373474043): Move safe_browsing::WebContentsKey to a common
-// place instead of aliasing.
-using WebContentsKey = safe_browsing::WebContentsKey;
+// TODO(crbug.com/373474043): Consider upstreaming this implementation to
+// safe_browsing::WebContentsKey .
+using WebContentsKey = base::UnguessableToken;
 WebContentsKey GetWebContentsKey(content::WebContents& web_contents);
 
 // This class provides a means of calling Java methods on an instance that has
