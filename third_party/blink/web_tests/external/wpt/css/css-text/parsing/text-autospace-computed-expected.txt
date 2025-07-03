@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Property text-autospace value 'initial'
+  assert_equals: expected "normal" but got "no-autospace"
 [FAIL] Property text-autospace value 'auto'
   assert_true: 'auto' is a supported value for text-autospace. expected true got false
 [FAIL] Property text-autospace value 'ideograph-alpha'

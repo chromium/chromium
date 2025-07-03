@@ -1,5 +1,23 @@
 This is a testharness.js-based test.
 [FAIL] Property text-spacing value 'auto'
   assert_true: 'auto' is a supported value for text-spacing. expected true got false
+[FAIL] Property text-spacing value 'no-autospace'
+  assert_equals: expected "no-autospace" but got "normal"
+[FAIL] Property text-spacing value 'trim-start'
+  assert_equals: expected "trim-start" but got "trim-start normal"
+[FAIL] Property text-spacing value 'space-all'
+  assert_equals: expected "space-all" but got "space-all normal"
+[FAIL] Property text-spacing value 'normal trim-start'
+  assert_equals: expected "trim-start" but got "trim-start normal"
+[FAIL] Property text-spacing value 'no-autospace normal'
+  assert_equals: expected "no-autospace" but got "normal"
+[FAIL] Property text-spacing value 'no-autospace trim-start'
+  assert_equals: expected "trim-start no-autospace" but got "trim-start"
+[FAIL] Property text-spacing value 'trim-start normal '
+  assert_equals: expected "trim-start" but got "trim-start normal"
+[FAIL] Property text-spacing value 'normal no-autospace'
+  assert_equals: expected "no-autospace" but got "normal"
+[FAIL] Property text-spacing value 'trim-start no-autospace'
+  assert_equals: expected "trim-start no-autospace" but got "trim-start"
 Harness: the test ran to completion.
 

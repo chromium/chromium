@@ -37,6 +37,7 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
     html = String(R"HTML(
       <style>
       #container {
+        text-autospace: normal;
         font-family: Ahem;
         font-size: 10px;)HTML") +
            container_css + R"HTML(

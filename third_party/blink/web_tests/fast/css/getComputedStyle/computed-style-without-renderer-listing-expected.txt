@@ -385,7 +385,7 @@ table-layout: auto
 text-align: start
 text-align-last: auto
 text-anchor: start
-text-autospace: normal
+text-autospace: no-autospace
 text-box-edge: auto
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
