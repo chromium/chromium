@@ -9,8 +9,8 @@
 #include <type_traits>
 
 #include "base/types/strong_alias.h"
-#include "build/branding_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -101,15 +101,6 @@ metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);
 // Returns the URL used to launch the password checkup.
 GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer =
                                PasswordCheckupReferrer::kLeakDetectionDialog);
-
-// Returns whether to use Google Chrome branded strings.
-constexpr bool UsesPasswordManagerGoogleBranding() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return true;
-#else
-  return false;
-#endif
-}
 
 // Captures common traits needed for a leak dialog.
 class LeakDialogTraits {

@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
+#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
@@ -271,6 +272,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
       cross_domain_confirmation_controller_;
 #endif
+
+  UndoPasswordChangeController undo_password_change_controller_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

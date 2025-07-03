@@ -429,11 +429,12 @@ void PasswordManualFallbackFlow::EnsureCrossDomainPasswordUsageGetsConsent(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
   if (payload.is_cross_domain) {
+    CHECK(payload.display_signon_realm);
     cross_domain_confirmation_popup_controller_ =
         password_client_->ShowCrossDomainConfirmationPopup(
             bounds_, text_direction_,
             password_manager_driver_->GetLastCommittedURL(),
-            payload.display_signon_realm, /*show_warning_text=*/false,
+            payload.display_signon_realm.value(), /*show_warning_text=*/false,
             std::move(on_allowed));
     return;
   }

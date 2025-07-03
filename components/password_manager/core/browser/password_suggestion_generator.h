@@ -20,6 +20,7 @@ namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordManagerDriver;
+class UndoPasswordChangeController;
 
 using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
 using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
@@ -65,6 +66,7 @@ class PasswordSuggestionGenerator {
   // `show_identity_credentials` specifies whether federated identity credential
   // suggestion should be added.
   std::vector<autofill::Suggestion> GetSuggestionsForDomain(
+      const UndoPasswordChangeController& undo_password_change_controller,
       base::optional_ref<const autofill::PasswordFormFillData> fill_data,
       const gfx::Image& page_favicon,
       const std::u16string& username_filter,
@@ -72,6 +74,12 @@ class PasswordSuggestionGenerator {
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials) const;
+
+  // Creates the suggestions used in the proactive recovery popup of the
+  // password recovery flow. This is always just 1 backup password suggestion, a
+  // separator and a free form footer explaining the popup.
+  std::vector<autofill::Suggestion> GetProactiveRecoverySuggestions(
+      const autofill::Suggestion::PasswordSuggestionDetails& payload);
 
   // Generates suggestions shown when user triggers password Autofill from the
   // Chrome context menu. Every suggestion will have several sub suggestions to

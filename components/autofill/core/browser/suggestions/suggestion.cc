@@ -174,6 +174,14 @@ Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
       is_cross_domain(is_cross_domain) {}
 
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    std::u16string_view username,
+    std::u16string_view password,
+    std::u16string_view backup_password)
+    : username(username),
+      password(password),
+      backup_password(backup_password) {}
+
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     const PasswordSuggestionDetails&) = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     PasswordSuggestionDetails&&) = default;
