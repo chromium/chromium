@@ -208,7 +208,8 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
       manager_->client().GetLastCommittedPrimaryMainFrameURL();
   if (std::ranges::any_of(
           loyalty_cards, [&current_domain](const LoyaltyCard& loyalty_card) {
-            return loyalty_card.HasMatchingMerchantDomain(current_domain);
+            return loyalty_card.GetAffiliationCategory(current_domain) ==
+                   LoyaltyCard::AffiliationCategory::kAffiliated;
           })) {
     return DryRunResult(TriggerOutcome::kShown, loyalty_cards);
   }

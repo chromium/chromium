@@ -35,18 +35,15 @@ bool LoyaltyCard::IsValid() const {
          (program_logo_.is_empty() || program_logo_.is_valid());
 }
 
-bool LoyaltyCard::HasMatchingMerchantDomain(const GURL& url) const {
-  return std::ranges::any_of(
-      merchant_domains(), [url](const GURL& merchant_url) {
+LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
+    const GURL& url) const {
+  const bool has_affiliated_domain =
+      std::ranges::any_of(merchant_domains(), [url](const GURL& merchant_url) {
         return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
                                                                url, {});
       });
-}
-
-LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
-    const GURL& url) const {
-  return HasMatchingMerchantDomain(url) ? AffiliationCategory::kAffiliated
-                                        : AffiliationCategory::kNonAffiliated;
+  return has_affiliated_domain ? AffiliationCategory::kAffiliated
+                               : AffiliationCategory::kNonAffiliated;
 }
 
 }  // namespace autofill

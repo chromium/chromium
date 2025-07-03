@@ -932,7 +932,8 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
   std::ranges::copy_if(loyalty_cards_to_suggest,
                        std::back_inserter(affiliated_loyalty_cards),
                        [&current_domain](const autofill::LoyaltyCard& card) {
-                         return card.HasMatchingMerchantDomain(current_domain);
+                         return card.GetAffiliationCategory(current_domain) ==
+                                LoyaltyCard::AffiliationCategory::kAffiliated;
                        });
 
   feature_engagement::Tracker* tracker =

@@ -140,7 +140,8 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return card.HasMatchingMerchantDomain(url);
+        return card.GetAffiliationCategory(url) ==
+               LoyaltyCard::AffiliationCategory::kAffiliated;
       });
   // SAFETY: Bounds information contained in vector iterators.
   UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
@@ -207,10 +208,11 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
-  std::ranges::stable_partition(all_loyalty_cards,
-                                [&](const LoyaltyCard& card) {
-                                  return card.HasMatchingMerchantDomain(url);
-                                });
+  std::ranges::stable_partition(
+      all_loyalty_cards, [&](const LoyaltyCard& card) {
+        return card.GetAffiliationCategory(url) ==
+               LoyaltyCard::AffiliationCategory::kAffiliated;
+      });
   submenu_suggestion.children =
       CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
   submenu_suggestion.children.emplace_back(SuggestionType::kSeparator);

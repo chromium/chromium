@@ -75,14 +75,9 @@ class LoyaltyCard final {
   // valid.
   bool IsValid() const;
 
-  // Returns true if any of the merchant domains matches the provided `url`.
-  // URLs are compared using their public suffix domains.
-  // TODO(crbug.com/422366498) Remove this method in favor of
-  // `GetAffiliationCategory`.
-  bool HasMatchingMerchantDomain(const GURL& url) const;
-
   // Returns whether the card is an affiliated card i.e. whether any of its
-  // merchang domains matches `url`.
+  // merchang domains matches `url`.  URLs are compared using their public
+  // suffix domains.
   AffiliationCategory GetAffiliationCategory(const GURL& url) const;
 
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
