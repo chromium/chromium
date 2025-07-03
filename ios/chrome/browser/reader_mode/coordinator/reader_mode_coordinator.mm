@@ -57,6 +57,11 @@
 #pragma mark - ReaderModeOptionsCommands
 
 - (void)showReaderModeOptions {
+  if (_optionsCoordinator) {
+    // If the Reader mode options UI is already presented then there is nothing
+    // to do.
+    return;
+  }
   _optionsCoordinator = [[ReaderModeOptionsCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
@@ -64,6 +69,11 @@
 }
 
 - (void)hideReaderModeOptions {
+  if (!_optionsCoordinator) {
+    // If the Reader mode options UI is already dismissed then there is nothing
+    // to do.
+    return;
+  }
   [_optionsCoordinator stop];
   _optionsCoordinator = nil;
 }
