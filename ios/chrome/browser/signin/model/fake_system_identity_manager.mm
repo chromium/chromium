@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 
-#import <set>
-#import <string>
-
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/i18n/time_formatting.h"
@@ -533,8 +530,7 @@ void FakeSystemIdentityManager::GetAccessTokenAsync(
     id<RefreshAccessTokenError> error =
         details.getAccessTokenCallback.Run(std::move(callback));
     if (error) {
-      FireIdentityAccessTokenRefreshFailed(identity, error,
-                                           std::set<std::string>());
+      FireIdentityAccessTokenRefreshFailed(identity, error);
     }
     return;
   } else {

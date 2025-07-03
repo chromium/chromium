@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
-#import <set>
-#import <string>
 #import <string_view>
 
 #import "base/check.h"
@@ -375,13 +373,12 @@ void ChromeAccountManagerService::OnIdentityRefreshTokenUpdated(
 
 void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    const std::set<std::string>& scopes) {
+    id<RefreshAccessTokenError> error) {
   if (!this->IsValidIdentity(identity)) {
     return;
   }
   for (auto& observer : observer_list_) {
-    observer.OnAccessTokenRefreshFailed(identity, error, scopes);
+    observer.OnAccessTokenRefreshFailed(identity, error);
   }
 }
 

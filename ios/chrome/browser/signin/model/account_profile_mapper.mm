@@ -171,8 +171,7 @@ class AccountProfileMapper::Assigner
       base::RepeatingCallback<void(id<SystemIdentity> identity)>;
   using IdentityAccessTokenRefreshFailedCallback =
       base::RepeatingCallback<void(id<SystemIdentity> identity,
-                                   id<RefreshAccessTokenError> error,
-                                   const std::set<std::string>& scopes)>;
+                                   id<RefreshAccessTokenError> error)>;
 
   // `mapping_updated_cb` will be run every time any identities are added or
   // removed from any profiles.
@@ -212,8 +211,7 @@ class AccountProfileMapper::Assigner
   void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) final;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
-      id<RefreshAccessTokenError> error,
-      const std::set<std::string>& scopes) final;
+      id<RefreshAccessTokenError> error) final;
 
   // ProfileAttributesStorageObserverIOS implementation.
   void OnProfileAttributesUpdated(std::string_view profile_name) final;
@@ -575,9 +573,8 @@ void AccountProfileMapper::Assigner::OnIdentityRefreshTokenUpdated(
 
 void AccountProfileMapper::Assigner::OnIdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    const std::set<std::string>& scopes) {
-  identity_access_token_refresh_failed_cb_.Run(identity, error, scopes);
+    id<RefreshAccessTokenError> error) {
+  identity_access_token_refresh_failed_cb_.Run(identity, error);
 }
 
 void AccountProfileMapper::Assigner::OnProfileAttributesUpdated(
@@ -1103,13 +1100,12 @@ void AccountProfileMapper::IdentityRefreshTokenUpdated(
 
 void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error,
-    const std::set<std::string>& scopes) {
+    id<RefreshAccessTokenError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyAccessTokenRefreshFailed(
       identity, error,
-      assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)), scopes);
+      assigner_->FindProfileNameForGaiaID(GaiaId(identity.gaiaID)));
 }
 
 SystemIdentityManager::IteratorResult
@@ -1250,8 +1246,7 @@ void AccountProfileMapper::NotifyRefreshTokenUpdated(
 void AccountProfileMapper::NotifyAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
-    const std::optional<std::string>& profile_name,
-    const std::set<std::string>& scopes) {
+    const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (!profile_name.has_value()) {
@@ -1262,13 +1257,13 @@ void AccountProfileMapper::NotifyAccessTokenRefreshFailed(
       return;
     }
     for (Observer& observer : it->second) {
-      observer.OnIdentityAccessTokenRefreshFailed(identity, error, scopes);
+      observer.OnIdentityAccessTokenRefreshFailed(identity, error);
     }
   } else {
     // If the feature flag is not enabled, notify all profiles.
     for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
       for (Observer& observer : observer_list) {
-        observer.OnIdentityAccessTokenRefreshFailed(identity, error, scopes);
+        observer.OnIdentityAccessTokenRefreshFailed(identity, error);
       }
     }
   }

@@ -66,10 +66,9 @@ class ChromeAccountManagerService : public KeyedService,
     // Handles access token refresh failed events.
     // `identity` is the the identity for which the access token refresh failed.
     // `error` is an opaque type containing information about the error.
-    virtual void OnAccessTokenRefreshFailed(
-        id<SystemIdentity> identity,
-        id<RefreshAccessTokenError> error,
-        const std::set<std::string>& scopes) {}
+    virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                            id<RefreshAccessTokenError> error) {
+    }
 
     // Called on Shutdown(), for observers that aren't KeyedServices to remove
     // their observers.
@@ -150,7 +149,7 @@ class ChromeAccountManagerService : public KeyedService,
   NSArray<id<SystemIdentity>>* GetAllIdentitiesOnDevice(
       base::PassKey<DeviceAccountsProviderImpl>) const;
 
-  // AccountProfileMapper::Observer implementation.
+  // SystemIdentityManagerObserver implementation.
   void OnIdentitiesInProfileChanged() override;
   void OnIdentitiesOnDeviceChanged() override;
   void OnIdentityInProfileUpdated(id<SystemIdentity> identity) override;
@@ -158,8 +157,7 @@ class ChromeAccountManagerService : public KeyedService,
   void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
-      id<RefreshAccessTokenError> error,
-      const std::set<std::string>& scopes) override;
+      id<RefreshAccessTokenError> error) override;
 
   // Gets base::WeakPtr to the object.
   base::WeakPtr<ChromeAccountManagerService> GetWeakPtr();

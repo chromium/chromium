@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
-#import <set>
-#import <string>
-
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -40,8 +37,7 @@ class ChromeAccountManagerServiceObserver
     on_identity_in_profile_updated_called_count += 1;
   }
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                  id<RefreshAccessTokenError> error,
-                                  const std::set<std::string>& scoopes) final {
+                                  id<RefreshAccessTokenError> error) final {
     on_access_token_refresh_failed_called_count += 1;
   }
 
@@ -188,13 +184,11 @@ TEST_F(ChromeAccountManagerServiceTest, TestFilterIdentityUpdate) {
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 0);
 
   // Google identity is filtered out, an update doesn't call the observer.
-  account_manager_->OnIdentityAccessTokenRefreshFailed(google_identity, nil,
-                                                       std::set<std::string>());
+  account_manager_->OnIdentityAccessTokenRefreshFailed(google_identity, nil);
   EXPECT_EQ(observer.on_identity_in_profile_updated_called_count, 1);
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 0);
   // Chromium identity is not filtered out, an update calls the observer.
-  account_manager_->OnIdentityAccessTokenRefreshFailed(chromium_identity1, nil,
-                                                       std::set<std::string>());
+  account_manager_->OnIdentityAccessTokenRefreshFailed(chromium_identity1, nil);
   EXPECT_EQ(observer.on_identity_in_profile_updated_called_count, 1);
   EXPECT_EQ(observer.on_access_token_refresh_failed_called_count, 1);
 

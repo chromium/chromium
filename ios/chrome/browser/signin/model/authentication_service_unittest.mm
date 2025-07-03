@@ -160,8 +160,7 @@ class AuthenticationServiceTestBase : public PlatformTest {
 
   void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     id<RefreshAccessTokenError> error) {
-    authentication_service()->OnAccessTokenRefreshFailed(
-        identity, error, std::set<std::string>());
+    authentication_service()->OnAccessTokenRefreshFailed(identity, error);
   }
 
   void MarkSignedinUserMigratedFromSyncing() {

@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include <map>
-#include <set>
-#include <string>
+#import <map>
 
 #import "base/functional/callback.h"
 #import "base/observer_list.h"
@@ -56,8 +54,7 @@ class AccountProfileMapper {
     // `error` is an opaque type containing information about the error.
     virtual void OnIdentityAccessTokenRefreshFailed(
         id<SystemIdentity> identity,
-        id<RefreshAccessTokenError> error,
-        const std::set<std::string>& scopes) {}
+        id<RefreshAccessTokenError> error) {}
   };
 
   // Value returned by IdentityIteratorCallback.
@@ -159,8 +156,7 @@ class AccountProfileMapper {
   void IdentityUpdated(id<SystemIdentity> identity);
   void IdentityRefreshTokenUpdated(id<SystemIdentity> identity);
   void IdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                        id<RefreshAccessTokenError> error,
-                                        const std::set<std::string>& scopes);
+                                        id<RefreshAccessTokenError> error);
 
   // Invokes `OnIdentityListChanged(...)` for all observers in
   // `profile_names_to_notify`. If `kSeparateProfilesForManagedAccounts` is
@@ -185,8 +181,7 @@ class AccountProfileMapper {
   void NotifyAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
       id<RefreshAccessTokenError> error,
-      const std::optional<std::string>& profile_name,
-      const std::set<std::string>& scopes);
+      const std::optional<std::string>& profile_name);
 
   // The AccountProfileMapper is sequence-affine.
   SEQUENCE_CHECKER(sequence_checker_);
