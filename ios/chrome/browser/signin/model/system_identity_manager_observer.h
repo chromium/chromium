@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include <set>
+#include <string>
+
 #include "base/observer_list_types.h"
 
 @protocol RefreshAccessTokenError;
@@ -33,7 +36,8 @@ class SystemIdentityManagerObserver : public base::CheckedObserver {
   // The error can be handled by calling `HandleMDMNotification`.
   virtual void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
-      id<RefreshAccessTokenError> error) {}
+      id<RefreshAccessTokenError> error,
+      const std::set<std::string>& scopes) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_IDENTITY_MANAGER_OBSERVER_H_

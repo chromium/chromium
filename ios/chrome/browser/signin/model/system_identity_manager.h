@@ -270,11 +270,6 @@ class SystemIdentityManager {
   void FireIdentityRefreshTokenUpdated(id<SystemIdentity> identity);
 
   // Invokes OnIdentityAccessTokenRefreshFailed(...)` for all observers.
-  // TODO(crbug.com/350461111): Remove this method in favor of the one below.
-  void FireIdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                            id<RefreshAccessTokenError> error);
-
-  // Invokes OnIdentityAccessTokenRefreshFailed(...)` for all observers.
   void FireIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
       id<RefreshAccessTokenError> error,
