@@ -1959,10 +1959,11 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source,
   }
 }
 
-bool HTMLCanvasElement::EnableAccelerationForCanvas2D() {
+void HTMLCanvasElement::EnableAccelerationForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  return GetRasterModeForCanvas2D() != RasterMode::kCPU ||
-         RecreateCanvasInGPURasterModeForCanvas2D();
+  if (GetRasterModeForCanvas2D() == RasterMode::kCPU) {
+    RecreateCanvasInGPURasterModeForCanvas2D();
+  }
 }
 
 std::unique_ptr<CanvasResourceProvider>

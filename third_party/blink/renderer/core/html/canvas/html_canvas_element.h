@@ -270,7 +270,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   UkmParameters GetUkmParameters() override;
-  bool EnableAccelerationForCanvas2D() final;
+  void EnableAccelerationForCanvas2D() final;
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
 

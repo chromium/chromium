@@ -466,21 +466,13 @@ bool OffscreenCanvas::OriginClean() const {
   return origin_clean_ && !disable_reading_from_canvas_;
 }
 
-bool OffscreenCanvas::EnableAccelerationForCanvas2D() {
+void OffscreenCanvas::EnableAccelerationForCanvas2D() {
   CHECK(IsRenderingContext2D());
 
   // Unlike HTML canvases, offscreen canvases don't automatically shift between
-  // CPU and GPU. Instead, we just return true if the canvas exists on GPU, or
-  // false if the canvas is CPU-bound. If the canvas' resource provider doesn't
-  // exist yet, we create it here.
-  // Note that `OffscreenCanvas::IsAccelerated` above is not equivalent! This
-  // returns false if the canvas resource provider doesn't exist yet, even if it
-  // will be an accelerated canvas once it has been created.
-  CanvasResourceProvider* provider = GetOrCreateResourceProviderForCanvas2D();
-  if (!provider) {
-    return false;
-  }
-  return provider->IsAccelerated();
+  // CPU and GPU. Instead, we just create the resource provider for Canvas2D
+  // here - it will either be accelerated or not.
+  GetOrCreateResourceProviderForCanvas2D();
 }
 
 std::unique_ptr<CanvasResourceProvider>
