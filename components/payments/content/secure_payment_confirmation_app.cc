@@ -226,40 +226,16 @@ const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {
   return payment_instrument_icon_.get();
 }
 
-std::u16string SecurePaymentConfirmationApp::issuer_label() const {
-  if (payment_entities_logos_.size() < 2) {
-    return u"";
-  }
-  return payment_entities_logos_[1].label;
-}
-
-const SkBitmap* SecurePaymentConfirmationApp::issuer_bitmap() const {
-  if (payment_entities_logos_.size() < 2) {
-    return nullptr;
-  }
-  return payment_entities_logos_[1].icon.get();
-}
-
-std::u16string SecurePaymentConfirmationApp::network_label() const {
-  if (payment_entities_logos_.empty()) {
-    return u"";
-  }
-  return payment_entities_logos_[0].label;
-}
-
-const SkBitmap* SecurePaymentConfirmationApp::network_bitmap() const {
-  if (payment_entities_logos_.empty()) {
-    return nullptr;
-  }
-  return payment_entities_logos_[0].icon.get();
-}
-
 std::vector<PaymentApp::PaymentEntityLogo*>
 SecurePaymentConfirmationApp::GetPaymentEntitiesLogos() {
   // Filters logos with empty icons out from payment_entities_logos_. Once
   // network_bitmap() and issuer_bitmap() are no longer needed,
   // payment_entities_logos_ will no longer contain logos with empty icons, and
   // the filtering will not be required.
+  //
+  // TODO(crbug.com/428009834): Validate this before removing the filtering. If
+  // a PaymentEntityLogo failed to download, the logo.icon would also be
+  // nullptr and so filtering may still be necessary.
   std::vector<PaymentApp::PaymentEntityLogo*> filtered_logos;
   for (PaymentApp::PaymentEntityLogo& logo : payment_entities_logos_) {
     if (logo.icon != nullptr) {
@@ -378,9 +354,6 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
   // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
   // in the assertion, so that the verifier can check that the caller offered
   // the experience if desired.
-  // TODO(crbug.com/333945861): The network and issuer information must also be
-  // signed in the assertion, so that the verifier can check that the caller
-  // passed the correct information.
   std::optional<std::vector<blink::mojom::ShownPaymentEntityLogoPtr>>
       payment_entities_logos;
   blink::mojom::PaymentCredentialInstrumentPtr instrument =

@@ -146,16 +146,6 @@ void SecurePaymentConfirmationController::
   model_.set_instrument_value(app->GetLabel());
   model_.set_instrument_icon(app->icon_bitmap());
 
-  model_.set_network_label(
-      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_NETWORK_LABEL));
-  model_.set_network_value(app->network_label());
-  model_.set_network_icon(app->network_bitmap());
-
-  model_.set_issuer_label(
-      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_ISSUER_LABEL));
-  model_.set_issuer_value(app->issuer_label());
-  model_.set_issuer_icon(app->issuer_bitmap());
-
   model_.set_total_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));
   const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);

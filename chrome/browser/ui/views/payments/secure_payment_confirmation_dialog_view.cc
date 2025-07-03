@@ -348,13 +348,10 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       CreateSecurePaymentConfirmationTitleLabel(
           GetTitleText(model_->title(), model_->relying_party_id()));
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
+  body_view->AddChildView(std::move(title_text));
+
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
-    body_view->AddChildView(CreateSecurePaymentConfirmationInlineImageTitleView(
-        std::move(title_text), *model_->network_icon(),
-        static_cast<int>(DialogViewID::NETWORK_ICON), *model_->issuer_icon(),
-        static_cast<int>(DialogViewID::ISSUER_ICON)));
-
     body_view->AddChildView(
         CreateSpacer(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
@@ -365,8 +362,6 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
     description_text->SetLineHeight(kDescriptionLineHeight);
     description_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     body_view->AddChildView(std::move(description_text));
-  } else {
-    body_view->AddChildView(std::move(title_text));
   }
 
   body_view->AddChildView(

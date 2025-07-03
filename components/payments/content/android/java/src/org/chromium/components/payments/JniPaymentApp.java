@@ -44,8 +44,6 @@ public class JniPaymentApp extends PaymentApp {
 
     private @Nullable AbortCallback mAbortCallback;
     private @Nullable InstrumentDetailsCallback mInvokeCallback;
-    private @Nullable final Bitmap mIssuerIcon;
-    private @Nullable final Bitmap mNetworkIcon;
     private final List<PaymentEntityLogoImpl> mPaymentEntitiesLogos;
 
     @CalledByNative
@@ -56,17 +54,11 @@ public class JniPaymentApp extends PaymentApp {
             @JniType("const SkBitmap*") @Nullable final Bitmap icon,
             @PaymentAppType int paymentAppType,
             long nativeObject,
-            // TODO(https://crbug.com/416516287): Remove issuer and network bitmap once all callers
-            // use getPaymentEntityLogos() instead.
-            @JniType("const SkBitmap*") @Nullable final Bitmap issuerIcon,
-            @JniType("const SkBitmap*") @Nullable final Bitmap networkIcon,
             @JniType("std::vector<PaymentApp::PaymentEntityLogo*>")
                     List<PaymentEntityLogoImpl> paymentEntitiesLogos) {
         super(id, label, sublabel, new BitmapDrawable(icon));
         mPaymentAppType = paymentAppType;
         mNativeObject = nativeObject;
-        mIssuerIcon = issuerIcon;
-        mNetworkIcon = networkIcon;
         mPaymentEntitiesLogos = paymentEntitiesLogos;
     }
 
@@ -290,16 +282,6 @@ public class JniPaymentApp extends PaymentApp {
                 JniPaymentAppJni.get()
                         .setAppSpecificResponseFields(mNativeObject, response.serialize());
         return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
-    }
-
-    @Override
-    public @Nullable Bitmap getIssuerIcon() {
-        return mIssuerIcon;
-    }
-
-    @Override
-    public @Nullable Bitmap getNetworkIcon() {
-        return mNetworkIcon;
     }
 
     @Override

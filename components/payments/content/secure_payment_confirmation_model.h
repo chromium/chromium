@@ -78,42 +78,6 @@ class SecurePaymentConfirmationModel {
     instrument_icon_ = instrument_icon;
   }
 
-  // Label for the network row, e.g. "Network".
-  const std::u16string& network_label() const { return network_label_; }
-  void set_network_label(const std::u16string& network_label) {
-    network_label_ = network_label;
-  }
-
-  // Label for the network row value, e.g. "Mastercard"
-  const std::u16string& network_value() const { return network_value_; }
-  void set_network_value(const std::u16string& network_value) {
-    network_value_ = network_value;
-  }
-
-  // Network icon.
-  const SkBitmap* network_icon() const { return network_icon_; }
-  void set_network_icon(const SkBitmap* network_icon) {
-    network_icon_ = network_icon;
-  }
-
-  // Label for the issuer row, e.g. "Issuer".
-  const std::u16string& issuer_label() const { return issuer_label_; }
-  void set_issuer_label(const std::u16string& issuer_label) {
-    issuer_label_ = issuer_label;
-  }
-
-  // Label for the issuer row value, e.g. "CitiBank"
-  const std::u16string& issuer_value() const { return issuer_value_; }
-  void set_issuer_value(const std::u16string& issuer_value) {
-    issuer_value_ = issuer_value;
-  }
-
-  // Issuer icon.
-  const SkBitmap* issuer_icon() const { return issuer_icon_; }
-  void set_issuer_icon(const SkBitmap* issuer_icon) {
-    issuer_icon_ = issuer_icon;
-  }
-
   // Label for the total row, e.g. "Total".
   const std::u16string& total_label() const { return total_label_; }
   void set_total_label(const std::u16string& total_label) {
@@ -211,14 +175,6 @@ class SecurePaymentConfirmationModel {
   std::u16string instrument_label_;
   std::u16string instrument_value_;
   raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
-
-  std::u16string network_label_;
-  std::u16string network_value_;
-  raw_ptr<const SkBitmap> network_icon_ = nullptr;
-
-  std::u16string issuer_label_;
-  std::u16string issuer_value_;
-  raw_ptr<const SkBitmap> issuer_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;
