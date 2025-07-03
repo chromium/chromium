@@ -150,6 +150,9 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override {}
+  void SetSimpleSecurePairingEnabled(bool enabled,
+                                     base::OnceClosure callback,
+                                     ErrorCallback error_callback) override {}
 
   LowEnergyScanSessionHardwareOffloadingStatus
   GetLowEnergyScanSessionHardwareOffloadingStatus() override {

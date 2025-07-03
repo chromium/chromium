@@ -194,6 +194,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
 
+  void SetSimpleSecurePairingEnabled(bool enabled,
+                                     base::OnceClosure callback,
+                                     ErrorCallback error_callback) override;
+
   LowEnergyScanSessionHardwareOffloadingStatus
   GetLowEnergyScanSessionHardwareOffloadingStatus() override;
 
@@ -406,7 +410,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void OnSetDevCoredumpSuccess();
   void OnSetDevCoredumpError(const std::string& error_name,
                              const std::string& error_message);
-#endif // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Called by dbus:: on completion of the D-Bus method call to enable LL
   // privacy.

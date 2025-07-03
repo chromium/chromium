@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,9 +47,17 @@ class BluetoothPolicyHandlerTest : public testing::Test {
                              ErrorCallback error_callback) override {
       uuids_ = uuids;
     }
+    void SetSimpleSecurePairingEnabled(bool enabled,
+                                       base::OnceClosure callback,
+                                       ErrorCallback error_callback) override {
+      is_simple_secure_pairing_enabled_ = enabled;
+    }
     bool IsPresent() const override { return !is_shutdown_; }
     bool IsPowered() const override { return is_powered_; }
     const UUIDList& GetAllowList() const { return uuids_; }
+    bool IsSimpleSecurePairingEnabled() {
+      return is_simple_secure_pairing_enabled_;
+    }
 
     void AddObserver(device::BluetoothAdapter::Observer* observer) override {
       DCHECK(!adapter_observer_);
@@ -61,6 +70,7 @@ class BluetoothPolicyHandlerTest : public testing::Test {
     bool is_shutdown_ = false;
     bool is_powered_ = true;
     UUIDList uuids_;
+    bool is_simple_secure_pairing_enabled_ = false;
     raw_ptr<device::BluetoothAdapter::Observer, DanglingUntriaged>
         adapter_observer_ = nullptr;
   };
@@ -73,6 +83,13 @@ class BluetoothPolicyHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+    ash::LoginState::Initialize();
+    ash::LoginState::Get()->set_always_logged_in(false);
+  }
+
+  void TearDown() override {
+    testing::Test::TearDown();
+    ash::LoginState::Shutdown();
   }
 
  protected:
@@ -85,6 +102,22 @@ class BluetoothPolicyHandlerTest : public testing::Test {
     scoped_testing_cros_settings_.device_settings()->Set(
         ash::kDeviceAllowedBluetoothServices,
         base::Value(std::move(allowlist)));
+  }
+
+  void SetJustWorksBluetoothPairingPolicyEnabled(bool enabled) {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ash::kDeviceBluetoothJustWorksPairingEnabled, enabled);
+  }
+
+  void Login() {
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR);
+  }
+
+  void Logout() {
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LOGGED_IN_NONE, ash::LoginState::LOGGED_IN_USER_NONE);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -191,4 +224,72 @@ TEST_F(BluetoothPolicyHandlerTest, TestPolicySettingsWhileBTNotReady) {
   EXPECT_EQ(test_uuid1, allowlist_result[0]);
   EXPECT_EQ(test_uuid2, allowlist_result[1]);
 }
+
+TEST_F(BluetoothPolicyHandlerTest, TestSetJustWorksPairingEnabledSuccess) {
+  Login();
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/true);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+
+  EXPECT_TRUE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest,
+       TestSetJustWorksPairingEnabledWhenNotLogggedInThenNotSet) {
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/true);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+
+  EXPECT_FALSE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest, TestSetJustWorksPairingEnabledDelayedLogin) {
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/true);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+  Login();
+
+  EXPECT_TRUE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest, TestSetJustWorksPairingDisabled) {
+  Login();
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/false);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+
+  EXPECT_FALSE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest,
+       TestSetJustWorksPairingDisabledNotLoggedInNotSet) {
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/false);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+
+  EXPECT_FALSE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest,
+       TestSetJustWorksPairingDisabledDelayedLogin) {
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/false);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+  Login();
+
+  EXPECT_FALSE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
+TEST_F(BluetoothPolicyHandlerTest,
+       TestSetJustWorksPairingEnabledWhenUserLogsInAndLogsOut) {
+  Login();
+  SetJustWorksBluetoothPairingPolicyEnabled(/*enabled=*/true);
+
+  BluetoothPolicyHandler bluetooth_policy_handler(ash::CrosSettings::Get());
+  EXPECT_TRUE(adapter_->IsSimpleSecurePairingEnabled());
+  Logout();
+
+  EXPECT_FALSE(adapter_->IsSimpleSecurePairingEnabled());
+}
+
 }  // namespace policy

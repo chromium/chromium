@@ -712,6 +712,12 @@ void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
   NOTREACHED();
 }
 
+void FakeCentral::SetSimpleSecurePairingEnabled(bool enabled,
+                                                base::OnceClosure callback,
+                                                ErrorCallback error_callback) {
+  NOTREACHED();
+}
+
 std::unique_ptr<device::BluetoothLowEnergyScanSession>
 FakeCentral::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,

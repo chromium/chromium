@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -16,7 +17,8 @@ namespace policy {
 // This class observes the device setting |DeviceAllowBluetooth|, and calls
 // BluetoothAdapter::Shutdown() appropriately based on the value of that
 // setting.
-class BluetoothPolicyHandler : public device::BluetoothAdapter::Observer {
+class BluetoothPolicyHandler : public device::BluetoothAdapter::Observer,
+                               public ash::LoginState::Observer {
  public:
   explicit BluetoothPolicyHandler(ash::CrosSettings* cros_settings);
 
@@ -30,6 +32,9 @@ class BluetoothPolicyHandler : public device::BluetoothAdapter::Observer {
                              bool present) override;
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+
+  // LoginState::Observer:
+  void LoggedInStateChanged() override;
 
  private:
   // Saves a reference to the adapter (so it stays alive) and calls
@@ -48,6 +53,7 @@ class BluetoothPolicyHandler : public device::BluetoothAdapter::Observer {
   raw_ptr<ash::CrosSettings, DanglingUntriaged> cros_settings_;
   base::CallbackListSubscription allow_bluetooth_subscription_;
   base::CallbackListSubscription allowed_services_subscription_;
+  base::CallbackListSubscription allow_just_works_pairing_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   bool new_policy_update_pending_ = false;
   base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_{this};

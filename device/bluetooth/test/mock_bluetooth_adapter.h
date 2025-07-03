@@ -136,6 +136,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
                     ErrorCallback error_callback));
+  MOCK_METHOD3(SetSimpleSecurePairingEnabled,
+               void(bool enabled,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD0(GetLowEnergyScanSessionHardwareOffloadingStatus,
                LowEnergyScanSessionHardwareOffloadingStatus());
   MOCK_METHOD2(
