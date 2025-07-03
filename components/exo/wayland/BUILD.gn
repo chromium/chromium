@@ -131,8 +131,6 @@ source_set("wayland") {
     "zwp_keyboard_shortcuts_inhibit_manager.h",
     "zwp_linux_dmabuf.cc",
     "zwp_linux_dmabuf.h",
-    "zwp_linux_explicit_synchronization.cc",
-    "zwp_linux_explicit_synchronization.h",
     "zwp_pointer_constraints.cc",
     "zwp_pointer_constraints.h",
     "zwp_pointer_gestures.cc",
@@ -183,7 +181,6 @@ source_set("wayland") {
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
     "//third_party/wayland-protocols:pointer_gestures_protocol",
@@ -404,7 +401,6 @@ source_set("client_support") {
     "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
-    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
     "//third_party/wayland-protocols:pointer_gestures_protocol",
@@ -774,20 +770,6 @@ if (ozone_platform_drm) {
     ]
 
     deps += [ "//third_party/minigbm" ]
-  }
-
-  executable("wayland_explicit_synchronization_client") {
-    sources = [ "clients/explicit_synchronization.cc" ]
-
-    deps = [
-      ":client_support",
-      "//base",
-      "//build/config/linux/libdrm",
-      "//skia",
-      "//third_party/wayland:wayland_client",
-      "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
-      "//ui/gl",
-    ]
   }
 
   if (enable_vulkan) {

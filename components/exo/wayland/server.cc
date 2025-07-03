@@ -16,7 +16,6 @@
 #include <keyboard-extension-unstable-v1-server-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-server-protocol.h>
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
 #include <overlay-prioritizer-server-protocol.h>
 #include <pointer-constraints-unstable-v1-server-protocol.h>
@@ -88,7 +87,6 @@
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
 #include "components/exo/wayland/zwp_keyboard_shortcuts_inhibit_manager.h"
 #include "components/exo/wayland/zwp_linux_dmabuf.h"
-#include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
 #include "components/exo/wayland/zwp_pointer_gestures.h"
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
@@ -122,18 +120,6 @@ constexpr int kMaxPendingConnections = 128;
 
 // Callback used to find a Server instance for a given wl_display.
 Server::ServerGetter g_server_getter;
-
-bool IsDrmAtomicAvailable() {
-#if BUILDFLAG(IS_OZONE)
-  auto& host_properties =
-      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
-  return host_properties.supports_overlays;
-#else
-  LOG(WARNING) << "Ozone disabled, cannot determine whether DrmAtomic is "
-                  "present. Assuming it is not";
-  return false;
-#endif
-}
 
 void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
@@ -292,14 +278,6 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &wl_seat_interface, kWlSeatVersion,
                    seat_data_.get(), bind_seat);
 
-  if (IsDrmAtomicAvailable()) {
-    // The release fence needed by linux-explicit-sync comes from DRM-atomic.
-    // If DRM atomic is not supported, linux-explicit-sync interface is
-    // disabled.
-    wl_global_create(
-        wl_display_.get(), &zwp_linux_explicit_synchronization_v1_interface,
-        /*version=*/2, display_, bind_linux_explicit_synchronization);
-  }
   wl_global_create(wl_display_.get(), &zaura_shell_interface,
                    kZAuraShellVersion, display_, bind_aura_shell);
   wl_global_create(wl_display_.get(), &wl_shell_interface, /*version=*/1,

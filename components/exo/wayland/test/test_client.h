@@ -74,9 +74,6 @@ class TestClient {
   zwp_input_timestamps_manager_v1* input_timestamps_manager() {
     return globals().input_timestamps_manager.get();
   }
-  zwp_linux_explicit_synchronization_v1* linux_explicit_synchronization() {
-    return globals().linux_explicit_synchronization.get();
-  }
   zcr_vsync_feedback_v1* vsync_feedback() {
     return globals().vsync_feedback.get();
   }

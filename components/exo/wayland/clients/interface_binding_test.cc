@@ -26,7 +26,6 @@ TEST_F(WaylandClientInterfaceTests, InterfaceBinding) {
     }
   }
 
-  LOG(INFO) << "Successfully tested " << protocols.size()
-            << " protocols (excluding zwp_linux_explicit_synchronization_v1)";
+  LOG(INFO) << "Successfully tested " << protocols.size();
 }
 }  // namespace

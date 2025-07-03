@@ -78,7 +78,6 @@ struct Globals {
   Object<xdg_wm_base> xdg_wm_base;
   Object<zwp_fullscreen_shell_v1> fullscreen_shell;
   Object<zwp_input_timestamps_manager_v1> input_timestamps_manager;
-  Object<zwp_linux_explicit_synchronization_v1> linux_explicit_synchronization;
   Object<zcr_vsync_feedback_v1> vsync_feedback;
   Object<zcr_color_manager_v1> color_manager;
   Object<zcr_stylus_v2> stylus;

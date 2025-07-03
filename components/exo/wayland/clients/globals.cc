@@ -69,7 +69,6 @@ void RegistryHandler(void* data,
   BIND(zwp_input_timestamps_manager_v1, input_timestamps_manager)
   BIND(zwp_fullscreen_shell_v1, fullscreen_shell)
   BIND_VECTOR(wl_output, outputs)
-  BIND(zwp_linux_explicit_synchronization_v1, linux_explicit_synchronization)
   BIND(zcr_vsync_feedback_v1, vsync_feedback)
   BIND(xdg_wm_base, xdg_wm_base)
   BIND(zcr_stylus_v2, stylus)

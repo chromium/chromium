@@ -21,7 +21,6 @@
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <notification-shell-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <pointer-constraints-unstable-v1-client-protocol.h>
@@ -107,14 +106,11 @@ DEFAULT_DELETER_FDECL(zcr_color_management_output_v1)
 DEFAULT_DELETER_FDECL(zcr_color_management_surface_v1)
 DEFAULT_DELETER_FDECL(zcr_color_space_creator_v1)
 DEFAULT_DELETER_FDECL(zcr_color_space_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_buffer_release_v1)
 DEFAULT_DELETER_FDECL(zwp_fullscreen_shell_v1)
 DEFAULT_DELETER_FDECL(zwp_input_timestamps_manager_v1)
 DEFAULT_DELETER_FDECL(zwp_input_timestamps_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_buffer_params_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_dmabuf_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_explicit_synchronization_v1)
-DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
 DEFAULT_DELETER_FDECL(wp_single_pixel_buffer_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
