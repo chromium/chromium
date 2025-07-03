@@ -454,6 +454,12 @@ void WebFrameWidgetImpl::Close(DetachReason detach_reason) {
   // prevent delaying the navigation commit, as releasing the LayerTreeView
   // resources blocks on the compositor thread.
   bool delay_release =
+#if BUILDFLAG(IS_ANDROID)
+      // Don't delay if synchronous compositing is enabled, since it doesn't
+      // expect async deletion.
+      !Platform::Current()
+           ->IsSynchronousCompositingEnabledForAndroidWebView() &&
+#endif
       (base::FeatureList::IsEnabled(
            blink::features::kDelayLayerTreeViewDeletionOnLocalSwap) &&
        detach_reason == DetachReason::kNavigation);

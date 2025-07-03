@@ -94,7 +94,12 @@ constexpr base::FeatureParam<RenderDocumentLevel>::Option
         {RenderDocumentLevel::kAllFrames, "all-frames"}};
 const base::FeatureParam<RenderDocumentLevel> render_document_level{
     &features::kRenderDocument, kRenderDocumentLevelParameterName,
-    RenderDocumentLevel::kSubframe, &render_document_levels};
+#if BUILDFLAG(IS_ANDROID)
+    RenderDocumentLevel::kAllFrames,
+#else
+    RenderDocumentLevel::kSubframe,
+#endif
+    &render_document_levels};
 
 RenderDocumentLevel GetRenderDocumentLevel() {
   if (base::FeatureList::IsEnabled(features::kRenderDocument))

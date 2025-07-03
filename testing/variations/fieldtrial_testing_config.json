@@ -20565,51 +20565,25 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledAllFramesWithQueueing",
+                    "name": "EnabledAllFrames",
                     "params": {
                         "level": "all-frames",
                         "queueing_level": "full"
                     },
                     "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
                         "RenderDocument",
                         "WebViewRenderDocument"
-                    ],
-                    "disable_features": [
-                        "DelayLayerTreeViewDeletionOnLocalSwap",
-                        "RenderDocumentCompositorReuse"
                     ]
                 },
                 {
-                    "name": "EnabledSubframeWithQueueing",
+                    "name": "EnabledSubframe",
                     "params": {
                         "level": "subframe",
                         "queueing_level": "full"
                     },
                     "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
                         "RenderDocument",
                         "WebViewRenderDocument"
-                    ],
-                    "disable_features": [
-                        "DelayLayerTreeViewDeletionOnLocalSwap",
-                        "RenderDocumentCompositorReuse"
-                    ]
-                },
-                {
-                    "name": "EnabledCrashedFrameWithQueueing",
-                    "params": {
-                        "level": "crashed-frame",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument",
-                        "WebViewRenderDocument"
-                    ],
-                    "disable_features": [
-                        "DelayLayerTreeViewDeletionOnLocalSwap",
-                        "RenderDocumentCompositorReuse"
                     ]
                 }
             ]

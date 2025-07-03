@@ -311,6 +311,10 @@ void WidgetBase::Shutdown(bool delay_release) {
         base::SingleThreadTaskRunner::GetCurrentDefault();
     base::TimeDelta task_delay(base::Seconds(0));
     if (delay_release) {
+#if BUILDFLAG(IS_ANDROID)
+      CHECK(!Platform::Current()
+                 ->IsSynchronousCompositingEnabledForAndroidWebView());
+#endif
       CHECK(base::FeatureList::IsEnabled(
           blink::features::kDelayLayerTreeViewDeletionOnLocalSwap));
       task_delay =
@@ -366,6 +370,10 @@ void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget,
     new_widget->layer_tree_view_ = std::move(layer_tree_view_);
     layer_tree_view_ = nullptr;
   } else if (delay_release) {
+#if BUILDFLAG(IS_ANDROID)
+    CHECK(!Platform::Current()
+               ->IsSynchronousCompositingEnabledForAndroidWebView());
+#endif
     CHECK(base::FeatureList::IsEnabled(
         blink::features::kDelayLayerTreeViewDeletionOnLocalSwap));
     // Detach the LayerTreeView now without attaching it to anything else. The
