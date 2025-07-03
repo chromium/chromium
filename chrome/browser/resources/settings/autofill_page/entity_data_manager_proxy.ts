@@ -37,12 +37,12 @@ export interface EntityDataManagerProxy {
   getEntityInstanceByGuid(guid: string): Promise<EntityInstance>;
 
   /**
-   * Returns a list of all possible entity types that exist.
+   * Returns a list of all enabled entity types.
    */
   getAllEntityTypes(): Promise<EntityType[]>;
 
   /**
-   * Returns a list of all possible attribute types that can be set on an entity
+   * Returns a list of all attribute types that can be set on an entity
    * instance.
    */
   getAllAttributeTypesForEntityTypeName(entityTypeName: number):

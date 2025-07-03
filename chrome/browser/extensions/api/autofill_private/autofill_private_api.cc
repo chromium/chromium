@@ -1085,21 +1085,24 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateGetAllEntityTypesFunction::Run() {
-  std::vector<autofill_private::EntityType> result = base::ToVector(
-      autofill::DenseSet<EntityType>::all(), [](const EntityType& entity_type) {
-        autofill_private::EntityType private_api_entity_type;
-        private_api_entity_type.type_name =
-            base::to_underlying(entity_type.name());
-        private_api_entity_type.type_name_as_string =
-            base::UTF16ToUTF8(entity_type.GetNameForI18n());
-        private_api_entity_type.add_entity_type_string =
-            autofill_ai_util::GetAddEntityTypeStringForI18n(entity_type);
-        private_api_entity_type.edit_entity_type_string =
-            autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
-        private_api_entity_type.delete_entity_type_string =
-            autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
-        return private_api_entity_type;
-      });
+  const auto all_types = autofill::DenseSet<EntityType>::all();
+  std::vector<autofill_private::EntityType> result;
+  result.reserve(all_types.size());
+  for (EntityType entity_type : all_types) {
+    if (!entity_type.enabled()) {
+      continue;
+    }
+    autofill_private::EntityType& api_type = result.emplace_back();
+    api_type.type_name = base::to_underlying(entity_type.name());
+    api_type.type_name_as_string =
+        base::UTF16ToUTF8(entity_type.GetNameForI18n());
+    api_type.add_entity_type_string =
+        autofill_ai_util::GetAddEntityTypeStringForI18n(entity_type);
+    api_type.edit_entity_type_string =
+        autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
+    api_type.delete_entity_type_string =
+        autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
+  }
   return RespondNow(ArgumentList(
       autofill_private::GetAllEntityTypes::Results::Create(result)));
 }
