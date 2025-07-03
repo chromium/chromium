@@ -4,9 +4,6 @@
 
 #include "components/variations/android/variations_seed_bridge.h"
 
-#include <jni.h>
-#include <stdint.h>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
