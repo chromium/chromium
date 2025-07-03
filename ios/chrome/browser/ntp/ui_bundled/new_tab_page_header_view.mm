@@ -63,6 +63,10 @@ const CGFloat kFakeboxHighlightAlpha = 0.06;
 // Height margin of the fake location bar.
 const CGFloat kFakeLocationBarHeightMargin = 2;
 
+// When the placeholder text in the fakebox doesn't fit, the font shrinks to fit
+// the string. This is the minimum allowed factor by which it shrinks.
+const CGFloat kFakeboxMinimumFontScaleFactor = 0.3;
+
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
@@ -70,15 +74,19 @@ const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
 const CGFloat kEndButtonMIAEnlargedFakebox = 20.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
+// Distance between the trailing fakebox icon and the placeholder text.
+const CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
+
 // The constants for the constraints the leading-edge aligned UI elements.
 const CGFloat kHintLabelFakeboxLeadingSpace = 28.0;
-const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 49.0;
-
+const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
 const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
-const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 39.0;
+const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
 
-const CGFloat kFakeboxImageLeadingSpace = 22.0;
-const CGFloat kFakeboxImageSize = 16.0;
+// The constants for the search engine image.
+const CGFloat kFakeboxImageLeadingSpace = 13.0;
+const CGFloat kOmniboxImageLeadingSpace = 22.0;
+const CGFloat kFakeboxImageSize = 20.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home, when
 // Large Fakebox is enabled.
@@ -223,6 +231,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 @property(nonatomic, strong) NSLayoutConstraint* fakeLocationBarTopConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
+
+// Constraint between the search field's leading edge and the search engine
+// logo.
+@property(nonatomic, strong) NSLayoutConstraint* leadingLogoConstraint;
+
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
 // View used to add on-touch highlight to the fake omnibox.
@@ -392,6 +405,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   // Hint label.
   self.searchHintLabel = [[UILabel alloc] init];
+  self.searchHintLabel.adjustsFontSizeToFitWidth = true;
+  self.searchHintLabel.minimumScaleFactor = kFakeboxMinimumFontScaleFactor;
   content_suggestions::ConfigureSearchHintLabel(
       self.searchHintLabel, searchField, self.placeholderText);
   [self updateHintLabelFonts];
@@ -469,9 +484,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSquareConstraints(logoView, kFakeboxImageSize);
 
+  self.leadingLogoConstraint = [logoView.leadingAnchor
+      constraintEqualToAnchor:searchField.leadingAnchor
+                     constant:kOmniboxImageLeadingSpace];
   [NSLayoutConstraint activateConstraints:@[
-    [logoView.leadingAnchor constraintEqualToAnchor:searchField.leadingAnchor
-                                           constant:kFakeboxImageLeadingSpace],
+    self.leadingLogoConstraint,
     [logoView.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor
                                            constant:-2.0],
 
@@ -584,8 +601,16 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   // If MIA animation view is shown then add an aditional spacing to avoid any
   // overlap with the label.
-  self.hintLabelTrailingConstraint.constant =
-      -hintLabelScalingExtraOffset - [self miaButtonHintLabelOffset];
+  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
+                                              [self miaButtonHintLabelOffset] -
+                                              kHintLabelFakeboxTrailingSpace;
+
+  // Animate the leading image from its fakebox position to its scrolled omnibox
+  // position linearly. When `percent` is 0, the fakebox is displayed in the
+  // middle of the screen; when it's 1, the fakebox is fully scrolled up.
+  self.leadingLogoConstraint.constant =
+      kFakeboxImageLeadingSpace * (1 - percent) +
+      kOmniboxImageLeadingSpace * percent;
 
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
   CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
@@ -950,7 +975,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
       constraintLessThanOrEqualToAnchor:referenceView.leadingAnchor
-                               constant:-[self miaButtonHintLabelOffset]];
+                               constant:-[self miaButtonHintLabelOffset] -
+                                        kHintLabelFakeboxTrailingSpace];
   self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
     [referenceView.centerYAnchor
@@ -1216,7 +1242,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 - (CGFloat)miaButtonHintLabelOffset {
   if (self.useSingleButtonMIA && _miaAnimationView) {
-    return [self miaAnimationSize].width / 2;
+    return ([self miaAnimationSize].width / 2);
   }
 
   return 0;
