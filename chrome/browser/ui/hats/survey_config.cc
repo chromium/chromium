@@ -77,6 +77,8 @@ constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
+constexpr char kHatsSurveyTriggerPasswordChangeCanceled[] =
+    "password-change-canceled";
 constexpr char kHatsSurveyTriggerPasswordChangeError[] =
     "password-change-error";
 constexpr char kHatsSurveyTriggerPasswordChangeSuccess[] =
@@ -656,6 +658,19 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &password_manager::features::kImprovedPasswordChangeService,
       kHatsSurveyTriggerPasswordChangeError,
       password_manager::features::kPasswordChangeErrorSurveyTriggerId.Get(),
+      /*product_specific_bits_data_fields=*/
+      std::vector<std::string>{password_manager::features_util::
+                                   kPasswordChangeSuggestedPasswordsAdoption},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{
+          password_manager::features_util::
+              kPasswordChangeBreachedPasswordsCount,
+          password_manager::features_util::kPasswordChangeSavedPasswordsCount,
+          password_manager::features_util::kPasswordChangeRuntime});
+  survey_configs.emplace_back(
+      &password_manager::features::kImprovedPasswordChangeService,
+      kHatsSurveyTriggerPasswordChangeCanceled,
+      password_manager::features::kPasswordChangeCanceledSurveyTriggerId.Get(),
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{password_manager::features_util::
                                    kPasswordChangeSuggestedPasswordsAdoption},

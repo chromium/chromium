@@ -74,6 +74,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnOtpFieldDetected(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
+  void OnPasswordChangeDeclined() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::u16string GetDisplayOrigin() const override;

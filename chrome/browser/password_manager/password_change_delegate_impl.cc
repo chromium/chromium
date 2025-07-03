@@ -228,6 +228,10 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   executor_.reset();
 
   UpdateState(State::kCanceled);
+  MaybeLaunchSurvey(
+      kHatsSurveyTriggerPasswordChangeCanceled,
+      /*password_change_duration=*/base::Time::Now() - flow_start_time_,
+      profile_, originator_);
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
@@ -374,6 +378,13 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
           optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   StartPasswordChangeFlow();
+}
+
+void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
+  MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeCanceled,
+                    /*password_change_duration=*/base::TimeDelta(), profile_,
+                    originator_);
+  Stop();
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {

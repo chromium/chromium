@@ -181,6 +181,11 @@ inline constexpr base::FeatureParam<std::string>
     kPasswordChangeErrorSurveyTriggerId{&kImprovedPasswordChangeService,
                                         "PasswordChangeErrorSurveyTriggerId",
                                         /*default_value=*/""};
+inline constexpr base::FeatureParam<std::string>
+    kPasswordChangeCanceledSurveyTriggerId{
+        &kImprovedPasswordChangeService,
+        "PasswordChangeCanceledSurveyTriggerId",
+        /*default_value=*/""};
 
 // All features parameters in alphabetical order.
 }  // namespace password_manager::features

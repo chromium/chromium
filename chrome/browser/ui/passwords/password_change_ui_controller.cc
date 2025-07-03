@@ -45,6 +45,7 @@ using ToastOptions = PasswordChangeToast::ToastOptions;
 // specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
     base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback,
     base::RepeatingClosure navigate_to_settings_callback,
     bool with_privacy_notice,
     std::u16string email) {
@@ -65,7 +66,7 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
   dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_DETAILS,
       {ui::DialogModelLabel::CreatePlainText(std::move(email)), link}));
-  dialog_builder.AddCancelButton(base::DoNothing(),
+  dialog_builder.AddCancelButton(std::move(cancel_callback),
                                  ui::DialogModel::Button::Params().SetLabel(
                                      l10n_util::GetStringUTF16(IDS_NO_THANKS)));
   dialog_builder.AddOkButton(
@@ -196,6 +197,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
   auto cancel_password_change_callback =
       base::BindOnce(&PasswordChangeUIController::CancelPasswordChange,
                      weak_ptr_factory_.GetWeakPtr());
+  auto cancel_password_change_offer_callback =
+      base::BindOnce(&PasswordChangeDelegate::OnPasswordChangeDeclined,
+                     password_change_delegate_->AsWeakPtr());
   auto navigate_to_settings_callback = base::BindRepeating(
       &PasswordChangeUIController::NavigateToPasswordChangeSettings,
       base::Unretained(this));
@@ -211,12 +215,14 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeDelegate::OnPrivacyNoticeAccepted,
                          password_change_delegate_->AsWeakPtr()),
+          std::move(cancel_password_change_offer_callback),
           std::move(navigate_to_settings_callback),
           /*with_privacy_notice=*/true, std::move(email));
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       return CreateOfferChangePasswordDialog(
           base::BindOnce(&PasswordChangeUIController::StartPasswordChangeFlow,
                          weak_ptr_factory_.GetWeakPtr()),
+          std::move(cancel_password_change_offer_callback),
           std::move(navigate_to_settings_callback),
           /*with_privacy_notice=*/false, std::move(email));
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:

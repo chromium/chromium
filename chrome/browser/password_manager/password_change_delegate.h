@@ -100,6 +100,9 @@ class PasswordChangeDelegate {
 
   virtual void OnOtpFieldDetected(content::WebContents* web_contents) = 0;
 
+  // Called when the user declines the initial dialog offering password change.
+  virtual void OnPasswordChangeDeclined() = 0;
+
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
