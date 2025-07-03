@@ -7,5 +7,5 @@ NAME_LAST | addlastName | Last Name: |  | addfirstName_2
 ADDRESS_HOME_LINE1 | addstreet1 | Address: |  | addfirstName_2
 ADDRESS_HOME_CITY | addcity | City: |  | addfirstName_2
 ADDRESS_HOME_STATE | addstate | State: |  | addfirstName_2
-ADDRESS_HOME_ZIP | addzipcode | ZIP Code: |  | addfirstName_2
-UNKNOWN_TYPE | addzipcodeExt | Optional |  | addfirstName_2
+ADDRESS_HOME_ZIP_PREFIX | addzipcode | ZIP Code: |  | addfirstName_2
+ADDRESS_HOME_ZIP_SUFFIX | addzipcodeExt | Optional |  | addfirstName_2

@@ -103,6 +103,9 @@ class FormStructureRationalizer {
   // 2 and 3.
   void RationalizeRepeatedStreetAddressFields(LogManager* log_manager);
 
+  // Rewrites sequence of (zip, zip) into (zip_prefix, zip_suffix)
+  void RationalizeRepeatedZipCodeFields(LogManager* log_manager);
+
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street
   // address predictions.

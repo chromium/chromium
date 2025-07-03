@@ -15,8 +15,8 @@ ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | unbxd_q_1
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | unbxd_q_1
 UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
-ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | unbxd_q_1
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
+ADDRESS_HOME_ZIP_PREFIX | BillingAddressZipCode | Zip Code: |  | unbxd_q_1
+ADDRESS_HOME_ZIP_SUFFIX | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | unbxd_q_1
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | unbxd_q_1
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | unbxd_q_1
@@ -38,8 +38,8 @@ ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | BillingAddressFirstName_3
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | BillingAddressFirstName_3
 UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
-ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_3
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
+ADDRESS_HOME_ZIP_PREFIX | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_3
+ADDRESS_HOME_ZIP_SUFFIX | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | BillingAddressFirstName_3
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_3
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_3
@@ -61,8 +61,8 @@ ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | BillingAddressFirstName_4
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | BillingAddressFirstName_4
 UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
-ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_4
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
+ADDRESS_HOME_ZIP_PREFIX | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_4
+ADDRESS_HOME_ZIP_SUFFIX | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | BillingAddressFirstName_4
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_4
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_4

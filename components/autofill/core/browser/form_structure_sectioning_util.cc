@@ -46,7 +46,8 @@ bool ConsecutiveSimilarFieldType(FieldType current_type,
       GroupTypeOfFieldType(previous_type) == FieldTypeGroup::kName) {
     return true;
   }
-  if (FieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_DEPENDENT_LOCALITY,
+  if (FieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_PREFIX,
+                    ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_DEPENDENT_LOCALITY,
                     ADDRESS_HOME_CITY, ADDRESS_HOME_ADMIN_LEVEL2,
                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY})
           .contains_all({previous_type, current_type})) {

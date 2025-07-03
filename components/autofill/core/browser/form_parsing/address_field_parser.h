@@ -203,7 +203,7 @@ class AddressFieldParser : public FormFieldParser {
   std::optional<FieldAndMatchInfo> city_;
   std::optional<FieldAndMatchInfo> state_;
   std::optional<FieldAndMatchInfo> zip_;
-  std::optional<FieldAndMatchInfo> zip4_;  // Classified but not filled
+  std::optional<FieldAndMatchInfo> zip_suffix_;  // Classified but not filled
   std::optional<FieldAndMatchInfo> country_;
   std::optional<FieldAndMatchInfo> landmark_;
   std::optional<FieldAndMatchInfo> between_streets_;

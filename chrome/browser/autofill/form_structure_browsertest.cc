@@ -214,6 +214,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillIgnoreCheckableElements,
           features::kAutofillUnifyRationalizationAndSectioningOrder,
+          // TODO(crbug.com/369503318): Remove once launched.
+          features::kAutofillSupportSplitZipCode,
       },
       // Disabled
       {

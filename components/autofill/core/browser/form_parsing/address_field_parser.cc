@@ -103,11 +103,11 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
   if (address_field->company_ || address_field->address1_ ||
       address_field->address2_ || address_field->address3_ ||
       address_field->street_address_ || address_field->city_ ||
-      address_field->state_ || address_field->zip_ || address_field->zip4_ ||
-      address_field->street_name_ || address_field->house_number_ ||
-      address_field->country_ || address_field->apartment_number_ ||
-      address_field->dependent_locality_ || address_field->landmark_ ||
-      address_field->between_streets_ ||
+      address_field->state_ || address_field->zip_ ||
+      address_field->zip_suffix_ || address_field->street_name_ ||
+      address_field->house_number_ || address_field->country_ ||
+      address_field->apartment_number_ || address_field->dependent_locality_ ||
+      address_field->landmark_ || address_field->between_streets_ ||
       address_field->between_streets_line_1_ ||
       address_field->between_streets_line_2_ || address_field->admin_level2_ ||
       address_field->between_streets_or_landmark_ ||
@@ -182,6 +182,10 @@ void AddressFieldParser::AddClassifications(
                     field_candidates);
   AddClassification(zip_, ADDRESS_HOME_ZIP, kBaseAddressParserScore,
                     field_candidates);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    AddClassification(zip_suffix_, ADDRESS_HOME_ZIP, kBaseAddressParserScore,
+                      field_candidates);
+  }
   AddClassification(country_, ADDRESS_HOME_COUNTRY, kBaseAddressParserScore,
                     field_candidates);
   AddClassification(house_number_, ADDRESS_HOME_HOUSE_NUMBER,
@@ -265,7 +269,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       between_streets_line_2_;
   std::optional<FieldAndMatchInfo> old_house_number = house_number_;
   std::optional<FieldAndMatchInfo> old_zip = zip_;
-  std::optional<FieldAndMatchInfo> old_zip4 = zip4_;
+  std::optional<FieldAndMatchInfo> old_zip_suffix = zip_suffix_;
   std::optional<FieldAndMatchInfo> old_apartment_number = apartment_number_;
   std::optional<FieldAndMatchInfo> old_house_number_and_apt_ =
       house_number_and_apt_;
@@ -360,7 +364,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   between_streets_line_1_ = old_between_streets_line_1;
   between_streets_line_2_ = old_between_streets_line_2;
   zip_ = old_zip;
-  zip4_ = old_zip4;
+  zip_suffix_ = old_zip_suffix;
   apartment_number_ = old_apartment_number;
   house_number_and_apt_ = old_house_number_and_apt_;
   dependent_locality_ = old_dependent_locality;
@@ -497,9 +501,14 @@ bool AddressFieldParser::ParseZipCode(ParsingContext& context,
     return false;
   }
 
-  // Look for a zip+4, whose field name will also often contain
+  // Look for a zip suffix, whose field name will also often contain
   // the substring "zip".
-  ParseField(context, scanner, "ZIP_4", &zip4_);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    ParseField(context, scanner, "ZIP_CODE", &zip_suffix_);
+  } else {
+    ParseField(context, scanner, "ZIP_4", &zip_suffix_);
+  }
+
   return true;
 }
 
@@ -938,23 +947,27 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
     return result;
 
   size_t saved_cursor = scanner->SaveCursor();
-  bool found_non_zip4 = ParseCity(context, scanner);
-  if (found_non_zip4) {
+  bool found_non_zip_suffix = ParseCity(context, scanner);
+  if (found_non_zip_suffix) {
     city_.reset();
   }
   scanner->RewindTo(saved_cursor);
-  if (!found_non_zip4) {
-    found_non_zip4 = ParseState(context, scanner);
-    if (found_non_zip4) {
+  if (!found_non_zip_suffix) {
+    found_non_zip_suffix = ParseState(context, scanner);
+    if (found_non_zip_suffix) {
       state_.reset();
     }
     scanner->RewindTo(saved_cursor);
   }
 
-  if (!found_non_zip4) {
-    // Look for a zip+4, whose field name will also often contain
+  if (!found_non_zip_suffix) {
+    // Look for a zip suffix, whose field name will also often contain
     // the substring "zip".
-    ParseField(context, scanner, "ZIP_4", &zip4_);
+    if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+      ParseField(context, scanner, "ZIP_CODE", &zip_suffix_);
+    } else {
+      ParseField(context, scanner, "ZIP_4", &zip_suffix_);
+    }
   }
   return result;
 }

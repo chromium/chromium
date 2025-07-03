@@ -1358,5 +1358,63 @@ TEST_F(RationalizeDateFormatTest, Label_DoNotCrashIfManyFields) {
               ElementsAre("YYYY", "MM", "DD", "YYYY-MM-DD"));
 }
 
+class RationalizeRepeatedZipTest : public FormStructureRationalizerTest {
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      features::kAutofillSupportSplitZipCode};
+};
+
+// Tests that two consecutive ADDRESS_HOME_ZIP fields are rationalized
+// to ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX.
+TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Zip", "zip", ADDRESS_HOME_ZIP},
+          {"Zip2", "zip2", ADDRESS_HOME_ZIP},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                          ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX));
+}
+
+// Tests that 3 consecutive ADDRESS_HOME_ZIP fields are not affected
+// by the rationalization.
+TEST_F(RationalizeRepeatedZipTest, ThreeConsecutiveZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Zip", "zip", ADDRESS_HOME_ZIP},
+          {"Zip2", "zip2", ADDRESS_HOME_ZIP},
+          {"Zip3", "zip3", ADDRESS_HOME_ZIP},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(
+      GetTypes(*form_structure),
+      ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP,
+                  ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP));
+}
+
+// Tests that a form that has two non-consecutive ADDRESS_HOME_ZIP fields
+// is not modified by the rationalization.
+TEST_F(RationalizeRepeatedZipTest, TwoNonConsecutiveZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {"Full Name", "fullName", NAME_FULL},
+          {"Zip", "zip", ADDRESS_HOME_ZIP},
+          {"City", "city", ADDRESS_HOME_CITY},
+          {"Full Name", "fullName", NAME_FULL},
+          {"Zip", "zip", ADDRESS_HOME_ZIP},
+          {"City", "city", ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                          NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
 }  // namespace
 }  // namespace autofill
