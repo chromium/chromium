@@ -1334,14 +1334,9 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateBlockingSettingBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
-// TODO(crbug.com/413427796): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BlockPasswordProtected DISABLED_BlockPasswordProtected
-#else
-#define MAYBE_BlockPasswordProtected BlockPasswordProtected
-#endif
+
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       MAYBE_BlockPasswordProtected) {
+                       BlockPasswordProtected) {
   // When the resumable protocol is in use and the `blocked_password_protected`
   // setting is off, the final verdict is determined by the server, not by the
   // policy value. So this specific scenario only applies to multi-part upload.
@@ -1398,6 +1393,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // The file should be reported as unscanned.
   test::EventReportValidator validator(client());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
       /*tab_url*/ "about:blank",
@@ -1433,6 +1430,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
           }),
       DeepScanAccessPoint::DRAG_AND_DROP);
 
+  validator_run_loop.Run();
   run_loop.Run();
   EXPECT_TRUE(called);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
@@ -1652,9 +1650,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
-// TODO(crbug.com/413427796): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       DISABLED_BlockUntilVerdict) {
+                       BlockUntilVerdict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
@@ -1692,6 +1689,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // The file should be reported as malware and sensitive content.
   bool called = false;
+  base::RunLoop delayed_delivery_run_loop;
   base::RunLoop run_loop;
   test::EventReportValidator validator(client());
   ContentAnalysisResponse response;
@@ -1703,6 +1701,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
     validator.SetDoneClosure(run_loop.QuitClosure());
   } else {
     SetQuitClosure(run_loop.QuitClosure());
+    validator.SetDoneClosure(delayed_delivery_run_loop.QuitClosure());
   }
 
   auto* malware_result = response.add_results();
@@ -1765,6 +1764,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
           }),
       DeepScanAccessPoint::DRAG_AND_DROP);
 
+  if (!expected_result()) {
+    delayed_delivery_run_loop.Run();
+  }
   run_loop.Run();
   EXPECT_TRUE(called);
 
