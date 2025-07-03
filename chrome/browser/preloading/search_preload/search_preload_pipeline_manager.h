@@ -86,7 +86,10 @@ class SearchPreloadPipelineManager
 
   void EraseNotAlivePipelines();
 
-  void OnAutocompleteResultChangedProcessOne(
+  // Returns `(singal_result_prefetch, signal_result_prerender)`.
+  std::tuple<std::optional<SearchPreloadSignalResult>,
+             std::optional<SearchPreloadSignalResult>>
+  OnAutocompleteResultChangedProcessOne(
       Profile& profile,
       base::WeakPtr<SearchPreloadService> search_preload_service,
       TemplateURLService& template_url_service,

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_H_
 #define CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_H_
 
+#include "chrome/browser/preloading/search_preload/search_preload_signal_result.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/prerender_handle.h"
@@ -34,7 +35,7 @@ class SearchPreloadPipeline {
   //
   // Returns true iff prefetch is triggered, i.e. `WebContents::StartPrefetch()`
   // is called.
-  bool StartPrefetch(
+  SearchPreloadSignalResult StartPrefetch(
       content::WebContents& web_contents,
       base::WeakPtr<SearchPreloadService> search_preload_service,
       const GURL& prefetch_url,
@@ -42,9 +43,10 @@ class SearchPreloadPipeline {
       const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint,
       bool is_navigation_likely);
   // Starts prerender if not triggered yet and prefetch is alive.
-  void StartPrerender(content::WebContents& web_contents,
-                      const GURL& prerernder_url,
-                      content::PreloadingPredictor predictor);
+  SearchPreloadSignalResult StartPrerender(
+      content::WebContents& web_contents,
+      const GURL& prerernder_url,
+      content::PreloadingPredictor predictor);
 
   // Cancels prerender if triggered.
   void CancelPrerender();

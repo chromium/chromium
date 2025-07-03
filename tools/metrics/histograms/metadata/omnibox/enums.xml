@@ -286,6 +286,32 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kCompleted"/>
 </enum>
 
+<!-- LINT.IfChange(SearchPreloadSignalResult) -->
+
+<enum name="SearchPreloadSignalResult">
+  <int value="0" label="kNotTriggeredMisc">kNotTriggeredMisc</int>
+  <int value="1" label="kPrefetchTriggered">kPrefetchTriggered</int>
+  <int value="2" label="kPrerenderTriggered">kPrerenderTriggered</int>
+  <int value="3" label="kNotTriggeredAlreadyTriggered">
+    kNotTriggeredAlreadyTriggered
+  </int>
+  <int value="4" label="kNotTriggeredPrefetchNotAlive">
+    kNotTriggeredPrefetchNotAlive
+  </int>
+  <int value="5" label="kNotTriggeredLimitExceeded">
+    kNotTriggeredLimitExceeded
+  </int>
+  <int value="6" label="kNotTriggeredIncognito">kNotTriggeredIncognito</int>
+  <int value="7" label="kNotTriggeredOnPressNotSearchType">
+    kNotTriggeredOnPressNotSearchType
+  </int>
+  <int value="8" label="kNotTriggeredOnPressNoSearchProviderOptIn">
+    kNotTriggeredOnPressNoSearchProviderOptIn
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/preloading/search_preload/search_preload_signal_result.h) -->
+
 <enum name="SearchSuggestRequestEvent">
   <int value="1" label="requests sent">Request was sent.</int>
   <int value="2" label="requests invalidated">

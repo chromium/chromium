@@ -19,6 +19,7 @@ source_set("search_preload") {
     "search_preload_service.h",
     "search_preload_service_factory.cc",
     "search_preload_service_factory.h",
+    "search_preload_signal_result.h",
   ]
 
   public_deps = [ "//content/public/browser" ]
