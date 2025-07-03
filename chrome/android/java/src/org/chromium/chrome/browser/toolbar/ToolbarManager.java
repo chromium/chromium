@@ -142,6 +142,7 @@ import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
@@ -171,7 +172,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.extensions.ExtensionService;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -317,9 +317,9 @@ public class ToolbarManager
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private HomePageButtonsCoordinator mHomePageButtonsCoordinator;
-
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
+    private @Nullable ExtensionToolbarCoordinator mExtensionToolbarCoordinator;
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -758,7 +758,6 @@ public class ToolbarManager
             ActivityTabProvider tabProvider,
             ScrimManager scrimManager,
             ToolbarActionModeCallback toolbarActionModeCallback,
-            @Nullable ExtensionService extensionService,
             FindToolbarManager findToolbarManager,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
@@ -1049,6 +1048,19 @@ public class ToolbarManager
                             /* onNavigationPopupShown= */ () -> {},
                             historyDelegate,
                             /* isWebApp= */ false);
+        }
+
+        ViewStub extensionToolbarStub =
+                controlContainer.findViewById(R.id.extension_toolbar_container_stub);
+        if (extensionToolbarStub != null) {
+            mExtensionToolbarCoordinator =
+                    ExtensionToolbarCoordinator.maybeCreate(
+                            mActivity,
+                            extensionToolbarStub,
+                            windowAndroid,
+                            profileSupplier,
+                            tabProvider,
+                            browsingModeThemeColorProvider);
         }
 
         mToolbarLongPressMenuHandler =
@@ -1655,19 +1667,6 @@ public class ToolbarManager
                 };
         mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
         initializeToolbarPositionController();
-
-        if (extensionService != null) {
-            ViewStub extensionToolbarStub =
-                    controlContainer.findViewById(R.id.extension_toolbar_container_stub);
-            if (extensionToolbarStub != null) {
-                extensionService.inflateExtensionToolbar(
-                        mActivity,
-                        extensionToolbarStub,
-                        windowAndroid,
-                        tabProvider,
-                        browsingModeThemeColorProvider);
-            }
-        }
 
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
         if (mXrSpaceModeObservableSupplier != null) {
@@ -2492,6 +2491,11 @@ public class ToolbarManager
             mTabSwitcherButtonCoordinator = null;
         }
 
+        if (mExtensionToolbarCoordinator != null) {
+            mExtensionToolbarCoordinator.destroy();
+            mExtensionToolbarCoordinator = null;
+        }
+
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -3216,5 +3220,13 @@ public class ToolbarManager
         mSuppressToolbarSceneLayerSupplier.set(isFsm);
         setToolbarShadowVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
         getToolbar().getProgressBar().setVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    /**
+     * @return The {@link ExtensionToolbarCoordinator} that manages the extension toolbar UI. null
+     *     if extensions are not supported on this build.
+     */
+    public @Nullable ExtensionToolbarCoordinator getExtensionToolbarCoordinator() {
+        return mExtensionToolbarCoordinator;
     }
 }

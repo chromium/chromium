@@ -261,6 +261,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
@@ -566,6 +567,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mXrSceneCoreSessionManagerSupplier =
                     LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+
+    private @Nullable ExtensionService mExtensionService;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -2546,6 +2549,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
+
+        mExtensionService = ExtensionService.maybeCreate(mTabModelProfileSupplier);
     }
 
     @Override
@@ -3035,7 +3040,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                         TabLaunchType.FROM_CHROME_UI),
                 getModalDialogManager(),
                 getSnackbarManager(),
-                mRootUiCoordinator.getExtensionService(),
+                mExtensionService,
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 mRootUiCoordinator.getReadAloudControllerSupplier());
     }
@@ -4007,6 +4012,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             xrSceneCoreSessionManager.destroy();
         }
 
+        if (mExtensionService != null) {
+            mExtensionService.destroy();
+            mExtensionService = null;
+        }
+
         super.onDestroyInternal();
     }
 
@@ -4037,10 +4047,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         if (Boolean.TRUE.equals(result)) return result;
 
-        @Nullable ExtensionService extensionService = mRootUiCoordinator.getExtensionService();
-        if (extensionService != null) {
+        ExtensionToolbarCoordinator extensionToolbarCoordinator =
+                mRootUiCoordinator.getToolbarManager().getExtensionToolbarCoordinator();
+        if (extensionToolbarCoordinator != null) {
             // Handle extension shortcuts.
-            if (extensionService.dispatchKeyEvent(event)) {
+            if (extensionToolbarCoordinator.dispatchKeyEvent(event)) {
                 result = true;
             }
         }

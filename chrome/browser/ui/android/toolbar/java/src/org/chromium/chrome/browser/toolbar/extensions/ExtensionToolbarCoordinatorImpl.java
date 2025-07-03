@@ -1,0 +1,101 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.toolbar.extensions;
+
+import android.content.Context;
+import android.view.KeyEvent;
+import android.view.ViewStub;
+import android.widget.LinearLayout;
+
+import org.chromium.base.Callback;
+import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.ServiceImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.ui.base.WindowAndroid;
+
+/** The implementation of {@link ExtensionToolbarCoordinator}. */
+@NullMarked
+@ServiceImpl(ExtensionToolbarCoordinator.class)
+public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
+    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    private final Callback<Profile> mProfileUpdatedCallback =
+            (profile) -> mCurrentProfile = profile;
+
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private ExtensionActionListCoordinator mExtensionActionListCoordinator;
+    private ExtensionsMenuButtonCoordinator mExtensionsMenuButtonCoordinator;
+
+    private @Nullable Profile mCurrentProfile;
+
+    @Override
+    public void initialize(
+            Context context,
+            ViewStub extensionToolbarStub,
+            WindowAndroid windowAndroid,
+            ObservableSupplier<Profile> profileSupplier,
+            ObservableSupplier<Tab> currentTabSupplier,
+            ThemeColorProvider themeColorProvider) {
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.addObserver(mProfileUpdatedCallback);
+
+        LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
+        mExtensionActionListCoordinator =
+                new ExtensionActionListCoordinator(
+                        context,
+                        container.findViewById(R.id.extension_action_list),
+                        windowAndroid,
+                        profileSupplier,
+                        currentTabSupplier);
+        mExtensionsMenuButtonCoordinator =
+                new ExtensionsMenuButtonCoordinator(
+                        context,
+                        container.findViewById(R.id.extensions_menu_button),
+                        container.findViewById(R.id.extensions_divider),
+                        themeColorProvider,
+                        profileSupplier);
+    }
+
+    @Override
+    public void destroy() {
+        mExtensionsMenuButtonCoordinator.destroy();
+        mExtensionActionListCoordinator.destroy();
+        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        // Filter out events we are not interested in before calling into JNI.
+        if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() > 0) {
+            return false;
+        }
+
+        if (mCurrentProfile == null) {
+            return false;
+        }
+
+        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mCurrentProfile);
+        if (bridge == null) {
+            return false;
+        }
+
+        ExtensionActionsBridge.HandleKeyEventResult result = bridge.handleKeyDownEvent(event);
+        if (result.handled) {
+            return true;
+        }
+        if (result.actionId.isEmpty()) {
+            return false;
+        }
+
+        mExtensionActionListCoordinator.click(result.actionId);
+        return true;
+    }
+}

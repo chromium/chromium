@@ -152,7 +152,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.MissingNavbarInsetsReason;
-import org.chromium.chrome.browser.ui.extensions.ExtensionService;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -241,8 +240,6 @@ public class RootUiCoordinator
 
     protected @Nullable FindToolbarManager mFindToolbarManager;
     private @Nullable FindToolbarObserver mFindToolbarObserver;
-
-    private @Nullable ExtensionService mExtensionService;
 
     private OverlayPanelManager mOverlayPanelManager;
     private OverlayPanelManager.OverlayPanelManagerObserver mOverlayPanelManagerObserver;
@@ -646,11 +643,6 @@ public class RootUiCoordinator
             mToolbarManager = null;
         }
 
-        if (mExtensionService != null) {
-            mExtensionService.destroy();
-            mExtensionService = null;
-        }
-
         if (mAdaptiveToolbarUiCoordinator != null) {
             mAdaptiveToolbarUiCoordinator.destroy();
             mAdaptiveToolbarUiCoordinator = null;
@@ -791,7 +783,6 @@ public class RootUiCoordinator
     public void onInflationComplete() {
         mScrimManager = buildScrimWidget();
         mScrimManagerSupplier.set(mScrimManager);
-        mExtensionService = ExtensionService.maybeCreate(mProfileSupplier);
         initFindToolbarManager();
         initializeToolbar();
     }
@@ -1514,7 +1505,6 @@ public class RootUiCoordinator
                             mActivityTabProvider,
                             mScrimManager,
                             mActionModeControllerCallback,
-                            mExtensionService,
                             mFindToolbarManager,
                             mProfileSupplier,
                             mBookmarkModelSupplier,
@@ -2004,14 +1994,6 @@ public class RootUiCoordinator
     /** @return The {@link SnackbarManager} for the {@link BottomSheetController}. */
     public SnackbarManager getBottomSheetSnackbarManager() {
         return mBottomSheetSnackbarManager;
-    }
-
-    /**
-     * @return The {@link ExtensionService} that handles extensions. null if extensions are not
-     *     supported on this build.
-     */
-    public @Nullable ExtensionService getExtensionService() {
-        return mExtensionService;
     }
 
     /**
