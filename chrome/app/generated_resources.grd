@@ -17059,6 +17059,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_SAVE_FILE_TITLE" desc="Title of the chooser when opening a file  with read and write permissions">
       Warning: this site can see edits you make
     </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_FILE_TITLE" desc="Title of the chooser when opening a file with read permissions">
+      Select a file this site can read
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_FILES_TITLE" desc="Title of the chooser when opening files with read permissions">
+      Select files this site can read
+    </message>
 
     <!-- File System Access restricted directory and file dialogs. -->
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TITLE" desc="Title of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">

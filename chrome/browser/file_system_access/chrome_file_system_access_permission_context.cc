@@ -2147,9 +2147,8 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
     const blink::mojom::FilePickerOptionsPtr& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(asully): Consider adding custom strings for invocations of the file
-  // picker, as well. Returning the empty string will fall back to the platform
-  // default for the given picker type.
+  // Returning the empty string will fall back to the platform default for the
+  // given picker type.
   std::u16string title;
   switch (options->type_specific_options->which()) {
     case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
@@ -2167,6 +2166,11 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
       break;
     case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
         kOpenFilePickerOptions:
+      title = l10n_util::GetStringUTF16(
+          options->type_specific_options->get_open_file_picker_options()
+                  ->can_select_multiple_files
+              ? IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_FILES_TITLE
+              : IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_FILE_TITLE);
       break;
   }
   return title;
