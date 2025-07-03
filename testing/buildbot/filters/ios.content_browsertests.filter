@@ -474,8 +474,3 @@
 -HidTest.GetDevices
 -HidTest.ProtectedReportsAreFiltered
 -HidTest.RequestDevice
-
-# TODO(crbug.com/429032825): The test has been failing since
-# https://crrev.com/c/6656174. The test couldn't get a video element in the
-# document.
--BlobUrlBrowserTest.NoPartitioningForMediaBlobUrlNavigations
