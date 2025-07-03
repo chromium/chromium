@@ -6,6 +6,8 @@
 
 #import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 
@@ -59,11 +61,20 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
   } else {
     std::move(show_reader_mode_chip).Run();
   }
+  UpdateHandlersOnActiveWebState();
 }
 
 void ReaderModeBrowserAgent::HideReaderModeUI() {
   [reader_mode_chip_handler_ hideReaderModeChip];
   [reader_mode_handler_ hideReaderMode];
+  UpdateHandlersOnActiveWebState();
+}
+
+void ReaderModeBrowserAgent::UpdateHandlersOnActiveWebState() {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<PageSideSwipeCommands> pageSideSwipeHandler =
+      HandlerForProtocol(dispatcher, PageSideSwipeCommands);
+  [pageSideSwipeHandler updateEdgeSwipePrecedenceForActiveWebState];
 }
 
 #pragma mark - WebStateListObserver

@@ -40,6 +40,10 @@ class Tracker;
 // Initializer.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList;
 
+// Updates the edge swipe precedence between Chromium native swipe and the
+// default WebView swipe for the currently active web state.
+- (void)updateEdgeSwipePrecedenceForActiveWebState;
+
 // Disconnects the mediator.
 - (void)disconnect;
 

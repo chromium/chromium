@@ -9,6 +9,10 @@
 
 @protocol PageSideSwipeCommands
 
+// Updates the edge swipe precedence between Chromium native swipe and the
+// default WebView swipe for the currently active web state.
+- (void)updateEdgeSwipePrecedenceForActiveWebState;
+
 // If an animation for navigating back is necessary, animates, navigate
 // back and return YES. Otherwise, do nothing and return NO.
 - (BOOL)navigateBackWithSideSwipeAnimationIfNeeded;

@@ -44,6 +44,10 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   void ShowReaderModeUI(bool animated);
   void HideReaderModeUI();
 
+  // Updates any handlers that rely on the non-Reading mode web state when the
+  // Reading mode web state has changed.
+  void UpdateHandlersOnActiveWebState();
+
   // WebStateListObserver methods.
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,

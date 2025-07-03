@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -94,6 +95,10 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
   return _webStateList ? _webStateList->GetActiveWebState() : nullptr;
 }
 
+- (void)updateEdgeSwipePrecedenceForActiveWebState {
+  return [self updateNavigationEdgeSwipeForWebState:self.activeWebState];
+}
+
 - (void)updateNavigationEdgeSwipeForWebState:(web::WebState*)webState {
   if (!webState) {
     return;
@@ -127,6 +132,16 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
       webState->GetNavigationManager()->GetForwardItems();
   if (forwardItems.size() > 0 && UseNativeSwipe(forwardItems[0])) {
     [self.consumer setTrailingEdgeNavigationEnabled:YES];
+  }
+
+  // The Reader Mode web state does not have a navigation stack, so instead
+  // use the custom Chromium native swipe to support back/forwards navigations.
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(webState);
+  if (readerModeTabHelper &&
+      readerModeTabHelper->IsReaderModeWebStateAvailable()) {
+    [self.consumer setTrailingEdgeNavigationEnabled:YES];
+    [self.consumer setLeadingEdgeNavigationEnabled:YES];
   }
 }
 

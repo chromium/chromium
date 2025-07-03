@@ -130,6 +130,10 @@
 
 #pragma mark - PageSideSwipeCommands
 
+- (void)updateEdgeSwipePrecedenceForActiveWebState {
+  [_sideSwipeMediator updateEdgeSwipePrecedenceForActiveWebState];
+}
+
 - (BOOL)navigateBackWithSideSwipeAnimationIfNeeded {
   if (![self shouldNavigateBackWithSideSwipeAnimation]) {
     return NO;

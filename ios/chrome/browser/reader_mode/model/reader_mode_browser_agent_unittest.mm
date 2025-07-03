@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -33,6 +35,11 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
         OCMStrictProtocolMock(@protocol(ReaderModeCommands));
     GetReaderModeBrowserAgent()->SetReaderModeHandler(
         fake_reader_mode_handler_);
+
+    side_swipe_handler_ = OCMProtocolMock(@protocol(PageSideSwipeCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:side_swipe_handler_
+                     forProtocol:@protocol(PageSideSwipeCommands)];
 
     // Initialize the WebStateList.
     InsertWebState();
@@ -80,6 +87,7 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
  protected:
   std::unique_ptr<TestBrowser> test_browser_;
   id fake_reader_mode_handler_;
+  id side_swipe_handler_;
 };
 
 // Tests that the Reader mode UI is shown/dismissed when changing the current
