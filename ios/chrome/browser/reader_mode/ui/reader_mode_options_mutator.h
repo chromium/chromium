@@ -15,6 +15,12 @@
 // Sets the font family for Reader mode.
 - (void)setFontFamily:(dom_distiller::mojom::FontFamily)fontFamily;
 
+// Increases the font size.
+- (void)increaseFontSize;
+
+// Decreases the font size.
+- (void)decreaseFontSize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_MUTATOR_H_

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 
 @implementation ReaderModeOptionsMediator {
   // The distilled page preferences.
@@ -24,6 +25,26 @@
 
 - (void)setFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
   _distilledPagePrefs->SetFontFamily(fontFamily);
+}
+
+- (void)increaseFontSize {
+  double currentScaling = _distilledPagePrefs->GetFontScaling();
+  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+  auto it =
+      std::upper_bound(multipliers.begin(), multipliers.end(), currentScaling);
+  if (it != multipliers.end()) {
+    _distilledPagePrefs->SetFontScaling(*it);
+  }
+}
+
+- (void)decreaseFontSize {
+  double currentScaling = _distilledPagePrefs->GetFontScaling();
+  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+  auto it =
+      std::lower_bound(multipliers.begin(), multipliers.end(), currentScaling);
+  if (it != multipliers.begin()) {
+    _distilledPagePrefs->SetFontScaling(*(--it));
+  }
 }
 
 #pragma mark - Public

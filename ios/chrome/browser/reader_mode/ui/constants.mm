@@ -16,6 +16,14 @@ NSString* const kReaderModeOptionsViewAccessibilityIdentifier =
 NSString* const kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier =
     @"ReaderModeOptionsFontFamilyButtonAccessibilityIdentifier";
 
+NSString* const
+    kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier =
+        @"ReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier";
+
+NSString* const
+    kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier =
+        @"ReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier";
+
 UIColor* ReaderModeLightBackgroundColor() {
   return [UIColor whiteColor];
 }
@@ -52,6 +60,6 @@ UIColor* ReaderModeSepiaTextColor() {
                          alpha:1.0];
 }
 
-std::vector<CGFloat> ReaderModeFontScaleMultipliers() {
+std::vector<double> ReaderModeFontScaleMultipliers() {
   return {0.5, 0.75, 1.0, 1.25, 1.5, 2.0};
 }

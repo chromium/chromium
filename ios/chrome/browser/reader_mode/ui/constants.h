@@ -22,6 +22,14 @@ extern NSString* const kReaderModeOptionsViewAccessibilityIdentifier;
 extern NSString* const
     kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier;
 
+// The accessibility identifier for the decrease font size button.
+extern NSString* const
+    kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier;
+
+// The accessibility identifier for the increase font size button.
+extern NSString* const
+    kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier;
+
 // Reader mode color themes helpers.
 UIColor* ReaderModeLightBackgroundColor();
 UIColor* ReaderModeLightTextColor();
@@ -30,7 +38,8 @@ UIColor* ReaderModeDarkTextColor();
 UIColor* ReaderModeSepiaBackgroundColor();
 UIColor* ReaderModeSepiaTextColor();
 
-// Reader mode font scale multipliers.
-std::vector<CGFloat> ReaderModeFontScaleMultipliers();
+// Reader mode font scale multipliers. Must be sorted.
+// These values should be in the range defined in distilled_page_prefs.cc.
+std::vector<double> ReaderModeFontScaleMultipliers();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_CONSTANTS_H_

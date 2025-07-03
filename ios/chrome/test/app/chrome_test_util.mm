@@ -206,6 +206,16 @@ void SetIntegerUserPref(ProfileIOS* profile, const char* pref_name, int value) {
   pref.SetValue(value);
 }
 
+void SetDoubleUserPref(ProfileIOS* profile,
+                       const char* pref_name,
+                       double value) {
+  DCHECK(profile);
+  DCHECK(profile->GetPrefs());
+  DoublePrefMember pref;
+  pref.Init(pref_name, profile->GetPrefs());
+  pref.SetValue(value);
+}
+
 bool IsMetricsRecordingEnabled() {
   DCHECK(GetApplicationContext());
   DCHECK(GetApplicationContext()->GetMetricsService());

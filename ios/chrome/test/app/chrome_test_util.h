@@ -81,6 +81,11 @@ void SetBooleanUserPref(ProfileIOS* profile, const char* pref_name, bool value);
 // Sets the value of an integer user pref in the given profile.
 void SetIntegerUserPref(ProfileIOS* profile, const char* pref_name, int value);
 
+// Sets the value of a double user pref in the given profile.
+void SetDoubleUserPref(ProfileIOS* profile,
+                       const char* pref_name,
+                       double value);
+
 // Checks whether metrics recording is enabled or not.
 bool IsMetricsRecordingEnabled();
 

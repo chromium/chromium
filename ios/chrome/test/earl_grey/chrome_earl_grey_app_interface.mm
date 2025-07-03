@@ -1353,6 +1353,12 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(prefName).c_str(), value);
 }
 
++ (void)setDoubleValue:(double)value forUserPref:(NSString*)prefName {
+  chrome_test_util::SetDoubleUserPref(chrome_test_util::GetOriginalProfile(),
+                                      base::SysNSStringToUTF8(prefName).c_str(),
+                                      value);
+}
+
 + (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   const PrefService::Preference* pref =

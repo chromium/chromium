@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/strings/stringprintf.h"
 #import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "components/dom_distiller/core/pref_names.h"
@@ -22,17 +23,39 @@
 using testing::HasSubstr;
 
 namespace {
+
+// Base font size for Reader Mode, in pixels. This is the font size that is
+// multiplied by the font scale multipliers. This value is defined in
+// components/dom_distiller/core/javascript/dom_distiller_viewer.js.
+constexpr double kReaderModeBaseFontSize = 16.0;
+
 // Verifies that the theme and font have been set as expected in the document
 // body.
 void ExpectBodyHasThemeAndFont(const std::string& theme,
                                const std::string& font) {
   NSString* js = @"(function() { return document.body.className; })();";
   base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
-  ASSERT_TRUE(result.is_string());
+  GREYAssertTrue(result.is_string(), @"The class name should be a string");
 
   const std::string resultStr = result.GetString();
-  EXPECT_THAT(resultStr, HasSubstr(theme));
-  EXPECT_THAT(resultStr, HasSubstr(font));
+  GREYAssertTrue(resultStr.find(theme) != std::string::npos,
+                 @"Expected theme '%s' not found in className '%s'",
+                 theme.c_str(), resultStr.c_str());
+  GREYAssertTrue(resultStr.find(font) != std::string::npos,
+                 @"Expected font '%s' not found in className '%s'",
+                 font.c_str(), resultStr.c_str());
+}
+
+// Verifies that the font size has been set as expected on the document element.
+void ExpectFontSize(double expected_size) {
+  NSString* js =
+      @"(function() { return document.documentElement.style.fontSize; })();";
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
+  GREYAssertTrue(result.is_string(), @"JS result should be a string");
+  std::string expected_font_size = base::StringPrintf("%gpx", expected_size);
+  GREYAssertEqual(result.GetString(), expected_font_size,
+                  @"Font size should be %s, but it is %s",
+                  expected_font_size.c_str(), result.GetString().c_str());
 }
 
 // Returns a matcher for a visible context menu item with the given
@@ -413,6 +436,62 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kReaderModeChipViewAccessibilityIdentifier)]
       assertWithMatcher:grey_hidden(YES)];
+}
+
+// Tests that font size can be changed from the options view.
+- (void)testChangeReaderModeFontSizeFromOptionsView {
+  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+  [ChromeEarlGrey setDoubleValue:multipliers[0]
+                     forUserPref:dom_distiller::prefs::kFontScale];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The options view should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  // Increase the font size.
+  for (int i = 1; i < static_cast<int>(multipliers.size()); ++i) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier)]
+        performAction:grey_tap()];
+    GREYAssertEqual(
+        [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+        multipliers[i], @"Pref should be updated to next multiplier");
+    ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
+  }
+
+  // Decrease the font size.
+  for (int i = static_cast<int>(multipliers.size()) - 2; i >= 0; --i) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier)]
+        performAction:grey_tap()];
+    GREYAssertEqual(
+        [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+        multipliers[i], @"Pref should be updated to previous multiplier");
+    ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
+  }
 }
 
 @end

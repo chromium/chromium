@@ -1587,6 +1587,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return success ? value->GetInt() : 0;
 }
 
+- (double)userDoublePref:(const std::string&)prefName {
+  std::optional<base::Value> value = [self userPrefValue:prefName];
+  BOOL success = value && value->is_double();
+  EG_TEST_HELPER_ASSERT_TRUE(success, @"Expected double");
+  return success ? value->GetDouble() : 0.0;
+}
+
 - (std::string)userStringPref:(const std::string&)prefName {
   std::optional<base::Value> value = [self userPrefValue:prefName];
   BOOL success = value && value->is_string();
@@ -1610,6 +1617,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
   return [ChromeEarlGreyAppInterface setIntegerValue:value
                                          forUserPref:prefName];
+}
+
+- (void)setDoubleValue:(double)value
+           forUserPref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setDoubleValue:value forUserPref:prefName];
 }
 
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName {

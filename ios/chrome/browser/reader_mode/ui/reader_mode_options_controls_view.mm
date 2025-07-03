@@ -70,6 +70,18 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   return self;
 }
 
+#pragma mark - UI actions
+
+// Decrease the font size using the mutator.
+- (void)decreaseFontSize:(id)sender {
+  [self.mutator decreaseFontSize];
+}
+
+// Increase the font size using the mutator.
+- (void)increaseFontSize:(id)sender {
+  [self.mutator increaseFontSize];
+}
+
 #pragma mark - Stacks creation helpers
 
 // Returns the first row stack.
@@ -229,7 +241,11 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
                                  fontSize:kSmallFontSize];
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_DECREASE_BUTTON_ACCESSIBILITY_LABEL);
-  // TODO(crbug.com/409941529): Decrease font size with mutator.
+  button.accessibilityIdentifier =
+      kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(decreaseFontSize:)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
@@ -242,7 +258,11 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
                                  fontSize:kLargeFontSize];
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_INCREASE_BUTTON_ACCESSIBILITY_LABEL);
-  // TODO(crbug.com/409941529): Increase font size with mutator.
+  button.accessibilityIdentifier =
+      kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(increaseFontSize:)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
