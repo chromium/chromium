@@ -7960,11 +7960,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "probabilistic-memory-saver",
-    "owners": ["chrome-performance-ui-team@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "process-rank-policy-android",
     "owners": [
       "kawasin@google.com",
