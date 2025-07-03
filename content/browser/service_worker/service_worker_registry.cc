@@ -391,10 +391,10 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // (https://crbug.com/1446216)
   bool no_registration = false;
   std::optional<GURL> matched_scope;
-  std::optional<std::set<GURL>> scopes;
+  std::optional<std::vector<GURL>> scopes;
   auto iter = registration_scope_cache_.Get(key);
   if (iter != registration_scope_cache_.end()) {
-    scopes = iter->second;
+    scopes = std::vector(iter->second.begin(), iter->second.end());
     blink::ServiceWorkerLongestScopeMatcher matcher(client_url);
     for (const GURL& scope : *scopes) {
       if (matcher.MatchLongest(scope)) {
@@ -446,20 +446,16 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     DidFindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
         storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
-        std::vector(scopes->begin(), scopes->end()));
+        scopes);
     return;
   }
   storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
       storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
   if (!preflight_result.is_null()) {
-    std::optional<std::vector<GURL>> scope_vector;
-    if (scopes.has_value()) {
-      scope_vector = std::vector(scopes->begin(), scopes->end());
-    }
     DidFindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
         storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-        std::move(preflight_result), scope_vector);
+        std::move(preflight_result), scopes);
     return;
   }
   // TODO(crbug.com/352578800): Consider moving this block before
