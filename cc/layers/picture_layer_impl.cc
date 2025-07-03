@@ -596,9 +596,9 @@ bool PictureLayerImpl::UpdateTiles() {
 
   // Remove any non-ideal tilings that were not used last time we generated
   // quads to save memory and processing time. Note that pending tree should
-  // only have one or two tilings (high and low res), so only clean up the
-  // active layer. This cleans it up here in case AppendQuads didn't run.
-  // If it did run, this would not remove any additional tilings.
+  // only have the high-res tiling, so only clean up the active layer. This
+  // cleans it up here in case AppendQuads didn't run.  If it did run, this
+  // would not remove any additional tilings.
   if (layer_tree_impl()->IsActiveTree())
     CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
 
