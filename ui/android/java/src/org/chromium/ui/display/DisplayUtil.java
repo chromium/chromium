@@ -4,8 +4,6 @@
 
 package org.chromium.ui.display;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Insets;
@@ -21,9 +19,9 @@ import android.view.Display;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,7 +40,7 @@ public abstract class DisplayUtil {
 
     /** Returns true if the device requires UI scaling. */
     public static boolean isUiScaled() {
-        return BuildInfo.getInstance().isAutomotive || XrUtils.isXrDevice();
+        return DeviceInfo.isAutomotive() || XrUtils.isXrDevice();
     }
 
     /** Change the UI scaling factor on automotive devices for testing. */
@@ -53,15 +51,6 @@ public abstract class DisplayUtil {
     /** Reset the UI scaling factor on automotive devices to the default value. */
     public static void resetUiScalingFactorForAutomotiveForTesting() {
         sUiScalingFactorForAutomotiveOverride = null;
-    }
-
-    /**
-     * Retrieves the UI scaling factor on automotive devices.
-     * TODO: Remove this method and replace usages with getUiDensityForAutomotive.
-     */
-    @Deprecated
-    public static float getUiScalingFactorForAutomotive() {
-        return assumeNonNull(sUiScalingFactorForAutomotiveOverride);
     }
 
     /**
@@ -306,7 +295,7 @@ public abstract class DisplayUtil {
     /** Returns the scaling factor for the current device. */
     public static float getCurrentUiScalingFactor(Context context) {
         if (!isUiScaled()) return 1;
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return sUiScalingFactorForAutomotiveOverride != null
                     ? sUiScalingFactorForAutomotiveOverride
                     : getTargetScalingFactorForAutomotive(context);
