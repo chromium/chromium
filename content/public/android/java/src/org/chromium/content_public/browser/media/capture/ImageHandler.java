@@ -12,7 +12,6 @@ import android.media.ImageReader;
 import android.os.Handler;
 import android.view.Surface;
 
-import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
@@ -34,47 +33,33 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
         void onClose(ImageHandler imageHandler);
     }
 
-    final Object mLock = new Object();
-
-    @GuardedBy("mLock")
-    final ImageReader mImageReader;
-
-    @GuardedBy("mLock")
-    int mAcquiredImageCount;
-
-    @GuardedBy("mLock")
-    boolean mClosing;
-
-    // This will be called without the internal lock taken to avoid adding lock order dependencies
-    // on delegates.
     private final Delegate mDelegate;
-
-    private final Handler mBackgroundHandler;
+    private final Handler mHandler;
+    private final ImageReader mImageReader;
+    private int mAcquiredImageCount;
+    private boolean mClosing;
 
     /**
      * Constructs an ImageHandler.
      *
      * @param captureState The state describing the capture (e.g. width, height).
      * @param delegate The delegate to notify of capture events.
-     * @param backgroundHandler The handler on which to run callbacks.
+     * @param handler The handler on which to run callbacks.
      */
-    ImageHandler(
-            ScreenCapture.CaptureState captureState, Delegate delegate, Handler backgroundHandler) {
+    ImageHandler(ScreenCapture.CaptureState captureState, Delegate delegate, Handler handler) {
         mDelegate = delegate;
-        mBackgroundHandler = backgroundHandler;
+        mHandler = handler;
         mImageReader =
                 ImageReader.newInstance(
                         captureState.width,
                         captureState.height,
                         captureState.format,
                         /* maxImages= */ 2);
-        mImageReader.setOnImageAvailableListener(this, mBackgroundHandler);
+        mImageReader.setOnImageAvailableListener(this, mHandler);
     }
 
     Surface getSurface() {
-        synchronized (mLock) {
-            return mImageReader.getSurface();
-        }
+        return mImageReader.getSurface();
     }
 
     /**
@@ -84,14 +69,12 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * immediately.
      */
     void close() {
-        synchronized (mLock) {
-            // If we have no acquired images, then it's safe to close the ImageReader because
-            // we are guaranteed that the native side is not using any of those Images.
-            if (mAcquiredImageCount == 0) {
-                closeNow();
-            } else {
-                mClosing = true;
-            }
+        // If we have no acquired images, then it's safe to close the ImageReader because
+        // we are guaranteed that the native side is not using any of those Images.
+        if (mAcquiredImageCount == 0) {
+            closeNow();
+        } else {
+            mClosing = true;
         }
     }
 
@@ -103,64 +86,52 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * safety issues) to access data from an `Image` after it is closed.
      */
     void closeNow() {
-        synchronized (mLock) {
-            mImageReader.close();
-            mAcquiredImageCount = 0;
-        }
+        mImageReader.close();
+        mAcquiredImageCount = 0;
         mDelegate.onClose(this);
     }
 
     private @Nullable Image maybeAcquireImage(ImageReader reader) {
-        assert mBackgroundHandler.getLooper().isCurrentThread();
+        assert reader == mImageReader;
+        // If we have acquired the maximum number of images `acquireLatestImage`
+        // will print warning level logspam, so avoid
+        if (mAcquiredImageCount >= reader.getMaxImages()) return null;
 
-        synchronized (mLock) {
-            assert reader == mImageReader;
-            // If we have acquired the maximum number of images `acquireLatestImage`
-            // will print warning level logspam, so avoid
-            if (mAcquiredImageCount >= reader.getMaxImages()) return null;
-
-            try {
-                Image image = reader.acquireLatestImage();
-                if (image != null) mAcquiredImageCount++;
-                return image;
-            } catch (IllegalStateException ex) {
-                // This happens if we have acquired the maximum number of images without closing
-                // them. We will eventually close the images so this is not an error condition.
-            } catch (UnsupportedOperationException ex) {
-                // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
-                // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
-                // case.
-                throw ex;
-            }
+        try {
+            final Image image = reader.acquireLatestImage();
+            if (image != null) mAcquiredImageCount++;
+            return image;
+        } catch (IllegalStateException ex) {
+            // This happens if we have acquired the maximum number of images without closing
+            // them. We will eventually close the images so this is not an error condition.
+        } catch (UnsupportedOperationException ex) {
+            // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
+            // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
+            // case.
+            throw ex;
         }
         return null;
     }
 
     private void releaseImage(ImageReader reader, Image image) {
-        assert mBackgroundHandler.getLooper().isCurrentThread();
+        assert reader == mImageReader;
 
-        synchronized (mLock) {
-            assert reader == mImageReader;
+        // If we recreate the ImageReader, we may get an old release here. The image will
+        // already have been closed since the ImageReader is closed, but it's safe to call
+        // close again here.
+        image.close();
+        mAcquiredImageCount--;
 
-            // If we recreate the ImageReader, we may get an old release here. The image will
-            // already have been closed since the ImageReader is closed, but it's safe to call
-            // close again here.
-            image.close();
-            mAcquiredImageCount--;
-
-            if (mClosing) {
-                if (mAcquiredImageCount == 0) closeNow();
-            } else {
-                // Now that we closed an image, we may be able to acquire a new image.
-                onImageAvailable(reader);
-            }
+        if (mClosing) {
+            if (mAcquiredImageCount == 0) closeNow();
+        } else {
+            // Now that we closed an image, we may be able to acquire a new image.
+            onImageAvailable(reader);
         }
     }
 
     @Override
     public void onImageAvailable(ImageReader reader) {
-        assert mBackgroundHandler.getLooper().isCurrentThread();
-
         // Note that we can't use `acquireLatestImage` here because we can't close older
         // images until the C++ side is finished using them.
         final Image image = maybeAcquireImage(reader);
@@ -175,10 +146,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                 final Plane plane = image.getPlanes()[0];
                 mDelegate.onRgbaFrameAvailable(
                         this,
-                        () -> {
-                            assert mBackgroundHandler != null;
-                            mBackgroundHandler.post(() -> releaseImage(reader, image));
-                        },
+                        () -> releaseImage(reader, image),
                         image.getTimestamp(),
                         plane,
                         image.getCropRect());

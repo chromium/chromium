@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/numerics/checked_math.h"
-#include "base/threading/platform_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ScreenCapture_jni.h"
@@ -28,17 +27,11 @@ DesktopCapturerAndroid::DesktopCapturerAndroid(
     const webrtc::DesktopCaptureOptions& options) {}
 
 DesktopCapturerAndroid::~DesktopCapturerAndroid() {
-  CHECK(task_runner_);
-  CHECK(task_runner_->RunsTasksInCurrentSequence());
-  finishing_ = true;
   JNIEnv* env = base::android::AttachCurrentThread();
-  // This will block until all pending Java side calls on the background thread
-  // have completed.
   Java_ScreenCapture_destroy(env, screen_capture_);
 }
 
 void DesktopCapturerAndroid::Start(Callback* callback) {
-  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   callback_ = callback;
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -55,8 +48,6 @@ void DesktopCapturerAndroid::SetSharedMemoryFactory(
     std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {}
 
 void DesktopCapturerAndroid::CaptureFrame() {
-  CHECK(task_runner_);
-  CHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(callback_);
 
   if (finishing_) {
@@ -103,25 +94,14 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
   plane.crop_right = unchecked_crop_right;
   plane.crop_bottom = unchecked_crop_bottom;
 
-  // It's guaranteed that `this` is valid here because destruction is blocked
-  // until all JNI methods are complete.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DesktopCapturerAndroid::ProcessRgbaFrame,
-                                weak_ptr_factory_.GetWeakPtr(), timestamp_ns,
-                                std::move(plane)));
+  ProcessRgbaFrame(timestamp_ns, std::move(plane));
 }
 
 void DesktopCapturerAndroid::OnStop(JNIEnv* env) {
-  // It's guaranteed that `this` is valid here because destruction is blocked
-  // until all JNI methods are complete.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&DesktopCapturerAndroid::Shutdown,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  Shutdown();
 }
 
 void DesktopCapturerAndroid::Shutdown() {
-  CHECK(task_runner_);
-  CHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(!finishing_);
   finishing_ = true;
 }
@@ -151,9 +131,6 @@ void RgbaToBgra(webrtc::DesktopFrame& frame) {
 
 void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
-  CHECK(task_runner_);
-  CHECK(task_runner_->RunsTasksInCurrentSequence());
-
   // Don't process frames if we are no longer doing anything.
   if (finishing_) {
     return;

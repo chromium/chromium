@@ -1028,12 +1028,6 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     DesktopMediaID::Type type)
     : thread_("desktopCaptureThread") {
   DVLOG(1) << __func__ << "(type=" << DesktopMediaTypeToString(type) << ")";
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // On Windows/OSX the thread must be a UI thread.
-  base::MessagePumpType thread_type = base::MessagePumpType::UI;
-#else
-  base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
-#endif
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
   const bool wgc_screen_zero_hertz = IsWgcZeroHzEnabledForScreenCapture();
@@ -1063,7 +1057,17 @@ DesktopCaptureDevice::DesktopCaptureDevice(
           << "]";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  thread_.Start();
+#else
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // On Windows/OSX the thread must be a UI thread.
+  base::MessagePumpType thread_type = base::MessagePumpType::UI;
+#else
+  base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
+#endif
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
+#endif
 
   core_ = std::make_unique<Core>(thread_.task_runner(), std::move(capturer),
                                  type, zero_hertz_is_supported);
