@@ -53,9 +53,15 @@ class ContentFiltersObserverBridge {
   void OnChange(JNIEnv* env, bool enabled);
 
   // Reads the last broadcasted value of the setting from the Java side.
-  virtual bool IsEnabled() const;
+  bool IsEnabled() const;
 
-private:
+ protected:
+  virtual void SetEnabled(bool enabled);
+
+ private:
+  // This value is set exclusively from Java, and reflects the last broadcasted
+  // value of the setting.
+  bool enabled_ = false;
   std::string setting_name_;
   base::RepeatingClosure on_enabled_;
   base::RepeatingClosure on_disabled_;

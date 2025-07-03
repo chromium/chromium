@@ -180,8 +180,7 @@ class SupervisedUserService : public KeyedService {
   // Activates the service which controls managed settings of url filtering and
   // incognito mode.
   void SetSettingsServiceActive(bool active);
-  // Activates the settings that manually control url filtering and incognito
-  // mode.
+  // Activates the settings that manually control url filtering.
   void SetUserSettingsActive(bool active);
 
   void OnCustodianInfoChanged();

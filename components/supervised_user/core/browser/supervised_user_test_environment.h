@@ -107,22 +107,39 @@ class FakeContentFiltersObserverBridge final
   void Init() override;
   void Shutdown() override;
 
-  // Override to return mocked value.
-  bool IsEnabled() const override;
-  // Set mocked value.
-  void SetEnabled(bool enabled);
+  // Set mocked value and trigger native code callbacks.
+  void SetEnabled(bool enabled) override;
 
   base::WeakPtr<FakeContentFiltersObserverBridge> GetWeakPtr();
 
  private:
-  // Stores actual value (in place of secure settings storage). Note: In prod
-  // environment there is one setting value for all profiles, but this fake
-  // is bound to a specific profile.
-  bool enabled_ = false;
   base::WeakPtrFactory<FakeContentFiltersObserverBridge> weak_ptr_factory_{
       this};
 };
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Offers access to the protected constructor of SupervisedUserService, used
+// to inject fake content filters observers.
+class TestSupervisedUserService : public SupervisedUserService {
+ public:
+  // Matching constructor of SupervisedUserService.
+  TestSupervisedUserService(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService& user_prefs,
+      SupervisedUserSettingsService& settings_service,
+      syncer::SyncService* sync_service,
+      std::unique_ptr<SupervisedUserURLFilter> url_filter,
+      std::unique_ptr<SupervisedUserService::PlatformDelegate>
+          platform_delegate);
+
+#if BUILDFLAG(IS_ANDROID)
+  base::WeakPtr<FakeContentFiltersObserverBridge>
+  browser_content_filters_observer_weak_ptr();
+  base::WeakPtr<FakeContentFiltersObserverBridge>
+  search_content_filters_observer_weak_ptr();
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 // Configures a handy set of components that form supervised user features, for
 // unit testing. This is a lightweight, unit-test oriented alternative to a
@@ -181,28 +198,6 @@ class SupervisedUserTestEnvironment {
   void Shutdown();
 
  private:
-  // Offers access to the protected constructor of SupervisedUserService, used
-  // to inject fake content filters observers.
-  class TestSupervisedUserService : public SupervisedUserService {
-   public:
-    // Matching constructor of SupervisedUserService.
-    TestSupervisedUserService(
-        signin::IdentityManager* identity_manager,
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        PrefService& user_prefs,
-        SupervisedUserSettingsService& settings_service,
-        syncer::SyncService* sync_service,
-        std::unique_ptr<SupervisedUserURLFilter> url_filter,
-        std::unique_ptr<SupervisedUserService::PlatformDelegate>
-            platform_delegate);
-#if BUILDFLAG(IS_ANDROID)
-    base::WeakPtr<FakeContentFiltersObserverBridge>
-    browser_content_filters_observer_weak_ptr();
-    base::WeakPtr<FakeContentFiltersObserverBridge>
-    search_content_filters_observer_weak_ptr();
-#endif  // BUILDFLAG(IS_ANDROID)
-  };
-
   SupervisedUserPrefStoreTestEnvironment pref_store_environment_;
 
   signin::IdentityTestEnvironment identity_test_env_;

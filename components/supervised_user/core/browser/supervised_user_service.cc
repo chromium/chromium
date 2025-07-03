@@ -257,15 +257,11 @@ void SupervisedUserService::SetSettingsServiceActive(bool active) {
 
 void SupervisedUserService::SetUserSettingsActive(bool active) {
   if (active) {
-    user_prefs_->SetInteger(
-        policy::policy_prefs::kIncognitoModeAvailability,
-        static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
     // Sets "Try to block mature sites" on user level.
     user_prefs_->SetBoolean(prefs::kSupervisedUserSafeSites, true);
     user_prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
                             static_cast<int>(FilteringBehavior::kAllow));
   } else {
-    user_prefs_->ClearPref(policy::policy_prefs::kIncognitoModeAvailability);
     user_prefs_->ClearPref(prefs::kSupervisedUserSafeSites);
     user_prefs_->ClearPref(prefs::kDefaultSupervisedUserFilteringBehavior);
   }
@@ -421,21 +417,33 @@ void SupervisedUserService::Shutdown() {
 #if BUILDFLAG(IS_ANDROID)
 void SupervisedUserService::EnableSearchContentFilters() {
   ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
+  ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
 void SupervisedUserService::DisableSearchContentFilters() {
   ::supervised_user::DisableSearchContentFilters(user_prefs_.get());
+  if (!IsSupervisedLocally()) {
+    // Restore incognito mode iff all of the local parental controls are
+    // disabled.
+    ::supervised_user::EnableIncognitoMode(user_prefs_.get());
+  }
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
 void SupervisedUserService::EnableBrowserContentFilters() {
   ::supervised_user::EnableBrowserContentFilters(user_prefs_.get());
+  ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }
 void SupervisedUserService::DisableBrowserContentFilters() {
   ::supervised_user::DisableBrowserContentFilters(user_prefs_.get());
+  if (!IsSupervisedLocally()) {
+    // Restore incognito mode iff all of the local parental controls are
+    // disabled.
+    ::supervised_user::EnableIncognitoMode(user_prefs_.get());
+  }
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }
