@@ -24,6 +24,15 @@ NSString* const
     kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier =
         @"ReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier";
 
+NSString* const kReaderModeOptionsLightThemeButtonAccessibilityIdentifier =
+    @"ReaderModeOptionsLightThemeButtonAccessibilityIdentifier";
+
+NSString* const kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier =
+    @"ReaderModeOptionsDarkThemeButtonAccessibilityIdentifier";
+
+NSString* const kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier =
+    @"ReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier";
+
 UIColor* ReaderModeLightBackgroundColor() {
   return [UIColor whiteColor];
 }

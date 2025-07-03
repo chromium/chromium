@@ -21,6 +21,9 @@
 // Decreases the font size.
 - (void)decreaseFontSize;
 
+// Sets the theme for the Reader mode page.
+- (void)setTheme:(dom_distiller::mojom::Theme)theme;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_MUTATOR_H_

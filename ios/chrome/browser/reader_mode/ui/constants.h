@@ -30,6 +30,17 @@ extern NSString* const
 extern NSString* const
     kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier;
 
+// The accessibility identifier for the light theme button.
+extern NSString* const
+    kReaderModeOptionsLightThemeButtonAccessibilityIdentifier;
+
+// The accessibility identifier for the dark theme button.
+extern NSString* const kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier;
+
+// The accessibility identifier for the sepia theme button.
+extern NSString* const
+    kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier;
+
 // Reader mode color themes helpers.
 UIColor* ReaderModeLightBackgroundColor();
 UIColor* ReaderModeLightTextColor();

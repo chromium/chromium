@@ -82,6 +82,21 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   [self.mutator increaseFontSize];
 }
 
+// Select the light theme using the mutator.
+- (void)selectLightTheme:(id)sender {
+  [self.mutator setTheme:dom_distiller::mojom::Theme::kLight];
+}
+
+// Select the sepia theme using the mutator.
+- (void)selectSepiaTheme:(id)sender {
+  [self.mutator setTheme:dom_distiller::mojom::Theme::kSepia];
+}
+
+// Select the dark theme using the mutator.
+- (void)selectDarkTheme:(id)sender {
+  [self.mutator setTheme:dom_distiller::mojom::Theme::kDark];
+}
+
 #pragma mark - Stacks creation helpers
 
 // Returns the first row stack.
@@ -297,7 +312,11 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_LIGHT);
-  // TODO(crbug.com/409941529): Update theme with mutator.
+  button.accessibilityIdentifier =
+      kReaderModeOptionsLightThemeButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(selectLightTheme:)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
@@ -310,7 +329,11 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_SEPIA);
-  // TODO(crbug.com/409941529): Update theme with mutator.
+  button.accessibilityIdentifier =
+      kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(selectSepiaTheme:)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
@@ -323,7 +346,11 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK);
-  // TODO(crbug.com/409941529): Update theme with mutator.
+  button.accessibilityIdentifier =
+      kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(selectDarkTheme:)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 

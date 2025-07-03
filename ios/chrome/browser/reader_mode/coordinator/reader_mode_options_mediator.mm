@@ -47,6 +47,10 @@
   }
 }
 
+- (void)setTheme:(dom_distiller::mojom::Theme)theme {
+  _distilledPagePrefs->SetTheme(theme);
+}
+
 #pragma mark - Public
 
 - (void)disconnect {

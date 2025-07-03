@@ -494,4 +494,63 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   }
 }
 
+// Tests that color theme can be changed from the options view.
+- (void)testChangeReaderModeThemeFromOptionsView {
+  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kLight
+                      forUserPref:dom_distiller::prefs::kTheme];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The options view should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  // Change the theme to dark.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
+                  static_cast<int>(dom_distiller::mojom::Theme::kDark),
+                  @"Pref should be updated to dark");
+  ExpectBodyHasThemeAndFont("dark", "sans-serif");
+
+  // Change the theme to sepia.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
+                  static_cast<int>(dom_distiller::mojom::Theme::kSepia),
+                  @"Pref should be updated to sepia");
+  ExpectBodyHasThemeAndFont("sepia", "sans-serif");
+
+  // Change the theme to light.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsLightThemeButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
+                  static_cast<int>(dom_distiller::mojom::Theme::kLight),
+                  @"Pref should be updated to light");
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+}
+
 @end
