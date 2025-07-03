@@ -206,7 +206,7 @@ TEST_F(MerchantPromoCodeManagerTest,
        DoesNotShowPromoCodeOffersForOffTheRecord) {
   std::string promo_code = SetUpPromoCodeOffer(
       "https://www.example.com", GURL("https://offer-details-url.com/"));
-  promo_manager().is_off_the_record_ = true;
+  client().set_is_off_the_record(true);
 
   // Setting up mock to verify that suggestions returning is not triggered if
   // the user is off the record.
@@ -367,15 +367,10 @@ TEST_F(MerchantPromoCodeManagerTest, PrefixMatched) {
   // The field contains the promo code already, so check that we do not return
   // suggestions to the handler.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(
-      mock_callback,
-      Run(_, testing::Truly(
-                 [](const std::vector<Suggestion>& returned_suggestions) {
-                   return returned_suggestions.empty();
-                 })));
+  EXPECT_CALL(mock_callback, Run).Times(0);
 
   // Simulate request for suggestions.
-  EXPECT_TRUE(promo_manager().OnGetSingleFieldSuggestions(
+  EXPECT_FALSE(promo_manager().OnGetSingleFieldSuggestions(
       form(), field(), field(), client(), mock_callback.GetNewRef()));
 }
 
