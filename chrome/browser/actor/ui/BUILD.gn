@@ -11,6 +11,7 @@ source_set("ui") {
     ":ui_event_types",
     "//base",
     "//chrome/browser/actor:actor",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//content/public/browser",
   ]
 }
@@ -52,12 +53,14 @@ source_set("test_support") {
     "mock_event_dispatcher.h",
   ]
   testonly = true
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//testing/gmock",
+  ]
   deps = [
     ":event_dispatcher",
     ":ui",
     "//chrome/browser/actor:actor",
-    "//testing/gmock",
   ]
 }
 
@@ -107,17 +110,19 @@ source_set("variant_visitor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_ui_state_manager_unittest.cc",
     "event_dispatcher_unittest.cc",
     "ui_event_debugstring_unittest.cc",
   ]
   deps = [
     ":event_dispatcher",
     ":test_support",
+    ":ui",
     ":ui_event_types",
     ":ui_event_utils",
     "//chrome/browser/actor:actor",
     "//chrome/browser/actor:impl",
-    "//chrome/browser/actor/ui:ui",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/tabs:public",
