@@ -13,7 +13,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/** Represents a loyalty card coming from the the Google Wallet. */
+/** Represents a loyalty card coming from Google Wallet. */
 @JNINamespace("autofill")
 @NullMarked
 public class LoyaltyCard {
