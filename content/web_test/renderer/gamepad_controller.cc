@@ -22,6 +22,8 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 using device::Gamepad;
@@ -41,10 +43,12 @@ int64_t CurrentTimeInMicroseconds() {
 
 }  // namespace
 
-class GamepadControllerBindings
-    : public gin::DeprecatedWrappable<GamepadControllerBindings> {
+class GamepadControllerBindings final
+    : public gin::Wrappable<GamepadControllerBindings> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static gin::WrapperInfo kWrapperInfo;
+
+  gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   GamepadControllerBindings(const GamepadControllerBindings&) = delete;
   GamepadControllerBindings& operator=(const GamepadControllerBindings&) =
@@ -53,12 +57,11 @@ class GamepadControllerBindings
   static void Install(base::WeakPtr<GamepadController> controller,
                       blink::WebLocalFrame* frame);
 
- private:
   explicit GamepadControllerBindings(
       base::WeakPtr<GamepadController> controller);
-  ~GamepadControllerBindings() override;
 
-  // gin::DeprecatedWrappable.
+ private:
+  // gin::Wrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -82,8 +85,9 @@ class GamepadControllerBindings
   base::WeakPtr<GamepadController> controller_;
 };
 
-gin::DeprecatedWrapperInfo GamepadControllerBindings::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
+gin::WrapperInfo GamepadControllerBindings::kWrapperInfo = {
+    {gin::kEmbedderNativeGin},
+    gin::kGamepadControllerBindings};
 
 // static
 void GamepadControllerBindings::Install(
@@ -97,14 +101,12 @@ void GamepadControllerBindings::Install(
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<GamepadControllerBindings> bindings =
-      gin::CreateHandle(isolate, new GamepadControllerBindings(controller));
-  if (bindings.IsEmpty())
-    return;
+  auto* bindings = cppgc::MakeGarbageCollected<GamepadControllerBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle(), controller);
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "gamepadController"),
-            bindings.ToV8())
+            gin::ConvertToV8(isolate, bindings).ToLocalChecked())
       .Check();
 }
 
@@ -112,12 +114,10 @@ GamepadControllerBindings::GamepadControllerBindings(
     base::WeakPtr<GamepadController> controller)
     : controller_(controller) {}
 
-GamepadControllerBindings::~GamepadControllerBindings() {}
-
 gin::ObjectTemplateBuilder GamepadControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<
-             GamepadControllerBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<GamepadControllerBindings>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("connect", &GamepadControllerBindings::Connect)
       .SetMethod("dispatchConnected",
                  &GamepadControllerBindings::DispatchConnected)
