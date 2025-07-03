@@ -222,7 +222,8 @@ void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
     ComputeTextMetrics(styleref, fontref, ifc_baseline);
 }
 
-void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result) {
+void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result,
+                                         float scale) {
   const auto baseline_type = style->GetFontBaseline();
   HeapHashSet<Member<const SimpleFontData>> used_fonts =
       shape_result->UsedFonts();
@@ -233,6 +234,8 @@ void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result) {
     FontHeight leading_space = CalculateLeadingSpace(
         used_font->GetFontMetrics().FixedLineSpacing(), used_metrics);
     used_metrics.AddLeading(leading_space);
+    used_metrics.ascent *= scale;
+    used_metrics.descent *= scale;
     metrics.Unite(used_metrics);
   }
 }

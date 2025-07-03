@@ -140,13 +140,16 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       }
       DCHECK(item_result.shape_result);
 
+      float block_scale = item_result.fit_text_scale.is_scaled_inline_only
+                              ? 1.0f
+                              : item_result.fit_text_scale.scale;
       if (quirks_mode_) [[unlikely]] {
         box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
       }
 
       // Take all used fonts into account if 'line-height: normal'.
       if (box->include_used_fonts) {
-        box->AccumulateUsedFonts(item_result.shape_result.Get());
+        box->AccumulateUsedFonts(item_result.shape_result.Get(), block_scale);
       }
 
       DCHECK(item.TextType() == TextItemType::kNormal ||

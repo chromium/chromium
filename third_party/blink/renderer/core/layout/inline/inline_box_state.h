@@ -129,7 +129,7 @@ struct InlineBoxState {
                          FontBaseline ifc_baseline);
   void ResetTextMetrics();
 
-  void AccumulateUsedFonts(const ShapeResultView*);
+  void AccumulateUsedFonts(const ShapeResultView*, float scale = 1.0f);
 
   // 'text-top' offset for 'vertical-align'.
   LayoutUnit TextTop(FontBaseline baseline_type) const;
