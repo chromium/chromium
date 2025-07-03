@@ -82,7 +82,6 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [RuntimeEnabled=ResourceTimingContentEncoding]
         readonly attribute DOMString contentEncoding;
 
-    [RuntimeEnabled=ResourceTimingFinalResponseHeadersStart]
     readonly attribute DOMHighResTimeStamp finalResponseHeadersStart;
     readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
 

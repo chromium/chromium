@@ -3946,10 +3946,6 @@
       status: "experimental",
     },
     {
-      name: "ResourceTimingFinalResponseHeadersStart",
-      status: "stable",
-    },
-    {
       name: "ResourceTimingInitiator",
       status: "experimental",
     },

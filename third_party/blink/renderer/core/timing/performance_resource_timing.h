@@ -134,7 +134,6 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   // respondWith().
   bool IsResponseFromCacheStorage() const;
 
-  DOMHighResTimeStamp GetAnyFirstResponseStart() const;
   double WorkerReady() const;
 
   AtomicString initiator_type_;

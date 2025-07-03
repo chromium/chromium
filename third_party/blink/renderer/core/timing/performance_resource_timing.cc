@@ -438,25 +438,6 @@ AtomicString PerformanceResourceTiming::initiatorUrl() const {
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
-  if (!info_->allow_timing_details || !info_->timing ||
-      RuntimeEnabledFeatures::
-          ResourceTimingFinalResponseHeadersStartEnabled()) {
-    return GetAnyFirstResponseStart();
-  }
-
-  base::TimeTicks response_start =
-      info_->timing->receive_non_informational_headers_start;
-  if (response_start.is_null()) {
-    return GetAnyFirstResponseStart();
-  }
-
-  return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), response_start, info_->allow_negative_values,
-      CrossOriginIsolatedCapability());
-}
-
-DOMHighResTimeStamp PerformanceResourceTiming::GetAnyFirstResponseStart()
-    const {
   if (!info_->allow_timing_details) {
     return 0.0;
   }
@@ -544,11 +525,7 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("requestStart", requestStart());
   builder.AddNumber("responseStart", responseStart());
   builder.AddNumber("firstInterimResponseStart", firstInterimResponseStart());
-  if (RuntimeEnabledFeatures::
-          ResourceTimingFinalResponseHeadersStartEnabled()) {
-    builder.AddNumber("finalResponseHeadersStart", finalResponseHeadersStart());
-  }
-
+  builder.AddNumber("finalResponseHeadersStart", finalResponseHeadersStart());
   builder.AddNumber("responseEnd", responseEnd());
   builder.AddNumber("transferSize", transferSize());
   builder.AddNumber("encodedBodySize", encodedBodySize());
