@@ -6,18 +6,36 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.fail;
+
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Proxy;
+import android.os.Handler;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
+
+import java.util.HashMap;
 
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public final class SystemProxyTest {
+    private static final String TAG = "SystemProxyTest";
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     // This hostname doesn't need to actually work, because Cronet won't try to connect to it - it
@@ -27,6 +45,103 @@ public final class SystemProxyTest {
     // bypasses the proxy for local names and IP addresses; see
     // //net/docs/proxy.md and ProxyBypassRules::MatchesImplicitRules().
     private static final String TEST_HOSTNAME = "test-hostname";
+
+    private static final class BroadcastContext extends ContextWrapper {
+        private final HashMap<BroadcastReceiver, IntentFilter> mReceivers = new HashMap<>();
+
+        BroadcastContext(Context context) {
+            super(context);
+        }
+
+        @Override
+        public Intent registerReceiver(
+                BroadcastReceiver receiver,
+                IntentFilter filter,
+                String broadcastPermission,
+                Handler scheduler) {
+            var result =
+                    getBaseContext()
+                            .registerReceiver(receiver, filter, broadcastPermission, scheduler);
+            mReceivers.put(receiver, filter);
+            return result;
+        }
+
+        @Override
+        public Intent registerReceiver(
+                BroadcastReceiver receiver,
+                IntentFilter filter,
+                String broadcastPermission,
+                Handler scheduler,
+                int flags) {
+            var result =
+                    getBaseContext()
+                            .registerReceiver(
+                                    receiver, filter, broadcastPermission, scheduler, flags);
+            mReceivers.put(receiver, filter);
+            return result;
+        }
+
+        @Override
+        public void unregisterReceiver(BroadcastReceiver receiver) {
+            getBaseContext().unregisterReceiver(receiver);
+            assert mReceivers.remove(receiver) != null;
+        }
+
+        public void injectBroadcast(Intent intent) {
+            for (var receiverEntry : mReceivers.entrySet()) {
+                var filter = receiverEntry.getValue();
+                if (filter != null
+                        && filter.match(/* resolver= */ null, intent, /* resolve= */ false, TAG)
+                                < 0) {
+                    continue;
+                }
+                receiverEntry.getKey().onReceive(this, intent);
+            }
+        }
+    }
+
+    private BroadcastContext mBroadcastContext;
+
+    @Before
+    public void interceptBroadcastReceiver() {
+        mTestRule
+                .getTestFramework()
+                .interceptContext(
+                        new ContextInterceptor() {
+                            @Override
+                            public Context interceptContext(Context context) {
+                                mBroadcastContext = new BroadcastContext(context);
+                                return mBroadcastContext;
+                            }
+                        });
+    }
+
+    private static class NativeTestServerRequestHandler
+            implements NativeTestServer.HandleRequestCallback {
+        public NativeTestServer.HttpRequest mReceivedHttpRequest;
+
+        @Override
+        public NativeTestServer.RawHttpResponse handleRequest(
+                NativeTestServer.HttpRequest httpRequest) {
+            assertThat(mReceivedHttpRequest).isNull();
+            mReceivedHttpRequest = httpRequest;
+            return new NativeTestServer.RawHttpResponse("", "");
+        }
+    }
+
+    private void executeRequest(String scheme) {
+        var callback = new TestUrlRequestCallback();
+        mTestRule
+                .getTestFramework()
+                .getEngine()
+                .newUrlRequestBuilder(
+                        scheme + "://" + TEST_HOSTNAME + "/test-path",
+                        callback,
+                        callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+    }
 
     /**
      * Tests that, if we setup a proxy for the http:// scheme using the standard Java proxy system
@@ -38,18 +153,7 @@ public final class SystemProxyTest {
     @Test
     @SmallTest
     public void testHttpScheme_sendsPathToProxy() {
-        var requestHandler =
-                new NativeTestServer.HandleRequestCallback() {
-                    public NativeTestServer.HttpRequest mReceivedHttpRequest;
-
-                    @Override
-                    public NativeTestServer.RawHttpResponse handleRequest(
-                            NativeTestServer.HttpRequest httpRequest) {
-                        assertThat(mReceivedHttpRequest).isNull();
-                        mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
-                    }
-                };
+        var requestHandler = new NativeTestServerRequestHandler();
 
         try (var nativeTestServerScope =
                 new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
@@ -77,18 +181,7 @@ public final class SystemProxyTest {
                     var httpsProxyPortScopedSystemProperty =
                             new ScopedSystemProperty("https.proxyPort", "42")) {
                 mTestRule.getTestFramework().startEngine();
-
-                var callback = new TestUrlRequestCallback();
-                mTestRule
-                        .getTestFramework()
-                        .getEngine()
-                        .newUrlRequestBuilder(
-                                "http://" + TEST_HOSTNAME + "/test-path",
-                                callback,
-                                callback.getExecutor())
-                        .build()
-                        .start();
-                callback.blockForDone();
+                executeRequest("http");
             }
         }
 
@@ -113,18 +206,7 @@ public final class SystemProxyTest {
     @Test
     @SmallTest
     public void testHttpsScheme_usesConnect() {
-        var requestHandler =
-                new NativeTestServer.HandleRequestCallback() {
-                    public NativeTestServer.HttpRequest mReceivedHttpRequest;
-
-                    @Override
-                    public NativeTestServer.RawHttpResponse handleRequest(
-                            NativeTestServer.HttpRequest httpRequest) {
-                        assertThat(mReceivedHttpRequest).isNull();
-                        mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
-                    }
-                };
+        var requestHandler = new NativeTestServerRequestHandler();
 
         try (var nativeTestServerScope =
                 new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
@@ -152,18 +234,7 @@ public final class SystemProxyTest {
                     var httpProxyPortScopedSystemProperty =
                             new ScopedSystemProperty("http.proxyPort", "42")) {
                 mTestRule.getTestFramework().startEngine();
-
-                var callback = new TestUrlRequestCallback();
-                mTestRule
-                        .getTestFramework()
-                        .getEngine()
-                        .newUrlRequestBuilder(
-                                "https://" + TEST_HOSTNAME + "/test-path",
-                                callback,
-                                callback.getExecutor())
-                        .build()
-                        .start();
-                callback.blockForDone();
+                executeRequest("https");
             }
         }
 
@@ -171,5 +242,63 @@ public final class SystemProxyTest {
         assertThat(requestHandler.mReceivedHttpRequest.getMethod()).isEqualTo("CONNECT");
         assertThat(requestHandler.mReceivedHttpRequest.getRelativeUrl())
                 .isEqualTo(TEST_HOSTNAME + ":443");
+    }
+
+    /** Tests that Cronet reacts to proxy configuration changes while an engine is running. */
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "Fallback doesn't support proxy change broadcasts")
+    public void testProxyChange() throws Exception {
+        var requestHandler = new NativeTestServerRequestHandler();
+
+        try (var nativeTestServerScope =
+                new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
+            NativeTestServer.registerRequestHandler(requestHandler);
+            NativeTestServer.startPrepared();
+
+            // Set up a proxy config and verify that it is used, same as
+            // testHttpScheme_sendsPathToProxy().
+            try (var httpProxyHostScopedSystemProperty =
+                            new ScopedSystemProperty("http.proxyHost", "localhost");
+                    var httpProxyPortScopedSystemProperty =
+                            new ScopedSystemProperty(
+                                    "http.proxyPort", String.valueOf(NativeTestServer.getPort()))) {
+                mTestRule.getTestFramework().startEngine();
+                executeRequest("http");
+            }
+            assertThat(requestHandler.mReceivedHttpRequest).isNotNull();
+            requestHandler.mReceivedHttpRequest = null;
+
+            // Do it again, with the properties unset. We expect Cronet to keep using the above
+            // proxy config as it was not notified the proxy config changed. This is mostly to
+            // ensure the test is testing what we think it's testing (i.e. proxy change broadcast
+            // listening logic).
+            executeRequest("http");
+            assertThat(requestHandler.mReceivedHttpRequest).isNotNull();
+            requestHandler.mReceivedHttpRequest = null;
+
+            // Now, notify Cronet that the proxy config changed. Note that, when Cronet receives
+            // this broadcast, it does not use the above properties to refresh its proxy config -
+            // instead, it queries ConnectivityManager (see
+            // org.chromium.net.ProxyChangeListener#getProxyConfig). Mocking ConnectivityManager
+            // is tricky, so we don't attempt to return a proxy config from ConnectivityManager - we
+            // just assume it will return something different from the above.
+            mBroadcastContext.injectBroadcast(new Intent(Proxy.PROXY_CHANGE_ACTION));
+
+            // Cronet acts on proxy updates asynchronously in the init thread, so check repeatedly
+            // to mitigate races.
+            for (int tryCount = 0; tryCount < 100; tryCount++) {
+                executeRequest("http");
+                if (requestHandler.mReceivedHttpRequest == null) {
+                    return;
+                }
+                requestHandler.mReceivedHttpRequest = null;
+                Thread.sleep(50);
+            }
+
+            fail("Cronet keeps sending requests through the proxy despite proxy config change");
+        }
     }
 }
