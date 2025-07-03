@@ -187,9 +187,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   Member<PlainTextPainter> plain_text_painter_;
   Member<UniqueFontSelector> unique_font_selector_;
-  // `did_fail_to_create_resource_provider_` prevents repeated attempts in
-  // allocating resources after the first attempt failed.
-  bool did_fail_to_create_resource_provider_ = false;
 
  private:
 

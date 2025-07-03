@@ -462,6 +462,9 @@ class CORE_EXPORT HTMLCanvasElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
+  // `did_fail_to_create_resource_provider_` prevents repeated attempts in
+  // allocating resources after the first attempt failed.
+  bool did_fail_to_create_resource_provider_ = false;
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
