@@ -399,128 +399,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// network name fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyNetworkName) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "";
-  spc_request->network_info->icon = GURL("https://network.example/icon.png");
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kNetworkNameRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// network icon fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyNetworkIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "Network Name";
-  spc_request->network_info->icon = GURL();
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kValidNetworkIconRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// network icon URL fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_InvalidNetworkIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "Network Name";
-  spc_request->network_info->icon = GURL("not-a-url");
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kValidNetworkIconRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// issuer name fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyIssuerName) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "";
-  spc_request->issuer_info->icon = GURL("https://issuer.example/icon.png");
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kIssuerNameRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// issuer icon fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyIssuerIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "Issuer Name";
-  spc_request->issuer_info->icon = GURL();
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kValidIssuerIconRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// issuer icon URL fails.
-TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_InvalidIssuerIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "Issuer Name";
-  spc_request->issuer_info->icon = GURL("not-a-url");
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-  EXPECT_CALL(*mock_delegate,
-              OnPaymentAppCreationError(errors::kValidIssuerIconRequired, _));
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
 // Test that parsing a SecurePaymentConfirmationRequest with a null
 // PaymentEntityLogo fails.
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
@@ -622,20 +500,27 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
-// Class wrapping tests relating to the network and issuer icons support in
+// Class wrapping tests relating to payment entity logos support in
 // SecurePaymentConfirmationAppFactory.
-class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
+class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
     : public SecurePaymentConfirmationAppFactoryTest {
  protected:
-  const GURL kIssuerIconUrl = GURL("https://issuer.example/icon.png");
-  const GURL kNetworkIconUrl = GURL("https://network.example/icon.png");
+  const GURL kPaymentEntity1LogoUrl =
+      GURL("https://payment-entity-1.example/icon.png");
+  const GURL kPaymentEntity2LogoUrl =
+      GURL("https://payment-entity-2.example/icon.png");
+  const GURL kPaymentEntity3LogoUrl =
+      GURL("https://payment-entity-3.example/icon.png");
   const WebDataServiceBase::Handle kWebDataServiceHandle = 1234;
 
-  SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest() {
+  SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest() {
     // For test setup simplicity, force tests in this fixture to use the (mocked
     // out) database storage path.
-    feature_list_.InitAndDisableFeature(
-        features::kSecurePaymentConfirmationUseCredentialStoreAPIs);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kSecurePaymentConfirmationUxRefresh},
+        /*disabled_features=*/{
+            features::kSecurePaymentConfirmationUseCredentialStoreAPIs});
   }
 
   void SetUp() override {
@@ -717,201 +602,12 @@ Matcher<PaymentApp::PaymentEntityLogo*> IsPaymentEntityLogo(
             Field("url", &PaymentApp::PaymentEntityLogo::url, url)));
 }
 
-// Tests that when neither the network nor issuer icons are specified, they are
-// not present on the final PaymentApp.
-TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
-       NoIconsSpecified) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  method_data->secure_payment_confirmation =
-      CreateSecurePaymentConfirmationRequest();
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
-      CreateMockDelegate(std::move(method_data));
-
-  std::unique_ptr<PaymentApp> created_payment_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&created_payment_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
-  FakeImageDownloaded(kInstrumentIconUrl);
-
-  ASSERT_TRUE(created_payment_app);
-  EXPECT_FALSE(created_payment_app->issuer_bitmap());
-  EXPECT_FALSE(created_payment_app->network_bitmap());
-  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(), IsEmpty());
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
-       NetworkIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "Network Name";
-  spc_request->network_info->icon = kNetworkIconUrl;
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
-      CreateMockDelegate(std::move(method_data));
-
-  std::unique_ptr<PaymentApp> created_payment_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&created_payment_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
-  FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/true, /*height=*/50);
-
-  // This payment app should have been created with a network icon but not an
-  // issuer one.
-  ASSERT_TRUE(created_payment_app);
-  EXPECT_TRUE(created_payment_app->network_bitmap());
-  EXPECT_FALSE(created_payment_app->issuer_bitmap());
-  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(
-                  u"Network Name", IsSkBitmapWithHeight(50), kNetworkIconUrl)));
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
-       IssuerIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "Issuer Name";
-  spc_request->issuer_info->icon = kIssuerIconUrl;
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
-      CreateMockDelegate(std::move(method_data));
-
-  std::unique_ptr<PaymentApp> created_payment_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&created_payment_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
-  FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
-
-  // This payment app should have been created with an issuer icon but not a
-  // network one.
-  ASSERT_TRUE(created_payment_app);
-  EXPECT_FALSE(created_payment_app->network_bitmap());
-  EXPECT_TRUE(created_payment_app->issuer_bitmap());
-  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(
-                  u"Issuer Name", IsSkBitmapWithHeight(60), kIssuerIconUrl)));
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
-       NetworkAndIssuerIcon) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "Network Name";
-  spc_request->network_info->icon = kNetworkIconUrl;
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "Issuer Name";
-  spc_request->issuer_info->icon = kIssuerIconUrl;
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
-      CreateMockDelegate(std::move(method_data));
-
-  std::unique_ptr<PaymentApp> created_payment_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&created_payment_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
-  FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/true, /*height=*/50);
-  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
-
-  // This payment app should have been created with both a network and issuer
-  // icon.
-  ASSERT_TRUE(created_payment_app);
-  EXPECT_TRUE(created_payment_app->network_bitmap());
-  EXPECT_TRUE(created_payment_app->issuer_bitmap());
-  EXPECT_THAT(
-      created_payment_app->GetPaymentEntitiesLogos(),
-      ElementsAre(IsPaymentEntityLogo(u"Network Name", IsSkBitmapWithHeight(50),
-                                      kNetworkIconUrl),
-                  IsPaymentEntityLogo(u"Issuer Name", IsSkBitmapWithHeight(60),
-                                      kIssuerIconUrl)));
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
-       NetworkAndIssuerIcon_DownloadFails) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  mojom::SecurePaymentConfirmationRequestPtr spc_request =
-      CreateSecurePaymentConfirmationRequest();
-  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->network_info->name = "Network Name";
-  spc_request->network_info->icon = kNetworkIconUrl;
-  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
-  spc_request->issuer_info->name = "Issuer Name";
-  spc_request->issuer_info->icon = kIssuerIconUrl;
-  method_data->secure_payment_confirmation = std::move(spc_request);
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
-      CreateMockDelegate(std::move(method_data));
-
-  std::unique_ptr<PaymentApp> created_payment_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&created_payment_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
-  FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/false);
-  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
-
-  // The resultant payment app should have been created with only an issuer
-  // icon.
-  ASSERT_TRUE(created_payment_app);
-  EXPECT_FALSE(created_payment_app->network_bitmap());
-  EXPECT_TRUE(created_payment_app->issuer_bitmap());
-  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
-              ElementsAre(IsPaymentEntityLogo(
-                  u"Issuer Name", IsSkBitmapWithHeight(60), kIssuerIconUrl)));
-}
-
-// Class wrapping tests relating to payment entity logos support in
-// SecurePaymentConfirmationAppFactory.
-class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
-    : public SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest {
- public:
-  const GURL kPaymentEntity1LogoUrl =
-      GURL("https://payment-entity-1.example/icon.png");
-  const GURL kPaymentEntity2LogoUrl =
-      GURL("https://payment-entity-2.example/icon.png");
-  const GURL kPaymentEntity3LogoUrl =
-      GURL("https://payment-entity-3.example/icon.png");
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationUxRefresh};
-};
-
 // Tests that when the feature flag is on, logos specified in
 // payment_entities_logos are downloaded and placed in the network and issuer
 // logo fields in the created PaymentApp. The first logo is placed in the
 // network logo field and the second logo is placed in the issuer field.
+//
+// TODO(crbug.com/428009834): Remove this test.
 TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
        ConvertedToNetworkAndIssuerIcons) {
   auto method_data = mojom::PaymentMethodData::New();
@@ -957,6 +653,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
 // Tests that the first entry in payment_entities_logos maps to the network
 // bitmap (and thus that implicitly the second entry will map to the issuer
 // bitmap).
+//
+// TODO(crbug.com/428009834): Remove this test.
 TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
        SinglePaymentEntityLogoConvertsToNetworkIcon) {
   auto method_data = mojom::PaymentMethodData::New();

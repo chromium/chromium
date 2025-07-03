@@ -296,22 +296,6 @@ extern const char kPayeeOriginOrPayeeNameRequired[];
 // "secure-payment-confirmation" method.
 extern const char kPayeeOriginMustBeHttps[];
 
-// Used when the networkInfo field was specified but the networkInfo.name field
-// was empty for the "secure-payment-confirmation" method.
-extern const char kNetworkNameRequired[];
-
-// Used when the networkInfo field was specified but the networkInfo.icon field
-// was not a valid URL in the "secure-payment-confirmation" method.
-extern const char kValidNetworkIconRequired[];
-
-// Used when the issuerInfo field was specified but the issuerInfo.name field
-// was empty for the "secure-payment-confirmation" method.
-extern const char kIssuerNameRequired[];
-
-// Used when the issuerInfo field was specified but the issuerInfo.icon field
-// was not a valid URL in the "secure-payment-confirmation" method.
-extern const char kValidIssuerIconRequired[];
-
 // Used when a logo in the paymentEntitiesLogo list is null. A well-behaving
 // renderer cannot end up in this situation, but we must handle it gracefully as
 // renderers cannot be trusted.

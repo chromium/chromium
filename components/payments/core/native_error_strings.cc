@@ -258,22 +258,6 @@ const char kPayeeOriginMustBeHttps[] =
     "The \"secure-payment-confirmation\" method requires that the "
     "\"payeeOrigin\" field must be https.";
 
-const char kNetworkNameRequired[] =
-    "The \"secure-payment-confirmation\" method requires a non-empty "
-    "\"networkInfo.name\" field.";
-
-const char kValidNetworkIconRequired[] =
-    "The \"secure-payment-confirmation\" method requires a valid URL in the "
-    "\"networkInfo.icon\" field.";
-
-const char kIssuerNameRequired[] =
-    "The \"secure-payment-confirmation\" method requires a non-empty "
-    "\"issuerInfo.name\" field.";
-
-const char kValidIssuerIconRequired[] =
-    "The \"secure-payment-confirmation\" method requires a valid URL in the "
-    "\"issuerInfo.icon\" field.";
-
 const char kNonNullPaymentEntityLogoRequired[] =
     "The \"secure-payment-confirmation\" method requires that each entry in "
     "\"paymentEntitiesLogos\" is non-null.";
