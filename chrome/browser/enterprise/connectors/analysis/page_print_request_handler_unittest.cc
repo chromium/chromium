@@ -145,16 +145,15 @@ class PagePrintRequestHandlerTest : public testing::Test {
   safe_browsing::TestBinaryUploadService binary_upload_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+  TestContentAnalysisInfo info_ = TestContentAnalysisInfo(cloud_settings());
 };
 
 }  // namespace
 TEST_F(PagePrintRequestHandlerTest, Test) {
-  TestContentAnalysisInfo info(cloud_settings());
-
   auto page = CreatePageRegion(kMaxSize);
   size_t page_size_bytes = page.mapping.size();
   auto handler = PagePrintRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
+      &info_, &binary_upload_service_, profile_.get(), GURL(kUrl),
       "printer_name", "page_content_type", std::move(page.region),
       base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
@@ -229,8 +228,6 @@ TEST_F(PagePrintRequestHandlerTest, Test) {
 }
 
 TEST_F(PagePrintRequestHandlerTest, TestNewLimit) {
-  TestContentAnalysisInfo info(cloud_settings());
-
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       enterprise_connectors::kEnableNewUploadSizeLimit,
@@ -239,7 +236,7 @@ TEST_F(PagePrintRequestHandlerTest, TestNewLimit) {
   auto page = CreatePageRegion(kMaxSize);
   size_t page_size_bytes = page.mapping.size();
   auto handler = PagePrintRequestHandler::Create(
-      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
+      &info_, &binary_upload_service_, profile_.get(), GURL(kUrl),
       "printer_name", "page_content_type", std::move(page.region),
       base::BindOnce([](RequestHandlerResult result) {
         EXPECT_EQ(result.final_result, FinalContentAnalysisResult::FAILURE);
