@@ -1,12 +1,12 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
 // META: --screen-info={label='#1'}{label='#2'}
-//
+
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
-      'Tests Target.createTarget() on a secodnary screen.');
+      'Tests Target.createTarget() on a secondary screen.');
 
   await dp.Browser.grantPermissions({permissions: ['windowManagement']});
 
@@ -20,14 +20,16 @@
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
   httpInterceptor.addResponse(
-      'https://example.com/index.html', `<html></html>`);
+      'https://example.com/index.html',
+      '<html><head><link rel="icon" href="data:,"></head></html>');
 
   const {targetId} = (await session.protocol.Target.createTarget({
                        'url': 'about:blank',
                        'left': 800,
                        'top': 100,
-                       'width': 400,
-                       'height': 300
+                       'width': 500,
+                       'height': 400,
+                       'newWindow': true,
                      })).result;
 
   const createdTargetSession = await session.attachChild(targetId);
@@ -35,7 +37,6 @@
   await createdTargetSession.navigate('https://example.com/index.html');
 
   const screen = await createdTargetSession.evaluateAsync(async () => {
-    console.log(`Window: ${screenX},${screenY} ${outerWidth}x${outerHeight}`);
     const cs = (await getScreenDetails()).currentScreen;
     return cs.label;
   });
@@ -44,4 +45,4 @@
   testRunner.log(`Screen: ${screen}`);
 
   testRunner.completeTest();
-})
+});

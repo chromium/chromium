@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={1600x1200}
-//
+
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
       `Tests Target.createTarget() window state handling.`);
@@ -24,4 +24,4 @@
   await tryCreateTarget('fullscreen');
 
   testRunner.completeTest();
-})
+});

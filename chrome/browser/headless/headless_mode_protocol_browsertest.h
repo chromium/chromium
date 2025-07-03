@@ -29,13 +29,23 @@ class HeadlessModeProtocolBrowserTest
   // JavaScript code.
   virtual base::Value::Dict GetPageUrlExtraParams();
 
+  // Returns relative test data directory.
+  base::FilePath GetTestDataDir();
+
+  // Returns absolute script file path.
+  base::FilePath GetScriptPath();
+
+  bool IsSharedTestScript();
+
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  // HeadlessModeDevTooledBrowserTest overrides.
+ private:
+  void StartEmbeddedTestServer();
+
+  // HeadlessModeDevTooledBrowserTest:
   void RunDevTooledTest() override;
 
- private:
   void OnLoadEventFired(const base::Value::Dict& params);
   void OnEvaluateResult(base::Value::Dict params);
   void OnConsoleAPICalled(const base::Value::Dict& params);

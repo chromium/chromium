@@ -6,7 +6,7 @@
 //
 (async function(testRunner) {
   const {dp} =
-      await testRunner.startBlank(`Tests fullscreen browser window size.`);
+      await testRunner.startBlank(`Tests maximized browser window size.`);
 
   await dp.Page.enable();
 
@@ -17,21 +17,12 @@
 
   const {result: {windowId}} = await dp.Browser.getWindowForTarget();
 
-  const intialSize = await getWindowSize(windowId);
-
   await dp.Browser.setWindowBounds(
-      {windowId, bounds: {windowState: 'fullscreen'}});
+      {windowId, bounds: {windowState: 'maximized'}});
   await dp.Page.onceFrameResized();
 
-  const fullscreenSize = await getWindowSize(windowId);
-  if (fullscreenSize.width > intialSize.width &&
-      fullscreenSize.height > intialSize.height) {
-    testRunner.log(`Success`);
-  } else {
-    testRunner.log(`Failure:`);
-    testRunner.log(intialSize);
-    testRunner.log(fullscreenSize);
-  }
+  const maximizedSize = await getWindowSize(windowId);
+  testRunner.log(`${maximizedSize.width}x${maximizedSize.height}`);
 
   testRunner.completeTest();
-})
+});

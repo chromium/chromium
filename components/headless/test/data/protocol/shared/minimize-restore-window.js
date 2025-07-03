@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 (async function(testRunner) {
   const html = `<!doctype html>
     <html><script>
@@ -23,8 +24,9 @@
     for (;;) {
       const result = await dp.Runtime.onceConsoleAPICalled();
       const text = result.params.args[0].value;
-      if (text === 'visible' || text === 'hidden')
+      if (text === 'visible' || text === 'hidden') {
         break;
+      }
     }
   }
 
@@ -49,4 +51,4 @@
   await logWindowState('Restored', windowId);
 
   testRunner.completeTest();
-})
+});

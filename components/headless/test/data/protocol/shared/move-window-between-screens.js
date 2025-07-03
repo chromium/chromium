@@ -45,4 +45,4 @@
   await moveWindowAndLogScreen({left: 801, top: 601, width: 500, height: 303});
 
   testRunner.completeTest();
-})
+});

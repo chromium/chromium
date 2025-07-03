@@ -11,4 +11,4 @@
   testRunner.log('document.visibilityState: ' + result);
 
   testRunner.completeTest();
-})
+});

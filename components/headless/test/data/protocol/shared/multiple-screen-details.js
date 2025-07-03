@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={label='#1'}{600x800 label='#2'}
+// META: --screen-info={label=#1}{600x800 label='#2'}
 //
 (async function(testRunner) {
   const {session, dp} =
@@ -14,7 +14,8 @@
 
   httpInterceptor.setDisableRequestedUrlsLogging(true);
   httpInterceptor.addResponse(
-      'https://example.com/index.html', '<html></html>');
+      'https://example.com/index.html',
+      '<html><head><link rel="icon" href="data:,"></head></html>');
 
   await dp.Browser.grantPermissions({permissions: ['windowManagement']});
 
@@ -44,4 +45,4 @@
   testRunner.log(result);
 
   testRunner.completeTest();
-})
+});

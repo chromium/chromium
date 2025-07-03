@@ -128,6 +128,7 @@ if (!is_android) {
         "//components/headless/select_file_dialog",
         "//components/headless/test",
         "//components/headless/test:meta_info",
+        "//components/headless/test:shared_test",
         "//components/infobars/content",
         "//content/public/browser",
         "//ui/display",
@@ -149,6 +150,7 @@ if (!is_android) {
 
     data = [
       "test/data/",
+      "//components/headless/test/data",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]

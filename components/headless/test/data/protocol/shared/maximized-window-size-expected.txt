@@ -1,2 +1,2 @@
 Tests maximized browser window size.
-Success
+1600x1200

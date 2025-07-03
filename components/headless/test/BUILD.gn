@@ -52,6 +52,15 @@ source_set("meta_info") {
   ]
 }
 
+source_set("shared_test") {
+  sources = [
+    "shared_test_util.cc",
+    "shared_test_util.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

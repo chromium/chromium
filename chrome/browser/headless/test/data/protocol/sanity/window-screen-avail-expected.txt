@@ -1,2 +1,0 @@
-Tests window.screen.avail* APIs.
-availLeft=10 availTop=20 availWidth=700 availHeight=500
