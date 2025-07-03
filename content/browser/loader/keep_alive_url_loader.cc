@@ -10,10 +10,14 @@
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -42,6 +46,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_request.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace features {
@@ -65,6 +70,18 @@ const base::FeatureParam<base::TimeDelta> kMaxRetryAge{
 
 namespace content {
 namespace {
+
+// Very simple ThreadChecker to use as a static variable. Used because using
+// `base::ThreadChecker` directly is not permitted and the static keyword cannot
+// be applied to THREAD_CHECKER. When not under DCHECK this class will be empty
+// and do nothing.
+class WrappedThreadChecker {
+ public:
+  void Check() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker); }
+
+ private:
+  THREAD_CHECKER(thread_checker);
+};
 
 constexpr net::NetworkTrafficAnnotationTag kKeepAliveRetryAnnotationTag =
     net::DefineNetworkTrafficAnnotation("keepalive_fetch_retry", R"(
@@ -1384,9 +1401,44 @@ void KeepAliveURLLoader::LogFetchKeepAliveRequestMetric(
         request_state_name == "Retried" || request_state_name == "Succeeded" ||
         request_state_name == "Failed");
 
-  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests2.",
-                                              request_state_name, ".Browser"}),
-                                sample_type);
+  const std::string histogram_name = base::StrCat(
+      {"FetchKeepAlive.Requests2.", request_state_name, ".Browser"});
+
+  // When under the experiment keep a local cache of resolved histograms to
+  // avoid contention on the global lock that is taken by histogram functions.
+  if (base::features::IsReducePPMsEnabled()) {
+    static base::NoDestructor<
+        absl::flat_hash_map<std::string, base::HistogramBase*>>
+        histograms;
+
+    // Verify that `histograms` is not read/modified by more than one thread.
+    // Since it's static it will be used by any code that calls into the
+    // function.
+    static WrappedThreadChecker* thread_checker = new WrappedThreadChecker;
+    thread_checker->Check();
+
+    auto it = histograms->find(histogram_name);
+    if (it != histograms->end()) {
+      it->second->Add(static_cast<int32_t>(sample_type));
+    } else {
+      // TODO(crbug.com/424432184): This is messy and leaks information from
+      // LinearHistogram. If the experiment succeeds implement
+      // GetUmaHistogramEnumerationFactory before cleaning up the flag.
+      int32_t max_value =
+          static_cast<int32_t>(FetchKeepAliveRequestMetricType::kMaxValue);
+      base::HistogramBase* histo = base::LinearHistogram::FactoryGet(
+          histogram_name, /*minimum=*/1,
+          /*maximum=*/max_value + 1,
+          /*bucket_count=*/max_value + 2,
+          base::HistogramBase::kUmaTargetedHistogramFlag);
+      histo->Add(static_cast<int32_t>(sample_type));
+
+      (*histograms)[histogram_name] = histo;
+    }
+  } else {
+    base::UmaHistogramEnumeration(histogram_name, sample_type);
+  }
+
   if (bool is_context_detached = !GetInitiator();
       request_state_name == "Started" || request_state_name == "Succeeded") {
     base::UmaHistogramBoolean(
