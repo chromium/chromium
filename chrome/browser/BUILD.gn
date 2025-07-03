@@ -4425,6 +4425,7 @@ static_library("browser") {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/tab_sharing",
 
       # TODO(crbug.com/418180294): Remove this circular dependency when:
       # - bookmark_model_factory.h,

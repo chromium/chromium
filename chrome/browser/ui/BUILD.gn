@@ -1126,9 +1126,6 @@ static_library("ui") {
       "sync/profile_signin_confirmation_helper.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
-      "tab_sharing/tab_sharing_infobar_delegate.cc",
-      "tab_sharing/tab_sharing_infobar_delegate.h",
-      "tab_sharing/tab_sharing_ui.h",
       "tabs/glic_nudge_controller.cc",
       "tabs/glic_nudge_controller.h",
       "tabs/glic_nudge_delegate.cc",
@@ -1567,6 +1564,8 @@ static_library("ui") {
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/ui/shared_highlighting",
+      "//chrome/browser/ui/tab_sharing",
+      "//chrome/browser/ui/tab_sharing:impl",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 
@@ -1869,6 +1868,10 @@ static_library("ui") {
       # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
       # //c/b/ui/browser_window.h.
       "//chrome/browser/ui/webui/accessibility:impl",
+
+      # TODO(crbug.com/429171097): Remove this circular dependency when
+      # c/b/ui/bubble_anchor_util.h gets componentized.
+      "//chrome/browser/ui/tab_sharing:impl",
     ]
 
     if (is_mac) {
