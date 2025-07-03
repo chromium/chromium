@@ -306,6 +306,12 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Updates the metrics related to navigations for the current page.
   void UpdateNavigationMetrics();
 
+  // Clears any selections currently made in the overlay.
+  void ClearAllSelections();
+
+  // Handles a new region thumbnail being created.
+  void HandleRegionBitmapCreated(const SkBitmap& region_bitmap);
+
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
                                         bool is_click);
@@ -488,9 +494,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Clears the selected region.
   void ClearRegionSelection();
-
-  // Clears any selections currently made in the overlay.
-  void ClearAllSelections();
 
   // Called by the searchbox controller when the focus on the searchbox changes.
   void OnSearchboxFocusChanged(bool focused);

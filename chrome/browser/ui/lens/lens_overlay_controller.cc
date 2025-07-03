@@ -1042,18 +1042,6 @@ void LensOverlayController::ClearRegionSelection() {
   page_->ClearRegionSelection();
 }
 
-void LensOverlayController::ClearAllSelections() {
-  if (page_) {
-    page_->ClearAllSelections();
-  }
-  initialization_data_->selected_region_.reset();
-  initialization_data_->selected_region_bitmap_.reset();
-  initialization_data_->selected_text_.reset();
-  if (!IsContextualSearchbox()) {
-    lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-  }
-}
-
 void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
   if (!focused) {
     return;
@@ -2670,6 +2658,36 @@ void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
 
 void LensOverlayController::UpdateNavigationMetrics() {
   GetLensSessionMetricsLogger()->OnPageNavigation();
+}
+
+void LensOverlayController::ClearAllSelections() {
+  if (state_ == State::kOff) {
+    return;
+  }
+
+  if (page_) {
+    page_->ClearAllSelections();
+  }
+  initialization_data_->selected_region_.reset();
+  initialization_data_->selected_region_bitmap_.reset();
+  initialization_data_->selected_text_.reset();
+  if (!IsContextualSearchbox()) {
+    lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  }
+}
+
+void LensOverlayController::HandleRegionBitmapCreated(
+    const SkBitmap& region_bitmap) {
+  // Do not update the selected region bitmap if the overlay is off or if the
+  // region bitmap is already set. This is only enabled when the back to page
+  // feature is enabled.
+  if (state_ == State::kOff ||
+      !initialization_data_->selected_region_bitmap_.drawsNothing() ||
+      !lens::features::IsLensOverlayBackToPageEnabled()) {
+    return;
+  }
+
+  initialization_data_->selected_region_bitmap_ = region_bitmap;
 }
 
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {

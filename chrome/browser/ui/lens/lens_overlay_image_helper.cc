@@ -316,7 +316,7 @@ SkBitmap CropBitmapToRegion(const SkBitmap& image,
       region_rect.height());
 }
 
-std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
+std::optional<lens::ImageCropAndBitmap> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
     lens::mojom::CenterRotatedBoxPtr region,
     std::optional<SkBitmap> region_bytes,
@@ -327,18 +327,20 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
 
   gfx::Rect region_rect = GetRectForRegion(image, region);
 
-  lens::ImageCrop image_crop;
-  SkBitmap region_bitmap;
+  lens::ImageCropAndBitmap image_crop_and_bitmap;
   scoped_refptr<base::RefCountedBytes> data =
       base::MakeRefCounted<base::RefCountedBytes>();
   ;
   if (region_bytes.has_value()) {
-    region_bitmap = DownscaleImageIfNeeded(*region_bytes, /*ui_scale_factor=*/0,
+    image_crop_and_bitmap.region_bitmap = DownscaleImageIfNeeded(*region_bytes, /*ui_scale_factor=*/0,
                                            client_logs);
   } else {
-    region_bitmap =
+    image_crop_and_bitmap.region_bitmap =
         CropAndDownscaleImageIfNeeded(image, region_rect, client_logs);
   }
+
+  const auto& region_bitmap = image_crop_and_bitmap.region_bitmap;
+  auto& image_crop = image_crop_and_bitmap.image_crop;
   if (EncodeImageMaybeWithTransparency(
           region_bitmap,
           lens::features::GetLensOverlayImageCompressionQuality(), data,
@@ -367,7 +369,7 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     image_crop.mutable_image()->mutable_image_content()->assign(data->begin(),
                                                                 data->end());
   }
-  return image_crop;
+  return std::move(image_crop_and_bitmap);
 }
 
 lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromTabViewAndImageBounds(

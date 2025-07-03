@@ -349,7 +349,8 @@ class LensSearchController {
 
   // Callback used by the query controller to pass the thumbnail bytes of a
   // visual interaction request to the searchbox.
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes,
+                              const SkBitmap& region_bitmap);
 
   // Callback used by the query controller to notify the search controller of
   // the progress of the page content upload.

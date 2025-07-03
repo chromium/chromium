@@ -659,7 +659,9 @@ void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
 }
 
 void LensSearchController::HandleThumbnailCreated(
-    const std::string& thumbnail_bytes) {
+    const std::string& thumbnail_bytes,
+    const SkBitmap& region_bitmap) {
+  lens_overlay_controller_->HandleRegionBitmapCreated(region_bitmap);
   lens_searchbox_controller_->HandleThumbnailCreated(thumbnail_bytes);
 }
 
