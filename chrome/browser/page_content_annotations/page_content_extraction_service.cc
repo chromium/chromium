@@ -4,6 +4,10 @@
 
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 
+#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 
 namespace page_content_annotations {
@@ -34,6 +38,25 @@ void PageContentExtractionService::OnPageContentExtracted(
   for (auto& observer : observers_) {
     observer.OnPageContentExtracted(page, page_content);
   }
+}
+
+std::optional<ExtractedPageContentResult>
+PageContentExtractionService::GetExtractedPageContentAndEligibilityForPage(
+    content::Page& page) {
+  // Get web contents for page.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  PageContentAnnotationsWebContentsObserver* observer =
+      PageContentAnnotationsWebContentsObserver::FromWebContents(web_contents);
+  if (!observer) {
+    return std::nullopt;
+  }
+  AnnotatedPageContentRequest* request =
+      observer->GetAnnotatedPageContentRequest();
+  if (!request) {
+    return std::nullopt;
+  }
+  return request->GetCachedContentAndEligibility();
 }
 
 }  // namespace page_content_annotations

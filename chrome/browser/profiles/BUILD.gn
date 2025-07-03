@@ -243,6 +243,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/plus_addresses",

@@ -50,6 +50,7 @@ class PageContentAnnotationsWebContentsObserver
   friend class content::WebContentsUserData<
       PageContentAnnotationsWebContentsObserver>;
   friend class PageContentAnnotationsWebContentsObserverTest;
+  friend class PageContentExtractionService;
 
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;

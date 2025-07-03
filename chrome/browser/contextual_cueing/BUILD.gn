@@ -39,6 +39,7 @@ source_set("impl") {
     "//chrome/browser/content_extraction",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",

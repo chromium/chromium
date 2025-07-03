@@ -30,6 +30,10 @@ namespace optimization_guide::proto {
 class ZeroStateSuggestionsRequest;
 }  // namespace optimization_guide::proto
 
+namespace page_content_annotations {
+class PageContentExtractionService;
+}  // namespace page_content_annotations
+
 namespace contextual_cueing {
 
 using GlicSuggestionsCallbackList =
@@ -76,7 +80,7 @@ class ZeroStateSuggestionsPageData
 
   // Called when annotated page content is received.
   void OnReceivedAnnotatedPageContent(
-      std::optional<optimization_guide::AIPageContentResult> content);
+      std::optional<optimization_guide::proto::AnnotatedPageContent> content);
 
   // Called when on-demand metadata is received.
   void OnReceivedOptimizationMetadataOnDemand(
@@ -117,7 +121,7 @@ class ZeroStateSuggestionsPageData
   bool inner_text_done_ = false;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   bool annotated_page_content_done_ = false;
-  std::optional<optimization_guide::AIPageContentResult>
+  std::optional<optimization_guide::proto::AnnotatedPageContent>
       annotated_page_content_;
   bool optimization_metadata_done_ = false;
   optimization_guide::OptimizationGuideDecision optimization_decision_;
@@ -134,6 +138,8 @@ class ZeroStateSuggestionsPageData
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
+  raw_ptr<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_ = nullptr;
   base::WeakPtrFactory<ZeroStateSuggestionsPageData> weak_ptr_factory_{this};
 
   PAGE_USER_DATA_KEY_DECL();

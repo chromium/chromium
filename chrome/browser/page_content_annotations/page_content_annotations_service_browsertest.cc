@@ -20,6 +20,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -1150,14 +1151,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
 class PageContentAnnotationsServiceContentExtractionTest
     : public InProcessBrowserTest {
  public:
-  virtual void InitializeFeaureList() {
+  virtual void InitializeFeatureList() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction,
         {{"capture_delay", "0s"}, {"include_inner_text", "true"}});
   }
 
   void SetUp() override {
-    InitializeFeaureList();
+    InitializeFeatureList();
     InProcessBrowserTest::SetUp();
   }
 
@@ -1260,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
 class PageContentAnnotationsServiceContentExtractionPdfTest
     : public PageContentAnnotationsServiceContentExtractionTest {
  public:
-  void InitializeFeaureList() override {
+  void InitializeFeatureList() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction, {{"capture_delay", "4s"}});
   }
@@ -1335,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
 class PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag
     : public PageContentAnnotationsServiceContentExtractionTest {
  public:
-  void InitializeFeaureList() override {}
+  void InitializeFeatureList() override {}
 };
 
 class FakeExtractionServiceObserver
@@ -1370,7 +1371,19 @@ IN_PROC_BROWSER_TEST_F(
   auto& page_content = observer.page_content_future_.Get();
   EXPECT_TRUE(page_content.IsInitialized());
 
+  // Should have cached data for page since there was an observer registered.
+  ASSERT_TRUE(service->GetExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage()));
+
   service->RemoveObserver(&observer);
+
+  GURL new_url(embedded_test_server()->GetURL(
+      "a.test", "/optimization_guide/newurl.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, new_url, 1);
+
+  // Make sure cached content is cleared with a new navigation.
+  ASSERT_FALSE(service->GetExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage()));
 }
 
 }  // namespace page_content_annotations

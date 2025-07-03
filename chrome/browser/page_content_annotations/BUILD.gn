@@ -3,10 +3,15 @@
 # found in the LICENSE file.
 
 source_set("extraction_service") {
-  sources = [ "page_content_extraction_service.h" ]
+  sources = [
+    "page_content_extraction_service.h",
+    "page_content_extraction_service_factory.h",
+    "page_content_extraction_types.h",
+  ]
   deps = []
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]

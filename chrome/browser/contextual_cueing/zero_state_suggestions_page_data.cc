@@ -15,6 +15,9 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -57,6 +60,23 @@ std::pair<bool, std::vector<std::string>> ParseOptimizationMetadata(
   return std::make_pair(true, std::vector<std::string>());
 }
 
+void GetEligibilityAndRunCallback(
+    const GURL& url,
+    base::OnceCallback<
+        void(std::optional<optimization_guide::proto::AnnotatedPageContent>)>
+        callback,
+    std::optional<optimization_guide::AIPageContentResult> content) {
+  auto* pce = optimization_guide::PageContextEligibility::Get();
+  bool is_eligible =
+      content &&
+      (!pce ||
+       optimization_guide::IsPageContextEligible(
+           url.host(), url.path(),
+           optimization_guide::GetFrameMetadataFromPageContent(*content), pce));
+  std::move(callback).Run(is_eligible ? std::make_optional(content->proto)
+                                      : std::nullopt);
+}
+
 }  // namespace
 
 namespace contextual_cueing {
@@ -73,6 +93,8 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  page_content_extraction_service_ = page_content_annotations::
+      PageContentExtractionServiceFactory::GetForProfile(profile);
 
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -167,14 +189,38 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
                          url.spec()));
 
   if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
-    blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
-    ai_page_content_options = optimization_guide::DefaultAIPageContentOptions();
-    ai_page_content_options->on_critical_path = true;
-    optimization_guide::GetAIPageContent(
-        web_contents, std::move(ai_page_content_options),
-        base::BindOnce(
-            &ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent,
-            weak_ptr_factory_.GetWeakPtr()));
+    bool should_extract_apc = true;
+    if (page_content_extraction_service_) {
+      // Use cached APC if available.
+      auto extracted_page_content_result =
+          page_content_extraction_service_
+              ->GetExtractedPageContentAndEligibilityForPage(page());
+      if (extracted_page_content_result) {
+        // Only cache the page content if the content is eligible for server
+        // upload.
+        OnReceivedAnnotatedPageContent(
+            extracted_page_content_result->is_eligible_for_server_upload
+                ? std::make_optional(
+                      extracted_page_content_result->page_content)
+                : std::nullopt);
+        should_extract_apc = false;
+      }
+    }
+
+    // Otherwise, extract fresh APC.
+    if (should_extract_apc) {
+      blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
+      ai_page_content_options =
+          optimization_guide::DefaultAIPageContentOptions();
+      ai_page_content_options->on_critical_path = true;
+      optimization_guide::GetAIPageContent(
+          web_contents, std::move(ai_page_content_options),
+          base::BindOnce(
+              &GetEligibilityAndRunCallback, GetUrl(),
+              base::BindOnce(
+                  &ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent,
+                  weak_ptr_factory_.GetWeakPtr())));
+    }
   } else {
     OnReceivedAnnotatedPageContent(/*content=*/std::nullopt);
   }
@@ -260,26 +306,14 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
-    std::optional<optimization_guide::AIPageContentResult> content) {
-  GURL url = GetUrl();
-  auto* pce = optimization_guide::PageContextEligibility::Get();
-  bool is_eligible =
-      content &&
-      (!pce ||
-       optimization_guide::IsPageContextEligible(
-           url.host(), url.path(),
-           optimization_guide::GetFrameMetadataFromPageContent(content.value()),
-           pce));
-
-  if (is_eligible) {
-    annotated_page_content_ = std::move(content);
+    std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
+  if (content) {
     base::UmaHistogramTimes(
         "ContextualCueing.GlicSuggestions.PageContextFetchlatency."
         "AnnotatedPageContent",
         base::TimeTicks::Now() - page_context_begin_time_);
-  } else {
-    annotated_page_content_ = std::nullopt;
   }
+  annotated_page_content_ = std::move(content);
   annotated_page_content_done_ = true;
   RequestSuggestionsIfComplete();
 }
@@ -413,8 +447,7 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
 
   if (annotated_page_content_) {
-    *page_context->mutable_annotated_page_content() =
-        annotated_page_content_->proto;
+    *page_context->mutable_annotated_page_content() = *annotated_page_content_;
   }
   if (inner_text_result_) {
     page_context->set_inner_text(inner_text_result_->inner_text);

@@ -11,9 +11,11 @@
 
 namespace content {
 class Page;
-}
+}  // namespace content
 
 namespace page_content_annotations {
+
+struct ExtractedPageContentResult;
 
 class PageContentExtractionService : public KeyedService {
  public:
@@ -36,6 +38,11 @@ class PageContentExtractionService : public KeyedService {
   // enabled based on features, or when some observer has registered for page
   // content.
   bool ShouldEnablePageContentExtraction() const;
+
+  // Returns the cached APC for `page` and whether it is eligible for
+  // server upload. Will return nullopt if not available.
+  std::optional<ExtractedPageContentResult>
+  GetExtractedPageContentAndEligibilityForPage(content::Page& page);
 
  private:
   friend class AnnotatedPageContentRequest;
