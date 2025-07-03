@@ -6569,6 +6569,7 @@ test("unit_tests") {
       # The test is disabled for Android. The respective functionality is currently not being used on
       # Android. We should enable this test when Android becomes supported.
       "../browser/content_extraction/inner_text_unittest.cc",
+      "../browser/devtools/device/usb/android_rsa_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/page_info/merchant_trust_service_delegate_unittest.cc",
       "../browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer_unittest.cc",
