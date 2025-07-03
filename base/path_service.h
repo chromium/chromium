@@ -57,6 +57,10 @@ class BASE_EXPORT PathService {
                                         bool is_absolute,
                                         bool create);
 
+  // This function does the same as `PathService::Override()` but it skips the
+  // checks for testing the invalid cases.
+  static bool OverrideWithoutCheckForTesting(int key, const FilePath& path);
+
   // Returns whether an override is present for a special directory or file.
   static bool IsOverriddenForTesting(int key);
 

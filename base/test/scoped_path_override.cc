@@ -19,11 +19,18 @@ ScopedPathOverride::ScopedPathOverride(int key) : key_(key) {
   CHECK(result);
 }
 
-ScopedPathOverride::ScopedPathOverride(int key, const base::FilePath& dir)
+ScopedPathOverride::ScopedPathOverride(int key,
+                                       const base::FilePath& dir,
+                                       bool should_skip_check)
     : key_(key) {
   SaveOriginal();
-  bool result = PathService::Override(key, dir);
-  CHECK(result);
+  if (should_skip_check) {
+    bool result = PathService::OverrideWithoutCheckForTesting(key, dir);
+    CHECK(result);
+  } else {
+    bool result = PathService::Override(key, dir);
+    CHECK(result);
+  }
 }
 
 ScopedPathOverride::ScopedPathOverride(int key,

@@ -311,6 +311,22 @@ bool PathService::OverrideAndCreateIfNeeded(int key,
 }
 
 // static
+bool PathService::OverrideWithoutCheckForTesting(int key,
+                                                 const FilePath& path) {
+  PathData* path_data = GetPathData();
+  DCHECK(path_data);
+
+  AutoLock scoped_lock(path_data->lock);
+
+  // Clear the cache now. Some of its entries could have depended
+  // on the value we are overriding, and are now out of sync with reality.
+  path_data->cache.clear();
+  path_data->overrides[key] = path;
+
+  return true;
+}
+
+// static
 bool PathService::RemoveOverrideForTests(int key) {
   PathData* path_data = GetPathData();
   DCHECK(path_data);
