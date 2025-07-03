@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">അവസാനം തുറന്നത് പ്രകാരം അടുക്കുന്നു</translation>
 <translation id="297771753501244313">അവസാനം തുറന്നതനുസരിച്ച് അടുക്കൂ</translation>
 <translation id="2979639724566107830">പുതിയ വിന്‍ഡോയില്‍ തുറക്കുക</translation>
-<translation id="2981364137500752533">നിങ്ങൾക്ക് 5 വിൻഡോകൾ വരെ തുറക്കാനാകും.</translation>
 <translation id="2983102365694924129">സൈറ്റിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റിയെ അടിസ്ഥാനമാക്കി. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="2983398917942897288">നിഷ്ക്രിയമായവ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുക</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" /> എന്നതിനൊപ്പം</translation>
 <translation id="5456381639095306749">പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5458366071038729214">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
-<translation id="5468068603361015296">നിങ്ങൾക്ക് എന്തായാലും <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ടാബ് നീക്കാനാകില്ല</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
 <translation id="5492637351392383067">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">ഇന്നലെ പരിശോധിച്ചു</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="671481426037969117">നിങ്ങളുടെ <ph name="FQDN" /> ടൈമർ അവസാനിച്ചു. ഇത് നാളെ വീണ്ടും ആരംഭിക്കും.</translation>
-<translation id="6715020873764921614">നിങ്ങൾക്ക് എന്തായാലും <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="671928215901716392">സ്‌ക്രീൻ ലോക്കുചെയ്യുക</translation>
 <translation id="6723740634201835758">നിങ്ങളുടെ Google അക്കൗണ്ടിലേത്</translation>
 <translation id="6734310707649923383">നിങ്ങൾ സന്ദർശിച്ച പേജുകൾ കാണാനോ അവ നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് ഇല്ലാതാക്കാനോ കഴിയും</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">സൈറ്റുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="8348430946834215779">സാധ്യമാകുമ്പോഴെല്ലാം HTTPS ഉപയോഗിക്കുക, ഇത് പിന്തുണയ്ക്കാത്ത സൈറ്റുകൾ ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് മുന്നറിയിപ്പ് നേടുക</translation>
 <translation id="8354977102499939946">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് വേഗത്തിൽ തിരയുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
-<translation id="8357329300499507091">നിങ്ങൾക്ക് <ph name="MAX_WINDOW_COUNT" /> വിൻഡോകൾ വരെ തുറക്കാനാകും. പുതിയൊരു വിൻഡോ പുനഃസ്ഥാപിക്കാൻ, സജീവവും നിഷ്ക്രിയവുമായ വിൻഡോകളുടെ ആകെ എണ്ണം <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> അല്ലെങ്കിൽ അതിൽ കുറവ് ആക്കുക. നിഷ്ക്രിയമായ വിൻഡോകൾ 6 മാസത്തിന് ശേഷം ഇല്ലാതാക്കും.</translation>
 <translation id="8361737703487394103">ഒരു നിർദ്ദിഷ്ട ടാബിലേക്ക് പോകുക (1–8)</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ടാബ് ഗ്രൂപ്പ്}other{<ph name="TAB_GROUPS_MANY" /> ടാബ് ഗ്രൂപ്പുകൾ}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> എന്നയാളെ നീക്കം ചെയ്യണോ?</translation>
 <translation id="8570677896027847510">ഫയൽ സുരക്ഷിതമായി ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
-<translation id="8576426273246268132">നിങ്ങൾക്ക് <ph name="MAX_WINDOW_COUNT" /> വിൻഡോകൾ വരെ തുറക്കാനാകും. പുതിയൊരു വിൻഡോ തുറക്കാൻ, സജീവവും നിഷ്ക്രിയവുമായ വിൻഡോകളുടെ ആകെ എണ്ണം <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> അല്ലെങ്കിൽ അതിൽ കുറവ് ആക്കുക.</translation>
 <translation id="8580435650274205305">കാലഹരണപ്പെടുന്ന തീയതി, ആവശ്യമാണ്</translation>
 <translation id="8582529315803410153">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="8585103689515290060">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ</translation>
@@ -1781,6 +1776,7 @@
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8715286883001906001">നിങ്ങളുടെ Google Account-ലെ പാസ്‍വേഡുകൾ ശക്തിപ്പെടുത്തുക</translation>
+<translation id="8715300232952757586"><ph name="TAB_TITLE" /> അടയ്ക്കും</translation>
 <translation id="8723453889042591629">ഈ പേജ് വേഗത്തിൽ വിവർത്തനം ചെയ്യുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>

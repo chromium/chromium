@@ -61,6 +61,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="1703666494654169921">Não permitir que os sites utilizem dados ou dispositivos de realidade virtual</translation>
 <translation id="1704230497453185209">Não permitir que os sites reproduzam som</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
+<translation id="1717996979683942279">Quando esta opção está ativada, os sites podem pedir para gerir janelas em todos os seus ecrãs. Quando esta opção está desativada, os sites não podem gerir janelas em todos os seus ecrãs.</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir a ligação de sites a um dispositivo (recomendado)</translation>
 <translation id="1777815584158991902">Secção inferior do feed do Discover</translation>
 <translation id="1779089405699405702">Descodificador de imagem</translation>
@@ -171,6 +172,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2968755619301702150">Visualizador de certificados</translation>
 <translation id="2979365474350987274">Os cookies de terceiros são limitados</translation>
 <translation id="2990583317361835189">Não permitir que os sites utilizem sensores de movimentos</translation>
+<translation id="3004438526346162184">Os sites podem usar esta funcionalidade para gerir janelas em todos os seus ecrãs</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3064871050034234884">Os sites podem reproduzir som</translation>
@@ -439,6 +441,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6071501408666570960">A sua sessão neste site pode ser terminada</translation>
 <translation id="6085954183010297841">Eliminar a autorização de edição de ficheiros? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando a opção está ativada, os sites podem pedir para saber quando está a usar ativamente o dispositivo. Quando esta opção está desativada, os sites não sabem quando está a usar ativamente o dispositivo.</translation>
+<translation id="615886654739818377">Não permitir que os sites façam a gestão de janelas em todos os seus ecrãs</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6171020522141473435">Quando esta opção está ativada, os sites podem pedir para usar dispositivos Bluetooth. Quando esta opção está desativada, os sites não podem usar dispositivos Bluetooth.</translation>
 <translation id="6177128806592000436">A sua ligação a este site não é segura</translation>

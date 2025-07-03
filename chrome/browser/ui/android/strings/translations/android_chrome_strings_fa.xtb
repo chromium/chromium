@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">ترتیب براساس آخرین باز شدن</translation>
 <translation id="297771753501244313">به‌ترتیب آخرین باز شدن</translation>
 <translation id="2979639724566107830">باز کردن در پنجرهٔ جدید</translation>
-<translation id="2981364137500752533">حداکثر ۵ پنجره می‌توانید داشته باشید.</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
 <translation id="2983398917942897288">غیرفعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">‏گنجاندن نوشتار اطراف در جستجوهای Google</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">بارگیری صفحه</translation>
 <translation id="5458366071038729214">سایت‌هایی را که دنبال می‌کنید اینجا پیدا خواهید کرد</translation>
-<translation id="5468068603361015296">می‌خواهید <ph name="FILE_NAME" /> درهرصورت بارگیری شود؟</translation>
 <translation id="5471273988133666918">زبانه <ph name="TAB_TITLE" /> را نمی‌توان منتقل کرد</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
 <translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
-<translation id="6715020873764921614">می‌خواهید <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) درهرصورت بارگیری شود؟</translation>
 <translation id="671928215901716392">قفل صفحه</translation>
 <translation id="6723740634201835758">‏در حساب Google</translation>
 <translation id="6734310707649923383">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">سایت‌هایی که هرگز ترجمه نمی‌شوند</translation>
 <translation id="8348430946834215779">‏درصورت امکان از HTTPS استفاده می‌شود و قبل‌از بار شدن سایت‌هایی که از آن پشتیبانی نمی‌کنند هشدار دریافت می‌کنید</translation>
 <translation id="8354977102499939946">به‌سرعت با صدایتان جستجو کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
-<translation id="8357329300499507091">می‌توانید در مجموع حداکثر <ph name="MAX_WINDOW_COUNT" /> پنجره داشته باشید. برای بازگرداندن پنجره جدید، تعداد کل پنجره‌های فعال و غیرفعال را به <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا کمتر کاهش دهید. پنجره‌های غیرفعال پس‌از ۶ ماه حذف می‌شوند.</translation>
 <translation id="8361737703487394103">‏رفتن به یک زبانه مشخص (‎۱–۸)</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{‫<ph name="TAB_GROUPS_ONE" /> گروه برگه}one{‫<ph name="TAB_GROUPS_MANY" /> گروه برگه}other{‫<ph name="TAB_GROUPS_MANY" /> گروه برگه}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">‫<ph name="MEMBER_FULL_NAME" /> برداشته شود؟</translation>
 <translation id="8570677896027847510">نمی‌توان این فایل را به‌طور ایمن بارگیری کرد</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
-<translation id="8576426273246268132">می‌توانید در مجموع حداکثر <ph name="MAX_WINDOW_COUNT" /> پنجره داشته باشید. برای باز کردن پنجره جدید، تعداد کل پنجره‌های فعال و غیرفعال را به <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا کمتر کاهش دهید.</translation>
 <translation id="8580435650274205305">تاریخ انقضا الزامی است</translation>
 <translation id="8582529315803410153">برگه‌های مربوط به دستگاه‌های دیگر را اینجا خواهید دید</translation>
 <translation id="8585103689515290060">سرویس‌های تکمیل خودکار</translation>

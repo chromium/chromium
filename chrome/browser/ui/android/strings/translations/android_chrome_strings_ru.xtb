@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">Сортировка по дате использования</translation>
 <translation id="297771753501244313">По дате использования</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
-<translation id="2981364137500752533">Можно открыть не более пяти окон.</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
 <translation id="2983398917942897288">Неактивны (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Учитывать контекст в поиске Google</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">с помощью <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Скачать страницу</translation>
 <translation id="5458366071038729214">Здесь будут сайты, на которые вы подпишетесь.</translation>
-<translation id="5468068603361015296">Все равно скачать файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="5471273988133666918">Нельзя переместить вкладку "<ph name="TAB_TITLE" />".</translation>
 <translation id="548278423535722844">Показать на карте</translation>
 <translation id="5492637351392383067">Шифрование на устройстве</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
-<translation id="6715020873764921614">Все равно скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="671928215901716392">Блокировать экран</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
 <translation id="6734310707649923383">Вы можете посмотреть посещенные страницы или удалить их из истории.</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8348430946834215779">Использовать протокол HTTPS всегда, когда это возможно, и предупреждать перед загрузкой сайтов, которые его не поддерживают</translation>
 <translation id="8354977102499939946">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
-<translation id="8357329300499507091">Максимальное число окон, которые можно открыть: <ph name="MAX_WINDOW_COUNT" />. Убедитесь, что у вас не больше <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> активных и неактивных окон, чтобы восстановить новое. Неактивные окна удаляются через шесть месяцев.</translation>
 <translation id="8361737703487394103">Перейти на определенную вкладку (1–8)</translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> группа вкладок}one{<ph name="TAB_GROUPS_MANY" /> группа вкладок}few{<ph name="TAB_GROUPS_MANY" /> группы вкладок}many{<ph name="TAB_GROUPS_MANY" /> групп вкладок}other{<ph name="TAB_GROUPS_MANY" /> группы вкладок}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">Удалить пользователя <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
-<translation id="8576426273246268132">Максимальное число окон, которые можно открыть: <ph name="MAX_WINDOW_COUNT" />. Убедитесь, что у вас не больше <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> активных и неактивных окон, чтобы создать новое.</translation>
 <translation id="8580435650274205305">Срок действия (обязательно)</translation>
 <translation id="8582529315803410153">Здесь вы найдете свои вкладки с других устройств</translation>
 <translation id="8585103689515290060">Сервисы автозаполнения</translation>

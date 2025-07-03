@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">ପେୟାରିଂକୁ ଅନୁମତି ଦେବା ପାଇଁ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">ଆକାଉଣ୍ଟ ଡିଲିଟ ହୋଇଯାଇଛି</translation>
 <translation id="14222610277930434">ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ କରନ୍ତି</translation>
+<translation id="1422795627423046860">ତାରିଖ ଅବୈଧ ଅଟେ</translation>
 <translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
 <translation id="1427192966110103169">ହୋମ ସୁଇମିଂ ପୁଲ, ସୌନା ଏବଂ ସ୍ପା</translation>
@@ -3710,7 +3711,6 @@
 <translation id="7251437084390964440">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗରେସନ୍‌ ONC ମାନାଙ୍କ ଅନୁୟାୟୀ ନାହିଁ। କନ୍‍ଫିଗରେସନ୍‌ର କିଛି ଅଂଶ ଇମ୍ପୋର୍ଟ କରାଯାଇନପାରେ।
 ଅତିରିକ୍ତ ବିବରଣୀ:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7251635775446614726">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ କହନ୍ତି: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7255540419660272073">ଥମ୍ବସ ଡାଉନ ବଟନ, ଆପଣ <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />କୁ କାହିଁକି ନାପସନ୍ଦ କରନ୍ତି ସେ ବିଷୟରେ ଏକ ବିସ୍ତୃତ ମତାମତ ଦାଖଲ କରିବା ପାଇଁ ଏକ ଫର୍ମ ଖୋଲିବାକୁ 'ଏଣ୍ଟର' ଦବାନ୍ତୁ</translation>
 <translation id="7256634549594854023">ପଛପଟର ଟ୍ରେ</translation>
 <translation id="7257453341537973799">କ୍ୟାରିଅର ରିସୋର୍ସ ଏବଂ ପ୍ଲାନିଂ</translation>
@@ -4812,6 +4812,7 @@
 <translation id="9155211586651734179">ଆଟାଚ କରାଯାଇଥିବା ଅଡିଓ ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="9155646082713385498">ମେଗାଜିନ</translation>
 <translation id="9157595877708044936">ସେଟ୍‍‍ଅପ୍ କରାଯାଉଛି...</translation>
+<translation id="9158491153040481956">ଆପଣ ବର୍ତ୍ତମାନ ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଥିବା ଏକ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି। ସମସ୍ୟା ହେଲେ, Password Manager ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}other{<ph name="FILE_COUNT" /> ଫାଇଲରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ, |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="9163287596625611517">Slack ମେସେଜ</translation>

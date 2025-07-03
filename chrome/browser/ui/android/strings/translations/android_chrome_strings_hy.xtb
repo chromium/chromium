@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">Տեսակավորում ըստ վերջին բացվածի</translation>
 <translation id="297771753501244313">Ըստ օգտագործման ամսաթվի</translation>
 <translation id="2979639724566107830">Բացել նոր պատուհանում</translation>
-<translation id="2981364137500752533">Դուք կարող եք բացել մինչև 5 պատուհան։</translation>
 <translation id="2983102365694924129">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումն անջատված է։</translation>
 <translation id="2983398917942897288">Ոչ ակտիվ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Ներառել շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
-<translation id="5468068603361015296">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը։</translation>
 <translation id="5471273988133666918">Ներդիր <ph name="TAB_TITLE" />-ը հնարավոր չէ շարժել</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
 <translation id="5492637351392383067">Գաղտնագրում սարքում</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
-<translation id="6715020873764921614">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="671928215901716392">Կողպել էկրանը</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
 <translation id="6734310707649923383">Դուք կարող եք դիտել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">Երբեք չթարգմանել կայքերը</translation>
 <translation id="8348430946834215779">Ցանկացած հնարավորության դեպքում օգտագործեք HTTPS հաղորդակարգը և ստացեք նախազգուշացում այնպիսի կայքեր բեռնելուց առաջ, որոնք չեն կիրառում այն</translation>
 <translation id="8354977102499939946">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
-<translation id="8357329300499507091">Դուք կարող եք բացել մինչև <ph name="MAX_WINDOW_COUNT" /> պատուհան։ Նոր պատուհան վերականգնելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։ Ոչ ակտիվ պատուհանները 6 ամիս հետո ջնջվում են։</translation>
 <translation id="8361737703487394103">Անցնել որոշակի ներդիր (1–8)</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{Ներդիրների <ph name="TAB_GROUPS_ONE" /> խումբ}one{Ներդիրների <ph name="TAB_GROUPS_MANY" /> խումբ}other{Ներդիրների <ph name="TAB_GROUPS_MANY" /> խումբ}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">Հեռացնե՞լ <ph name="MEMBER_FULL_NAME" />-ին</translation>
 <translation id="8570677896027847510">Ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
-<translation id="8576426273246268132">Դուք կարող եք բացել մինչև <ph name="MAX_WINDOW_COUNT" /> պատուհան։ Նոր պատուհան բացելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։</translation>
 <translation id="8580435650274205305">Վավերականության ժամկետ, պարտադիր է</translation>
 <translation id="8582529315803410153">Այստեղ դուք կգտնեք ձեր ներդիրները մյուս սարքերից</translation>
 <translation id="8585103689515290060">Ինքնալրացման ծառայություններ</translation>

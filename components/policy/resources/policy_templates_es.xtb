@@ -3364,7 +3364,6 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
       La opción experimental se eliminará en el futuro cuando el inicio de sesión insertado sea totalmente compatible con todos los flujos de SSO.</translation>
 <translation id="3435178885391813398">No permitir Escáner.</translation>
 <translation id="3435796032110614169">Permitir eliminar el historial de trabajos de impresión</translation>
-<translation id="3435896845095436175">Habilitar</translation>
 <translation id="3436217793443508863">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se bloquee la pantalla cuando el dispositivo funcione con la batería</translation>
 <translation id="3437924696598384725">Permitir que el usuario gestione conexiones VPN</translation>
 <translation id="3441664787678256816">Permitir conexiones de asistencia remota de empresa en este equipo.</translation>
@@ -4641,7 +4640,6 @@ Nota: Esta política desactiva la política <ph name="ARC_GLS_POLICY_NAME" />. A
 <translation id="4389073105055031853">Permitir que los usuarios gestionen todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la confirmación remota con el mecanismo de TPM.</translation>
 <translation id="4389113579547582722">Permitir que se muestre la promoción de valoraciones del App Store</translation>
-<translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="4395619678972620537">Si se habilita esta política, las conexiones WebRTC entre pares podrán cambiar a versiones inferiores
       obsoletas de los protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 y TLS 1.1).
       Si se inhabilita esta política o no se establece, estas versiones de TLS/DTLS se
@@ -5598,6 +5596,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5037749623252479780">Los ajustes de Re Pág y Av Pág están inhabilitados</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada.</translation>
 <translation id="504689994545234073">Habilitar el almacenamiento local de archivos de usuario</translation>
@@ -6488,17 +6487,6 @@ Si se quitan dominios de la política, no podrán acceder a URLs file:// en el l
 Si no se establece la política, ningún dominio podrá acceder a URLs file:// en el lector de PDFs.</translation>
 <translation id="5585424654425017599">Permitir integraciones</translation>
 <translation id="5586942249556966598">No hacer nada</translation>
-<translation id="5595355842329604596">Esta política define la configuración predeterminada de todas las funciones de IA generativa incluidas. Por ejemplo, si se le asigna el valor 1 a la política, esta será la configuración predeterminada de todas las funciones de IA generativa incluidas. No afectará a ningún valor de política definido manualmente. Este ajuste definirá los valores predeterminados de <ph name="GEMINI_SETTINGS_POLICY_NAME" /> y de las funciones de IA generativa de Chrome incluidas. Consulta https://support.google.com/chrome/a?p=generative_ai_settings para ver la lista de funciones incluidas.
-
-Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2, no se permite la función.
-
-Si una función de Chrome incluida no tiene un valor de política equivalente, se usará el valor más alto más cercano. Algunas políticas, por ejemplo, <ph name="GEMINI_SETTINGS_POLICY_NAME" />, solo admiten los estados Permitido y No permitido. Si se le asigna el valor 0 o 1 a la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />, esta función se permitirá. Si se le asigna el valor 2 a la política, esta función no se permitirá. Consulta la documentación de cada función para obtener más información sobre cómo interactúa con los valores de esta política.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5597542113049786516">Esta política controla si una página puede usar las APIs de IA integradas (como <ph name="LANGUAGE_MODEL_API_NAME" />, <ph name="SUMMARIZATION_API_NAME" />, <ph name="WRITER_API_NAME" /> y <ph name="REWRITER_API_NAME" />).
 
 Si la política está habilitada o no se ha establecido, las APIs se pueden usar.
@@ -10944,12 +10932,6 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 
       Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener información sobre los tipos de medios JavaScript/ECMAScript.
       </translation>
-<translation id="8668202868357089313">Lens Overlay permite a los usuarios hacer búsquedas de Google interactuando con una captura de pantalla de la página actual superpuesta al contenido web.
-
-No hay ninguna configuración de usuario para controlar esta función, que generalmente está disponible para todos los usuarios que tienen Google como buscador predeterminado a menos que esta política la inhabilite.
-
-Si se le asigna el valor 0 - Habilitado a esta política o no se define, la función estará disponible para los usuarios.
-Si se le asigna el valor 1 - Inhabilitado a esta política, la función no estará disponible.</translation>
 <translation id="8668928485126473293">Te permite definir si <ph name="PRODUCT_NAME" /> ejecutará el motor V8 de JavaScript con más optimizaciones avanzadas de JavaScript habilitadas.
 
 Si se inhabilitan las optimizaciones de JavaScript (asignando el valor 2 a esta política), es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web más lentamente.

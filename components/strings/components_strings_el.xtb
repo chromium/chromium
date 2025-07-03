@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> για να επιτρέψετε τη σύζευξη</translation>
 <translation id="1421484961346698724">Διαγραμμένος λογαριασμός</translation>
 <translation id="14222610277930434">Επισκέπτεστε συχνά</translation>
+<translation id="1422795627423046860">Η ημερομηνία δεν είναι έγκυρη</translation>
 <translation id="1422930527989633628">Μπορεί να ζητά να εντοπίζει κοντινές συσκευές Bluetooth (συνιστάται).</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1427192966110103169">Οικιακές πισίνες, σάουνες και σπα</translation>
@@ -3718,7 +3719,6 @@
 <translation id="7251437084390964440">Η διαμόρφωση δικτύου δεν συμμορφώνεται με το πρότυπο ONC. Ορισμένα τμήματα αυτής της διαμόρφωσης μπορεί να μην εισαχθούν
 Πρόσθετες λεπτομέρειες:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7251635775446614726">Ο διαχειριστής σας λέει: <ph name="CUSTOM_MESSAGE" />.</translation>
 <translation id="7255540419660272073">Κουμπί Δεν εγκρίνω, πατήστε Enter για να ανοίξετε μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Πίσω τροφοδότης χαρτιού</translation>
 <translation id="7257453341537973799">Πόροι και σχεδιασμός καριέρας</translation>
@@ -4822,6 +4822,7 @@
 <translation id="9155211586651734179">Τυχόν συνδεδεμένα περιφερειακά ήχου</translation>
 <translation id="9155646082713385498">Περιοδικά</translation>
 <translation id="9157595877708044936">Ρύθμιση...</translation>
+<translation id="9158491153040481956">Αλλάξατε πρόσφατα έναν κωδικό πρόσβασης που εντοπίστηκε σε μια δημόσια παραβίαση δεδομένων. Σε περίπτωση προβλημάτων, η Διαχείριση κωδικών πρόσβασης μπορεί να σας βοηθήσει να συνδεθείτε.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Το αρχείο <ph name="FILE_NAME" /> μπορεί να περιέχει ευαίσθητο περιεχόμενο}other{<ph name="FILE_COUNT" /> αρχεία μπορεί να περιέχουν ευαίσθητο περιεχόμενο}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Για έξοδο από την πλήρη οθόνη, πατήστε |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Μήνυμα στο Slack</translation>

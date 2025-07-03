@@ -424,9 +424,9 @@
 <translation id="1277597051786235230">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ чрез <ph name="SEARCH_ENGINE" /> в нов раздел</translation>
 <translation id="127849925363482083">Натиснете <ph name="SHORTCUT_TEXT" /> отново, за да затворите фиксирания раздел</translation>
 <translation id="1278859221870828664">Прегледайте приложенията и услугите в Google Play</translation>
+<translation id="1279024913354609713">Без разрешаване</translation>
 <translation id="127946606521051357">Устройство в близост споделя</translation>
 <translation id="1280332775949918163">Прилепване на прозорец</translation>
-<translation id="1280965841156951489">Редактиране на файловете</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлът не може да се отвори}other{Файловете не могат да се отворят}}</translation>
 <translation id="1282311502488501110">Без влизане в профила</translation>
 <translation id="1282436639288565079">Подробности за групата раздели</translation>
@@ -1027,7 +1027,6 @@
 <translation id="169675691788639886">На устройството е конфигуриран SSH сървър. Не влизайте с поверителни профили.</translation>
 <translation id="1697122132646041614">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати.</translation>
 <translation id="1697532407822776718">Готово!</translation>
-<translation id="1697686431566694143">Редактиране на файла</translation>
 <translation id="1698796500103229697">&amp;Начини на плащане</translation>
 <translation id="1698899521169711967">Клавишно сърфиране</translation>
 <translation id="1699807488537653303">Отстраняване на грешка с паролата</translation>
@@ -3022,7 +3021,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3067198179881736288">Да се инсталира ли приложението?</translation>
 <translation id="3067198360141518313">Стартиране на тази приставка</translation>
 <translation id="3071624960923923138">Можете да кликнете тук, за да отворите нов раздел</translation>
-<translation id="3072775339180057696">Да се разреши ли на сайта да преглежда <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Превод на цялата страница</translation>
 <translation id="3075144191779656260">Докоснете сензора за отпечатъци от лявата страна на устройството си <ph name="DEVICE_TYPE" />. Данните за отпечатъка ви се съхраняват надеждно и никога не напускат устройството ви <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075740753681485522">Изключено • Това разширение съдържа злонамерен софтуер</translation>
@@ -3520,7 +3518,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3443744348829035122">Времето за изчакване на <ph name="BRAND" /> изтече</translation>
 <translation id="3443754338602062261">Вече има пароли за тези профили в(ъв) <ph name="BRAND" />. Ако решите да импортирате една от паролите по-долу, тя ще замени съществуващата.</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> ще може да преглежда <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Кратки отговори на Google Асистент</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344537926140058498">Организацията ви блокира този файл, защото в него има поверително или опасно съдържание. Помолете собственика му да отстрани проблема.</translation>
@@ -3999,7 +3996,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3760460896538743390">Инспектиране на &amp;фоновата страница</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> ден</translation>
 <translation id="37613671848467444">Отваряне на прозорец в режим „&amp;инкогнито“</translation>
-<translation id="3761556954875533505">Да се разреши ли на сайта да редактира файлове?</translation>
 <translation id="3761560059647741692">Пейзаж</translation>
 <translation id="3761733456040768239">Още действия за <ph name="CARD_DESCRIPTION" />, кодът за проверка е запазен</translation>
 <translation id="3763433740586298940">Можете да блокирате нежеланите сайтове. Също така Chrome автоматично изтрива от списъка сайтовете, посетени преди повече от 30 дни.</translation>
@@ -5319,7 +5315,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4689235506267737042">Изберете предпочитанията си за демонстрацията</translation>
 <translation id="4689421377817139245">Синхронизирайте тази отметка със своя iPhone</translation>
 <translation id="4690091457710545971">&lt;Фърмуерът на Intel за Wi-Fi генерира четири файла: csr.lst, fh_regs.lst, radio_reg.lst и monitor.lst.sysmon. Първите три са двоични файлове с копия на данни от системния регистър и според Intel не съдържат лични данни или информация, идентифицираща устройството. Последният е файл за трасиране на изпълнението от фърмуера на Intel. Личните данни и идентифициращата устройството информация са премахнати от него, но той е твърде голям, за да бъде показан тук. Тези файлове са генерирани поради скорошните проблеми с Wi-Fi на устройството ви и ще бъдат споделени с Intel с цел по-лесното им отстраняване.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> ще може да преглежда <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
 <translation id="4692342362587775867">Известията от този сайт може да са натрапчиви</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# член в групата}other{# членове в групата}}</translation>
 <translation id="4692623383562244444">Търсещи машини</translation>
@@ -5645,7 +5640,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4913209098186576320">Възможно е този файл да е опасен<ph name="LINE_BREAK" />Проверката отнема повече време от обикновено…</translation>
 <translation id="4913695564084524048">Данните от приложението не могат да бъдат намерени</translation>
 <translation id="4915961947098019832">Сайтове с разрешение за показване на изображения</translation>
-<translation id="4916542008280060967">Да се разреши ли на сайта да редактира <ph name="FILE_NAME" />?</translation>
 <translation id="491779113051926205">Броячи за трафика в ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> иска да комуникира с разширението „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Приемам</translation>
@@ -6647,6 +6641,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5643321261065707929">Мрежа с отчитане</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
+<translation id="5647989922796038257">Споделяне и на всички аудиоизходи</translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5651308944918885595">Откриваемост за „Споделяне наблизо“</translation>
@@ -8788,7 +8783,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="720110658997053098">Това устройство да е постоянно в павилионен режим</translation>
 <translation id="7201118060536064622">Изтрихте „<ph name="DELETED_ITEM_NAME" />“</translation>
 <translation id="7201336084980086208">Автоматичното попълване може да предлага да запазва информация, когато изпращате формуляри, като например номера на шофьорската книжка или на паспорта ви.</translation>
-<translation id="7201420661433230412">Преглед на файловете</translation>
 <translation id="7201432510117121839">Предаването на звук от работен плот не се поддържа на това устройство</translation>
 <translation id="7201535955609308429">Изчакайте, докато потвърждаването е в ход</translation>
 <translation id="7202337678781136582">Сканирайте QR кода с телефона си с Android</translation>
@@ -9397,7 +9391,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="764178579712141045">Добавихте <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Скриване на поверителното съдържание</translation>
 <translation id="7643117827468520640">Преглед на тези условия</translation>
-<translation id="7643932971554933646">Да се разреши ли на сайта да преглежда файловете?</translation>
 <translation id="7644953783774050577">Без избиране</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (собственик)</translation>
 <translation id="7645681574855902035">Създаването на резервно копие на Linux се анулира</translation>
@@ -9595,7 +9588,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7767554953520855281">Подробностите са скрити, когато споделяте екрана си</translation>
 <translation id="7767972280546034736">Създайте код за достъп за <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Сайтовете автоматично следват тази настройка, когато ги посещавате</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> ще може да преглежда файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="7768770796815395237">Промяна</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7769709635093101687">Клавишна комбинация за поставяне на пауза</translation>
@@ -9613,7 +9605,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7774581652827321413">Вижте обобщена информация за страницата, сродни търсения и други полезни сведения за нея</translation>
 <translation id="7774792847912242537">Твърде много заявки.</translation>
 <translation id="7775694664330414886">Разделът бе преместен в група без име – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> ще може да преглежда файловете в(ъв) <ph name="FOLDERNAME" />, докато не затворите всички раздели със сайта</translation>
 <translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7776701556330691704">Няма намерени гласове</translation>
 <translation id="7776950606649732730">Опитайте отново, след като синхронизирането на файла приключи.</translation>
@@ -10048,7 +10039,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8061991877177392872">Изглежда, че вече сте настроили Voice Match за Асистент на друго устройство. Предишните записи бяха използвани за създаване на гласов модел на това устройство.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартия}other{{COUNT} листа хартия}}</translation>
 <translation id="8063235345342641131">Стандартен зелен аватар</translation>
-<translation id="8063535366119089408">Преглед на файла</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Използвайте AI на Google, за да повишите креативността и продуктивността си</translation>
 <translation id="8066444921260601116">Диалогов прозорец за връзка</translation>

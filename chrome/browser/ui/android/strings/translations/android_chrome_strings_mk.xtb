@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">Се подредува според последно отворање</translation>
 <translation id="297771753501244313">Подреди по посл. отвор.</translation>
 <translation id="2979639724566107830">Отвори во нов прозорец</translation>
-<translation id="2981364137500752533">Може да имате до 5 прозорци.</translation>
 <translation id="2983102365694924129">Според вашата активност на сајт. Оваа поставка е исклучена.</translation>
 <translation id="2983398917942897288">Неактивни (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Вклучи го околниот текст во пребарувањата на Google</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">со <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Преземете ја страницата</translation>
 <translation id="5458366071038729214">Сајтовите што ги следите ќе ги најдете тука</translation>
-<translation id="5468068603361015296">Дали сепак сакате да ја преземете <ph name="FILE_NAME" />?</translation>
 <translation id="5471273988133666918">Картичката <ph name="TAB_TITLE" /> не може да се премести</translation>
 <translation id="548278423535722844">Отвори во апликацијата „Карти“</translation>
 <translation id="5492637351392383067">Шифрирање на уредот</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
-<translation id="6715020873764921614">Дали сепак сакате да ја преземете датотеката <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="671928215901716392">Заклучување на екранот</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
 <translation id="6734310707649923383">Може да ги видите страниците што сте ги отвориле или да ги избришете од историјата</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8348430946834215779">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат</translation>
 <translation id="8354977102499939946">Брзо пребарувајте со гласот. За да ја измените кратенкава, одете во „Поставки“.</translation>
-<translation id="8357329300499507091">Вкупно може да имате најмногу <ph name="MAX_WINDOW_COUNT" /> прозорци. За да вратите нов прозорец, намалете го вкупниот број активни и неактивни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку. Неактивните прозорци се бришат по 6 месеци.</translation>
 <translation id="8361737703487394103">Скокни до конкретна картичка (1 – 8)</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> група картички}one{<ph name="TAB_GROUPS_MANY" /> група картички}other{<ph name="TAB_GROUPS_MANY" /> групи картички}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">Да се отстрани <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Датотеката не може да се преземе безбедно</translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
-<translation id="8576426273246268132">Вкупно може да имате најмногу <ph name="MAX_WINDOW_COUNT" /> прозорци. За да отворите нов прозорец, намалете го вкупниот број активни и неактивни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку.</translation>
 <translation id="8580435650274205305">Датум на истекување, задолжително</translation>
 <translation id="8582529315803410153">Картичките од другите уреди ќе ги најдете тука</translation>
 <translation id="8585103689515290060">Услуги за автоматско пополнување</translation>

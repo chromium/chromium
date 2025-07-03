@@ -3715,7 +3715,6 @@
 <translation id="7251437084390964440">Некоторые элементы сетевой конфигурации невозможно импортировать, поскольку она не соответствует стандарту ONC.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7251635775446614726">Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7255540419660272073">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="7257453341537973799">Планирование карьеры и посвященные ей ресурсы</translation>

@@ -3382,7 +3382,6 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
       Tùy chọn cài đặt thử nghiệm này sẽ bị xóa trong tương lai khi tính năng đăng nhập nội tuyến hỗ trợ đầy đủ tất cả các luồng đăng nhập một lần (SSO).</translation>
 <translation id="3435178885391813398">Không cho phép Trình quét.</translation>
 <translation id="3435796032110614169">Cho phép xóa lịch sử lệnh in</translation>
-<translation id="3435896845095436175">Bật</translation>
 <translation id="3436217793443508863">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình bị khóa khi chạy bằng pin</translation>
 <translation id="3437924696598384725">Cho phép người dùng quản lý các tùy chọn kết nối VPN</translation>
 <translation id="3441664787678256816">Cho phép các kết nối hỗ trợ từ xa của doanh nghiệp đến máy này</translation>
@@ -4704,7 +4703,6 @@ Lưu ý: Chính sách này sẽ vô hiệu hoá chính sách <ph name="ARC_GLS_P
 <translation id="4389073105055031853">Cho phép người dùng quản lý tất cả chứng chỉ</translation>
 <translation id="4389091865841123886">Định cấu hình chứng thực từ xa với cơ chế TPM.</translation>
 <translation id="4389113579547582722">Cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
-<translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="4395619678972620537">Nếu bạn bật chính sách này, các kết nối ngang hàng WebRTC có thể hạ cấp xuống phiên bản 
       lỗi thời của các giao thức TLS/DTLS (DTLS 1.0, TLS 1.0 và TLS 1.1).
       Khi bạn tắt hoặc không đặt chính sách này, các phiên bản TLS/DTLS này sẽ
@@ -5681,6 +5679,7 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5037749623252479780">Chế độ cài đặt phím PageUp/PageDown bị tắt</translation>
 <translation id="5039110755072335605">hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS</translation>
+<translation id="5039804452771397117">Cho phép</translation>
 <translation id="504116558738617678">Chỉ hiển thị các cảnh báo dung lượng ổ đĩa thấp nếu thiết bị không được quản lý hoặc chỉ có 1 người dùng</translation>
 <translation id="5041315457555330432">Chỉ cho phép <ph name="PRODUCT_NAME" /> kết nối với các thiết bị trên địa chỉ IP riêng tư, trừ phi tính năng CastAllowAllIPs được bật.</translation>
 <translation id="504689994545234073">Cho phép người dùng lưu trữ tệp trên máy</translation>
@@ -6580,17 +6579,6 @@ Nếu bạn xoá miền khỏi chính sách, thì miền đó sẽ không thể 
 Nếu bạn không đặt chính sách, thì tất cả miền sẽ không thể truy cập URL file:// trong Trình xem PDF.</translation>
 <translation id="5585424654425017599">Cho phép thành phần tích hợp</translation>
 <translation id="5586942249556966598">Không làm gì</translation>
-<translation id="5595355842329604596">Chính sách này xác định chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập đến trong chính sách. Ví dụ: Nếu bạn đặt chính sách này thành giá trị 1, thì 1 sẽ là chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập. Các giá trị chính sách được đặt thủ công sẽ không bị ảnh hưởng. Chế độ cài đặt này sẽ xác định chế độ mặc định cho <ph name="GEMINI_SETTINGS_POLICY_NAME" /> và các tính năng AI tạo sinh được đề cập của Chrome. Hãy truy cập vào https://support.google.com/chrome/a?p=generative_ai_settings để xem danh sách các tính năng được đề cập.
-
-0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-2 = Không cho phép sử dụng tính năng này.
-
-Nếu một tính năng của Chrome được đề cập không có giá trị chính sách tương đương, thì giá trị cao hơn gần nhất sẽ được sử dụng. Một số chính sách, chẳng hạn như <ph name="GEMINI_SETTINGS_POLICY_NAME" />, chỉ hỗ trợ các trạng thái Được phép và Không được phép. Nếu bạn đặt chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> thành 0 hoặc 1, thì tính năng này sẽ được phép. Nếu bạn đặt chính sách này thành 2, thì tính năng này sẽ không được phép. Hãy xem tài liệu về mỗi tính năng để biết thêm thông tin về cách tính năng tương tác với các giá trị trong chính sách này.
-
-Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5597542113049786516">Chính sách này kiểm soát việc một trang có thể sử dụng các API AI tích hợp sẵn (chẳng hạn như <ph name="LANGUAGE_MODEL_API_NAME" />, <ph name="SUMMARIZATION_API_NAME" />, <ph name="WRITER_API_NAME" /> và <ph name="REWRITER_API_NAME" />) hay không.
 
 Nếu bạn bật hoặc không đặt chính sách này, trang sẽ có thể sử dụng các API đó.
@@ -11098,12 +11086,6 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 
       Xem https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage để biết chi tiết về các loại phương tiện JavaScript/ECMAScript.
       </translation>
-<translation id="8668202868357089313">Lớp phủ Ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web.
-
-Tính năng này không bị kiểm soát bởi bất cứ chế độ cài đặt nào của người dùng và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi bị tắt theo chính sách này.
-
-Khi bạn đặt chính sách thành 0 – Bật hoặc không đặt, người dùng sẽ có thể sử dụng tính năng này.
-Khi bạn đặt chính sách này thành 1 – Tắt, người dùng sẽ không thể sử dụng tính năng này.</translation>
 <translation id="8668928485126473293">Cho phép bạn thiết lập liệu <ph name="PRODUCT_NAME" /> có chạy công cụ JavaScript v8 trong khi bật tính năng tối ưu hoá JavaScript nâng cao hơn hay không.
 
 Việc tắt tính năng tối ưu hoá JavaScript (bằng cách đặt giá trị của chính sách này thành 2) có thể khiến <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web chậm hơn.

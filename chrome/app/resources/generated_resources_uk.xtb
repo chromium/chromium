@@ -427,9 +427,9 @@
 <translation id="1277597051786235230">&amp;Пошук у <ph name="SEARCH_ENGINE" /> за запитом "<ph name="SEARCH_TERMS" />" у новій вкладці</translation>
 <translation id="127849925363482083">Щоб закрити закріплену вкладку, знову натисніть <ph name="SHORTCUT_TEXT" /></translation>
 <translation id="1278859221870828664">Перегляньте додатки й сервіси Google Play</translation>
+<translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="127946606521051357">Пристрій поблизу надсилає дані</translation>
 <translation id="1280332775949918163">Прив’язати вікно</translation>
-<translation id="1280965841156951489">Змінити файли</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не вдалося відкрити файл}one{Не вдалося відкрити файли}few{Не вдалося відкрити файли}many{Не вдалося відкрити файли}other{Не вдалося відкрити файли}}</translation>
 <translation id="1282311502488501110">Не входити</translation>
 <translation id="1282436639288565079">Відомості про групу вкладок</translation>
@@ -1033,7 +1033,6 @@
 <translation id="169675691788639886">На пристрої налаштовано сервер SSH. Не входьте в облікові записи, що містять конфіденційну інформацію.</translation>
 <translation id="1697122132646041614">Якщо натиснути "Не подобається", відкриється форма, де ви зможете залишити докладний відгук про те, чому вам не подобаються ці результати.</translation>
 <translation id="1697532407822776718">Готово!</translation>
-<translation id="1697686431566694143">Редагувати файл</translation>
 <translation id="1698796500103229697">Способи оплати</translation>
 <translation id="1698899521169711967">Режим активного курсора</translation>
 <translation id="1699807488537653303">Виправити помилку пароля</translation>
@@ -3029,7 +3028,6 @@
 <translation id="3067198179881736288">Установити додаток?</translation>
 <translation id="3067198360141518313">Запустити цей плагін</translation>
 <translation id="3071624960923923138">Натисніть тут, щоб відкрити нову вкладку</translation>
-<translation id="3072775339180057696">Дозволити сайту переглядати файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="3074499504015191586">Перекласти всю сторінку</translation>
 <translation id="3075144191779656260">Торкніться сканера відбитків пальців на лівому боці пристрою <ph name="DEVICE_TYPE" />. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
 <translation id="3075740753681485522">Вимкнено • Це розширення містить зловмисне програмне забезпечення</translation>
@@ -3527,7 +3525,6 @@
 <translation id="3443744348829035122">Час очікування сервісу <ph name="BRAND" /> минув</translation>
 <translation id="3443754338602062261">Паролі для цих облікових записів уже збережено в сервісі <ph name="BRAND" />. Якщо ви вирішите імпортувати один із наведених нижче паролів, він замінить наявний.</translation>
 <translation id="344449859752187052">Сторонні файли cookie заблоковано</translation>
-<translation id="3444726579402183581">Сайт <ph name="ORIGIN" /> зможе переглядати файл <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Швидкі відповіді Google Асистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="344537926140058498">Ваша організація заблокувала цей файл, оскільки він містить конфіденційний або небезпечний контент. Попросіть його власника вирішити цю проблему.</translation>
@@ -4006,7 +4003,6 @@
 <translation id="3760460896538743390">Перевірити &amp;фонову сторінку</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> (день)</translation>
 <translation id="37613671848467444">Відкрити в &amp;анонімному вікні</translation>
-<translation id="3761556954875533505">Дозволити сайту змінювати файли?</translation>
 <translation id="3761560059647741692">Пейзажі</translation>
 <translation id="3761733456040768239">Інші дії для картки "<ph name="CARD_DESCRIPTION" />", код CVC збережено</translation>
 <translation id="3763433740586298940">Ви можете блокувати непотрібні вам сайти. Chrome також автоматично видаляє їх зі списку через 30 днів.</translation>
@@ -5325,7 +5321,6 @@
 <translation id="4689235506267737042">Виберіть демо-параметри</translation>
 <translation id="4689421377817139245">Синхронізуйте цю закладку з iPhone</translation>
 <translation id="4690091457710545971">&lt;Мікропрограма Wi-Fi від Intel згенерувала чотири файли: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Перші три – це двійкові файли, що містять дані розвантаження пам’яті реєстру та не включають особисту інформацію й відомості, за якими можна ідентифікувати пристрій (як стверджує компанія Intel). Останній файл – це трасування виконання мікропрограми Intel; з нього стерто всю особисту інформацію й дані, за якими можна ідентифікувати пристрій, але він завеликий, щоб відображатися тут. Ці файли згенеровано у відповідь на нещодавні проблеми з Wi-Fi на пристрої. Їх буде надіслано в Intel, щоб допомогти вирішити ці проблеми.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> зможе переглядати файл "<ph name="FILENAME" />", поки ви не закриєте всі вкладки для цього сайту</translation>
 <translation id="4692342362587775867">Сповіщення від цього сайту можуть заважати перегляду</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# учасник у групі}one{# учасник у групі}few{# учасники в групі}many{# учасників у групі}other{# учасника в групі}}</translation>
 <translation id="4692623383562244444">Пошукові системи</translation>
@@ -5650,7 +5645,6 @@
 <translation id="4913209098186576320">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Перевірка триває довше, ніж зазвичай…</translation>
 <translation id="4913695564084524048">Не вдалося знайти дані додатка</translation>
 <translation id="4915961947098019832">Дозволено показувати зображення</translation>
-<translation id="4916542008280060967">Дозволити сайту змінювати файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="491779113051926205">Лічильники трафіку в ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> хоче обмінюватися даними з розширенням <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Прийняти</translation>
@@ -8794,7 +8788,6 @@
 <translation id="720110658997053098">Назавжди перевести цей пристрій у режим термінала</translation>
 <translation id="7201118060536064622">Елемент "<ph name="DELETED_ITEM_NAME" />" видалено</translation>
 <translation id="7201336084980086208">Коли ви надсилаєте форми, функція автозаповнення може пропонувати зберегти дані, наприклад номер посвідчення водія чи паспорта</translation>
-<translation id="7201420661433230412">Переглянути файли</translation>
 <translation id="7201432510117121839">Цей пристрій не підтримує трансляцію звуку комп’ютера</translation>
 <translation id="7201535955609308429">Зачекайте, поки триває підтвердження</translation>
 <translation id="7202337678781136582">Зіскануйте QR-код за допомогою телефона Android</translation>
@@ -9402,7 +9395,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> додано</translation>
 <translation id="7642778300616172920">Ховати конфіденційний вміст</translation>
 <translation id="7643117827468520640">Перегляньте наведені нижче умови</translation>
-<translation id="7643932971554933646">Дозволити сайту переглядати файли?</translation>
 <translation id="7644953783774050577">Не вибирати нічого</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7645681574855902035">Скасовується резервне копіювання Linux</translation>
@@ -9600,7 +9592,6 @@
 <translation id="7767554953520855281">Доки ви показуєте свій екран, деталі приховуються</translation>
 <translation id="7767972280546034736">Створити ключ доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Коли ви відвідуєте сайти, вони автоматично дотримуються цього налаштування</translation>
-<translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> зможе переглядати файли в папці <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Змінити</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7769709635093101687">Комбінація клавіш для призупинення</translation>
@@ -9618,7 +9609,6 @@
 <translation id="7774581652827321413">Отримайте короткий виклад сторінки, пов’язані пошукові запити й іншу корисну інформацію про цю сторінку</translation>
 <translation id="7774792847912242537">Забагато запитів.</translation>
 <translation id="7775694664330414886">Вкладку переміщено в групу без назви — <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> зможе переглядати файли в папці "<ph name="FOLDERNAME" />", поки ви не закриєте всі вкладки для цього сайту</translation>
 <translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7776701556330691704">Голосів не знайдено</translation>
 <translation id="7776950606649732730">Повторіть спробу, коли синхронізація файлу завершиться.</translation>
@@ -10053,7 +10043,6 @@
 <translation id="8061991877177392872">Схоже, ви вже налаштували Voice Match для Асистента на іншому пристрої. Зразок вашого голосу на цьому пристрої створено на основі попередніх записів.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 аркуш паперу}one{{COUNT} аркуш паперу}few{{COUNT} аркуші паперу}many{{COUNT} аркушів паперу}other{{COUNT} аркуша паперу}}</translation>
 <translation id="8063235345342641131">Стандартний зелений аватар</translation>
-<translation id="8063535366119089408">Переглянути файл</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>
 <translation id="8065144531309810062">Використовуйте ШІ від Google, щоб знайти натхнення й бути продуктивнішими</translation>
 <translation id="8066444921260601116">Діалогове вікно з’єднання</translation>

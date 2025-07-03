@@ -424,9 +424,9 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1277597051786235230">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /> nunha pestana nova</translation>
 <translation id="127849925363482083">Preme <ph name="SHORTCUT_TEXT" /> de novo para pechar a pestana fixada</translation>
 <translation id="1278859221870828664">Revisar as aplicacións e os servizos de Google Play</translation>
+<translation id="1279024913354609713">Non permitir</translation>
 <translation id="127946606521051357">Dispositivo próximo compartindo contido</translation>
 <translation id="1280332775949918163">Axustar ventá</translation>
-<translation id="1280965841156951489">Editar ficheiros</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Non se pode abrir o ficheiro}other{Non se pode abrir o ficheiros}}</translation>
 <translation id="1282311502488501110">Non iniciar sesión</translation>
 <translation id="1282436639288565079">Detalles do grupo de pestanas</translation>
@@ -1028,7 +1028,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="169675691788639886">O dispositivo ten configurado un servidor SSH. Non inicies sesión con contas confidenciais.</translation>
 <translation id="1697122132646041614">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gustan estes resultados.</translation>
 <translation id="1697532407822776718">Listo!</translation>
-<translation id="1697686431566694143">Editar ficheiro</translation>
 <translation id="1698796500103229697">Métodos de pago</translation>
 <translation id="1698899521169711967">Navegación por cursor de texto</translation>
 <translation id="1699807488537653303">Corrixe o erro de contrasinal</translation>
@@ -3012,7 +3011,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3067198179881736288">Queres instalar a aplicación?</translation>
 <translation id="3067198360141518313">Executar este plugin</translation>
 <translation id="3071624960923923138">Podes facer clic aquí para abrir unha nova pestana</translation>
-<translation id="3072775339180057696">Queres permitir que o sitio acceda a <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Traducir páxina completa</translation>
 <translation id="3075144191779656260">Toca o sensor de impresión dixital situado na parte esquerda do dispositivo (<ph name="DEVICE_TYPE" />). Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="3075740753681485522">Desactivada • Esta extensión contén software malicioso</translation>
@@ -3510,7 +3508,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3443744348829035122">Esgotouse o tempo de espera de <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Xa tes contrasinais para estas contas no <ph name="BRAND" />. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueadas</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostas rápidas do Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">A túa organización bloqueou este ficheiro porque inclúe contido confidencial ou perigoso. Pídelle ao seu propietario que o corrixa.</translation>
@@ -3992,7 +3989,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3760460896538743390">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> día</translation>
 <translation id="37613671848467444">Abrir nunha ventá de &amp;incógnito</translation>
-<translation id="3761556954875533505">Queres permitir que o sitio edite os ficheiros?</translation>
 <translation id="3761560059647741692">Paisaxe</translation>
 <translation id="3761733456040768239">Máis accións para <ph name="CARD_DESCRIPTION" />, CVC gardado</translation>
 <translation id="3763433740586298940">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade.</translation>
@@ -5311,7 +5307,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4689235506267737042">Selecciona as túas preferencias de demostración</translation>
 <translation id="4689421377817139245">Sincroniza este marcador co iPhone</translation>
 <translation id="4690091457710545971">&lt;O firmware da wifi de Intel xerou catro ficheiros: csr.lst, fh_regs.lst, radio_reg.lst e monitor.lst.sysmon. Os tres primeiros son ficheiros binarios que conteñen envorcaduras de rexistros e que Intel confirmou que non conteñen información persoal nin datos que permitan identificar o dispositivo. O último ficheiro é un seguimento da execución do firmware de Intel. Quitáronselle toda a información persoal e todos os datos que permitían identificar o dispositivo, pero é demasiado grande para mostralo aquí. Estes ficheiros xeráronse porque se produciron problemas recentes relacionados coa conexión wifi do dispositivo e compartiranse con Intel para axudar a solucionalos.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
 <translation id="4692342362587775867">As notificacións deste sitio poden resultar molestas</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# membro no grupo}other{# membros no grupo}}</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
@@ -5637,7 +5632,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4913209098186576320">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />A comprobación está tardando máis tempo do normal...</translation>
 <translation id="4913695564084524048">Non se poden atopar datos da aplicación</translation>
 <translation id="4915961947098019832">Permiso concedido para mostrar imaxes</translation>
-<translation id="4916542008280060967">Queres permitir que o sitio edite <ph name="FILE_NAME" />?</translation>
 <translation id="491779113051926205">Contadores de tráfico de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quere comunicarse coa extensión "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -8775,7 +8769,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="720110658997053098">Manter este dispositivo permanentemente no modo de quiosco</translation>
 <translation id="7201118060536064622">Eliminouse "<ph name="DELETED_ITEM_NAME" />"</translation>
 <translation id="7201336084980086208">Cando envíes formularios, a función de autocompletar pode preguntarche se queres gardar a información, como o número do pasaporte ou o permiso de conducir</translation>
-<translation id="7201420661433230412">Ver ficheiros</translation>
 <translation id="7201432510117121839">Non se pode emitir o audio do ordenador neste dispositivo</translation>
 <translation id="7201535955609308429">Espera mentres se leva a cabo a verificación</translation>
 <translation id="7202337678781136582">Escanea o código QR co teu teléfono Android</translation>
@@ -9384,7 +9377,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="764178579712141045">Engadiuse a <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>
 <translation id="7643117827468520640">Revisa estas condicións</translation>
-<translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
 <translation id="7644953783774050577">Non seleccionar nada</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguranza de Linux</translation>
@@ -9582,7 +9574,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7767554953520855281">Os detalles ocúltanse mentres compartes a pantalla</translation>
 <translation id="7767972280546034736">Crea unha clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Esta opción de configuración aplicarase automaticamente aos sitios cando os visites</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> poderá ver os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7769709635093101687">Atallo de teclado para pór en pausa</translation>
@@ -9600,7 +9591,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7774581652827321413">Obtén un resumo desta páxina, buscas relacionadas e outra información útil acerca dela</translation>
 <translation id="7774792847912242537">Hai demasiadas solicitudes.</translation>
 <translation id="7775694664330414886">A pestana moveuse a un grupo sen nome (<ph name="GROUP_CONTENTS" />)</translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> poderá ver os ficheiros de <ph name="FOLDERNAME" /> ata que peches todas as pestanas deste sitio</translation>
 <translation id="777637629667389858">Cando teñas a sesión iniciada, ofrecerache protección nos servizos de Google.</translation>
 <translation id="7776701556330691704">Non se atopou ningunha voz</translation>
 <translation id="7776950606649732730">Volve tentalo cando o ficheiro remate de sincronizarse.</translation>
@@ -10034,7 +10024,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8061991877177392872">Parece que xa configuraches Voice Match co teu Asistente noutro dispositivo. Esas gravacións anteriores utilizáronse para crear un modelo de voz neste dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 folla}other{{COUNT} follas}}</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
-<translation id="8063535366119089408">Ver ficheiro</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8065144531309810062">Usa a IA de Google para aumentar a túa creatividade e produtividade</translation>
 <translation id="8066444921260601116">Cadro de diálogo de conexión</translation>

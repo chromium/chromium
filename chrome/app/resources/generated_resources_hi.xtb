@@ -425,9 +425,9 @@
 <translation id="1277597051786235230">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="127849925363482083">पिन किए गए टैब को बंद करने के लिए, <ph name="SHORTCUT_TEXT" /> को फिर से दबाएं</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
+<translation id="1279024913354609713">अनुमति न दें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280332775949918163">विंडो मूव करें</translation>
-<translation id="1280965841156951489">फ़ाइलों में बदलाव करें</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{फ़ाइल खोली नहीं जा सकती}one{फ़ाइल खोली नहीं जा सकती}other{फ़ाइलें खोली नहीं जा सकतीं}}</translation>
 <translation id="1282311502488501110">साइन इन न करें</translation>
 <translation id="1282436639288565079">टैब ग्रुप की जानकारी</translation>
@@ -1031,7 +1031,6 @@
 <translation id="169675691788639886">डिवाइस के लिए एसएसएच सर्वर कॉन्फ़िगर किया गया है. संवेदनशील खातों से साइन इन न करें.</translation>
 <translation id="1697122132646041614">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं.</translation>
 <translation id="1697532407822776718">आप बिलकुल तैयार हैं!</translation>
-<translation id="1697686431566694143">फ़ाइल में बदलाव करें</translation>
 <translation id="1698796500103229697">पेमेंट के तरीके</translation>
 <translation id="1698899521169711967">कैरेट ब्राउज़िंग</translation>
 <translation id="1699807488537653303">पासवर्ड की गड़बड़ी ठीक करें</translation>
@@ -3027,7 +3026,6 @@
 <translation id="3067198179881736288">ऐप्लिकेशन इंस्टॉल करें?</translation>
 <translation id="3067198360141518313">यह प्लग इन चलाएं</translation>
 <translation id="3071624960923923138">नया टैब खोलने के लिए, आप यहां क्लिक कर सकते हैं</translation>
-<translation id="3072775339180057696">क्या आप साइट को <ph name="FILE_NAME" /> देखने देना चाहते हैं?</translation>
 <translation id="3074499504015191586">पूरे पेज का अनुवाद करें</translation>
 <translation id="3075144191779656260">अपने <ph name="DEVICE_TYPE" /> की बाईं ओर मौजूद, फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="3075740753681485522">बंद है • इस एक्सटेंशन में मैलवेयर है</translation>
@@ -3525,7 +3523,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> का समय खत्म हो गया</translation>
 <translation id="3443754338602062261">आपके <ph name="BRAND" /> में, इन खातों के पासवर्ड पहले से मौजूद हैं. अगर यहां दिए गए पासवर्ड में से किसी एक को इंपोर्ट करने का विकल्प चुना जाता है, तो मौजूदा पासवर्ड बदल जाएगा.</translation>
 <translation id="344449859752187052">तीसरे पक्ष की कुकी ब्लॉक की गईं</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" />, <ph name="FILENAME" /> देख पाएंगे</translation>
 <translation id="3445047461171030979">Google Assistant में तुरंत जवाब की सुविधा</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="344537926140058498">आपके संगठन ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि इसमें संवेदनशील या खतरनाक कॉन्टेंट है. फ़ाइल के मालिक को इसमें सुधार करने के लिए कहें.</translation>
@@ -4004,7 +4001,6 @@
 <translation id="3760460896538743390">निरीक्षण और पेजभूमि पेज</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> दिन</translation>
 <translation id="37613671848467444">&amp;गुप्त विंडों में खोलें</translation>
-<translation id="3761556954875533505">क्या आप साइट को फ़ाइलों में बदलाव करने देना चाहते हैं?</translation>
 <translation id="3761560059647741692">लैंडस्केप</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> के लिए ज़्यादा कार्रवाइयां. सीवीसी सेव किया गया</translation>
 <translation id="3763433740586298940">आपको जो साइटें नहीं देखनी हैं उन्हें ब्लॉक किया जा सकता है. Chrome, ब्लॉक की गई साइटों की सूची से उन साइटों को अपने-आप मिटा देता है जिन्हें इसमें जोड़े हुए 30 दिन से ज़्यादा हो गए हैं.</translation>
@@ -5322,7 +5318,6 @@
 <translation id="4689235506267737042">अपनी डेमो पसंद चुनें</translation>
 <translation id="4689421377817139245">इस बुकमार्क को अपने iPhone से सिंक करें</translation>
 <translation id="4690091457710545971">&lt;'Intel वाई-फ़ाई फ़र्मवेयर' की जनरेट की हुई चार फ़ाइलें: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  पहली तीन फ़ाइलें बाइनरी हैं जिनमें रजिस्टर डंप शामिल हैं और Intel का दावा है कि इनमें कोई भी निजी या डिवाइस की पहचान करने वाली जानकारी शामिल नहीं है.  आखिरी फ़ाइल Intel फ़र्मवेयर का एक एक्ज़ीक्यूशन ट्रेस है जिसमें से किसी भी निजी या डिवाइस की पहचान करने वाली जानकारी को हटा दिया गया है लेकिन यहां दिखाने के लिए उसका आकार बहुत ही बड़ा है.  ये फ़ाइलें आपके डिवाइस में वाई-फ़ाई से जुड़ी हाल ही की समस्याओं के जवाब में जनरेट हुई हैं और इन्हें Intel के साथ शेयर किया जाएगा ताकि इन समस्याओं का हल निकालने में मदद मिल सके.&gt;</translation>
-<translation id="4691791363716065510">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक <ph name="FILENAME" /> को देख पाएगी</translation>
 <translation id="4692342362587775867">इस साइट से मिलने वाली सूचनाएं रुकावट पैदा कर सकती हैं</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{ग्रुप में # सदस्य है}one{ग्रुप में # सदस्य है}other{ग्रुप में # सदस्य हैं}}</translation>
 <translation id="4692623383562244444">सर्च इंजन</translation>
@@ -5647,7 +5642,6 @@
 <translation id="4913209098186576320">यह फ़ाइल खतरनाक हो सकती है<ph name="LINE_BREAK" />इस जांच में सामान्य से ज़्यादा समय लग रहा है...</translation>
 <translation id="4913695564084524048">ऐप्लिकेशन का डेटा नहीं मिला</translation>
 <translation id="4915961947098019832">इमेज दिखाने की अनुमति है</translation>
-<translation id="4916542008280060967">क्या आप साइट को <ph name="FILE_NAME" /> में बदलाव करने देना चाहते हैं?</translation>
 <translation id="491779113051926205">ChromeOS के ट्रैफ़िक काउंटर</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" एक्‍सटेंशन से संचार करना चाहता है</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
@@ -8790,7 +8784,6 @@
 <translation id="720110658997053098">इस डिवाइस को हमेशा के लिए किओस्क मोड में रखें</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' मिटाया गया</translation>
 <translation id="7201336084980086208">फ़ॉर्म सबमिट करने पर, ऑटोमैटिक भरने की सुविधा आपको जानकारी सेव करने का विकल्प दे सकती है. जैसे, आपका ड्राइविंग लाइसेंस या पासपोर्ट नंबर</translation>
-<translation id="7201420661433230412">फ़ाइलें देखें</translation>
 <translation id="7201432510117121839">इस डिवाइस पर, डेस्कटॉप के ऑडियो को कास्ट करने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="7201535955609308429">कृपया पुष्टि होने तक इंतज़ार करें</translation>
 <translation id="7202337678781136582">क्यूआर कोड को अपने Android फ़ोन से स्कैन करें</translation>
@@ -9398,7 +9391,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> को जोड़ा गया</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री छिपाएं</translation>
 <translation id="7643117827468520640">इन शर्तों को पढ़ें</translation>
-<translation id="7643932971554933646">साइट को फ़ाइलें देखने की अनुमति देना चाहते हैं?</translation>
 <translation id="7644953783774050577">कुछ भी न चुनें</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
 <translation id="7645681574855902035">Linux का बैकअप रद्द किया जा रहा है</translation>
@@ -9596,7 +9588,6 @@
 <translation id="7767554953520855281">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट नहीं दिखता</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" /> के लिए पासकी सेट करें</translation>
 <translation id="7768507955883790804">किसी साइट पर जाने पर, वह अपने-आप इस सेटिंग को फ़ॉलो करती है</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> के अंदर फ़ाइलें देख पाएंगे</translation>
 <translation id="7768770796815395237">बदलें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7769709635093101687">माउस का काम करने वाले बटन को रोकने के लिए कीबोर्ड शॉर्टकट</translation>
@@ -9614,7 +9605,6 @@
 <translation id="7774581652827321413">इस पेज के बारे में खास जानकारी, इससे मिलती-जुलती खोजें, और इससे जुड़ी काम की अन्य जानकारी पाएं</translation>
 <translation id="7774792847912242537">बहुत सारे अनुरोध.</translation>
 <translation id="7775694664330414886">टैब को बिना नाम वाले ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक फाइलों को <ph name="FOLDERNAME" /> में देख पाएगी</translation>
 <translation id="777637629667389858">अगर आप साइन इन हैं, तो यह Google की सभी सेवाओं पर आपकी सुरक्षा करती है.</translation>
 <translation id="7776701556330691704">कोई आवाज़ नहीं मिली</translation>
 <translation id="7776950606649732730">फ़ाइल सिंक होने के बाद, फिर से कोशिश करें.</translation>
@@ -10048,7 +10038,6 @@
 <translation id="8061991877177392872">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर, Assistant के साथ वॉइस मैच की सुविधा को सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए, इन पुरानी रिकॉर्डिंग का इस्तेमाल किया गया है.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{काग़ज़ की 1 शीट}one{काग़ज़ की {COUNT} शीट}other{काग़ज़ की {COUNT} शीट}}</translation>
 <translation id="8063235345342641131">डिफ़ॉल्ट हरा अवतार</translation>
-<translation id="8063535366119089408">फ़ाइल देखें</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">ज़्यादा क्रिएटिव और बेहतर काम करने के लिए, Google के एआई का इस्तेमाल करें</translation>
 <translation id="8066444921260601116">कनेक्शन डायलॉग</translation>

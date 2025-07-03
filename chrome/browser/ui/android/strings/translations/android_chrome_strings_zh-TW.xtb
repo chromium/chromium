@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">依上次開啟時間排序</translation>
 <translation id="297771753501244313">依上次開啟時間排序</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
-<translation id="2981364137500752533">最多只能開啟 5 個視窗。</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
 <translation id="2983398917942897288">未啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">使用 Google 搜尋時納入前後文</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">提供者：<ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">這裡會顯示你追蹤的網站</translation>
-<translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5492637351392383067">裝置端加密</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">昨天已檢查</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
-<translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
 <translation id="6723740634201835758">在你的 Google 帳戶中</translation>
 <translation id="6734310707649923383">系統會顯示造訪過的網頁，你也可以從歷史記錄中刪除這些網頁</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">一律不翻譯的網站</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
 <translation id="8354977102499939946">快速透過語音進行搜尋。如要編輯這個捷徑，請前往 [設定]。</translation>
-<translation id="8357329300499507091">最多可以開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。如要還原新視窗，請將使用中和閒置視窗的總數量減少至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下。閒置視窗 6 個月後就會刪除。</translation>
 <translation id="8361737703487394103">前往特定分頁 (1 - 8)</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> 個分頁群組}other{<ph name="TAB_GROUPS_MANY" /> 個分頁群組}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
-<translation id="8576426273246268132">最多可以開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。如要開啟新視窗，請將使用中和閒置視窗的總數量減少至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下。</translation>
 <translation id="8580435650274205305">請輸入到期日</translation>
 <translation id="8582529315803410153">這裡會顯示你在其他裝置上的分頁</translation>
 <translation id="8585103689515290060">自動填入服務</translation>

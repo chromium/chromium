@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">शेवटचा उघडलेला यानुसार क्रमाने लावत आहे</translation>
 <translation id="297771753501244313">शेवटचा उघडलेला यानुसार क्रमाने लावा</translation>
 <translation id="2979639724566107830">नवीन विंडोमध्ये उघडा</translation>
-<translation id="2981364137500752533">तुम्ही कमाल पाच विंडो उघडू शकता.</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
 <translation id="2983398917942897288">इनॅक्टिव्ह (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google वर शोधताना आसपासच्या मजकुराचा समावेश करा</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सह</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करा</translation>
 <translation id="5458366071038729214">तुम्ही फॉलो करत असलेल्या साइट तुम्हाला येथे दिसतील</translation>
-<translation id="5468068603361015296">तुम्हाला तरीही <ph name="FILE_NAME" /> डाउनलोड करायची आहे का?</translation>
 <translation id="5471273988133666918">टॅब <ph name="TAB_TITLE" /> हलवला जाऊ शकत नाही</translation>
 <translation id="548278423535722844">नकाशे ॲपमध्ये उघडा</translation>
 <translation id="5492637351392383067">डिव्हाइसवरील एंक्रिप्शन</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">काल तपासले</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="671481426037969117">तुमचा <ph name="FQDN" /> टायमर झाला आहे. तो उद्या पुन्हा सुरू होईल.</translation>
-<translation id="6715020873764921614">तुम्हाला तरीही <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) डाउनलोड करायची आहे का?</translation>
 <translation id="671928215901716392">लॉक स्क्रीन</translation>
 <translation id="6723740634201835758">तुमच्या Google खात्यामध्ये</translation>
 <translation id="6734310707649923383">तुम्ही भेट दिलेली पेज पाहू शकता किंवा ती तुमच्या इतिहासामधून हटवू शकता</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
-<translation id="8357329300499507091">तुम्ही कमाल <ph name="MAX_WINDOW_COUNT" /> विंडो उघडू शकता. नवीन विंडो रिस्टोअर करण्यासाठी, अ‍ॅक्टिव्ह आणि इनॅक्टिव्ह एकूण विंडोची संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा. इनॅक्टिव्ह विंडो ६ महिन्यांनंतर हटवल्या जातात.</translation>
 <translation id="8361737703487394103">विशिष्ट टॅबवर जा (१-८)</translation>
 <translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> टॅब गट}other{<ph name="TAB_GROUPS_MANY" /> टॅब गट}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> यांना काढून टाकायचे आहे का?</translation>
 <translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
-<translation id="8576426273246268132">तुम्ही कमाल <ph name="MAX_WINDOW_COUNT" /> विंडो उघडू शकता. नवीन विंडो उघडण्यासाठी, अ‍ॅक्टिव्ह आणि इनॅक्टिव्ह एकूण विंडोची संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा.</translation>
 <translation id="8580435650274205305">एक्स्पायरीची तारीख आवश्यक आहे</translation>
 <translation id="8582529315803410153">तुमच्या इतर डिव्हाइसमधील टॅब तुम्हाला इथे सापडतील</translation>
 <translation id="8585103689515290060">ऑटोफिल सेवा</translation>

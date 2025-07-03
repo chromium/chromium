@@ -424,9 +424,9 @@
 <translation id="1277597051786235230">Жаңа қойындыда <ph name="SEARCH_ENGINE" /> ішінен "<ph name="SEARCH_TERMS" />" &amp;іздеу</translation>
 <translation id="127849925363482083">Бекітілген қойындыны жабу үшін <ph name="SHORTCUT_TEXT" /> тіркесімін қайтадан басыңыз.</translation>
 <translation id="1278859221870828664">Google Play қолданбалары мен қызметтерін көру</translation>
+<translation id="1279024913354609713">Рұқсат бермеу</translation>
 <translation id="127946606521051357">Маңайдағы құрылғы бөлісіп жатыр</translation>
 <translation id="1280332775949918163">Терезені жылжыту</translation>
-<translation id="1280965841156951489">Файлдарды өзгерту</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлды ашу мүмкін емес}other{Файлдарды ашу мүмкін емес}}</translation>
 <translation id="1282311502488501110">Кірмеу</translation>
 <translation id="1282436639288565079">Қойындылар тобының мәліметтері</translation>
@@ -1026,7 +1026,6 @@
 <translation id="169675691788639886">Құрылғыда SSH сервері конфигурацияланған. Құпия аккаунттармен кірмеңіз.</translation>
 <translation id="1697122132646041614">"Ұнамайды" белгішесін бассаңыз, бұл нәтижелердің ұнамау себебін толықтай жазуға арналған үлгі ашылады.</translation>
 <translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
-<translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1698796500103229697">&amp;Төлеу әдістері</translation>
 <translation id="1698899521169711967">Белсенді курсор режимі</translation>
 <translation id="1699807488537653303">Құпия сөз қатесін түзету</translation>
@@ -3010,7 +3009,6 @@
 <translation id="3067198179881736288">Қолданба орнатылсын ба?</translation>
 <translation id="3067198360141518313">Бұл плагинді іске қосу</translation>
 <translation id="3071624960923923138">Жаңа қойынды ашу үшін осы жерді басуыңызға болады</translation>
-<translation id="3072775339180057696">Сайтқа <ph name="FILE_NAME" /> файлын қарауға рұқсат етілсін бе?</translation>
 <translation id="3074499504015191586">Тұтас бетті аудару</translation>
 <translation id="3075144191779656260"><ph name="DEVICE_TYPE" /> сол жағындағы саусақ ізін оқу сканерін түртіңіз. Саусағыңыздың ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="3075740753681485522">Өшірулі • Бұл кеңейтімде зиянды бағдарлама бар</translation>
@@ -3506,7 +3504,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> уақыты өтіп кетті</translation>
 <translation id="3443754338602062261"><ph name="BRAND" /> ішінде бұл тіркелгілерге арналған құпия сөздеріңіз бұрыннан бар. Төмендегі құпия сөздердің бірін импорттауды таңдасаңыз, ол бұрыннан бар біреуін ауыстырады.</translation>
 <translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> домені <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="3445047461171030979">Google Assistant жылдам жауаптары</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="344537926140058498">Бұл файлда құпия немесе қауіпті контент болғандықтан, ұйымыңыз оны бөгеді. Иесінен бұл мәселені шешуін сұраңыз.</translation>
@@ -3985,7 +3982,6 @@
 <translation id="3760460896538743390">&amp;Фондық бетті тексеру</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> күн</translation>
 <translation id="37613671848467444">&amp;Инкогнито терезесінде ашу</translation>
-<translation id="3761556954875533505">Сайтқа файлдарды өзгертуге рұқсат етілсін бе?</translation>
 <translation id="3761560059647741692">Альбомдық</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> бойынша басқа әрекеттер, CVC сақталды</translation>
 <translation id="3763433740586298940">Қаламайтын сайттарды блоктай аласыз. Сонымен қатар Chrome браузері тізімнен 30 күннен асқан сайттарды автоматты түрде жояды.</translation>
@@ -5304,7 +5300,6 @@
 <translation id="4689235506267737042">Демо параметрлерін таңдаңыз</translation>
 <translation id="4689421377817139245">Осы бетбелгіні iPhone телефоныңызға синхрондаңыз</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi микробағдарламасы жасаған төрт файл: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Алғашқы үшеуі тіркеу қателерінен тұратын бинарлы файлдар болып табылады және Intel-дің мәлімдеуі бойынша оларда жеке тұлғаны не құрылғыны айқындайтын ақпарат қамтылмайды. Соңғы файл – Intel микробағдарламасындағы бағдарламаның орындалу трассасы. Ондағы жеке тұлғаны не құрылғыны айқындайтын барлық ақпарат жойылған, бірақ ол үлкен болғандықтан, осы жерде көрсету мүмкін емес. Осы файлдар құрылғыңыздағы Wi-Fi желісіне қатысты соңғы мәселелерге сәйкес жасалды және олар Intel компаниясына жіберіліп, аталған мәселелерді шешуге көмектеседі.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> сайтының барлық қойындысы жабылғанға дейін, ол <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="4692342362587775867">Бұл сайттың хабарландырулары кедергі келтіруі мүмкін.</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{Топтағы # мүше}other{Топтағы # мүше}}</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
@@ -5629,7 +5624,6 @@
 <translation id="4913209098186576320">Бұл файл қауіпті болуы мүмкін.<ph name="LINE_BREAK" />Тексеріс әдеттегіден ұзақ уақытқа созылып жатыр...</translation>
 <translation id="4913695564084524048">Қолданба деректерін табу мүмкін емес.</translation>
 <translation id="4915961947098019832">Суреттерді көрсетуге рұқсаты барлар</translation>
-<translation id="4916542008280060967">Сайтқа <ph name="FILE_NAME" /> файлын өзгертуге рұқсат етілсін бе?</translation>
 <translation id="491779113051926205">ChromeOS трафик есептеуіштері</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" кеңейтімімен байланысуға рұқсат сұрауда</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
@@ -8766,7 +8760,6 @@
 <translation id="720110658997053098">Бұл құрылғыны киоск режимінде тұрақты сақтау</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" жойылды</translation>
 <translation id="7201336084980086208">Автотолтыру функциясы үлгілерді жіберген кезде, жүргізуші куәлігі немесе паспорт нөмірі сияқты ақпаратты сақтауды ұсынуы мүмкін.</translation>
-<translation id="7201420661433230412">Файлдарды көру</translation>
 <translation id="7201432510117121839">Бұл құрылғыда трансляцияланатын жұмыс үстелі аудиосының дыбысы шықпайды</translation>
 <translation id="7201535955609308429">Тексерудің аяқталғанын күтіңіз.</translation>
 <translation id="7202337678781136582">QR кодын Android телефоныңызбен сканерлеңіз</translation>
@@ -9374,7 +9367,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> қосылды</translation>
 <translation id="7642778300616172920">Құпия мәліметті жасыру</translation>
 <translation id="7643117827468520640">Осы шарттарды оқып шығыңыз</translation>
-<translation id="7643932971554933646">Сайтқа файлдар көруге рұқсат етілсін бе?</translation>
 <translation id="7644953783774050577">Ешқайсысын таңдамау</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (иесі)</translation>
 <translation id="7645681574855902035">Linux контейнерінің сақтық көшірмесін жасаудан бас тартылуда</translation>
@@ -9572,7 +9564,6 @@
 <translation id="7767554953520855281">Экраныңызды бөлісіп жатқанда, мәліметтер жасырын тұрады.</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" /> қолданбасына кіру кілтін жасаңыз</translation>
 <translation id="7768507955883790804">Сайттарға кірген кезде олар автоматты түрде осы параметрге қойылады.</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> домені <ph name="FOLDERNAME" /> қалтасындағы файлдарды көре алады.</translation>
 <translation id="7768770796815395237">Өзгерту</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769709635093101687">Кідіртуге арналған пернелер тіркесімі</translation>
@@ -9590,7 +9581,6 @@
 <translation id="7774581652827321413">Беттің қысқартылған нұсқасын, ұқсас сұрауларды және осы бет жайында басқа пайдалы ақпаратты алыңыз</translation>
 <translation id="7774792847912242537">Сұраулар тым көп.</translation>
 <translation id="7775694664330414886">Қойынды атаусыз топқа (<ph name="GROUP_CONTENTS" />) жылжытылды.</translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> сайтының барлық қойындысы жабылғанға дейін, ол <ph name="FOLDERNAME" /> қалтасындағы файлдарды көре алады.</translation>
 <translation id="777637629667389858">Аккаунтқа кірген кезде, сізді Google қызметтерінде қорғайды.</translation>
 <translation id="7776701556330691704">Ешқандай дауыс табылмады</translation>
 <translation id="7776950606649732730">Әрекетті файл синхрондалып болғаннан кейін қайталаңыз.</translation>
@@ -10024,7 +10014,6 @@
 <translation id="8061991877177392872">Voice Match функциясын Assistant қызметімен басқа құрылғыда реттеп қойған сияқтысыз. Бұл алдыңғы жазбалар осы құрылғыда дауыс үлгісін жасау үшін пайдаланылған.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 қағаз парақ}other{{COUNT} қағаз парақ}}</translation>
 <translation id="8063235345342641131">Әдепкі жасыл түсті аватар</translation>
-<translation id="8063535366119089408">Файлды қарау</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Креативтілік пен өнімділікті арттыру үшін Google AI пайдаланыңыз</translation>
 <translation id="8066444921260601116">Қосылу диалогтік терезесі</translation>

@@ -439,7 +439,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2977350910003566746">Акыркы ачылгандар боюнча иреттелүүдө</translation>
 <translation id="297771753501244313">Акыркы ачылган убакыты боюнча иргөө</translation>
 <translation id="2979639724566107830">Жаңы терезеде ачуу</translation>
-<translation id="2981364137500752533">5 терезеге чейин ачсаңыз болот.</translation>
 <translation id="2983102365694924129">Сайттагы аракеттериңиздин негизинде көрсөтүлөт. Бул параметр өчүк.</translation>
 <translation id="2983398917942897288">Активдүү эмес (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google'да издегенде көбүрөөк текст камтыңыз</translation>
@@ -988,7 +987,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5454166040603940656"><ph name="PROVIDER" /> менен</translation>
 <translation id="5456381639095306749">Баракты жүктөп алуу</translation>
 <translation id="5458366071038729214">Жазылган сайттарды ушул жерден табасыз</translation>
-<translation id="5468068603361015296"><ph name="FILE_NAME" /> файлы баары бир жүктөлүп алынсынбы?</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> өтмөгүн жылдырууга болбойт</translation>
 <translation id="548278423535722844">Карталар колдонмосунан ачыңыз</translation>
 <translation id="5492637351392383067">Түзмөктө шифрлөө</translation>
@@ -1278,7 +1276,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> таймериңиздин убакыты бүттү. Ал эртең кайра башталат.</translation>
-<translation id="6715020873764921614"><ph name="FILE_NAME" /> файлы (<ph name="FILE_SIZE" />) баары бир жүктөлүп алынсынбы?</translation>
 <translation id="671928215901716392">Кулпу экраны</translation>
 <translation id="6723740634201835758">Google аккаунтуңузда</translation>
 <translation id="6734310707649923383">Кирген барактарыңызды көрүп же аларды таржымалдан өчүрө аласыз</translation>
@@ -1691,7 +1688,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="834313815369870491">Сайттар эч качан которулбасын</translation>
 <translation id="8348430946834215779">HTTPS кеңейтүүсүн мүмкүн болгон учурларда колдонуп, аны колдоого албаган сайттарды жүктөөдөн мурда эскертүү алыңыз</translation>
 <translation id="8354977102499939946">Оозеки ыкчам издеңиз. Бул ыкчам баскычты түзөтүү үчүн параметрлерге өтүңүз.</translation>
-<translation id="8357329300499507091"><ph name="MAX_WINDOW_COUNT" /> терезеге чейин ачсаңыз болот. Жаңы терезени калыбына келтирүү үчүн ачык жана жабык терезелердин саны <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> же андан азыраак болушу керек. Жабык терезелер 6 айдан кийин жок кылынат.</translation>
 <translation id="8361737703487394103">Белгилүү бир өтмөккө өтүү (1–8)</translation>
 <translation id="8368001212524806591">Баага көз салуу</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> өтмөктөр тобу}other{<ph name="TAB_GROUPS_MANY" /> өтмөктөр тобу}}</translation>
@@ -1753,7 +1749,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> өчүрүлсүнбү?</translation>
 <translation id="8570677896027847510">Файлды коопсуз жүктөп алуу мүмкүн эмес</translation>
 <translation id="8571213806525832805">Акыркы 4 апта</translation>
-<translation id="8576426273246268132"><ph name="MAX_WINDOW_COUNT" /> терезеге чейин ачсаңыз болот. Жаңы терезе ачуу үчүн ачык жана жабык терезелердин саны <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> же андан азыраак болушу керек.</translation>
 <translation id="8580435650274205305">Мөөнөтү аяктоочу күн, талап кылынат</translation>
 <translation id="8582529315803410153">Башка түзмөктөрдөгү өтмөктөрүңүздү ушул жерден табасыз</translation>
 <translation id="8585103689515290060">Автотолтуруу кызматтары</translation>

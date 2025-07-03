@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">చివరిగా తెరిచిన దాని ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="297771753501244313">'చివరిగా తెరిచినది' వారీగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="2979639724566107830">కొత్త విండోలో తెరవండి</translation>
-<translation id="2981364137500752533">మీరు 5 విండోల వరకు తెరవవచ్చు.</translation>
 <translation id="2983102365694924129">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="2983398917942897288">ఇన్‌యాక్టివ్‌గా ఉంది (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను చేర్చండి</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
 <translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5458366071038729214">మీరు ఫాలో అయ్యే సైట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="5468068603361015296">మీరు ఏదేమైనా <ph name="FILE_NAME" />ను డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ట్యాబ్‌ను తరలించడం సాధ్యం కాదు</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
 <translation id="5492637351392383067">పరికరంలో ఎన్‌క్రిప్షన్</translation>
@@ -1276,7 +1274,6 @@
 <translation id="670498945988402717">నిన్న చెక్ చేసింది</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="671481426037969117">మీ <ph name="FQDN" /> టైమర్ పూర్తయింది. అది మళ్లీ రేపు ప్రారంభమవుతుంది.</translation>
-<translation id="6715020873764921614">మీరు ఏదేమైనా <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="671928215901716392">స్క్రీన్‌ను లాక్ చేయి</translation>
 <translation id="6723740634201835758">మీ Google ఖాతాలో</translation>
 <translation id="6734310707649923383">మీరు తెరిచిన పేజీలను చూడవచ్చు లేదా వాటిని మీ హిస్టరీ నుండి తొలగించవచ్చు</translation>
@@ -1689,7 +1686,6 @@
 <translation id="834313815369870491">ఈ సైట్‌లను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="8348430946834215779">సాధ్యమైనప్పుడల్లా HTTPSని ఉపయోగించండి, దానికి సపోర్ట్ చేయని సైట్‌లను లోడ్ చేసే ముందు హెచ్చరికను పొందండి</translation>
 <translation id="8354977102499939946">మీ వాయిస్‌తో వేగంగా సెర్చ్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
-<translation id="8357329300499507091">మీరు గరిష్ఠంగా <ph name="MAX_WINDOW_COUNT" /> విండోలను మాత్రమే ఉపయోగించగలరు. కొత్త విండోను రీస్టోర్ చేయడానికి, యాక్టివ్‌గా, ఇన్‌యాక్టివ్‌గా ఉన్న విండోల మొత్తం సంఖ్యను <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />‌కు లేదా అంతకంటే తక్కువకు తగ్గించండి. ఇన్‌యాక్టివ్ విండోలు 6 నెలల తర్వాత తొలగించబడతాయి.</translation>
 <translation id="8361737703487394103">ఏదైనా నిర్దిష్ట ట్యాబ్‌కు వెళ్లడం (1–8)</translation>
 <translation id="8368001212524806591">ధరను ట్రాక్ చేయండి</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ట్యాబ్ గ్రూప్}other{<ph name="TAB_GROUPS_MANY" /> ట్యాబ్ గ్రూప్‌లు}}</translation>
@@ -1751,7 +1747,6 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />‌ను తీసివేయాలా?</translation>
 <translation id="8570677896027847510">ఫైల్‌ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యపడదు</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
-<translation id="8576426273246268132">మీరు గరిష్ఠంగా <ph name="MAX_WINDOW_COUNT" /> విండోలను మాత్రమే ఉపయోగించగలరు. కొత్త విండోను తెరవడానికి, యాక్టివ్‌గా, ఇన్‌యాక్టివ్‌గా ఉన్న విండోల మొత్తం సంఖ్యను <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />‌కు లేదా అంతకంటే తక్కువకు తగ్గించండి.</translation>
 <translation id="8580435650274205305">గడువు ముగింపు తేదీ, అవసరం</translation>
 <translation id="8582529315803410153">ఇతర పరికరాలలో ఉన్న మీ ట్యాబ్‌లను మీరు ఇక్కడ చూడవచ్చు</translation>
 <translation id="8585103689515290060">ఆటోఫిల్ సర్వీసులు</translation>

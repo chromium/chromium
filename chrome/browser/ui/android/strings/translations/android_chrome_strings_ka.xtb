@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">ბოლოს გახსნილის მიხედვით დალაგება</translation>
 <translation id="297771753501244313">ბოლო გახსნით დალაგება</translation>
 <translation id="2979639724566107830">ახალ ფანჯარაში გახსნა</translation>
-<translation id="2981364137500752533">დაშვებულია მაქსიმუმ 5 ფანჯარა.</translation>
 <translation id="2983102365694924129">ეფუძნება თქვენს აქტივობას საიტზე. ეს პარამეტრი გამორთულია.</translation>
 <translation id="2983398917942897288">არააქტიური (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">გარშემო ტექსტის დართვა Google ძიებებში</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
 <translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
-<translation id="5468068603361015296">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="5471273988133666918">ჩანართის „<ph name="TAB_TITLE" />“ გადატანა შეუძლებელია</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
 <translation id="5492637351392383067">მოწყობილობაზე დაშიფვრა</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">შემოწმდა გუშინ</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="671481426037969117">თქვენი <ph name="FQDN" />-ის ტაიმერი ამოიწურა. ხვალ ის ხელახლა დაიწყება.</translation>
-<translation id="6715020873764921614">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="671928215901716392">ჩაკეტილი ეკრანი</translation>
 <translation id="6723740634201835758">თქვენს Google ანგარიშში</translation>
 <translation id="6734310707649923383">თქვენ შეგიძლიათ ნახოთ გვერდები, რომლებსაც ესტუმრეთ, ან წაშალოთ ისინი ისტორიიდან</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">არასოდეს ითარგმნოს საიტები</translation>
 <translation id="8348430946834215779">შეძლებისდაგვარად HTTPS-ის გამოყენება და გაფრთხილების მიღება, სანამ ჩაიტვირთება ის საიტები, რომელთა მიერაც ის მხარდაუჭერელია</translation>
 <translation id="8354977102499939946">სწრაფად მოიძიეთ ხმის მეშვეობით. ამ მალსახმობის რედაქტირებისთვის გადადით პარამეტრებზე.</translation>
-<translation id="8357329300499507091">დაშვებულია მაქსიმუმ <ph name="MAX_WINDOW_COUNT" /> ფანჯარა. ახალი ფანჯრის აღსადგენად შეამცირეთ აქტიური და არააქტიური ფანჯრების რაოდენობა მაქსიმუმ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />-მდე. არააქტიური ფანჯრები წაიშლება 6 თვის შემდეგ.</translation>
 <translation id="8361737703487394103">კონკრეტულ ჩანართზე გადასვლა (1–8)</translation>
 <translation id="8368001212524806591">ფასებისთვის თვალის მიდევნება</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ჩანართების ჯგუფი}other{<ph name="TAB_GROUPS_MANY" /> ჩანართების ჯგუფი}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">ამოიშალოს <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">ფაილის დაცულად ჩამოტვირთვა ვერ ხერხდება</translation>
 <translation id="8571213806525832805">ბოლო 4 კვირა</translation>
-<translation id="8576426273246268132">დაშვებულია მაქსიმუმ <ph name="MAX_WINDOW_COUNT" /> ფანჯარა. ახალი ფანჯრის გასახსნელად შეამცირეთ აქტიური და არააქტიური ფანჯრების რაოდენობა მაქსიმუმ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />-მდე.</translation>
 <translation id="8580435650274205305">მოქმედების ვადა (სავალდებულოა)</translation>
 <translation id="8582529315803410153">აქ იპოვით ჩანართებს თქვენი სხვა მოწყობილობებიდან</translation>
 <translation id="8585103689515290060">ავტომატური შევსების სერვისები</translation>

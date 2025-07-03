@@ -424,9 +424,9 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1277597051786235230">&amp;Tìm kiếm "<ph name="SEARCH_TERMS" />" qua <ph name="SEARCH_ENGINE" /> trong thẻ mới</translation>
 <translation id="127849925363482083">Nhấn <ph name="SHORTCUT_TEXT" /> lần nữa để đóng thẻ được ghim</translation>
 <translation id="1278859221870828664">Xem xét các ứng dụng và dịch vụ của Google Play</translation>
+<translation id="1279024913354609713">Không cho phép</translation>
 <translation id="127946606521051357">Thiết bị lân cận đang chia sẻ</translation>
 <translation id="1280332775949918163">Di chuyển cửa sổ</translation>
-<translation id="1280965841156951489">Chỉnh sửa tệp</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Không thể mở tệp}other{Không thể mở các tệp}}</translation>
 <translation id="1282311502488501110">Không đăng nhập</translation>
 <translation id="1282436639288565079">Thông tin về nhóm thẻ</translation>
@@ -1030,7 +1030,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
 <translation id="1697122132646041614">Nút Không thích sẽ mở ra một biểu mẫu để bạn gửi phản hồi chi tiết về lý do bạn không thích các kết quả này.</translation>
 <translation id="1697532407822776718">Bạn đã hoàn tất!</translation>
-<translation id="1697686431566694143">Chỉnh sửa tệp</translation>
 <translation id="1698796500103229697">&amp;Phương thức thanh toán</translation>
 <translation id="1698899521169711967">Duyệt web bằng con nháy</translation>
 <translation id="1699807488537653303">Khắc phục lỗi về mật khẩu</translation>
@@ -3026,7 +3025,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3067198179881736288">Cài đặt ứng dụng?</translation>
 <translation id="3067198360141518313">Chạy plugin này</translation>
 <translation id="3071624960923923138">Bạn có thể nhấp vào đây để mở thẻ mới</translation>
-<translation id="3072775339180057696">Cho phép trang web xem <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Dịch toàn bộ trang</translation>
 <translation id="3075144191779656260">Chạm vào cảm biến vân tay ở bên trái <ph name="DEVICE_TYPE" />. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="3075740753681485522">Đang tắt • Tiện ích này chứa phần mềm độc hại</translation>
@@ -3524,7 +3522,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3443744348829035122">Đã hết thời gian chờ dành cho <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Bạn đã có mật khẩu cho các tài khoản này trong <ph name="BRAND" />. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="344449859752187052">Đã chặn cookie của bên thứ ba</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> sẽ xem được <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="344537926140058498">Tổ chức của bạn đã chặn tệp này vì tệp có nội dung nhạy cảm hoặc nguy hiểm. Hãy yêu cầu chủ sở hữu tệp khắc phục vấn đề.</translation>
@@ -4003,7 +4000,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3760460896538743390">Kiểm tra trang &amp;nền</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> ngày</translation>
 <translation id="37613671848467444">Mở trong &amp;Cửa sổ ẩn danh</translation>
-<translation id="3761556954875533505">Cho phép trang web chỉnh sửa các tệp?</translation>
 <translation id="3761560059647741692">Phong cảnh</translation>
 <translation id="3761733456040768239">Các thao tác khác dành cho <ph name="CARD_DESCRIPTION" />, đã lưu CVC</translation>
 <translation id="3763433740586298940">Bạn có thể chặn những trang web bạn không muốn. Chrome cũng tự động xoá khỏi danh sách những trang web đã hơn 30 ngày bạn không truy cập.</translation>
@@ -5322,7 +5318,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4689235506267737042">Chọn tùy chọn minh họa</translation>
 <translation id="4689421377817139245">Đồng bộ hóa dấu trang này với iPhone của bạn</translation>
 <translation id="4690091457710545971">&lt;Bốn tệp do chương trình cơ sở Intel Wi-Fi tạo ra: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Ba tệp đầu tiên là tệp nhị phân có chứa nội dung kết xuất đăng ký và được Intel xác nhận là không chứa thông tin nhận dạng cá nhân hoặc thiết bị.  Tệp cuối cùng là dấu vết thực thi từ chương trình cơ sở Intel; tệp này đã được xóa mọi thông tin nhận dạng cá nhân hoặc thiết bị, nhưng kích thước tệp quá lớn nên không hiển thị được ở đây.  Các tệp này được tạo do các sự cố Wi-Fi xảy ra gần đây với thiết bị của bạn và sẽ được chia sẻ với Intel để giúp khắc phục các sự cố này.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> sẽ có thể xem <ph name="FILENAME" /> cho đến khi bạn đóng tất cả các thẻ cho trang web này</translation>
 <translation id="4692342362587775867">Thông báo từ trang web này có thể gây gián đoạn</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# thành viên trong nhóm}other{# thành viên trong nhóm}}</translation>
 <translation id="4692623383562244444">Công cụ tìm kiếm</translation>
@@ -5648,7 +5643,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4913209098186576320">Tệp này có thể nguy hiểm<ph name="LINE_BREAK" />Quá trình kiểm tra mất nhiều thời gian hơn bình thường...</translation>
 <translation id="4913695564084524048">Không tìm thấy dữ liệu ứng dụng</translation>
 <translation id="4915961947098019832">Được phép hiển thị hình ảnh</translation>
-<translation id="4916542008280060967">Cho phép trang web chỉnh sửa <ph name="FILE_NAME" />?</translation>
 <translation id="491779113051926205">Bộ đếm lưu lượng truy cập ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> muốn giao tiếp với tiện ích "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
@@ -6649,6 +6643,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5643321261065707929">Mạng có đo lượng dữ liệu</translation>
 <translation id="5646376287012673985">Vị trí</translation>
 <translation id="5646558797914161501">Doanh nhân</translation>
+<translation id="5647989922796038257">Đồng thời chia sẻ tất cả đầu ra âm thanh</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5651308944918885595">Khả năng tìm thấy thiết bị Chia sẻ lân cận</translation>
@@ -8792,7 +8787,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="720110658997053098">Vĩnh viễn giữ thiết bị này ở chế độ kiosk</translation>
 <translation id="7201118060536064622">Đã xóa '<ph name="DELETED_ITEM_NAME" />'</translation>
 <translation id="7201336084980086208">Tính năng tự động điền có thể đề xuất lưu thông tin khi bạn gửi biểu mẫu, chẳng hạn như số hộ chiếu hoặc số giấy phép lái xe</translation>
-<translation id="7201420661433230412">Xem tệp</translation>
 <translation id="7201432510117121839">Thiết bị này không hỗ trợ truyền âm thanh của màn hình</translation>
 <translation id="7201535955609308429">Vui lòng đợi trong khi hệ thống đang tiến hành xác minh</translation>
 <translation id="7202337678781136582">Quét mã QR bằng điện thoại Android</translation>
@@ -9401,7 +9395,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="764178579712141045">Đã thêm <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ẩn nội dung nhạy cảm</translation>
 <translation id="7643117827468520640">Xem kĩ các điều khoản này</translation>
-<translation id="7643932971554933646">Cho phép trang web xem tệp?</translation>
 <translation id="7644953783774050577">Không chọn</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (chủ sở hữu)</translation>
 <translation id="7645681574855902035">Đang hủy quá trình sao lưu Linux</translation>
@@ -9599,7 +9592,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7767554953520855281">Khi bạn chia sẻ màn hình, thông tin chi tiết sẽ bị ẩn</translation>
 <translation id="7767972280546034736">Tạo một khoá đăng nhập cho <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> sẽ xem được các tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7769709635093101687">Phím tắt để tạm dừng</translation>
@@ -9617,7 +9609,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7774581652827321413">Xem nội dung tóm tắt, nội dung tìm kiếm có liên quan và thông tin hữu ích khác về trang này</translation>
 <translation id="7774792847912242537">Quá nhiều yêu cầu.</translation>
 <translation id="7775694664330414886">Đã di chuyển thẻ sang nhóm chưa có tên – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> có thể xem các tệp trong <ph name="FOLDERNAME" /> cho đến khi bạn đóng tất cả các thẻ cho trang web này</translation>
 <translation id="777637629667389858">Bảo vệ bạn trên các dịch vụ của Google khi bạn đăng nhập.</translation>
 <translation id="7776701556330691704">Không tìm thấy giọng nói nào</translation>
 <translation id="7776950606649732730">Hãy thử lại khi tệp đồng bộ hoá xong.</translation>
@@ -10052,7 +10043,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8061991877177392872">Có vẻ như bạn đã thiết lập Voice Match với Trợ lý trên một thiết bị khác. Trợ lý đã dùng những bản ghi âm trước đây để tạo một mẫu giọng nói trên thiết bị này.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 tờ giấy}other{{COUNT} tờ giấy}}</translation>
 <translation id="8063235345342641131">Hình đại diện màu xanh lục mặc định</translation>
-<translation id="8063535366119089408">Xem tệp</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Sử dụng AI của Google để tăng khả năng sáng tạo và hiệu suất công việc</translation>
 <translation id="8066444921260601116">Hộp thoại kết nối</translation>

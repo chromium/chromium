@@ -424,9 +424,9 @@
 <translation id="1277597051786235230">새 탭에서 <ph name="SEARCH_ENGINE" />에 “<ph name="SEARCH_TERMS" />” 검색(&amp;S)</translation>
 <translation id="127849925363482083">탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요.</translation>
 <translation id="1278859221870828664">Google Play 앱 및 서비스 검토</translation>
+<translation id="1279024913354609713">허용 안함</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
 <translation id="1280332775949918163">창 맞추기</translation>
-<translation id="1280965841156951489">파일 수정</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{파일을 열 수 없음}other{파일을 열 수 없음}}</translation>
 <translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1282436639288565079">탭 그룹 세부정보</translation>
@@ -1030,7 +1030,6 @@
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697532407822776718">설정 완료</translation>
-<translation id="1697686431566694143">파일 수정</translation>
 <translation id="1698796500103229697">결제 수단</translation>
 <translation id="1698899521169711967">캐럿 브라우징</translation>
 <translation id="1699807488537653303">비밀번호 오류 해결</translation>
@@ -3028,7 +3027,6 @@
 <translation id="3067198179881736288">앱을 설치하시겠습니까?</translation>
 <translation id="3067198360141518313">이 플러그인 실행</translation>
 <translation id="3071624960923923138">여기를 클릭하여 새 탭을 열 수 있습니다</translation>
-<translation id="3072775339180057696">사이트에서 <ph name="FILE_NAME" /> 파일을 보도록 허용하시겠습니까?</translation>
 <translation id="3074499504015191586">전체 페이지 번역</translation>
 <translation id="3075144191779656260"><ph name="DEVICE_TYPE" />의 왼쪽에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3075740753681485522">사용 안함 • 이 확장 프로그램에 멀웨어가 포함되어 있습니다.</translation>
@@ -3526,7 +3524,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> 시간 초과됨</translation>
 <translation id="3443754338602062261"><ph name="BRAND" />에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="344449859752187052">서드 파티 쿠키 차단됨</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="344537926140058498">파일에 민감하거나 위험한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 수정을 요청하세요.</translation>
@@ -4005,7 +4002,6 @@
 <translation id="3760460896538743390">백그라운드 페이지 검사(&amp;B)</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" />일</translation>
 <translation id="37613671848467444">시크릿 창에서 열기(&amp;I)</translation>
-<translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="3761560059647741692">가로 모드</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> 관련 작업 더보기, CVC 저장됨</translation>
 <translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 30일이 경과한 웹사이트는 목록에서 자동으로 삭제됩니다.</translation>
@@ -5323,7 +5319,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4689235506267737042">데모 환경설정 선택</translation>
 <translation id="4689421377817139245">이 북마크를 내 iPhone에 동기화</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 펌웨어에서 csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon 의 4개 파일을 생성하였습니다. 처음 3개 파일은 레지스터 덤프를 포함하는 바이너리 파일로 Intel에서 개인정보나 기기 식별 정보를 포함하지 않도록 선언되었습니다. 4번째 파일은 Intel 펌웨어의 실행 기록으로 모든 개인정보나 기기 식별 정보가 삭제되었지만 너무 커서 여기에 표시할 수 없습니다. 이러한 4개 파일은 최근에 발생한 기기의 Wi-Fi 문제로 인해 생성되었으며 관련 문제를 해결하기 위해 Intel과 공유됩니다.&gt;</translation>
-<translation id="4691791363716065510">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있게 됩니다.</translation>
 <translation id="4692342362587775867">이 사이트의 알림이 불편할 수 있음</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{그룹 구성원 #명}other{그룹 구성원 #명}}</translation>
 <translation id="4692623383562244444">검색엔진</translation>
@@ -5649,7 +5644,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4913209098186576320">위험한 파일일 수 있습니다<ph name="LINE_BREAK" />검사가 평소보다 오래 걸리고 있습니다...</translation>
 <translation id="4913695564084524048">앱 데이터를 찾을 수 없습니다.</translation>
 <translation id="4915961947098019832">이미지 표시가 허용됨</translation>
-<translation id="4916542008280060967">사이트에서 <ph name="FILE_NAME" /> 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="491779113051926205">ChromeOS 트래픽 카운터</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 확장 프로그램과 통신하려고 합니다.</translation>
 <translation id="4918086044614829423">수락</translation>
@@ -8791,7 +8785,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="720110658997053098">이 기기를 키오스크 모드로 영구 고정</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' 삭제됨</translation>
 <translation id="7201336084980086208">자동 완성 기능은 양식을 제출할 때 운전면허증 또는 여권 번호 등의 정보를 저장할지 묻는 메시지를 표시할 수 있습니다.</translation>
-<translation id="7201420661433230412">파일 보기</translation>
 <translation id="7201432510117121839">이 기기에서는 데스크톱 오디오를 전송할 수 없습니다</translation>
 <translation id="7201535955609308429">확인을 진행하는 동안 잠시 기다려 주세요</translation>
 <translation id="7202337678781136582">Android 휴대전화로 QR 코드 스캔</translation>
@@ -9399,7 +9392,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> 추가됨</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643117827468520640">약관 검토</translation>
-<translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
 <translation id="7644953783774050577">선택 안함</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />(소유자)</translation>
 <translation id="7645681574855902035">Linux 백업 취소 중</translation>
@@ -9597,7 +9589,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7767554953520855281">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" />의 패스키 생성</translation>
 <translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 볼 수 있게 됩니다.</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769709635093101687">일시중지 단축키</translation>
@@ -9615,7 +9606,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7774581652827321413">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 받습니다.</translation>
 <translation id="7774792847912242537">요청 횟수가 너무 많습니다.</translation>
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있게 됩니다.</translation>
 <translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7776701556330691704">음성을 찾을 수 없음</translation>
 <translation id="7776950606649732730">파일 동기화가 완료된 후 다시 시도해 보세요.</translation>
@@ -10051,7 +10041,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8061991877177392872">다른 기기의 어시스턴트에서 이미 Voice Match를 설정한 것 같습니다. 이전에 녹음된 음성을 사용하여 이 기기에서 음성 모델을 만들었습니다.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{용지 1장}other{용지 {COUNT}장}}</translation>
 <translation id="8063235345342641131">기본 녹색 아바타</translation>
-<translation id="8063535366119089408">파일 보기</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Google AI를 사용하여 창의성과 생산성 높이기</translation>
 <translation id="8066444921260601116">연결 대화상자</translation>

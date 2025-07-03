@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">Адсартавана па часе апошняга адкрыцця</translation>
 <translation id="297771753501244313">Па часе адкрыцця</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
-<translation id="2981364137500752533">Вы можаце адкрываць не больш за 5 вокнаў.</translation>
 <translation id="2983102365694924129">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада выключана.</translation>
 <translation id="2983398917942897288">Неактыўныя (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Дадаваць кантэкст у пошукавыя запыты Google</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">крыніца: <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Спампаваць старонку</translation>
 <translation id="5458366071038729214">Тут будуць паказвацца сайты, на якія вы падпішацеся</translation>
-<translation id="5468068603361015296">Усё роўна спампаваць файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="5471273988133666918">Не ўдаецца перамясціць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">Адкрыць у праграме карт</translation>
 <translation id="5492637351392383067">Шыфраванне на прыладзе</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
-<translation id="6715020873764921614">Усё роўна спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="671928215901716392">Экран блакіроўкі</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
 <translation id="6734310707649923383">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8348430946834215779">Выкарыстоўваць HTTPS калі магчыма і паказваць папярэджанне перад загрузкай сайтаў, якія не падтрымліваюць гэты пратакол</translation>
 <translation id="8354977102499939946">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
-<translation id="8357329300499507091">Максімальная колькасць вокнаў, якую можна адкрыць: <ph name="MAX_WINDOW_COUNT" />. Каб аднавіць новае акно, скараціце агульную колькасць актыўных і неактыўных вокнаў да <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> або менш. Неактыўныя вокны выдаляюцца праз 6 месяцаў.</translation>
 <translation id="8361737703487394103">Перайсці да ўказанай укладкі (1–8)</translation>
 <translation id="8368001212524806591">Адсочваць цану</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> група ўкладак}one{<ph name="TAB_GROUPS_MANY" /> група ўкладак}few{<ph name="TAB_GROUPS_MANY" /> групы ўкладак}many{<ph name="TAB_GROUPS_MANY" /> груп укладак}other{<ph name="TAB_GROUPS_MANY" /> групы ўкладак}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">Выдаліць гэтага карыстальніка (<ph name="MEMBER_FULL_NAME" />)?</translation>
 <translation id="8570677896027847510">Бяспечна спампаваць файл нельга</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
-<translation id="8576426273246268132">Максімальная колькасць вокнаў, якую можна адкрыць: <ph name="MAX_WINDOW_COUNT" />. Каб адкрыць новае акно, скараціце агульную колькасць актыўных і неактыўных вокнаў да <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> або менш.</translation>
 <translation id="8580435650274205305">Трэба ўвесці тэрмін дзеяння</translation>
 <translation id="8582529315803410153">Тут знаходзяцца вашы ўкладкі з іншых прылад</translation>
 <translation id="8585103689515290060">Службы аўтазапаўнення</translation>

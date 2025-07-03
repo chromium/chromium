@@ -425,9 +425,9 @@
 <translation id="1277597051786235230">Пребарајте „<ph name="SEARCH_TERMS" />“ на <ph name="SEARCH_ENGINE" /> во нова картичка</translation>
 <translation id="127849925363482083">Притиснете <ph name="SHORTCUT_TEXT" /> повторно за да ја затворите прикачената картичка</translation>
 <translation id="1278859221870828664">Прегледајте ги апликациите и услугите на Google Play</translation>
+<translation id="1279024913354609713">Не дозволувај</translation>
 <translation id="127946606521051357">Уред во близина споделува</translation>
 <translation id="1280332775949918163">Преместете прозорец</translation>
-<translation id="1280965841156951489">Измени датотеки</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Датотеката не може да се отвори}one{Датотеките не може да се отворат}other{Датотеките не може да се отворат}}</translation>
 <translation id="1282311502488501110">Не се најавувај</translation>
 <translation id="1282436639288565079">Детали за групата картички</translation>
@@ -1031,7 +1031,6 @@
 <translation id="169675691788639886">Уредот има конфигурирано сервер за SSH. Не најавувајте се со чувствителни сметки.</translation>
 <translation id="1697122132646041614">„Не ми се допаѓа“ отвора формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓаат резултативе.</translation>
 <translation id="1697532407822776718">Подготвени сте.</translation>
-<translation id="1697686431566694143">Измени датотека</translation>
 <translation id="1698796500103229697">Начини на плаќање</translation>
 <translation id="1698899521169711967">Прелистување со курсор</translation>
 <translation id="1699807488537653303">Поправете ја грешката со лозинката</translation>
@@ -3027,7 +3026,6 @@
 <translation id="3067198179881736288">Дали да се инсталира апликацијата?</translation>
 <translation id="3067198360141518313">Стартувај го приклучокот</translation>
 <translation id="3071624960923923138">Може да кликнете тука за да отворите нова картичка</translation>
-<translation id="3072775339180057696">Да се дозволи сајтот да прикажува <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Преведи ја целата страница</translation>
 <translation id="3075144191779656260">Допрете го сензорот за отпечатоци лево на вашиот <ph name="DEVICE_TYPE" />. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075740753681485522">Исклучено • екстензијава содржи злонамерен софтвер</translation>
@@ -3525,7 +3523,6 @@
 <translation id="3443744348829035122">Времето за <ph name="BRAND" /> истече</translation>
 <translation id="3443754338602062261">Веќе имате лозинки за сметкиве во вашиот <ph name="BRAND" />. Ако изберете да увезете една од лозинките подолу, ќе ја замени постојната.</translation>
 <translation id="344449859752187052">Колачињата од трети страни се блокирани</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> ќе може да ја прегледува <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Брзи одговори од „Помошникот на Google“</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="344537926140058498">Организацијата ја блокираше датотекава бидејќи содржи чувствителни и опасни содржини. Побарајте од сопственикот да ја поправи.</translation>
@@ -4004,7 +4001,6 @@
 <translation id="3760460896538743390">Страница за проверка на &amp;заднина</translation>
 <translation id="3760788800962452192">Ден: <ph name="DROPDOWN_NAME" /></translation>
 <translation id="37613671848467444">Отвори во &amp;Инкогнито прозорец</translation>
-<translation id="3761556954875533505">Да се дозволи сајтот да изменува датотеки?</translation>
 <translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Повеќе дејства за <ph name="CARD_DESCRIPTION" />, CVC е зачуван</translation>
 <translation id="3763433740586298940">Може да ги блокирате сајтовите што не ви се допаѓаат. Chrome автоматски ги брише од списокот и сајтовите што се постари од 30 дена.</translation>
@@ -5323,7 +5319,6 @@
 <translation id="4689235506267737042">Изберете ги поставките за демо-режим</translation>
 <translation id="4689421377817139245">Синхронизирајте го обележувачов со вашиот iPhone</translation>
 <translation id="4690091457710545971">&lt;Генерирани се четири датотеки од фирмверот за Wi-Fi на Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Првите три се бинарни датотеки што содржат складови од регистарот за коишто Intel тврди дека не содржат информации за лична идентификација или идентификација на уред. Последната датотека е трага за извршувањето од фирмверот на Intel од којашто се исчистени сите информации за лична идентификација или идентификација на уред, но е преголема за да се прикаже тука. Овие датотеки беа генерирани како одговор на неодамнешните Wi-Fi проблеми на вашиот уред и ќе се споделат со Intel за помош при нивното решавање.&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> ќе може да ја прегледува <ph name="FILENAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="4692342362587775867">Известувањата од сајтов може да се вознемирувачки</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# член во групата}one{# член во групата}other{# члена во групата}}</translation>
 <translation id="4692623383562244444">Пребарувачи</translation>
@@ -5649,7 +5644,6 @@
 <translation id="4913209098186576320">Датотекава можеби е опасна<ph name="LINE_BREAK" />Проверкава трае подолго од вообичаено…</translation>
 <translation id="4913695564084524048">Не може да се најдат податоци од апликација</translation>
 <translation id="4915961947098019832">Дозволено им е да прикажуваат слики</translation>
-<translation id="4916542008280060967">Да се дозволи сајтот да изменува <ph name="FILE_NAME" />?</translation>
 <translation id="491779113051926205">Бројачи на сообраќајот на ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> сака да комуницира со наставката „<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Прифати</translation>
@@ -8792,7 +8786,6 @@
 <translation id="720110658997053098">Трајно задржи го уредов во режим на киоск</translation>
 <translation id="7201118060536064622">Ставката „<ph name="DELETED_ITEM_NAME" />“ е избришана</translation>
 <translation id="7201336084980086208">„Автоматско пополнување“ може да нуди да ги зачувува податоците кога испраќате формулари, како вашата возачка дозвола или број на пасош</translation>
-<translation id="7201420661433230412">Прегледувај ги датотеките</translation>
 <translation id="7201432510117121839">Емитувањето на аудиото од компјутерот не е поддржано на уредов</translation>
 <translation id="7201535955609308429">Почекајте да заврши потврдувањето во тек</translation>
 <translation id="7202337678781136582">Скенирајте го QR-кодот со вашиот телефон со Android</translation>
@@ -9401,7 +9394,6 @@
 <translation id="764178579712141045">Контактот <ph name="USER_EMAIL" /> е додаден</translation>
 <translation id="7642778300616172920">Скриј ги чувствителните содржини</translation>
 <translation id="7643117827468520640">Прегледајте ги овие „Услови“</translation>
-<translation id="7643932971554933646">Да му се дозволи на сајтот да ги прегледува датотеките?</translation>
 <translation id="7644953783774050577">Поништете го изборот</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
 <translation id="7645681574855902035">Се откажува бекапот на Linux</translation>
@@ -9599,7 +9591,6 @@
 <translation id="7767554953520855281">Деталите се скриени додека го споделувате екранот</translation>
 <translation id="7767972280546034736">Создајте криптографски клуч за <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Сајтовите автоматски ја следат оваа поставка кога ги посетувате</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> ќе може да ги прегледува датотеките во <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Промени</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769709635093101687">Кратенката од тастатурата за да паузирате</translation>
@@ -9617,7 +9608,6 @@
 <translation id="7774581652827321413">Добијте резиме на страница, слични пребарувања и други корисни информации за страницава</translation>
 <translation id="7774792847912242537">Премногу барања.</translation>
 <translation id="7775694664330414886">Картичката е преместена во неименувана група - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> ќе може да прегледува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
 <translation id="7776701556330691704">Не се најдени гласови</translation>
 <translation id="7776950606649732730">Обидете се повторно откако ќе заврши синхронизирањето на датотеката.</translation>
@@ -10051,7 +10041,6 @@
 <translation id="8061991877177392872">Се чини дека веќе сте ја поставиле Voice Match за вашиот „Помошник на Google“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел за уредов.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартија}one{{COUNT} лист хартија}other{{COUNT} листови хартија}}</translation>
 <translation id="8063235345342641131">Стандарден зелен аватар</translation>
-<translation id="8063535366119089408">Прикажи датотека</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Користете ја Google AI за да бидете покреативни и попродуктивни</translation>
 <translation id="8066444921260601116">Прозорец за врската</translation>

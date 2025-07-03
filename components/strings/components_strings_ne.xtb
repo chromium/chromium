@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">कनेक्ट गर्ने प्रक्रियालाई अनुमति दिन <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">मेटाइएको खाता</translation>
 <translation id="14222610277930434">तपाईंले प्रायः खोल्ने ट्याब</translation>
+<translation id="1422795627423046860">मिति अवैध छ</translation>
 <translation id="1422930527989633628">वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू पत्ता लगाउने अनुमति माग्न सक्छ</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1427192966110103169">घरमा भएका स्विमिङ पुल, सौना तथा स्पा</translation>
@@ -3712,7 +3713,6 @@
 <translation id="7251437084390964440">नेटवर्कको कन्फिगुरेसन ONC मानकअनुसार छैन। कन्फिगुरेसनका अंशहरू आयात नहुन सक्छन्।
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7251635775446614726">तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7255540419660272073">थम्ज डाउन बटन, तपाईंलाई यो कुरा मन नपर्नुको कारणका बारेमा विस्तृत प्रतिक्रिया पेस गर्नका निम्ति फाराम खोल्न इन्टर थिच्नुहोस्, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">पछाडिको ट्रे</translation>
 <translation id="7257453341537973799">करिअरसम्बन्धी स्रोतसाधन तथा योजना</translation>
@@ -4815,6 +4815,7 @@
 <translation id="9155211586651734179">एट्याच गरिएका अडियोसम्बन्धी सहायक डिभाइसहरू</translation>
 <translation id="9155646082713385498">पत्रिकाहरू</translation>
 <translation id="9157595877708044936">सेटिङ गर्दै...</translation>
+<translation id="9158491153040481956">तपाईंले हालसालै परिवर्तन गर्नुभएको पासवर्ड चोरी भएको डेटाको सार्वजनिक सङ्ग्रहमा भेटिएको छ। कुनै समस्या परेका खण्डमा पासवर्ड म्यानेजरले तपाईंलाई साइन इन गर्न मद्दत गर्न सक्छ।</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> मा संवेदनशील सामग्री समावेश हुन सक्छ}other{<ph name="FILE_COUNT" /> वटा फाइलमा संवेदनशील सामग्री समावेश हुन सक्छ}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – फुल स्क्रिन मोडबाट बाहिरिन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="9163287596625611517">Slack म्यासेज</translation>

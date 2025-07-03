@@ -3251,7 +3251,6 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
       今後、インライン ログインがすべての SSO ログインフローで完全にサポートされるようになった時点で、試験運用の設定は削除されます。</translation>
 <translation id="3435178885391813398">スキャナを許可しない。</translation>
 <translation id="3435796032110614169">印刷ジョブの履歴の削除を許可します</translation>
-<translation id="3435896845095436175">有効にする</translation>
 <translation id="3436217793443508863">バッテリーでの使用中、ユーザー入力が行われなくなってから画面をロックするまでの時間（ミリ秒）</translation>
 <translation id="3437924696598384725">ユーザーに VPN 接続の管理を許可する</translation>
 <translation id="3441664787678256816">このパソコンへの企業のリモート サポート接続を許可する</translation>
@@ -4512,7 +4511,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
 <translation id="4389073105055031853">すべての証明書の管理をユーザーに許可する</translation>
 <translation id="4389091865841123886">TPM メカニズムを使用してリモート認証を設定します。</translation>
 <translation id="4389113579547582722">App Store の評価に関するプロモーションの表示を許可する</translation>
-<translation id="4394049700291259645">無効にする</translation>
 <translation id="4395619678972620537">有効にすると、WebRTC ピア接続が TLS/DTLS プロトコルのサポートが終了したバージョン（DTLS 1.0、TLS 1.0、TLS 1.1）にダウングレードされる可能性があります。
       このポリシーを無効にするか、未設定のままにすると、これらの TLS/DTLS バージョンは無効になります。
 
@@ -5261,7 +5259,7 @@ None（なし）に設定するか未設定のままにした場合、ARC アプ
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、モノラル音声は初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
-<translation id="493253860646951791">安全でない SwiftShader の WebGL フォールバックのサポートを有効にする</translation>
+<translation id="493253860646951791">安全でない SwiftShader による WebGL フォールバックのサポートを有効にする</translation>
 <translation id="4933301190614090397">ブラウザのシャットダウン時のキープアライブ リクエストに許可される継続時間（秒単位）を制御します。指定されている場合、ブラウザのシャットダウンを指定された秒数までの間ブロックして、キープアライブ（https://fetch.spec.whatwg.org/#request-keepalive-flag）リクエストを処理できます。デフォルト値（0）はこの機能が無効になっていることを表します。</translation>
 <translation id="4933339133618140916">このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> でユーザーにプロダクトのプロモーション用コンテンツが表示されます。
 
@@ -5385,6 +5383,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。</translation>
 <translation id="5037749623252479780">PageUp / PageDown の設定は無効</translation>
 <translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
+<translation id="5039804452771397117">許可</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
 <translation id="5041315457555330432">CastAllowAllIPs 機能がオンになっていない場合に、プライベート IP アドレスのデバイスにのみ <ph name="PRODUCT_NAME" /> の接続を許可する。</translation>
 <translation id="504689994545234073">ユーザー ファイルのローカル保存を有効にする</translation>
@@ -6221,17 +6220,6 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 ポリシーを未設定のままにした場合、どのドメインも PDF ビューアで file:// URL にアクセスできません。</translation>
 <translation id="5585424654425017599">統合を許可する</translation>
 <translation id="5586942249556966598">何もしない</translation>
-<translation id="5595355842329604596">このポリシーでは、対象となるすべての生成 AI 機能のデフォルト設定を定義します。たとえば、このポリシーを値 1 に設定した場合、対象となるすべての生成 AI 機能のデフォルト設定は 1 になります。この設定は、手動で設定したポリシー値には影響しません。このポリシーでは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> と対象となる Chrome の生成 AI 機能のデフォルト設定を定義します。対象となる機能の一覧については、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。
-
-0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。AI モデルを改善するため、人間のレビュアーが確認する場合もあります。以下に記載している場合を除き、0 がデフォルト値です。
-
-1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
-
-2 = この機能を許可しません。
-
-対象となる Chrome の機能に同等のポリシー値がない場合は、次に大きい値が使用されます。一部のポリシー（<ph name="GEMINI_SETTINGS_POLICY_NAME" /> など）では、「許可する」と「許可しない」の状態のみがサポートされます。<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーを 0 または 1 に設定した場合、この機能は許可されます。ポリシーを 2 に設定した場合、この機能は許可されません。このポリシーの値で各機能がどのように動作するかについては、該当の機能のドキュメントをご覧ください。
-
-生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="5597542113049786516">このポリシーでは、ページに組み込みの AI API（<ph name="LANGUAGE_MODEL_API_NAME" />、<ph name="SUMMARIZATION_API_NAME" />、<ph name="WRITER_API_NAME" />、<ph name="REWRITER_API_NAME" /> など）を使用を許可するかどうかを制御します。
 
 ポリシーを有効に設定するか未設定のままにした場合、API の使用が有効になります。
@@ -7632,7 +7620,7 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
 <translation id="6513453889192806240">HTTPS レイテンシ</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6518102411616460786">ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する</translation>
-<translation id="6518286606938091609">安全でない SwiftShader の WebGL フォールバックのサポートを無効にする</translation>
+<translation id="6518286606938091609">安全でない SwiftShader による WebGL フォールバックのサポートを無効にする</translation>
 <translation id="6518894783486860562">セキュリティ上の理由から、<ph name="SHOW_SUBAPPS_APP_API_NAME" />、<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" />、<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> ウェブ API を呼び出すには、事前のユーザー操作（「一時的な有効化」）が必要で、操作がない場合は呼び出せません。さらに、ユーザーには確認ダイアログで操作の確認が求められます。
 
 このポリシーでは、事前のユーザー操作やユーザーに確認を求めることなく、これらの API を呼び出せるオリジンを指定できます。
@@ -10475,12 +10463,6 @@ Kiosk Vision フレームワークが起動し、オーディエンス テレメ
 
       JavaScript と ECMAScript のメディアタイプについて詳しくは、https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage をご覧ください。
       </translation>
-<translation id="8668202868357089313">レンズ オーバーレイを使用すると、実際のウェブ コンテンツに重ねた現在のページのスクリーンショットを操作して Google で検索することができます。
-
-この機能を制御するユーザー設定はありません。通常、このポリシーで無効にしない限り、Google をデフォルトの検索エンジンに設定しているすべてのユーザーが使用できます。
-
-このポリシーを 0（有効）に設定するか未設定のままにした場合、ユーザーはこの機能を使用できます。
-このポリシーを 1（無効）に設定した場合、この機能は使用できません。</translation>
 <translation id="8668928485126473293"><ph name="PRODUCT_NAME" /> で JavaScript のさらに高度な最適化を有効にした V8 JavaScript エンジンを実行するかどうかを設定できます。
 
 JavaScript の最適化を無効にした場合（このポリシーの値を 2 に設定）、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかる可能性があります。

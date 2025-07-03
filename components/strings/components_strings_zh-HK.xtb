@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允許配對</translation>
 <translation id="1421484961346698724">已刪除的帳戶</translation>
 <translation id="14222610277930434">經常瀏覽</translation>
+<translation id="1422795627423046860">日期無效</translation>
 <translation id="1422930527989633628">可要求探索附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427192966110103169">家居游泳池、桑拿浴和水療</translation>
@@ -3714,7 +3715,6 @@
 <translation id="7251437084390964440">網絡設定未遵循 ONC 標準，系統可能無法匯入部分設定。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="7255540419660272073">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意「<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」嘅原因</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="7257453341537973799">就業資源和職業生涯規劃</translation>
@@ -4816,6 +4816,7 @@
 <translation id="9155211586651734179">已連結的音訊周邊裝置</translation>
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中…</translation>
+<translation id="9158491153040481956">你最近變更的密碼已在公開資料外洩事件中外洩。如果遇到問題，「密碼管理工具」可協助你登入。</translation>
 <translation id="9161794544616754735">{0,plural, =1{「<ph name="FILE_NAME" />」可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 如要離開全螢幕，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack 訊息</translation>

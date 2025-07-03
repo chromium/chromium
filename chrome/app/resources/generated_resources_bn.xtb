@@ -425,9 +425,9 @@
 <translation id="1277597051786235230">&amp; <ph name="SEARCH_ENGINE" />-এ নতুন ট্যাবে “<ph name="SEARCH_TERMS" />” সার্চ করুন</translation>
 <translation id="127849925363482083">পিন করা ট্যাব বন্ধ করতে <ph name="SHORTCUT_TEXT" /> আবার প্রেস করুন</translation>
 <translation id="1278859221870828664">Google Play অ্যাপ এবং পরিষেবার পর্যালোচনা করুন</translation>
+<translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="127946606521051357">আশেপাশে থাকা ডিভাইস ডেটা শেয়ার করছে</translation>
 <translation id="1280332775949918163">উইন্ডো স্ন্যাপ করুন</translation>
-<translation id="1280965841156951489">ফাইল এডিট করতে পারবে</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ফাইল খোলা যাচ্ছে না}one{ফাইল খোলা যাচ্ছে না}other{ফাইল খোলা যাচ্ছে না}}</translation>
 <translation id="1282311502488501110">সাইন-ইন করতে চাই না</translation>
 <translation id="1282436639288565079">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
@@ -1031,7 +1031,6 @@
 <translation id="169675691788639886">ডিভাইসে SSH সার্ভার কনফিগার করা আছে। সংবেদনশীল অ্যাকাউন্ট দিয়ে সাইন-ইন করবেন না।</translation>
 <translation id="1697122132646041614">'থাম্বস-ডাউন' আইকন এমন একটি ফর্ম খোলে, যেখানে এইসব ফলাফল কেন আপনার পছন্দ হয়নি সেই সম্পর্কিত বিশদ মতামত জমা দেওয়া যায়।</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
-<translation id="1697686431566694143">ফাইল এডিট করতে পারবে</translation>
 <translation id="1698796500103229697">&amp;পেমেন্ট পদ্ধতি</translation>
 <translation id="1698899521169711967">ক্যারেট ব্রাউজিং</translation>
 <translation id="1699807488537653303">পাসওয়ার্ড সংক্রান্ত সমস্যার সমাধান করুন</translation>
@@ -3027,7 +3026,6 @@
 <translation id="3067198179881736288">অ্যাপ ইনস্টল করবেন?</translation>
 <translation id="3067198360141518313">এই প্লাগ-ইনটি চালনা</translation>
 <translation id="3071624960923923138">নতুন ট্যাব খুলতে এখানে ক্লিক করুন</translation>
-<translation id="3072775339180057696">সাইটকে <ph name="FILE_NAME" /> দেখার অনুমতি দেবেন?</translation>
 <translation id="3074499504015191586">সম্পূর্ণ পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="3075144191779656260">আপনার <ph name="DEVICE_TYPE" />-এর বাঁদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করুন। আপনার ফিঙ্গারপ্রিন্ট ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
 <translation id="3075740753681485522">বন্ধ আছে • এই এক্সটেনশনে ম্যালওয়্যার রয়েছে</translation>
@@ -3525,7 +3523,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> টাইম-আউট</translation>
 <translation id="3443754338602062261">আপনার <ph name="BRAND" />-এ আগে থেকেই এইসব অ্যাকাউন্টের জন্য পাসওয়ার্ড আছে। আপনি নিচে থেকে কোনও একটি পাসওয়ার্ড ইমপোর্ট করতে চাইলে, আগে থাকা পাসওয়ার্ডটিও পরিবর্তন হয়ে যাবে।</translation>
 <translation id="344449859752187052">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> ফাইল দেখতে পারবে</translation>
 <translation id="3445047461171030979">Google Assistant-এর ঝটপট উত্তর</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="344537926140058498">এই ফাইলে সংবেদনশীল বা বিপদজনক কন্টেন্ট থাকার জন্য আপনার সংস্থা ফাইলটি ব্লক করে দিয়েছে। ফাইলের মালিককে সেটি ঠিক করতে বলুন।</translation>
@@ -4004,7 +4001,6 @@
 <translation id="3760460896538743390">&amp;পশ্চাদপট পৃষ্ঠা পরিদর্শন করুন</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> দিন</translation>
 <translation id="37613671848467444">ছদ্মবেশী উইন্ডোতে খুলু&amp;ন</translation>
-<translation id="3761556954875533505">সাইটকে এই ফাইল এডিট করার অনুমতি দেবেন?</translation>
 <translation id="3761560059647741692">ল্যান্ডস্কেপ</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" />-এর জন্য আরও অ্যাকশন, CVC সেভ করা হয়েছে</translation>
 <translation id="3763433740586298940">আপনি চান না এমন সাইটগুলি ব্লক করতে পারবেন। এছাড়াও তালিকা থেকে ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়।</translation>
@@ -5323,7 +5319,6 @@
 <translation id="4689235506267737042">আপনার ডেমো পছন্দগুলি বেছে নিন</translation>
 <translation id="4689421377817139245">এই বুকমার্কটি আপনার iPhone এর সাথে সিঙ্ক করুন</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ফার্মওয়্যার চারটি ফাইল তৈরী করেছে: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  প্রথম তিনটি হচ্ছে রেজিস্টার ডাম্প সম্বলিত বাইনারি ফাইল, যেগুলির মধ্যে কোনও ব্যক্তিগত বা ডিভাইস শনাক্তকারী তথ্য থাকে না বলে Intel দাবি করে।  শেষ ফাইলটি Intel ফার্মওয়্যার চালানোর সময় তৈরি ট্রেস; এটির মধ্যে থাকা কোনও ব্যক্তিগত বা ডিভাইস শনাক্তকারী তথ্য মুছে ফেলা হয়েছে, কিন্তু এখানে দেখানোর ক্ষেত্রে এটি খুবই বড়।  আপনার ডিভাইসের সাম্প্রতিক Wi-Fi সমস্যাগুলির জন্য এই ফাইলগুলি তৈরি করা হয়েছিল এবং এই সমস্যাগুলির সমাধান করার জন্য Intel-এর সাথে শেয়ার করা হবে।&gt;</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> <ph name="FILENAME" /> দেখতে পারবে যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
 <translation id="4692342362587775867">এই সাইট থেকে পাওয়া বিজ্ঞপ্তি হয়ত বিঘ্ন সৃষ্টি করতে পারে</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{গ্রুপে # জন সদস্য আছেন}one{গ্রুপে # জন সদস্য আছেন}other{গ্রুপে # জন সদস্য আছেন}}</translation>
 <translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
@@ -5649,7 +5644,6 @@
 <translation id="4913209098186576320">এই ফাইল বিপজ্জনক হতে পারে<ph name="LINE_BREAK" />এটি চেক করতে সাধারণের থেকে বেশি সময় লাগতে পারে...</translation>
 <translation id="4913695564084524048">অ্যাপ ডেটা পাওয়া যাচ্ছে না</translation>
 <translation id="4915961947098019832">ছবি দেখানোর অনুমতি দেওয়া হয়েছে</translation>
-<translation id="4916542008280060967">সাইটকে <ph name="FILE_NAME" /> এডিট করার অনুমতি দেবেন?</translation>
 <translation id="491779113051926205">ChromeOS ট্রাফিক কাউন্টার</translation>
 <translation id="4918021164741308375">"<ph name="EXTENSION_NAME" />" এক্সটেনশন দ্বারা <ph name="ORIGIN" /> যোগাযোগ করতে চায়</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
@@ -6651,6 +6645,7 @@
 <translation id="5643321261065707929">মিটার্ড নেটওয়ার্ক</translation>
 <translation id="5646376287012673985">লোকেশন</translation>
 <translation id="5646558797914161501">ব্যবসায়ী</translation>
+<translation id="5647989922796038257">এছাড়াও সব অডিও আউটপুট শেয়ার করুন</translation>
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5651308944918885595">'নিয়ারবাই শেয়ার'-এর মাধ্যমে ডিভাইস খুঁজে নেওয়ার সুবিধা</translation>
@@ -8794,7 +8789,6 @@
 <translation id="720110658997053098">স্থায়ীভাবে এই ডিভাইসটিকে কিয়স্ক মোডে রাখুন</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' মুছে ফেলা হয়েছে</translation>
 <translation id="7201336084980086208">ফর্ম জমা দেওয়া হলে, অটোফিল আপনাকে তথ্য সেভ করার সুবিধা দেয়, যেমন আপনার ড্রাইভিং লাইসেন্স বা পাসপোর্ট নম্বর</translation>
-<translation id="7201420661433230412">ফাইলগুলি দেখুন</translation>
 <translation id="7201432510117121839">এই ডিভাইসে ডেস্কটপ থেকে অডিও কাস্ট করার সুবিধা কাজ করে না</translation>
 <translation id="7201535955609308429">যাচাইকরণের প্রসেস চলাকালীন অপেক্ষা করুন</translation>
 <translation id="7202337678781136582">আপনার Android ফোনের মাধ্যমে QR কোডটি স্ক্যান করুন</translation>
@@ -9403,7 +9397,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> যোগ করা হয়েছে</translation>
 <translation id="7642778300616172920">ব্যক্তিগত কোনও কিছু দেখতে চাই না</translation>
 <translation id="7643117827468520640">এইসব শর্ত পর্যালোচনা করে দেখুন</translation>
-<translation id="7643932971554933646">সাইটকে এই ফাইল পড়ার অনুমতি দেবেন?</translation>
 <translation id="7644953783774050577">কিছু নির্বাচন করবেন না</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (মালিক)</translation>
 <translation id="7645681574855902035">Linux ব্যাক-আপ বাতিল করা হচ্ছে</translation>
@@ -9601,7 +9594,6 @@
 <translation id="7767554953520855281">স্ক্রিন শেয়ার করার সময় বিজ্ঞপ্তির কন্টেন্ট লুকানো থাকে</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" />-এর জন্য 'পাসকী' তৈরি করা</translation>
 <translation id="7768507955883790804">আপনি কোনও সাইট খুললে সেটি অটোমেটিক এই সেটিং মেনে কাজ করবে</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের সব ফাইল দেখতে পারবে</translation>
 <translation id="7768770796815395237">পরিবর্তন করুন</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7769709635093101687">পজ করার কীবোর্ড শর্টকাট</translation>
@@ -9619,7 +9611,6 @@
 <translation id="7774581652827321413">পৃষ্ঠার সারাংশ, সংশ্লিষ্ট সার্চ ও এই পৃষ্ঠা সম্পর্কে অন্যান্য প্রয়োজনীয় তথ্য পান</translation>
 <translation id="7774792847912242537">অত্যধিক অনুরোধ।</translation>
 <translation id="7775694664330414886">নামবিহীন গ্রুপে ট্যাব সরানো হয়েছে - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি দেখতে পারবে, যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
 <translation id="777637629667389858">আপনি যখন সাইন-ইন করে থাকেন, তখন Google পরিষেবা জুড়ে আপনাকে সুরক্ষিত রাখে।</translation>
 <translation id="7776701556330691704">কোনও ভয়েস নেই</translation>
 <translation id="7776950606649732730">ফাইল সিঙ্ক করা সম্পূর্ণ হওয়ার পরে আবার চেষ্টা করুন।</translation>
@@ -10053,7 +10044,6 @@
 <translation id="8061991877177392872">মনে হচ্ছে আপনি অন্য কোনও ডিভাইসে Assistant-এর সাথে আগেই Voice Match সেট আপ করে ফেলেছেন। আগের এই সব রেকর্ডিং এই ডিভাইসে ভয়েস মডেল তৈরি করার জন্য ব্যবহার করা হয়েছে।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{১ শিট কাগজ}one{{COUNT} শিট কাগজ}other{{COUNT} শিট কাগজ}}</translation>
 <translation id="8063235345342641131">ডিফল্ট সবুজ অবতার</translation>
-<translation id="8063535366119089408">ফাইল দেখুন</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Google AI আরও ক্রিয়েটিভ ও প্রোডাক্টিভ হতে ব্যবহার করুন</translation>
 <translation id="8066444921260601116">কানেকশন ডায়ালগ</translation>

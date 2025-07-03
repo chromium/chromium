@@ -424,9 +424,9 @@
 <translation id="1277597051786235230">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="127849925363482083">固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
+<translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280332775949918163">ウィンドウをスナップする</translation>
-<translation id="1280965841156951489">ファイルを編集</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ファイルを開けません}other{ファイルを開けません}}</translation>
 <translation id="1282311502488501110">ログインしない</translation>
 <translation id="1282436639288565079">タブグループの詳細</translation>
@@ -1028,7 +1028,6 @@
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
 <translation id="1697122132646041614">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
-<translation id="1697686431566694143">ファイルを編集</translation>
 <translation id="1698796500103229697">お支払い方法(&amp;P)</translation>
 <translation id="1698899521169711967">カーソル ブラウジング</translation>
 <translation id="1699807488537653303">パスワード エラーを修正する</translation>
@@ -3007,7 +3006,6 @@
 <translation id="3067198179881736288">アプリをインストールしますか？</translation>
 <translation id="3067198360141518313">このプラグインを実行する</translation>
 <translation id="3071624960923923138">ここをクリックすると新しいタブが開きます</translation>
-<translation id="3072775339180057696">サイトに <ph name="FILE_NAME" /> の読み取りを許可しますか？</translation>
 <translation id="3074499504015191586">ページ全体を翻訳</translation>
 <translation id="3075144191779656260"><ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3075740753681485522">オフ • この拡張機能にはマルウェアが含まれています</translation>
@@ -3503,7 +3501,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> がタイムアウトしました</translation>
 <translation id="3443754338602062261">これらのアカウントのパスワードはすでに <ph name="BRAND" /> に保存されています。下記のパスワードをインポートすると、既存のパスワードが置き換えられます。</translation>
 <translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を読み取れるようになります</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="344537926140058498">このファイルには機密または危険なコンテンツが含まれているため、組織でブロックされました。所有者に修正するよう依頼してください。</translation>
@@ -3981,7 +3978,6 @@
 <translation id="3760460896538743390">バックグラウンド ページの検証(&amp;B)</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> 日</translation>
 <translation id="37613671848467444">シークレット ウィンドウで開く(&amp;I)</translation>
-<translation id="3761556954875533505">サイトにファイルの編集を許可しますか？</translation>
 <translation id="3761560059647741692">風景</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> のその他の操作、CVC を保存しました</translation>
 <translation id="3763433740586298940">広告主のウェブサイトを訪れた後、その企業からの広告を希望しない場合はブロックすることができます。また、30 日以上経過した広告主のウェブサイトはリストから自動削除されます。</translation>
@@ -5298,7 +5294,6 @@
 <translation id="4689235506267737042">デモ設定の選択</translation>
 <translation id="4689421377817139245">このブックマークは iPhone と同期できます</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ファームウェアにより生成された 4 つのファイル: csr.lst、fh_regs.lst、radio_reg.lst、monitor.lst.sysmon。最初の 3 つはレジスタダンプを含むバイナリ ファイルで、個人情報や端末を特定できる情報を一切含まないことが Intel により表明されています。最後の 1 つは Intel ファームウェアからの実行トレースで、個人情報や端末を特定できる情報は除かれていますが、サイズが大きいためここには表示できません。これらのファイルはご使用の端末で最近発生した Wi-Fi の問題への応答として生成されたもので、問題を調査するために Intel と共有されます。&gt;</translation>
-<translation id="4691791363716065510">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FILENAME" />」を読み取れるようになります</translation>
 <translation id="4692342362587775867">このサイトからの通知は閲覧の妨げになる可能性があります</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{グループのメンバー # 人}other{グループのメンバー # 人}}</translation>
 <translation id="4692623383562244444">検索エンジン</translation>
@@ -5623,7 +5618,6 @@
 <translation id="4913209098186576320">このファイルは危険な可能性があります<ph name="LINE_BREAK" />確認に通常より時間がかかっています...</translation>
 <translation id="4913695564084524048">アプリデータが見つかりません</translation>
 <translation id="4915961947098019832">画像の表示を許可するサイト</translation>
-<translation id="4916542008280060967">サイトに <ph name="FILE_NAME" /> の編集を許可しますか？</translation>
 <translation id="491779113051926205">ChromeOS トラフィック カウンタ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
@@ -8759,7 +8753,6 @@
 <translation id="720110658997053098">このデバイスをキオスクモードに固定する</translation>
 <translation id="7201118060536064622">「<ph name="DELETED_ITEM_NAME" />」が削除されました</translation>
 <translation id="7201336084980086208">自動入力機能により、フォームを送信する際に、運転免許証やパスポートの番号などの情報を保存できます</translation>
-<translation id="7201420661433230412">ファイルを表示する</translation>
 <translation id="7201432510117121839">このデバイスでは、デスクトップの音声をキャストできません</translation>
 <translation id="7201535955609308429">確認中のため、しばらくお待ちください</translation>
 <translation id="7202337678781136582">Android スマートフォンで QR コードをスキャンする</translation>
@@ -9368,7 +9361,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> を追加しました</translation>
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643117827468520640">利用規約を確認</translation>
-<translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
 <translation id="7644953783774050577">選択しない</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">Linux のバックアップをキャンセルしています</translation>
@@ -9565,7 +9557,6 @@
 <translation id="7767554953520855281">画面の共有中は詳細が表示されません</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" /> のパスキーを作成する</translation>
 <translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> は <ph name="FOLDERNAME" /> 内のファイルを読み取れるようになります</translation>
 <translation id="7768770796815395237">変更</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769709635093101687">一時停止のキーボード ショートカット</translation>
@@ -9583,7 +9574,6 @@
 <translation id="7774581652827321413">このページに関して、概要、関連する検索、その他の有益な情報を確認できます</translation>
 <translation id="7774792847912242537">リクエストが多すぎます。</translation>
 <translation id="7775694664330414886">タブを名前のないグループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを読み取れるようになります</translation>
 <translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
 <translation id="7776701556330691704">音声が見つかりません</translation>
 <translation id="7776950606649732730">ファイルの同期が完了してから、もう一度お試しください。</translation>
@@ -10018,7 +10008,6 @@
 <translation id="8061991877177392872">アシスタントの Voice Match は、すでに別のデバイスで設定されたようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 枚}other{{COUNT} 枚}}</translation>
 <translation id="8063235345342641131">デフォルトの緑のアバター</translation>
-<translation id="8063535366119089408">ファイルを表示</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Google AI を活用して創造力と生産性を高める</translation>
 <translation id="8066444921260601116">接続ダイアログ</translation>

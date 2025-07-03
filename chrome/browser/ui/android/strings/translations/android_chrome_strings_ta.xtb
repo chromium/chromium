@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">கடைசியாகத் திறந்ததன்படி வரிசைப்படுத்துகிறது</translation>
 <translation id="297771753501244313">கடைசியாகத் திறந்ததன்படி வரிசைப்படுத்து</translation>
 <translation id="2979639724566107830">புதிய சாளரத்தில் திற</translation>
-<translation id="2981364137500752533">5 சாளரங்கள் வரை மட்டுமே பயன்படுத்த முடியும்.</translation>
 <translation id="2983102365694924129">ஒரு தளத்தில் நீங்கள் மேற்கொண்ட செயல்பாட்டின் அடிப்படையிலானவை. இந்த அமைப்பு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="2983398917942897288">செயலற்ற நிலை (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">சுற்றியுள்ள வார்த்தைகளையும் Google தேடல்களில் சேர்</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656"><ph name="PROVIDER" /> உடன்</translation>
 <translation id="5456381639095306749">பக்கத்தைப் பதிவிறக்குக</translation>
 <translation id="5458366071038729214">நீங்கள் பின்தொடரும் தளங்களின் பட்டியல் இங்கே காட்டப்படும்</translation>
-<translation id="5468068603361015296"><ph name="FILE_NAME" /> ஃபைலைப் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> பக்கத்தை நகர்த்த முடியாது</translation>
 <translation id="548278423535722844">வரைபடப் பயன்பாட்டில் திற</translation>
 <translation id="5492637351392383067">சாதன என்க்ரிப்ஷன்</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">சரிபார்த்தது: நேற்று</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
 <translation id="671481426037969117">உங்கள் <ph name="FQDN" /> டைமர் நேரம் முடிந்தது. நாளை மீண்டும் தொடங்கும்.</translation>
-<translation id="6715020873764921614"><ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ஃபைலைப் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="671928215901716392">திரையைப் பூட்டு</translation>
 <translation id="6723740634201835758">உங்கள் Google கணக்கில்</translation>
 <translation id="6734310707649923383">நீங்கள் பார்த்த பக்கங்களைப் பதிவில் பார்க்கலாம், நீக்கலாம்</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>
 <translation id="8348430946834215779">முடியும்போதெல்லாம் HTTPS நெறிமுறையைப் பயன்படுத்தி, அதை ஆதரிக்காத தளங்கள் ஏற்றப்படும் முன் எச்சரிக்கையைப் பெறுங்கள்</translation>
 <translation id="8354977102499939946">குரல் மூலம் உடனடியாகத் தேடலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
-<translation id="8357329300499507091">நீங்கள் மொத்தமாக <ph name="MAX_WINDOW_COUNT" /> சாளரங்கள் வரை மட்டுமே பயன்படுத்த முடியும். புதிய சாளரத்தை மீட்டெடுக்க, செயலிலுள்ள மற்றும் செயலில் இல்லாத மொத்தச் சாளரங்களின் எண்ணிக்கையை <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> அல்லது அதற்கும் குறைவாக வைத்திருக்கவும். செயலில் இல்லாத சாளரங்கள் 6 மாதங்களுக்குப் பிறகு நீக்கப்படுகின்றன.</translation>
 <translation id="8361737703487394103">குறிப்பிட்ட பக்கத்திற்குச் செல்ல (1–8)</translation>
 <translation id="8368001212524806591">விலையைக் கண்காணி</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> பக்கக் குழு}other{<ph name="TAB_GROUPS_MANY" /> பக்கக் குழுக்கள்}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ஐ அகற்றவா?</translation>
 <translation id="8570677896027847510">ஃபைலைப் பாதுகாப்பாகப் பதிவிறக்க முடியாது</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
-<translation id="8576426273246268132">நீங்கள் மொத்தமாக <ph name="MAX_WINDOW_COUNT" /> சாளரங்கள் வரை மட்டுமே பயன்படுத்த முடியும். புதிய சாளரத்தைத் திறக்க, செயலிலுள்ள மற்றும் செயலில் இல்லாத மொத்தச் சாளரங்களின் எண்ணிக்கையை <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> அல்லது அதற்கும் குறைவாக வைத்திருக்கவும்.</translation>
 <translation id="8580435650274205305">காலாவதித் தேதி அவசியம்</translation>
 <translation id="8582529315803410153">பிற சாதனங்களில் உள்ள பக்கங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="8585103689515290060">தன்னிரப்பிச் சேவைகள்</translation>

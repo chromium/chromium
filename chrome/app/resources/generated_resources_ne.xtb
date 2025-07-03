@@ -422,9 +422,9 @@
 <translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> को नयाँ ट्याबमा “<ph name="SEARCH_TERMS" />” खोज्नुहोस्</translation>
 <translation id="127849925363482083">पिन गरिएको ट्याब बन्द गर्न फेरि <ph name="SHORTCUT_TEXT" /> थिच्नुहोस्</translation>
 <translation id="1278859221870828664">Google Play का एप तथा सेवाहरूको समीक्षा गर्नुहोस्</translation>
+<translation id="1279024913354609713">अनुमति नदिनुहोस्</translation>
 <translation id="127946606521051357">नजिकैको यन्त्रले डेटा सेयर गर्ने प्रयास गर्दै छ।</translation>
 <translation id="1280332775949918163">स्न्याप विन्डो</translation>
-<translation id="1280965841156951489">फाइलहरू सम्पादन गर्नुहोस्</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{फाइल खोल्न सकिएन}other{फाइलहरू खोल्न सकिएन}}</translation>
 <translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1282436639288565079">ट्याब समूहसम्बन्धी विवरणहरू</translation>
@@ -1026,7 +1026,6 @@
 <translation id="169675691788639886">यो डिभाइसमा SSH सर्भर कन्फिगर गरिएको छ। संवेदनशील खाता प्रयोग गरी साइन इन नगर्नुहोस्।</translation>
 <translation id="1697122132646041614">थम्ब्स डाउनले तपाईंलाई यी परिणामहरू मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
-<translation id="1697686431566694143">फाइल सम्पादन गर्नुहोस्</translation>
 <translation id="1698796500103229697">भुक्तानी विधिहरू</translation>
 <translation id="1698899521169711967">क्यारेट ब्राउजिङ</translation>
 <translation id="1699807488537653303">पासवर्डसम्बन्धी त्रुटि सच्याउनुहोस्</translation>
@@ -3011,7 +3010,6 @@
 <translation id="3067198179881736288">एप स्थापना गर्ने हो?</translation>
 <translation id="3067198360141518313">यो प्लगइन चलाउनुहोस्</translation>
 <translation id="3071624960923923138">एउटा नयाँ ट्याब खोल्न यहाँ क्लिक गर्न सक्नुहुन्छ</translation>
-<translation id="3072775339180057696">साइटलाई <ph name="FILE_NAME" /> हेर्न दिने हो?</translation>
 <translation id="3074499504015191586">पूरै पेज अनुवाद गर्नुहोस्</translation>
 <translation id="3075144191779656260">आफ्नो <ph name="DEVICE_TYPE" /> को बायाँतिर रहेको फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="3075740753681485522">अफ • यो एक्स्टेन्सनमा मालवेयर समावेश छ</translation>
@@ -3507,7 +3505,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> टाइम आउट भयो</translation>
 <translation id="3443754338602062261">तपाईंको <ph name="BRAND" /> मा यी खाताहरूको पासवर्ड सेभ गरिसकिएको छ। तपाईंले तल सूचीकृत कुनै पासवर्ड इम्पोर्ट गर्नुभयो भने सो पासवर्डले हालको पासवर्ड प्रतिस्थापन गर्ने छ।</translation>
 <translation id="344449859752187052">तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्ने छ</translation>
 <translation id="3445047461171030979">Google सहायकका द्रुत जवाफहरू</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="344537926140058498">यो फाइलमा संवेदनशील वा खतरनाक सामग्री भएकाले तपाईंको संस्थाले यो फाइल ब्लक गरेको छ। यसका मालिकलाई उक्त समस्या समाधान गर्न लगाउनुहोस्।</translation>
@@ -3986,7 +3983,6 @@
 <translation id="3760460896538743390">&amp;पृष्ठभूमि पृष्ठ निरीक्षण गर्नुहोस्</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> तारिख</translation>
 <translation id="37613671848467444">&amp;इनकगनिटो विण्डोमा खोल्नुहोस्</translation>
-<translation id="3761556954875533505">साइटलाई फाइलहरू सम्पादन गर्न दिने हो?</translation>
 <translation id="3761560059647741692">ल्यान्डस्केप</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू, CVC सेभ गरिएको छ</translation>
 <translation id="3763433740586298940">तपाईं आफूले नचाहेका साइटहरू ब्लक गर्न सक्नुहुन्छ। साथै Chrome ले पनि उक्त सूचीमा भएका ३० दिनभन्दा पुराना साइटहरू स्वतः मेटाउँछ।</translation>
@@ -5304,7 +5300,6 @@
 <translation id="4689235506267737042">डेमो सेटअपसम्बन्धी आफ्ना प्राथमिकताहरू छनाैट गर्नुहोस्</translation>
 <translation id="4689421377817139245">यो बुकमार्कलाई आफ्नो iPhone मा सिंक गर्नुहोस्</translation>
 <translation id="4690091457710545971">&lt;Intel को Wi-Fi फर्मवेयरले सिर्जना गरेका चारवटा फाइलहरू यस प्रकार छन्: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon। सुरुका तीनवटा फाइलहरू भनेका दर्ताका डम्पहरू समावेश गर्ने र Intel ले कुनै व्यक्तिगत डेटा वा यन्त्र पहिचान गर्ने जानकारी समावेश नभएको भनी दाबी गरिएका बाइनरी फाइलहरू हुन्। अन्तिम फाइल चाहिँ Intel फर्मवेयरको कार्यान्वयनको ट्रेस हो; यसले कुनै पनि व्यक्तिगत जानकारी वा यन्त्र पहिचान गर्ने जानकारी समावेश गरेको छ या छैन भनी छानबिन गरिएको छ। यी फाइल तपाईंको यन्त्रमा भएका हालसालैका Wi-Fi सम्बन्धी समस्याहरूको प्रतिक्रियास्वरूप सिर्जना गरिएका थिए र यी समस्याहरूको समाधान गर्न मद्दत गर्न ती फाइलहरूलाईIntel सँग आदान प्रदान गरिने छन्।&gt;</translation>
-<translation id="4691791363716065510">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्ने छ</translation>
 <translation id="4692342362587775867">यो साइटबाट प्राप्त हुने सूचनाहरूले बाधा पुऱ्याउन सक्छन्</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{यस समूहमा # सदस्य हुनुहुन्छ}other{यस समूहमा # जना सदस्य हुनुहुन्छ}}</translation>
 <translation id="4692623383562244444">खोज इन्धनहरू</translation>
@@ -5630,7 +5625,6 @@
 <translation id="4913209098186576320">यो फाइल खतरनाक हुन सक्छ<ph name="LINE_BREAK" />यो फाइलको जाँच गर्न सामान्यभन्दा बढी समय लागिरहेको छ...</translation>
 <translation id="4913695564084524048">एपसम्बन्धी डेटा भेटिएन</translation>
 <translation id="4915961947098019832">फोटोहरू देखाउन अनुमति दिइएका साइटहरू</translation>
-<translation id="4916542008280060967">साइटलाई <ph name="FILE_NAME" /> सम्पादन गर्न दिने हो?</translation>
 <translation id="491779113051926205">ChromeOS का ट्राफिक काउन्टरहरू</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ले एक्सटेन्सन "<ph name="EXTENSION_NAME" />" सँग कुराकानी गर्न चाहन्छ</translation>
 <translation id="4918086044614829423">स्वीकार्नुहोस्</translation>
@@ -6631,6 +6625,7 @@
 <translation id="5643321261065707929">सीमा तोकिएको नेटवर्क</translation>
 <translation id="5646376287012673985">लोकेसन</translation>
 <translation id="5646558797914161501">व्यापारी</translation>
+<translation id="5647989922796038257">साथै, सबै अडियो आउटपुटहरू पनि सेयर गर्नुहोस्</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5651308944918885595">नजिकैका डिभाइससँग सेयर गर्ने सुविधामा भएको 'भेटिने क्षमता' नामक विकल्प</translation>
@@ -8770,7 +8765,6 @@
 <translation id="720110658997053098">यो यन्त्रलाई सदाका लागि किअस्क मोडमा राख्नुहोस्</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' मेटियो</translation>
 <translation id="7201336084980086208">तपाईंले फारामहरू पेस गर्दा अटोफिलले तपाईंको सवारी चालक अनुमति पत्र वा राहदानी नम्बर जस्ता जानकारी सेभ गर्ने विकल्प उपलब्ध गराउन सक्छ</translation>
-<translation id="7201420661433230412">फाइलहरू हेर्ने</translation>
 <translation id="7201432510117121839">यो डिभाइसमा डेस्कटपको अडियो कास्ट गर्न मिल्दैन</translation>
 <translation id="7201535955609308429">कृपया पुष्टि गर्ने प्रक्रिया जारी रहुन्जेल पर्खनुहोस्</translation>
 <translation id="7202337678781136582">आफ्नो Android फोनमार्फत उक्त QR कोड स्क्यान गर्नुहोस्</translation>
@@ -9379,7 +9373,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> लाई सामेल गराइयो</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री लुकाउनुहोस्</translation>
 <translation id="7643117827468520640">यी सर्तहरू हेर्नुहोस्</translation>
-<translation id="7643932971554933646">साइटलाई फाइलहरू हेर्न दिने हो?</translation>
 <translation id="7644953783774050577">कुनै पनि चयन नगर्नुहोला</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
 <translation id="7645681574855902035">Linux को ब्याकअप रद्द गर्दै</translation>
@@ -9577,7 +9570,6 @@
 <translation id="7767554953520855281">तपाईंले आफ्नो स्क्रिन सेयर गरिरहेका बेला सूचनाका विवरणहरू लुकाइन्छन्</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" /> का लागि पासकी बनाउनुहोस्</translation>
 <translation id="7768507955883790804">तपाईं कुनै साइटमा जाँदा उक्त साइटमा स्वतः यो सेटिङ लागू हुन्छ</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू हेर्न सक्ने छ</translation>
 <translation id="7768770796815395237">परिवर्तन गर्नुहोस्</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769709635093101687">पज गर्न प्रयोग हुने किबोर्डको सर्टकट</translation>
@@ -9595,7 +9587,6 @@
 <translation id="7774581652827321413">यो पेजको सारांश, सम्बन्धित खोज र यसका बारेमा अन्य उपयोगी जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="7774792847912242537">अत्यन्त धेरै पटक अनुरोध गरियो।</translation>
 <translation id="7775694664330414886">यो ट्याब नामविहीन समूहमा सारियो - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा रहेका फाइलहरू हेर्न सक्ने छ</translation>
 <translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7776701556330691704">कुनै पनि आवाज फेला परेन</translation>
 <translation id="7776950606649732730">फाइल सिंक भइसकेपछि फेरि प्रयास गर्नुहोस्।</translation>
@@ -10029,7 +10020,6 @@
 <translation id="8061991877177392872">तपाईंले आफ्नो सहायकमार्फत अर्को यन्त्रमा Voice Match सेटअप गरिसक्नुभएको छ जस्तो देखिन्छ। यो डिभाइसमा आवाजको मोडेल बनाउनका लागि ती पहिलेका रेकर्डिङहरू प्रयोग गरिएका छन्।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{कागजको एउटा पाना}other{कागजका {COUNT} वटा पाना}}</translation>
 <translation id="8063235345342641131">डिफल्ट हरियो अवतार</translation>
-<translation id="8063535366119089408">फाइल हेर्नुहोस्</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Google AI प्रयोग गरी आफ्नो सिर्जनशीलता र कार्यक्षमता बढाउनुहोस्</translation>
 <translation id="8066444921260601116">कनेक्सन डायलग</translation>

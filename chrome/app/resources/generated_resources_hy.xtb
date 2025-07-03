@@ -426,9 +426,9 @@
 <translation id="1277597051786235230">&amp;Որոնել «<ph name="SEARCH_TERMS" />» <ph name="SEARCH_ENGINE" />-ում նոր ներդիրում</translation>
 <translation id="127849925363482083">Նորից սեղմեք <ph name="SHORTCUT_TEXT" />՝ ամրացված ներդիրը փակելու համար</translation>
 <translation id="1278859221870828664">Ստուգեք Google Play հավելվածներն ու ծառայությունները</translation>
+<translation id="1279024913354609713">Չթույլատրել</translation>
 <translation id="127946606521051357">Մոտակա սարքերից մեկը տվյալներ է ուղարկում</translation>
 <translation id="1280332775949918163">Կապել պատուհանը</translation>
-<translation id="1280965841156951489">Փոփոխել ֆայլերը</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Հնարավոր չէ բացել ֆայլը}one{Հնարավոր չէ բացել ֆայլը}other{Հնարավոր չէ բացել ֆայլերը}}</translation>
 <translation id="1282311502488501110">Մուտք չգործել</translation>
 <translation id="1282436639288565079">Ներդիրների խմբի մասին</translation>
@@ -1031,7 +1031,6 @@
 <translation id="169675691788639886">Սարքում կարգավորված է SSH սերվեր։ Մի մտեք համակարգ այնպիսի հաշիվներով, որոնք խիստ անձնական տեղեկություններ են պարունակում։</translation>
 <translation id="1697122132646041614">«Վատն է» կոճակը բացում է ձև, որտեղ կարող եք մանրամասն հայտնել ձեր կարծիքը։</translation>
 <translation id="1697532407822776718">Տեղակայումը բարեհաջող ավարտված է:</translation>
-<translation id="1697686431566694143">Փոփոխել ֆայլը</translation>
 <translation id="1698796500103229697">&amp;Վճարման եղանակներ</translation>
 <translation id="1698899521169711967">Ակտիվ նշորդի ռեժիմ</translation>
 <translation id="1699807488537653303">Շտկել գաղտնաբառի հետ կապված սխալը</translation>
@@ -3013,7 +3012,6 @@
 <translation id="3067198179881736288">Տեղադրե՞լ հավելվածը</translation>
 <translation id="3067198360141518313">Գործարկել այս փլագինը</translation>
 <translation id="3071624960923923138">Սեղմեք այստեղ՝ նոր ներդիր բացելու համար</translation>
-<translation id="3072775339180057696">Կայքին հասանելի դարձնե՞լ <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="3074499504015191586">Թարգմանել ամբողջ էջը</translation>
 <translation id="3075144191779656260">Հպեք մատնահետքերի սկաներին, որը ձեր <ph name="DEVICE_TYPE" /> սարքի ձախ կողմում է։ Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="3075740753681485522">Անջատված է • Այս ընդլայնումը պարունակում է վնասագիր</translation>
@@ -3509,7 +3507,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" />ի սպասման ժամանակը սպառվել է</translation>
 <translation id="3443754338602062261">Այս հաշիվների գաղտնաբառերն արդեն պահվել են «<ph name="BRAND" />» ծառայությունում։ Եթե դուք ներմուծեք ստորև նշված գաղտնաբառերից որևէ մեկը, գոյություն ունեցող գաղտնաբառը կփոխարինվի։</translation>
 <translation id="344449859752187052">Երրորդ կողմի քուքիներն արգելափակված են</translation>
-<translation id="3444726579402183581"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="3445047461171030979">Google Օգնականի արագ պատասխաններ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="344537926140058498">Ձեր կազմակերպությունն արգելափակել է այս ֆայլը, քանի որ այն պարունակում է խիստ անձնական կամ վտանգավոր բովանդակություն։ Խնդրեք սեփականատիրոջը շտկել այդ խնդիրը։</translation>
@@ -3988,7 +3985,6 @@
 <translation id="3760460896538743390">Հետազոտել &amp;հետնաշերտի էջը</translation>
 <translation id="3760788800962452192"><ph name="DROPDOWN_NAME" /> օր</translation>
 <translation id="37613671848467444">Բացել &amp;ինկոգնիտո պատուհանում</translation>
-<translation id="3761556954875533505">Թույլատրե՞լ կայքին փոփոխել ֆայլեր</translation>
 <translation id="3761560059647741692">Բնանկար</translation>
 <translation id="3761733456040768239">Լրացուցիչ գործողություններ <ph name="CARD_DESCRIPTION" /> քարտի, պահված CVC-ի համար</translation>
 <translation id="3763433740586298940">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։</translation>
@@ -5307,7 +5303,6 @@
 <translation id="4689235506267737042">Ընտրեք դեմո տարբերակի կարգավորումները</translation>
 <translation id="4689421377817139245">Օգտագործեք այս գաղտնաբառը ձեր iPhone-ում</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ներկառուցված ծրագիրը ստեղծել է չորս ֆայլ՝ csr.lst, fh_regs.lst, radio_reg.lst և monitor.lst.sysmon։ Առաջին երեքը բինարային ֆայլեր են, որոնք պարունակում են ռեեստրի հիշողության բեռնաթափման տվյալները, որոնց մեջ, ըստ Intel ընկերության, չկան անձնական տեղեկություններ և սարքի մասին տվյալներ։ Վերջին ֆայլը պարունակում է Intel–ի ներկառուցված ծրագրի աշխատանքի հետագծումը։ Ֆայլից հեռացված են բոլոր անձնական տեղեկություններն ու սարքի մասին տվյալները։ Քանի որ վերջին ֆայլի չափը շատ մեծ է, այն ամբողջությամբ չի ցուցադրվի այստեղ։ Նշյալ ֆայլերը կուղարկվեն Intel-ին՝ ձեր սարքում Wi-Fi-ի հետ կապված խնդիրները շտկելու համար։</translation>
-<translation id="4691791363716065510"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="4692342362587775867">Այս կայքի ծանուցումները կարող են խանգարել</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# անդամ խմբում}one{# անդամ խմբում}other{# անդամ խմբում}}</translation>
 <translation id="4692623383562244444">Որոնիչներ</translation>
@@ -5633,7 +5628,6 @@
 <translation id="4913209098186576320">Այս ֆայլը կարող է վտանգավոր լինել<ph name="LINE_BREAK" />Ստուգումը սովորականից ավելի երկար է տևում...</translation>
 <translation id="4913695564084524048">Չհաջողվեց գտնել հավելվածի տվյալներ</translation>
 <translation id="4915961947098019832">Թույլատրվում է ցուցադրել պատկերներ</translation>
-<translation id="4916542008280060967">Թույլատրե՞լ կայքին փոփոխել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="491779113051926205">ChromeOS-ի թրաֆիկի հաշվիչներ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» ընդլայնման հետ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
@@ -8772,7 +8766,6 @@
 <translation id="720110658997053098">Մշտապես պահել այս սարքը կրպակի ռեժիմում</translation>
 <translation id="7201118060536064622">«<ph name="DELETED_ITEM_NAME" />» տարրը ջնջվեց</translation>
 <translation id="7201336084980086208">Երբ դուք ձևեր ուղարկեք, ինքնալրացման գործառույթը կարող է առաջարկել ձեզ պահել մուտքագրված տեղեկությունները, օրինակ՝ ձեր վարորդական վկայականի կամ անձնագրի համարը</translation>
-<translation id="7201420661433230412">Դիտել ֆայլերը</translation>
 <translation id="7201432510117121839">Համակարգչից ձայնի հեռարձակումն այս սարքում չի աջակցվում</translation>
 <translation id="7201535955609308429">Սպասեք, մինչև ստուգումն ավարտվի</translation>
 <translation id="7202337678781136582">Սկանավորեք QR կոդը Android հեռախոսում</translation>
@@ -9381,7 +9374,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> օգտատերն ավելացվեց</translation>
 <translation id="7642778300616172920">Թաքցնել գաղտնի տվյալները</translation>
 <translation id="7643117827468520640">Կարդացեք այս պայմանները</translation>
-<translation id="7643932971554933646">Թույլ տա՞լ կայքին ֆայլեր դիտել</translation>
 <translation id="7644953783774050577">Չընտրել ոչ մեկը</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7645681574855902035">Լինուքսի պահուստավորումը չեղարկվում է</translation>
@@ -9579,7 +9571,6 @@
 <translation id="7767554953520855281">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
 <translation id="7767972280546034736">Ստեղծեք մուտքի բանալի <ph name="APP_NAME" /> հավելվածի համար</translation>
 <translation id="7768507955883790804">Երբ դուք այցելում եք կայքեր, դրանք ավտոմատ հետևում են այս կարգավորմանը։</translation>
-<translation id="7768526219335215384"><ph name="ORIGIN" /> կայքը կկարողանա դիտել «<ph name="FOLDERNAME" />» պանակի ֆայլերը</translation>
 <translation id="7768770796815395237">Փոխել</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7769709635093101687">Ստեղնային դյուրանցում՝ դադարեցնելու համար</translation>
@@ -9597,7 +9588,6 @@
 <translation id="7774581652827321413">Դիտեք էջի ամփոփագիրը, որոնման առնչվող հարցումները և այս էջի մասին այլ օգտակար տեղեկություններ</translation>
 <translation id="7774792847912242537">Չափազանց շատ հարցումներ</translation>
 <translation id="7775694664330414886">Ներդիրը տեղափոխվեց անանուն խումբ – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="7776156998370251340"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FOLDERNAME" /> պանակի ֆայլերը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="777637629667389858">Երբ դուք մուտք եք գործած հաշիվ, գործառույթը պաշտպանում է ձեզ Google-ի ծառայություններում։</translation>
 <translation id="7776701556330691704">Ձայներ չեն գտնվել</translation>
 <translation id="7776950606649732730">Նորից փորձեք, երբ ֆայլի համաժամացումն ավարտվի։</translation>
@@ -10030,7 +10020,6 @@
 <translation id="8061991877177392872">Դուք արդեն կարգավորել եք Voice Match-ը այլ սարքում։ Այս նախկին ձայնագրություններն օգտագործվել են՝ ձեր ձայնի նմուշն այս սարքում ստեղծելու համար։</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 թերթ}one{{COUNT} թերթ}other{{COUNT} թերթ}}</translation>
 <translation id="8063235345342641131">Կանխադրված կանաչ ավատար</translation>
-<translation id="8063535366119089408">Դիտել ֆայլը</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Օգտագործեք Google AI-ը՝ ավելի ստեղծագործ և արդյունավետ լինելու համար</translation>
 <translation id="8066444921260601116">Միացման պատուհան</translation>

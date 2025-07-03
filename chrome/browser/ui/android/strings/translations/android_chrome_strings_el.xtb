@@ -439,7 +439,6 @@
 <translation id="2977350910003566746">Ταξινόμηση κατά τελευταίο άνοιγμα</translation>
 <translation id="297771753501244313">Ταξιν. κατά τελ. άνοιγμα</translation>
 <translation id="2979639724566107830">Άνοιγμα σε νέο παράθυρο</translation>
-<translation id="2981364137500752533">Μπορείτε να έχετε έως 5 παράθυρα.</translation>
 <translation id="2983102365694924129">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
 <translation id="2983398917942897288">Ανενεργά στοιχεία (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google</translation>
@@ -988,7 +987,6 @@
 <translation id="5454166040603940656">με <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Λήψη σελίδας</translation>
 <translation id="5458366071038729214">Εδώ θα βρίσκετε τους ιστοτόπους που ακολουθείτε.</translation>
-<translation id="5468068603361015296">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" />;</translation>
 <translation id="5471273988133666918">Δεν είναι δυνατή η μετακίνηση της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
 <translation id="5492637351392383067">Κρυπτογράφηση στη συσκευή</translation>
@@ -1278,7 +1276,6 @@
 <translation id="670498945988402717">Ελέγχθηκε χθες</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="671481426037969117">Η αντίστροφη μέτρηση <ph name="FQDN" /> εξαντλήθηκε. Θα ξεκινήσει ξανά αύριο.</translation>
-<translation id="6715020873764921614">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />);</translation>
 <translation id="671928215901716392">Κλείδωμα οθόνης</translation>
 <translation id="6723740634201835758">Στον Λογαριασμό σας Google</translation>
 <translation id="6734310707649923383">Μπορείτε να δείτε τις σελίδες που έχετε επισκεφτεί ή να τις διαγράψετε από το ιστορικό σας</translation>
@@ -1691,7 +1688,6 @@
 <translation id="834313815369870491">Να μην γίνεται ποτέ μετάφραση ιστοτόπων</translation>
 <translation id="8348430946834215779">Χρησιμοποιήστε HTTPS όποτε είναι δυνατόν και λάβετε ειδοποίηση πριν από τη φόρτωση ιστοτόπων που δεν το υποστηρίζουν</translation>
 <translation id="8354977102499939946">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
-<translation id="8357329300499507091">Μπορείτε να έχετε συνολικά έως <ph name="MAX_WINDOW_COUNT" /> παράθυρα. Για να επαναφέρετε ένα νέο παράθυρο, μειώστε τον συνολικό αριθμό των παραθύρων μεταξύ ενεργών και ανενεργών σε <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ή λιγότερα. Τα ανενεργά παράθυρα διαγράφονται μετά από 6 μήνες.</translation>
 <translation id="8361737703487394103">Μετάβαση σε συγκεκριμένη καρτέλα (1-8)</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ομάδα καρτελών}other{<ph name="TAB_GROUPS_MANY" /> ομάδες καρτελών}}</translation>
@@ -1753,7 +1749,6 @@
 <translation id="8565021320663436446">Κατάργηση του χρήστη <ph name="MEMBER_FULL_NAME" />;</translation>
 <translation id="8570677896027847510">Δεν είναι δυνατή η λήψη του αρχείου με ασφάλεια.</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
-<translation id="8576426273246268132">Μπορείτε να έχετε συνολικά έως <ph name="MAX_WINDOW_COUNT" /> παράθυρα. Για να ανοίξετε ένα νέο παράθυρο, μειώστε τον συνολικό αριθμό των παραθύρων μεταξύ ενεργών και ανενεργών σε <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ή λιγότερα.</translation>
 <translation id="8580435650274205305">Απαιτείται η ημερομηνία λήξης</translation>
 <translation id="8582529315803410153">Εδώ θα βρείτε τις καρτέλες σας από τις άλλες συσκευές</translation>
 <translation id="8585103689515290060">Υπηρεσίες αυτόματης συμπλήρωσης</translation>
