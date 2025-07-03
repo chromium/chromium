@@ -69,8 +69,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-// TODO(crbug.com/404741060): Eliminate
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 #if BUILDFLAG(USE_VAAPI)
