@@ -12,8 +12,8 @@
 
 namespace autofill {
 
-// A class that manages the startup and shutdown of Autofill Loyalty Cards.
-// This custom implementation clears the data on sync pause in kTransportMode.
+// A class that manages the startup and shutdown of Valuables. This custom
+// implementation clears the data on sync pause in kTransportMode.
 class AutofillValuableDataTypeController : public syncer::DataTypeController {
  public:
   AutofillValuableDataTypeController(
