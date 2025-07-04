@@ -32,7 +32,6 @@
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
 
 namespace base {
-class SequencedTaskRunner;
 class TickClock;
 }  // namespace base
 
@@ -159,14 +158,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
   // Returns true if the timer that dispatches long queued requests is running.
   bool IsLongQueuedRequestsDispatchTimerRunning() const;
 
-  base::SequencedTaskRunner* task_runner();
-
-  // Testing setters
-  void SetTaskRunnerForTesting(
-      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
-    task_runner_ = std::move(sequenced_task_runner);
-  }
-
   void SetResourceSchedulerParamsManagerForTests(
       const ResourceSchedulerParamsManager& resource_scheduler_params_manager);
 
@@ -213,9 +204,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
   const base::TimeDelta queued_requests_dispatch_periodicity_;
 
   ResourceSchedulerParamsManager resource_scheduler_params_manager_;
-
-  // The TaskRunner to post tasks on. Can be overridden for tests.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

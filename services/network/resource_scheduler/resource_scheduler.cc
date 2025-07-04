@@ -29,6 +29,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/tracing.h"
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log.h"
@@ -285,10 +286,12 @@ class ResourceScheduler::ScheduledResourceRequestImpl
       // If can't start the request synchronously, post a task to start the
       // request.
       if (start_mode == START_ASYNC) {
-        scheduler_->task_runner()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ScheduledResourceRequestImpl::Start,
-                           weak_ptr_factory_.GetWeakPtr(), START_SYNC));
+        net::GetTaskRunner(priority_.priority)
+            ->PostTask(
+                FROM_HERE,
+                base::BindOnce(&ScheduledResourceRequestImpl::Start,
+                               weak_ptr_factory_.GetWeakPtr(), START_SYNC));
+
         return;
       }
       deferred_ = false;
@@ -532,7 +535,8 @@ class ResourceScheduler::Client
     if (new_priority_params.priority > old_priority_params.priority) {
       // Check if this request is now able to load at its new priority.
       ScheduleLoadAnyStartablePendingRequests(
-          RequestStartTrigger::REQUEST_REPRIORITIZED);
+          RequestStartTrigger::REQUEST_REPRIORITIZED,
+          new_priority_params.priority);
     }
   }
 
@@ -1097,11 +1101,14 @@ class ResourceScheduler::Client
   // LoadAnyStartablePendingRequests.
   // TODO(csharrison): Reconsider this if IPC batching becomes an easy to use
   // pattern.
-  void ScheduleLoadAnyStartablePendingRequests(RequestStartTrigger trigger) {
+  void ScheduleLoadAnyStartablePendingRequests(
+      RequestStartTrigger trigger,
+      net::RequestPriority new_priority) {
     if (num_skipped_scans_due_to_scheduled_start_ == 0) {
       TRACE_EVENT0("loading", "ScheduleLoadAnyStartablePendingRequests");
-      resource_scheduler_->task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&Client::LoadAnyStartablePendingRequests,
+      net::GetTaskRunner(new_priority)
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(&Client::LoadAnyStartablePendingRequests,
                                     weak_ptr_factory_.GetWeakPtr(), trigger));
     }
     num_skipped_scans_due_to_scheduled_start_ += 1;
@@ -1212,8 +1219,7 @@ ResourceScheduler::ResourceScheduler(const base::TickClock* tick_clock)
     : tick_clock_(tick_clock ? tick_clock
                              : base::DefaultTickClock::GetInstance()),
       queued_requests_dispatch_periodicity_(
-          GetQueuedRequestsDispatchPeriodicity()),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+          GetQueuedRequestsDispatchPeriodicity()) {
   DCHECK(tick_clock_);
 
   StartLongQueuedRequestsDispatchTimerIfNeeded();
@@ -1403,10 +1409,6 @@ void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
 bool ResourceScheduler::IsLongQueuedRequestsDispatchTimerRunning() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return long_queued_requests_dispatch_timer_.IsRunning();
-}
-
-base::SequencedTaskRunner* ResourceScheduler::task_runner() {
-  return task_runner_.get();
 }
 
 void ResourceScheduler::SetResourceSchedulerParamsManagerForTests(
