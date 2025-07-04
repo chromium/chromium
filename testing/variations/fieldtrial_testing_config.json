@@ -17999,6 +17999,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_PlusAddressCreateSuggestion",
                         "PlusAddressAndroidOpenGmsCoreManagementPage",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressPreallocation",
