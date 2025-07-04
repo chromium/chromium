@@ -240,18 +240,17 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    GpuMemoryBufferImpl::DestructionCallback callback,
     GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
         copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
+          std::move(handle), size, format, usage, base::DoNothing());
 #if BUILDFLAG(IS_MAC)
     case gfx::IO_SURFACE_BUFFER:
       return GpuMemoryBufferImplIOSurface::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
+          std::move(handle), size, format, usage, base::DoNothing());
 #endif
 #if BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP: {
@@ -260,13 +259,13 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
           ui::CreateClientNativePixmapFactoryOzone();
       return GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory.get(), std::move(handle), size, format,
-          usage, std::move(callback));
+          usage, base::DoNothing());
     }
 #endif
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return GpuMemoryBufferImplDXGI::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback),
+          std::move(handle), size, format, usage, base::DoNothing(),
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -397,7 +396,7 @@ ClientSharedImage::ClientSharedImage(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
         viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
             metadata_.format),
-        exported_si.buffer_usage_.value(), base::DoNothing(),
+        exported_si.buffer_usage_.value(),
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -421,7 +420,7 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
         viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
             metadata_.format),
-        exported_si.buffer_usage_.value(), base::DoNothing(),
+        exported_si.buffer_usage_.value(),
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -449,7 +448,6 @@ ClientSharedImage::ClientSharedImage(
           viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
               handle_info.format),
           handle_info.buffer_usage,
-          base::DoNothing(),
           base::BindRepeating(
               &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
               base::Unretained(this)),
