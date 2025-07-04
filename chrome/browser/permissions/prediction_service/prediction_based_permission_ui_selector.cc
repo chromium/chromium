@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
+#include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
-#include "chrome/browser/permissions/permissions_aiv1_handler.h"
+#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/permissions_aiv1_handler.h"
+#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 
 #include <memory>
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/permissions_aiv1_handler.h"
+#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
@@ -235,7 +235,7 @@ void PermissionsAiv1Handler::InquireAiOnDeviceModel(
       LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/false);
       // TODO(crbug.com/382447738): It can happen that a new inquiry comes
       // before the previous finishes its execution. To avoid unexpected
-      // behavior return `std::nullopt` which means another type of CPSS logic
+      // behavior return `std::nullopt` which means another type of prediction_service logic
       // will be executed.
       std::move(callback).Run(std::nullopt);
       return;

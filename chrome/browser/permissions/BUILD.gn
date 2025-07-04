@@ -38,12 +38,12 @@ source_set("permissions") {
     "permission_manager_factory.h",
     "permission_revocation_request.cc",
     "permission_revocation_request.h",
-    "permissions_aiv1_handler.cc",
-    "permissions_aiv1_handler.h",
-    "prediction_based_permission_ui_selector.cc",
-    "prediction_based_permission_ui_selector.h",
     "prediction_model_handler_provider.cc",
     "prediction_model_handler_provider.h",
+    "prediction_service/permissions_aiv1_handler.cc",
+    "prediction_service/permissions_aiv1_handler.h",
+    "prediction_service/prediction_based_permission_ui_selector.cc",
+    "prediction_service/prediction_based_permission_ui_selector.h",
     "prediction_service_factory.cc",
     "prediction_service_factory.h",
     "prediction_service_request.cc",
@@ -168,8 +168,8 @@ source_set("permissions") {
 
   if (safe_browsing_mode != 0) {
     sources += [
-      "contextual_notification_permission_ui_selector.cc",
-      "contextual_notification_permission_ui_selector.h",
+      "prediction_service/contextual_notification_permission_ui_selector.cc",
+      "prediction_service/contextual_notification_permission_ui_selector.h",
     ]
   }
 }
@@ -198,15 +198,15 @@ source_set("unit_tests") {
   sources = [
     "chrome_permission_manager_unittest.cc",
     "chrome_permission_request_manager_unittest.cc",
-    "contextual_notification_permission_ui_selector_unittest.cc",
     "crowd_deny_preload_data_unittest.cc",
     "crowd_deny_safe_browsing_request_unittest.cc",
     "notifications_engagement_service_unittest.cc",
     "permission_context_base_permissions_policy_unittest.cc",
     "permission_revocation_request_unittest.cc",
     "permission_subscription_unittest.cc",
-    "permissions_aiv1_handler_unittest.cc",
-    "prediction_based_permission_ui_selector_unittest.cc",
+    "prediction_service/contextual_notification_permission_ui_selector_unittest.cc",
+    "prediction_service/permissions_aiv1_handler_unittest.cc",
+    "prediction_service/prediction_based_permission_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
   ]
 
