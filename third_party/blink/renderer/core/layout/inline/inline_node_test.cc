@@ -359,7 +359,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineBR) {
 TEST_F(InlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
-  SetupHtml("t", u"<li id=t>ab</li>");
+  SetupHtml("t", u"<ul><li id=t>ab</li></ul>");
   // LayoutListItem {LI}
   //   LayoutOutsideListMarker {::marker}
   //      LayoutTextCombine (anonymous)
@@ -369,10 +369,10 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   InlineNodeForTest node =
       CreateInlineNode(To<LayoutTextCombine>(layout_object_->SlowFirstChild()));
   node.CollectInlines();
-  EXPECT_EQ("\u2022", node.Text());
+  EXPECT_EQ("\u2022 ", node.Text());
   InlineItems& items = node.Items();
   ASSERT_EQ(1u, items.size());
-  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 2u);
   EXPECT_TRUE(items[0]->IsSymbolMarker());
 }
 

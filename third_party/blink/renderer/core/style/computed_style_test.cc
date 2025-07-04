@@ -2148,6 +2148,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
 }
 
 TEST_F(ComputedStyleTest, UseCountInsideListMarkerPositionQuirk) {
+  if (RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
+    return;
+  }
   Document& document = GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>.marker-content-none::marker { content: none }</style>

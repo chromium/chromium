@@ -624,7 +624,8 @@ TEST_F(LayoutTextCombineTest, ListMarkerWidthOfSymbol) {
       " text-combine-upright: all;"
       " writing-mode: vertical-lr;"
       " font-size: 1e-7px;"
-      "}");
+      "}"
+      "li { list-style-position: inside; }");
   SetBodyInnerHTML("<li id=root>ab</li>");
   auto& root = *GetElementById("root");
   const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());

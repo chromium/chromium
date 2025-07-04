@@ -1,9 +1,7 @@
 This is a testharness.js-based test.
-Found 129 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 115 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <li> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <li> (in <dir>) - text-align
   assert_equals: expected "start" but got "left"
 [FAIL] <menu>\n   <li> - counter-reset
@@ -104,104 +102,78 @@ Found 129 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="1"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="1"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="a" class="type-a"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="a" class="type-a"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="a" class="type-a"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="a" class="type-a"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="A" class="type-A"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="A" class="type-A"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="A" class="type-A"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="A" class="type-A"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="i" class="type-i"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="i" class="type-i"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="i" class="type-i"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="i" class="type-i"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="I" class="type-I"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="I" class="type-I"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="I" class="type-I"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="I" class="type-I"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="none"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="none"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="none"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="none"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="NONE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="NONE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="NONE"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="NONE"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="disc"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="disc"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="disc"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="disc"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="DISC"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="DISC"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="DISC"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="DISC"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="circle"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="circle"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="circle"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="circle"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="CIRCLE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="CIRCLE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="CIRCLE"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="CIRCLE"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="square"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="square"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="square"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="square"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol type="SQUARE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <ul type="SQUARE"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li type="SQUARE"> - text-align
   assert_equals: expected "start" but got "left"
-[FAIL] <li type="SQUARE"> - list-style-position
-  assert_equals: expected "inside" but got "outside"
 [FAIL] <ol>\n    <li value="10"> - counter-reset
   assert_equals: expected "list-item 0" but got "none"
 [FAIL] <li value="10"> (in <ol>) - counter-set

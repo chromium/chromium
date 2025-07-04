@@ -58,3 +58,22 @@ input:not([type=image i]), textarea {
 form {
     margin-block-end: 1em
 }
+
+@supports blink-feature(ListStylePositionQuirkStandard) {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#lists */
+    li { list-style-position: inside; }
+
+    /* Expand `:is()` in the rightmost position because otherwise they hit
+       `DCHECK(default_html_quirks_style_->UniversalRules().empty())` */
+    /* li :is(dir, menu, ol, ul) { list-style-position: outside; }*/
+    li dir, li menu, li ol, li ul { list-style-position: outside; }
+
+    /* :is(dir, menu, ol, ul) :is(dir, menu, ol, ul, li) { */
+    :is(dir, menu, ol, ul) dir,
+    :is(dir, menu, ol, ul) menu,
+    :is(dir, menu, ol, ul) ol,
+    :is(dir, menu, ol, ul) ul,
+    :is(dir, menu, ol, ul) li {
+        list-style-position: unset;
+    }
+}

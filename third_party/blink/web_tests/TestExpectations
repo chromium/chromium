@@ -3191,7 +3191,6 @@ crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-link.tentati
 crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-style-subresource.tentative.html [ Failure ]
 crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-style.tentative.html [ Failure ]
 crbug.com/393401460 external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
-crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
 crbug.com/392927987 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392927987 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]

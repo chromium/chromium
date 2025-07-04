@@ -1024,6 +1024,7 @@
       custom_compare: true,
     },
     {
+      // crbug.com/41241289 Remove with the "ListStylePositionQuirk" flag.
       name: "IsInsideListElement",
       field_template: "monotonic_flag",
       default_value: "false",

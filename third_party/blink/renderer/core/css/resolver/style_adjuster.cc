@@ -610,9 +610,11 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     return;
   }
 
-  if (IsA<HTMLUListElement>(element) || IsA<HTMLOListElement>(element)) {
-    builder.SetIsInsideListElement();
-    return;
+  if (!RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
+    if (IsA<HTMLUListElement>(element) || IsA<HTMLOListElement>(element)) {
+      builder.SetIsInsideListElement();
+      return;
+    }
   }
 
   if (builder.Display() == EDisplay::kContents) {
