@@ -109,6 +109,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -1869,6 +1870,14 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     response_dict.Set("devToolsIpProtectionInDevTools",
                       std::move(devtools_ip_protection_dict));
   }
+
+  base::Value::Dict deep_links_via_extensibility_api_dict;
+  deep_links_via_extensibility_api_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(
+          ::blink::features::kEnableDevtoolsDeepLinkViaExtensibilityApi));
+  response_dict.Set("devToolsDeepLinksViaExtensibilityApi",
+                    std::move(deep_links_via_extensibility_api_dict));
 
   base::Value::Dict ai_generated_timeline_labels_dict;
   ai_generated_timeline_labels_dict.Set(
