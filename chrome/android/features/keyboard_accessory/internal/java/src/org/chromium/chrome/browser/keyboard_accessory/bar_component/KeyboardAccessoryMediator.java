@@ -163,6 +163,7 @@ class KeyboardAccessoryMediator
             case SuggestionType.TITLE:
             case SuggestionType.SEPARATOR:
             case SuggestionType.UNDO_OR_CLEAR:
+            case SuggestionType.ALL_LOYALTY_CARDS_ENTRY:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.MANAGE_ADDRESS:

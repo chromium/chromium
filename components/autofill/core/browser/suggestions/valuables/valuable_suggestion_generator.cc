@@ -147,7 +147,15 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
   // If no submenu is needed.
-  if (affiliated_cards.empty() || non_affiliated_cards.empty()) {
+
+#if BUILDFLAG(IS_ANDROID)
+  const bool generate_flat_suggestions = true;
+#else
+  const bool generate_flat_suggestions =
+      affiliated_cards.empty() || non_affiliated_cards.empty();
+#endif
+
+  if (generate_flat_suggestions) {
     std::vector<Suggestion> suggestions =
         CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
     std::ranges::move(

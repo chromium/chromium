@@ -160,13 +160,20 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                       "loyalty_card_id_2"),
           EqualsLoyaltyCardSuggestion(u"998766823", u"Walgreens",
                                       "loyalty_card_id_3"),
+#if BUILDFLAG(IS_ANDROID)
+          EqualsLoyaltyCardSuggestion(u"987654321987654321", u"CVS Pharmacy",
+                                      "loyalty_card_id_1"),
+#else
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kAllLoyaltyCardsEntry,
               l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE)),
+#endif  // BUILDFLAG(IS_ANDROID)
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManageLoyaltyCardsSuggestion()));
+
+#if !BUILDFLAG(IS_ANDROID)
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
             Suggestion::Acceptability::kUnacceptable);
@@ -182,7 +189,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(suggestions_with_matching_domain.back(),
               HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
@@ -198,14 +206,21 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                       "loyalty_card_id_2"),
           EqualsLoyaltyCardSuggestion(u"998766823", u"Walgreens",
                                       "loyalty_card_id_3"),
+#if BUILDFLAG(IS_ANDROID)
+          EqualsLoyaltyCardSuggestion(u"987654321987654321", u"CVS Pharmacy",
+                                      "loyalty_card_id_1"),
+#else
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kAllLoyaltyCardsEntry,
               l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUBMENU_TITLE)),
+#endif  // BUILDFLAG(IS_ANDROID)
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kUndoOrClear),
           EqualsManageLoyaltyCardsSuggestion()));
+
+#if !BUILDFLAG(IS_ANDROID)
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
             Suggestion::Acceptability::kUnacceptable);
@@ -221,7 +236,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(suggestions_with_matching_domain.back(),
               HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
