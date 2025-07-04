@@ -2291,5 +2291,21 @@ TEST_F(PasswordAutofillManagerTest,
       PasswordRecoveryState::kIncludeBackup);
 }
 
+TEST_F(PasswordAutofillManagerTest,
+       PasswordRecoveryFlow_OnAddPasswordFillDataWithBackupPassword) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client, nullptr);
+  auto form_fill_data = fill_data();
+  form_fill_data.preferred_login.backup_password_value = u"backup_password";
+  form_fill_data.wait_for_username = false;
+
+  password_autofill_manager_->OnAddPasswordFillData(form_fill_data);
+
+  EXPECT_EQ(
+      password_autofill_manager_->undo_password_change_controller().GetState(
+          form_fill_data.preferred_login.username_value),
+      PasswordRecoveryState::kTroubleSigningIn);
+}
+
 }  // namespace
 }  // namespace password_manager

@@ -397,6 +397,12 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   }
 
   fill_data_ = std::make_unique<autofill::PasswordFormFillData>(fill_data);
+  // The value was likely filled on page load, progress the state of the
+  // recovery flow.
+  if (!fill_data.wait_for_username) {
+    undo_password_change_controller_.OnSuggestionSelected(
+        fill_data.preferred_login);
+  }
 
   if (!autofill_client_ || autofill_client_->GetAutofillSuggestions().empty()) {
     return;
