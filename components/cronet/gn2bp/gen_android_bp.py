@@ -1160,6 +1160,12 @@ def _set_rust_flags(module: Module.Target, rust_flags: List[str],
     module.edition = list(rust_flags_dict["--edition"])[0]
 
   for cfg in rust_flags_dict.get("--cfg", set()):
+    # This cfg is not actually used in code; Chromium only uses it to force
+    # rebuilds on rustc rolls. It doesn't hurt, per se, but it does create
+    # annoying diff noise on Android.bp files, so we drop it for
+    # aesthetic/convenience reasons.
+    if cfg.startswith("cr_rustc_revision="):
+      continue
     feature_regex = re.match(_FEATURE_REGEX, cfg)
     if feature_regex:
       module.features.add(feature_regex.group(1))
