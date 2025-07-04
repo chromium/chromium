@@ -650,5 +650,8 @@ enum AutofillSuggestionTriggerSource {
   // plus address suggestion terminated and its result needs to be shown.
   // This value is not allowed to be sent from the renderer to the browser since
   // it disables some of the click-jacking protections in the browser.
-  kPlusAddressUpdatedInBrowserProcess = 19
+  kPlusAddressUpdatedInBrowserProcess = 19,
+  // Suggestion triggered when Password Manager detects a potentially failed
+  // login attempt that used a credential with a recovery password.
+  kProactivePasswordRecovery = 20
 };

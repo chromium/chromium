@@ -247,6 +247,20 @@ void ContentPasswordManagerDriver::FillField(
   }
 }
 
+void ContentPasswordManagerDriver::TriggerPasswordRecoverySuggestions(
+    autofill::FieldRendererId field_id) {
+  autofill::AutofillDriver* autofill_driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          render_frame_host_);
+  if (!autofill_driver) {
+    return;
+  }
+  autofill_driver->RendererShouldTriggerSuggestions(
+      /*field_id=*/{.frame_token = autofill_driver->GetFrameToken(),
+                    .renderer_id = field_id},
+      autofill::AutofillSuggestionTriggerSource::kProactivePasswordRecovery);
+}
+
 void ContentPasswordManagerDriver::FillChangePasswordForm(
     autofill::FieldRendererId password_element_id,
     autofill::FieldRendererId new_password_element_id,

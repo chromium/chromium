@@ -76,6 +76,8 @@ class ContentPasswordManagerDriver final
   void FillField(
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) override;
+  void TriggerPasswordRecoverySuggestions(
+      autofill::FieldRendererId field_id) override;
   void FillChangePasswordForm(
       autofill::FieldRendererId password_element_id,
       autofill::FieldRendererId new_password_element_id,

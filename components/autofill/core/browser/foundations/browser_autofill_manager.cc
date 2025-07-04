@@ -425,6 +425,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
       return false;
   }
 }
@@ -1843,6 +1844,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kManualFallback:
       case AutofillTriggerSource::kAutofillAi:
       case AutofillTriggerSource::kNone:
+      case AutofillTriggerSource::kProactivePasswordRecovery:
         NOTREACHED();
     }
   }();

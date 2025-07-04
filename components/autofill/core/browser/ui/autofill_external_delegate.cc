@@ -134,6 +134,8 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
       return AutofillTriggerSource::kManualFallback;
     case AutofillSuggestionTriggerSource::kAutofillAi:
       return AutofillTriggerSource::kAutofillAi;
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+      return AutofillTriggerSource::kProactivePasswordRecovery;
   }
   NOTREACHED();
 }

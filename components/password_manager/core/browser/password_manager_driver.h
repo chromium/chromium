@@ -93,7 +93,10 @@ class PasswordManagerDriver {
   virtual void FillField(
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) {}
-
+  // Tells the renderer to open the suggestions popup on the login field
+  // specified in `field_id`.
+  virtual void TriggerPasswordRecoverySuggestions(
+      autofill::FieldRendererId field_id) {}
   // Tells the renderer to fill and submit a change password form, specifically
   // `password_element_id` with `old_password` and `new_password_element_id`,
   // `confirm_password_element_id` with `new_password`. Upon completion
