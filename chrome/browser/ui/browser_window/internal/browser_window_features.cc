@@ -509,8 +509,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   windows_taskbar_icon_updater_.reset();
 #endif
 
-  exclusive_access_manager_.reset();
-
   if (user_education_) {
     user_education_->TearDown();
   }
