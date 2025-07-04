@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -45,6 +46,16 @@ bool HasManagedGuestSessionInPolicy() {
         return account.type == policy::DeviceLocalAccountType::kPublicSession;
       });
   return managed_gest_session != device_local_accounts.end();
+}
+
+// Return only IWAs from `iwa_ids` which are in the IWA allowlist.
+std::vector<web_package::SignedWebBundleId> FilterAllowlistedIwas(
+    std::vector<web_package::SignedWebBundleId> iwa_ids) {
+  std::erase_if(iwa_ids, [](const auto& id) {
+    return !IwaKeyDistributionInfoProvider::GetInstance()
+                .IsManagedInstallPermitted(id.id());
+  });
+  return iwa_ids;
 }
 
 std::vector<web_package::SignedWebBundleId> GetPolicyInstalledIwasForKiosk() {
@@ -150,10 +161,11 @@ void IwaBundleCacheManager::OnMaybeRemoveManagedGuestSessionCache(
 }
 
 void IwaBundleCacheManager::RemoveCacheForIwaKioskDeletedFromPolicy() {
-  std::vector<web_package::SignedWebBundleId> iwas_in_policy =
-      GetPolicyInstalledIwasForKiosk();
+  std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache =
+      FilterAllowlistedIwas(GetPolicyInstalledIwasForKiosk());
+
   provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      /*iwas_to_keep_in_cache=*/iwas_in_policy, SessionType::kKiosk,
+      iwas_to_keep_in_cache, SessionType::kKiosk,
       base::BindOnce(
           &IwaBundleCacheManager::OnRemoveCacheForIwaKioskDeletedFromPolicy,
           weak_ptr_factory_.GetWeakPtr()));
@@ -169,12 +181,12 @@ void IwaBundleCacheManager::CleanupManagedGuestSessionOrphanedIwas() {
       SessionType::kManagedGuestSession) {
     return;
   }
-  std::vector<web_package::SignedWebBundleId> iwas_in_policy =
-      GetPolicyInstalledIwasForManagedGuestSession(*profile_);
+  std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache =
+      FilterAllowlistedIwas(
+          GetPolicyInstalledIwasForManagedGuestSession(*profile_));
 
   provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      /*iwas_to_keep_in_cache=*/iwas_in_policy,
-      SessionType::kManagedGuestSession,
+      iwas_to_keep_in_cache, SessionType::kManagedGuestSession,
       base::BindOnce(
           &IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas,
           weak_ptr_factory_.GetWeakPtr()));

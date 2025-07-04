@@ -46,6 +46,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -60,6 +61,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
+#include "components/webapps/isolated_web_apps/features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -284,7 +286,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         session_mixin_(CreateSessionMixin(session_type_)) {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebAppBundleCache,
-         features::kIsolatedWebAppManagedGuestSessionInstall},
+         features::kIsolatedWebAppManagedGuestSessionInstall,
+         features::kIsolatedWebAppManagedAllowlist},
         /*disabled_features=*/{});
   }
 
@@ -297,6 +300,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
     OverrideCacheDir();
     ConfigureSession(iwa_configs_);
+    SkipIwaAllowlist(/*skip=*/true);
   }
 
   void TearDownOnMainThread() override {
@@ -486,6 +490,24 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   size_t GetNumOpenedWindows(const SignedWebBundleId& bundle_id) {
     return provider().ui_manager().GetNumWindowsForApp(GetAppId(bundle_id));
+  }
+
+  void SkipIwaAllowlist(bool skip) {
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(skip);
+  }
+
+  // To set the allowlist multiple times within one test,
+  // `key_distribution_version` should be increased.
+  void SetIwasAllowlist(
+      const std::vector<SignedWebBundleId>& bundle_ids,
+      base::Version key_distribution_version = base::Version("1.0.1")) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                    key_distribution_version,
+                    /*managed_allowlist=*/bundle_ids),
+                base::test::HasValue());
   }
 
   WebAppProvider& provider() {
@@ -756,6 +778,41 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 
   // Cache for `kWebBundleId` should be removed.
   WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
+                       PRE_RemoveTwoCachedBundles) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+
+  IwaConfig iwa_config1{kWebBundleId, kBaseVersion, kPublicKeyPair};
+  IwaConfig iwa_config2{kWebBundleId2, kBaseVersion, kPublicKeyPair2};
+  ConfigureSession({iwa_config1, iwa_config2});
+  AddNewIwaToServer(iwa_config1);
+  AddNewIwaToServer(iwa_config2);
+
+  LaunchSession({kWebBundleId, kWebBundleId2});
+
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+  AssertAppInstalledAtVersion(kWebBundleId2, kBaseVersion);
+
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
+// `kWebBundleId` is no longer in the policy list --> remove from cache.
+// `kWebBundleId2` is no longer in the allowlist --> remove from cache.
+IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
+                       RemoveTwoCachedBundles) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId});
+  IwaConfig iwa2{kWebBundleId2, kBaseVersion, kPublicKeyPair2};
+  AddNewIwaToServer(iwa2);
+  ConfigureSession({iwa2});
+  LaunchSession(/*expected_iwas=*/{});
+
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
 }
 
 // Covers Managed Guest Session (MGS) specific tests which cannot be tested in
@@ -1044,6 +1101,29 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs, TwoAppsAreCached) {
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
 }
 
+IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
+                       PRE_RemoveNotAllowlistedIwa) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+  LaunchSession({kWebBundleId, kWebBundleId2});
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+  AssertAppInstalledAtVersion(kWebBundleId2, kBaseVersion);
+
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
+                       RemoveNotAllowlistedIwa) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId});
+  LaunchSession({kWebBundleId});
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
 class IwaCacheMultipleAppsConfigurationKiosk : public IwaCacheBaseTest {
  public:
   IwaCacheMultipleAppsConfigurationKiosk()
@@ -1069,6 +1149,29 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
   AssertAppInstalledAtVersion(kWebBundleId2, kBaseVersion);
 
   CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
+                       PRE_RemoveNotAllowlistedIwa) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId});
+
+  LaunchSession(kWebBundleId);
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
+                       RemoveNotAllowlistedIwa) {
+  SkipIwaAllowlist(/*skip=*/false);
+  SetIwasAllowlist({kWebBundleId2});
+
+  LaunchSession({kWebBundleId2});
+  AssertAppInstalledAtVersion(kWebBundleId2, kBaseVersion);
+
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, kBaseVersion));
 }
 
