@@ -449,11 +449,10 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   SetupTranslateControllerFactory();
   PartialTranslateMediator* partial_translate_mediator =
       [[PartialTranslateMediator alloc]
-            initWithWebStateList:&web_state_list_
-          withBaseViewController:base_view_controller_
-                     prefService:profile_->GetPrefs()
-            fullscreenController:nullptr
-                       incognito:NO];
+          initWithBaseViewController:base_view_controller_
+                         prefService:profile_->GetPrefs()
+                fullscreenController:nullptr
+                           incognito:NO];
 
   LinkToTextMediator* link_to_text_mediator =
       [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_];

@@ -25,17 +25,15 @@
   UIViewController* viewController =
       chrome_test_util::GetActiveViewController();
   Browser* browser = chrome_test_util::GetMainBrowser();
-  WebStateList* webStateList = browser ? browser->GetWebStateList() : nullptr;
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(browser);
 
   PartialTranslateMediator* partialTranslateMediator =
       [[PartialTranslateMediator alloc]
-            initWithWebStateList:webStateList
-          withBaseViewController:viewController
-                     prefService:prefService
-            fullscreenController:fullscreenController
-                       incognito:incognito];
+          initWithBaseViewController:viewController
+                         prefService:prefService
+                fullscreenController:fullscreenController
+                           incognito:incognito];
   BOOL shouldInstallPartialTranslate =
       [partialTranslateMediator shouldInstallPartialTranslate];
   [partialTranslateMediator shutdown];

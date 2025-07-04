@@ -110,15 +110,13 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   raw_ptr<FullscreenController> _fullscreenController;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-              withBaseViewController:(UIViewController*)baseViewController
-                         prefService:(PrefService*)prefs
-                fullscreenController:(FullscreenController*)fullscreenController
-                           incognito:(BOOL)incognito {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                               prefService:(PrefService*)prefs
+                      fullscreenController:
+                          (FullscreenController*)fullscreenController
+                                 incognito:(BOOL)incognito {
   if ((self = [super init])) {
-    DCHECK(webStateList);
     DCHECK(baseViewController);
-    _webStateList = webStateList->AsWeakPtr();
     _baseViewController = baseViewController;
     _fullscreenController = fullscreenController;
     _incognito = incognito;
@@ -132,20 +130,29 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   _fullscreenController = nullptr;
 }
 
-- (void)handlePartialTranslateSelection {
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+- (void)handlePartialTranslateSelectionForTestingInWebState:
+    (web::WebState*)webState {
+  if (!webState) {
+    return;
+  }
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper) {
     return;
   }
-
+  GURL pageURL = webState->GetLastCommittedURL();
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
-    [weakSelf receivedWebSelectionResponse:response];
+    [weakSelf receivedWebSelectionResponse:response forPageURL:pageURL];
   }));
 }
 
-- (BOOL)canHandlePartialTranslateSelection {
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+- (BOOL)canHandlePartialTranslateSelectionInWebState:(web::WebState*)webState {
+  if (!webState) {
+    return NO;
+  }
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper) {
     return NO;
   }
@@ -165,11 +172,57 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   return YES;
 }
 
-- (void)switchToFullTranslateWithError:(PartialTranslateError)error {
+#pragma mark - EditMenuBuilder
+
+- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
+                      inWebState:(web::WebState*)webState {
+  if (!webState) {
+    return;
+  }
+  if (![self shouldInstallPartialTranslate]) {
+    return;
+  }
+
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithBlockWithItemArray provider =
+      ^(ProceduralBlockWithItemArray completion) {
+        [weakSelf addItemWithCompletion:completion forWebState:weakWebState];
+      };
+  // Use a deferred element so that the item is displayed depending on the text
+  // selection and updated on selection change.
+  UIDeferredMenuElement* deferredMenuElement =
+      [UIDeferredMenuElement elementWithProvider:provider];
+  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
+                                    /*primary*/ YES);
+
+  auto childrenTransformBlock =
+      ^NSArray<UIMenuElement*>*(NSArray<UIMenuElement*>* oldElements) {
+    return [oldElements
+        filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:^BOOL(
+                             id object, NSDictionary<NSString*, id>* bindings) {
+              if (![object isKindOfClass:[UICommand class]]) {
+                return YES;
+              }
+              UICommand* command = base::apple::ObjCCast<UICommand>(object);
+              return command.action != NSSelectorFromString(@"_translate:");
+            }]];
+  };
+
+  [builder replaceChildrenOfMenuForIdentifier:UIMenuLookup
+                            fromChildrenBlock:childrenTransformBlock];
+}
+
+#pragma mark - private
+
+// If the partial translate fails, try to switch to normal page translate.
+- (void)switchToFullTranslateWithError:(PartialTranslateError)error
+                            forPageURL:(const GURL&)pageURL {
   if (!self.alertDelegate) {
     return;
   }
-  if (![self URLIsTranslatable]) {
+  if (!TranslateServiceIOS::IsTranslatableURL(pageURL)) {
     ReportErrorOutcome(error, false);
     return;
   }
@@ -216,15 +269,19 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
                  actions:@[ cancelAction, translateAction ]];
 }
 
-- (void)receivedWebSelectionResponse:(WebSelectionResponse*)response {
+// The selection was received from JS. Proceed to check it and trigger partial
+// translate.
+- (void)receivedWebSelectionResponse:(WebSelectionResponse*)response
+                          forPageURL:(const GURL&)pageURL {
   DCHECK(response);
   base::UmaHistogramCounts10000("IOS.PartialTranslate.SelectionLength",
                                 response.selectedText.length);
   if (response.selectedText.length >
       std::min(ios::provider::PartialTranslateLimitMaxCharacters(),
                kPartialTranslateCharactersLimit)) {
-    return [self switchToFullTranslateWithError:PartialTranslateError::
-                                                    kSelectionTooLong];
+    return [self
+        switchToFullTranslateWithError:PartialTranslateError::kSelectionTooLong
+                            forPageURL:pageURL];
   }
   if (!response.valid ||
       [[response.selectedText
@@ -232,7 +289,8 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
                                               whitespaceAndNewlineCharacterSet]]
           length] == 0u) {
     return [self
-        switchToFullTranslateWithError:PartialTranslateError::kSelectionEmpty];
+        switchToFullTranslateWithError:PartialTranslateError::kSelectionEmpty
+                            forPageURL:pageURL];
   }
 
   CGRect sourceRect = response.sourceRect;
@@ -246,64 +304,69 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   self.controller = ios::provider::NewPartialTranslateController(
       response.selectedText, sourceRect, self.incognito);
   __weak __typeof(self) weakSelf = self;
+  GURL copyPageURL = pageURL;
   [self.controller presentOnViewController:self.baseViewController
                      flowCompletionHandler:^(BOOL success) {
-                       weakSelf.controller = nil;
-                       if (success) {
-                         ReportOutcome(PartialTranslateOutcomeStatus::kSuccess);
-                       } else {
-                         [weakSelf switchToFullTranslateWithError:
-                                       PartialTranslateError::kGenericError];
-                       }
+                       [weakSelf flowCompletedForPageURL:copyPageURL
+                                              withResult:success];
                      }];
 }
 
+// Flow ended. If it is a success, report it to metrics. Otherwise, try to
+// trigger page translate instead.
+- (void)flowCompletedForPageURL:(const GURL&)pageURL withResult:(BOOL)success {
+  self.controller = nil;
+  if (success) {
+    ReportOutcome(PartialTranslateOutcomeStatus::kSuccess);
+  } else {
+    [self switchToFullTranslateWithError:PartialTranslateError::kGenericError
+                              forPageURL:pageURL];
+  }
+}
+
+// Trigger a full translate as a fallback of partial translate.
 - (void)triggerFullTranslate {
   [self.browserHandler showTranslate];
 }
 
-- (WebSelectionTabHelper*)webSelectionTabHelper {
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (!webState) {
-    return nullptr;
-  }
-  WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
-  return helper;
-}
-
-- (BOOL)URLIsTranslatable {
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (!webState) {
-    return NO;
-  }
-  return TranslateServiceIOS::IsTranslatableURL(
-      webState->GetLastCommittedURL());
-}
-
-- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
-  if (![self canHandlePartialTranslateSelection]) {
+// Create the menu item to trigger partial translate step 1.
+// This method is called from the UIDeferredElement handler.
+// This method triggers the fetch of the selection.
+- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion
+                  forWebState:(base::WeakPtr<web::WebState>)weakWebState {
+  if (!weakWebState) {
     completion(@[]);
     return;
   }
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  web::WebState* webState = weakWebState.get();
+  if (![self canHandlePartialTranslateSelectionInWebState:webState]) {
+    completion(@[]);
+    return;
+  }
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper) {
     completion(@[]);
     return;
   }
+  GURL pageURL = webState->GetLastCommittedURL();
 
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
     if (weakSelf) {
-      [weakSelf addItemWithResponse:response completion:completion];
+      [weakSelf addItemWithResponse:response
+                         forPageURL:pageURL
+                         completion:completion];
     } else {
       completion(@[]);
     }
   }));
 }
 
+// Create the menu item to trigger partial translate step 2.
+// This selection was fetched, if it is valid, add the action in the edit menu.
 - (void)addItemWithResponse:(WebSelectionResponse*)response
+                 forPageURL:(const GURL&)pageURL
                  completion:(ProceduralBlockWithItemArray)completion {
   __weak __typeof(self) weakSelf = self;
   if (!response.valid ||
@@ -317,54 +380,17 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
   NSString* partialTranslateId = @"chromecommand.partialTranslate";
+  GURL pageURLCopy = pageURL;
   UIAction* action =
       [UIAction actionWithTitle:title
                           image:CustomSymbolWithPointSize(
                                     kTranslateSymbol, kSymbolActionPointSize)
                      identifier:partialTranslateId
                         handler:^(UIAction* a) {
-                          [weakSelf receivedWebSelectionResponse:response];
+                          [weakSelf receivedWebSelectionResponse:response
+                                                      forPageURL:pageURLCopy];
                         }];
   completion(@[ action ]);
-}
-
-#pragma mark - EditMenuBuilder
-
-- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
-                      inWebState:(web::WebState*)webState {
-  // TODO(crbug.com/427168159): use webState.
-  if (![self shouldInstallPartialTranslate]) {
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlockWithBlockWithItemArray provider =
-      ^(ProceduralBlockWithItemArray completion) {
-        [weakSelf addItemWithCompletion:completion];
-      };
-  // Use a deferred element so that the item is displayed depending on the text
-  // selection and updated on selection change.
-  UIDeferredMenuElement* deferredMenuElement =
-      [UIDeferredMenuElement elementWithProvider:provider];
-  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
-                                    /*primary*/ YES);
-
-  auto childrenTransformBlock =
-      ^NSArray<UIMenuElement*>*(NSArray<UIMenuElement*>* oldElements) {
-    return [oldElements
-        filteredArrayUsingPredicate:
-            [NSPredicate predicateWithBlock:^BOOL(
-                             id object, NSDictionary<NSString*, id>* bindings) {
-              if (![object isKindOfClass:[UICommand class]]) {
-                return YES;
-              }
-              UICommand* command = base::apple::ObjCCast<UICommand>(object);
-              return command.action != NSSelectorFromString(@"_translate:");
-            }]];
-  };
-
-  [builder replaceChildrenOfMenuForIdentifier:UIMenuLookup
-                            fromChildrenBlock:childrenTransformBlock];
 }
 
 @end

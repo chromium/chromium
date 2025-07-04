@@ -159,11 +159,10 @@ class PartialTranslateMediatorTest : public PlatformTest {
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     mediator_ = [[PartialTranslateMediator alloc]
-          initWithWebStateList:&web_state_list_
-        withBaseViewController:base_view_controller_
-                   prefService:profile_->GetSyncablePrefs()
-          fullscreenController:nullptr
-                     incognito:NO];
+        initWithBaseViewController:base_view_controller_
+                       prefService:profile_->GetSyncablePrefs()
+              fullscreenController:nullptr
+                         incognito:NO];
     mediator_.alertDelegate = fake_alert_controller_;
     mediator_.browserHandler = mock_browser_coordinator_commands_handler_;
   }
@@ -223,20 +222,13 @@ class PartialTranslateMediatorTest : public PlatformTest {
 
 // Tests the behavior if partial translate is not supported.
 TEST_F(PartialTranslateMediatorTest, NotSupported) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   EXPECT_FALSE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_FALSE([mediator_ canHandlePartialTranslateSelection]);
+  EXPECT_FALSE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
 }
 
 // Tests the behavior if partial translate is disabled by policy.
 TEST_F(PartialTranslateMediatorTest, EnterpriseDisabled) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(true);
 
@@ -250,17 +242,17 @@ TEST_F(PartialTranslateMediatorTest, EnterpriseDisabled) {
 // Tests the behavior in incognito.
 TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
-        initWithWebStateList:&web_state_list_
-      withBaseViewController:base_view_controller_
-                 prefService:profile_->GetSyncablePrefs()
-        fullscreenController:nullptr
-                   incognito:YES];
+      initWithBaseViewController:base_view_controller_
+                     prefService:profile_->GetSyncablePrefs()
+            fullscreenController:nullptr
+                       incognito:YES];
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(true);
   EXPECT_TRUE([mediator shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator canHandlePartialTranslateSelection]);
-  [mediator handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -273,31 +265,23 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
 
 // Tests the behavior in incognito if not supported.
 TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
-        initWithWebStateList:&web_state_list_
-      withBaseViewController:base_view_controller_
-                 prefService:profile_->GetSyncablePrefs()
-        fullscreenController:nullptr
-                   incognito:YES];
+      initWithBaseViewController:base_view_controller_
+                     prefService:profile_->GetSyncablePrefs()
+            fullscreenController:nullptr
+                       incognito:YES];
   EXPECT_FALSE([mediator shouldInstallPartialTranslate]);
 }
 
 // Tests the behavior if partial translate is supported.
 TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(true);
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
-  [mediator_ handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
@@ -311,17 +295,14 @@ TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
 
 // Tests the behavior if selection is too long.
 TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(1001);
   auto factory = SetupTranslateControllerFactory(true);
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
-  [mediator_ handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -334,19 +315,16 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
 
 // Tests the behavior if selection is too long.
 TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(1001);
   auto factory = SetupTranslateControllerFactory(true);
   fake_alert_controller_.selectedAction = 1;
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
   ExpectShowTranslate();
-  [mediator_ handlePartialTranslateSelection];
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -359,17 +337,14 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
 
 // Tests the behavior if selection is empty.
 TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(0);
   auto factory = SetupTranslateControllerFactory(true);
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
-  [mediator_ handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -382,17 +357,14 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
 
 // Tests the behavior if selection is only spaces.
 TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(5, @" ");
   auto factory = SetupTranslateControllerFactory(true);
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
-  [mediator_ handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -405,19 +377,16 @@ TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
 
 // Tests the behavior if selection is empty.
 TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(0);
   auto factory = SetupTranslateControllerFactory(true);
   fake_alert_controller_.selectedAction = 1;
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
   ExpectShowTranslate();
-  [mediator_ handlePartialTranslateSelection];
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -430,17 +399,14 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
 
 // Tests the behavior if an error occurs.
 TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(false);
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
-  [mediator_ handlePartialTranslateSelection];
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{
@@ -453,19 +419,16 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
 
 // Tests the behavior if an error occurs.
 TEST_F(PartialTranslateMediatorTest, InternalErrorFullTranslate) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(false);
   fake_alert_controller_.selectedAction = 1;
 
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
-  EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
+  EXPECT_TRUE(
+      [mediator_ canHandlePartialTranslateSelectionInWebState:web_state_]);
   ExpectShowTranslate();
-  [mediator_ handlePartialTranslateSelection];
+  [mediator_ handlePartialTranslateSelectionForTestingInWebState:web_state_];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
       ^{

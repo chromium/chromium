@@ -113,11 +113,10 @@
       FullscreenController::FromBrowser(self.browser);
 
   _partialTranslateMediator = [[PartialTranslateMediator alloc]
-        initWithWebStateList:webStateList
-      withBaseViewController:self.viewController
-                 prefService:prefService
-        fullscreenController:fullscreenController
-                   incognito:incognito];
+      initWithBaseViewController:self.viewController
+                     prefService:prefService
+            fullscreenController:fullscreenController
+                       incognito:incognito];
   _partialTranslateMediator.alertDelegate = self;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> browserCommandsHandler =
