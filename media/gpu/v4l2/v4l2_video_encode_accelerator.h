@@ -390,6 +390,19 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
   SEQUENCE_CHECKER(encoder_sequence_checker_);
 
+  // These data members are saved so that initialization can take place in the
+  // correct order on each thread. The order is as follows.
+  // 1. SetCommandBufferHelperCB - stores gpu callback and task runner
+  // 2. Initialize - stores 'config_' and posts gpu callback task
+  // 3. OnSharedImageInterfaceAvailable - ssi is ready from gpu post
+  //    'InitializeTask' to encoder
+  //
+  Config config_;
+  // These are set on 'SetCommandBufferHelperCB' but the post task waits for
+  // 'Initialize' to be called.
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+      get_command_buffer_helper_cb_;
   // The device polling thread handles notifications of V4L2 device changes.
   // TODO(sheu): replace this thread with an TYPE_IO encoder_thread_.
   base::Thread device_poll_thread_;

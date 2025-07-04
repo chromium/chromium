@@ -310,10 +310,25 @@ EncoderStatus V4L2VideoEncodeAccelerator::Initialize(
   }
 
   driver_name_ = device_->GetDriverName();
+  config_ = config;
 
-  encoder_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::InitializeTask,
-                                weak_this_, config));
+  gpu_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+                 get_command_buffer_helper_cb_)
+              -> scoped_refptr<gpu::SharedImageInterface> {
+            auto helper = get_command_buffer_helper_cb_.Run();
+            if (helper && helper->GetSharedImageStub()) {
+              return helper->GetSharedImageStub()->shared_image_interface();
+            }
+            return nullptr;
+          },
+          std::move(get_command_buffer_helper_cb_)),
+      base::BindOnce(
+          &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
+          weak_this_));
+
   return {EncoderStatus::Codes::kOk};
 }
 
@@ -713,28 +728,25 @@ bool V4L2VideoEncodeAccelerator::IsFlushSupported() {
 void V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable(
     scoped_refptr<gpu::SharedImageInterface> sii) {
   sii_ = std::move(sii);
+  // We can now run the 'InitializeTask' given the valid sii from the gpu.
+  encoder_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::InitializeTask,
+                                weak_this_, config_));
 }
 
 void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
-  gpu_task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-                 get_command_buffer_helper_cb)
-              -> scoped_refptr<gpu::SharedImageInterface> {
-            auto helper = get_command_buffer_helper_cb.Run();
-            if (helper && helper->GetSharedImageStub()) {
-              return helper->GetSharedImageStub()->shared_image_interface();
-            }
-            return nullptr;
-          },
-          get_command_buffer_helper_cb),
-      base::BindOnce(
-          &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
-          weak_this_));
+  // we should store this here and then run it on init.
+  // this way we know when the ssi comes back we can finish off with the
+  // InitializeTask (knowing that init has actually run)
+  // We store the callback and task runner here so that when the ssi comes back
+  // we know that 'Initialize' has been run and it is save to run
+  // 'InitializeTask' on the encoder. (Which likely uses ssi to allocate
+  // buffers)
+  get_command_buffer_helper_cb_ = get_command_buffer_helper_cb;
+  gpu_task_runner_ = gpu_task_runner;
 }
 
 void V4L2VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(
