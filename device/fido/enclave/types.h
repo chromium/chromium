@@ -13,7 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "device/fido/fido_constants.h"
 #include "url/gurl.h"
 
@@ -74,7 +74,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClientSignature {
 };
 
 // Message format that can be signed by SignedCallback.
-using SignedMessage = std::array<uint8_t, 2 * crypto::kSHA256Length>;
+using SignedMessage = std::array<uint8_t, 2 * crypto::hash::kSha256Size>;
 
 // A SigningCallback is used to sign an encoded array of enclave requests.
 using SigningCallback = base::OnceCallback<void(
