@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -1567,6 +1568,34 @@ void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
   }
 #endif
   UnregisterAlertedItem(menu_item);
+
+  bool found_in_pending_state = false;
+  bool found_in_current_state = false;
+  int menu_stack_matches = 0;
+
+  if (pending_state_.item == menu_item) {
+    pending_state_.item = nullptr;
+    found_in_pending_state = true;
+  }
+  if (state_.item == menu_item) {
+    state_.item = nullptr;
+    found_in_current_state = true;
+  }
+
+  for (auto& menu_state_pair : menu_stack_) {
+    if (menu_state_pair.first.item == menu_item) {
+      menu_state_pair.first.item = nullptr;
+      menu_stack_matches++;
+    }
+  }
+
+  if (found_in_pending_state || found_in_current_state ||
+      menu_stack_matches > 0) {
+    // This indicates a lifecycle management issue - MenuItemView destroyed
+    // while still referenced by MenuController.
+    // Remove this DumpWithoutCrashing once we get enough information.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void MenuController::AnimationProgressed(const gfx::Animation* animation) {
@@ -3222,12 +3251,19 @@ void MenuController::SelectByChar(char16_t character) {
   char16_t char_array[] = {character, 0};
   char16_t key = base::i18n::ToLower(char_array)[0];
   MenuItemView* item = pending_state_.item;
+  if (!item) {
+    return;
+  }
   if (!item->SubmenuIsShowing()) {
     item = item->GetParentMenuItem();
   }
   DCHECK(item);
   DCHECK(item->HasSubmenu());
   DCHECK(item->GetSubmenu());
+
+  if (!item) {
+    return;
+  }
   if (item->GetSubmenu()->GetMenuItems().empty()) {
     return;
   }
