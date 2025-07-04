@@ -296,7 +296,6 @@ source_set("unit_tests") {
       "address_editor_controller_unittest.cc",
       "autofill_field_promo_controller_impl_unittest.cc",
       "autofill_popup_controller_impl_unittest.cc",
-      "delete_address_profile_dialog_controller_impl_unittest.cc",
       "save_address_bubble_controller_unittest.cc",
       "update_address_bubble_controller_unittest.cc",
     ]
@@ -440,6 +439,7 @@ if (!is_android) {
       "address_bubbles_controller_browsertest.cc",
       "autofill_ai/save_or_update_autofill_ai_data_controller_impl_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
+      "delete_address_profile_dialog_controller_impl_browsertest.cc",
       "edit_address_profile_dialog_controller_impl_browsertest.cc",
     ]
 

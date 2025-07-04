@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,39 +25,43 @@ namespace autofill {
 
 using ::testing::_;
 
-class DeleteAddressProfileDialogControllerImplTest
-    : public BrowserWithTestWindowTest {
+class DeleteAddressProfileDialogControllerImplBrowserTest
+    : public InProcessBrowserTest {
  public:
   static constexpr char const* kUserEmail = "example@gmail.com";
 
-  DeleteAddressProfileDialogControllerImplTest() = default;
+  DeleteAddressProfileDialogControllerImplBrowserTest() = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::TestSyncService>();
-        }));
-    AddTab(browser(), GURL("about:blank"));
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
     DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
         web_contents());
     ASSERT_THAT(controller(), ::testing::NotNull());
     controller()->SetViewFactoryForTest(/*view_factory=*/base::DoNothing());
   }
 
-  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
-
- protected:
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  void TearDownOnMainThread() override {
+    identity_test_env_adaptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+ protected:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   DeleteAddressProfileDialogControllerImpl* controller() {
@@ -65,7 +71,7 @@ class DeleteAddressProfileDialogControllerImplTest
 
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile()));
+        SyncServiceFactory::GetForProfile(GetProfile()));
   }
 
   void ConfigureAddressSync(bool enable_address_sync) {
@@ -102,10 +108,11 @@ class DeleteAddressProfileDialogControllerImplTest
   base::MockOnceCallback<void(bool)> delete_dialog_callback_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest,
-       LocalAddressProfile_AssertStrings) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       LocalAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             /*delete_dialog_callback=*/base::DoNothing());
@@ -114,8 +121,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
       IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_RECORD_TYPE_NOTICE));
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest,
-       AccountAddressProfile_AssertStrings) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       AccountAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   SigninUser();
   controller()->OfferDelete(/*is_account_address_profile=*/true,
@@ -126,8 +133,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
       base::ASCIIToUTF16(kUserEmail)));
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest,
-       SyncAddressProfile_AssertStrings) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       SyncAddressProfile_AssertStrings) {
   ConfigureAddressSync(/*enable_address_sync=*/true);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             /*delete_dialog_callback=*/base::DoNothing());
@@ -136,7 +143,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest,
       IDS_AUTOFILL_DELETE_SYNC_ADDRESS_RECORD_TYPE_NOTICE));
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest, AcceptedDelete) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       AcceptedDelete) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             delete_dialog_callback_.Get());
@@ -146,7 +154,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest, AcceptedDelete) {
   controller()->OnDialogDestroying();
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest, CanceledDelete) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       CanceledDelete) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             delete_dialog_callback_.Get());
@@ -156,7 +165,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest, CanceledDelete) {
   controller()->OnDialogDestroying();
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest, ClosedDialog) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       ClosedDialog) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             delete_dialog_callback_.Get());
@@ -166,7 +176,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest, ClosedDialog) {
   controller()->OnDialogDestroying();
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest, UserDecisionIsReset) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       UserDecisionIsReset) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             delete_dialog_callback_.Get());
@@ -181,7 +192,8 @@ TEST_F(DeleteAddressProfileDialogControllerImplTest, UserDecisionIsReset) {
   controller()->OnDialogDestroying();
 }
 
-TEST_F(DeleteAddressProfileDialogControllerImplTest, TabClosed) {
+IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
+                       TabClosed) {
   ConfigureAddressSync(/*enable_address_sync=*/false);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             delete_dialog_callback_.Get());
