@@ -47,6 +47,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
@@ -3620,6 +3621,19 @@ void NetworkHandler::LoadNetworkResource(
       return;
     }
 
+    RenderFrameHostCSPContext csp_context(frame);
+
+    network::CSPCheckResult result = csp_context.IsAllowedByCsp(
+        frame->policy_container_host()->policies().content_security_policies,
+        network::mojom::CSPDirectiveName::ConnectSrc, gurl, gurl,
+        /*has_followed_redirect=*/false, /*source_location=*/nullptr,
+        network::CSPContext::CHECK_ENFORCED_CSP,
+        /*is_form_submission=*/false);
+    if (!result.IsAllowed()) {
+      callback->sendFailure(Response::ServerError("CSP violation"));
+      return;
+    }
+
     auto params = URLLoaderFactoryParamsHelper::CreateForFrame(
         frame, frame->GetLastCommittedOrigin(),
         frame->GetIsolationInfoForSubresources(),
@@ -3651,6 +3665,7 @@ void NetworkHandler::LoadNetworkResource(
       DevToolsAgentHostImpl::GetForId(host_id_);
   if (host) {
     // TODO(sigurds): Support dedicated workers.
+    // TODO(mkwst): Check CSP for non-frame targets.
     auto info = host->CreateNetworkFactoryParamsForDevTools();
     auto factory = CreateNetworkFactoryForDevTools(
         gurl.scheme(), host->GetProcessHost(), MSG_ROUTING_NONE, info.origin,

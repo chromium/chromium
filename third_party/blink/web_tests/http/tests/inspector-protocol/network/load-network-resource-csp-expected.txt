@@ -1,0 +1,14 @@
+Tests for Network.loadNetworkResource with CSP
+Response for fetch with cross-origin resource (should be blocked by CSP):{
+    code : -32000
+    message : CSP violation
+}
+Response for fetch with same-origin resource (should be allowed by CSP):{
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : 1
+        success : true
+    }
+}
+
