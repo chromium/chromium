@@ -10,7 +10,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -29,7 +31,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/periodic_event_collector.h"
-#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
 
@@ -43,7 +45,6 @@ class ChromeFatalCrashEventsObserver;
 
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableChromeFatalCrashEventsObserver);
-BASE_DECLARE_FEATURE(kEnableKioskVisionTelemetry);
 
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
@@ -304,10 +305,6 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   // Initializes a periodic collector that sends out heartbeat signals.
   void InitKioskHeartbeatTelemetryCollector();
-
-  // Initializes a periodic collector that sends the audience telemetry data
-  // from the Kiosk vision framework.
-  void InitKioskVisionTelemetryCollector();
 
   base::TimeDelta GetUploadDelay() const;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -13,15 +12,18 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_periodic_collector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
@@ -41,7 +43,6 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_vision/kiosk_vision_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
@@ -49,7 +50,9 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
@@ -61,10 +64,11 @@
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_periodic_collector_ash.h"
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-data-view.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/delayed_sampler.h"
@@ -75,7 +79,7 @@
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/rate_limiter_slide_window.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/user_manager/user.h"
 
 namespace em = enterprise_management;
@@ -94,7 +98,6 @@ constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
 constexpr char kKioskHeartbeatTelemetry[] = "kiosk_heartbeat_telemetry";
-constexpr char kKioskVisionTelemetry[] = "kiosk_vision_telemetry";
 constexpr char kWebsiteTelemetry[] = "website_telemetry";
 
 }  // namespace
@@ -106,9 +109,6 @@ BASE_FEATURE(kEnableFatalCrashEventsObserver,
 BASE_FEATURE(kEnableChromeFatalCrashEventsObserver,
              "EnableChromeFatalCrashEventsObserver",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableKioskVisionTelemetry,
-             "EnableKioskVisionTelemetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsUserAffiliated(
     Profile& profile) const {
@@ -404,7 +404,6 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   InitDisplayCollectors();
   InitDeviceActivityCollector();
   InitKioskHeartbeatTelemetryCollector();
-  InitKioskVisionTelemetryCollector();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -600,12 +599,11 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::Contains(telemetry_collectors_, kAppTelemetry)
-      || !user_event_report_queue_
-      || !user_reporting_settings_
-      || !user_telemetry_report_queue_) {
-  return;
- }
+  if (base::Contains(telemetry_collectors_, kAppTelemetry) ||
+      !user_event_report_queue_ || !user_reporting_settings_ ||
+      !user_telemetry_report_queue_) {
+    return;
+  }
   // App events.
   auto app_events_observer = AppEventsObserver::CreateForProfile(
       profile, user_reporting_settings_.get());
@@ -843,37 +841,6 @@ void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
       /*rate_unit_to_ms=*/1,
       /*init_delay=*/base::TimeDelta());
   samplers_.push_back(std::move(heartbeat_sampler));
-}
-
-void MetricReportingManager::InitKioskVisionTelemetryCollector() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(user_reporting_settings_);
-
-  if (!base::FeatureList::IsEnabled(kEnableKioskVisionTelemetry)) {
-    return;
-  }
-  if (!user_telemetry_report_queue_) {
-    LOG(WARNING) << "No report queue created for KioskVisionTelemetry. "
-                    "No TelemetryCollector created.";
-    return;
-  }
-
-  auto kiosk_vision_sampler = std::make_unique<KioskVisionTelemetrySampler>();
-  auto collector = delegate_->CreatePeriodicCollector(
-      /*sampler=*/kiosk_vision_sampler.get(),
-      /*metric_report_queue=*/user_telemetry_report_queue_.get(),
-      /*reporting_settings=*/&local_state_reporting_settings_,
-      /*enable_setting_path=*/::ash::prefs::kKioskVisionTelemetryEnabled,
-      /*setting_enabled_default_value=*/
-      metrics::kKioskVisionTelemetryDefaultValue,
-      /*rate_setting_path=*/::ash::prefs::kKioskVisionTelemetryFrequency,
-      /*default_rate=*/
-      metrics::GetDefaultCollectionRate(
-          metrics::kDefaultKioskVisionTelemetryCollectionRate),
-      /*rate_unit_to_ms=*/1,
-      /*init_delay=*/delegate_->GetInitDelay());
-  telemetry_collectors_.insert({kKioskVisionTelemetry, std::move(collector)});
-  samplers_.push_back(std::move(kiosk_vision_sampler));
 }
 
 std::vector<raw_ptr<CollectorBase, VectorExperimental>>
