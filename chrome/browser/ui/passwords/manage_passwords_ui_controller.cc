@@ -723,10 +723,14 @@ ManagePasswordsUIController::GetPasswordFeatureManager() {
 
 password_manager::ui::State ManagePasswordsUIController::GetState() const {
   PasswordChangeDelegate* delegate = GetPasswordChangeDelegate();
-  if (delegate &&
-      delegate->GetCurrentState() ==
-          PasswordChangeDelegate::State::kPasswordSuccessfullyChanged) {
-    return password_manager::ui::State::PASSWORD_CHANGE_STATE;
+  if (delegate) {
+    if (delegate->GetCurrentState() ==
+        PasswordChangeDelegate::State::kPasswordSuccessfullyChanged) {
+      // Prevent any UI being displayed instead of the password change bubble.
+      return password_manager::ui::State::PASSWORD_CHANGE_STATE;
+    }
+    // Prevent any UI being displayed during ongoing password change flow.
+    return password_manager::ui::State::INACTIVE_STATE;
   }
   return passwords_data_.state();
 }
@@ -809,6 +813,16 @@ bool ManagePasswordsUIController::GpmPinCreatedDuringRecentPasskeyCreation()
 
 const std::string& ManagePasswordsUIController::PasskeyRpId() const {
   return passwords_data_.passkey_rp_id();
+}
+
+const std::u16string& ManagePasswordsUIController::PasswordChangeUsername()
+    const {
+  return passwords_data_.password_change_username();
+}
+
+const std::u16string& ManagePasswordsUIController::PasswordChangeNewPassword()
+    const {
+  return passwords_data_.password_change_new_password();
 }
 
 void ManagePasswordsUIController::OnBubbleShown() {
@@ -1152,8 +1166,10 @@ void ManagePasswordsUIController::HidePasswordBubble() {
   }
 }
 
-void ManagePasswordsUIController::ShowChangePasswordBubble() {
-  CHECK_EQ(password_manager::ui::PASSWORD_CHANGE_STATE, GetState());
+void ManagePasswordsUIController::ShowChangePasswordBubble(
+    const std::u16string& username,
+    const std::u16string& new_password) {
+  passwords_data_.OpenPasswordChangedBubble(username, new_password);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }

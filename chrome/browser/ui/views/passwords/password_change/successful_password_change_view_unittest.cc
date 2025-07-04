@@ -9,8 +9,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
-#include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
@@ -42,12 +40,9 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
 
   void SetUp() override {
     PasswordBubbleViewTestBase::SetUp();
-    password_change_delegate_ = std::make_unique<PasswordChangeDelegateMock>();
-    ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
-        .WillByDefault(Return(password_change_delegate_.get()));
-    ON_CALL(*password_change_delegate_, GetUsername())
+    ON_CALL(*model_delegate_mock(), PasswordChangeUsername())
         .WillByDefault(ReturnRef(kTestEmail));
-    ON_CALL(*password_change_delegate_, GetGeneratedPassword())
+    ON_CALL(*model_delegate_mock(), PasswordChangeNewPassword())
         .WillByDefault(ReturnRef(kPassword));
   }
 
@@ -65,10 +60,6 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 
-  PasswordChangeDelegateMock* password_change_delegate() {
-    return password_change_delegate_.get();
-  }
-
   SuccessfulPasswordChangeView* view() { return view_; }
 
   views::Label* GetLabelById(int id) {
@@ -76,7 +67,6 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
   }
 
  private:
-  std::unique_ptr<PasswordChangeDelegateMock> password_change_delegate_;
   raw_ptr<SuccessfulPasswordChangeView> view_;
 };
 
@@ -107,7 +97,6 @@ TEST_F(SuccessfulPasswordChangeViewTest, BubbleLayout) {
 TEST_F(SuccessfulPasswordChangeViewTest, ManagePasswordButtonClick) {
   CreateAndShowView();
 
-  EXPECT_CALL(*password_change_delegate(), Stop);
   EXPECT_CALL(*model_delegate_mock(), NavigateToPasswordManagerSettingsPage);
   auto* manage_passwords_button =
       static_cast<views::Button*>(view()->GetViewByID(static_cast<int>(

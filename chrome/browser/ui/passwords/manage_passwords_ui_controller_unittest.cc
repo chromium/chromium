@@ -1963,8 +1963,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeFinishedSuccessfully) {
   auto test_form_manager =
       CreateFormManagerWithBestMatches(best_matches, &submitted_form());
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
+  ASSERT_EQ(controller()->GetState(),
+            password_manager::ui::PENDING_PASSWORD_STATE);
 
   // Emulate password change flow has started.
   PasswordChangeDelegateMock mock_delegate;
@@ -1973,16 +1973,14 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeFinishedSuccessfully) {
           Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillOnce(Return(&mock_delegate));
-
-  ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
+  ASSERT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
 
   // Password change flow has finished successfully. The state should change to
   // `MANAGE_STATE`.
   controller()->OnPasswordChangeFinishedSuccessfully();
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillOnce(Return(nullptr));
-  ASSERT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+  ASSERT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -2353,4 +2351,13 @@ TEST_F(ManagePasswordsUIControllerWithBrowserTest,
   // MANAGE_STATE.
   EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
   EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, ShowChangePasswordBubble) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->ShowChangePasswordBubble(kExampleUsername, kExamplePassword);
+  EXPECT_EQ(controller()->PasswordChangeUsername(), kExampleUsername);
+  EXPECT_EQ(controller()->PasswordChangeNewPassword(), kExamplePassword);
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(password_manager::ui::PASSWORD_CHANGE_STATE);
 }

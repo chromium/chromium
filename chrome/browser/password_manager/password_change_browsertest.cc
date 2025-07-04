@@ -408,8 +408,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   delegate->StartPasswordChangeFlow();
 
   // Start observing web_contents where password change happens.
-  SetWebContents(
-      static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
+  SetWebContents(delegate_impl->executor());
   PasswordsNavigationObserver observer(WebContents());
   EXPECT_TRUE(observer.Wait());
   WaitForElementValue("password", "pa$$word");
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   // Verify generated password is pre-saved.
   WaitForPasswordStore();
   std::string generated_password =
-      base::UTF16ToUTF8(delegate->GetGeneratedPassword());
+      base::UTF16ToUTF8(delegate_impl->generated_password());
   EXPECT_EQ(generated_password,
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
@@ -454,30 +454,30 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
 
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"pa$$word", WebContents());
-  password_change_service()
-      ->GetPasswordChangeDelegate(WebContents())
-      ->StartPasswordChangeFlow();
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
-  base::WeakPtr<PasswordChangeDelegate> delegate =
-      password_change_service()
-          ->GetPasswordChangeDelegate(WebContents())
-          ->AsWeakPtr();
   EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
   }));
   CheckThatCredentialsStored(
-      /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      /*username=*/"test",
+      base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                            ->generated_password()),
       "pa$$word", password_manager::PasswordForm::Type::kChangeSubmission);
 
-  delegate->Stop();
-  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
+      delegate->AsWeakPtr();
+  delegate_weak_ptr->Stop();
+  EXPECT_TRUE(base::test::RunUntil([&delegate_weak_ptr]() {
     // Delegate's destructor is called async, so this is needed before checking
     // the metrics report.
-    return delegate == nullptr;
+    return delegate_weak_ptr == nullptr;
   }));
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
@@ -556,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
-      base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
+      base::UTF16ToUTF8(static_cast<PasswordChangeDelegateImpl*>(delegate)
+                            ->generated_password()),
       base::UTF16ToUTF8(form.password_value),
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
@@ -670,7 +671,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       /*username=*/"test", "pa$$word",
-      base::UTF16ToUTF8(delegate->GetGeneratedPassword()));
+      base::UTF16ToUTF8(
+          static_cast<PasswordChangeDelegateImpl*>(
+              password_change_service()->GetPasswordChangeDelegate(
+                  WebContents()))
+              ->generated_password()));
 
   delegate->Stop();
   EXPECT_TRUE(base::test::RunUntil([&delegate]() {

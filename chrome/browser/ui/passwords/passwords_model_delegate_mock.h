@@ -67,6 +67,14 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (),
               (const override));
   MOCK_METHOD(const std::string&, PasskeyRpId, (), (const override));
+  MOCK_METHOD(const std::u16string&,
+              PasswordChangeUsername,
+              (),
+              (const override));
+  MOCK_METHOD(const std::u16string&,
+              PasswordChangeNewPassword,
+              (),
+              (const override));
   MOCK_METHOD(void, OnBubbleShown, (), (override));
   MOCK_METHOD(void, OnBubbleHidden, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (), (override));

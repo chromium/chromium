@@ -94,7 +94,8 @@ enum State {
   // the same website and user.
   PASSKEY_UPGRADE_STATE,
 
-  // Password change flow was started.
+  // Password change flow ended successfully. User can trigger this state
+  // from the password change success toast.
   PASSWORD_CHANGE_STATE,
 };
 

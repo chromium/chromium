@@ -93,7 +93,6 @@ void ManagePasswordsIconViews::UpdateUiForState() {
 
   // Hides the page action icon if the associated toolbar icon is pinned.
   if (state_ == password_manager::ui::INACTIVE_STATE ||
-      state_ == password_manager::ui::PASSWORD_CHANGE_STATE ||
       delegate()->ShouldHidePageActionIcon(this)) {
     SetVisible(false);
     return;

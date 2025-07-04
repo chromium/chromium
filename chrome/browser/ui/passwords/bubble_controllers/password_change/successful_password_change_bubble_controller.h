@@ -9,8 +9,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 
-class PasswordChangeDelegate;
-
 // Controller for SuccessfulPasswordChangeView which is displayed after
 // successful password change.
 class SuccessfulPasswordChangeBubbleController
@@ -40,9 +38,6 @@ class SuccessfulPasswordChangeBubbleController
   base::WeakPtr<SuccessfulPasswordChangeBubbleController> GetWeakPtr();
 
  private:
-  // Controls password change process.
-  base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
-
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;

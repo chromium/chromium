@@ -364,7 +364,7 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
 
   if (last_committed_url_ == originator_->GetLastCommittedURL()) {
     ManagePasswordsUIController::FromWebContents(originator_)
-        ->ShowChangePasswordBubble();
+        ->ShowChangePasswordBubble(username_, generated_password_);
   } else {
     NavigateToPasswordDetailsPage(
         chrome::FindBrowserWithTab(originator_),
@@ -379,21 +379,6 @@ void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
 
 void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
-  GURL url = submission_verifier_ ? submission_verifier_->GetURL()
-                                  : change_password_url_;
-  return url_formatter::FormatUrlForSecurityDisplay(
-      url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-}
-
-const std::u16string& PasswordChangeDelegateImpl::GetUsername() const {
-  return username_;
-}
-
-const std::u16string& PasswordChangeDelegateImpl::GetGeneratedPassword() const {
-  return generated_password_;
 }
 
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
@@ -466,6 +451,13 @@ bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
          opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
              optimization_guide::UserVisibleFeatureKey::
                  kPasswordChangeSubmission);
+}
+
+std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
+  GURL url = submission_verifier_ ? submission_verifier_->GetURL()
+                                  : change_password_url_;
+  return url_formatter::FormatUrlForSecurityDisplay(
+      url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {

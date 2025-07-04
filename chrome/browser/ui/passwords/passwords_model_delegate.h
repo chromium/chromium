@@ -101,6 +101,13 @@ class PasswordsModelDelegate {
   // the empty string if there isn't one.
   virtual const std::string& PasskeyRpId() const = 0;
 
+  // Returns username of a password that was updated during a recent password
+  // change flow.
+  virtual const std::u16string& PasswordChangeUsername() const = 0;
+
+  // Returns password that was generated during a recent password change flow.
+  virtual const std::u16string& PasswordChangeNewPassword() const = 0;
+
   // Called from the model when the bubble is displayed.
   virtual void OnBubbleShown() = 0;
 

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +18,6 @@ class SuccessfulPasswordChangeBubbleControllerTest : public ::testing::Test {
  public:
   void CreateController() {
     EXPECT_CALL(mock_delegate_, OnBubbleShown());
-    ON_CALL(mock_delegate_, GetPasswordChangeDelegate)
-        .WillByDefault(Return(&password_change_delegate_));
     controller_ = std::make_unique<SuccessfulPasswordChangeBubbleController>(
         mock_delegate_.AsWeakPtr());
   }
@@ -28,7 +25,6 @@ class SuccessfulPasswordChangeBubbleControllerTest : public ::testing::Test {
  protected:
   PasswordsModelDelegateMock mock_delegate_;
   std::unique_ptr<SuccessfulPasswordChangeBubbleController> controller_;
-  PasswordChangeDelegateMock password_change_delegate_;
 };
 
 TEST_F(SuccessfulPasswordChangeBubbleControllerTest,

@@ -134,6 +134,11 @@ class ManagePasswordsState {
   // Move to MANAGE_STATE with initial credential to show its details.
   void OpenPasswordDetailsBubble(const password_manager::PasswordForm& form);
 
+  // Move to PASSWORD_CHANGE_STATE with `username` and `new_password` to
+  // display.
+  void OpenPasswordChangedBubble(const std::u16string& username,
+                                 const std::u16string& new_password);
+
   password_manager::ui::State state() const { return state_; }
   const std::vector<password_manager::PasswordForm>& unsynced_credentials()
       const {
@@ -178,6 +183,14 @@ class ManagePasswordsState {
 
   void ClearSingleCredentialModeCredential() {
     single_credential_mode_credential_ = std::nullopt;
+  }
+
+  const std::u16string& password_change_username() const {
+    return password_change_username_;
+  }
+
+  const std::u16string& password_change_new_password() const {
+    return password_change_new_password_;
   }
 
  private:
@@ -226,6 +239,11 @@ class ManagePasswordsState {
 
   // The passkey relying party identifier used during a recent passkey flow.
   std::string passkey_rp_id_;
+
+  // Username and password of a credential that has been updated in a recent
+  // password change flow.
+  std::u16string password_change_username_;
+  std::u16string password_change_new_password_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_

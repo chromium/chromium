@@ -6,7 +6,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,9 +24,7 @@ SuccessfulPasswordChangeBubbleController::
     : PasswordBubbleControllerBase(
           delegate,
           password_manager::metrics_util::UIDisplayDisposition::
-              PASSWORD_CHANGE_BUBBLE),
-      password_change_delegate_(
-          delegate_->GetPasswordChangeDelegate()->AsWeakPtr()) {}
+              PASSWORD_CHANGE_BUBBLE) {}
 
 SuccessfulPasswordChangeBubbleController::
     ~SuccessfulPasswordChangeBubbleController() {
@@ -48,9 +45,6 @@ void SuccessfulPasswordChangeBubbleController::ReportInteractions() {
 void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
   dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
   if (delegate_) {
-    // Stop password change flow for this tab.
-    password_change_delegate_->Stop();
-
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
   }
@@ -58,9 +52,6 @@ void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
 
 void SuccessfulPasswordChangeBubbleController::FinishPasswordChange() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
-  if (password_change_delegate_) {
-    password_change_delegate_->Stop();
-  }
 }
 
 void SuccessfulPasswordChangeBubbleController::AuthenticateUser(
@@ -78,12 +69,12 @@ void SuccessfulPasswordChangeBubbleController::AuthenticateUser(
 }
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetUsername() const {
-  return password_change_delegate_->GetUsername();
+  return delegate_->PasswordChangeUsername();
 }
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
     const {
-  return password_change_delegate_->GetGeneratedPassword();
+  return delegate_->PasswordChangeNewPassword();
 }
 
 void SuccessfulPasswordChangeBubbleController::RequestFavicon(

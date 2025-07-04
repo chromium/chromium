@@ -675,4 +675,13 @@ TEST_F(ManagePasswordsStateTest, OpenPasswordDetailsBubble) {
   EXPECT_EQ(passwords_data().single_credential_mode_credential(), form);
   EXPECT_TRUE(passwords_data().origin().GetURL().is_empty());
 }
+
+TEST_F(ManagePasswordsStateTest, OpenPasswordChangeBubble) {
+  passwords_data().OpenPasswordChangedBubble(u"username", u"password");
+  EXPECT_EQ(passwords_data().state(),
+            password_manager::ui::PASSWORD_CHANGE_STATE);
+  EXPECT_EQ(passwords_data().password_change_username(), u"username");
+  EXPECT_EQ(passwords_data().password_change_new_password(), u"password");
+}
+
 }  // namespace

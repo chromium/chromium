@@ -104,9 +104,7 @@ void ManagePasswordsPageActionController::UpdateVisibility(
     bool is_blocklisted,
     ManagePasswordsUIController& passwords_ui_controller,
     actions::ActionItem& passwords_action_item) {
-  bool should_be_visible =
-      !(state == password_manager::ui::INACTIVE_STATE ||
-        state == password_manager::ui::PASSWORD_CHANGE_STATE);
+  bool should_be_visible = state != password_manager::ui::INACTIVE_STATE;
   if (should_be_visible) {
     page_action_controller_->Show(kActionShowPasswordsBubbleOrPage);
     const gfx::VectorIcon& icon = GetVectorIconForState(state, is_blocklisted);

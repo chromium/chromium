@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 
-#include <string>
-
 #include "base/observer_list_types.h"
 
 namespace content {
@@ -106,12 +104,6 @@ class PasswordChangeDelegate {
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Getters for current domain where password change is ongoing, username and a
-  // newly generated password. Password exists only after it was generated.
-  virtual std::u16string GetDisplayOrigin() const = 0;
-  virtual const std::u16string& GetUsername() const = 0;
-  virtual const std::u16string& GetGeneratedPassword() const = 0;
 
   virtual base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() = 0;
 };
