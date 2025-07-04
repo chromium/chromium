@@ -54,10 +54,8 @@ function createContextMenusOnClickedEvent(webViewInstanceId,
 }
 
 // This event is exposed as <webview>.contextMenus.onShow.
-function createContextMenusOnContextMenuEvent(webViewInstanceId,
-                                              opt_eventName,
-                                              opt_argSchemas,
-                                              opt_eventOptions) {
+function createContextMenusOnContextMenuEvent(
+    webViewInstanceId, opt_eventName, opt_argSchemas, opt_eventOptions) {
   var subEventName = GetUniqueSubEventName(opt_eventName);
   var newEvent =
       bindingUtil.createCustomEvent(subEventName, false, false);
@@ -65,8 +63,7 @@ function createContextMenusOnContextMenuEvent(webViewInstanceId,
   var view = GuestViewInternalNatives.GetViewFromID(webViewInstanceId);
   if (view) {
     view.events.addScopedListener(
-        ContextMenusHandlerEvent,
-        $Function.bind(function(e) {
+        ContextMenusHandlerEvent, $Function.bind(function(e) {
           var defaultPrevented = false;
           var event = {
             preventDefault: function() { defaultPrevented = true; }
@@ -76,16 +73,16 @@ function createContextMenusOnContextMenuEvent(webViewInstanceId,
           $Function.apply(newEvent.dispatch, newEvent, [event]);
 
           if (!defaultPrevented) {
-          // TODO(lazyboy): Remove |items| parameter completely from
-          // ChromeWebView.showContextMenu as we don't do anything useful with
-          // it currently.
-          var items = [];
-          var guestInstanceId = GuestViewInternalNatives.
-              GetViewFromID(webViewInstanceId).guest.getId();
-          ChromeWebView.showContextMenu(guestInstanceId, e.requestId, items);
-        }
-      }, newEvent),
-      {instanceId: webViewInstanceId});
+            // TODO(lazyboy): Remove |items| parameter completely from
+            // ChromeWebView.showContextMenu as we don't do anything useful with
+            // it currently.
+            var items = [];
+            var guestInstanceId =
+                GuestViewInternalNatives.GetViewFromID(webViewInstanceId)
+                    .guest.getId();
+            ChromeWebView.showContextMenu(guestInstanceId, e.requestId, items);
+          }
+        }, newEvent), {instanceId: webViewInstanceId});
   }
 
   return newEvent;
@@ -95,8 +92,9 @@ function createContextMenusOnContextMenuEvent(webViewInstanceId,
 // WebViewContextMenusImpl object.
 
 // An instance of this class is exposed as <webview>.contextMenus.
-function WebViewContextMenusImpl(viewInstanceId) {
+function WebViewContextMenusImpl(webView, viewInstanceId) {
   this.viewInstanceId_ = viewInstanceId;
+  this.setupEvents(webView);
 }
 $Object.setPrototypeOf(WebViewContextMenusImpl.prototype, null);
 
@@ -120,9 +118,42 @@ WebViewContextMenusImpl.prototype.update = function() {
   return $Function.apply(ChromeWebView.contextMenusUpdate, null, args);
 };
 
+WebViewContextMenusImpl.prototype.setupEvents = function(webView) {
+  // Define 'onClicked' event property on |contextMenus|.
+  var getOnClickedEvent = $Function.bind(function() {
+    return webView.weakWrapper(function() {
+      if (!webView.contextMenusOnClickedEvent_) {
+        var eventName = 'chromeWebViewInternal.onClicked';
+        var eventSchema =
+            utils.lookup(ChromeWebViewSchema.events, 'name', 'onClicked');
+        var eventOptions = {
+          supportsListeners: true,
+          supportsLazyListeners: false
+        };
+        var onClickedEvent = createContextMenusOnClickedEvent(
+            webView.viewInstanceId, eventName, eventSchema, eventOptions);
+        webView.contextMenusOnClickedEvent_ = onClickedEvent;
+        return onClickedEvent;
+      }
+      return webView.contextMenusOnClickedEvent_;
+    });
+  }, webView);
+
+  $Object.defineProperty(
+      this, 'onClicked', {get: getOnClickedEvent(), enumerable: true});
+  $Object.defineProperty(this, 'onShow', {
+    get: webView.weakWrapper(function() {
+      return webView.contextMenusOnContextMenuEvent_;
+    }),
+    enumerable: true
+  });
+};
+
+// Arguments: webView, viewInstanceId
 function WebViewContextMenus() {
   privates(WebViewContextMenus).constructPrivate(this, arguments);
 }
+
 utils.expose(WebViewContextMenus, WebViewContextMenusImpl, {
   functions: [
     'create',
@@ -130,6 +161,7 @@ utils.expose(WebViewContextMenus, WebViewContextMenusImpl, {
     'removeAll',
     'update',
   ],
+  readonly: ['onClicked', 'onShow'],
 });
 
 // -----------------------------------------------------------------------------
@@ -141,16 +173,19 @@ class ChromeWebViewImpl extends WebViewImpl {
   }
 }
 
-ChromeWebViewImpl.prototype.createWebViewContextMenus = function () {
-  return new WebViewContextMenus(this.viewInstanceId);
+ChromeWebViewImpl.prototype.createWebViewContextMenus =
+    function() {
+  return new WebViewContextMenus(this, this.viewInstanceId);
 }
 
-ChromeWebViewImpl.prototype.setupContextMenus = function() {
+    ChromeWebViewImpl.prototype.setupContextMenus = function() {
   if (!this.contextMenusOnContextMenuEvent_) {
     var eventName = 'chromeWebViewInternal.onContextMenuShow';
     var eventSchema =
         utils.lookup(ChromeWebViewSchema.events, 'name', 'onShow');
     var eventOptions = {supportsListeners: true, supportsLazyListeners: false};
+    // TODO(crbug.com/429599984): Move this member to the context menus
+    // instance.
     this.contextMenusOnContextMenuEvent_ = createContextMenusOnContextMenuEvent(
         this.viewInstanceId, eventName, eventSchema, eventOptions);
   }
@@ -162,37 +197,6 @@ ChromeWebViewImpl.prototype.setupContextMenus = function() {
       }
 
       this.contextMenus_ = this.createWebViewContextMenus();
-
-      // Define 'onClicked' event property on |this.contextMenus_|.
-      var getOnClickedEvent = $Function.bind(function() {
-        return this.weakWrapper(function() {
-          if (!this.contextMenusOnClickedEvent_) {
-            var eventName = 'chromeWebViewInternal.onClicked';
-            var eventSchema =
-                utils.lookup(ChromeWebViewSchema.events, 'name', 'onClicked');
-            var eventOptions =
-                {supportsListeners: true, supportsLazyListeners: false};
-            var onClickedEvent = createContextMenusOnClickedEvent(
-                this.viewInstanceId, eventName, eventSchema, eventOptions);
-            this.contextMenusOnClickedEvent_ = onClickedEvent;
-            return onClickedEvent;
-          }
-          return this.contextMenusOnClickedEvent_;
-        });
-      }, this);
-      $Object.defineProperty(
-          this.contextMenus_,
-          'onClicked',
-          {get: getOnClickedEvent(), enumerable: true});
-      $Object.defineProperty(
-          this.contextMenus_,
-          'onShow',
-          {
-            get: this.weakWrapper(function() {
-              return this.contextMenusOnContextMenuEvent_;
-            }),
-            enumerable: true
-          });
       return this.contextMenus_;
     });
   }, this);
