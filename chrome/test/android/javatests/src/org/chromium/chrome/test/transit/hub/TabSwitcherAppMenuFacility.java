@@ -115,7 +115,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
 
     private NewTabGroupDialogFacility<HostStationT> createNewTabGroupFacility(
             ItemOnScreenFacility<NewTabGroupDialogFacility<HostStationT>> item) {
-        return Journeys.beginNewTabGroupUiFlow(mHostStation, item.viewElement.getClickTrigger());
+        return Journeys.beginNewTabGroupUiFlow(item.viewElement.clickTo());
     }
 
     /** Select "Settings" from the app menu. */

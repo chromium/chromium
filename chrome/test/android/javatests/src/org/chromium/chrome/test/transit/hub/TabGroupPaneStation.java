@@ -50,7 +50,7 @@ public class TabGroupPaneStation extends HubBaseStation {
 
     public NewTabGroupDialogFacility<TabGroupPaneStation> createNewTabGroup() {
         assertNotNull(newTabGroupButtonElement);
-        return Journeys.beginNewTabGroupUiFlow(this, newTabGroupButtonElement.getClickTrigger());
+        return Journeys.beginNewTabGroupUiFlow(newTabGroupButtonElement.clickTo());
     }
 
     // TODO(crbug.com/413652567): Implement actions.
