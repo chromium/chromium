@@ -34,8 +34,8 @@ class V8ValueConverter;
 // meaning it can outlive the `Client`. Messages are dropped if the `Client` is
 // destroyed.
 class PostMessageReceiver final
-    : public gin::DeprecatedWrappable<PostMessageReceiver>,
-      public gin::NamedPropertyInterceptor {
+    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
+          PostMessageReceiver> {
  public:
   // The interface for a plugin client that handles messages from its embedder.
   class Client {

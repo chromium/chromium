@@ -293,12 +293,8 @@ v8::Local<v8::Value> MojomToJSValue(
 }
 }  // namespace
 
-RemoteObject::RemoteObject(v8::Isolate* isolate,
-                           RemoteObjectGatewayImpl* gateway,
-                           int32_t object_id)
-    : gin::NamedPropertyInterceptor(isolate, this),
-      gateway_(gateway),
-      object_id_(object_id) {}
+RemoteObject::RemoteObject(RemoteObjectGatewayImpl* gateway, int32_t object_id)
+    : gateway_(gateway), object_id_(object_id) {}
 
 RemoteObject::~RemoteObject() {
   if (gateway_) {

@@ -133,13 +133,14 @@ blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;
 }
 
-class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
-                         public gin::NamedPropertyInterceptor {
+class ScriptableObject
+    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
+          ScriptableObject> {
  public:
   static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
-    ScriptableObject* scriptable_object = new ScriptableObject(isolate);
+    ScriptableObject* scriptable_object = new ScriptableObject();
     return gin::CreateHandle(isolate, scriptable_object)
         .ToV8()
         .As<v8::Object>();
@@ -156,8 +157,7 @@ class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
   }
 
  private:
-  explicit ScriptableObject(v8::Isolate* isolate)
-      : gin::NamedPropertyInterceptor(isolate, this) {}
+  explicit ScriptableObject() = default;
 
   // gin::DeprecatedWrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

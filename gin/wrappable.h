@@ -15,6 +15,8 @@
 
 namespace gin {
 
+class NamedPropertyInterceptor;
+
 // Wrappable is a base class for C++ objects that have corresponding v8 wrapper
 // objects. To retain a Wrappable object on the stack, use a gin::Handle.
 //
@@ -152,6 +154,8 @@ class GIN_EXPORT DeprecatedWrappableBase {
  public:
   DeprecatedWrappableBase(const DeprecatedWrappableBase&) = delete;
   DeprecatedWrappableBase& operator=(const DeprecatedWrappableBase&) = delete;
+
+  virtual NamedPropertyInterceptor* GetNamedPropertyInterceptor();
 
  protected:
   DeprecatedWrappableBase();

@@ -44,17 +44,7 @@ NamedPropertyInterceptor* NamedInterceptorFromV8(v8::Isolate* isolate,
   if (!base) {
     return nullptr;
   }
-  return PerIsolateData::From(isolate)->GetNamedPropertyInterceptor(base);
-}
-
-IndexedPropertyInterceptor* IndexedInterceptorFromV8(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> val) {
-  DeprecatedWrappableBase* base = WrappableFromV8(isolate, val);
-  if (!base) {
-    return nullptr;
-  }
-  return PerIsolateData::From(isolate)->GetIndexedPropertyInterceptor(base);
+  return base->GetNamedPropertyInterceptor();
 }
 
 v8::Intercepted NamedPropertyGetter(
@@ -128,66 +118,6 @@ void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
   info.GetReturnValue().Set(v8::Local<v8::Array>::Cast(properties));
 }
 
-v8::Intercepted IndexedPropertyQuery(
-    uint32_t index,
-    const v8::PropertyCallbackInfo<v8::Integer>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.HolderV2());
-  if (interceptor &&
-      !interceptor->GetIndexedProperty(isolate, index).IsEmpty()) {
-    info.GetReturnValue().Set(v8::None);
-    return v8::Intercepted::kYes;
-  }
-  return v8::Intercepted::kNo;
-}
-
-v8::Intercepted IndexedPropertyGetter(
-    uint32_t index,
-    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.HolderV2());
-  if (!interceptor) {
-    return v8::Intercepted::kNo;
-  }
-  v8::Local<v8::Value> result = interceptor->GetIndexedProperty(isolate, index);
-  if (!result.IsEmpty()) {
-    info.GetReturnValue().SetNonEmpty(result);
-    return v8::Intercepted::kYes;
-  }
-  return v8::Intercepted::kNo;
-}
-
-v8::Intercepted IndexedPropertySetter(
-    uint32_t index,
-    v8::Local<v8::Value> value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.HolderV2());
-  if (interceptor && interceptor->SetIndexedProperty(isolate, index, value)) {
-    return v8::Intercepted::kYes;
-  }
-  return v8::Intercepted::kNo;
-}
-
-void IndexedPropertyEnumerator(
-    const v8::PropertyCallbackInfo<v8::Array>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  IndexedPropertyInterceptor* interceptor =
-      IndexedInterceptorFromV8(isolate, info.HolderV2());
-  if (!interceptor) {
-    return;
-  }
-  v8::Local<v8::Value> properties;
-  if (!TryConvertToV8(isolate, interceptor->EnumerateIndexedProperties(isolate),
-                      &properties)) {
-    return;
-  }
-  info.GetReturnValue().Set(v8::Local<v8::Array>::Cast(properties));
-}
-
 void Constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   isolate->ThrowException(v8::Exception::Error(info.Data().As<v8::String>()));
@@ -226,13 +156,6 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::AddNamedPropertyInterceptor() {
       &NamedPropertyGetter, &NamedPropertySetter, &NamedPropertyQuery, nullptr,
       &NamedPropertyEnumerator, v8::Local<v8::Value>(),
       v8::PropertyHandlerFlags::kOnlyInterceptStrings));
-  return *this;
-}
-
-ObjectTemplateBuilder& ObjectTemplateBuilder::AddIndexedPropertyInterceptor() {
-  template_->SetHandler(v8::IndexedPropertyHandlerConfiguration(
-      &IndexedPropertyGetter, &IndexedPropertySetter, &IndexedPropertyQuery,
-      nullptr, &IndexedPropertyEnumerator, v8::Local<v8::Value>()));
   return *this;
 }
 

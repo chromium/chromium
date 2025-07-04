@@ -61,10 +61,7 @@ GinJavaBridgeObject::GinJavaBridgeObject(
     v8::Isolate* isolate,
     const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
     GinJavaBridgeDispatcher::ObjectID object_id)
-    : gin::NamedPropertyInterceptor(isolate, this),
-      dispatcher_(dispatcher),
-      object_id_(object_id),
-      template_cache_(isolate) {
+    : dispatcher_(dispatcher), object_id_(object_id), template_cache_(isolate) {
   dispatcher_->GetRemoteObjectHost()->GetObject(
       object_id, remote_.BindNewPipeAndPassReceiver());
 }

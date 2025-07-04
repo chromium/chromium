@@ -135,7 +135,7 @@ RemoteObject* RemoteObjectGatewayImpl::GetRemoteObject(v8::Isolate* isolate,
     return iter->value;
   }
 
-  auto* remote_object = new RemoteObject(isolate, this, object_id);
+  auto* remote_object = new RemoteObject(this, object_id);
   remote_objects_.insert(object_id, remote_object);
   return remote_object;
 }

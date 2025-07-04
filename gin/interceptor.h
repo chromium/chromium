@@ -12,20 +12,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gin/gin_export.h"
+#include "gin/wrappable.h"
 #include "v8/include/v8-forward.h"
 
 namespace gin {
 
-class DeprecatedWrappableBase;
-
-// Base class for gin::Wrappable-derived classes that want to implement a
-// property interceptor.
 class GIN_EXPORT NamedPropertyInterceptor {
  public:
-  NamedPropertyInterceptor(v8::Isolate* isolate, DeprecatedWrappableBase* base);
+  NamedPropertyInterceptor() = default;
   NamedPropertyInterceptor(const NamedPropertyInterceptor&) = delete;
   NamedPropertyInterceptor& operator=(const NamedPropertyInterceptor&) = delete;
-  virtual ~NamedPropertyInterceptor();
+  virtual ~NamedPropertyInterceptor() = default;
 
   // Return non-empty handle if the get was interecepted.
   virtual v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
@@ -36,38 +33,25 @@ class GIN_EXPORT NamedPropertyInterceptor {
                                 v8::Local<v8::Value> value);
   virtual std::vector<std::string> EnumerateNamedProperties(
       v8::Isolate* isolate);
-
-  void ClearForTesting();
-
- private:
-  raw_ptr<v8::Isolate> isolate_;
-  raw_ptr<DeprecatedWrappableBase> base_;
 };
 
-class GIN_EXPORT IndexedPropertyInterceptor {
+// Base class for gin::Wrappable-derived classes that want to implement a
+// property interceptor.
+template <typename T>
+class GIN_EXPORT DeprecatedWrappableWithNamedPropertyInterceptor
+    : public DeprecatedWrappable<T>,
+      public NamedPropertyInterceptor {
  public:
-  IndexedPropertyInterceptor(v8::Isolate* isolate,
-                             DeprecatedWrappableBase* base);
-  IndexedPropertyInterceptor(const IndexedPropertyInterceptor&) = delete;
-  IndexedPropertyInterceptor& operator=(const IndexedPropertyInterceptor&) =
-      delete;
-  virtual ~IndexedPropertyInterceptor();
+  DeprecatedWrappableWithNamedPropertyInterceptor() = default;
+  DeprecatedWrappableWithNamedPropertyInterceptor(
+      const DeprecatedWrappableWithNamedPropertyInterceptor&) = delete;
+  DeprecatedWrappableWithNamedPropertyInterceptor& operator=(
+      const DeprecatedWrappableWithNamedPropertyInterceptor&) = delete;
+  ~DeprecatedWrappableWithNamedPropertyInterceptor() override = default;
 
-  // Return non-empty handle if the get was interecepted.
-  virtual v8::Local<v8::Value> GetIndexedProperty(v8::Isolate* isolate,
-                                                  uint32_t index);
-  // Return true if the set was interecepted.
-  virtual bool SetIndexedProperty(v8::Isolate* isolate,
-                                  uint32_t index,
-                                  v8::Local<v8::Value> value);
-  virtual std::vector<uint32_t> EnumerateIndexedProperties(
-      v8::Isolate* isolate);
-
-  void ClearForTesting();
-
- private:
-  raw_ptr<v8::Isolate> isolate_;
-  raw_ptr<DeprecatedWrappableBase> base_;
+  NamedPropertyInterceptor* GetNamedPropertyInterceptor() override {
+    return static_cast<NamedPropertyInterceptor*>(this);
+  }
 };
 
 }  // namespace gin

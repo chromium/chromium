@@ -22,9 +22,8 @@
 
 namespace gin {
 
-class MyInterceptor : public DeprecatedWrappable<MyInterceptor>,
-                      public NamedPropertyInterceptor,
-                      public IndexedPropertyInterceptor {
+class MyInterceptor
+    : public DeprecatedWrappableWithNamedPropertyInterceptor<MyInterceptor> {
  public:
   MyInterceptor(const MyInterceptor&) = delete;
   MyInterceptor& operator=(const MyInterceptor&) = delete;
@@ -36,8 +35,6 @@ class MyInterceptor : public DeprecatedWrappable<MyInterceptor>,
   }
 
   void Clear() {
-    NamedPropertyInterceptor::ClearForTesting();
-    IndexedPropertyInterceptor::ClearForTesting();
   }
 
   int value() const { return value_; }
@@ -74,44 +71,17 @@ class MyInterceptor : public DeprecatedWrappable<MyInterceptor>,
     return result;
   }
 
-  // gin::IndexedPropertyInterceptor
-  v8::Local<v8::Value> GetIndexedProperty(v8::Isolate* isolate,
-                                          uint32_t index) override {
-    if (index == 0)
-      return ConvertToV8(isolate, value_);
-    return v8::Local<v8::Value>();
-  }
-  bool SetIndexedProperty(v8::Isolate* isolate,
-                          uint32_t index,
-                          v8::Local<v8::Value> value) override {
-    if (index == 0) {
-      ConvertFromV8(isolate, value, &value_);
-      return true;
-    }
-    // Don't allow bypassing the interceptor.
-    return true;
-  }
-  std::vector<uint32_t> EnumerateIndexedProperties(
-      v8::Isolate* isolate) override {
-    std::vector<uint32_t> result;
-    result.push_back(0);
-    return result;
-  }
-
  private:
   explicit MyInterceptor(v8::Isolate* isolate)
-      : NamedPropertyInterceptor(isolate, this),
-        IndexedPropertyInterceptor(isolate, this),
-        value_(0),
-        template_cache_(isolate) {}
+      : value_(0), template_cache_(isolate) {}
   ~MyInterceptor() override = default;
 
-  // gin::DeprecatedWrappable
-  ObjectTemplateBuilder GetObjectTemplateBuilder(
+  // gin::Wrappable
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return DeprecatedWrappable<MyInterceptor>::GetObjectTemplateBuilder(isolate)
-        .AddNamedPropertyInterceptor()
-        .AddIndexedPropertyInterceptor();
+    return DeprecatedWrappableWithNamedPropertyInterceptor<
+               MyInterceptor>::GetObjectTemplateBuilder(isolate)
+        .AddNamedPropertyInterceptor();
   }
 
   int Call(int value) {
@@ -189,27 +159,12 @@ TEST_F(InterceptorTest, NamedInterceptorCall) {
       "   })");
 }
 
-TEST_F(InterceptorTest, IndexedInterceptor) {
-  RunInterceptorTest(
-      "(function (obj) {"
-      "   if (obj[0] !== 42) throw 'FAIL';"
-      "   else obj[0] = 191; })");
-}
-
 TEST_F(InterceptorTest, BypassInterceptorAllowed) {
   RunInterceptorTest(
       "(function (obj) {"
       "   obj.value = 191 /* make test happy */;"
       "   obj.foo = 23;"
       "   if (obj.foo !== 23) throw 'FAIL'; })");
-}
-
-TEST_F(InterceptorTest, BypassInterceptorForbidden) {
-  RunInterceptorTest(
-      "(function (obj) {"
-      "   obj.value = 191 /* make test happy */;"
-      "   obj[1] = 23;"
-      "   if (obj[1] === 23) throw 'FAIL'; })");
 }
 
 }  // namespace gin

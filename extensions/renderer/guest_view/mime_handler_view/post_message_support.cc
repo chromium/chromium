@@ -26,8 +26,9 @@ const char kPostMessageName[] = "postMessage";
 
 // The gin-backed scriptable object which is exposed by the BrowserPlugin for
 // PostMessageSupport. This currently only implements "postMessage".
-class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
-                         public gin::NamedPropertyInterceptor {
+class ScriptableObject
+    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
+          ScriptableObject> {
  public:
   static gin::DeprecatedWrapperInfo kWrapperInfo;
 
@@ -35,7 +36,7 @@ class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
       v8::Isolate* isolate,
       base::WeakPtr<PostMessageSupport> post_message_support) {
     ScriptableObject* scriptable_object =
-        new ScriptableObject(isolate, post_message_support);
+        new ScriptableObject(post_message_support);
     return gin::CreateHandle(isolate, scriptable_object)
         .ToV8()
         .As<v8::Object>();
@@ -66,10 +67,9 @@ class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
   }
 
  private:
-  ScriptableObject(v8::Isolate* isolate,
-                   base::WeakPtr<PostMessageSupport> post_message_support)
-      : gin::NamedPropertyInterceptor(isolate, this),
-        post_message_support_(post_message_support) {}
+  explicit ScriptableObject(
+      base::WeakPtr<PostMessageSupport> post_message_support)
+      : post_message_support_(post_message_support) {}
 
   // gin::DeprecatedWrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

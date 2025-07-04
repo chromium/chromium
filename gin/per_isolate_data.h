@@ -23,9 +23,6 @@
 namespace gin {
 
 class V8IdleTaskRunner;
-class IndexedPropertyInterceptor;
-class NamedPropertyInterceptor;
-class DeprecatedWrappableBase;
 
 // There is one instance of PerIsolateData per v8::Isolate managed by Gin. This
 // class stores all the Gin-related data that varies per isolate.
@@ -79,23 +76,6 @@ class GIN_EXPORT PerIsolateData {
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(
       DeprecatedWrapperInfo* info);
 
-  // We maintain a map from Wrappable objects that derive from one of the
-  // interceptor interfaces to the interceptor interface pointers.
-  void SetIndexedPropertyInterceptor(DeprecatedWrappableBase* base,
-                                     IndexedPropertyInterceptor* interceptor);
-  void SetNamedPropertyInterceptor(DeprecatedWrappableBase* base,
-                                   NamedPropertyInterceptor* interceptor);
-
-  void ClearIndexedPropertyInterceptor(DeprecatedWrappableBase* base,
-                                       IndexedPropertyInterceptor* interceptor);
-  void ClearNamedPropertyInterceptor(DeprecatedWrappableBase* base,
-                                     NamedPropertyInterceptor* interceptor);
-
-  IndexedPropertyInterceptor* GetIndexedPropertyInterceptor(
-      DeprecatedWrappableBase* base);
-  NamedPropertyInterceptor* GetNamedPropertyInterceptor(
-      DeprecatedWrappableBase* base);
-
   void AddDisposeObserver(DisposeObserver* observer);
   void RemoveDisposeObserver(DisposeObserver* observer);
   void NotifyBeforeDispose();
@@ -120,12 +100,6 @@ class GIN_EXPORT PerIsolateData {
       ObjectTemplateMap;
   typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::FunctionTemplate>>
       FunctionTemplateMap;
-  typedef std::map<DeprecatedWrappableBase*,
-                   raw_ptr<IndexedPropertyInterceptor, CtnExperimental>>
-      IndexedPropertyInterceptorMap;
-  typedef std::map<DeprecatedWrappableBase*,
-                   raw_ptr<NamedPropertyInterceptor, CtnExperimental>>
-      NamedPropertyInterceptorMap;
 
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is
   // owned by the IsolateHolder, which also owns the PerIsolateData.
@@ -134,8 +108,6 @@ class GIN_EXPORT PerIsolateData {
   DeprecatedObjectTemplateMap deprecated_object_templates_;
   ObjectTemplateMap object_templates_;
   FunctionTemplateMap function_templates_;
-  IndexedPropertyInterceptorMap indexed_interceptors_;
-  NamedPropertyInterceptorMap named_interceptors_;
   base::ObserverList<DisposeObserver> dispose_observers_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> user_visible_task_runner_;

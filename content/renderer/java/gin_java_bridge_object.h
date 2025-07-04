@@ -24,8 +24,8 @@ class WebLocalFrame;
 namespace content {
 
 class GinJavaBridgeObject
-    : public gin::DeprecatedWrappable<GinJavaBridgeObject>,
-      public gin::NamedPropertyInterceptor {
+    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
+          GinJavaBridgeObject> {
  public:
   static gin::DeprecatedWrapperInfo kWrapperInfo;
 

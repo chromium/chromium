@@ -73,6 +73,11 @@ void DeprecatedWrappableBase::FirstWeakCallback(
   data.SetSecondPassCallback(SecondWeakCallback);
 }
 
+NamedPropertyInterceptor*
+DeprecatedWrappableBase::GetNamedPropertyInterceptor() {
+  return nullptr;
+}
+
 void DeprecatedWrappableBase::SecondWeakCallback(
     const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data) {
   DeprecatedWrappableBase* wrappable = data.GetParameter();
