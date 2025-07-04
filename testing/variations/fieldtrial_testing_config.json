@@ -20195,6 +20195,7 @@
                     "enable_features": [
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
                         "ReducePPMs",
                         "ScreenWinDisplayLookupByHMONITOR"
                     ]
