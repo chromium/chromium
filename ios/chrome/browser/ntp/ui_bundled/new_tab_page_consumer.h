@@ -59,6 +59,9 @@
 // Pass nil to remove any currently applied background color.
 - (void)applyBaseBackgroundColor:(UIColor*)color;
 
+// Whether MIA is allowed from a policy perspective.
+- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_

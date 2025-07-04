@@ -285,6 +285,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // Maintains the MIA circle animation.
   id<LottieAnimation> _miaAnimation;
   UIView* _miaAnimationView;
+  // Whether MIA is allowed by policy.
+  BOOL _MIAAllowedByPolicy;
 }
 
 #pragma mark - Public
@@ -829,6 +831,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   return [_buttonStack snapshotViewAfterScreenUpdates:NO];
 }
 
+- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
+  _MIAAllowedByPolicy = policyAllowed;
+}
+
 #pragma mark - UITraitEnvironment
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
@@ -1182,13 +1188,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 #pragma mark - MIA
 
 - (BOOL)useInlineMIA {
-  return self.isGoogleDefaultSearchEngine &&
+  return self.isGoogleDefaultSearchEngine && _MIAAllowedByPolicy &&
          GetNTPMIAEntrypointVariation() ==
              NTPMIAEntrypointVariation::kOmniboxContainedInline;
 }
 
 - (BOOL)useSingleButtonMIA {
-  return self.isGoogleDefaultSearchEngine &&
+  return self.isGoogleDefaultSearchEngine && _MIAAllowedByPolicy &&
          ShowOnlyMIAEntrypointInNTPFakebox();
 }
 
@@ -1260,7 +1266,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (BOOL)useMIAEnlargedFakebox {
-  return self.isGoogleDefaultSearchEngine && ShouldEnlargeNTPFakeboxForMIA();
+  return self.isGoogleDefaultSearchEngine && ShouldEnlargeNTPFakeboxForMIA() &&
+         self.shouldShowMIAEntrypoint;
 }
 
 #pragma mark - helpers

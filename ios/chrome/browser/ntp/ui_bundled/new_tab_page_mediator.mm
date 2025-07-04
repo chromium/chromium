@@ -16,6 +16,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -296,6 +297,10 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     // Make sure the intial background is set.
     [self updateBackground];
   }
+
+  BOOL miaPolicyAllowed = omnibox::IsAimAllowedByPolicy(_prefService);
+  [self.consumer setMIAAllowedByPolicy:miaPolicyAllowed];
+  [self.headerConsumer setMIAAllowedByPolicy:miaPolicyAllowed];
 }
 
 - (void)shutdown {
