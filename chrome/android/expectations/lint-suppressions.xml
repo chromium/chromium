@@ -353,9 +353,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.feed_setting_option` appears to be unused"/>
     <ignore regexp="The resource `R.string.feed_section_on` appears to be unused"/>
 
-    <!-- TODO(crbug.com/424217546): 1 string: Remove once these are used. -->
-    <ignore regexp="The resource `R.string.ntp_custom_links_help_pin` appears to be unused"/>
-
     <!-- TODO(https://crbug.com/423579377): Remove the following 3 lines after the NTP appearance bottom sheet is implemented. -->
     <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet_opened_full` appears to be unused"/>
     <ignore regexp="The resource `R.string.ntp_customization_theme_bottom_sheet` appears to be unused"/>

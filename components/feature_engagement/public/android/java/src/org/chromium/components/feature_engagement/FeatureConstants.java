@@ -89,6 +89,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
     FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
+    FeatureConstants.MOST_VISITED_TILES_CUSTOMIZATION_PIN,
     FeatureConstants.PAGE_INFO_FEATURE,
     FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
     FeatureConstants.PAGE_ZOOM_FEATURE,
@@ -366,6 +367,9 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show the third re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE = "IPH_ChromeReengagementNotification3";
+
+    /** An IPH feature to inform users about Most Visited Tile context menu "Pin this shortcut". */
+    String MOST_VISITED_TILES_CUSTOMIZATION_PIN = "IPH_MostVisitedTilesCustomizationPin";
 
     /** An IPH feature to inform about changing permissions in PageInfo. */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";

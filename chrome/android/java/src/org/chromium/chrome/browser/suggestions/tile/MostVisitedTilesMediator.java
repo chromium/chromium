@@ -26,13 +26,22 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** Mediator for handling {@link MostVisitedTilesLayout} related logic. */
 public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
+
+    /**
+     * Score threshold for the first Top Sites Tiles to trigger IPH for MVT Customization. For
+     * reference, if all visits occur today, the score for 2 visits is 1.12876; 3 visit is 1.39907.
+     */
+    private static final double MVT_CUSTOMIZATION_IPH_TILE_SCORE_THRESHOULD = 1.3;
 
     private final Resources mResources;
     private final UiConfig mUiConfig;
@@ -48,6 +57,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
     private TileRenderer mRenderer;
     private TileGroup mTileGroup;
+    private UserEducationHelper mUserEducationHelper;
     private boolean mSearchProviderHasLogo = true;
     private TemplateUrlService mTemplateUrlService;
 
@@ -93,11 +103,13 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     /** Called to initialize this mediator when native is ready. */
     public void initWithNative(
             Profile profile,
+            UserEducationHelper userEducationHelper,
             SuggestionsUiDelegate suggestionsUiDelegate,
             ContextMenuManager contextMenuManager,
             TileGroup.Delegate tileGroupDelegate,
             OfflinePageBridge offlinePageBridge,
             TileRenderer renderer) {
+        mUserEducationHelper = userEducationHelper;
         mRenderer = renderer;
         mTileGroup =
                 new TileGroup(
@@ -127,17 +139,15 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     public void onTileDataChanged() {
         if (mTileGroup.getTileSections().size() < 1) return;
 
-        mRenderer.renderTileSection(
-                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
-                mMvTilesLayout,
-                mTileGroup.getTileSetupDelegate());
+        List<Tile> tiles = mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        mRenderer.renderTileSection(tiles, mMvTilesLayout, mTileGroup.getTileSetupDelegate());
         mTileGroup.notifyTilesRendered();
         updateTilesView();
 
         if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
-        MostVisitedSitesMetadataUtils.getInstance()
-                .saveSuggestionListsToFile(
-                        mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
+        MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(tiles);
+
+        maybeTriggerCustomizationIph(tiles);
     }
 
     @Override
@@ -281,5 +291,17 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             mModel.set(PLACEHOLDER_VIEW, mNoMvPlaceholderStub.inflate());
         }
         mModel.set(IS_MVT_LAYOUT_VISIBLE, !showPlaceholder);
+    }
+
+    private void maybeTriggerCustomizationIph(List<Tile> tiles) {
+        if (tiles.size() == 0) return;
+
+        Tile firstTile = tiles.get(0);
+        if (firstTile.getData().source == TileSource.CUSTOM_LINKS) return;
+
+        double firstTileScore = mTileGroup.getSuggestionScore(firstTile.getUrl());
+        if (firstTileScore < MVT_CUSTOMIZATION_IPH_TILE_SCORE_THRESHOULD) return;
+
+        mMvTilesLayout.triggerCustomizationIph(mUserEducationHelper);
     }
 }

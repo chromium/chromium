@@ -49747,6 +49747,8 @@ should be able to be added at any place in this file.
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MerchantTrust" label="For MerchantTrust feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>
+  <suffix name="MostVisitedTilesCustomizationPin"
+      label="In product help for MVT Customization feature to pin a shortcut."/>
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>
   <suffix name="NewTabPageHomeButton"

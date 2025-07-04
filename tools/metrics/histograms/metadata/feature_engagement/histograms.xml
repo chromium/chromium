@@ -409,6 +409,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_LongPressToolbarTip" summary="LongPress toolbar"/>
   <variant name="IPH_MerchantTrust" summary="Merchant Trust"/>
   <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>
+  <variant name="IPH_MostVisitedTilesCustomizationPin"
+      summary="informing user of context menu to pin a shortcut on MVT"/>
   <variant name="IPH_NewTab" summary="new tab"/>
   <variant name="IPH_NewTabPageHomeButton"
       summary="(obsolete) new tab page button"/>

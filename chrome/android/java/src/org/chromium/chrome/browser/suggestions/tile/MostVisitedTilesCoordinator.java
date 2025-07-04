@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -22,6 +24,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,6 +40,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     private final MostVisitedTilesMediator mMediator;
     private final UiConfig mUiConfig;
     private TileRenderer mRenderer;
+    private UserEducationHelper mUserEducationHelper;
     private ContextMenuManager mContextMenuManager;
     private OfflinePageBridge mOfflinePageBridge;
 
@@ -115,6 +119,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         }
         mRenderer.onNativeInitializationReady(profile);
 
+        Handler handler = new Handler(Looper.getMainLooper());
+        mUserEducationHelper = new UserEducationHelper(mActivity, profile, handler);
+
         mContextMenuManager =
                 new ContextMenuManager(
                         suggestionsUiDelegate.getNavigationDelegate(),
@@ -125,6 +132,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         mMediator.initWithNative(
                 profile,
+                mUserEducationHelper,
                 suggestionsUiDelegate,
                 mContextMenuManager,
                 tileGroupDelegate,
