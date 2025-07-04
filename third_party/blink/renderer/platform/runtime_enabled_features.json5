@@ -2347,6 +2347,10 @@
       status: "experimental",
     },
     {
+      name: "FontMatchAliasesAsLastResort",
+      status: "stable",
+    },
+    {
       name: "FontPresentWin",
       status: "stable",
     },

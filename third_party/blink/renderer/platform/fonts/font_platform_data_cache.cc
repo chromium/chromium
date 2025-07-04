@@ -31,9 +31,11 @@
 
 #include <algorithm>
 #include <cmath>
+
 #include "base/feature_list.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -69,9 +71,15 @@ const FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
     return result;
   }
 
-  if (alternate_font_name != AlternateFontName::kAllowAlternate ||
-      creation_params.CreationType() != kCreateFontByFamily)
+  const bool match_alternate_font_name =
+      alternate_font_name == AlternateFontName::kAllowAlternate ||
+      (RuntimeEnabledFeatures::FontMatchAliasesAsLastResortEnabled() &&
+       alternate_font_name == AlternateFontName::kLastResort);
+
+  if (!match_alternate_font_name ||
+      creation_params.CreationType() != kCreateFontByFamily) {
     return nullptr;
+  }
 
   // We were unable to find a font. We have a small set of fonts that we alias
   // to other names, e.g., Arial/Helvetica, Courier/Courier New, etc. Try
