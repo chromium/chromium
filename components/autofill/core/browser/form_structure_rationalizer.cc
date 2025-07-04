@@ -952,13 +952,15 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
     return field->is_visible() &&
            field->ComputedType().GetStorableType() == ADDRESS_HOME_ZIP;
   };
-  auto it = std::ranges::find_if(*fields_, has_zip_type);
-  while (it != fields_->end()) {
-    auto it2 = std::find_if_not(it, fields_->end(), has_zip_type);
-    // All fields in [it, it2[ are ADDRESS_HOME_ZIP.
-    if (it2 - it == 2) {
-      AutofillField& first_zip = **it;
-      AutofillField& second_zip = **(it + 1);
+  // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP.
+  auto begin = fields_->begin();
+  auto end = begin;
+  while ((begin = std::find_if(end, fields_->end(), has_zip_type)) !=
+         fields_->end()) {
+    end = std::find_if_not(begin + 1, fields_->end(), has_zip_type);
+    if (end - begin == 2) {
+      AutofillField& first_zip = **begin;
+      AutofillField& second_zip = **(begin + 1);
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
           << "Zip Code Rationalization: Converting sequence of (zip, "
@@ -968,7 +970,6 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
       second_zip.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP_SUFFIX),
                            AutofillPredictionSource::kRationalization);
     }
-    it = std::find_if(it2, fields_->end(), has_zip_type);
   }
 }
 
