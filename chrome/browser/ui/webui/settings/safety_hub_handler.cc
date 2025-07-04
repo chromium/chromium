@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
@@ -445,8 +445,9 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id,
-                            safety_hub::GetSafeBrowsingCardData(profile_));
+  ResolveJavascriptCallback(
+      callback_id, SafetyHubSafeBrowsingResult::GetSafeBrowsingCardData(
+                       profile_->GetPrefs()));
 }
 
 void SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview(
@@ -464,8 +465,12 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(
-      callback_id, base::Value(safety_hub::GetPasswordCardData(profile_)));
+  PasswordStatusCheckService* service =
+      PasswordStatusCheckServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(service->GetPasswordCardData()));
 }
 
 void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
@@ -475,7 +480,7 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id,
-                            base::Value(safety_hub::GetVersionCardData()));
+                            base::Value(safety_hub_util::GetVersionCardData()));
 }
 
 void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
@@ -550,15 +555,20 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   std::set<SafetyHubModule> modules;
 
   // Passwords module
-  if (CardHasRecommendations(safety_hub::GetPasswordCardData(profile_))) {
+  PasswordStatusCheckService* psc_service =
+      PasswordStatusCheckServiceFactory::GetForProfile(profile_);
+  CHECK(psc_service);
+  if (CardHasRecommendations(psc_service->GetPasswordCardData())) {
     modules.insert(SafetyHubModule::kPasswords);
   }
   // Version module
-  if (CardHasRecommendations(safety_hub::GetVersionCardData())) {
+  if (CardHasRecommendations(safety_hub_util::GetVersionCardData())) {
     modules.insert(SafetyHubModule::kVersion);
   }
   // SafeBrowsing module
-  if (CardHasRecommendations(safety_hub::GetSafeBrowsingCardData(profile_))) {
+  if (CardHasRecommendations(
+          SafetyHubSafeBrowsingResult::GetSafeBrowsingCardData(
+              profile_->GetPrefs()))) {
     modules.insert(SafetyHubModule::kSafeBrowsing);
   }
   // Extensions module
@@ -566,10 +576,10 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
     modules.insert(SafetyHubModule::kExtensions);
   }
   // Notifications module
-  NotificationPermissionsReviewService* service =
+  NotificationPermissionsReviewService* npr_service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-  if (!service->PopulateNotificationPermissionReviewData().empty()) {
+  CHECK(npr_service);
+  if (!npr_service->PopulateNotificationPermissionReviewData().empty()) {
     modules.insert(SafetyHubModule::kNotifications);
   }
   // Unused site permission module

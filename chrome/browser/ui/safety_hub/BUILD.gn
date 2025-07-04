@@ -49,7 +49,6 @@ source_set("safety_hub") {
     public_deps += [ "//components/prefs" ]
   } else {
     sources += [
-      "card_data_helper.h",
       "extensions_result.h",
       "password_status_check_result.h",
       "password_status_check_service.h",
@@ -98,6 +97,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/hats",
     "//components/content_settings/core/browser",
     "//components/permissions",
@@ -117,7 +117,6 @@ source_set("impl") {
     deps += [ "//chrome/browser/safety_hub/android:jni_headers" ]
   } else {
     sources += [
-      "card_data_helper.cc",
       "extensions_result.cc",
       "password_status_check_result.cc",
       "password_status_check_service.cc",
@@ -129,7 +128,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/extensions",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/webui/settings",
       "//components/password_manager/core/browser:password_form",
       "//components/password_manager/core/browser/leak_detection",
@@ -260,7 +258,6 @@ source_set("unit_tests") {
   } else {
     sources += [
       "abusive_notification_permissions_manager_unittest.cc",
-      "card_data_helper_unittest.cc",
       "disruptive_notification_permissions_manager_unittest.cc",
       "extensions_result_unittest.cc",
       "notification_permission_review_result_unittest.cc",

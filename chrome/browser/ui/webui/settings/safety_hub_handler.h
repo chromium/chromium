@@ -26,17 +26,6 @@ class ExtensionPrefs;
 class ExtensionRegistry;
 }  // namespace extensions
 
-// The state of Safe Browsing settings.
-enum class SafeBrowsingState {
-  kEnabledEnhanced = 0,
-  kEnabledStandard = 1,
-  kDisabledByAdmin = 2,
-  kDisabledByExtension = 3,
-  kDisabledByUser = 4,
-  // New enum values must go above here.
-  kMaxValue = kDisabledByUser,
-};
-
 /**
  * This handler deals with the permission-related operations on the site
  * settings page.

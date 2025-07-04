@@ -43,7 +43,7 @@ class GURL;
 class HostContentSettingsMap;
 class PrefRegistrySimple;
 class NotificationPermissionReviewServiceTest;
-class SafetyHubCardDataHelperTest;
+class SafetyHubHatsServiceTest;
 
 namespace site_engagement {
 
@@ -213,7 +213,7 @@ class SiteEngagementService : public KeyedService,
   friend class SiteEngagementServiceTest;
   friend class web_app::WebAppEngagementBrowserTest;
   friend class ::NotificationPermissionReviewServiceTest;
-  friend class ::SafetyHubCardDataHelperTest;
+  friend class ::SafetyHubHatsServiceTest;
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CheckHistograms);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CleanupEngagementScores);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,

@@ -14,10 +14,12 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
@@ -32,6 +34,8 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -745,6 +749,15 @@ base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
   }
 
   return GetNoWeakOrReusedPasswordCardData(signed_in);
+}
+
+base::Value::Dict PasswordStatusCheckService::GetPasswordCardData() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
+                                           signin::ConsentLevel::kSignin);
+
+  return GetPasswordCardData(signed_in);
 }
 
 void PasswordStatusCheckService::ScheduleCheckAndStartRepeatedUpdates() {

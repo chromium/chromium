@@ -7,8 +7,22 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
+
+class PrefService;
+
+// The state of Safe Browsing settings.
+enum class SafeBrowsingState {
+  kEnabledEnhanced = 0,
+  kEnabledStandard = 1,
+  kDisabledByAdmin = 2,
+  kDisabledByExtension = 3,
+  kDisabledByUser = 4,
+  // New enum values must go above here.
+  kMaxValue = kDisabledByUser,
+};
 
 class SafetyHubSafeBrowsingResult : public SafetyHubResult {
  public:
@@ -25,6 +39,12 @@ class SafetyHubSafeBrowsingResult : public SafetyHubResult {
       const PrefService* pref_service);
 
   static SafeBrowsingState GetState(const PrefService* pref_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Fetches data for the Safe Browsing card to return data to the desktop UI.
+  static base::Value::Dict GetSafeBrowsingCardData(
+      const PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // SafetyHubResult implementation
 

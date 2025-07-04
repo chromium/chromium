@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_UTIL_H_
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
 
@@ -50,6 +51,11 @@ void SetRevokedAbusiveNotificationPermission(
     GURL url,
     bool is_ignored,
     const content_settings::ContentSettingConstraints& constraints = {});
+
+#if !BUILDFLAG(IS_ANDROID)
+// Fetches data for the version card to return data to the desktop UI.
+base::Value::Dict GetVersionCardData();
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safety_hub_util
 
