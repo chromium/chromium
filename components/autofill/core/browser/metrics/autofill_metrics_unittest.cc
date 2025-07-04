@@ -1030,8 +1030,13 @@ TEST_F(AutofillMetricsTest, LoyaltyCardCheckoutFlowUserActions) {
   }
 
   // Simulate an Autofill query on a loyalty card field.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[1].global_id());
+  {
+    base::UserActionTester user_action_tester;
+    autofill_manager().OnAskForValuesToFillTest(form,
+                                                form.fields()[1].global_id());
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "Autofill_PolledLoyaltyCardSuggestions"));
+  }
   // Simulate showing a loyalty card suggestion polled from "Loyalty Number"
   // field.
   {

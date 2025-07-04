@@ -4681,6 +4681,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_PolledLoyaltyCardSuggestions">
+  <owner>vizcay@google.com</owner>
+  <description>
+    This user action is logged when the user interacts with an autofillable
+    loyalty card field field, either by clicking or by typing.
+  </description>
+</action>
+
 <action name="Autofill_PolledProfileSuggestions">
   <owner>battre@chromium.org</owner>
   <description>

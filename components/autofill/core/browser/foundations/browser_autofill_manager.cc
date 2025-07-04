@@ -2995,14 +2995,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
 std::vector<Suggestion> BrowserAutofillManager::GetLoyaltyCardSuggestions(
     const GURL& url,
-    bool trigger_field_is_autofilled) {
+    const FormFieldData& trigger_field) {
   ValuablesDataManager* valuables_manager = client().GetValuablesDataManager();
   if (!valuables_manager) {
     return {};
   }
-  // TODO(crbug.com/429370505): Report polled suggestions user action.
+  metrics_->loyalty_card_form_event_logger.OnDidPollSuggestions(
+      trigger_field.global_id());
   return GetSuggestionsForLoyaltyCards(*valuables_manager, url,
-                                       trigger_field_is_autofilled);
+                                       trigger_field.is_autofilled());
 }
 
 // TODO(crbug.com/40219607) Eliminate and replace with a listener?
@@ -3215,8 +3216,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                 client().GetValuablesDataManager()) {
           if (suggestions.empty()) {
             suggestions = GetLoyaltyCardSuggestions(
-                client().GetLastCommittedPrimaryMainFrameURL(),
-                field.is_autofilled());
+                client().GetLastCommittedPrimaryMainFrameURL(), field);
           } else {
             ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                 *valuables_manager,
@@ -3236,8 +3236,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
         // Only loyalty card numbers filling is supported.
         if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
           suggestions = GetLoyaltyCardSuggestions(
-              client().GetLastCommittedPrimaryMainFrameURL(),
-              field.is_autofilled());
+              client().GetLastCommittedPrimaryMainFrameURL(), field);
         }
       }
       break;
