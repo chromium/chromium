@@ -96,7 +96,7 @@ class FormStructureRationalizer {
 
   // Sets the format strings. For now, only date format strings such as
   // "YYYY-MM-DD" are supported.
-  void RationalizeFormatStrings(LogManager* log_manager);
+  void RationalizeDateFormatStrings(LogManager* log_manager);
 
   // Rewrites two or three (not necessarily consecutive)
   // ADDRESS_HOME_STREET_ADDRESS fields in the same section into address line 1,

@@ -184,7 +184,8 @@ ParseServerPredictionOverrideJson(const base::Value& value) {
         //     "<field_signature>": [
         //       {
         //         "predictions": [ <raw_field_type> or "<type_name>", ... ],
-        //         "format_string": <format_string>
+        //         "format_string_type": "DATE",
+        //         "format_string": "<format_string>"
         //       },
         //       ...
         //     ]

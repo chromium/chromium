@@ -685,7 +685,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   }
 }
 
-void FormStructureRationalizer::RationalizeFormatStrings(
+void FormStructureRationalizer::RationalizeDateFormatStrings(
     LogManager* log_manager) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     return;
@@ -979,7 +979,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
-  RationalizeFormatStrings(log_manager);
+  RationalizeDateFormatStrings(log_manager);
   RationalizeRepeatedStreetAddressFields(log_manager);
   if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
     RationalizeRepeatedZipCodeFields(log_manager);

@@ -1030,8 +1030,6 @@ void ProcessServerPredictionsQueryResponse(
                     field_suggestion->format_string().format_string()),
                 AutofillField::FormatStringSource::kServer);
             break;
-          default:
-            break;
         }
       }
       ++field_rank_map[field->GetFieldSignature()];
