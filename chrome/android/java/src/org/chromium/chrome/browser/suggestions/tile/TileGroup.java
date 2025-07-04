@@ -97,6 +97,12 @@ public class TileGroup implements MostVisitedSites.Observer {
         void showTileUnpinSnackbar(Runnable undoHandler);
 
         /**
+         * Returns the score of a recent suggestion identified by {@param url}, or {@link
+         * MostVisitedSites.INVALID_SUGGESTION_SCORE} if not found.
+         */
+        double getSuggestionScore(GURL url);
+
+        /**
          * To be called before this instance is abandoned to the garbage collector so it can do any
          * necessary cleanups. This instance must not be used after this method is called.
          */
@@ -468,6 +474,14 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     public TileSetupDelegate getTileSetupDelegate() {
         return mTileSetupDelegate;
+    }
+
+    /**
+     * Returns the score of a recent suggestion identified by {@param url}, or {@link
+     * MostVisitedSites.INVALID_SUGGESTION_SCORE} if not found.
+     */
+    double getSuggestionScore(GURL url) {
+        return mTileGroupDelegate.getSuggestionScore(url);
     }
 
     /** Loads tile data from {@link #mPendingChanges.siteSuggestions} and clears it afterwards. */
