@@ -2873,7 +2873,6 @@
 <translation id="5847181246682413476">Τροφοδοτικά</translation>
 <translation id="584902713199270089">Γνωριμίες και προσωπικά</translation>
 <translation id="5851548754964597211">Λίστα καρτελών</translation>
-<translation id="5851868085455377790">Εκδότης</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5862579898803147654">Μονάδα στοίβαξης 8</translation>
@@ -3734,6 +3733,7 @@
 <translation id="7292031607255951991">Όνομα παραλήπτη</translation>
 <translation id="7298195798382681320">Προτεινόμενες</translation>
 <translation id="7299471494012161875">Συνδεδεμένα περιφερειακά οθόνης</translation>
+<translation id="7299769361777046949">Διαχείριση καρτών επιβράβευσης αφοσιωμένων πελατών στο Πορτοφόλι Google</translation>
 <translation id="7300012071106347854">Βαθύ μπλε</translation>
 <translation id="7304030187361489308">Υψηλός</translation>
 <translation id="7304562222803846232">Διαχείριση ρυθμίσεων απορρήτου Λογαριασμού Google</translation>
@@ -4152,7 +4152,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Πριν από <ph name="TIME_COUNT" /> λ.}=1{Πριν από <ph name="TIME_COUNT" /> ω.}other{Πριν από <ph name="TIME_COUNT" /> η.}}</translation>
 <translation id="7979595116210197019">Υπηρεσίες φαγητού</translation>
 <translation id="798134797138789862">Μπορεί να ζητά να χρησιμοποιεί συσκευές και δεδομένα εικονικής πραγματικότητας.</translation>
-<translation id="7982789257301363584">Δίκτυο</translation>
 <translation id="7983008347525536475">Οχήματα SUV</translation>
 <translation id="7984945080620862648">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος έστειλε κωδικοποιημένα διαπιστευτήρια τα οποία δεν μπορεί να επεξεργαστεί το Chrome. Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

@@ -61,6 +61,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
 <translation id="1704230497453185209">Tillad ikke, at websites afspiller lyd</translation>
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
+<translation id="1717996979683942279">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at administrere vinduer på alle dine skærme. Når denne indstilling er deaktiveret, kan websites ikke administrere vinduer på alle dine skærme.</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
@@ -171,6 +172,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2968755619301702150">Certifikatfremviser</translation>
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
 <translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
+<translation id="3004438526346162184">Websites kan bruge denne funktion til at administrere vinduer på alle dine skærme</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3064871050034234884">Websites kan afspille lyd</translation>
@@ -439,6 +441,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
 <translation id="6085954183010297841">Vil du slette tilladelsen til filredigering? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
+<translation id="615886654739818377">Tillad ikke, at websites administrerer vinduer på alle dine skærme</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>

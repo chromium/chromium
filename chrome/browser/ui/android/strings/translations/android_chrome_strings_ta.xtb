@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">இணையம் முழுவதிலும் எந்தவொரு தளத்தில் விலை குறைந்தாலும் அதுகுறித்த விழிப்பூட்டல்களைப் பெறுங்கள்</translation>
 <translation id="1140317858355046628">இதை நீக்கிவிட்டால் "<ph name="GROUP_NAME" />" பக்கக் குழுவிற்கான அணுகலை எல்லோரும் இழப்பார்கள். அத்துடன், எல்லாச் சாதனங்களில் இருந்தும் இது நீக்கப்படும்.</translation>
 <translation id="1142732900304639782">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
-<translation id="1145536944570833626">ஏற்கனவே உள்ள தரவை நீக்கு.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
 <translation id="1154555449933432029">Google Password Managerரில் நீங்கள் எந்தக் கடவுச்சொல்லையும் சேமிக்கவில்லை.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> கடவுச்சொல்லைப் பயன்படுத்தும்</translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Z முதல் A வரை வரிசைப்படுத்துகிறது</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3931947361983910192">கடந்த 4 வாரங்கள்</translation>
 <translation id="393697183122708255">குரல் தேடல் இயக்கப்படவில்லை</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> என்ற பெயரில் சேர்கிறீர்கள்</translation>
 <translation id="5503125329065007089">‘உங்கள் சாதனங்கள் அனைத்திலும் உள்ள கடவுச்சொற்கள்’ தொடர்பான அறிவிப்பு பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="5515439363601853141">கடவுச்சொல்லைப் பார்க்க, அன்லாக் செய்யவும்</translation>
-<translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> இன் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உள்ளன.</translation>
 <translation id="5517326820028369152">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு</translation>
 <translation id="5526281268548144413">பல சாளரங்களில் உள்ள பக்கங்கள் மூடப்படாது</translation>
 <translation id="5548606607480005320">பாதுகாப்புச் சரிபார்ப்பு</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 தளத்தில் இருந்து குழுவிலகிவிட்டீர்கள்}other{# தளங்களில் இருந்து குழுவிலகிவிட்டீர்கள்}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 கடவுச்சொல்}other{# கடவுச்சொற்கள்}}</translation>
 <translation id="688730033107341407">நீங்கள் வெளியேறிய பிறகு உங்கள் Google கணக்கில் உள்ள புக்மார்க்குகள், கடவுச்சொற்கள் போன்றவை இந்தச் சாதனத்தில் இருந்து அகற்றப்படும்.</translation>
-<translation id="688738109438487280">ஏற்கனவே உள்ள தரவை <ph name="TO_ACCOUNT" /> இல் சேர்.</translation>
 <translation id="6891726759199484455">உங்கள் கடவுச்சொல்லை நகலெடுக்க, அன்லாக் செய்யவும்</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6898797562238201317">எனது Google கணக்கில் உள்ள Chrome தரவு அனைத்தையும் என்க்ரிப்ஷன் செய்ய எனது கடவுச்சொற்றொடரைப் பயன்படுத்து</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">நீட்டிக்கப்பட்ட முன்கூட்டிய ஏற்றுதல்:</translation>
 <translation id="8063895661287329888">புக்மார்க்கைச் சேர்க்க முடியவில்லை.</translation>
 <translation id="8066816452984416180">இந்தப் பக்கத்தை உடனடியாக புக்மார்க் செய்யலாம். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
-<translation id="806745655614357130">எனது தரவைத் தனியாக வை</translation>
 <translation id="8073388330009372546">படத்தை புதிய தாவலில் திற</translation>
 <translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8078096376109663956">உரையை மட்டும் பகிரவும்</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">குறிப்பிட்ட பக்கத்திற்குச் செல்ல (1–8)</translation>
 <translation id="8368001212524806591">விலையைக் கண்காணி</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> பக்கக் குழு}other{<ph name="TAB_GROUPS_MANY" /> பக்கக் குழுக்கள்}}</translation>
-<translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> கணக்கின் புக்மார்க்குகள், பதிவு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உங்களிடம் உள்ளன.</translation>
 <translation id="8387617938027387193">நீங்கள்தான் என்பதை உறுதிசெய்யுங்கள்</translation>
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8396098434728053815">பிரிவின் ஆடியோவையும் பகிர்</translation>

@@ -1778,6 +1778,7 @@ Si la inhabilitas, los usuarios no podrán usar esta función.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
 <translation id="2215746393279570703">Configuración de SSO flotante</translation>
+<translation id="2219724363635419721">Inhabilitar el Subtitulado instantáneo</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -5738,6 +5739,15 @@ lista de entidades permitidas, que, a su vez, tienen mayor prioridad que el valo
 Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
 la optimización de JavaScript para el sitio.</translation>
 <translation id="4960597185231686653">Función experimental booleana que indica si el teclado en pantalla puede proporcionar entrada de voz.</translation>
+<translation id="49677896192199414">Habilita la función de Subtitulado instantáneo.
+
+Si habilitas esta política, la función Subtitulado instantáneo estará siempre activada.
+
+Si la inhabilitas, el Subtitulado instantáneo siempre estará desactivado.
+
+Si estableces esta política como obligatoria, los usuarios no podrán cambiarla ni anularla.
+
+Si no la estableces, el Subtitulado instantáneo estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4970046075219007744">Permitir que las aplicaciones web le soliciten al usuario acceso a determinados tipos de archivos a través de la API de File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar el acceso en el navegador</translation>
 <translation id="4974091268178043378">Modo de color de ChromeOS</translation>
@@ -6526,6 +6536,7 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 <translation id="5476152378885134514">Bloquear el portapapeles en estos sitios</translation>
 <translation id="5479841110985196412">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5480380613778757009">Si inhabilitas o no estableces esta política, apenas finalice la sesión, se restablecerán todas las opciones de configuración de pantalla que se hayan establecido en la sesión de invitado administrada. Si estableces esta política como verdadera, se conservarán las propiedades de pantalla después de salir de la sesión de invitado administrada.</translation>
+<translation id="548137908954174608">Activar el subtitulado instantáneo</translation>
 <translation id="5483012943408894695">Los orígenes o patrones de nombres de host para los cuales no deben aplicarse restricciones en los orígenes no seguros</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
 <translation id="5486352219019836984">Si habilitas esta política, se habilitará de forma predeterminada el envío anónimo de datos sobre el uso y las fallas de <ph name="PRODUCT_NAME" /> a Google. Los usuarios aún podrán cambiar este parámetro de configuración.
@@ -10111,6 +10122,9 @@ Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLIC
 <translation id="7841883965249733328">Inhabilitar la actualización automática de contenido mixto</translation>
 <translation id="7845130996290850593">Habilitar Kerberos</translation>
 <translation id="7846952520291088817">Las URL para las que se exponen las IP locales en los candidatos ICE de WebRTC</translation>
+<translation id="7847374643492493038">Si estableces la política como verdadera (o estableces <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> como falsa), las páginas web no podrán acceder a la API de WebGL.
+
+      Si la estableces como falsa o no la estableces, los sitios web podrán usar la API de WebGL, pero es posible que la configuración predeterminada del navegador aún requiera que los argumentos de línea de comandos utilicen estas API.</translation>
 <translation id="7848641140449742406">Configuración del SO</translation>
 <translation id="7850846808758624237">Si habilitas la política, se importará la página principal del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará la página principal en la primera ejecución.
 
@@ -11439,6 +11453,17 @@ los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="8705895771006864851">Si estableces la política como verdadera, los usuarios podrán utilizar la funcionalidad de traducción cuando corresponda. Verán una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" /> y se agregará una opción de traducción al menú contextual que aparece al hacer clic con el botón derecho. Si estableces la política como falsa, se desactivarán todas las funciones de traducción integradas.
 
       Si estableces la política, los usuarios no podrán cambiar esta función. Si no la estableces, los usuarios podrán cambiar la configuración.</translation>
+<translation id="8707290517123095787">Habilita la traducción de subtítulos instantáneos. Los subtítulos se enviarán a Google para su traducción.
+
+Si habilitas esta política, la función Traducción instantánea estará siempre activada.
+
+Si la inhabilitas, la Traducción instantánea siempre estará desactivada.
+
+Si estableces esta política como obligatoria, los usuarios no podrán cambiarla ni anularla.
+
+Si no la estableces, la Traducción instantánea estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.
+
+Si inhabilitas <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />, se inhabilitará la Traducción instantánea, independientemente de la configuración de esta política.</translation>
 <translation id="8707790573162457301">Ejecutar la limpieza automática del disco durante el acceso</translation>
 <translation id="8712609946151927008">Programar intervalos de suspensión semanales</translation>
 <translation id="8713535263782304771">Inhabilitar la Navegación segura</translation>

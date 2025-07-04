@@ -3720,6 +3720,7 @@
 <translation id="3592260987370335752">&amp;ดูข้อมูลเพิ่มเติม</translation>
 <translation id="3592344177526089979">กำลังแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">เปิดการใช้งานโหมด Fuzzy-Pinyin</translation>
+<translation id="3593953853060020305">อนุญาตให้เว็บไซต์นี้แก้ไข <ph name="FILE_NAME" /> ใช่ไหม</translation>
 <translation id="3593965109698325041">ข้อจำกัดของชื่อใบรับรอง</translation>
 <translation id="3596012367874587041">การตั้งค่าแอป</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
@@ -4682,6 +4683,7 @@
 <translation id="4249785854468467847">พลิกโฉม Chrome และเสริมประสิทธิภาพด้วย AI</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4250680216510889253">ไม่</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> จะดูและทำสำเนาไฟล์ของตัวเองใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="4251377547188244181">การลงทะเบียนอุปกรณ์คีออสก์และป้าย</translation>
 <translation id="4252828488489674554">คลิกขวาชื่อกลุ่มแท็บเพื่อแก้ไขกลุ่มนี้หรือคลิกเพื่อยุบ</translation>
 <translation id="4252899949534773101">บลูทูธปิดอยู่</translation>
@@ -8628,6 +8630,7 @@
 <translation id="7093220653036489319">คำตอบด่วน</translation>
 <translation id="7093866338626856921">แลกเปลี่ยนข้อมูลกับอุปกรณ์ชื่อ <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">มหาพีระมิดแห่งกิซา</translation>
+<translation id="7094834615934458012">อนุญาตให้เว็บไซต์นี้แก้ไขไฟล์ใช่ไหม</translation>
 <translation id="7098389117866926363">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="7098447629416471489">เครื่องมือค้นหาอื่นๆ ที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
@@ -9001,6 +9004,7 @@
 <translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="73786666777299047">เปิด Chrome เว็บสโตร์</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" /> งานอื่นๆ ในกลุ่มงานเดียวกัน: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" /> งานอื่นๆ # งานในกลุ่มงานเดียวกัน: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> จะดูและทำสำเนา <ph name="FILENAME" /> ของตัวเองได้</translation>
 <translation id="7380272457268061606">ปิดใช้การกู้คืนข้อมูลในเครื่องไหม</translation>
 <translation id="7380459290951585794">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="7380622428988553498">ชื่ออุปกรณ์มีอักขระที่ไม่ถูกต้อง</translation>
@@ -9745,6 +9749,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{1 รายการ}other{# รายการ}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ดูทัวร์ชมพร้อมคำแนะนำเกี่ยวกับการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัย หากต้องการดูตัวเลือกเพิ่มเติม ให้ไปที่การตั้งค่าแต่ละรายการ</translation>
+<translation id="7887286029584695415">อนุญาตให้เว็บไซต์นี้ดูและคัดลอกไฟล์ใช่ไหม</translation>
 <translation id="7887334752153342268">ทำซ้ำ</translation>
 <translation id="7887864092952184874">จับคู่เมาส์บลูทูธแล้ว</translation>
 <translation id="7889371445710865055">เปลี่ยนภาษาการพิมพ์ตามคำบอก</translation>
@@ -9830,6 +9835,7 @@
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="7944847494038629732">ถอดสาย USB ของเครื่องสแกนแล้วเสียบใหม่เพื่อลองอีกครั้ง</translation>
 <translation id="7945703887991230167">เสียงที่ต้องการ</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> จะดูและทำสำเนาไฟล์ของตัวเองใน <ph name="FOLDERNAME" /> ได้จนกว่าคุณจะปิดทุกแท็บของเว็บไซต์นี้</translation>
 <translation id="7946586320617670168">ต้นทางต้องปลอดภัย</translation>
 <translation id="7946681191253332687">มีการอัปเดตความปลอดภัยเพิ่มเติม</translation>
 <translation id="794676567536738329">ยืนยันการอนุญาต</translation>
@@ -10039,6 +10045,7 @@
 <translation id="8079606020824373126">เครื่องมือจัดการรหัสผ่านบน Google สามารถอัปเดตบัญชีของคุณด้วยรหัสผ่านที่รัดกุมและบันทึกลงใน <ph name="EMAIL" /> ได้ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">เว็บไซต์ขอจัดการหน้าต่างบนจอแสดงผลทั้งหมดได้</translation>
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> จะดูและทำสำเนา <ph name="FILENAME" /> ของตัวเองได้จนกว่าคุณจะปิดทุกแท็บของเว็บไซต์นี้</translation>
 <translation id="8081989000209387414">ปิดใช้การแก้ไขข้อบกพร่อง ADB ไหม</translation>
 <translation id="8082106343289440791">จับคู่กับ "<ph name="DEVICE_NAME" />" ไหม</translation>
 <translation id="8082132721957920509">บันทึกบัตรแล้ว</translation>
@@ -10806,6 +10813,7 @@
 <translation id="862750493060684461">แคช CSS</translation>
 <translation id="8627795981664801467">สำหรับการเชื่อมต่อที่ปลอดภัยเท่านั้น</translation>
 <translation id="8627804903623428808">ตรวจสอบข้อกำหนดเหล่านี้และควบคุมข้อมูลของบุตรหลาน</translation>
+<translation id="862907440446514309">ผู้ดูแลระบบกำลังบันทึกหน้าจอของคุณด้วย <ph name="APP0_NAME" /></translation>
 <translation id="8630338733867813168">เข้าสู่โหมดสลีปขณะชาร์จ</translation>
 <translation id="8631032106121706562">พีทอล</translation>
 <translation id="8632104508818855045">คุณเคยเลือกที่จะไม่อนุญาตให้ใช้งานส่วนขยายใดๆ บน <ph name="ORIGIN" /></translation>
@@ -11325,6 +11333,7 @@
 <translation id="897525204902889653">บริการเขตกักบริเวณ</translation>
 <translation id="8975396729541388937">ยกเลิกการสมัครได้ทุกเมื่อโดยคลิกลิงก์ในอีเมลที่ได้รับ</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก 1 แท็บ}other{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก # แท็บ}}</translation>
+<translation id="897565255818387330">อนุญาตให้เว็บไซต์นี้ดูและคัดลอก <ph name="FILE_NAME" /> ใช่ไหม</translation>
 <translation id="8977523125954274918">ตั้งค่าโปรไฟล์โรงเรียนเพื่อบันทึกและใช้รหัสผ่าน รวมถึงข้อมูลอื่นๆ ในบัญชี</translation>
 <translation id="8977811652087512276">รหัสผ่านไม่ถูกต้องหรือไฟล์เสียหาย</translation>
 <translation id="8978154919215542464">เปิด - ซิงค์ทุกอย่าง</translation>

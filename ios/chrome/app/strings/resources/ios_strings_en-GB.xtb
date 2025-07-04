@@ -907,6 +907,7 @@ See your search engine’s instructions for deleting your search history, if app
        Choose what to do with the existing browsing data on this device.</translation>
 <translation id="4682496302933121474">Translate page?</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
+<translation id="4691892551491778176">When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings at any time.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4709570498586527752">The most relevant features for you at different times</translation>
 <translation id="4717844083556844785">Current web page is on Incognito</translation>
@@ -1188,6 +1189,8 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5804012843049740908">Set up tips that help you get the most out of Chrome</translation>
 <translation id="5804241973901381774">Permissions</translation>
+<translation id="58081802114142635">Your activity improves Google AI</translation>
+<translation id="5813223718099710537">When you use this feature, page content and URLs are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Syncing…</translation>
@@ -1457,6 +1460,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6759709389246683070">You can touch and hold this tab to set a reminder to revisit later</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775647281444147078">Your organisation's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. Your privacy and Gemini</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
@@ -1592,6 +1596,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7412027924265291969">Continue</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
 <translation id="7417689656810783109">Rename group</translation>
+<translation id="7418703176995102827">Neither your conversations with Gemini nor your Google Workspace data will be reviewed by human reviewers or used to improve generative AI models.</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7425053386765766120">Add payment method…</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
@@ -1648,6 +1653,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="760667371114328991">Turn off notifications for Safety Check</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612849887607288481">Open AI prototyping menu</translation>
+<translation id="7615581988398168124">Google Terms and the Gemini Apps Privacy Notice apply. Gemini can make mistakes, so double-check it.</translation>
 <translation id="7620522820075868385">Cancel</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
@@ -1823,6 +1829,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8275068909952022340">More…</translation>
+<translation id="8277328362018795342">Your page content is shared for more relevant answers</translation>
 <translation id="8278488584187265939">Customise home page</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
@@ -1897,6 +1904,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8560253818350321773">Show frequently used items first.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option for password available above your keyboard.}other{{count} options for password available above your keyboard.}}</translation>
 <translation id="8564894539416715395">New tab page</translation>
+<translation id="8569414323292250522">Chats are reviewed and used to improve Google AI. Learn about your choices. Info about your location is also stored with your activity.</translation>
 <translation id="8569721750632860947">What URL would you like to add to your reading list?</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8577056989960190117">Autofill the expiry year <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9206887540681440657">Speed</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
 <translation id="926455622548529175">Switch and delete</translation>
+<translation id="927162192666499119">Your organisation's data is private and secure</translation>
 <translation id="929748059769569925">Highlighted text</translation>
 <translation id="932305336591073205">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="932327136139879170">Home</translation>

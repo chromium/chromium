@@ -907,6 +907,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
        Bu cihazda mövcud axtarış datası ilə nə edəcəyinizi seçin.</translation>
 <translation id="4682496302933121474">Səhifə tərcümə edilsin?</translation>
 <translation id="4682686630151240767">1. iPhone Ayarlarını açın</translation>
+<translation id="4691892551491778176">Bu funksiyadan istifadə etdiyiniz zaman səhifə kontenti və URL-lər Google-a göndərilir, lakin generativ Sİ modellərini təkmilləşdirmək üçün istifadə olunmur. Bunu ayarlarda istənilən vaxt deaktiv edə bilərsiniz.</translation>
 <translation id="4699172675775169585">Keşlənmiş şəkillər və fayllar</translation>
 <translation id="4709570498586527752">Fərqli vaxtlarda sizin üçün ən uyğun funksiyalar</translation>
 <translation id="4717844083556844785">Hazırkı veb-səhifə Anonim rejimdədir</translation>
@@ -1188,6 +1189,8 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5803566855766646066">Bu yeni kartı silmək istədiyinizə əminsiniz?</translation>
 <translation id="5804012843049740908">Chrome-dan maksimum yararlanmağınıza kömək edən ayarlama məsləhətləri</translation>
 <translation id="5804241973901381774">İcazələr</translation>
+<translation id="58081802114142635">Fəaliyyətiniz Google Sİ-ni təkmilləşdirir</translation>
+<translation id="5813223718099710537">Bu funksiyadan istifadə etdiyiniz zaman səhifə kontenti və URL-lər Google-a göndərilir. Bunu ayarlarda istənilən vaxt deaktiv edə bilərsiniz.</translation>
 <translation id="5817176759448082654">Parol Yoxlanışı</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tərəfindən idarə edilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinxronlaşdırılır…</translation>
@@ -1457,6 +1460,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6759709389246683070">Daha sonra yenidən daxil olmaq üçün xatırladıcı ayarlamaq məqsədilə bu taba toxunub saxlaya bilərsiniz</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERV EDİLDİ]</translation>
+<translation id="6775647281444147078">Təşkilatınızın söhbətləri modellərimizi təkmilləşdirmək üçün istifadə olunmur. Gemini insanlar haqqındakı məlumatlar da daxil olmaqla qeyri-dəqiq məlumatlar göstərə bilər, ona görə də məlumatları yenidən yoxlayın. Məxfiliyiniz və Gemini</translation>
 <translation id="6779455296366983087">Baxış datası silinəcək</translation>
 <translation id="6790502149545262384">Tezliklə yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="6791425686608802741">"Yeni qrupa tab əlavə edin" üzərinə toxunun</translation>
@@ -1592,6 +1596,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7412027924265291969">Davam edin</translation>
 <translation id="741204030948306876">Bəli, razıyam</translation>
 <translation id="7417689656810783109">Qrup adını dəyişin</translation>
+<translation id="7418703176995102827">Gemini ilə söhbətləriniz və Google Workspace datanız insan redaktorlar tərəfindən nəzərdən keçirilməyəcək və generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilməyəcək.</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
 <translation id="7425053386765766120">Ödəniş metodu əlavə edin…</translation>
 <translation id="7425346204213733349">Əlfəcin, tarixçə, parol və digər ayarlarınızdakı dəyişikliklər artıq Google Hesabınıza sinxronizasiya olunmayacaq. Buna baxmayaraq, mövcud datanız Google hesabınızın yaddaşında qalacaq.</translation>
@@ -1648,6 +1653,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="760667371114328991">Təhlükəsizlik yoxlanışı üçün Bildirişləri söndürün</translation>
 <translation id="7612619742409846846">Google'a bu cür daxil olunub</translation>
 <translation id="7612849887607288481">Sİ Prototipləmə Menyusunu açın</translation>
+<translation id="7615581988398168124">Google şərtləri və Gemini tətbiqi məxfilik bildirişi tətbiq olunur. Gemini səhvlərə yol verə bilər, ona görə də yenidən yoxlayın.</translation>
 <translation id="7620522820075868385">Ləğv edin</translation>
 <translation id="7638584964844754484">Yanlış parol</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Oğurlanmış parol}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
@@ -1823,6 +1829,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="826614135184049678">iPad-i sıfırlayarkən <ph name="USER_NAME" /> hesabından çıxdınız. Yenidən daxil olmaq üçün aşağıda "Davam edin" üzərinə toxunun.</translation>
 <translation id="8273982424131314219">Məlumatlar <ph name="URL" /> saytına daxil ediləcək</translation>
 <translation id="8275068909952022340">Daha çox…</translation>
+<translation id="8277328362018795342">Səhifənizin kontenti daha uyğun cavablar üçün paylaşılır</translation>
 <translation id="8278488584187265939">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="8281781826761538115">Defolt - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Keçin</translation>
@@ -1897,6 +1904,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8560253818350321773">Əvvəlcə çox istifadə edilənləri göstərin.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Parol üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Parol üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="8564894539416715395">Yeni tab səhifəsi</translation>
+<translation id="8569414323292250522">Söhbətlər nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. Seçimləriniz haqqında məlumat əldə edin. Məkanınız haqqında məlumat da fəaliyyətinizlə birlikdə saxlanılır.</translation>
 <translation id="8569721750632860947">Oxu siyahısına hansı URL-i əlavə etmək istərdiniz?</translation>
 <translation id="8571213806525832805">Son 4 həftə</translation>
 <translation id="8577056989960190117">Son istifadə ilini (<ph name="YEAR" />) avtomatik doldurun</translation>
@@ -2079,6 +2087,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9206887540681440657">Sürət</translation>
 <translation id="9223358826628549784">Xəta hesabatı göndərildi.</translation>
 <translation id="926455622548529175">Dəyişin və silin</translation>
+<translation id="927162192666499119">Təşkilatınızın datası məxfi və təhlükəsizdir</translation>
 <translation id="929748059769569925">Vurğulanmış mətn</translation>
 <translation id="932305336591073205">{count,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
 <translation id="932327136139879170">Ev</translation>

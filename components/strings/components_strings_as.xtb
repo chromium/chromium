@@ -2411,6 +2411,7 @@
 <translation id="5043753287208271200">হালধীয়া ৩</translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
 <translation id="5048293684454354469">বিজ্ঞাপনৰ বিষয়বস্তু হৈছে বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ ছাইটসমূহে ব্যৱহাৰ কৰিব পৰা বহুতো বস্তুৰ মাজৰ এটা। বিজ্ঞাপনৰ বিষয়বস্তু অবিহনেও ছাইটসমূহে আপোনাক তথাপি বিজ্ঞাপন দেখুৱাব পাৰে, কিন্তু সেয়া কম পৰিমাণে ব্যক্তিগতকৰণ কৰা হ’ব পাৰে। <ph name="BEGIN_LINK" />আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰা<ph name="LINK_END" />ৰ বিষয়ে অধিক জানক।</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, এই সন্ধানৰ পৰামৰ্শটোৰ পাছত উপলব্ধ অধিক সন্ধানৰ শ্বৰ্টকাট পাবলৈ টেবত টিপক</translation>
 <translation id="5052517576853118371">সক্ৰিয় বিষয়বস্তু</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share ব্যৱহাৰ কৰি এই ফাইলটো পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}one{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}other{Nearby Share ব্যৱহাৰ কৰি এই ফাইলসমূহ পঠিয়াবলৈ, আপোনাৰ ডিভাইচত ঠাই (<ph name="DISK_SPACE_SIZE" />) খালী কৰক}}</translation>
 <translation id="505757197798929356">খোলাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
@@ -2867,7 +2868,6 @@
 <translation id="5847181246682413476">পাৱাৰ ছাপ্লাই</translation>
 <translation id="584902713199270089">ডে’টিং আৰু ব্যক্তিগত সেৱা</translation>
 <translation id="5851548754964597211">টেবৰ তালিকা</translation>
-<translation id="5851868085455377790">প্ৰদানকাৰী</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
 <translation id="5862579898803147654">ষ্টেকাৰ ৮</translation>
@@ -3725,6 +3725,7 @@
 <translation id="7292031607255951991">প্ৰাপকৰ নাম</translation>
 <translation id="7298195798382681320">চুপাৰিছ কৰা</translation>
 <translation id="7299471494012161875">ডিছপ্লে’ পৰিধীয় সংলগ্ন কৰা হৈছে</translation>
+<translation id="7299769361777046949">Google Walletত লয়েল্টী কাৰ্ড পৰিচালনা কৰক</translation>
 <translation id="7300012071106347854">ক’বাল্ট ব্লু</translation>
 <translation id="7304030187361489308">উচ্চ</translation>
 <translation id="7304562222803846232">Google একাউণ্টৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰক</translation>
@@ -4143,7 +4144,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> মিনিট পূৰ্বে}=1{<ph name="TIME_COUNT" /> ঘণ্টা পূৰ্বে}one{<ph name="TIME_COUNT" /> দিন পূৰ্বে}other{<ph name="TIME_COUNT" /> দিন পূৰ্বে}}</translation>
 <translation id="7979595116210197019">খাদ্য সম্পর্কীয় সেৱা</translation>
 <translation id="798134797138789862">ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচসমূহ আৰু ডেটা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
-<translation id="7982789257301363584">নেটৱৰ্ক</translation>
 <translation id="7983008347525536475">এছইউভি</translation>
 <translation id="7984945080620862648">আপুনি এই মুহূৰ্তত <ph name="SITE" /> ছাইটটো খুলিব নোৱাৰে কাৰণ ৱেবছাইটটোৱে বিশৃংখল ক্ৰেডেনশ্বিয়েল পঠিয়াইছে যিটো Chromeএ চলাব নোৱাৰে। নেটৱৰ্কৰ আসোঁৱাহ আৰু আক্ৰমণবোৰ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে পাছত কাম কৰিব পাৰে।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

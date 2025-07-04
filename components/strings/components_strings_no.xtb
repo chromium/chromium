@@ -256,6 +256,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for å tillate sammenkobling.</translation>
 <translation id="1421484961346698724">Slettet konto</translation>
 <translation id="14222610277930434">Du besøker nettstedet ofte</translation>
+<translation id="1422795627423046860">Dato er ugyldig</translation>
 <translation id="1422930527989633628">Kan be om å få oppdage Bluetooth-enheter i nærheten</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Svømmebasseng, badstuer og velværeutstyr til hjemmet</translation>
@@ -2870,7 +2871,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5847181246682413476">Strømforsyninger</translation>
 <translation id="584902713199270089">Dating og kontaktannonser</translation>
 <translation id="5851548754964597211">Faneliste</translation>
-<translation id="5851868085455377790">Utsteder </translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5862579898803147654">Hylle 8</translation>
@@ -4147,7 +4147,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{for <ph name="TIME_COUNT" /> m siden}=1{for <ph name="TIME_COUNT" /> t siden}other{for <ph name="TIME_COUNT" /> d siden}}</translation>
 <translation id="7979595116210197019">Mattjenester</translation>
 <translation id="798134797138789862">Kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
-<translation id="7982789257301363584">Nettverk</translation>
 <translation id="7983008347525536475">SUV-er</translation>
 <translation id="7984945080620862648">Du kan ikke gå til <ph name="SITE" /> akkurat nå fordi nettstedet sendte kryptert legitimasjon som Chrome ikke kan behandle. Nettverksfeil og -angrep er som regel kortvarige, så denne siden fungerer nok igjen senere.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@ Mer informasjon:
 <translation id="9155211586651734179">Eksterne lydenheter er tilkoblet</translation>
 <translation id="9155646082713385498">Tidsskrifter</translation>
 <translation id="9157595877708044936">Konfigurerer ...</translation>
+<translation id="9158491153040481956">Du har nylig endret et passord som ble funnet i et offentlig databrudd. Hvis du har problemer, kan Passordlagring hjelpe deg med å logge på.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> kan ha sensitivt innhold}other{<ph name="FILE_COUNT" /> filer kan ha sensitivt innhold}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – For å gå ut av fullskjerm, trykk på |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-melding</translation>

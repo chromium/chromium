@@ -4655,7 +4655,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4231141543165771749">Fermer les commandes de jeu</translation>
 <translation id="4231231258999726714">Configuration de Steam pour Chromebook</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
-<translation id="4232376164796433044">Mots de passe et saisie auto</translation>
+<translation id="4232376164796433044">Mots de passe et saisie automatique</translation>
 <translation id="4232484478444192782">Votre téléphone Android se charge de transférer vos informations de connexion Wi-Fi et votre mot de passe.</translation>
 <translation id="423327101839111402">Supprimer le groupe <ph name="NAME" /></translation>
 <translation id="4233739489690259993">Votre Chromebook ne reçoit plus de mises à jour logicielles ni de sécurité. Mettez-le à niveau pour bénéficier des dernières mises à jour de sécurité et de nouvelles fonctionnalités. Offre soumise à conditions.</translation>
@@ -6628,6 +6628,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5643321261065707929">Réseau facturé à l'usage</translation>
 <translation id="5646376287012673985">Localisation</translation>
 <translation id="5646558797914161501">Homme d'affaires</translation>
+<translation id="5647989922796038257">Partager aussi toutes les sorties audio</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5651308944918885595">Découvrabilité pour le Partage à proximité</translation>

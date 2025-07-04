@@ -907,6 +907,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
        Izvēlieties, kā rīkoties ar šajā ierīcē esošajiem pārlūkošanas datiem.</translation>
 <translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="4682686630151240767">1. iPhone tālrunī atveriet sadaļu Settings (Iestatījumi).</translation>
+<translation id="4691892551491778176">Kad izmantojat šo funkciju, lapas saturs un vietrāži URL tiek nosūtīti Google serveriem, taču tie netiks izmantoti ģeneratīvo MI modeļu uzlabošanai. Iestatījumos varat to jebkurā laikā izslēgt.</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
 <translation id="4709570498586527752">Jums dažādos brīžos visatbilstošākās funkcijas</translation>
 <translation id="4717844083556844785">Šajā tīmekļa lapā esat inkognito režīmā</translation>
@@ -1188,6 +1189,8 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5803566855766646066">Vai tiešām vēlaties atmest jauno kartīti?</translation>
 <translation id="5804012843049740908">Padomi iestatīšanai, kas palīdzēs pilnvērtīgi izmantot pārlūku Chrome</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
+<translation id="58081802114142635">Jūsu darbību dati uzlabo Google MI</translation>
+<translation id="5813223718099710537">Kad izmantojat šo funkciju, lapas saturs un vietrāži URL tiek nosūtīti Google serveriem. Iestatījumos varat to jebkurā laikā izslēgt.</translation>
 <translation id="5817176759448082654">Paroļu pārbaude</translation>
 <translation id="5819208479324046259">Pārvalda <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Notiek sinhronizēšana…</translation>
@@ -1457,6 +1460,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6759709389246683070">Varat pieskarties šai cilnei un turēt to, lai iestatītu atgādinājumu par atkārtotu apmeklējumu vēlāk.</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[REZERVĒTS]</translation>
+<translation id="6775647281444147078">Jūsu organizācijas tērzēšanas sarunas netiek izmantotas mūsu modeļu uzlabošanai. Gemini var rādīt neprecīzu informāciju, tostarp par personām, tādēļ pārbaudiet to. Jūsu konfidencialitāte un Gemini</translation>
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
 <translation id="6790502149545262384">Drīzumā, atverot jaunu cilni, būs redzami raksti no vietnes <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Pieskarieties vienumam “Pievienot cilni jaunai grupai”.</translation>
@@ -1592,6 +1596,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7412027924265291969">Turpināt</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
 <translation id="7417689656810783109">Pārdēvēt grupu</translation>
+<translation id="7418703176995102827">Pārskatītāji nepārskatīs ne jūsu sarunas ar Gemini, ne jūsu Google Workspace datus, un šīs sarunas un dati netiks izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
 <translation id="7425346204213733349">Grāmatzīmju, vēstures, paroļu un citu iestatījumu izmaiņas vairs netiks sinhronizētas ar jūsu Google kontu. Tomēr esošie dati joprojām tiks glabāti jūsu Google kontā.</translation>
@@ -1648,6 +1653,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="760667371114328991">Izslēgt drošības pārbaudes paziņojumus</translation>
 <translation id="7612619742409846846">Pierakstījies Google kontā kā</translation>
 <translation id="7612849887607288481">Atvērt MI prototipu izvēlni</translation>
+<translation id="7615581988398168124">Ir spēkā Google noteikumi un Gemini Apps konfidencialitātes paziņojums. Gemini var pieļaut kļūdas, tādēļ pārbaudiet to.</translation>
 <translation id="7620522820075868385">Atcelt</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Uzlauztas paroles}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztu paroļu}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
@@ -1823,6 +1829,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="826614135184049678">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPad planšetdatora atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="8273982424131314219">Jūs aizpildīsiet informāciju vietnē <ph name="URL" />.</translation>
 <translation id="8275068909952022340">Vairāk…</translation>
+<translation id="8277328362018795342">Jūsu lapas saturs tiek kopīgots, lai saņemtu atbilstošākas atbildes</translation>
 <translation id="8278488584187265939">Sākumlapas pielāgošana</translation>
 <translation id="8281781826761538115">Noklusējuma — <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Izlaist</translation>
@@ -1897,6 +1904,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8560253818350321773">Vispirms rādīt bieži izmantotos vienumus.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Virs tastatūras ir pieejams {count} paroles variants.}zero{Virs tastatūras ir pieejami {count} paroles varianti.}one{Virs tastatūras ir pieejams {count} paroles variants.}other{Virs tastatūras ir pieejami {count} paroles varianti.}}</translation>
 <translation id="8564894539416715395">Jaunas cilnes lapa</translation>
+<translation id="8569414323292250522">Tērzēšanas sarunas tiek pārskatītas un izmantotas Google MI uzlabošanai. Uzziniet par jums pieejamajām izvēles iespējām. Kopā ar jūsu darbībām tiek glabāta arī informācija par jūsu atrašanās vietu.</translation>
 <translation id="8569721750632860947">Kuru URL vēlaties pievienot savam lasīšanas sarakstam?</translation>
 <translation id="8571213806525832805">Pēdējās 4 nedēļas</translation>
 <translation id="8577056989960190117">Automātiski aizpildīt derīguma termiņa gadu: <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9206887540681440657">Ātrums</translation>
 <translation id="9223358826628549784">Avārijas ziņojums nosūtīts.</translation>
 <translation id="926455622548529175">Pārslēgt un dzēst</translation>
+<translation id="927162192666499119">Jūsu organizācijas dati ir konfidenciāli un aizsargāti</translation>
 <translation id="929748059769569925">Atzīmētais teksts</translation>
 <translation id="932305336591073205">{count,plural, =1{Aizvērt cilni}zero{Aizvērt cilnes}one{Aizvērt cilnes}other{Aizvērt cilnes}}</translation>
 <translation id="932327136139879170">Sākums</translation>

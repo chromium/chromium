@@ -841,7 +841,7 @@
 <translation id="1576594961618857597">డిఫాల్ట్ తెలుపు రంగు అవతార్</translation>
 <translation id="1576729678809834061">ఈ సెర్చ్ ఫలితాన్ని రిపోర్ట్ చేయండి</translation>
 <translation id="1578110287710452646">పక్క పక్కన ఉండే సైజ్ మార్చే హ్యాండిల్</translation>
-<translation id="1578488449637163638">ముదురు రంగు</translation>
+<translation id="1578488449637163638">డార్క్</translation>
 <translation id="1578558981922970608">బలవంతంగా మూసివేయండి</translation>
 <translation id="157931050206866263">మాల్‌వేర్ స్కాన్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="1580772913177567930">మీ నిర్వాహకులను సంప్రదించండి</translation>
@@ -6640,6 +6640,7 @@
 <translation id="5643321261065707929">డేటా నియంత్రిత నెట్‌వర్క్</translation>
 <translation id="5646376287012673985">లొకేషన్</translation>
 <translation id="5646558797914161501">వ్యాపారవేత్త</translation>
+<translation id="5647989922796038257">అన్ని ఆడియో అవుట్‌ఫుట్‌లను కూడా షేర్ చేయండి</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5651308944918885595">సమీప షేరింగ్ కనిపించగలిగే సామర్థ్యం</translation>
@@ -8389,7 +8390,7 @@
 <translation id="6909422577741440844">ఈ పరికరం నుండి అందుకోవాలని అనుకుంటున్నారా?</translation>
 <translation id="6910190732484284349">యూజర్‌నేమ్ కోసం పాస్-కీని తొలగించండి: <ph name="USER_EMAIL" /></translation>
 <translation id="6910211073230771657">తొలగించబడింది</translation>
-<translation id="6910274140210351823">ముదురు రంగు</translation>
+<translation id="6910274140210351823">డార్క్</translation>
 <translation id="691102290537033604">ఈ ఎక్స్‌టెన్షన్ Google రివ్యూ చేయని కోడ్‌ను కూడా రన్ చేయగలదు. ఇది సురక్షితం కాకపోవచ్చు, మీరు ఏమి చేస్తున్నారో మీకు తెలిస్తేనే దీన్ని ఎనేబుల్ చేయాలి.</translation>
 <translation id="6911734910326569517">మెమరీ ఫుట్‌ప్రింట్</translation>
 <translation id="6912007319859991306">సెల్యూలార్ SIM పిన్</translation>
@@ -10181,7 +10182,7 @@
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌ను జోడించండి}other{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌లను జోడించండి}}</translation>
 <translation id="8169177848833352618">దురదృష్టవశాత్తూ Bruschettaను ఇన్‌స్టాల్ చేయడానికి ఆవశ్యకతలను ఈ మెషీన్ పూర్తి చేయలేదు. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="8172303073969862496">కుడి వైపు</translation>
-<translation id="8174047975335711832">పరికర సమాచారం</translation>
+<translation id="8174047975335711832">డివైజ్ సమాచారం</translation>
 <translation id="8176332201990304395">గులాబీ రంగు మరియు తెలుపు</translation>
 <translation id="8176529144855282213">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయడానికి, మీ పరికరంలో ఫిజికల్ మైక్రోఫోన్ స్విచ్‌ని ఆన్ చేయండి</translation>
 <translation id="8177196903785554304">నెట్‌వర్క్ వివరాలు</translation>

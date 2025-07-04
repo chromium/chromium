@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">വെബിലുടനീളമുള്ള ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ അലേർട്ടുകൾ നേടുക</translation>
 <translation id="1140317858355046628">നിങ്ങൾ ഇത് ഇല്ലാതാക്കുകയാണെങ്കിൽ, എല്ലാവർക്കും ഉടൻ തന്നെ "<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും.</translation>
 <translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
-<translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1154555449933432029">Google Password Manager-ൽ നിങ്ങൾ പാസ്‌വേഡുകൾ സംരക്ഷിച്ചിട്ടില്ല.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> എന്ന പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Z മുതൽ A വരെ ക്രമത്തിൽ അടുക്കുന്നു</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ഓണാണ്</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
 <translation id="3931947361983910192">കഴിഞ്ഞ 4 ആഴ്‌ചയിലെ</translation>
 <translation id="393697183122708255">പ്രവർത്തനക്ഷമമാക്കിയ ശബ്ദ തിരയലുകൾ ലഭ്യമല്ല</translation>
 <translation id="3950820424414687140">സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
 <translation id="5503125329065007089">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലെയും പാസ്‌വേഡുകൾ സംബന്ധിച്ച ഷീറ്റ് പകുതി വലുപ്പത്തിൽ തുറന്നു</translation>
 <translation id="5515439363601853141">നിങ്ങളുടെ പാസ്‍വേഡ് കാണാൻ അൺലോക്ക് ചെയ്യുക</translation>
-<translation id="5517095782334947753">നിങ്ങൾക്ക് <ph name="FROM_ACCOUNT" /> എന്നയാളിൽ നിന്നുള്ള ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവുമുണ്ട്.</translation>
 <translation id="5517326820028369152">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ്</translation>
 <translation id="5526281268548144413">ഒന്നിലധികം വിൻഡോകളിൽ അടയ്ക്കാൻ കഴിയില്ല</translation>
 <translation id="5548606607480005320">സുരക്ഷാ പരിശോധന</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 സൈറ്റിൽ നിന്ന് വരിക്കാരല്ലാതായി}other{# സൈറ്റുകളിൽ നിന്ന് വരിക്കാരല്ലാതായി}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 പാസ്‌വേഡ്}other{# പാസ്‌വേഡുകൾ}}</translation>
 <translation id="688730033107341407">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തതിന് ശേഷം, നിങ്ങളുടെ Google Account-ലെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യും.</translation>
-<translation id="688738109438487280">നിലവിലുള്ള വിവരങ്ങളെ <ph name="TO_ACCOUNT" /> അക്കൗണ്ടിലേക്ക് ചേർക്കുക</translation>
 <translation id="6891726759199484455">പാസ്‍വേഡ് പകർത്താൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6898797562238201317">നിങ്ങളുടെ സ്വന്തം പാസ്ഫ്രെയ്‌സ് ഉപയോഗിച്ച് Google Account-ലെ എല്ലാ Chrome ഡാറ്റയും എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">വിപുലീകരിച്ച മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
 <translation id="8063895661287329888">ബുക്ക്‌മാർക്ക് ചേർക്കാനായില്ല.</translation>
 <translation id="8066816452984416180">ഈ പേജ് വേഗത്തിൽ ബുക്ക്‌മാർക്ക് ചെയ്യുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
-<translation id="806745655614357130">എന്റെ വിവരങ്ങൾ പ്രത്യേകം വേർതിരിച്ച് സൂക്ഷിക്കുക</translation>
 <translation id="8073388330009372546">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8078096376109663956">ടെക്‌സ്റ്റ് മാത്രം പങ്കിടുക</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">ഒരു നിർദ്ദിഷ്ട ടാബിലേക്ക് പോകുക (1–8)</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ടാബ് ഗ്രൂപ്പ്}other{<ph name="TAB_GROUPS_MANY" /> ടാബ് ഗ്രൂപ്പുകൾ}}</translation>
-<translation id="8378850197701296741">നിങ്ങൾക്ക് <ph name="FROM_ACCOUNT" /> എന്ന അക്കൗണ്ടിൽ നിന്നുള്ള ബുക്ക്‌മാർക്കുകളും ചരിത്രവും മറ്റ് ക്രമീകരണവുമുണ്ട്.</translation>
 <translation id="8387617938027387193">ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8396098434728053815">ടാബിൽ നിന്നുള്ള ഓഡിയോയും പങ്കിടുക</translation>

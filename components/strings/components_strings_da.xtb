@@ -256,6 +256,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for at tillade parring</translation>
 <translation id="1421484961346698724">Slettet konto</translation>
 <translation id="14222610277930434">Du besøger ofte</translation>
+<translation id="1422795627423046860">Ugyldig dato</translation>
 <translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Swimmingpool, sauna og spa til hjemmet</translation>
@@ -2870,7 +2871,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5847181246682413476">Strømforsyningsenheder</translation>
 <translation id="584902713199270089">Dating og personlige annoncer</translation>
 <translation id="5851548754964597211">Faneliste</translation>
-<translation id="5851868085455377790">Udsteder</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5862579898803147654">Stabler 8</translation>
@@ -3730,6 +3730,7 @@ Yderligere oplysninger:
 <translation id="7292031607255951991">Modtagernavn</translation>
 <translation id="7298195798382681320">Anbefalet</translation>
 <translation id="7299471494012161875">Tilknyttet skærmtilbehør</translation>
+<translation id="7299769361777046949">Administrer loyalitetskort i Google Wallet</translation>
 <translation id="7300012071106347854">Koboltblå</translation>
 <translation id="7304030187361489308">Højt</translation>
 <translation id="7304562222803846232">Administrer privatlivsindstillingerne for din Google-konto</translation>
@@ -4148,7 +4149,6 @@ Yderligere oplysninger:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{For <ph name="TIME_COUNT" /> min. siden}=1{For <ph name="TIME_COUNT" /> t. siden}one{For <ph name="TIME_COUNT" /> dag siden}other{For <ph name="TIME_COUNT" /> dage siden}}</translation>
 <translation id="7979595116210197019">Fødevareindustri</translation>
 <translation id="798134797138789862">Websitet kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
-<translation id="7982789257301363584">Netværk</translation>
 <translation id="7983008347525536475">Firehjulstrækkere</translation>
 <translation id="7984945080620862648">Du kan ikke gå til <ph name="SITE" /> lige nu, da websitet sendte krypterede legitimationsoplysninger, som Chrome ikke kan håndtere. Netværksfejl og angreb er normalt midlertidige, så denne side vil sandsynligvis fungere senere.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4818,6 +4818,7 @@ Yderligere oplysninger:
 <translation id="9155211586651734179">Forbundne eksterne lydenheder</translation>
 <translation id="9155646082713385498">Magasiner</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
+<translation id="9158491153040481956">Du har for nylig ændret en adgangskode, der blev lækket i forbindelse med et offentligt brud på datasikkerheden. Hvis du har problemer, kan Adgangskodeadministrator hjælpe dig med at logge ind.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> indeholder muligvis følsomt indhold}one{<ph name="FILE_COUNT" /> fil indeholder muligvis følsomt indhold}other{<ph name="FILE_COUNT" /> filer indeholder muligvis følsomt indhold}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="9163287596625611517">Slack-besked</translation>

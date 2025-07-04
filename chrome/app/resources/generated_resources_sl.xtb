@@ -3738,6 +3738,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3592260987370335752">Več o tem</translation>
 <translation id="3592344177526089979">Predvajanje zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="3593152357631900254">Omogoči način enakozvočnega pinjina</translation>
+<translation id="3593953853060020305">Želite temu spletnemu mestu dovoliti urejanje datoteke <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Omejitve imena potrdila</translation>
 <translation id="3596012367874587041">Nastavitve aplikacije</translation>
 <translation id="3596414637720633074">Blokiranje piškotkov tretjih oseb v anonimnem načinu</translation>
@@ -4700,6 +4701,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4249785854468467847">Poustvarite Chrome z umetno inteligenco</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4250680216510889253">Ne</translation>
+<translation id="4251243704979202079">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteke v mapi <ph name="FOLDERNAME" /> in ustvarjalo njihove kopije</translation>
 <translation id="4251377547188244181">Včlanitev naprave za kiosk ali reklamne napise</translation>
 <translation id="4252828488489674554">Z desnim gumbom kliknite ime skupine zavihkov, če želite urediti to skupino, ali kliknite, če jo želite strniti</translation>
 <translation id="4252899949534773101">Bluetooth je onemogočen</translation>
@@ -6648,6 +6650,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5643321261065707929">Omrežje z omejenim prenosom podatkov</translation>
 <translation id="5646376287012673985">Lokacija</translation>
 <translation id="5646558797914161501">Poslovnež</translation>
+<translation id="5647989922796038257">Deli tudi vse zvočne izhode</translation>
 <translation id="5648021990716966815">Vtič za mikrofon</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5651308944918885595">Vidnost deljenja v bližini</translation>
@@ -8658,6 +8661,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7093220653036489319">Hitri odgovori</translation>
 <translation id="7093866338626856921">Izmenjava podatkov z napravami, imenovanimi: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Velika piramida v Gizi</translation>
+<translation id="7094834615934458012">Želite temu spletnemu mestu dovoliti urejanje datotek?</translation>
 <translation id="7098389117866926363">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="7098447629416471489">Drugi shranjeni iskalniki bodo prikazani tukaj</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Odstrani aplikacijo}one{Odstrani aplikacije}two{Odstrani aplikacije}few{Odstrani aplikacije}other{Odstrani aplikacije}}</translation>
@@ -9031,6 +9035,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7377481913241237033">Povezava s kodo</translation>
 <translation id="73786666777299047">Odpiranje Spletne trgovine Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Drugo opravilo v isti skupini opravil: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Drugo # opravilo v isti skupini opravil: <ph name="OTHER_TASKS" />}two{<ph name="TASK_ROW" />. Drugi # opravili v isti skupini opravil: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Druga # opravila v isti skupini opravil: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Drugih # opravil v isti skupini opravil: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteko <ph name="FILENAME" /> in ustvarjalo njene kopije</translation>
 <translation id="7380272457268061606">Želite onemogočiti obnovitev lokalnih podatkov?</translation>
 <translation id="7380459290951585794">Preverite, ali imate telefon v bližini, ali je vklopljen in ali ima vklopljeno povezavo Bluetooth ter omrežje Wi-Fi.</translation>
 <translation id="7380622428988553498">Ime naprave vsebuje neveljavne znake.</translation>
@@ -9776,6 +9781,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7886279613512920452">{COUNT,plural, =1{element}one{# element}two{# elementa}few{# elementi}other{# elementov}}</translation>
 <translation id="7886605625338676841">e-SIM</translation>
 <translation id="7887174313503389866">Oglejte si vodeno predstavitev ključnih kontrolnikov zasebnosti in varnosti. Če želite več možnosti, odprite posamezne nastavitve.</translation>
+<translation id="7887286029584695415">Želite temu spletnemu mestu dovoliti ogled in kopiranje datotek?</translation>
 <translation id="7887334752153342268">Podvoji</translation>
 <translation id="7887864092952184874">Miška Bluetooth je seznanjena</translation>
 <translation id="7889371445710865055">Spreminjanje jezika nareka</translation>
@@ -9861,6 +9867,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7944772052836377867">Sinhroniziranje mora potrditi, da ste to vi</translation>
 <translation id="7944847494038629732">Odklopite kabel USB optičnega bralnika in ga znova priklopite, če želite poskusiti znova</translation>
 <translation id="7945703887991230167">Prednostni glas</translation>
+<translation id="7946243258100028201">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteke v mapi <ph name="FOLDERNAME" /> in v njej ustvarjalo kopije teh datotek, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
 <translation id="7946586320617670168">Izvor mora biti varen</translation>
 <translation id="7946681191253332687">Na voljo so razširjene varnostne posodobitve</translation>
 <translation id="794676567536738329">Potrditev dovoljenj</translation>
@@ -10070,6 +10077,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8079606020824373126">Googlov upravitelj gesel lahko posodobi vaš račun z močnim geslom in ga shrani v <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Spletna mesta lahko zahtevajo upravljanje oken na vseh zaslonih.</translation>
 <translation id="8080028325999236607">Zapri vse zavihke</translation>
+<translation id="8080530871547404884">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteko <ph name="FILENAME" /> in ustvarjalo njene kopije, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
 <translation id="8081989000209387414">Želite onemogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
 <translation id="8082106343289440791">Želite seznaniti z napravo »<ph name="DEVICE_NAME" />«?</translation>
 <translation id="8082132721957920509">Vaša kartica je shranjena</translation>
@@ -10837,6 +10845,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="862750493060684461">Predpomnilnik CSS</translation>
 <translation id="8627795981664801467">Samo varne povezave</translation>
 <translation id="8627804903623428808">Pregled teh pogojev in nadzor nad podatki otroka</translation>
+<translation id="862907440446514309">Skrbnik snema vaš zaslon z aplikacijo <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Stanje pripravljenosti med polnjenjem</translation>
 <translation id="8631032106121706562">Rožica</translation>
 <translation id="8632104508818855045">Predhodno ste se odločili, da ne odobritie nobenih razširitev v <ph name="ORIGIN" />.</translation>
@@ -11359,6 +11368,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="897525204902889653">Storitev karantene</translation>
 <translation id="8975396729541388937">Kadar koli se lahko odjavite tako, da kliknete povezavo v e-poštnih sporočilih, ki jih prejmete.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{»<ph name="TAB_TITLE" />«}=1{»<ph name="TAB_TITLE" />« in še 1 zavihek}one{»<ph name="TAB_TITLE" />« in še # zavihek}two{»<ph name="TAB_TITLE" />« in še # zavihka}few{»<ph name="TAB_TITLE" />« in še # zavihki}other{»<ph name="TAB_TITLE" />« in še # zavihkov}}</translation>
+<translation id="897565255818387330">Želite temu spletnemu mestu dovoliti ogled in kopiranje datoteke <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Nastavite šolski profil, če želite shraniti in uporabljati gesla ter drugo v računu</translation>
 <translation id="8977811652087512276">Napačno geslo ali poškodovana datoteka</translation>
 <translation id="8978154919215542464">Vklopljeno – sinhroniziranje vsega</translation>

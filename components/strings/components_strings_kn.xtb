@@ -2868,7 +2868,6 @@
 <translation id="5847181246682413476">ವಿದ್ಯುತ್ ಪೂರೈಕೆಗಳು</translation>
 <translation id="584902713199270089">ಡೇಟಿಂಗ್ ಮತ್ತು ವೈಯಕ್ತಿಕಗಳು</translation>
 <translation id="5851548754964597211">ಟ್ಯಾಬ್ ಪಟ್ಟಿ</translation>
-<translation id="5851868085455377790">ನೀಡುವವರು</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5862579898803147654">ಸ್ಟ್ಯಾಕರ್ 8</translation>
@@ -4146,7 +4145,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />ನಿಮಿಷದ ಹಿಂದೆ}=1{<ph name="TIME_COUNT" />ಗಂಟೆಯ ಹಿಂದೆ}one{<ph name="TIME_COUNT" />ದಿನದ ಹಿಂದೆ}other{<ph name="TIME_COUNT" />ದಿನದ ಹಿಂದೆ}}</translation>
 <translation id="7979595116210197019">ಆಹಾರ ಸೇವೆ</translation>
 <translation id="798134797138789862">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
-<translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="7983008347525536475">SUV ಗಳು</translation>
 <translation id="7984945080620862648">ನೀವು ಸದ್ಯಕ್ಕೆ <ph name="SITE" /> ಗೆ ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏಕೆಂದರೆ, Chrome ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲದ ಸಂಘರ್ಷನೀಯ ರುಜುವಾತುಗಳನ್ನು ವೆಬ್‌ಸೈಟ್ ಕಳುಹಿಸಿದೆ. ನೆಟ್‌ವರ್ಕ್ ದೋಷಗಳು ಮತ್ತು ಆಕ್ರಮಣಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ, ಹೀಗಾಗಿ ಈ ಪುಟವು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಕಾರ್ಯ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

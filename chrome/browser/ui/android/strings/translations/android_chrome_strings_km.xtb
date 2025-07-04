@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">ទទួលបានការជូនដំណឹង នៅពេលដែលតម្លៃធ្លាក់ចុះនៅលើគេហទំព័រណាមួយលើបណ្ដាញ</translation>
 <translation id="1140317858355046628">ប្រសិនបើ​អ្នកលុបវា អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />" ភ្លាមៗ ហើយ​វានឹង​ត្រូវបានលុប​ចេញពី​ឧបករណ៍​ទាំងអស់។</translation>
 <translation id="1142732900304639782">មិនផ្ដល់ការបកប្រែគេហទំព័រទាំងនេះទេ</translation>
-<translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។</translation>
 <translation id="1154555449933432029">អ្នក​មិនមាន​ពាក្យ​សម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​ទេ។</translation>
 <translation id="115483310321669804">ប្រើ​ពាក្យសម្ងាត់ <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">តម្រៀបពីលំដាប់ Z ទៅ A</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ត្រូវបាន​បើក</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">រួមបញ្ចូលទិន្នន័យរបស់ខ្ញុំ</translation>
 <translation id="3931947361983910192">4 សប្តាហ៍ចុងក្រោយ</translation>
 <translation id="393697183122708255">គ្មានការគាំទ្រការស្វែងរកដោយសម្លេងទេ</translation>
 <translation id="3950820424414687140">ចូល</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">ចូលរួមក្នុងនាមជា <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">ពាក្យ​សម្ងាត់​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក​ត្រូវបានបើក​ពាក់កណ្ដាល​អេក្រង់</translation>
 <translation id="5515439363601853141">ដោះសោ​ដើម្បី​មើល​ពាក្យសម្ងាត់​របស់អ្នក</translation>
-<translation id="5517095782334947753">អ្នកមានចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតពី <ph name="FROM_ACCOUNT" /> ។</translation>
 <translation id="5517326820028369152">សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ</translation>
 <translation id="5526281268548144413">មិនអាចបិទ​នៅលើ​វិនដូ​ច្រើន​បានទេ</translation>
 <translation id="5548606607480005320">ការពិនិត្យ​សុវត្ថិភាព</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{បានឈប់​ជាវពីគេហទំព័រ 1}other{បានឈប់​ជាវពីគេហទំព័រ #}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{ពាក្យសម្ងាត់ 1}other{ពាក្យសម្ងាត់ #}}</translation>
 <translation id="688730033107341407">បន្ទាប់ពីអ្នក​ចេញពីគណនី ចំណាំ ពាក្យ​សម្ងាត់របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅក្នុង​គណនី Google របស់អ្នក​នឹងត្រូវបាន​ដកចេញ​ពីឧបករណ៍នេះ។</translation>
-<translation id="688738109438487280">បន្ថែមទិន្នន័យដែលមានស្រាប់ទៅ <ph name="TO_ACCOUNT" /> ។</translation>
 <translation id="6891726759199484455">ដោះសោ​ដើម្បី​ចម្លង​ពាក្យសម្ងាត់​របស់អ្នក</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6898797562238201317">ប្រើឃ្លាសម្ងាត់របស់អ្នកផ្ទាល់ ដើម្បីអ៊ីនគ្រីបទិន្នន័យ Chrome ទាំងអស់នៅក្នុងគណនី Google របស់អ្នក</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">ការផ្ទុកជាមុន​បន្ថែម៖</translation>
 <translation id="8063895661287329888">បានបរាជ័យក្នុងការបន្ថែមចំណាំ</translation>
 <translation id="8066816452984416180">ចំណាំ​ទំព័រ​នេះ​យ៉ាង​រហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
-<translation id="806745655614357130">រក្សាទិន្នន័យរបស់ខ្ញុំដាច់ដោយឡែកពីគ្នា</translation>
 <translation id="8073388330009372546">បើករូបភាពនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8078096376109663956">ចែករំលែក​អត្ថបទ​តែប៉ុណ្ណោះ</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">រំលងទៅ​ផ្ទាំង​ជាក់លាក់ (1–8)</translation>
 <translation id="8368001212524806591">តាម​ដាន​តម្លៃ​</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ក្រុមផ្ទាំង}other{<ph name="TAB_GROUPS_MANY" /> ក្រុមផ្ទាំង}}</translation>
-<translation id="8378850197701296741">អ្នកមានចំណាំ ប្រវត្តិ និងការកំណត់ផ្សេងទៀតពី <ph name="FROM_ACCOUNT" />។</translation>
 <translation id="8387617938027387193">ផ្ទៀងផ្ទាត់ថាជាអ្នក</translation>
 <translation id="8393700583063109961">ផ្ញើ​សារ</translation>
 <translation id="8396098434728053815">ចែករំលែក​សំឡេង​របស់ផ្ទាំង​ផងដែរ</translation>
@@ -1776,6 +1770,7 @@
 <translation id="8699120352855309748">មិនផ្ដល់ការបកប្រែភាសាទាំងនេះទេ</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8715286883001906001">ធ្វើឱ្យ​ពាក្យសម្ងាត់​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក​ខ្លាំង</translation>
+<translation id="8715300232952757586"><ph name="TAB_TITLE" /> នឹងត្រូវ​បានបិទ</translation>
 <translation id="8723453889042591629">បកប្រែ​ទំព័រ​នេះ​យ៉ាង​រហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
 <translation id="8731268612289859741">លេខ​កូដ​សុវត្ថិភាព</translation>

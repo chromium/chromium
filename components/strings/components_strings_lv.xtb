@@ -256,6 +256,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, lai atļautu savienošanu pārī</translation>
 <translation id="1421484961346698724">Dzēsts konts</translation>
 <translation id="14222610277930434">Jūs bieži apmeklējat</translation>
+<translation id="1422795627423046860">Datums nav derīgs.</translation>
 <translation id="1422930527989633628">Var pieprasīt atļauju noteikt tuvumā esošas Bluetooth ierīces</translation>
 <translation id="1426410128494586442">Jā</translation>
 <translation id="1427192966110103169">Mājas peldbaseini, saunas un SPA</translation>
@@ -2868,7 +2869,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5847181246682413476">Energoapgāde</translation>
 <translation id="584902713199270089">Randiņi un iepazīšanās sludinājumi</translation>
 <translation id="5851548754964597211">Ciļņu saraksts</translation>
-<translation id="5851868085455377790">Izdevējs</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5862579898803147654">8. izvades vieta</translation>
@@ -4146,7 +4146,6 @@ Papildu informācija:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Pirms <ph name="TIME_COUNT" /> min}=1{Pirms <ph name="TIME_COUNT" /> h}zero{Pirms <ph name="TIME_COUNT" /> d.}one{Pirms <ph name="TIME_COUNT" /> d.}other{Pirms <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Ēdināšanas nozare</translation>
 <translation id="798134797138789862">Var pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
-<translation id="7982789257301363584">Tīkls</translation>
 <translation id="7983008347525536475">Apvidus automašīnas</translation>
 <translation id="7984945080620862648">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tā nosūtīja bojātus akreditācijas datus, ko nevar apstrādāt pārlūkā Chrome. Tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, tāpēc šī lapa vēlāk, visticamāk, darbosies.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" />, <ph name="BOOKMARKED" />, <ph name="TITLE" />, <ph name="DOMAIN" /></translation>
@@ -4815,6 +4814,7 @@ Papildu informācija:
 <translation id="9155211586651734179">Pievienotās perifērās audio ierīces</translation>
 <translation id="9155646082713385498">Žurnāli</translation>
 <translation id="9157595877708044936">Notiek uzstādīšana...</translation>
+<translation id="9158491153040481956">Jūs nesen nomainījāt paroli, jo tā tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Ja rodas problēmas, Paroļu pārvaldnieks var palīdzēt jums pierakstīties.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Failā <ph name="FILE_NAME" /> var būt ietverts sensitīvs saturs}zero{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}one{<ph name="FILE_COUNT" /> failā var būt ietverts sensitīvs saturs}other{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> — lai izietu no pilnekrāna režīma, nospiediet taustiņu |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack ziņojums</translation>

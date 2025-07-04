@@ -61,6 +61,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
+<translation id="1717996979683942279">Jika diaktifkan, situs dapat meminta untuk mengelola jendela di semua layar Anda. Jika dinonaktifkan, situs tidak dapat mengelola jendela di semua layar Anda.</translation>
 <translation id="1743802530341753419">Tanya sebelum mengizinkan situs terhubung ke perangkat (disarankan)</translation>
 <translation id="1777815584158991902">Panel bawah feed Discover</translation>
 <translation id="1779089405699405702">Pendekode gambar</translation>
@@ -171,6 +172,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2968755619301702150">Penampil sertifikat</translation>
 <translation id="2979365474350987274">Cookie pihak ketiga dibatasi</translation>
 <translation id="2990583317361835189">Jangan izinkan situs menggunakan sensor gerakan</translation>
+<translation id="3004438526346162184">Situs dapat menggunakan fitur ini untuk mengelola jendela di semua layar Anda</translation>
 <translation id="3008272652534848354">Reset izin</translation>
 <translation id="301521992641321250">Diblokir secara otomatis</translation>
 <translation id="3064871050034234884">Situs dapat memutar suara</translation>
@@ -439,6 +441,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6071501408666570960">Anda mungkin akan logout dari situs ini</translation>
 <translation id="6085954183010297841">Hapus pemberian izin edit file? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Jika diaktifkan, situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat. Jika dinonaktifkan, situs tidak dapat mengetahui saat Anda aktif menggunakan perangkat.</translation>
+<translation id="615886654739818377">Jangan izinkan situs mengelola jendela di semua layar Anda</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6171020522141473435">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat Bluetooth. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat Bluetooth.</translation>
 <translation id="6177128806592000436">Sambungan Anda ke situs ini tidak aman</translation>

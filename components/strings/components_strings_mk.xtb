@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
 <translation id="1421484961346698724">Избришана сметка</translation>
 <translation id="14222610277930434">Го отворате ова често</translation>
+<translation id="1422795627423046860">Датум е неважечки</translation>
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1427192966110103169">Домашни базени, сауни и простории со спа</translation>
@@ -2870,7 +2871,6 @@
 <translation id="5847181246682413476">Напојувања</translation>
 <translation id="584902713199270089">Запознавање и лични огласи</translation>
 <translation id="5851548754964597211">Список со картички</translation>
-<translation id="5851868085455377790">Издавач</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862579898803147654">Фиока за складирање 8</translation>
@@ -4147,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Пред <ph name="TIME_COUNT" /> м.}=1{Пред <ph name="TIME_COUNT" /> ч.}one{Пред <ph name="TIME_COUNT" /> д.}other{Пред <ph name="TIME_COUNT" /> д.}}</translation>
 <translation id="7979595116210197019">Услуга за храна</translation>
 <translation id="798134797138789862">Може да прашува за да ги користи податоците и уредите со виртуелна реалност</translation>
-<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983008347525536475">Спортски теренски возила</translation>
 <translation id="7984945080620862648">Не може сега да го посетите <ph name="SITE" /> затоа што веб-локацијата испрати измешани акредитации што Chrome не може да ги обработи. Мрежните грешки и напади обично се привремени, така што страницата веројатно ќе работи подоцна.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@
 <translation id="9155211586651734179">Поврзани периферни уреди за аудио</translation>
 <translation id="9155646082713385498">Списанија</translation>
 <translation id="9157595877708044936">Се поставува…</translation>
+<translation id="9158491153040481956">Неодамна променивте лозинка најдена при јавен упад во податоци. Ако се соочите со проблем, Password Manager може да ви помогне да се најавите.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можеби содржи чувствителни содржини}one{<ph name="FILE_COUNT" /> датотека можеби содржат чувствителни содржини}other{<ph name="FILE_COUNT" /> датотеки можеби содржат чувствителни содржини}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – за да излезете од цел екран, притиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Порака на Slack</translation>

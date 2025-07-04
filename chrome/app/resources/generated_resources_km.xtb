@@ -3733,6 +3733,7 @@
 <translation id="3592260987370335752">ស្វែងយល់បន្ថែម</translation>
 <translation id="3592344177526089979">កំពុងបញ្ជូនផ្ទាំងទៅកាន់ <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">បើកដំណើរការរបៀបភិញអ៊ិញមិនច្បាស់</translation>
+<translation id="3593953853060020305">អនុញ្ញាតឱ្យ​គេហទំព័រនេះ​កែ <ph name="FILE_NAME" /> ឬ?</translation>
 <translation id="3593965109698325041">ឧបសគ្គឈ្មោះវិញ្ញាបនប័ត្រ</translation>
 <translation id="3596012367874587041">ការកំណត់កម្មវិធី</translation>
 <translation id="3596414637720633074">ទប់ស្កាត់​ខូគីភាគីទីបីក្នុងមុខងារឯកជន</translation>
@@ -4695,6 +4696,7 @@
 <translation id="4249785854468467847">ទទួលបទពិសោធថ្មីពី Chrome ដែលធ្វើឱ្យប្រសើរឡើងដោយ AI</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="4250680216510889253">ទេ</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> នឹងអាច​មើល និង​បង្កើតច្បាប់ចម្លង​ឯកសារ​របស់ខ្លួនផ្ទាល់​នៅក្នុង <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">ការចុះឈ្មោះ​ឧបករណ៍ Kiosk និង signage</translation>
 <translation id="4252828488489674554">ចុចកណ្ដុរ​ខាងស្ដាំ​លើឈ្មោះ​ក្រុមផ្ទាំង ដើម្បីកែ​ក្រុមនេះ ឬចុច​ដើម្បី​បង្រួម</translation>
 <translation id="4252899949534773101">បានបិទប៊្លូធូស</translation>
@@ -8644,6 +8646,7 @@
 <translation id="7093220653036489319">ចម្លើយរហ័ស</translation>
 <translation id="7093866338626856921">ផ្តោះប្តូរទិន្នន័យជាមួយឧបករណ៍ដែលមានឈ្មោះ៖ <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">មហាពីរ៉ាមីតហ្គីហ្សា</translation>
+<translation id="7094834615934458012">អនុញ្ញាតឱ្យ​គេហទំព័រនេះ​កែឯកសារ​ឬ?</translation>
 <translation id="7098389117866926363">ឧបករណ៍ USB-C (រន្ធឆ្វេងផ្នែកខាងក្រោយ)</translation>
 <translation id="7098447629416471489">ម៉ាស៊ីន​ស្វែងរក​ផ្សេងទៀត​ដែល​បាន​រក្សាទុក​នឹង​បង្ហាញ​នៅទីនេះ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{លុប​កម្មវិធី​ចេញ}other{លុប​កម្មវិធី​ចេញ}}</translation>
@@ -9017,6 +9020,7 @@
 <translation id="7377481913241237033">ភ្ជាប់ដោយប្រើកូដ</translation>
 <translation id="73786666777299047">បើក Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />។ កិច្ចការ​ផ្សេងទៀត​នៅក្នុង​ក្រុមកិច្ចការ​តែមួយ៖ <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />។ កិច្ចការ # ផ្សេងទៀត​នៅក្នុង​ក្រុមកិច្ចការ​តែមួយ៖ <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> នឹងអាច​មើល និង​បង្កើតច្បាប់ចម្លង <ph name="FILENAME" /> របស់ខ្លួនផ្ទាល់</translation>
 <translation id="7380272457268061606">បិទ​ការស្ដារ​ទិន្នន័យ​ក្នុង​ឧបករណ៍ឡើងវិញឬ?</translation>
 <translation id="7380459290951585794">សូមប្រាកដថាទូរសព្ទរបស់អ្នក​នៅជិត បានដោះសោ និងបានបើក​ប៊្លូធូស និង Wi-Fi</translation>
 <translation id="7380622428988553498">ឈ្មោះឧបករណ៍​មានតួអក្សរ​មិនត្រឹមត្រូវ</translation>
@@ -9762,6 +9766,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{ធាតុមួយ}other{ធាតុ #}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ធ្វើទស្សនកិច្ច​ស្វែងយល់អំពី​ការគ្រប់គ្រងសុវត្ថិភាព និងឯកជនភាព​សំខាន់ៗ។ សម្រាប់ជម្រើស​ច្រើនទៀត សូមចូលទៅកាន់​ការកំណត់នីមួយៗ។</translation>
+<translation id="7887286029584695415">អនុញ្ញាតឱ្យ​គេហទំព័រនេះ​មើល និង​ចម្លង​ឯកសារឬ?</translation>
 <translation id="7887334752153342268">ចម្លង</translation>
 <translation id="7887864092952184874">ប៊្លូធូសកណ្តុរត្រូវបានភ្ជាប់</translation>
 <translation id="7889371445710865055">ប្ដូរ​ភាសា​សរសេរ​តាមអាន</translation>
@@ -9847,6 +9852,7 @@
 <translation id="7944772052836377867">សមកាលកម្ម​ត្រូវការ​ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="7944847494038629732">ដកខ្សែ USB របស់ម៉ាស៊ីនស្កេន រួចដោតវិញដើម្បីព្យាយាមម្ដងទៀត</translation>
 <translation id="7945703887991230167">សំឡេងដែលចង់ប្រើ</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> នឹងអាច​មើល និង​បង្កើតច្បាប់ចម្លង​ឯកសារ​របស់ខ្លួនផ្ទាល់​នៅក្នុង <ph name="FOLDERNAME" /> រហូត​ទាល់តែ​អ្នកបិទ​ផ្ទាំង​ទាំងអស់​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="7946586320617670168">ប្រភពដើម​ត្រូវតែ​មានសុវត្ថិភាព</translation>
 <translation id="7946681191253332687">មានការធ្វើ​បច្ចុប្បន្នភាព​ផ្នែក​សុវត្ថិភាពបន្ថែម</translation>
 <translation id="794676567536738329">អះអាងការអនុញ្ញាត</translation>
@@ -10055,6 +10061,7 @@
 <translation id="8079606020824373126">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​អាច​ធ្វើបច្ចុប្បន្នភាព​គណនី​របស់អ្នក​ដោយប្រើ​ពាក្យសម្ងាត់​ខ្លាំង និង​រក្សាទុកវា​នៅក្នុង <ph name="EMAIL" />។ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">គេហទំព័រអាចស្នើសុំគ្រប់គ្រងវិនដូនៅលើផ្ទាំងអេក្រង់ទាំងអស់របស់អ្នក</translation>
 <translation id="8080028325999236607">បិទផ្ទាំងទាំងអស់</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> នឹងអាច​មើល និង​បង្កើតច្បាប់ចម្លង <ph name="FILENAME" /> របស់ខ្លួនផ្ទាល់ រហូត​ទាល់តែ​អ្នកបិទ​ផ្ទាំង​ទាំងអស់​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="8081989000209387414">បិទ​ការជួសជុល ADB ឬ?</translation>
 <translation id="8082106343289440791">ផ្គូផ្គងជាមួយ "<ph name="DEVICE_NAME" />" ឬ?</translation>
 <translation id="8082132721957920509">កាតរបស់អ្នកត្រូវបានរក្សាទុក</translation>
@@ -10823,6 +10830,7 @@
 <translation id="862750493060684461">ឃ្លាំងសម្ងាត់ CSS</translation>
 <translation id="8627795981664801467">ការភ្ជាប់ដែលមានសុវត្ថិភាពប៉ុណ្ណោះ</translation>
 <translation id="8627804903623428808">ពិនិត្យមើល​លក្ខខណ្ឌទាំងនេះ និងគ្រប់គ្រង​ទិន្នន័យរបស់​កូនអ្នក</translation>
+<translation id="862907440446514309">អ្នក​គ្រប់គ្រង​របស់អ្នក​កំពុងថត​អេក្រង់​របស់អ្នក​ដោយប្រើ <ph name="APP0_NAME" />។</translation>
 <translation id="8630338733867813168">អសកម្មពេលសាកថ្ម</translation>
 <translation id="8631032106121706562">ត្របកផ្កា</translation>
 <translation id="8632104508818855045">ពីមុន​អ្នកបានជ្រើសរើស​មិនអនុញ្ញាត​កម្មវិធីបន្ថែម​ណាមួយ​នៅលើ <ph name="ORIGIN" /></translation>
@@ -11342,6 +11350,7 @@
 <translation id="897525204902889653">សេវាកម្ម​ចត្តាឡីស័ក</translation>
 <translation id="8975396729541388937">ឈប់ជាវ​បានគ្រប់ពេល ដោយចុចតំណ​នៅក្នុងអ៊ីមែល​ដែលអ្នកទទួលបាន។</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" និងផ្ទាំង 1 ទៀត}other{"<ph name="TAB_TITLE" />" និងផ្ទាំង # ទៀត}}</translation>
+<translation id="897565255818387330">អនុញ្ញាតឱ្យ​គេហទំព័រនេះ​មើល និង​ចម្លង <ph name="FILE_NAME" /> ឬ?</translation>
 <translation id="8977523125954274918">រៀបចំ​កម្រងព័ត៌មាន​សាលា ដើម្បី​រក្សាទុក និងប្រើ​ពាក្យ​សម្ងាត់​របស់អ្នក និងអ្វីៗជា​ច្រើនទៀត​នៅក្នុង​គណនី​របស់អ្នក</translation>
 <translation id="8977811652087512276">ពាក្យសម្ងាត់​មិន​ត្រឹមត្រូវ ឬ​ឯកសារ​ខូច</translation>
 <translation id="8978154919215542464">បើក - ធ្វើសមកាលកម្មទាំងអស់</translation>

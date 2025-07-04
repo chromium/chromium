@@ -907,6 +907,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
        Kies wat je wilt doen met de bestaande browsegegevens op dit apparaat.</translation>
 <translation id="4682496302933121474">Pagina vertalen?</translation>
 <translation id="4682686630151240767">1. Open de iPhone-instellingen</translation>
+<translation id="4691892551491778176">Als je deze functie gebruikt, worden paginacontent en URL's naar Google gestuurd, maar worden ze niet gebruikt om generatieve AI-modellen te verbeteren. Je kunt de functie op elk moment uitzetten in de instellingen.</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4709570498586527752">De meest relevante functies voor jou op verschillende momenten</translation>
 <translation id="4717844083556844785">De huidige webpagina is in de incognitomodus</translation>
@@ -1188,6 +1189,8 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
 <translation id="5804012843049740908">Stel tips in waarmee je alles uit Chrome kunt halen</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="58081802114142635">Je activiteit verbetert AI van Google</translation>
+<translation id="5813223718099710537">Als je deze functie gebruikt, worden paginacontent en URL's naar Google gestuurd. Je kunt de functie op elk moment uitzetten in de instellingen.</translation>
 <translation id="5817176759448082654">Wachtwoordcheck</translation>
 <translation id="5819208479324046259">Beheerd door <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchroniseren…</translation>
@@ -1457,6 +1460,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6759709389246683070">Je kunt je vinger op dit tabblad houden om een herinnering in te stellen om het later opnieuw te bezoeken</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[GEBOEKT]</translation>
+<translation id="6775647281444147078">De chats van je organisatie worden niet gebruikt om onze modellen te verbeteren. Gemini kan onjuiste informatie tonen, ook over mensen. Dubbelcheck daarom de reacties. Je privacy en Gemini</translation>
 <translation id="6779455296366983087">Je browsegegevens worden verwijderd</translation>
 <translation id="6790502149545262384">Binnenkort zie je artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="6791425686608802741">Tik op Tabblad toevoegen aan nieuwe groep</translation>
@@ -1592,6 +1596,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7412027924265291969">Doorgaan</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
 <translation id="7417689656810783109">Naam van groep wijzigen</translation>
+<translation id="7418703176995102827">Je gesprekken met Gemini en ook je Google Workspace-gegevens worden niet beoordeeld door menselijke reviewers of gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="7419565702166471774">Altijd beveiligde verbindingen gebruiken</translation>
 <translation id="7425053386765766120">Betaalmethode toevoegen…</translation>
 <translation id="7425346204213733349">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account.</translation>
@@ -1648,6 +1653,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="760667371114328991">Meldingen van Veiligheidscheck uitzetten</translation>
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612849887607288481">Menu voor AI-prototypering openen</translation>
+<translation id="7615581988398168124">De Servicevoorwaarden van Google en de Privacyverklaring van Gemini Apps zijn van toepassing. Gemini kan fouten maken, dus dubbelcheck de reacties.</translation>
 <translation id="7620522820075868385">Annuleren</translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
@@ -1823,6 +1829,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
 <translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8275068909952022340">Meer…</translation>
+<translation id="8277328362018795342">Je paginacontent wordt gedeeld voor relevantere antwoorden</translation>
 <translation id="8278488584187265939">Homepage aanpassen</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
@@ -1897,6 +1904,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8560253818350321773">Toon veelgebruikte items eerst.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} optie voor wachtwoord beschikbaar boven je toetsenbord.}other{{count} opties voor wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="8564894539416715395">Pagina Nieuw tabblad</translation>
+<translation id="8569414323292250522">Chats worden beoordeeld en gebruikt om AI van Google te verbeteren. Meer informatie over je keuzes. Informatie over je locatie wordt ook opgeslagen bij je activiteit.</translation>
 <translation id="8569721750632860947">Welke URL wil je toevoegen aan je leeslijst?</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
@@ -2079,6 +2087,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9206887540681440657">Snelheid</translation>
 <translation id="9223358826628549784">Crashrapport verzonden.</translation>
 <translation id="926455622548529175">Overschakelen en verwijderen</translation>
+<translation id="927162192666499119">De gegevens van je organisatie zijn privé en beveiligd</translation>
 <translation id="929748059769569925">Gemarkeerde tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Tabblad sluiten}other{Tabbladen sluiten}}</translation>
 <translation id="932327136139879170">Homepage</translation>

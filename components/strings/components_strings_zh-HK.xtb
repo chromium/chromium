@@ -2870,7 +2870,6 @@
 <translation id="5847181246682413476">電力供應</translation>
 <translation id="584902713199270089">約會和交友</translation>
 <translation id="5851548754964597211">分頁清單</translation>
-<translation id="5851868085455377790">發行者</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5862579898803147654">堆疊器 8</translation>
@@ -3730,6 +3729,7 @@
 <translation id="7292031607255951991">收件者名稱</translation>
 <translation id="7298195798382681320">建議</translation>
 <translation id="7299471494012161875">顯示已連接的周邊裝置</translation>
+<translation id="7299769361777046949">管理「Google 錢包」入面嘅會員卡</translation>
 <translation id="7300012071106347854">鈷藍色</translation>
 <translation id="7304030187361489308">高</translation>
 <translation id="7304562222803846232">管理 Google 帳戶私隱設定</translation>
@@ -4148,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分鐘前}=1{<ph name="TIME_COUNT" /> 小時前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">食品服務</translation>
 <translation id="798134797138789862">可要求使用虛擬實境﻿裝置和資料</translation>
-<translation id="7982789257301363584">網絡</translation>
 <translation id="7983008347525536475">休閒車</translation>
 <translation id="7984945080620862648">您目前無法瀏覽 <ph name="SITE" />，因為這個網站傳送的憑證經過編碼，導致 Chrome 無法處理。網絡錯誤和攻擊行為通常是暫時性的，所以這個網頁可能稍後就能正常使用。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

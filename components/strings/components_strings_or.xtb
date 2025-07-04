@@ -2868,7 +2868,6 @@
 <translation id="5847181246682413476">ପାୱାର ସପ୍ଲାଇ</translation>
 <translation id="584902713199270089">ଡେଟିଂ ଏବଂ ପର୍ସନାଲ୍ସ</translation>
 <translation id="5851548754964597211">ଟାବ୍‍ର ତାଲିକା</translation>
-<translation id="5851868085455377790">ଜାରିକର୍ତ୍ତା</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5862579898803147654">ଷ୍ଟାକର୍ 8</translation>
@@ -4144,7 +4143,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ମିନିଟ ପୂର୍ବେ}=1{<ph name="TIME_COUNT" /> ଘଣ୍ଟା ପୂର୍ବେ}other{<ph name="TIME_COUNT" /> ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="7979595116210197019">ଖାଦ୍ୟ ସେବା</translation>
 <translation id="798134797138789862">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
-<translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
 <translation id="7983008347525536475">SUVଗୁଡ଼ିକ</translation>
 <translation id="7984945080620862648">ଆପଣ ବର୍ତ୍ତମାନ <ph name="SITE" />କୁ ଭିଜିଟ୍ କରିପାରିବେ ନାହିଁ କାରଣ ୱେବସାଇଟ୍ ସ୍କ୍ରେମ୍ବଲ୍ କରାଯାଇଥିବା କ୍ରେଡେନ୍ସିଆଲଗୁଡ଼ିକୁ ପଠାଇଛି ଯାହାକୁ Chrome ପ୍ରକ୍ରିୟାନ୍ୱିତ କରିପାରିବ ନାହିଁ। ନେଟୱାର୍କ ତ୍ରୁଟି ଓ ଆକ୍ରମଣ ସାଧାରଣତଃ ଅସ୍ଥାୟୀ ଅଟେ, ତେଣୁ ଏହି ପୃଷ୍ଠା ସମ୍ଭବତଃ ପରେ କାମ କରିପାରେ।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

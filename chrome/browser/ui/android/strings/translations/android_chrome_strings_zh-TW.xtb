@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1140317858355046628">如果刪除，所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而且該群組將從所有裝置中刪除。</translation>
 <translation id="1142732900304639782">不要詢問是否要翻譯這些網站</translation>
-<translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
 <translation id="1154555449933432029">你未在 Google 密碼管理工具中儲存任何密碼。</translation>
 <translation id="115483310321669804">使用密碼：<ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">由 Z 到 A 排序</translation>
 <translation id="3924911262913579434">已開啟<ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3931947361983910192">過去 4 週</translation>
 <translation id="393697183122708255">沒有可用的語音搜尋功能</translation>
 <translation id="3950820424414687140">登入</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
 <translation id="5503125329065007089">「在所有裝置上都能使用自己的密碼」說明已開啟，顯示在畫面下半部</translation>
 <translation id="5515439363601853141">解鎖即可查看你的密碼</translation>
-<translation id="5517095782334947753">你有來自 <ph name="FROM_ACCOUNT" /> 的書籤、歷史記錄、密碼和其他設定。</translation>
 <translation id="5517326820028369152">近期活動底部功能表</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
 <translation id="5548606607480005320">安全檢查</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{已取消訂閱 1 個網站}other{已取消訂閱 # 個網站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 組密碼}other{# 組密碼}}</translation>
 <translation id="688730033107341407">登出後，你 Google 帳戶中的書籤、密碼和其他資訊就會從這部裝置移除。</translation>
-<translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製你的密碼</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6898797562238201317">使用通關密語加密 Google 帳戶中的所有 Chrome 資料</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="8066816452984416180">快速將這個頁面加入書籤，按住即可編輯這個捷徑。</translation>
-<translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8078096376109663956">僅分享文字</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">前往特定分頁 (1 - 8)</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> 個分頁群組}other{<ph name="TAB_GROUPS_MANY" /> 個分頁群組}}</translation>
-<translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、歷史記錄和其他設定。</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8396098434728053815">一併分享分頁音訊</translation>

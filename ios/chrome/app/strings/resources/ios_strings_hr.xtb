@@ -907,6 +907,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
        Odaberite što želite učiniti s postojećim podacima o pregledavanju na ovom uređaju.</translation>
 <translation id="4682496302933121474">Želite li prevesti stranicu?</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
+<translation id="4691892551491778176">Kada upotrebljavate ovu značajku, sadržaj stranice i URL-ovi šalju se Googleu, ali neće se upotrebljavati za poboljšanje generativnih AI modela. To uvijek možete isključiti u postavkama.</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
 <translation id="4709570498586527752">Najrelevantnije značajke za vas u različita vremena</translation>
 <translation id="4717844083556844785">Trenutačna web-stranica je u anonimnom načinu</translation>
@@ -1188,6 +1189,8 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti ovu novu karticu?</translation>
 <translation id="5804012843049740908">Savjeti za postavljanje koji će vam pomoći da iskoristite sve prednosti Chromea</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
+<translation id="58081802114142635">Vaša aktivnost poboljšava Googleov AI</translation>
+<translation id="5813223718099710537">Kada upotrebljavate ovu značajku, sadržaj stranice i URL-ovi šalju se Googleu. To uvijek možete isključiti u postavkama.</translation>
 <translation id="5817176759448082654">Provjera zaporki</translation>
 <translation id="5819208479324046259">Uređajem upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkronizacija…</translation>
@@ -1457,6 +1460,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6759709389246683070">Možete dodirnuti i zadržati pritisak na ovoj kartici da biste postavili podsjetnik za ponovno posjetu kasnije</translation>
 <translation id="6761393919622941301">Audiozapisi</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775647281444147078">Razgovori vaše organizacije ne upotrebljavaju se za poboljšanje naših modela. Gemini može prikazivati netočne informacije, uključujući one o ljudima, stoga provjerite njegove odgovore. Vaša privatnost i Gemini</translation>
 <translation id="6779455296366983087">Vaši će se podaci o pregledavanju izbrisati</translation>
 <translation id="6790502149545262384">Prilikom otvaranja nove kartice uskoro će se prikazivati članci s web-lokacije <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Dodirnite Dodaj karticu novoj grupi</translation>
@@ -1592,6 +1596,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7412027924265291969">Nastavi</translation>
 <translation id="741204030948306876">Da, u redu</translation>
 <translation id="7417689656810783109">Preimenovanje grupe</translation>
+<translation id="7418703176995102827">Vaše razgovore s Geminijem i vaše podatke s Google Workspacea neće pregledavati ljudi niti će se oni na drugi način upotrebljavati za poboljšanje generativnih AI modela.</translation>
 <translation id="7419565702166471774">Uvijek upotrebljavaj sigurne veze</translation>
 <translation id="7425053386765766120">Dodajte način plaćanja…</translation>
 <translation id="7425346204213733349">Promjene oznaka, povijesti, zaporki i drugih postavki više se neće sinkronizirati s vašim Google računom. No vaši postojeći podaci ostat će pohranjeni na vašem Google računu.</translation>
@@ -1648,6 +1653,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="760667371114328991">Isključite obavijesti za sigurnosnu provjeru</translation>
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612849887607288481">Otvorite izbornik za AI prototip</translation>
+<translation id="7615581988398168124">Primjenjuju se Googleovi uvjeti i obavijest o privatnosti za Gemini aplikacije. Gemini može pogriješiti, stoga provjerite njegove odgovore.</translation>
 <translation id="7620522820075868385">Odustani</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Ugrožene zaporke}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
@@ -1823,6 +1829,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="826614135184049678">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. Da biste se ponovno prijavili, dodirnite Nastavi u nastavku.</translation>
 <translation id="8273982424131314219">Unijet ćete podatke u <ph name="URL" /></translation>
 <translation id="8275068909952022340">Više…</translation>
+<translation id="8277328362018795342">Sadržaj vaše stranice dijeli se u svrhu generiranja relevantnijih odgovora</translation>
 <translation id="8278488584187265939">Prilagodite početnu stranicu</translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
@@ -1897,6 +1904,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8560253818350321773">Najprije prikažite često korištene stavke.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Iznad tipkovnice dostupna je {count} opcija za zaporku.}one{Iznad tipkovnice dostupna je {count} opcija za zaporku.}few{Iznad tipkovnice dostupne su {count} opcije za zaporku.}other{Iznad tipkovnice dostupno je {count} opcija za zaporku.}}</translation>
 <translation id="8564894539416715395">Web-stranica nove kartice</translation>
+<translation id="8569414323292250522">Razgovori se pregledavaju i upotrebljavaju za poboljšanje Googleovog AI-ja. Saznajte više o svojim odabirima. Informacije o vašoj lokaciji također se pohranjuju uz vašu aktivnost.</translation>
 <translation id="8569721750632860947">Koji URL želite dodati na popis za čitanje?</translation>
 <translation id="8571213806525832805">Protekla 4 tjedna</translation>
 <translation id="8577056989960190117">Automatski popunite godinu isteka <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9206887540681440657">Brzina</translation>
 <translation id="9223358826628549784">Izvješće o rušenju programa poslano je.</translation>
 <translation id="926455622548529175">Promijeni i izbriši</translation>
+<translation id="927162192666499119">Podaci vaše organizacije privatni su i sigurni</translation>
 <translation id="929748059769569925">Istaknuti tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="932327136139879170">Početna stranica</translation>

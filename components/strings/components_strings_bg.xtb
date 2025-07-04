@@ -2871,7 +2871,6 @@
 <translation id="5847181246682413476">Захранвания</translation>
 <translation id="584902713199270089">Запознанства и лични обяви</translation>
 <translation id="5851548754964597211">Списък с раздели</translation>
-<translation id="5851868085455377790">Издател</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5862579898803147654">Стакер 8</translation>
@@ -4149,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Преди <ph name="TIME_COUNT" /> мин}=1{Преди <ph name="TIME_COUNT" /> ч}other{Преди <ph name="TIME_COUNT" /> д}}</translation>
 <translation id="7979595116210197019">Обществено хранене</translation>
 <translation id="798134797138789862">Може да поиска разрешение да използва устройства и данни за виртуална реалност</translation>
-<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983008347525536475">Автомобили с висока проходимост</translation>
 <translation id="7984945080620862648">В момента не можете да посетите <ph name="SITE" />, защото уебсайтът изпрати кодирани идентификационни данни, които Chrome не може да обработи. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

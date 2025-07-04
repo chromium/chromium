@@ -907,6 +907,7 @@
        請選擇如何處理這部裝置上的現有瀏覽資料。</translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的 [設定]</translation>
+<translation id="4691892551491778176">使用這項功能時，頁面內容和網址會傳送到 Google，但不會用於改良生成式 AI 模型。你可以隨時前往設定關閉這項功能。</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4709570498586527752">在不同時間提供你最需要的功能</translation>
 <translation id="4717844083556844785">目前網頁處於無痕模式</translation>
@@ -1188,6 +1189,8 @@
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5804012843049740908">提供設定提示，協助你充分運用 Chrome</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="58081802114142635">你的活動記錄有助於提升 Google AI 服務品質</translation>
+<translation id="5813223718099710537">使用這項功能時，頁面內容和網址會傳送到 Google。你可以隨時前往設定關閉這項功能。</translation>
 <translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">同步處理中…</translation>
@@ -1457,6 +1460,7 @@
 <translation id="6759709389246683070">按住這個分頁即可設定提醒，通知自己之後再回來查看</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6770452996697898492">[已預約]</translation>
+<translation id="6775647281444147078">貴組織的對話內容不會用於改良我們的模型。Gemini 提供的資訊可能不準確 (包括人物介紹)，因此請務必查證。個人隱私權與 Gemini</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，你就會在開啟新分頁時看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>
@@ -1592,6 +1596,7 @@
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7417689656810783109">變更群組名稱</translation>
+<translation id="7418703176995102827">人工審查員不會審查你與 Gemini 的對話及 Google Workspace 資料，這些內容也不會用於改良生成式 AI 模型。</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>
 <translation id="7425346204213733349">你更改過的書籤、歷史記錄、密碼和其他設定不會繼續與 Google 帳戶中的資料保持同步，但是 Google 帳戶現有的資料仍會保留。</translation>
@@ -1648,6 +1653,7 @@
 <translation id="760667371114328991">關閉安全檢查通知</translation>
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612849887607288481">開啟 AI 原型設計選單</translation>
+<translation id="7615581988398168124">適用《Google 條款》和《Gemini 系列應用程式隱私權聲明》。Gemini 可能會出錯，因此請務必查證。</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{遭外洩的密碼}=1{有 {COUNT} 組遭外洩的密碼}other{有 {COUNT} 組遭外洩的密碼}}</translation>
@@ -1823,6 +1829,7 @@
 <translation id="826614135184049678">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="8273982424131314219">即將填入資訊到「<ph name="URL" />」</translation>
 <translation id="8275068909952022340">更多…</translation>
+<translation id="8277328362018795342">分享頁面內容，提供更符合需求的答案</translation>
 <translation id="8278488584187265939">自訂首頁</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
@@ -1897,6 +1904,7 @@
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
 <translation id="8561999115126307258">{count,plural, =1{鍵盤上方顯示 {count} 個密碼選項。}other{鍵盤上方顯示 {count} 個密碼選項。}}</translation>
 <translation id="8564894539416715395">新分頁</translation>
+<translation id="8569414323292250522">我們會查看對話內容，並用於改良 Google AI。瞭解你的選項。你的位置資訊也會儲存在活動記錄中。</translation>
 <translation id="8569721750632860947">你想將哪個網址加入閱讀清單？</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8577056989960190117">自動填入到期年份 <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@
 <translation id="9206887540681440657">速度</translation>
 <translation id="9223358826628549784">當機報告已送出。</translation>
 <translation id="926455622548529175">切換並刪除</translation>
+<translation id="927162192666499119">我們會確保貴機構的資料隱私與安全</translation>
 <translation id="929748059769569925">醒目顯示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{關閉分頁}other{關閉分頁}}</translation>
 <translation id="932327136139879170">首頁</translation>

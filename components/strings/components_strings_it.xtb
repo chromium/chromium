@@ -2868,7 +2868,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5847181246682413476">Alimentatori</translation>
 <translation id="584902713199270089">Incontri e annunci personali</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
-<translation id="5851868085455377790">Autorità emittente</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5862579898803147654">Fascicolatore 8</translation>
@@ -4145,7 +4144,6 @@ Ulteriori dettagli:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min fa}=1{<ph name="TIME_COUNT" /> h fa}other{<ph name="TIME_COUNT" /> g fa}}</translation>
 <translation id="7979595116210197019">Servizi alimentari</translation>
 <translation id="798134797138789862">Può chiedere di usare dati e dispositivi per realtà virtuale</translation>
-<translation id="7982789257301363584">Rete</translation>
 <translation id="7983008347525536475">Fuoristrada</translation>
 <translation id="7984945080620862648">Al momento non puoi visitare il sito web <ph name="SITE" /> perché ha inviato strane credenziali che Chrome non riesce a elaborare. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

@@ -907,6 +907,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
        Choisissez ce que vous souhaitez faire des données de navigation existantes sur cet appareil.</translation>
 <translation id="4682496302933121474">Traduire la page ?</translation>
 <translation id="4682686630151240767">1. Ouvrez les réglages de l'iPhone</translation>
+<translation id="4691892551491778176">Lorsque vous utilisez cette fonctionnalité, le contenu des pages et les URL sont envoyés à Google, mais ne servent pas à améliorer les modèles d'IA générative. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4709570498586527752">Les fonctionnalités les plus pertinentes pour vous à différents moments</translation>
 <translation id="4717844083556844785">La page Web actuelle est en mode navigation privée</translation>
@@ -1188,6 +1189,8 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte ?</translation>
 <translation id="5804012843049740908">Des conseils de configuration qui vous aideront à exploiter tout le potentiel de Chrome</translation>
 <translation id="5804241973901381774">Autorisations</translation>
+<translation id="58081802114142635">Votre activité améliore l'IA de Google</translation>
+<translation id="5813223718099710537">Lorsque vous utilisez cette fonctionnalité, le contenu des pages et les URL sont envoyés à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
 <translation id="5817176759448082654">Check-up Mots de passe</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronisation…</translation>
@@ -1457,6 +1460,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6759709389246683070">Appuyez de manière prolongée sur cet onglet pour définir un rappel afin de revenir plus tard</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
+<translation id="6775647281444147078">Les discussions de votre organisation ne sont pas utilisées pour améliorer nos modèles. Vérifiez les réponses de Gemini, car elles peuvent contenir des informations inexactes, y compris sur des personnes. Votre confidentialité et Gemini</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un onglet.</translation>
 <translation id="6791425686608802741">Appuyez sur "Ajouter l'onglet à un nouveau groupe"</translation>
@@ -1592,6 +1596,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7412027924265291969">Continuer</translation>
 <translation id="741204030948306876">J'accepte</translation>
 <translation id="7417689656810783109">Renommer le groupe</translation>
+<translation id="7418703176995102827">Ni vos conversations avec Gemini, ni vos données Google Workspace ne seront examinées par des réviseurs humains ou utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="7419565702166471774">Toujours utiliser une connexion sécurisée</translation>
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisées avec votre compte Google. Vos données seront cependant maintenues sur votre compte Google.</translation>
@@ -1648,6 +1653,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="760667371114328991">Désactiver les notifications du contrôle de sécurité</translation>
 <translation id="7612619742409846846">Connecté à Google en tant que</translation>
 <translation id="7612849887607288481">Ouvrir le menu de prototypage IA</translation>
+<translation id="7615581988398168124">Les Conditions d'utilisation de Google et l'Avis de confidentialité des applications Gemini s'appliquent. Vérifiez les réponses de Gemini, car il peut se tromper.</translation>
 <translation id="7620522820075868385">Annuler</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mots de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
@@ -1823,6 +1829,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
 <translation id="8273982424131314219">Vous saisirez des informations sur <ph name="URL" /></translation>
 <translation id="8275068909952022340">Plus…</translation>
+<translation id="8277328362018795342">Le contenu de vos pages est partagé pour vous offrir des réponses plus pertinentes</translation>
 <translation id="8278488584187265939">Personnaliser la page d'accueil</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Passer</translation>
@@ -1897,6 +1904,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8560253818350321773">Afficher en premier les éléments fréquemment utilisés.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe disponible au-dessus de votre clavier.}one{{count} option de mot de passe disponible au-dessus de votre clavier.}other{{count} options de mot de passe disponibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>
+<translation id="8569414323292250522">Les discussions sont examinées et utilisées pour améliorer l'IA de Google. Découvrez les options qui s'offrent à vous. Des informations sur votre position sont aussi stockées avec votre activité.</translation>
 <translation id="8569721750632860947">Quelle URL souhaitez-vous ajouter à votre liste de lecture ?</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8577056989960190117">Saisir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9206887540681440657">Vitesse</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
 <translation id="926455622548529175">Changer et supprimer</translation>
+<translation id="927162192666499119">Les données de votre organisation sont privées et sécurisées</translation>
 <translation id="929748059769569925">Texte en surbrillance</translation>
 <translation id="932305336591073205">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="932327136139879170">Accueil</translation>

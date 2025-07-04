@@ -444,6 +444,7 @@
 <translation id="2708051474374549906">Googleলৈ পঠিওৱা আপোনাৰ ব্ৰাউজিঙৰ ডেটাৰ ভিত্তিক বিপজ্জনক ছাইটসমূহ, ডাউনল’ড আৰু এক্সটেনশ্বনৰ পৰা ৰিয়েল টাইমত আগতীয়া সুৰক্ষা</translation>
 <translation id="2709516037105925701">স্বয়ংপূৰ্তি</translation>
 <translation id="271033894570825754">নতুন</translation>
+<translation id="2712929214961145009">চেনচ চেৰিফ</translation>
 <translation id="2718352093833049315">কেৱল ৱাই-ফাইত</translation>
 <translation id="2721190673959776287">ইন-প্ৰ’ডাক্টৰ ৰিচ্চ নমুনাই প্ৰাসংগিক পেনেলৰ বাবে সহায় কৰে, যিটো এদিনত বহুবাৰ দেখুৱাব লাগে।</translation>
 <translation id="2739887572830526131">পাছত টেবসমূহ যোগ দিবলৈ এই গোটটো ৰাখক বা যদি আপোনাক এইটো আৰু নালাগে তেন্তে এইটো মচক।</translation>
@@ -913,6 +914,7 @@
 <translation id="4717844083556844785">বৰ্তমানৰ ৱেবপৃষ্ঠাখন ইনক’গনিট’ত আছে</translation>
 <translation id="4719927025381752090">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="4720530280568305198">আপোনাৰ বাছনি এটা নতুন টেব খোলা হৈছে</translation>
+<translation id="4720782081196952026">পাঠৰ আকাৰ কমাওক</translation>
 <translation id="472259426228234149">মূল্য $১০০ - $১৮০</translation>
 <translation id="4735849923335729414">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰা <ph name="EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5217329997012062137">আপুনি Google Lens ব্যৱহাৰ কৰিলে পৃষ্ঠাখনৰ এটা স্ক্ৰীনশ্বট Googleলৈ প্ৰেৰণ কৰা হয়।</translation>
 <translation id="5220945116117011963">তাৰিখৰ পৰা কেলেণ্ডাৰৰ অনুষ্ঠান সৃষ্টি কৰক</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">নতুন টেব</translation>
 <translation id="5234094073825090254">{count,plural, =1{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}।}one{{email} আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ।}other{{email} আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ।}}</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
@@ -1072,6 +1075,7 @@
 <translation id="5343472494710226394">আপোনাৰ আগ্ৰহৰ ওপৰত আধাৰিত বাতৰি, ক্ৰীড়া আৰু সমল।</translation>
 <translation id="5352128922772839949">ফাইল ছেভ কৰক</translation>
 <translation id="5355191726083956201">বৰ্ধিত সুৰক্ষা অন আছে</translation>
+<translation id="5371112366564891538">পাঠৰ আকাৰ বৃদ্ধি কৰক</translation>
 <translation id="537853552771686272">আপোনাৰ আগ্ৰহ থকা বিষয় আৰু ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} টা বন্ধ কৰা হৈছে}one{{count} টা বন্ধ কৰা হৈছে}other{{count} টা বন্ধ কৰা হৈছে}}</translation>
 <translation id="5394975111793637642">আপোনাৰ বাবে প্ৰ’ডাক্টৰ পৰ্যালোচনা লুকুৱাওক সম্পৰ্কীয় কাৰ্ড</translation>
@@ -1316,6 +1320,7 @@
 <translation id="6295751040240588413">কাৰ্ডৰ উপনাম অমান্য</translation>
 <translation id="629730747756840877">একাউণ্ট</translation>
 <translation id="6301104306974789820">মূল্য ট্ৰেকিঙৰ জাননী পাওক</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">এই ডিভাইচটোত আপোনাৰ আটাইবোৰ পাছৱৰ্ড পাবলৈ নিজৰ পৰিচয় সত্যাপন কৰক</translation>
 <translation id="6316141353357700666">এয়া প্ৰদৰ্শিত হোৱা সূচীৰ পৰা আপুনি ব্যৱহাৰ কৰিব বিচৰা পাছৱৰ্ড বাছনি কৰক।</translation>
 <translation id="6321526113093607004">বুকমাৰ্কত যোগ দিয়ক</translation>
@@ -2076,6 +2081,7 @@
 <translation id="9130317582644834675">পাঠ জুম কৰাৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="913036870884277353">সহজে অন্য এপত লিংকসমূহ খোলক।</translation>
 <translation id="9137013805542155359">মূল সংস্কৰণ দেখুৱাওক</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">আপুনি ছেট কৰা ৰিমাইণ্ডাৰ আৰু আন ডিভাইচৰ টেবৰ বাবে আপডে’ট লাভ কৰক</translation>
 <translation id="914781932147356857">সকলো চিহ্নিত কৰক…</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>

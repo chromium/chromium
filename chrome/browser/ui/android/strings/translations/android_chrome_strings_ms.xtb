@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Terima makluman jika harga produk tersebut turun pada mana-mana laman merentas web</translation>
 <translation id="1140317858355046628">Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan tab "<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan akan dipadamkan daripada semua peranti.</translation>
 <translation id="1142732900304639782">Jangan tawarkan untuk menterjemahkan tapak ini</translation>
-<translation id="1145536944570833626">Padam data sedia ada.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Anda tiada kata laluan yang disimpan dalam Google Password Manager.</translation>
 <translation id="115483310321669804">Gunakan kata laluan <ph name="PASSWORD" /></translation>
@@ -187,6 +186,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1829244130665387512">Cari dalam halaman</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
 <translation id="1845958458910716240">Untuk melindungi data anda, benarkan Chrome mengalih keluar kebenaran daripada laman yang belum anda lawati baru-baru ini</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan pemberitahuan daripada laman ini. Anda boleh menyemak dan mengurus pemberitahuan.}other{Chrome menghentikan pemberitahuan daripada laman ini. Anda boleh menyemak dan mengurus pemberitahuan.}}</translation>
 <translation id="1871098866036088250">Buka dalam penyemak imbas Chrome</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
 <translation id="1877073879466606884">Profil yang anda log masuk ialah profil terurus. Pentadbir anda boleh membuat perubahan pada tetapan profil anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain.</translation>
@@ -635,7 +635,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3911609878849982353">Mengisih mengikut Z hingga A</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> dihidupkan</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3931947361983910192">4 minggu yang lalu</translation>
 <translation id="393697183122708255">Tiada carian suara yg didayakan tersedia</translation>
 <translation id="3950820424414687140">Log masuk</translation>
@@ -993,7 +992,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="549660026907543296">Sertai sebagai <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Kata laluan pada semua peranti anda dibuka pada separuh ketinggian</translation>
 <translation id="5515439363601853141">Buka kunci untuk melihat kata laluan anda</translation>
-<translation id="5517095782334947753">Anda mempunyai penanda halaman, sejarah, kata laluan dan tetapan lain daripada <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Helaian bawah aktiviti baru-baru ini</translation>
 <translation id="5526281268548144413">Tidak boleh ditutup merentas berbilang tetingkap</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
@@ -1329,7 +1327,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Telah menyahlanggan daripada 1 laman}other{Telah menyahlanggan daripada # laman}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 Kata laluan}other{# kata laluan}}</translation>
 <translation id="688730033107341407">Selepas anda log keluar, penanda halaman, kata laluan dan pelbagai lagi dalam Google Account anda akan dialih keluar daripada peranti ini.</translation>
-<translation id="688738109438487280">Tambahkan data sedia ada pada <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin kata laluan anda</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6898797562238201317">Gunakan ungkapan laluan anda sendiri untuk menyulitkan data Chrome dalam Google Account anda</translation>
@@ -1615,7 +1612,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8062594758852531064">Pramuat lanjutan:</translation>
 <translation id="8063895661287329888">Gagal menambah penanda halaman.</translation>
 <translation id="8066816452984416180">Tandai halaman ini dengan cepat. Untuk mengedit pintasan ini, sentuh dan tahan butang.</translation>
-<translation id="806745655614357130">Biarkan data saya diasingkan</translation>
 <translation id="8073388330009372546">Buka imej dalam tab baharu</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8078096376109663956">Kongsi teks sahaja</translation>
@@ -1691,7 +1687,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8361737703487394103">Langkau kepada tab tertentu (1–8)</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> kumpulan tab}other{<ph name="TAB_GROUPS_MANY" /> kumpulan tab}}</translation>
-<translation id="8378850197701296741">Anda mempunyai penanda halaman, sejarah dan tetapan lain daripada <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Sahkan itu anda</translation>
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8396098434728053815">Kongsi audio tab juga</translation>

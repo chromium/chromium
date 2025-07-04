@@ -2872,7 +2872,6 @@
 <translation id="5847181246682413476">پاور سپلائیز</translation>
 <translation id="584902713199270089">ڈیٹنگ اور ذاتیات</translation>
 <translation id="5851548754964597211">ٹیب کی فہرست</translation>
-<translation id="5851868085455377790">جاری کنندہ</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">آن کریں</translation>
 <translation id="5862579898803147654">اسٹیکر 8</translation>
@@ -3732,6 +3731,7 @@
 <translation id="7292031607255951991">وصول کنندہ کا نام</translation>
 <translation id="7298195798382681320">تجویز کردہ</translation>
 <translation id="7299471494012161875">ڈسپلے پیریفیرلز منسلک ہیں</translation>
+<translation id="7299769361777046949">‏‫Google والٹ میں لائلٹی کارڈز کا نظم کریں</translation>
 <translation id="7300012071106347854">کوبالٹ نیلا</translation>
 <translation id="7304030187361489308">زیادہ</translation>
 <translation id="7304562222803846232">‏Google اکاؤنٹ کی رازداری کا نظم کریں</translation>
@@ -4150,7 +4150,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> منٹ قبل}=1{‫<ph name="TIME_COUNT" /> گھنٹہ قبل}other{‫<ph name="TIME_COUNT" /> دن قبل}}</translation>
 <translation id="7979595116210197019">غذائی سروس</translation>
 <translation id="798134797138789862">سائٹ ورچوئل رئیلٹی آلات اور ڈیٹا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
-<translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ نے جلد بازی والی اسنادات بھیجی ہیں جس پر Chrome کارروائی نہیں کر سکتا ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

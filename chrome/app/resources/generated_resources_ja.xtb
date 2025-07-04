@@ -3713,6 +3713,7 @@
 <translation id="3592260987370335752">詳細(&amp;L)</translation>
 <translation id="3592344177526089979">タブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3593152357631900254">ファジーピンイン モードを有効にする</translation>
+<translation id="3593953853060020305">このサイトに <ph name="FILE_NAME" /> の編集を許可しますか？</translation>
 <translation id="3593965109698325041">証明書名の制約</translation>
 <translation id="3596012367874587041">アプリの設定</translation>
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
@@ -4674,6 +4675,7 @@
 <translation id="4249785854468467847">AI で Chrome の機能を強化</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4250680216510889253">いいえ</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを表示し、独自のコピーを作成できます</translation>
 <translation id="4251377547188244181">キオスクとサイネージ デバイスの登録</translation>
 <translation id="4252828488489674554">タブグループ名を右クリックするとグループを編集できます。クリックするとグループが閉じます</translation>
 <translation id="4252899949534773101">Bluetooth が無効です</translation>
@@ -6614,6 +6616,7 @@
 <translation id="5643321261065707929">従量制ネットワーク</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5646558797914161501">ビジネスマン</translation>
+<translation id="5647989922796038257">すべてのオーディオ出力も共有する</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
 <translation id="5651308944918885595">ニアバイシェアの検出の許可</translation>
@@ -8616,6 +8619,7 @@
 <translation id="7093220653036489319">クイック アンサー</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
 <translation id="7094768688212290897">ギザの大ピラミッド</translation>
+<translation id="7094834615934458012">このサイトにファイルの編集を許可しますか？</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7098447629416471489">保存したその他の検索エンジンがここに表示されます</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
@@ -8989,6 +8993,7 @@
 <translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="73786666777299047">Chrome ウェブストアを開きます</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同じタスクグループ内の他 のタスク: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同じタスクグループ内の他 # 件のタスク: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示し、独自のコピーを作成できます</translation>
 <translation id="7380272457268061606">ローカルデータの復元を無効にしますか？</translation>
 <translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
@@ -9733,6 +9738,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{アイテム}other{# 件のアイテム}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ガイドに沿って、プライバシーとセキュリティに関する重要な設定を確認します。その他のオプションについては、それぞれの設定で行います。</translation>
+<translation id="7887286029584695415">このサイトにファイルの表示とコピーを許可しますか？</translation>
 <translation id="7887334752153342268">タブを複製</translation>
 <translation id="7887864092952184874">Bluetooth マウスがペア設定されました</translation>
 <translation id="7889371445710865055">音声入力の言語を変更</translation>
@@ -9818,6 +9824,7 @@
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7944847494038629732">スキャナの USB ケーブルを外し、もう一度差し込んでみてください</translation>
 <translation id="7945703887991230167">好きな音声</translation>
+<translation id="7946243258100028201">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを表示し、独自のコピーを作成できます</translation>
 <translation id="7946586320617670168">保護されている発行元でなければなりません</translation>
 <translation id="7946681191253332687">セキュリティ アップデートを延長可能</translation>
 <translation id="794676567536738329">許可の確認</translation>
@@ -10027,6 +10034,7 @@
 <translation id="8079606020824373126">Google パスワード マネージャーでアカウントのパスワードを安全なものに変更し、<ph name="EMAIL" /> に保存できます。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
 <translation id="8080028325999236607">すべてのタブを閉じる</translation>
+<translation id="8080530871547404884">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示してコピーを作成できます</translation>
 <translation id="8081989000209387414">ADB デバッグを無効にしますか？</translation>
 <translation id="8082106343289440791">「<ph name="DEVICE_NAME" />」とペア設定しますか？</translation>
 <translation id="8082132721957920509">支払いカードが保存されました</translation>
@@ -10794,6 +10802,7 @@
 <translation id="862750493060684461">CSS キャッシュ</translation>
 <translation id="8627795981664801467">セキュリティで保護された接続のみ</translation>
 <translation id="8627804903623428808">以下の利用規約を確認してお子様のデータをコントロールしてください</translation>
+<translation id="862907440446514309">管理者が <ph name="APP0_NAME" /> を使用して画面を録画しています。</translation>
 <translation id="8630338733867813168">充電時のスリープ設定</translation>
 <translation id="8631032106121706562">デイジー</translation>
 <translation id="8632104508818855045"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
@@ -11313,6 +11322,7 @@
 <translation id="897525204902889653">検疫サービス</translation>
 <translation id="8975396729541388937">配信登録は、このメールのリンクをクリックして、いつでも解除できます。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
+<translation id="897565255818387330">このサイトに <ph name="FILE_NAME" /> の表示とコピーを許可しますか？</translation>
 <translation id="8977523125954274918">学校用プロフィールを設定すると、パスワードなどをアカウントに保存して使用できます</translation>
 <translation id="8977811652087512276">パスワードが間違っているか、ファイルが壊れています</translation>
 <translation id="8978154919215542464">オン - すべて同期</translation>

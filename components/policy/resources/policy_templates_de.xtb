@@ -1698,6 +1698,7 @@ Ist die Richtlinie deaktiviert, können Nutzer diese Funktion nicht verwenden.
 
       Wenn du "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegst (Wert: 2), werden auf dem Anmeldebildschirm keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_OS_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
 <translation id="2215746393279570703">Floating-SSO-Einstellungen</translation>
+<translation id="2219724363635419721">„Automatische Untertitel“ deaktivieren</translation>
 <translation id="2221779615493499989">Mit dieser Richtlinie wird festgelegt, ob der Netzwerkstatus des Nutzers auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
@@ -5492,6 +5493,15 @@ Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Ba
 
 Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="4960597185231686653">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Spracheingabe aktiviert ist.</translation>
+<translation id="49677896192199414">Funktion „Automatische Untertitel“ aktivieren.
+
+Wenn diese Richtlinie aktiviert ist, ist „Automatische Untertitel“ immer aktiviert.
+
+Ist die Richtlinie deaktiviert, ist „Automatische Untertitel“ immer deaktiviert.
+
+Wird die Richtlinie als verbindlich konfiguriert, kann sie vom Nutzer nicht geändert oder überschrieben werden.
+
+Ist die Richtlinie nicht konfiguriert, ist „Automatische Untertitel“ anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
 <translation id="4974091268178043378">Chrome OS-Farbmodus</translation>
@@ -6262,6 +6272,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5476152378885134514">Zwischenablage für diese Websites blockieren</translation>
 <translation id="5479841110985196412">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5480380613778757009">Wenn diese Richtlinie deaktiviert oder nicht eingerichtet ist, werden alle in der verwalteten Gastsitzung festgelegten Anzeigeeinstellungen zurückgesetzt, sobald die Sitzung beendet ist. Ist diese Richtlinie auf „True“ gesetzt, bleiben Anzeigeeigenschaften nach dem Beenden der verwalteten Gastsitzung bestehen.</translation>
+<translation id="548137908954174608">„Automatische Untertitel“ aktivieren</translation>
 <translation id="5483012943408894695">Ursprünge oder Hostnamenmuster, für die Einschränkungen für unsichere Ursprünge nicht gelten sollen</translation>
 <translation id="5483065054530244863">SHA-1-signierte Zertifikate zulassen, die von lokalen Vertrauensankern ausgestellt werden</translation>
 <translation id="5486352219019836984">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
@@ -9677,6 +9688,9 @@ Hinweis: Sofern konfiguriert, überschreibt „<ph name="DEVICE_LOGIN_SCREEN_SCR
 <translation id="7841883965249733328">Automatisches Upgrade für gemischte Inhalte deaktivieren</translation>
 <translation id="7845130996290850593">Kerberos aktivieren</translation>
 <translation id="7846952520291088817">URLs, für die lokale IPs in WebRTC ICE Candidates offengelegt sind</translation>
+<translation id="7847374643492493038">Wenn die Richtlinie auf „True“ (oder „<ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" />“ auf „False“) gesetzt ist, können Webseiten nicht auf die WebGL API zugreifen.
+
+      Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, können Webseiten die WebGL API nutzen, doch bei den Standardeinstellungen des Browsers kann es weiterhin erforderlich sein, dass zur Verwendung dieser APIs Argumente über die Befehlszeile eingegeben werden müssen.</translation>
 <translation id="7848641140449742406">Einstellungen des Betriebssystems</translation>
 <translation id="7850846808758624237">Wenn die Richtlinie aktiviert ist, wird bei der ersten Ausführung die Startseite des vorherigen Standardbrowsers importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird bei der ersten Ausführung keine Startseite importiert.
 
@@ -10912,6 +10926,17 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8705895771006864851">Wenn du diese Richtlinie auf "True" setzt, wird eine Übersetzungsfunktion implementiert, wenn dies für Nutzer angemessen ist. In diesem Fall werden in <ph name="PRODUCT_NAME" /> eine integrierte Übersetzungssymbolleiste sowie eine Übersetzungsfunktion im Kontextmenü angezeigt, das mit einem Rechtsklick geöffnet werden kann. Wird die Richtlinie auf "False" gesetzt, werden alle integrierten Übersetzungsfunktionen ausgeschaltet.
 
       Nach dem Konfigurieren der Richtlinie kann diese Funktion von den Nutzern nicht mehr geändert werden. Ist sie dagegen nicht konfiguriert, kann der Nutzer die Einstellung ändern.</translation>
+<translation id="8707290517123095787">Übersetzung von automatischen Untertiteln aktivieren. Die Untertitel werden zur Übersetzung an Google gesendet.
+
+Wenn diese Richtlinie aktiviert ist, ist die Funktion „Live-Übersetzung“ immer aktiviert.
+
+Ist die Richtlinie deaktiviert, ist „Live-Übersetzung“ immer deaktiviert.
+
+Wird die Richtlinie als verbindlich konfiguriert, kann sie vom Nutzer nicht geändert oder überschrieben werden.
+
+Ist die Richtlinie nicht konfiguriert, ist „Live-Übersetzung“ anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.
+
+Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiviert ist, ist „Live-Übersetzung“ unabhängig von dieser Richtlinieneinstellung deaktiviert.</translation>
 <translation id="8707790573162457301">Automatische Datenträgerbereinigung während der Anmeldung ausführen</translation>
 <translation id="8712609946151927008">Wöchentliche Intervalle für den Ruhemodus festlegen</translation>
 <translation id="8713535263782304771">Safe Browsing deaktivieren</translation>

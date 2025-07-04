@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pour autoriser l'association</translation>
 <translation id="1421484961346698724">Compte supprimé</translation>
 <translation id="14222610277930434">Vous visitez souvent cette page</translation>
+<translation id="1422795627423046860">La date est incorrecte</translation>
 <translation id="1422930527989633628">Les sites peuvent demander à découvrir les appareils Bluetooth à proximité</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1427192966110103169">Piscines, saunas et spas personnels</translation>
@@ -2870,7 +2871,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5847181246682413476">Alimentations électriques</translation>
 <translation id="584902713199270089">Rencontres et services personnels</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
-<translation id="5851868085455377790">Émetteur</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
@@ -4147,7 +4147,6 @@ Détails supplémentaires :
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Il y a <ph name="TIME_COUNT" /> min}=1{Il y a <ph name="TIME_COUNT" /> h}one{Il y a <ph name="TIME_COUNT" /> j}other{Il y a <ph name="TIME_COUNT" /> j}}</translation>
 <translation id="7979595116210197019">Service alimentaire</translation>
 <translation id="798134797138789862">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
-<translation id="7982789257301363584">Réseau</translation>
 <translation id="7983008347525536475">VUS</translation>
 <translation id="7984945080620862648">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car il a envoyé des identifiants brouillés qui ne peuvent être traités par Chrome. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4815,6 +4814,7 @@ Détails supplémentaires :
 <translation id="9155211586651734179">Périphériques audio connectés</translation>
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
+<translation id="9158491153040481956">Vous avez récemment modifié un mot de passe trouvé dans une violation de données publique. En cas de problème, le gestionnaire de mots de passe peut vous aider à vous connecter.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut comporter du contenu de nature délicate}one{<ph name="FILE_COUNT" /> fichier peut comporter du contenu de nature délicate}other{<ph name="FILE_COUNT" /> fichiers peuvent comporter du contenu de nature délicate}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> : pour quitter le mode plein écran, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Message Slack</translation>

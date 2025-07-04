@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Атрымлівайце абвесткі, калі цана зніжаецца на любым сайце ў інтэрнэце</translation>
 <translation id="1140317858355046628">Калі вы выдаліце яе, усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />" і яна будзе выдалена з усіх прылад.</translation>
 <translation id="1142732900304639782">Не прапаноўваць перакладаць гэтыя сайты</translation>
-<translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1150263420752757504">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У Менеджары пароляў Google няма захаваных пароляў.</translation>
 <translation id="115483310321669804">Выкарыстаць пароль <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Адсартавана па алфавіце (ад Я да А)</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />: уключана</translation>
 <translation id="3927692899758076493">Без засечак</translation>
-<translation id="3928666092801078803">Аб’яднаць мае даныя</translation>
 <translation id="3931947361983910192">апошнія 4 тыдні</translation>
 <translation id="393697183122708255">Уключаны галасавы пошук недаступны</translation>
 <translation id="3950820424414687140">Увайсці</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">Далучыцца як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Аркуш "Паролі на ўсіх вашых прыладах" адкрыты на палову экрана</translation>
 <translation id="5515439363601853141">Каб паглядзець пароль, трэба зняць блакіроўку</translation>
-<translation id="5517095782334947753">У вас ёсць закладкі, гісторыя, паролі і іншыя налады з уліковага запісу <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Ніжні аркуш з нядаўнімі дзеяннямі</translation>
 <translation id="5526281268548144413">Нельга закрыць у некалькіх вокнах</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Вы адпісаліся ад 1 сайта}one{Вы адпісаліся ад # сайта}few{Вы адпісаліся ад # сайтаў}many{Вы адпісаліся ад # сайтаў}other{Вы адпісаліся ад # сайта}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 пароль}one{# пароль}few{# паролі}many{# пароляў}other{# пароля}}</translation>
 <translation id="688730033107341407">Пасля таго, як вы выйдзеце, з гэтай прылады будуць выдалены закладкі, паролі і іншыя даныя з вашага Уліковага запісу Google.</translation>
-<translation id="688738109438487280">Дадаць існуючыя даныя ва ўліковы запіс <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Разблакіруйце, каб скапіраваць пароль</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6898797562238201317">Выкарыстоўваць для шыфравання ўсіх даных Chrome ва Уліковым запісе Google уласную фразу-пароль</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">Пашыраная перадзагрузка:</translation>
 <translation id="8063895661287329888">Не ўдалося дадаць закладку.</translation>
 <translation id="8066816452984416180">Хутка дадаць гэту старонку ў закладкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
-<translation id="806745655614357130">Захоўваць мае даныя асобна</translation>
 <translation id="8073388330009372546">Адкрыць відарыс у нов. укладцы</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8078096376109663956">Абагульце толькі тэкст</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">Перайсці да ўказанай укладкі (1–8)</translation>
 <translation id="8368001212524806591">Адсочваць цану</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> група ўкладак}one{<ph name="TAB_GROUPS_MANY" /> група ўкладак}few{<ph name="TAB_GROUPS_MANY" /> групы ўкладак}many{<ph name="TAB_GROUPS_MANY" /> груп укладак}other{<ph name="TAB_GROUPS_MANY" /> групы ўкладак}}</translation>
-<translation id="8378850197701296741">У вас ёсць закладкі, гісторыя і іншыя налады ва ўліковым запісе <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Прайдзіце спраўджанне асобы</translation>
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8396098434728053815">Таксама абагуліць аўдыя з укладкі</translation>

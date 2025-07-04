@@ -3731,6 +3731,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3592260987370335752">&amp;Научете повече</translation>
 <translation id="3592344177526089979">Към <ph name="DEVICE_NAME" /> се предава раздел</translation>
 <translation id="3593152357631900254">Активиране на режим „неточен пинин“</translation>
+<translation id="3593953853060020305">Да се разреши ли на този сайт да редактира „<ph name="FILE_NAME" />“?</translation>
 <translation id="3593965109698325041">Ограничения за името на сертификата</translation>
 <translation id="3596012367874587041">Настройки за приложението</translation>
 <translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
@@ -4694,6 +4695,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4249785854468467847">Преоткрийте Chrome с разширени възможности, базирани на AI</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4250680216510889253">Не</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> ще може да преглежда и да прави свои собствени копия на файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="4251377547188244181">Регистриране на устройство за павилионен режим или режим за дигитални знаци и надписи</translation>
 <translation id="4252828488489674554">Кликнете с десния бутон върху името на групата раздели, за да я редактирате, или кликнете с левия бутон за свиване</translation>
 <translation id="4252899949534773101">Функцията за Bluetooth е деактивирана</translation>
@@ -8646,6 +8648,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7093220653036489319">Бързи отговори</translation>
 <translation id="7093866338626856921">Обмен на данни с устройствата със следните имена: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Великата пирамида в Гиза</translation>
+<translation id="7094834615934458012">Да се разреши ли на този сайт да редактира файлове?</translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
 <translation id="7098447629416471489">Тук ще се покажат другите запазени търсещи машини</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Премахване на приложението}other{Премахване на приложенията}}</translation>
@@ -9019,6 +9022,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7377481913241237033">Свързване чрез код</translation>
 <translation id="73786666777299047">Отваряне на уеб магазина на Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Друга задача в същата група задачи: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Още # задачи в същата група задачи: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> ще може да преглежда и да прави свои собствени копия на „<ph name="FILENAME" />“</translation>
 <translation id="7380272457268061606">Да се деактивира ли възстановяването на локални данни?</translation>
 <translation id="7380459290951585794">Телефонът трябва да е наблизо, да е отключен и Bluetooth и функцията за Wi-Fi да са включени</translation>
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
@@ -9764,6 +9768,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7886279613512920452">{COUNT,plural, =1{елемент}other{# елемента}}</translation>
 <translation id="7886605625338676841">Електронна SIM карта</translation>
 <translation id="7887174313503389866">Направете обиколка с упътване на ключовите контроли за поверителност и сигурност. За още опции отворете отделните настройки.</translation>
+<translation id="7887286029584695415">Да се разреши ли на този сайт да преглежда и копира файлове?</translation>
 <translation id="7887334752153342268">Дублиране</translation>
 <translation id="7887864092952184874">Мишката с Bluetooth е сдвоена</translation>
 <translation id="7889371445710865055">Промяна на езика за диктуване</translation>
@@ -9849,6 +9854,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>
 <translation id="7944847494038629732">Извадете USB кабела на скенера и пак го включете, за да опитате отново</translation>
 <translation id="7945703887991230167">Предпочитан глас</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> ще може да преглежда файловете в(ъв) „<ph name="FOLDERNAME" />“ и да прави свои собствени копия на тях, докато не затворите всички раздели със сайта</translation>
 <translation id="7946586320617670168">Източникът трябва да е сигурен</translation>
 <translation id="7946681191253332687">Налице са удължени актуализации за сигурност</translation>
 <translation id="794676567536738329">Потвърждаване на разрешенията</translation>
@@ -10058,6 +10064,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8079606020824373126">Google Мениджър на пароли може да актуализира профила ви с надеждна парола и да я запази в(ъв) <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сайтовете могат да извеждат запитвания за управление на прозорците на всичките ви дисплеи</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> ще може да преглежда „<ph name="FILENAME" />“ и да прави свои собствени копия на файла, докато не затворите всички раздели със сайта</translation>
 <translation id="8081989000209387414">Да се деактивира ли отстраняването на грешки през ADB?</translation>
 <translation id="8082106343289440791">Искате ли да сдвоите с(ъс) „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082132721957920509">Картата ви е запазена</translation>
@@ -10825,6 +10832,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="862750493060684461">Кеш за CSS</translation>
 <translation id="8627795981664801467">Само сигурни връзки</translation>
 <translation id="8627804903623428808">Прегледайте тези условия и управлявайте данните на детето си</translation>
+<translation id="862907440446514309">Администраторът ви записва екрана ви чрез <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Спящ режим при зареждане</translation>
 <translation id="8631032106121706562">Цвете</translation>
 <translation id="8632104508818855045">По-рано избрахте да не разрешавате разширенията на <ph name="ORIGIN" /></translation>
@@ -11344,6 +11352,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="897525204902889653">Услуга за поставяне под карантина</translation>
 <translation id="8975396729541388937">Можете да се отпишете по всяко време, като кликнете върху връзката в получените от вас имейли.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и още 1 раздел}other{„<ph name="TAB_TITLE" />“ и още # раздела}}</translation>
+<translation id="897565255818387330">Да се разреши ли на този сайт да преглежда и копира „<ph name="FILE_NAME" />“?</translation>
 <translation id="8977523125954274918">Настройте училищен потребителски профил, за да запазвате и използвате паролите си и др. в профила си</translation>
 <translation id="8977811652087512276">Неправилна парола или повреден файл</translation>
 <translation id="8978154919215542464">Включено (всичко се синхронизира)</translation>

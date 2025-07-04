@@ -2415,6 +2415,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5043753287208271200">Amarelo 3</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="5048293684454354469">Os tópicos de anúncios são apenas um dos muitos elementos que um site pode usar para personalizar anúncios. Mesmo sem tópicos de anúncios, os sites podem continuar a mostrar-lhe anúncios, mas estes podem ser menos personalizados. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, prima Tab para ver mais atalhos de pesquisa disponíveis após esta sugestão de pesquisa</translation>
 <translation id="5052517576853118371">Tópicos ativos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="505757197798929356">Indique o motivo para a abertura (obrigatório)</translation>
@@ -2871,7 +2872,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5847181246682413476">Fontes de alimentação</translation>
 <translation id="584902713199270089">Encontros e anúncios pessoais</translation>
 <translation id="5851548754964597211">Lista de separadores</translation>
-<translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
@@ -4149,7 +4149,6 @@ Detalhes adicionais:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Há <ph name="TIME_COUNT" /> min}=1{Há <ph name="TIME_COUNT" /> h}other{Há <ph name="TIME_COUNT" /> dias}}</translation>
 <translation id="7979595116210197019">Serviço de catering</translation>
 <translation id="798134797138789862">Pode solicitar a utilização de dados e dispositivos de realidade virtual</translation>
-<translation id="7982789257301363584">Rede</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">De momento é possível visitar <ph name="SITE" /> porque o Website enviou credenciais codificadas que o Chrome não consegue processar. Os erros de rede e os ataques normalmente são temporários, por isso, esta página voltará provavelmente a funcionar.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

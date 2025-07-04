@@ -907,6 +907,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
        Aukeratu zer egin nahi duzun gailuan lehendik dauden arakatze-datuekin.</translation>
 <translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
+<translation id="4691892551491778176">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AAko eredu generatiboak hobetzeko. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4709570498586527752">Zuretzat ordu ezberdinetan egokienak diren eginbideak</translation>
 <translation id="4717844083556844785">Web-orri hau ezkutuko moduan dago</translation>
@@ -1188,6 +1189,8 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5804012843049740908">Chrome-ri etekinik handiena ateratzen laguntzen dizuten konfigurazio-aholkuak</translation>
 <translation id="5804241973901381774">Baimenak</translation>
+<translation id="58081802114142635">Zure jarduerek Google-ren AA hobetzen dute</translation>
+<translation id="5813223718099710537">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="5817176759448082654">Pasahitz-egiaztapena</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> da arakatzailearen kudeatzailea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkronizatzen…</translation>
@@ -1457,6 +1460,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6759709389246683070">Geroago berriro bisitatzeko gogorarazpen bat ezartzeko, fitxa hau sakatuta eduki dezakezu</translation>
 <translation id="6761393919622941301">Audioak</translation>
 <translation id="6770452996697898492">[ERRESERBATUTA]</translation>
+<translation id="6775647281444147078">Zure erakundearen txatak ez dira erabiltzen gure ereduak hobetzeko. Baliteke Gemini-k informazio okerra bistaratzea (jendeari buruzkoa barne); beraz, egiaztatu erantzunak. Zure pribatutasuna eta Gemini</translation>
 <translation id="6779455296366983087">Arakatze-datuak ezabatuko dira</translation>
 <translation id="6790502149545262384">Laster, <ph name="CHANNEL_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="6791425686608802741">Sakatu "Gehitu fitxa talde berri batean".</translation>
@@ -1592,6 +1596,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7412027924265291969">Egin aurrera</translation>
 <translation id="741204030948306876">Bai, ados</translation>
 <translation id="7417689656810783109">Aldatu taldearen izena</translation>
+<translation id="7418703176995102827">Gemini-rekin dituzun elkarrizketak eta Google Workspace-ko datuak ez dituzte berrikusiko gizakiek, eta ez dira erabiliko AAko eredu generatiboak hobetzeko.</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
 <translation id="7425053386765766120">Gehitu ordainketa-metodo bat…</translation>
 <translation id="7425346204213733349">Aurrerantzean, ez dira Google-ko kontuarekin sinkronizatuko laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egiten dituzun aldaketak. Hala ere, orain arteko datuak Google-ko kontuan izaten jarraituko duzu.</translation>
@@ -1648,6 +1653,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="760667371114328991">Desaktibatu segurtasun-egiaztapenaren jakinarazpenak</translation>
 <translation id="7612619742409846846">Kontu honekin hasi duzu saioa Google-n:</translation>
 <translation id="7612849887607288481">Ireki AAko prototipoaren menua</translation>
+<translation id="7615581988398168124">Google-ren Baldintzak eta Gemini-ren aplikazioen Pribatutasun-oharra aplikatzen dira. Baliteke Gemini-k akatsak egitea; beraz, egiaztatu erantzunak.</translation>
 <translation id="7620522820075868385">Utzi</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Arriskuan dauden pasahitzak}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
@@ -1823,6 +1829,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="826614135184049678">iPad-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
 <translation id="8273982424131314219"><ph name="URL" /> helbideari emango diozu informazioa</translation>
 <translation id="8275068909952022340">Gehiago…</translation>
+<translation id="8277328362018795342">Orriaren edukia partekatzen da, erantzun egokiagoak emateko</translation>
 <translation id="8278488584187265939">Pertsonalizatu orri nagusia</translation>
 <translation id="8281781826761538115">Lehenetsia - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltatu</translation>
@@ -1897,6 +1904,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8560253818350321773">Erakutsi maiz erabiltzen diren elementuak lehenik.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Pasahitz {count} dago erabilgarri teklatuaren gainean.}other{{count} pasahitz daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="8564894539416715395">Fitxa berriaren orria</translation>
+<translation id="8569414323292250522">Google-ren AA hobetzeko berrikusiko eta erabiliko dira txatak. Lortu zure aukerei buruzko informazioa. Zure kokapenari buruzko informazioa ere jarduerekin batera gordetzen da.</translation>
 <translation id="8569721750632860947">Zer URL gehitu nahi duzu irakurketa-zerrendan?</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
 <translation id="8577056989960190117">Bete automatikoki iraungitze-urtea <ph name="YEAR" /> urtearekin</translation>
@@ -2079,6 +2087,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9206887540681440657">Abiadura</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
 <translation id="926455622548529175">Aldatu eta ezabatu</translation>
+<translation id="927162192666499119">Zure erakundearen datuak pribatuak dira eta babestuta daude</translation>
 <translation id="929748059769569925">Nabarmendutako testua</translation>
 <translation id="932305336591073205">{count,plural, =1{Itxi fitxa}other{Itxi fitxak}}</translation>
 <translation id="932327136139879170">Hasiera</translation>

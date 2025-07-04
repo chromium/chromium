@@ -2867,7 +2867,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5847181246682413476">Quvvatlash jihozlari</translation>
 <translation id="584902713199270089">Tanishuv va shaxsiy maʼlumotlar</translation>
 <translation id="5851548754964597211">Ichki oynalar ro‘yxati</translation>
-<translation id="5851868085455377790">Noshir</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862579898803147654">Taxlovchi 8</translation>
@@ -4144,7 +4143,6 @@ Batafsil axborot:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> daq oldin}=1{<ph name="TIME_COUNT" /> st oldin}other{<ph name="TIME_COUNT" /> kun oldin}}</translation>
 <translation id="7979595116210197019">Taom xizmati</translation>
 <translation id="798134797138789862">Virtual reallik qurilmalari va axborotlardan foydalanish uchun ruxsat soʻrashi mumkin</translation>
-<translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7983008347525536475">Yoʻl tanlamas avtomobillar</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> saytiga o‘tib bo‘lmadi, chunki veb-sayt shifrlangan hisob ma’lumotlarini yubordi, Chrome ular bilan ishlay olmaydi. Tarmoq xatoligi yoki saytga hujumlar odatda vaqtinchalik bo‘ladi, shu sababli bu sahifa keyinroq ishga tushishi mumkin.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4832,6 +4830,7 @@ Batafsil axborot:
 <translation id="9174917557437862841">Varaqlar orasida almashtirish tugmasi, shu varaqqa almashish uchun Enter tugmasini bosing</translation>
 <translation id="9177283544810807743">Bu PDF fayl ochilmaydi. Matn Google AI yordamida chiqarilmoqda</translation>
 <translation id="9179703756951298733">Toʻlov va kredit karta axborotini Chrome sozlamalari orqali boshqarish</translation>
+<translation id="9179766227052716237">Tashkilot xabari: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">Har qaysi saytda narxi tushganda email orqali ogohlantirish olish</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sayti qo‘llab-quvvatlanmaydigan protokoldan foydalanmoqda.</translation>

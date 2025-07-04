@@ -61,6 +61,7 @@
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
 <translation id="1704230497453185209">사이트에서 소리를 재생하도록 허용하지 않음</translation>
 <translation id="1717218214683051432">움직임 감지 센서</translation>
+<translation id="1717996979683942279">사용 설정하면 사이트에서 모든 디스플레이의 창 관리를 요청할 수 있습니다. 사용 중지하면 사이트에서 모든 디스플레이의 창을 관리할 수 없습니다.</translation>
 <translation id="1743802530341753419">사이트에서 내 기기에 연결하도록 허용하기 전에 확인(권장)</translation>
 <translation id="1777815584158991902">디스커버 피드 하단 시트</translation>
 <translation id="1779089405699405702">이미지 디코더</translation>
@@ -171,6 +172,7 @@
 <translation id="2968755619301702150">인증서 뷰어</translation>
 <translation id="2979365474350987274">서드 파티 쿠키 제한됨</translation>
 <translation id="2990583317361835189">사이트에서 움직임 감지 센서를 사용하도록 허용하지 않음</translation>
+<translation id="3004438526346162184">사이트에서 이 기능을 사용하여 모든 디스플레이의 창을 관리할 수 있습니다.</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
@@ -439,6 +441,7 @@
 <translation id="6071501408666570960">이 사이트에서 로그아웃될 수 있습니다</translation>
 <translation id="6085954183010297841">파일 수정 권한을 삭제하시겠습니까? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">사용 설정하면 사이트에서 사용자가 현재 기기를 사용 중인지에 관한 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 사용자가 현재 기기를 사용 중인지 확인할 수 없습니다.</translation>
+<translation id="615886654739818377">사이트에서 모든 디스플레이의 창을 관리하도록 허용 안함</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6171020522141473435">사용 설정하면 사이트에서 블루투스 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 블루투스 기기를 사용할 수 없습니다.</translation>
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>

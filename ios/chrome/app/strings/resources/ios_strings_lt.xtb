@@ -444,6 +444,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2708051474374549906">Realiuoju laiku teikiama, proaktyvi apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių, pagrįsta jūsų naršymo duomenimis, siunčiamais „Google“</translation>
 <translation id="2709516037105925701">Automatinis pildymas</translation>
 <translation id="271033894570825754">Naujiena</translation>
+<translation id="2712929214961145009">Be užraitų</translation>
 <translation id="2718352093833049315">Tik su „Wi–Fi“</translation>
 <translation id="2721190673959776287">Pavyzdinio kontekstinis skydelio raiškiosios medijos pagalba produkte, kuri turi būti rodoma kelis kartus per dieną.</translation>
 <translation id="2739887572830526131">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba ištrinkite, jei jos nebereikia.</translation>
@@ -913,6 +914,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4717844083556844785">Dabartinis tinklalapis atidarytas inkognito režimu</translation>
 <translation id="4719927025381752090">Siūlyti versti</translation>
 <translation id="4720530280568305198">Pasirinkimas atidarytas naujame skirtuke</translation>
+<translation id="4720782081196952026">Sumažinti teksto dydį</translation>
 <translation id="472259426228234149">Kaina 100–180 USD</translation>
 <translation id="4735849923335729414">Prisijunkite kaip <ph name="EMAIL" />, kurį valdo jūsų organizacija.</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
@@ -1045,6 +1047,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5217329997012062137">Kai naudojate „Google Lens“, puslapio ekrano kopija siunčiama „Google“.</translation>
 <translation id="5220945116117011963">Kalendoriaus įvykių kūrimas pagal datas</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">Naujas skirtukas</translation>
 <translation id="5234094073825090254">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}.}one{Žymės išsaugotos „Google“ paskyroje {email}.}few{Žymės išsaugotos „Google“ paskyroje {email}.}many{Žymės išsaugotos „Google“ paskyroje {email}.}other{Žymės išsaugotos „Google“ paskyroje {email}.}}</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
@@ -1072,6 +1075,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5343472494710226394">Naujienos, sportas ir turinys pagal jūsų pomėgius.</translation>
 <translation id="5352128922772839949">Išsaugoti failą</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
+<translation id="5371112366564891538">Padidinti teksto dydį</translation>
 <translation id="537853552771686272">Tvarkykite jus dominančias temas ir svetaines</translation>
 <translation id="5390458669633674385">{count,plural, =1{Uždaryta: {count}}one{Uždaryta: {count}}few{Uždaryta: {count}}many{Uždaryta: {count}}other{Uždaryta: {count}}}</translation>
 <translation id="5394975111793637642">Slėpti atsiliepimų apie produktus jums kortelę</translation>
@@ -1316,6 +1320,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6295751040240588413">Netinkamas kortelės slapyvardis</translation>
 <translation id="629730747756840877">Paskyra</translation>
 <translation id="6301104306974789820">Gaukite kainų stebėjimo pranešimus</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">Patvirtinkite savo tapatybę, kad gautumėte visus slaptažodžius šiame įrenginyje</translation>
 <translation id="6316141353357700666">Iš pateikto sąrašo pasirinkite norimą naudoti slaptažodį.</translation>
 <translation id="6321526113093607004">Pridėti prie žymių</translation>
@@ -2070,6 +2075,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9130317582644834675">Slėpti parinktį „Keisti teksto mastelį“</translation>
 <translation id="913036870884277353">Lengvai atidarykite nuorodas kitose programose.</translation>
 <translation id="9137013805542155359">Rodyti originalą</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">Gaukite nustatytų priminimų ir skirtukų iš kitų įrenginių atnaujinimus</translation>
 <translation id="914781932147356857">Pažymėti visus…</translation>
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>

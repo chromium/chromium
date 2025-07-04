@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1140317858355046628">Když skupinu karet <ph name="GROUP_NAME" /> smažete, všichni k ní okamžitě ztratí přístup a smaže se ze všech zařízení.</translation>
 <translation id="1142732900304639782">Nenabízet překlad těchto webů</translation>
-<translation id="1145536944570833626">Smazat existující data.</translation>
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Ve Správci hesel Google nemáte uložená hesla.</translation>
 <translation id="115483310321669804">Použít heslo <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3911609878849982353">Řazení od Z do A</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je zapnutý</translation>
 <translation id="3927692899758076493">Bezpatková</translation>
-<translation id="3928666092801078803">Sloučit má data</translation>
 <translation id="3931947361983910192">z posledních 4 týdnů</translation>
 <translation id="393697183122708255">Hlasové vyhledávání není k dispozici</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
@@ -993,7 +991,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="549660026907543296">Přidat se jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Panel Hesla ve všech vašich zařízeních je otevřený na poloviční výšku</translation>
 <translation id="5515439363601853141">Chcete-li zobrazit heslo, odemkněte zařízení</translation>
-<translation id="5517095782334947753">Máte záložky, historii, hesla a další nastavení z účtu <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Spodní panel s nedávnou aktivitou</translation>
 <translation id="5526281268548144413">Nelze zavřít ve více oknech</translation>
 <translation id="5548606607480005320">Bezpečnostní kontrola</translation>
@@ -1329,7 +1326,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Byl odhlášen odběr oznámení z 1 webu}few{Byl odhlášen odběr oznámení ze # webů}many{Byl odhlášen odběr oznámení z # webu}other{Byl odhlášen odběr oznámení z # webů}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 heslo}few{# hesla}many{# hesla}other{# hesel}}</translation>
 <translation id="688730033107341407">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky z vašeho účtu Google.</translation>
-<translation id="688738109438487280">Přidat existující data do účtu <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Chcete-li zkopírovat heslo, odemkněte zařízení</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6898797562238201317">Veškerá data Chromu ve vašem účtu Google šifrovat pomocí vaší vlastní heslové fráze</translation>
@@ -1615,7 +1611,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8062594758852531064">Rozšířené předběžné načítání:</translation>
 <translation id="8063895661287329888">Přidání záložky se nezdařilo.</translation>
 <translation id="8066816452984416180">Rychle tuto stránku přidat do záložek. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
-<translation id="806745655614357130">Uchovat má data samostatně.</translation>
 <translation id="8073388330009372546">Otevřít na nové kartě</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8078096376109663956">Sdílet pouze text</translation>
@@ -1691,7 +1686,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8361737703487394103">Přejít na konkrétní kartu (1–8)</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> skupina karet}few{<ph name="TAB_GROUPS_MANY" /> skupiny karet}many{<ph name="TAB_GROUPS_MANY" /> skupiny karet}other{<ph name="TAB_GROUPS_MANY" /> skupin karet}}</translation>
-<translation id="8378850197701296741">Máte záložky, historii, hesla a další nastavení z účtu <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potvrďte, že jste to vy</translation>
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8396098434728053815">Sdílet také zvuk karty</translation>
@@ -1776,6 +1770,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715286883001906001">Zesilte hesla ve svém účtu Google</translation>
+<translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> se zavře</translation>
 <translation id="8723453889042591629">Nechte si tuto stránku rychle přeložit. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>

@@ -907,6 +907,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
        Elige qué hacer con los datos de navegación de este dispositivo.</translation>
 <translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
+<translation id="4691892551491778176">Cuando usas esta función, el contenido de la página y las URLs se envían a Google, pero no se usan para mejorar los modelos de IA generativa. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
 <translation id="4699172675775169585">Archivos e imágenes en caché</translation>
 <translation id="4709570498586527752">Las funciones más relevantes para ti en diferentes momentos</translation>
 <translation id="4717844083556844785">La página web actual está en Incógnito</translation>
@@ -1188,6 +1189,8 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>
 <translation id="5804012843049740908">Consejos sobre configuración que te ayudan a sacar el máximo partido de Chrome</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="58081802114142635">Tu actividad mejora la IA de Google</translation>
+<translation id="5813223718099710537">Cuando usas esta función, el contenido de la página y las URLs se envían a Google. Puedes desactivar esta opción en Configuración cuando quieras.</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
@@ -1457,6 +1460,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6759709389246683070">Puedes mantener pulsada esta pestaña para configurar un recordatorio con el fin de volver a visitarla más adelante</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
+<translation id="6775647281444147078">Las conversaciones de tu organización no se usan para mejorar nuestros modelos. Gemini puede mostrar información incorrecta (incluidos datos sobre personas), así que comprueba sus respuestas. Tu privacidad y Gemini</translation>
 <translation id="6779455296366983087">Tus datos de navegación se eliminarán</translation>
 <translation id="6790502149545262384">Pronto verás historias de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
 <translation id="6791425686608802741">Toca Añadir pestaña a un nuevo grupo</translation>
@@ -1592,6 +1596,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7417689656810783109">Cambiar el nombre del grupo</translation>
+<translation id="7418703176995102827">Ni tus conversaciones con Gemini ni tus datos de Google Workspace serán examinados por revisores humanos ni se usarán de ningún otro modo para mejorar los modelos de IA generativa.</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
 <translation id="7425053386765766120">Añadir método de pago…</translation>
 <translation id="7425346204213733349">Los cambios que hagas en los marcadores, el historial, las contraseñas y otras opciones no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales seguirán almacenados en tu cuenta.</translation>
@@ -1648,6 +1653,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="760667371114328991">Desactivar notificaciones de Comprobación de tu estado</translation>
 <translation id="7612619742409846846">Has iniciado sesión en Google como</translation>
 <translation id="7612849887607288481">Abrir menú de prototipado de IA</translation>
+<translation id="7615581988398168124">Se aplican los Términos de Google y el Aviso de Privacidad de las Aplicaciones de Gemini. Gemini puede cometer errores, así que comprueba sus respuestas.</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
@@ -1823,6 +1829,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="826614135184049678">Se ha cerrado la sesión de tu cuenta (<ph name="USER_NAME" />) al restablecer tu iPad. Para volver a iniciar sesión, toca Continuar abajo.</translation>
 <translation id="8273982424131314219">Rellenarás la información en <ph name="URL" /></translation>
 <translation id="8275068909952022340">Más…</translation>
+<translation id="8277328362018795342">El contenido de la página se comparte para obtener respuestas más pertinentes</translation>
 <translation id="8278488584187265939">Personalizar página principal</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
@@ -1897,6 +1904,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8560253818350321773">Muestra primero los artículos utilizados con más frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opción de contraseña disponible encima de tu teclado.}other{{count} opciones de contraseña disponibles encima de tu teclado.}}</translation>
 <translation id="8564894539416715395">Nueva página de pestaña</translation>
+<translation id="8569414323292250522">Las conversaciones se revisan y se usan para mejorar la IA de Google. Consulta información sobre tus opciones. La información sobre tu ubicación también se almacena con tu actividad.</translation>
 <translation id="8569721750632860947">¿Qué URL quieres añadir a tu lista de lectura?</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar el año de caducidad: <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9206887540681440657">Velocidad</translation>
 <translation id="9223358826628549784">Informe sobre fallos enviado.</translation>
 <translation id="926455622548529175">Cambiar y eliminar</translation>
+<translation id="927162192666499119">Los datos de tu organización son privados y están protegidos</translation>
 <translation id="929748059769569925">Texto resaltado</translation>
 <translation id="932305336591073205">{count,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
 <translation id="932327136139879170">Página principal</translation>

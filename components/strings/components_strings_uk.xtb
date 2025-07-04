@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, щоб підключити</translation>
 <translation id="1421484961346698724">Видалений обліковий запис</translation>
 <translation id="14222610277930434">Ви часто відвідуєте цю сторінку</translation>
+<translation id="1422795627423046860">Недійсна дата</translation>
 <translation id="1422930527989633628">Може просити дозвіл шукати пристрої з Bluetooth поблизу</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1427192966110103169">Домашні плавальні басейни, сауни й спа</translation>
@@ -2870,7 +2871,6 @@
 <translation id="5847181246682413476">Джерела живлення</translation>
 <translation id="584902713199270089">Побачення й знайомства</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
-<translation id="5851868085455377790">Видавець</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5862579898803147654">Накопичувач 8</translation>
@@ -3730,6 +3730,7 @@
 <translation id="7292031607255951991">Ім'я отримувача</translation>
 <translation id="7298195798382681320">Рекомендоване</translation>
 <translation id="7299471494012161875">Підключено периферійні екрани</translation>
+<translation id="7299769361777046949">Керувати картками постійного покупця в Google Гаманці</translation>
 <translation id="7300012071106347854">Кобальтовий</translation>
 <translation id="7304030187361489308">Високий</translation>
 <translation id="7304562222803846232">Керувати налаштуваннями конфіденційності облікового запису Google</translation>
@@ -4148,7 +4149,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв тому}=1{<ph name="TIME_COUNT" /> год тому}one{<ph name="TIME_COUNT" /> дн. тому}few{<ph name="TIME_COUNT" /> дн. тому}many{<ph name="TIME_COUNT" /> дн. тому}other{<ph name="TIME_COUNT" /> дн. тому}}</translation>
 <translation id="7979595116210197019">Приготування й доставка їжі</translation>
 <translation id="798134797138789862">Може просити дозвіл використовувати пристрої й дані віртуальної реальності</translation>
-<translation id="7982789257301363584">Мережа</translation>
 <translation id="7983008347525536475">Автомобілі класу SUV</translation>
 <translation id="7984945080620862648">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки веб-сайт надіслав зашифровані облікові дані, які Chrome не може обробити. Помилки мережі й атаки зазвичай є тимчасовими, тому ця сторінка може працювати пізніше.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4818,6 +4818,7 @@
 <translation id="9155211586651734179">Підключено периферійні аудіопристрої</translation>
 <translation id="9155646082713385498">Журнали</translation>
 <translation id="9157595877708044936">Налаштування...</translation>
+<translation id="9158491153040481956">Ви нещодавно змінили пароль, який було розкрито через порушення безпеки даних. Якщо виникнуть проблеми, Менеджер паролів допоможе вам увійти.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" може містити конфіденційний контент}one{<ph name="FILE_COUNT" /> файл може містити конфіденційний контент}few{<ph name="FILE_COUNT" /> файли можуть містити конфіденційний контент}many{<ph name="FILE_COUNT" /> файлів можуть містити конфіденційний контент}other{<ph name="FILE_COUNT" /> файлу можуть містити конфіденційний контент}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Повідомлення в Slack</translation>

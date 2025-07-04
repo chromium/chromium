@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">ማጣመርን ለመፈቀድ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">የተሰረዘ መለያ</translation>
 <translation id="14222610277930434">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
+<translation id="1422795627423046860">ውሂብ ልክ ያልሆነ ነው</translation>
 <translation id="1422930527989633628">በአቅራቢያ ያሉ የብሉቱዝ መሣሪያዎችን ለማግኘት መጠየቅ ይችላል</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1427192966110103169">የቤት መዋኛ ገንዳዎች፣ ሳውናዎች እና ስፓዎች</translation>
@@ -2869,7 +2870,6 @@
 <translation id="5847181246682413476">የኃይል አቅርቦቶች</translation>
 <translation id="584902713199270089">ለፍቅር መገናኘት እና ራስን ማስተዋወቅ</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
-<translation id="5851868085455377790">ሰጪው</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5862579898803147654">ቁልል 8</translation>
@@ -4147,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{ከ<ph name="TIME_COUNT" />ደ በፊት}=1{ከ<ph name="TIME_COUNT" />ሰ በፊት}one{ከ<ph name="TIME_COUNT" />ቀ በፊት}other{ከ<ph name="TIME_COUNT" />ቀ በፊት}}</translation>
 <translation id="7979595116210197019">የምግብ አገልግሎት</translation>
 <translation id="798134797138789862">ምናባዊ የእውነታ መሣሪያዎችን እና ውሂብን ለመጠቀም መጠየቅ ይችላል</translation>
-<translation id="7982789257301363584">አውታረ መረብ</translation>
 <translation id="7983008347525536475">ኤስዩቪዎች</translation>
 <translation id="7984945080620862648">ድር ጣቢያው Chrome ሊሰራባቸው የማይችላቸው የተዘበራረቁ ምስክርነቶችን ስለላከ <ph name="SITE" />ን አሁን መጎብኘት ይችላሉ። የአውታረ መረብ ስህተቶች እና ጥቃቶች አብዛኛው ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ሊሰራ ይችላል።</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4817,6 +4816,7 @@
 <translation id="9155211586651734179">የድምፅ መሳሪያዎች ተያይዘዋል</translation>
 <translation id="9155646082713385498">መጽሔቶች</translation>
 <translation id="9157595877708044936">በማዋቀር ላይ…</translation>
+<translation id="9158491153040481956">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}one{<ph name="FILE_COUNT" /> ፋይል ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}other{<ph name="FILE_COUNT" /> ፋይሎች ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዙ ይችላሉ}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ከሙሉ ገጽ ዕይታ ለመውጣት፣ |<ph name="ACCELERATOR" />| ላይ ይጫኑ</translation>
 <translation id="9163287596625611517">Slack መልዕክት</translation>

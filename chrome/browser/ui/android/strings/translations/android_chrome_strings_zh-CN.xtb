@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1140317858355046628">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
-<translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1154555449933432029">您未在 Google 密码管理工具中保存任何密码。</translation>
 <translation id="115483310321669804">使用密码 <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">按从 Z 到 A 排序</translation>
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3931947361983910192">过去 4 周</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
 <translation id="3950820424414687140">登录</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身份加入</translation>
 <translation id="5503125329065007089">在所有设备上都能使用您的密码（已半屏打开）</translation>
 <translation id="5515439363601853141">需解锁才能查看您的密码</translation>
-<translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5517326820028369152">显示近期活动的底部动作条</translation>
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
 <translation id="5548606607480005320">安全检查</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{已退订 1 个网站}other{已退订 # 个网站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 个密码}other{# 个密码}}</translation>
 <translation id="688730033107341407">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
-<translation id="688738109438487280">将现有数据添加到 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">需解锁才能复制您的密码</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6898797562238201317">使用您自己的口令加密您 Google 账号中的所有 Chrome 数据</translation>
@@ -1613,7 +1609,6 @@
 <translation id="8062594758852531064">扩展型预加载：</translation>
 <translation id="8063895661287329888">无法添加书签。</translation>
 <translation id="8066816452984416180">快速为此页添加书签。若要修改此快捷方式，请轻触并按住这里。</translation>
-<translation id="806745655614357130">单独保存我的数据</translation>
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
@@ -1689,7 +1684,6 @@
 <translation id="8361737703487394103">跳转到特定标签页 (1–8)</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> 个标签页分组}other{<ph name="TAB_GROUPS_MANY" /> 个标签页分组}}</translation>
-<translation id="8378850197701296741">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录及其他设置。</translation>
 <translation id="8387617938027387193">请验证是您本人在操作</translation>
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8396098434728053815">同时分享标签页中的音频</translation>

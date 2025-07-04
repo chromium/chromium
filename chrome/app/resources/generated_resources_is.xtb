@@ -3736,6 +3736,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3592260987370335752">Frekari upp&amp;lýsingar</translation>
 <translation id="3592344177526089979">Sendir flipa út í <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Kveikja á stillingu fyrir óljóst pinyin</translation>
+<translation id="3593953853060020305">Viltu leyfa þessu vefsvæði að breyta <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Takmarkanir vottorðsheitis</translation>
 <translation id="3596012367874587041">Forritastillingar</translation>
 <translation id="3596414637720633074">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
@@ -4698,6 +4699,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4249785854468467847">Endurskapaðu Chrome, eflt með gervigreind</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4250680216510889253">Nei</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> getur skoðað og gert sín eigin afrit af skrám í <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Skráning tækis í sjálfsala- og merkingastillingu.</translation>
 <translation id="4252828488489674554">Hægrismelltu á heiti flipahópsins til að breyta þessum hópi eða smelltu til að minnka</translation>
 <translation id="4252899949534773101">Slökkt er á Bluetooth</translation>
@@ -6644,6 +6646,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5643321261065707929">Net með mældri notkun</translation>
 <translation id="5646376287012673985">Staðsetning</translation>
 <translation id="5646558797914161501">Viðskiptamaður</translation>
+<translation id="5647989922796038257">Einnig deila öll hljóðúttökum</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5648166631817621825">Síðastliðna sjö daga</translation>
 <translation id="5651308944918885595">Sýnileiki Nærdeilingar</translation>
@@ -8649,6 +8652,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7093220653036489319">Skjót svör</translation>
 <translation id="7093866338626856921">Skiptast á gögnum við tækin sem heita: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Pýramídinn mikli í Gísa</translation>
+<translation id="7094834615934458012">Viltu leyfa þessu vefsvæði að breyta skrám?</translation>
 <translation id="7098389117866926363">USB-C tæki (vinstra tengi að aftan)</translation>
 <translation id="7098447629416471489">Aðrar vistaðar leitarvélar birtast hér</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Fjarlægja forrit}one{Fjarlægja forrit}other{Fjarlægja forrit}}</translation>
@@ -9022,6 +9026,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7377481913241237033">Tengjast með kóða</translation>
 <translation id="73786666777299047">Opna vefverslun Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Annað verkefni í sama verkefnahópi: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. # annað verkefni í sama verkefnahópi: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # önnur verkefni í sama verkefnahópi: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> getur skoðað og gert sín eigin afrit af <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Slökkva á endurheimt staðbundinna gagna?</translation>
 <translation id="7380459290951585794">Gakktu úr skugga um að síminn sé nálægt, ólæstur og með kveikt á Bluetooth og Wi-Fi</translation>
 <translation id="7380622428988553498">Heiti tækis inniheldur ógilda stafi</translation>
@@ -9767,6 +9772,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{atriði}one{# atriði}other{# atriði}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Fáðu kynningu með leiðsögn um helstu öryggis- og persónuverndarstýringar Opnaðu hverja stillingu fyrir sig til að fá að sjá fleiri valkosti.</translation>
+<translation id="7887286029584695415">Viltu leyfa þessu vefsvæði að skoða og afrita skrár?</translation>
 <translation id="7887334752153342268">Afrita</translation>
 <translation id="7887864092952184874">Bluetooth-mús pöruð</translation>
 <translation id="7889371445710865055">Breyta tungumáli raddinnsláttar</translation>
@@ -9852,6 +9858,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7944847494038629732">Taktu USB-snúru skannans úr sambandi og settu hana aftur í samband til að reyna aftur</translation>
 <translation id="7945703887991230167">Ákjósanleg rödd</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> getur skoðað og gert sín eigin afrit af skrám í <ph name="FOLDERNAME" /> þar til þú lokar öllum flipum fyrir þetta vefsvæði</translation>
 <translation id="7946586320617670168">Uppruni verður að vera öruggur</translation>
 <translation id="7946681191253332687">Framlengdar öryggisuppfærslur í boði</translation>
 <translation id="794676567536738329">Staðfestu heimildir</translation>
@@ -10060,6 +10067,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8079606020824373126">Google-aðgangsorðastjórnun getur uppfært reikninginn þinn með traustu aðgangsorði og vistað það á <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Vefsvæði geta beðið um að stjórna gluggum á öllum skjáum</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> getur skoðað og gert sín eigin afrit af <ph name="FILENAME" /> þar til þú lokar öllum flipum fyrir þetta vefsvæði</translation>
 <translation id="8081989000209387414">Slökkva á ADB-villuleit?</translation>
 <translation id="8082106343289440791">Para við „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082132721957920509">Kortið var vistað</translation>
@@ -10827,6 +10835,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="862750493060684461">CSS-skyndiminni</translation>
 <translation id="8627795981664801467">Aðeins öruggar tengingar</translation>
 <translation id="8627804903623428808">Farðu yfir skilmálana og stjórnaðu gögnum barnsins</translation>
+<translation id="862907440446514309">Kerfisstjórinn þinn er að taka upp skjáinn þinn með <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Sofa við hleðslu</translation>
 <translation id="8631032106121706562">Baldursbrá</translation>
 <translation id="8632104508818855045">Þú valdir áður að leyfa engar viðbætur á <ph name="ORIGIN" /></translation>
@@ -11347,6 +11356,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="897525204902889653">Einangrunarþjónusta</translation>
 <translation id="8975396729541388937">Hættu áskrift hvenær sem er með því að smella á tengilinn í tölvupóstinum sem þú færð.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ og 1 flipi til viðbótar}one{„<ph name="TAB_TITLE" />“ og # flipi til viðbótar}other{„<ph name="TAB_TITLE" />“ og # flipar til viðbótar}}</translation>
+<translation id="897565255818387330">Viltu leyfa þessu vefsvæði að skoða og afrita <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Settu upp skólaprófíl til að vista og nota aðgangsorð og fleira á reikningnum þínum</translation>
 <translation id="8977811652087512276">Rangt aðgangsorð eða skemmd skrá</translation>
 <translation id="8978154919215542464">Kveikt – samstilla allt</translation>

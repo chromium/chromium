@@ -256,6 +256,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1420920093772172268">Eşlemeye izin vermek için <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Hesap silindi</translation>
 <translation id="14222610277930434">Sık ziyaret ediyorsunuz</translation>
+<translation id="1422795627423046860">Tarih geçersiz</translation>
 <translation id="1422930527989633628">Yakındaki Bluetooth cihazları bulmak isteyebilir</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1427192966110103169">Özel Yüzme Havuzları, Saunalar ve Spalar</translation>
@@ -2870,7 +2871,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5847181246682413476">Güç Kaynakları</translation>
 <translation id="584902713199270089">Arkadaşlık ve Kişisel</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
-<translation id="5851868085455377790">Sertifikayı Veren</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5862579898803147654">Yığınlayıcı 8</translation>
@@ -4148,7 +4148,6 @@ Ek ayrıntılar:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dk. önce}=1{<ph name="TIME_COUNT" /> sa. önce}other{<ph name="TIME_COUNT" /> gün önce}}</translation>
 <translation id="7979595116210197019">Gıda Hizmetleri</translation>
 <translation id="798134797138789862">Sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
-<translation id="7982789257301363584">Ağ</translation>
 <translation id="7983008347525536475">Arazi araçları</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> web sitesi Chrome'un işleyemediği karışık kimlik bilgileri gönderdiği için web sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4817,6 +4816,7 @@ Ek ayrıntılar:
 <translation id="9155211586651734179">Takılı durumdaki ses çevre birimleri</translation>
 <translation id="9155646082713385498">Dergiler</translation>
 <translation id="9157595877708044936">Ayarlanıyor...</translation>
+<translation id="9158491153040481956">Yakın zamanda, herkese açık bir veri ihlalinde tespit edilen bir şifreyi değiştirdiniz. Sorun yaşamanız durumunda Şifre Yöneticisi oturum açmanıza yardımcı olabilir.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> hassas içeriğe sahip olabilir}other{<ph name="FILE_COUNT" /> dosya hassas içeriğe sahip olabilir}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="9163287596625611517">Slack Mesajı</translation>

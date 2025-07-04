@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">ସମଗ୍ର ୱେବରେ ଯେ କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ହେଲେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="1140317858355046628">ଯଦି ଆପଣ ଏହାକୁ ଡିଲିଟ କରନ୍ତି, ତେବେ ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="1142732900304639782">ଏହି ସାଇଟଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
-<translation id="1145536944570833626">ବିଦ୍ୟମାନ ଥିବା ଡାଟାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="1154555449933432029">Google Password Managerରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ସେଭ କରାଯାଇନାହିଁ।</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Zରୁ A କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ଚାଲୁ ଅଛି</translation>
 <translation id="3927692899758076493">ସାନ୍ସ-ସେରିଫ୍‌</translation>
-<translation id="3928666092801078803">ମୋର ଡାଟା ଏକାଠି କରନ୍ତୁ</translation>
 <translation id="3931947361983910192">ଗତ 4 ସପ୍ତାହ</translation>
 <translation id="393697183122708255">କୌଣସି ସକ୍ଷମ ଭଏସ ସର୍ଚ୍ଚ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ଭାବେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="5503125329065007089">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅଧା ଉଚ୍ଚତାରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="5515439363601853141">ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ଦେଖିବା ପାଇଁ ଅନ୍‍ଲକ୍ କରନ୍ତୁ</translation>
-<translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />ରୁ ଆପଣଙ୍କ ପାଖରେ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସ୍‌ ଅଛି।</translation>
 <translation id="5517326820028369152">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ବଟମ ସିଟ</translation>
 <translation id="5526281268548144413">ଏକାଧିକ ୱିଣ୍ଡୋରେ ବନ୍ଦ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}other{# ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 ପାସୱାର୍ଡ}other{# ପାସୱାର୍ଡ}}</translation>
 <translation id="688730033107341407">ଆପଣ ସାଇନ ଆଉଟ କରିବା ପରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା ଆପଣଙ୍କର ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
-<translation id="688738109438487280"><ph name="TO_ACCOUNT" />ରେ ପୂର୍ବରୁ ଥିବା ଡାଟା ଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6891726759199484455">ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ କପି କରିବାକୁ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
 <translation id="6898797562238201317">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା ସମସ୍ତ Chrome ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ ନିଜର ପାସଫ୍ରେଜ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">ଏକ୍ସଟେଣ୍ଡେଡ ପ୍ରିଲୋଡିଂ:</translation>
 <translation id="8063895661287329888">ବୁକ୍‍ମାର୍କ ଯୋଗକରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="8066816452984416180">ଏହି ପୃଷ୍ଠାକୁ ଶୀଘ୍ର ବୁକମାର୍କ କରନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
-<translation id="806745655614357130">ମୋ ଡାଟାକୁ ଅଲଗା ରଖନ୍ତୁ</translation>
 <translation id="8073388330009372546">ନୂତନ ଟାବ୍‌ରେ ଛବି ଖୋଲନ୍ତୁ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8078096376109663956">କେବଳ ଟେକ୍ସଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ଟାବକୁ ଯାଆନ୍ତୁ (1–8)</translation>
 <translation id="8368001212524806591">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ଟାବ ଗ୍ରୁପ}other{<ph name="TAB_GROUPS_MANY" /> ଟାବ ଗ୍ରୁପ}}</translation>
-<translation id="8378850197701296741">ଆପଣଙ୍କ ପାଖରେ <ph name="FROM_ACCOUNT" />ର ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଅନ୍ୟ ସେଟିଂସ ଅଛି।</translation>
 <translation id="8387617938027387193">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8393700583063109961">ମେସେଜ୍‌ ପଠାନ୍ତୁ</translation>
 <translation id="8396098434728053815">ଟାବ ଅଡିଓ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>

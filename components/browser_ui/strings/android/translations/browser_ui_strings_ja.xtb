@@ -61,6 +61,7 @@
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
+<translation id="1717996979683942279">オンにすると、サイトは全ディスプレイのウィンドウ管理をリクエストできます。オフにすると、サイトは全ディスプレイのウィンドウ管理を行えません。</translation>
 <translation id="1743802530341753419">サイトがデバイスに接続する前に確認する（推奨）</translation>
 <translation id="1777815584158991902">Discover フィードのボトムシート</translation>
 <translation id="1779089405699405702">画像デコーダー</translation>
@@ -171,6 +172,7 @@
 <translation id="2968755619301702150">証明書ビューア</translation>
 <translation id="2979365474350987274">サードパーティ Cookie が制限されています</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
+<translation id="3004438526346162184">サイトはこの機能を使用して、全ディスプレイのウィンドウを管理できます</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3064871050034234884">サイトが音声を再生できるようにする</translation>
@@ -439,6 +441,7 @@
 <translation id="6071501408666570960">このサイトからログアウトされる可能性があります</translation>
 <translation id="6085954183010297841"><ph name="FILE" /> のファイル編集権限を削除しますか？</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
+<translation id="615886654739818377">全ディスプレイのウィンドウ管理をサイトに許可しない</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6171020522141473435">オンにすると、サイトは Bluetooth デバイスの使用を要求できます。オフにすると、サイトは Bluetooth デバイスを使用できません。</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>

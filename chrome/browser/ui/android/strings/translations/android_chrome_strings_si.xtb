@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">වෙබය පුරා ඕනෑම අඩවියක මිල පහත වැටෙන විට ඇඟවීම් ලබා ගන්න</translation>
 <translation id="1140317858355046628">ඔබ එය මකා දැමුවහොත්, සෑම කෙනෙකුටම වහාම "<ph name="GROUP_NAME" />" පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය සියලු උපාංගවලින් මකා දැමෙනු ඇත.</translation>
 <translation id="1142732900304639782">මෙම අඩවි පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
-<translation id="1145536944570833626">පවතින දත්ත මකන්න.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome තුළ විවෘත වනු ඇත. ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> සමග එකඟ වේ.</translation>
 <translation id="1154555449933432029">ඔබ Google මුරපද කළමනාකරු තුළ සුරකින ලද මුරපද නොමැත.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> මුරපදය භාවිත කරන්න</translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Z සිට A දක්වා වර්ග කිරීම</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ක්‍රියාත්මකයි</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
 <translation id="3931947361983910192">පසුගිය සති 4</translation>
 <translation id="393697183122708255">ලබා ගත හැකි සබල කළ හඬ සෙවීමක් නැත</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ලෙස එක්වන්න</translation>
 <translation id="5503125329065007089">ඔබේ සියලුම උපාංග මත මුරපද අඩ මට්ටමින් විවිෘත විය</translation>
 <translation id="5515439363601853141">ඔබේ මුරපදය බැලීමට අගුළු හරින්න</translation>
-<translation id="5517095782334947753">ඔබට <ph name="FROM_ACCOUNT" /> වෙතින් පිටුසන්, ඉතිහාසය, මුරපද, සහ වෙනත් සැකසීම් ඇත.</translation>
 <translation id="5517326820028369152">මෑත ක්‍රියාකාරකම් පහළ පත්‍රය</translation>
 <translation id="5526281268548144413">බහු කවුළු පුරා වැසිය නොහැක</translation>
 <translation id="5548606607480005320">ආරක්‍ෂක පරීක්‍ෂාව</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 අඩවියකින් ග්‍රාහක නොවුණි}one{අඩවි #කින් ග්‍රාහක නොවුණි}other{අඩවි #කින් ග්‍රාහක නොවුණි}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 මුරපදයක්}one{මුරපද #ක්}other{මුරපද #ක්}}</translation>
 <translation id="688730033107341407">ඔබ වැරීමෙන් පසු, ඔබේ Google ගිණුම තුළ ඇති පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ.</translation>
-<translation id="688738109438487280">පවතින දත්ත <ph name="TO_ACCOUNT" /> වෙත එක් කරන්න.</translation>
 <translation id="6891726759199484455">ඔබේ මුරපදය පිටපත් කිරීමට අගුළු හරින්න</translation>
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6898797562238201317">ඔබේ Google ගිණුමේ ඇති සියලුම Chrome දත්ත සංකේතනය කිරීමට ඔබේම මුර-වැකිකඩක් භාවිත කරන්න</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">දීර්ඝ කළ පූර්ව පූරණය:</translation>
 <translation id="8063895661287329888">පිටුසන එක් කිරීම අසාර්ථක විය.</translation>
 <translation id="8066816452984416180">මෙම පිටුව ඉක්මනින් පිටුසන් කරන්න. මෙම කෙටිමඟ සංස්කරණ කිරීමට, ස්පර්ශ කර අල්ලා සිටින්න.</translation>
-<translation id="806745655614357130">මගේ දත්ත වෙනම තබා ගන්න</translation>
 <translation id="8073388330009372546">පින්තූරය නව ටැබයක විවෘත කරන්න</translation>
 <translation id="8076492880354921740">පටිති</translation>
 <translation id="8078096376109663956">පෙළ පමණක් බෙදා ගන්න</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">නිශ්චිත පටිත්තකට පනින්න (1–8)</translation>
 <translation id="8368001212524806591">මිල හඹා යන්න</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> පටිති සමූහය}one{පටිති සමූහ <ph name="TAB_GROUPS_MANY" />ක්}other{පටිති සමූහ <ph name="TAB_GROUPS_MANY" />ක්}}</translation>
-<translation id="8378850197701296741">ඔබට <ph name="FROM_ACCOUNT" /> වෙතින් පිටුසන්, ඉතිහාසය සහ වෙනත් සැකසීම් ඇත</translation>
 <translation id="8387617938027387193">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
 <translation id="8396098434728053815">පටිති ශ්‍රව්‍ය ද බෙදා ගන්න</translation>

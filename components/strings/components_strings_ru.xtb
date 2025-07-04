@@ -1224,7 +1224,7 @@
 <translation id="3076865167425975822">Операционные системы</translation>
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3082007635241601060">Разрешите компании Google использовать корзины, чтобы находить для вас персонализированные скидки.</translation>
-<translation id="3086269988715347183">Вы ещё не одобряли <ph name="BLOCKED_URL" />.</translation>
+<translation id="3086269988715347183">Вы ещё не разрешали <ph name="BLOCKED_URL" />.</translation>
 <translation id="3086579638707268289">Ваши действия в Интернете отслеживаются</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090667236485488075">Стекло</translation>
@@ -1354,7 +1354,7 @@
 <translation id="3273757719652748628">Экран для сохранения кода IBAN открыт полностью.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
-<translation id="3282568296779691940">Аккаунт Chrome</translation>
+<translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
@@ -2870,7 +2870,6 @@
 <translation id="5847181246682413476">Источники питания</translation>
 <translation id="584902713199270089">Знакомства и общение</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
-<translation id="5851868085455377790">Издатель</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5862579898803147654">Укладчик 8</translation>
@@ -4148,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минут назад}=1{<ph name="TIME_COUNT" /> час назад}one{<ph name="TIME_COUNT" /> день назад}few{<ph name="TIME_COUNT" /> дня назад}many{<ph name="TIME_COUNT" /> дней назад}other{<ph name="TIME_COUNT" /> дня назад}}</translation>
 <translation id="7979595116210197019">Общественное питание</translation>
 <translation id="798134797138789862">Разрешено отправлять запрос на использование устройств и данных виртуальной реальности</translation>
-<translation id="7982789257301363584">Сеть</translation>
 <translation id="7983008347525536475">Внедорожники</translation>
 <translation id="7984945080620862648">Перейти на сайт <ph name="SITE" /> невозможно, так как его идентификационные данные зашифрованы, и Chrome не может их обработать. Это могло произойти из-за ошибки сети или атаки на сайт. Скорее всего, он заработает через некоторое время.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

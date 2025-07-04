@@ -2416,6 +2416,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5043753287208271200">3 geltona</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
 <translation id="5048293684454354469">Skelbimų temos yra tik vienas iš daugelio dalykų, kuriuos svetainė gali naudoti skelbimams suasmeninti. Net jei nėra skelbimų temų, svetainės vis tiek gali rodyti skelbimus, bet jie gali būti mažiau suasmeninti. Sužinokite daugiau apie <ph name="BEGIN_LINK" />su skelbimais susijusio privatumo tvarkymą<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; paspauskite skirtuką, kad pamatytumėte daugiau paieškos nuorodų, pasiekiamų po šio paieškos pasiūlymo</translation>
 <translation id="5052517576853118371">Aktyvios temos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jei norite siųsti šį failą naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}one{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}few{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}many{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}other{Jei norite siųsti šiuos failus naudodami funkciją „Bendrinimas netoliese“, atlaisvinkite vietos (<ph name="DISK_SPACE_SIZE" />) įrenginyje}}</translation>
 <translation id="505757197798929356">Nurodykite atidarymo priežastį (būtina)</translation>
@@ -2872,7 +2873,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5847181246682413476">Maitinimo tiekimas</translation>
 <translation id="584902713199270089">Pažinčių ir asmeniniai skelbimai</translation>
 <translation id="5851548754964597211">Skirtukų sąrašas</translation>
-<translation id="5851868085455377790">Išdavėjas</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5862579898803147654">8 dėtuvė</translation>
@@ -4150,7 +4150,6 @@ Papildoma išsami informacija:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Prieš <ph name="TIME_COUNT" /> min.}=1{Prieš <ph name="TIME_COUNT" /> val.}one{Prieš <ph name="TIME_COUNT" /> d.}few{Prieš <ph name="TIME_COUNT" /> d.}many{Prieš <ph name="TIME_COUNT" /> d.}other{Prieš <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Maisto paslaugos</translation>
 <translation id="798134797138789862">Gali būti prašoma naudoti virtualiosios realybės įrenginius ir duomenis</translation>
-<translation id="7982789257301363584">Tinklas</translation>
 <translation id="7983008347525536475">Sportiniai automobiliai</translation>
 <translation id="7984945080620862648">Negalite dabar apsilankyti svetainėje <ph name="SITE" />, nes ji atsiuntė užšifruotus prisijungimo duomenis, kurių „Chrome“ negali apdoroti. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
 <translation id="7986319120639858961">„<ph name="CARD_TITLE" />“ <ph name="TIME" /> <ph name="BOOKMARKED" /> „<ph name="TITLE" />“ <ph name="DOMAIN" /></translation>

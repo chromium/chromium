@@ -907,6 +907,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
        Velg hva du vil gjøre med de eksisterende nettlesingsdataene på denne enheten.</translation>
 <translation id="4682496302933121474">Vil du oversette siden?</translation>
 <translation id="4682686630151240767">1. Åpne iPhone-innstillingene</translation>
+<translation id="4691892551491778176">Når du bruker denne funksjonen, sendes sideinnhold og nettadresser til Google, men de brukes ikke til å forbedre generative AI-modeller. Du kan når som helst slå av dette av i innstillingene.</translation>
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4709570498586527752">De mest relevante funksjonene for deg til forskjellige tider</translation>
 <translation id="4717844083556844785">Den gjeldende nettsiden er i Inkognito</translation>
@@ -1188,6 +1189,8 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5803566855766646066">Er du sikker på at du vil forkaste dette nye kortet?</translation>
 <translation id="5804012843049740908">Konfigurer tips som hjelper deg med å få mest mulig ut av Chrome</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
+<translation id="58081802114142635">Aktiviteten din forbedrer AI fra Google</translation>
+<translation id="5813223718099710537">Når du bruker denne funksjonen, sendes sideinnhold og nettadresser til Google. Du kan når som helst slå av dette av i innstillingene.</translation>
 <translation id="5817176759448082654">Passordsjekk</translation>
 <translation id="5819208479324046259">Administreres av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserer …</translation>
@@ -1457,6 +1460,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6759709389246683070">Du kan trykke og holde på denne fanen for å stille inn en påminnelse om å komme tilbake senere</translation>
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6770452996697898492">[BESTILT]</translation>
+<translation id="6775647281444147078">Chattene til organisasjonen din brukes ikke til å forbedre modellene våre. Gemini kan vise unøyaktig informasjon, blant annet om mennesker, så du bør dobbeltsjekke svarene den gir. Personvernet ditt og Gemini</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6791425686608802741">Trykk på «Legg til fane i ny gruppe»</translation>
@@ -1592,6 +1596,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7412027924265291969">Fortsett</translation>
 <translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7417689656810783109">Gi gruppen nytt navn</translation>
+<translation id="7418703176995102827">Verken samtalene dine med Gemini eller dataene dine i Google Workspace gjennomgås av menneskelige evaluerere eller brukes på andre måter for å forbedre generativ AI-modeller.</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
@@ -1648,6 +1653,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="760667371114328991">Slå av varsler fra sikkerhetssjekk</translation>
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612849887607288481">Åpne menyen for AI-prototyping</translation>
+<translation id="7615581988398168124">Googles vilkår og merknaden om personvern for Gemini-apper gjelder. Gemini kan gjøre feil, så dobbeltsjekk svaret.</translation>
 <translation id="7620522820075868385">Avbryt</translation>
 <translation id="7638584964844754484">Feil passordfrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Passord utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
@@ -1823,6 +1829,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="826614135184049678">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPad. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="8273982424131314219">Du fyller ut informasjon på <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mer…</translation>
+<translation id="8277328362018795342">Sideinnholdet deles for å gi deg mer relevante svar</translation>
 <translation id="8278488584187265939">Tilpass startsiden</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hopp over</translation>
@@ -1897,6 +1904,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8560253818350321773">Vis elementene som brukes ofte, først.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ for passord er tilgjengelig over tastaturet.}other{{count} alternativer for passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="8564894539416715395">Ny fane-siden</translation>
+<translation id="8569414323292250522">Chatter gjennomgås og brukes for å forbedre AI fra Google. Finn ut mer om valgene dine. Informasjon om posisjonen din lagres også sammen med aktiviteten din.</translation>
 <translation id="8569721750632860947">Hvilken nettadresse vil du legge til på leselisten?</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8577056989960190117">Autofyll utløpsåret <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9206887540681440657">Hastighet</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
 <translation id="926455622548529175">Bytt og slett</translation>
+<translation id="927162192666499119">Organisasjonens data er private og sikre</translation>
 <translation id="929748059769569925">Markert tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>

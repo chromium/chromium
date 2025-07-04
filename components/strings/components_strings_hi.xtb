@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">युग्मन की अनुमति देने के लिए <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">मिटाया गया खाता</translation>
 <translation id="14222610277930434">यह वेबसाइट अक्सर विज़िट की जाती है</translation>
+<translation id="1422795627423046860">तारीख अमान्य है</translation>
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1427192966110103169">होम स्विमिंग पूल, सॉना, और स्पा</translation>
@@ -2870,7 +2871,6 @@
 <translation id="5847181246682413476">पावर सप्लाई</translation>
 <translation id="584902713199270089">डेटिंग और पर्सनल</translation>
 <translation id="5851548754964597211">टैब सूची</translation>
-<translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>
@@ -4148,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनट पहले}=1{<ph name="TIME_COUNT" /> घंटा पहले}one{<ph name="TIME_COUNT" /> दिन पहले}other{<ph name="TIME_COUNT" /> दिन पहले}}</translation>
 <translation id="7979595116210197019">खान-पान से जुड़ी सेवा</translation>
 <translation id="798134797138789862">साइट, वर्चुअल रिएलिटी डिवाइस और डेटा का इस्तेमाल करने की अनुमति मांग सकती है</translation>
-<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983008347525536475">एसयूवी</translation>
 <translation id="7984945080620862648">आप इस समय <ph name="SITE" /> पर विज़िट नहीं कर सकते हैं क्योंकि वेबसाइट ने ऐसे अव्यवस्थित प्रमाणिकता भेजे हैं जिन्हें Chrome संसाधित नहीं कर सकता. नेटवर्क की त्रुटियां और हमले आमतौर पर अस्थायी होते हैं, इसलिए संभवत: यह पेज बाद में काम करेगा.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4818,6 +4817,7 @@
 <translation id="9155211586651734179">सहायक ऑडियो डिवाइस अटैच किए गए</translation>
 <translation id="9155646082713385498">पत्रिकाएं</translation>
 <translation id="9157595877708044936">सेट अप कर रहा है...</translation>
+<translation id="9158491153040481956">आपने हाल ही में उस पासवर्ड को बदला जो सार्वजनिक तौर पर लीक हुआ था. अगर आपको नए पासवर्ड से साइन इन करने में समस्या आती है, तो Password Manager की मदद से साइन इन किया जा सकता है.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> में संवेदनशील कॉन्टेंट हो सकता है}one{<ph name="FILE_COUNT" /> फ़ाइल में संवेदनशील कॉन्टेंट हो सकता है}other{<ph name="FILE_COUNT" /> फ़ाइलों में संवेदनशील कॉन्टेंट हो सकता है}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="9163287596625611517">Slack मैसेज</translation>

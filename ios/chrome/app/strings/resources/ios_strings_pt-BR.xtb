@@ -61,7 +61,7 @@
 <translation id="1253032109800629289">Ocultar "Receber notificações de monitoramento de preço"</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
 <translation id="1262724000444746916">Ocultar "Adicionar aos favoritos"</translation>
-<translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1263231323834454256">Lista de Leitura</translation>
 <translation id="1263433075299269530">Sua última guia aberta</translation>
 <translation id="1264156759663453185">O texto selecionado é muito grande para a tradução parcial.</translation>
 <translation id="1264974993859112054">Esportes</translation>
@@ -907,6 +907,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
        Escolha o que fazer com os dados de navegação neste dispositivo.</translation>
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
+<translation id="4691892551491778176">Ao usar o Gemini, o conteúdo da página e os URLs são enviados ao Google, mas não são usados para aprimorar nossos modelos de IA generativa. Você pode desativar esse recurso nas configurações quando quiser.</translation>
 <translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4709570498586527752">Os recursos mais relevantes sempre que você precisar</translation>
 <translation id="4717844083556844785">Esta página da Web está no modo anônimo</translation>
@@ -1188,6 +1189,8 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5804012843049740908">Dicas para ajudar você a aproveitar o Chrome ao máximo</translation>
 <translation id="5804241973901381774">Permissões</translation>
+<translation id="58081802114142635">Sua atividade ajuda a aprimorar a IA do Google</translation>
+<translation id="5813223718099710537">Ao usar esse recurso, o conteúdo da página e os URLs são enviados ao Google. Você pode desativá-lo nas configurações quando quiser.</translation>
 <translation id="5817176759448082654">Check-up de Senha</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
@@ -1457,6 +1460,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6759709389246683070">Toque e pressione esta guia para definir um lembrete para voltar mais tarde</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6770452996697898492">[AGENDADO]</translation>
+<translation id="6775647281444147078">As conversas da sua organização não são usadas para melhorar nossos modelos. O Gemini pode conter informações imprecisas, inclusive sobre pessoas. Por isso, cheque o conteúdo. Sua privacidade e o Gemini</translation>
 <translation id="6779455296366983087">Os dados de navegação serão excluídos</translation>
 <translation id="6790502149545262384">Em breve, stories de <ph name="CHANNEL_NAME" /> vão ser mostrados quando você abrir uma nova guia.</translation>
 <translation id="6791425686608802741">Toque em "Adicionar guia ao novo grupo"</translation>
@@ -1592,6 +1596,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Sim</translation>
 <translation id="7417689656810783109">Renomear grupo</translation>
+<translation id="7418703176995102827">Suas conversas com o Gemini e seu conteúdo do Google Workspace não vão passar por revisão humana nem ser usados para aprimorar os modelos de IA generativa.</translation>
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
 <translation id="7425053386765766120">Adicionar forma de pagamento…</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
@@ -1648,6 +1653,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="760667371114328991">Desativar as notificações da Confirmação de segurança</translation>
 <translation id="7612619742409846846">Conectado ao Google como</translation>
 <translation id="7612849887607288481">Abrir menu de protótipos de IA</translation>
+<translation id="7615581988398168124">Sujeito aos Termos do Google e ao Aviso de privacidade dos apps do Gemini. O Gemini pode cometer erros. Por isso, é bom checar as respostas.</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
@@ -1823,6 +1829,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
 <translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mais…</translation>
+<translation id="8277328362018795342">O conteúdo da página é compartilhado para oferecer respostas mais relevantes</translation>
 <translation id="8278488584187265939">Personalizar página inicial</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
@@ -1897,6 +1904,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8560253818350321773">Mostrar primeiro os itens usados com frequência.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opção de senha disponível acima do teclado.}one{{count} opção de senha disponível acima do teclado.}other{{count} opções de senha disponíveis acima do teclado.}}</translation>
 <translation id="8564894539416715395">Página Nova guia</translation>
+<translation id="8569414323292250522">As conversas são analisadas e usadas para aprimorar a IA do Google. Saiba mais sobre suas opções. As informações sobre sua localização também são armazenadas com sua atividade.</translation>
 <translation id="8569721750632860947">Qual URL você quer adicionar à Lista de leitura?</translation>
 <translation id="8571213806525832805">Últimas quatro semanas</translation>
 <translation id="8577056989960190117">Preencher automaticamente o ano de validade <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9206887540681440657">Velocidade</translation>
 <translation id="9223358826628549784">Relatórios de erros enviados.</translation>
 <translation id="926455622548529175">Trocar e excluir</translation>
+<translation id="927162192666499119">A privacidade e a segurança dos dados da sua organização ficam garantidas</translation>
 <translation id="929748059769569925">Texto em destaque</translation>
 <translation id="932305336591073205">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
 <translation id="932327136139879170">Início</translation>
@@ -2089,7 +2098,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="94870150074703282">Excluir grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>
-<translation id="954667170699278022">Lista de leitura</translation>
+<translation id="954667170699278022">Lista de Leitura</translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>

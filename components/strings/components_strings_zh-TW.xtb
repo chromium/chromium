@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">如要允許配對，請<ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">已刪除的帳戶</translation>
 <translation id="14222610277930434">經常造訪</translation>
+<translation id="1422795627423046860">日期無效</translation>
 <translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427192966110103169">居家泳池、三溫暖和 SPA</translation>
@@ -2868,7 +2869,6 @@
 <translation id="5847181246682413476">電源供應器</translation>
 <translation id="584902713199270089">約會交友</translation>
 <translation id="5851548754964597211">分頁清單</translation>
-<translation id="5851868085455377790">發行者</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">啟用</translation>
 <translation id="5862579898803147654">堆疊出紙器 8</translation>
@@ -4146,7 +4146,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分鐘前}=1{<ph name="TIME_COUNT" /> 小時前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">餐飲服務</translation>
 <translation id="798134797138789862">可以要求使用虛擬實境裝置和資料</translation>
-<translation id="7982789257301363584">網路</translation>
 <translation id="7983008347525536475">運動休旅車 (SUV)</translation>
 <translation id="7984945080620862648">你目前無法造訪 <ph name="SITE" />，因為這個網站傳送的憑證經過編碼，導致 Chrome 無法處理。網路錯誤和攻擊行為通常是暫時性的，所以這個網頁可能稍後就能正常使用。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4814,6 +4813,7 @@
 <translation id="9155211586651734179">已連結的音訊周邊裝置</translation>
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中...</translation>
+<translation id="9158491153040481956">你最近變更的密碼在公開的資料侵害事件中外洩。如有問題，密碼管理工具可協助你登入。</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> 可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack 訊息</translation>

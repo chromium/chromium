@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1140317858355046628">삭제하면 모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹의 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="1142732900304639782">이 사이트 번역 옵션 제공 안 함</translation>
-<translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1154555449933432029">Google 비밀번호 관리자에 저장된 비밀번호가 없습니다.</translation>
 <translation id="115483310321669804">비밀번호(<ph name="PASSWORD" />) 사용</translation>
@@ -635,7 +634,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3911609878849982353">내림차순으로 정렬</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">내 데이터 결합하기</translation>
 <translation id="3931947361983910192">지난 4주</translation>
 <translation id="393697183122708255">사용 가능한 음성 검색이 없습니다.</translation>
 <translation id="3950820424414687140">로그인</translation>
@@ -993,7 +991,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
 <translation id="5503125329065007089">모든 기기의 비밀번호가 절반 높이로 열림</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
-<translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="5517326820028369152">최근 활동 하단 시트</translation>
 <translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
 <translation id="5548606607480005320">안전 확인</translation>
@@ -1329,7 +1326,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{사이트 1개의 구독을 취소함}other{사이트 #개의 구독을 취소함}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{비밀번호 1개}other{비밀번호 #개}}</translation>
 <translation id="688730033107341407">로그아웃하면 Google 계정의 북마크, 비밀번호 등이 이 기기에서 삭제됩니다.</translation>
-<translation id="688738109438487280"><ph name="TO_ACCOUNT" />에 기존 데이터 추가</translation>
 <translation id="6891726759199484455">비밀번호를 복사하려면 잠금 해제하세요</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6898797562238201317">나만의 암호를 사용하여 Google 계정에 있는 모든 Chrome 데이터를 암호화하세요</translation>
@@ -1615,7 +1611,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8062594758852531064">확장된 미리 로드:</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
 <translation id="8066816452984416180">이 페이지를 빠르게 북마크에 추가합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
-<translation id="806745655614357130">내 데이터 별도로 유지</translation>
 <translation id="8073388330009372546">새 탭에서 이미지 열기</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8078096376109663956">텍스트만 공유하세요.</translation>
@@ -1691,7 +1686,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8361737703487394103">특정 탭으로 이동(1~8)</translation>
 <translation id="8368001212524806591">가격 추적</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> 탭 그룹}other{<ph name="TAB_GROUPS_MANY" /> 탭 그룹}}</translation>
-<translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8396098434728053815">탭 오디오도 공유</translation>
@@ -1776,6 +1770,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8715286883001906001">Google 계정의 비밀번호 강화</translation>
+<translation id="8715300232952757586"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="8723453889042591629">이 페이지를 빠르게 번역합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="8725066075913043281">다시 시도하기</translation>
 <translation id="8731268612289859741">보안 코드</translation>

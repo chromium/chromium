@@ -2870,7 +2870,6 @@
 <translation id="5847181246682413476">Крыніцы сілкавання</translation>
 <translation id="584902713199270089">Спатканні і знаёмствы</translation>
 <translation id="5851548754964597211">Спіс укладак</translation>
-<translation id="5851868085455377790">Выдавец</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Уключыць</translation>
 <translation id="5862579898803147654">Укладчык 8</translation>
@@ -4148,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв таму}=1{<ph name="TIME_COUNT" /> гадз таму}one{<ph name="TIME_COUNT" /> сут таму}few{<ph name="TIME_COUNT" /> сут таму}many{<ph name="TIME_COUNT" /> сут таму}other{<ph name="TIME_COUNT" /> сут таму}}</translation>
 <translation id="7979595116210197019">Грамадскае харчаванне</translation>
 <translation id="798134797138789862">Сайт можа запытваць дазвол на выкарыстанне даных і прылад віртуальнай рэальнасці</translation>
-<translation id="7982789257301363584">Сетка</translation>
 <translation id="7983008347525536475">Аўтамабілі павышанай праходнасці</translation>
 <translation id="7984945080620862648">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён адправіў зашыфраваныя ўліковыя даныя, якія Chrome не можа апрацаваць. Звычайна памылкі сеткі і атакі – часовая з’ява, таму гэта старонка будзе, хутчэй за ўсё, працаваць пазней.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

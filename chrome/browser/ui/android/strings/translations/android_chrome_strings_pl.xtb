@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Otrzymuj alerty, gdy cena spadnie w dowolnej witrynie w internecie</translation>
 <translation id="1140317858355046628">Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich urządzeń.</translation>
 <translation id="1142732900304639782">Nie proponuj tłumaczenia tych witryn</translation>
-<translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1150263420752757504">Aplikacja <ph name="APP_NAME" /> zostanie otwarta w Chrome. Przechodząc dalej, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nie masz haseł zapisanych w Menedżerze haseł Google.</translation>
 <translation id="115483310321669804">Użyj hasła <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3911609878849982353">Sortowanie od Z do A</translation>
 <translation id="3924911262913579434">Tryb <ph name="SAFE_BROWSING_MODE" /> jest włączony</translation>
 <translation id="3927692899758076493">Bezszeryfowa</translation>
-<translation id="3928666092801078803">Połącz moje dane</translation>
 <translation id="3931947361983910192">z ostatnich czterech tygodni</translation>
 <translation id="393697183122708255">Brak włączonego wyszukiwania głosowego</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
@@ -993,7 +991,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="549660026907543296">Dołącz jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Hasła na wszystkich urządzeniach są otwarte do połowy wysokości</translation>
 <translation id="5515439363601853141">Odblokuj, by wyświetlić hasło</translation>
-<translation id="5517095782334947753">Masz zakładki, historię, hasła i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Plansza dolna Ostatnia aktywność</translation>
 <translation id="5526281268548144413">Nie można zamknąć w kilku oknach</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
@@ -1329,7 +1326,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Anulowano subskrypcję 1 witryny}few{Anulowano subskrypcję # witryn}many{Anulowano subskrypcję # witryn}other{Anulowano subskrypcję # witryny}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 hasło}few{# hasła}many{# haseł}other{# hasła}}</translation>
 <translation id="688730033107341407">Gdy się wylogujesz, z tego urządzenia zostaną usunięte Twoje zakładki, hasła i inne ustawienia na koncie Google.</translation>
-<translation id="688738109438487280">Dodaj istniejące dane do konta <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Odblokuj, by skopiować hasło</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6898797562238201317">Używaj własnego hasła do szyfrowania wszystkich danych Chrome na koncie Google</translation>
@@ -1615,7 +1611,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8062594758852531064">Wczytywanie rozszerzone:</translation>
 <translation id="8063895661287329888">Nie udało się dodać zakładki.</translation>
 <translation id="8066816452984416180">W łatwy sposób dodaj tę stronę do zakładek. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
-<translation id="806745655614357130">Przechowuj dane oddzielnie</translation>
 <translation id="8073388330009372546">Otwórz grafikę w nowej karcie</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8078096376109663956">Udostępnij tylko tekst</translation>
@@ -1691,7 +1686,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8361737703487394103">Przełączenie na określoną kartę (1–8)</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> grupę kart}few{<ph name="TAB_GROUPS_MANY" /> grupy kart}many{<ph name="TAB_GROUPS_MANY" /> grup kart}other{<ph name="TAB_GROUPS_MANY" /> grupy kart}}</translation>
-<translation id="8378850197701296741">Masz zakładki, historię i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8396098434728053815">Udostępnij też dźwięk z karty</translation>

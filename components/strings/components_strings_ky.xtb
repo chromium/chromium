@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">Жупташтырууга уруксат берүү үчүн <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Аккаунт өчүрүлдү</translation>
 <translation id="14222610277930434">Тез-тез өтүп турасыз</translation>
+<translation id="1422795627423046860">Күн жараксыз</translation>
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1427192966110103169">Үй бассейндери, сауналар жана спалар</translation>
@@ -2869,7 +2870,6 @@
 <translation id="5847181246682413476">Кубат булактары</translation>
 <translation id="584902713199270089">Таанышуу жана жеке адамдар</translation>
 <translation id="5851548754964597211">Өтмөк тизмеси</translation>
-<translation id="5851868085455377790">Берүүчү</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5862579898803147654">8-төшөгүч</translation>
@@ -4146,7 +4146,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мүн. мурун}=1{<ph name="TIME_COUNT" /> саат мурун}other{<ph name="TIME_COUNT" /> күн мурун}}</translation>
 <translation id="7979595116210197019">Тамак-аш кызматы</translation>
 <translation id="798134797138789862">Виртуалдык чындык түзмөктөрүн жана маалыматтарды колдонууга уруксат сурай алат</translation>
-<translation id="7982789257301363584">Тармак</translation>
 <translation id="7983008347525536475">Жол тандабастар</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> сайтына кире албайсыз, анткени вебсайт Chrome иштете албаган шифрленген далдаштырма дайындарын жөнөттү. Тармак каталары жана бузукулар адатта убактылуу көйгөй болгондуктан, бул бет кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4815,6 +4814,7 @@
 <translation id="9155211586651734179">Аудио түзмөктүн көмөкчү жабдыктары тиркелди</translation>
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
+<translation id="9158491153040481956">Жакында өзгөрткөн сырсөзүңүз уурдалды. Маселе келип чыкса, Сырсөздөрдү башкаргыч аккаунтуңузга кирүүгө жардам берет.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында купуя контент болушу мүмкүн}other{<ph name="FILE_COUNT" /> файлда купуя контент болушу мүмкүн}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Толук экрандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз</translation>
 <translation id="9163287596625611517">Slack билдирүүсү</translation>

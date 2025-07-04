@@ -2870,7 +2870,6 @@
 <translation id="5847181246682413476">വൈദ്യുതി വിതരണ ഉപകരണങ്ങൾ</translation>
 <translation id="584902713199270089">ഡേറ്റിംഗും വ്യക്തിപരമായ കാര്യങ്ങളും</translation>
 <translation id="5851548754964597211">ടാബ് ലിസ്റ്റ്</translation>
-<translation id="5851868085455377790">നല്‍‌കിയ ആള്‍‌</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5862579898803147654">സ്റ്റാക്കർ 8</translation>
@@ -4147,7 +4146,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> മിനിറ്റ് മുമ്പ്}=1{<ph name="TIME_COUNT" /> മണിക്കൂർ മുമ്പ്}other{<ph name="TIME_COUNT" /> ദിവസം മുമ്പ്}}</translation>
 <translation id="7979595116210197019">ഭക്ഷണ സേവനം</translation>
 <translation id="798134797138789862">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
-<translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7983008347525536475">എസ്‌യുവികൾ</translation>
 <translation id="7984945080620862648">Chrome-ന് പ്രോസസ്സുചെയ്യാനാകാത്ത രൂപമാറ്റം വരുത്തിയ ക്രെഡൻഷ്യലുകൾ വെബ്സൈറ്റ് അയയ്ക്കുന്നതിനാൽ നിങ്ങൾക്കിപ്പോൾ <ph name="SITE" /> സന്ദർശിക്കാനാകില്ല.നെറ്റ്‌വർക്ക് പിശകുകളും ആക്രമണങ്ങളും സാധാരണയായി താൽക്കാലികമായതിനാൽ ഈ പേജ് മിക്കവാറും പിന്നീട് പ്രവർത്തിക്കും.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

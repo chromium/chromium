@@ -907,6 +907,7 @@
        选择如何处理此设备上现有的浏览数据。</translation>
 <translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
+<translation id="4691892551491778176">当您使用此功能时，网页内容和网址会发送给 Google，但不会用于改进生成式 AI 模型。您随时可以在设置中关闭此功能。</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4709570498586527752">在不同时间为您提供最相关的功能</translation>
 <translation id="4717844083556844785">当前网页处于无痕模式</translation>
@@ -1188,6 +1189,8 @@
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
 <translation id="5804012843049740908">帮助您充分利用 Chrome 的设置提示</translation>
 <translation id="5804241973901381774">权限</translation>
+<translation id="58081802114142635">您的活动记录可以帮助改进 Google AI</translation>
+<translation id="5813223718099710537">当您使用此功能时，网页内容和网址会发送给 Google。您随时可以在设置中关闭此功能。</translation>
 <translation id="5817176759448082654">密码安全检查</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">正在同步…</translation>
@@ -1457,6 +1460,7 @@
 <translation id="6759709389246683070">您可以轻触并按住此标签页，设置提醒以便日后再次访问</translation>
 <translation id="6761393919622941301">音频</translation>
 <translation id="6770452996697898492">[已预订]</translation>
+<translation id="6775647281444147078">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。您的隐私权与 Gemini</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
@@ -1592,6 +1596,7 @@
 <translation id="7412027924265291969">继续</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7417689656810783109">重命名分组</translation>
+<translation id="7418703176995102827">您与 Gemini 的对话以及您的 Google Workspace 数据不会经过人工审核，也不会用于改进生成式 AI 模型。</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7425053386765766120">添加支付方式…</translation>
 <translation id="7425346204213733349">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但现有数据将继续存储在您的 Google 账号中。</translation>
@@ -1648,6 +1653,7 @@
 <translation id="760667371114328991">关闭安全检查通知</translation>
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612849887607288481">打开 AI 原型设计菜单</translation>
+<translation id="7615581988398168124">须遵守《Google 条款》和《Gemini 应用隐私权声明》。Gemini 的回答未必正确无误，请注意核查。</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{有密码遭泄露}=1{有 {COUNT} 个密码遭泄露}other{有 {COUNT} 个密码遭泄露}}</translation>
@@ -1823,6 +1829,7 @@
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8273982424131314219">即将填写信息到 <ph name="URL" /></translation>
 <translation id="8275068909952022340">更多…</translation>
+<translation id="8277328362018795342">系统会分享网页内容，提供更切合需求的答案</translation>
 <translation id="8278488584187265939">自定义首页</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
@@ -1897,6 +1904,7 @@
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8561999115126307258">{count,plural, =1{键盘上方显示了 {count} 个密码选项。}other{键盘上方显示了 {count} 个密码选项。}}</translation>
 <translation id="8564894539416715395">新标签页</translation>
+<translation id="8569414323292250522">对话内容会接受审核，并用于改进 Google AI。了解您有哪些选择。与您所在位置有关的信息也会存储在活动记录中。</translation>
 <translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@
 <translation id="9206887540681440657">速度</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
 <translation id="926455622548529175">切换并删除</translation>
+<translation id="927162192666499119">组织数据的保密性和安全性有保障</translation>
 <translation id="929748059769569925">突出显示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{关闭标签页}other{关闭标签页}}</translation>
 <translation id="932327136139879170">首页</translation>

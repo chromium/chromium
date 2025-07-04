@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">जोडणीस अनुमती देण्‍यासाठी <ph name="TURN_ON_BLUETOOTH_LINK" /> सुरू करा</translation>
 <translation id="1421484961346698724">खाते हटवले आहे</translation>
 <translation id="14222610277930434">तुम्ही अनेकदा भेट देता</translation>
+<translation id="1422795627423046860">तारीख चुकीची आहे</translation>
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1427192966110103169">घरातील स्विमिंग पूल, सॉना आणि स्पा</translation>
@@ -2413,6 +2414,7 @@
 <translation id="5043753287208271200">पिवळा ३</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="5048293684454354469">जाहिराती पर्सनलाइझ करण्यासाठी साइट वापरू शकत असलेल्या अनेक गोष्टींपैकी जाहिरातीचे विषय ही फक्त एक गोष्ट आहे. जाहिरातीच्या विषयांशिवायदेखील साइट तुम्हाला जाहिराती दाखवू शकतात, पण त्या कमी पर्सनलाइझ केलेल्या असतील. <ph name="BEGIN_LINK" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="LINK_END" /> याबद्दल अधिक जाणून घ्या.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, या शोध सूचनेनंतर उपलब्ध असलेल्या आणखी शोध शॉर्टकटसाठी टॅब प्रेस करा</translation>
 <translation id="5052517576853118371">ॲक्टिव्ह विषय</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
@@ -2869,7 +2871,6 @@
 <translation id="5847181246682413476">वीज पुरवठ्याच्या वस्तू</translation>
 <translation id="584902713199270089">डेटिंग आणि वैयक्तिक गोष्टी</translation>
 <translation id="5851548754964597211">टॅब सूची</translation>
-<translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5862579898803147654">स्टॅकर ८</translation>
@@ -3730,6 +3731,7 @@
 <translation id="7292031607255951991">मिळवणाऱ्याचे नाव</translation>
 <translation id="7298195798382681320">शिफारस केलेले</translation>
 <translation id="7299471494012161875">अटॅच केलेली उपकरणे दाखवा</translation>
+<translation id="7299769361777046949">Google Wallet मधील लॉयल्‍टी कार्ड व्यवस्थापित करा</translation>
 <translation id="7300012071106347854">गडद निळा</translation>
 <translation id="7304030187361489308">उच्च</translation>
 <translation id="7304562222803846232">Google खाते ची गोपनीयता सेटिंग्ज व्यवस्थापित करा</translation>
@@ -4148,7 +4150,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />तासापूर्वी}other{<ph name="TIME_COUNT" /> दिवसांपूर्वी}}</translation>
 <translation id="7979595116210197019">खाद्यपदर्थांसंबंधित सेवा</translation>
 <translation id="798134797138789862">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्याची विनंती करू शकते</translation>
-<translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">Chrome प्रक्रिया करू शकत नसलेली स्क्रॅंबल केलेली क्रेडेंशियल वेबसाइटने पाठवल्यामुळे तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही. नेटवर्क एरर आणि आक्रमणकर्ते सामान्यतः तात्पुरते असतात, यामुळे हे पेज नंतर व्यवस्थित काम करेल.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4817,6 +4818,7 @@
 <translation id="9155211586651734179">ऑडिओ उपकरणे कनेक्ट केली</translation>
 <translation id="9155646082713385498">मासिके</translation>
 <translation id="9157595877708044936">सेट अप करीत आहे...</translation>
+<translation id="9158491153040481956">सार्वजनिक डेटा भंगामध्ये आढळलेला पासवर्ड तुम्ही अलीकडे बदलला आहे. समस्या आल्यास, Password Manager तुम्हाला साइन इन करण्यात मदत करू शकते.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> यामध्ये संवेदनशील आशय असू शकतो}other{<ph name="FILE_COUNT" /> या फाइलमध्ये संवेदनशील आशय असू शकतो}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="9163287596625611517">Slack मेसेज</translation>

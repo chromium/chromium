@@ -251,6 +251,7 @@
 <translation id="1420920093772172268">జత చేయడాన్ని అనుమతించడానికి <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">తొలగించబడిన ఖాతా</translation>
 <translation id="14222610277930434">మీరు తరచుగా సందర్శించినది</translation>
+<translation id="1422795627423046860">తేదీ చెల్లనిది</translation>
 <translation id="1422930527989633628">సమీపంలో ఉన్న బ్లూటూత్ పరికరాలను కనుగొనడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1427192966110103169">ఇంటిలో ఉండే స్విమ్మింగ్ పూల్స్, సానాలు &amp; స్పాలు</translation>
@@ -2865,7 +2866,6 @@
 <translation id="5847181246682413476">విద్యుత్ సరఫరాలు</translation>
 <translation id="584902713199270089">డేటింగ్ &amp; వ్యక్తిగత వివరాలు</translation>
 <translation id="5851548754964597211">ట్యాబ్ లిస్ట్‌</translation>
-<translation id="5851868085455377790">జారీ చేసినవారు</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5862579898803147654">స్టాకర్ 8</translation>
@@ -3725,6 +3725,7 @@
 <translation id="7292031607255951991">గ్రహీత పేరు</translation>
 <translation id="7298195798382681320">సిఫార్సు చేయబడినవి</translation>
 <translation id="7299471494012161875">అటాచ్ చేసిన డిస్‌ప్లే పెరిఫెరల్స్</translation>
+<translation id="7299769361777046949">Google Walletలో లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7300012071106347854">నల్ల కావిరాయి నీలం</translation>
 <translation id="7304030187361489308">అధికం</translation>
 <translation id="7304562222803846232">Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
@@ -4143,7 +4144,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />ని క్రితం}=1{<ph name="TIME_COUNT" />గం క్రితం}other{<ph name="TIME_COUNT" />రో క్రితం}}</translation>
 <translation id="7979595116210197019">ఫుడ్ సర్వీస్</translation>
 <translation id="798134797138789862">వర్చువల్ రియాలిటీ పరికరాలు, డేటాను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
-<translation id="7982789257301363584">నెట్‌వర్క్</translation>
 <translation id="7983008347525536475">SUVలు</translation>
 <translation id="7984945080620862648">Chrome ప్రాసెస్ చేయలేని, గజిబిజిగా ఉండే ఆధారాలను వెబ్‌సైట్ పంపినందున మీరు ప్రస్తుతం <ph name="SITE" />ని సందర్శించలేరు. నెట్‌వర్క్ లోపాలు మరియు దాడులు సాధారణంగా తాత్కాలికంగానే ఉంటాయి, కావున ఈ పేజీ కాసేపటి తర్వాత పని చేసే అవకాశం ఉంది.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4812,6 +4812,7 @@
 <translation id="9155211586651734179">ఆడియో పెరిఫెరల్స్ జోడించబడ్డాయి</translation>
 <translation id="9155646082713385498">మ్యాగజైన్‌లు</translation>
 <translation id="9157595877708044936">అమర్చుతోంది...</translation>
+<translation id="9158491153040481956">పబ్లిక్ డేటా ఉల్లంఘనలో బహిర్గతమైన పాస్‌వర్డ్‌ను మీరు ఇటీవల మార్చారు. సమస్యగా ఉంటే, సైన్ ఇన్ చేయడానికి Password Manager మీకు సహాయపడగలదు.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />‌లో సున్నితమైన కంటెంట్ ఉండవచ్చు}other{<ph name="FILE_COUNT" /> ఫైల్స్‌లో సున్నితమైన కంటెంట్ ఉండవచ్చు}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="9163287596625611517">Slack మెసేజ్</translation>

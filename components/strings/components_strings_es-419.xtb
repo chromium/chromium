@@ -256,6 +256,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para habilitar la sincronización</translation>
 <translation id="1421484961346698724">Cuenta borrada</translation>
 <translation id="14222610277930434">Visitas con frecuencia</translation>
+<translation id="1422795627423046860">La fecha no es válida</translation>
 <translation id="1422930527989633628">Puede solicitar permiso para establecer conexión con dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1427192966110103169">Spa, saunas y piscinas domésticas</translation>
@@ -917,7 +918,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2512101340618156538">No se permite (predeterminado)</translation>
 <translation id="2512413427717747692">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado en la configuración de iOS</translation>
 <translation id="2514548229949738417">Casa y jardín</translation>
-<translation id="2515629240566999685">Verificar la señal en tu área.</translation>
+<translation id="2515629240566999685">Verificar la señal en tu área</translation>
 <translation id="2515761554693942801">Elegiste realizar la verificación con Touch ID en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Esta tarjeta no está disponible. Comunícate con el proveedor de la tarjeta.</translation>
 <translation id="2519250377986324805">Más detalles</translation>
@@ -1631,7 +1632,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3713277100229669269">Ahora puedes ver los beneficios de la tarjeta antes de pagar</translation>
 <translation id="371420189621607696">Videojuegos competitivos</translation>
 <translation id="3714633008798122362">Calendario web</translation>
-<translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi.</translation>
+<translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{No se permite cargar el archivo}other{No se permite cargar <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3715597595485130451">Conectar a Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS<ph name="END_LINK" />.</translation>
@@ -2871,7 +2872,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5847181246682413476">Fuentes de alimentación</translation>
 <translation id="584902713199270089">Citas y anuncios personales</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
-<translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862579898803147654">Apilador 8</translation>
@@ -3731,6 +3731,7 @@ Detalles adicionales:
 <translation id="7292031607255951991">Nombre del destinatario</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de pantallas conectados</translation>
+<translation id="7299769361777046949">Administrar las tarjetas de lealtad en la Billetera de Google</translation>
 <translation id="7300012071106347854">Azul cobalto</translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Administrar configuración de privacidad de la Cuenta de Google</translation>
@@ -4149,7 +4150,6 @@ Detalles adicionales:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hace <ph name="TIME_COUNT" /> min}=1{Hace <ph name="TIME_COUNT" /> h}other{Hace <ph name="TIME_COUNT" /> días}}</translation>
 <translation id="7979595116210197019">Servicio de comida</translation>
 <translation id="798134797138789862">Puede solicitar permiso para usar datos y dispositivos de realidad virtual</translation>
-<translation id="7982789257301363584">Red</translation>
 <translation id="7983008347525536475">Vehículos deportivos utilitarios</translation>
 <translation id="7984945080620862648">No puedes visitar <ph name="SITE" /> ahora porque el sitio web envió credenciales confusas que Chrome no puede procesar. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4367,7 +4367,7 @@ Detalles adicionales:
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
-<translation id="8363502534493474904">Desactivar el modo avión.</translation>
+<translation id="8363502534493474904">Desactivar el modo avión</translation>
 <translation id="8363929499301563123">Cookies de sitios web (se conservará el estado de acceso en los sitios web visitados recientemente)</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
 <translation id="8366057325711477500">Noticias del mundo</translation>
@@ -4819,6 +4819,7 @@ Detalles adicionales:
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
+<translation id="9158491153040481956">Cambiaste recientemente una contraseña que se encontró en una violación pública de la seguridad de los datos. Si tienes problemas, el Administrador de contraseñas puede ayudarte a acceder.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> puede incluir contenido sensible}other{<ph name="FILE_COUNT" /> archivos pueden incluir contenido sensible}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para salir de la pantalla completa, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensaje de Slack</translation>

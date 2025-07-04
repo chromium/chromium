@@ -2872,7 +2872,6 @@
 <translation id="5847181246682413476">ইলেকট্রিক সাপ্লাই</translation>
 <translation id="584902713199270089">ডেটিং ও ব্যক্তিগত</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
-<translation id="5851868085455377790">ইস্যুকারী</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862579898803147654">স্ট্যাকার ৮</translation>
@@ -4149,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> মিনিট আগে}=1{<ph name="TIME_COUNT" /> ঘণ্টা আগে}one{<ph name="TIME_COUNT" /> দিন আগে}other{<ph name="TIME_COUNT" /> দিন আগে}}</translation>
 <translation id="7979595116210197019">খাদ্য পরিষেবা</translation>
 <translation id="798134797138789862">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে অনুমতি চাইতে পারে</translation>
-<translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">আপনি <ph name="SITE" /> এ যেতে পারবেন না কারণ অসম্পূর্ণ শংসাপত্র পাঠিয়েছে যেটি Chrome প্রক্রিয়া করতে পারে না।  নেটওয়ার্ক ত্রুটি এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠা সম্ভবত পরে কাজ করবে।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

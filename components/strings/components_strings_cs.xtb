@@ -256,6 +256,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1420920093772172268">Chcete-li povolit párování, <ph name="TURN_ON_BLUETOOTH_LINK" />.</translation>
 <translation id="1421484961346698724">Účet byl smazán</translation>
 <translation id="14222610277930434">Často navštěvujete</translation>
+<translation id="1422795627423046860">Datum je neplatné</translation>
 <translation id="1422930527989633628">Může žádat o objevování zařízení Bluetooth v okolí</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1427192966110103169">Domácí bazény, sauny a lázně</translation>
@@ -2866,7 +2867,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5847181246682413476">Dodávky elektrické energie</translation>
 <translation id="584902713199270089">Seznamování a osobní inzerce</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
-<translation id="5851868085455377790">Vydavatel</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862579898803147654">Stohovač 8</translation>
@@ -3724,6 +3724,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7292031607255951991">Jméno příjemce</translation>
 <translation id="7298195798382681320">Doporučeno</translation>
 <translation id="7299471494012161875">Připojená zobrazovací periferní zařízení</translation>
+<translation id="7299769361777046949">Správa věrnostních karet v Peněžence Google</translation>
 <translation id="7300012071106347854">Sytě modrá</translation>
 <translation id="7304030187361489308">Vysoký</translation>
 <translation id="7304562222803846232">Spravovat nastavení ochrany soukromí v účtu Google</translation>
@@ -4142,7 +4143,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Před <ph name="TIME_COUNT" /> min}=1{Před <ph name="TIME_COUNT" /> h}few{Před <ph name="TIME_COUNT" /> dny}many{Před <ph name="TIME_COUNT" /> dne}other{Před <ph name="TIME_COUNT" /> dny}}</translation>
 <translation id="7979595116210197019">Kulinářský průmysl</translation>
 <translation id="798134797138789862">Může žádat o použití zařízení a dat pro virtuální realitu</translation>
-<translation id="7982789257301363584">Síť</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">Web <ph name="SITE" /> teď nemůžete navštívit, protože webové stránky odeslaly zakódované identifikační údaje, které Chrome nedokáže zpracovat. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4811,6 +4811,7 @@ Další podrobnosti:
 <translation id="9155211586651734179">Jsou připojeny zvukové periferie</translation>
 <translation id="9155646082713385498">Časopisy</translation>
 <translation id="9157595877708044936">Nastavování...</translation>
+<translation id="9158491153040481956">Nedávno jste změnili heslo, které bylo nalezeno ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů. V případě potíží vám s přihlášením může pomoct Správce hesel.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Soubor <ph name="FILE_NAME" /> může zahrnovat citlivý obsah}few{<ph name="FILE_COUNT" /> soubory mohou zahrnovat citlivý obsah}many{<ph name="FILE_COUNT" /> souboru může zahrnovat citlivý obsah}other{<ph name="FILE_COUNT" /> souborů může zahrnovat citlivý obsah}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, stiskněte |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Zpráva pro Slack</translation>

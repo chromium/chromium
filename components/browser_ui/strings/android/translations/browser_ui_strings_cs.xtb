@@ -61,6 +61,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
 <translation id="1717218214683051432">Pohybová čidla</translation>
+<translation id="1717996979683942279">Když je tato možnost zapnutá, mohou weby žádat o správu oken na všech vašich displejích. Když je vypnutá, weby okna na všech vašich displejích spravovat nemohou.</translation>
 <translation id="1743802530341753419">Pokud se web bude chtít připojit k zařízení, zobrazit dotaz (doporučeno)</translation>
 <translation id="1777815584158991902">Spodní panel Feed Objevit</translation>
 <translation id="1779089405699405702">Dekodér obrázků</translation>
@@ -171,6 +172,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
 <translation id="2979365474350987274">Soubory cookie třetích stran jsou omezovány</translation>
 <translation id="2990583317361835189">Nepovolovat webům používat senzory pohybu</translation>
+<translation id="3004438526346162184">Webové stránky mohou pomocí této funkce spravovat okna na všech vašich displejích</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3064871050034234884">Weby mohou přehrávat zvuk</translation>
@@ -439,6 +441,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6071501408666570960">Můžete být odhlášeni z tohoto webu</translation>
 <translation id="6085954183010297841">Smazat udělené oprávnění k úpravám souboru? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Když je tato možnost zapnutá, weby mohou žádat o informace o tom, zda své zařízení aktivně používáte. Když je vypnutá, weby se nemohou dozvědět, zda zařízení aktivně používáte.</translation>
+<translation id="615886654739818377">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6171020522141473435">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení Bluetooth. Když je vypnutá, weby nemohou používat zařízení Bluetooth.</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>

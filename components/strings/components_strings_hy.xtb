@@ -260,6 +260,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />՝ զուգակցումը թույլատրելու համար</translation>
 <translation id="1421484961346698724">Հաշիվը հեռացվել է</translation>
 <translation id="14222610277930434">Հաճախ եք այցելում</translation>
+<translation id="1422795627423046860">Ամսաթիվն անվավեր է</translation>
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1427192966110103169">Տնային լողավազաններ, սաունաներ և սպա</translation>
@@ -2879,7 +2880,6 @@
 <translation id="5847181246682413476">Սնուցման աղբյուրներ</translation>
 <translation id="584902713199270089">Հանդիպումներ և ծանոթություններ</translation>
 <translation id="5851548754964597211">Ներդիրների ցանկ</translation>
-<translation id="5851868085455377790">Թողարկող</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5862579898803147654">Շեղջիչ 8</translation>
@@ -4156,7 +4156,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ր առաջ}=1{<ph name="TIME_COUNT" /> ժ առաջ}one{<ph name="TIME_COUNT" /> օր առաջ}other{<ph name="TIME_COUNT" /> օր առաջ}}</translation>
 <translation id="7979595116210197019">Սննդի ծառայություն</translation>
 <translation id="798134797138789862">Կարող է հայցել վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն</translation>
-<translation id="7982789257301363584">Ցանց</translation>
 <translation id="7983008347525536475">Ամենագնաց մեքենաներ</translation>
 <translation id="7984945080620862648">Այս պահին չեք կարող այցելել <ph name="SITE" />, քանի որ կայքը կոդավորված հավատարմագրեր է ուղարկել, որոնք Chrome-ը չի կարող մշակել: Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր բնույթ են կրում, ուստի, հավանաբար, այս էջը մատչելի կլինի ավելի ուշ:</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4824,6 +4823,7 @@
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>
 <translation id="9155646082713385498">Ամսագրեր</translation>
 <translation id="9157595877708044936">Տեղակայում…</translation>
+<translation id="9158491153040481956">Վերջերս դուք փոխել եք գաղտնաբառը, որը բացահայտվել էր տվյալների հրապարակային արտահոսքի արդյունքում։ Խնդիրների դեպքում Գաղտնաբառերի կառավարիչը կօգնի ձեզ մուտք գործել հաշիվ։</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ֆայլը պարունակում է զգայուն բովանդակություն}one{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}other{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />․ լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Հաղորդագրություն Slack-ում</translation>

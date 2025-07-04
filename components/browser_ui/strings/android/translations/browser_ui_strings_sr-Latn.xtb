@@ -61,6 +61,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="1703666494654169921">Ne dozvoljavaj sajtovima da koriste uređaje i podatke virtuelne realnosti</translation>
 <translation id="1704230497453185209">Ne dozvoljavaj sajtovima da puštaju zvuk</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
+<translation id="1717996979683942279">Kada je uključeno, sajtovi mogu da traže da upravljaju prozorima na svim ekranima. Kada je isključeno, sajtovi ne mogu da upravljaju prozorima na svim ekranima.</translation>
 <translation id="1743802530341753419">Pitaj pre nego što dozvoliš sajtovima da se povezuju sa uređajem (preporučeno)</translation>
 <translation id="1777815584158991902">Donja tabela Discover fida</translation>
 <translation id="1779089405699405702">Dekoder slika</translation>
@@ -171,6 +172,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="2968755619301702150">Prikazivač sertifikata</translation>
 <translation id="2979365474350987274">Kolačići treće strane su ograničeni</translation>
 <translation id="2990583317361835189">Ne dozvoljavaj sajtovima da koriste senzore pokreta</translation>
+<translation id="3004438526346162184">Sajtovi mogu da koriste ovu funkciju da bi upravljali prozorima na svim ekranima</translation>
 <translation id="3008272652534848354">Resetuj dozvole</translation>
 <translation id="301521992641321250">Automatski je blokirano</translation>
 <translation id="3064871050034234884">Sajtovi mogu da puštaju zvuk</translation>
@@ -439,6 +441,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6071501408666570960">Možda ćete biti odjavljeni sa ovog sajta</translation>
 <translation id="6085954183010297841">Želite da izbrišete dozvolu za izmene fajlova? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
+<translation id="615886654739818377">Ne dozvoljavaj sajtovima da upravljaju prozorima na svim ekranima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kada je uključeno, sajtovi mogu da traže da koriste Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da koriste Bluetooth uređaje.</translation>
 <translation id="6177128806592000436">Veza sa ovim sajtom nije bezbedna</translation>

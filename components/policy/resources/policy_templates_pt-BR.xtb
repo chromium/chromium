@@ -1779,6 +1779,7 @@ Se a política for desativada, os usuários não terão acesso a essa funcionali
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
+<translation id="2219724363635419721">Desative a Legenda instantânea</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -5736,6 +5737,15 @@ lista de permissões, que têm prioridade maior do que o valor padrão configura
 Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
 a otimização do JavaScript será ativada.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
+<translation id="49677896192199414">Ative a Legenda instantânea.
+
+Se essa política for ativada, a Legenda instantânea vai ficar sempre ativada.
+
+Se ela for desativada, a Legenda instantânea também vai ficar desativada.
+
+Se for definida como obrigatória, o usuário não poderá mudar nem substituir essa política.
+
+Se for deixada sem definição, a Legenda instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4974091268178043378">Modo de cor do ChromeOS</translation>
@@ -6522,6 +6532,7 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
 <translation id="5479841110985196412">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
+<translation id="548137908954174608">Ative a Legenda instantânea</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5486352219019836984">Se essa política for ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
@@ -10093,6 +10104,9 @@ Observação: se <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME
 <translation id="7841883965249733328">Desativar o upgrade automático do conteúdo misto</translation>
 <translation id="7845130996290850593">Ativar o Kerberos</translation>
 <translation id="7846952520291088817">URLs para os quais IPs locais são expostos em candidatos ICE do WebRTC</translation>
+<translation id="7847374643492493038">Se a política for definida como verdadeira ou se <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> for definida como falsa, as páginas da Web serão impedidas de acessar a API WebGL.
+
+      Se a política for definida como falsa ou deixada sem definição, as páginas da Web poderão usar a API WebGL, mas talvez as configurações padrão do navegador ainda exijam argumentos da linha de comando para usar essas APIs.</translation>
 <translation id="7848641140449742406">Configurações do SO</translation>
 <translation id="7850846808758624237">Se a política for definida como "Ativada", a página inicial será importada do navegador padrão anterior durante a primeira execução. Se a política for definida como "Desativada" ou não for definida, a página inicial não será importada durante a primeira execução.
 
@@ -11401,6 +11415,17 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 <translation id="8705895771006864851">Se esta política for definida como verdadeira, funcionalidades de tradução serão fornecidas quando for adequado para os usuários, mostrando uma barra de ferramentas de tradução integrada no <ph name="PRODUCT_NAME" /> e uma opção de tradução no menu de contexto que aparece ao clicar com o botão direito do mouse. Se esta política for definida como falsa, todos os recursos de tradução integrados serão desativados.
 
       Se você definir a política, os usuários não poderão mudar essa função. Se ela não for definida, os usuários poderão mudar a configuração.</translation>
+<translation id="8707290517123095787">Ative a tradução da Legenda instantânea. As legendas serão enviadas ao Google para tradução.
+
+Se essa política for ativada, a Tradução instantânea vai ficar sempre ativada.
+
+Se ela for desativada, a Tradução instantânea também vai ficar desativada.
+
+Se for definida como obrigatória, o usuário não poderá mudar nem substituir essa política.
+
+Se for deixada sem definição, a Tradução instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.
+
+Se a opção <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> estiver desativada, a Tradução instantânea também será desativada, não importando a configuração dessa política.</translation>
 <translation id="8707790573162457301">Executar a limpeza de disco automática durante o login</translation>
 <translation id="8712609946151927008">Programar intervalos de suspensão semanais</translation>
 <translation id="8713535263782304771">Desativar o Navegação segura</translation>

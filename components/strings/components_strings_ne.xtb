@@ -2869,7 +2869,6 @@
 <translation id="5847181246682413476">विद्युत आपूर्ति</translation>
 <translation id="584902713199270089">डेटिङ तथा व्यक्तिगत कुराहरू</translation>
 <translation id="5851548754964597211">ट्याब सूची</translation>
-<translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5862579898803147654">स्ट्याकर ८</translation>
@@ -4146,7 +4145,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनेटअघि}=1{<ph name="TIME_COUNT" /> घण्टाअघि}other{<ph name="TIME_COUNT" /> दिनअघि}}</translation>
 <translation id="7979595116210197019">खाद्य सेवा</translation>
 <translation id="798134797138789862">भर्चुअल रियालिटी चल्ने डिभाइस र डेटा प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
-<translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7983008347525536475">SUV गाडीहरू</translation>
 <translation id="7984945080620862648">तपाईं अहिले नै <ph name="SITE" /> भ्रमण गर्न सक्नुहुन्न किनभने वेबसाइटले स्क्रेम्बल गरिएका पत्यारपत्रहरू पठायो जसलाई Chrome ले प्रक्रियामा लैजान सक्दैन। नेटवर्क त्रुटिहरू र आक्रमणहरू प्राय: अस्थायी हुने गर्दछन्, त्यसैले सम्भवत: यो पृष्ठले पछि कार्य गर्ने छ।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

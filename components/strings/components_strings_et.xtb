@@ -2871,7 +2871,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5847181246682413476">Toiteallikad</translation>
 <translation id="584902713199270089">Kohtingud ja tutvumiskuulutused</translation>
 <translation id="5851548754964597211">Vahelehtede loend</translation>
-<translation id="5851868085455377790">Väljastaja</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862579898803147654">Virnastaja 8</translation>
@@ -4149,7 +4148,6 @@ Lisateave:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min tagasi}=1{<ph name="TIME_COUNT" /> h tagasi}other{<ph name="TIME_COUNT" /> p tagasi}}</translation>
 <translation id="7979595116210197019">Toiduvalmistamistööstus</translation>
 <translation id="798134797138789862">Saab küsida luba VR-seadmete ja -andmete kasutamiseks</translation>
-<translation id="7982789257301363584">Võrk</translation>
 <translation id="7983008347525536475">Linnamaasturid</translation>
 <translation id="7984945080620862648">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait saatis tagasi arusaamatud mandaadid, mida Chrome ei saa töödelda. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

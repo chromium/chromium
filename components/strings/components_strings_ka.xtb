@@ -2415,6 +2415,7 @@
 <translation id="5043753287208271200">ყვითელი 3</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="5048293684454354469">სარეკლამო თემები არის ერთ-ერთი იმ მრავალი საშუალებიდან, რომლებითაც საიტს შეუძლია რეკლამის პერსონალიზება. საიტებს რეკლამის ჩვენება სარეკლამო თემების გარეშეც შეუძლია, თუმცა ის ნაკლებად პერსონალიზებული იქნება. შეიტყვეთ მეტი <ph name="BEGIN_LINK" />რეკლამის კონფიდენციალურობის მართვის<ph name="LINK_END" /> შესახებ.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ძიების ამ შემოთავაზების შემდეგ, მეტი ხელმისაწვდომი ძიების მალსახმობებისთვის დააჭირეთ ჩანართს</translation>
 <translation id="5052517576853118371">აქტიური თემები</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ეს ფაილი მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ეს ფაილები მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
 <translation id="505757197798929356">მიუთითეთ გახსნის მიზეზი (სავალდებულო)</translation>
@@ -2871,7 +2872,6 @@
 <translation id="5847181246682413476">ელექტროენერგიით მომარაგება</translation>
 <translation id="584902713199270089">პაემნები და გაცნობა</translation>
 <translation id="5851548754964597211">ჩანართების სია</translation>
-<translation id="5851868085455377790">გამცემი</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5862579898803147654">სტეკერი 8</translation>
@@ -4149,7 +4149,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> წთ-ის წინ}=1{<ph name="TIME_COUNT" /> სთ-ის წინ}other{<ph name="TIME_COUNT" /> დღის წინ}}</translation>
 <translation id="7979595116210197019">სასურსათო მომსახურება</translation>
 <translation id="798134797138789862">შეუძლია ვირტუალური რეალობის მოწყობილობებისა და მონაცემების გამოყენების თხოვნა</translation>
-<translation id="7982789257301363584">ქსელი</translation>
 <translation id="7983008347525536475">ყველგანმავლები</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> საიტზე შესვლა ამჟამად შეუძლებელია, რადგან ვებსაიტმა გამოგზავნა დაზიანებული მტკიცებულებები, რომელთა წაკითხვას Chrome ვერ ახერხებს. ქსელური შეცდომები და შეტევები, ჩვეულებრივ, დროებითია, ამიტომ მოგვიანებით ეს გვერდი შეიძლება ამუშავდეს.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

@@ -1697,6 +1697,7 @@ Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze function
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
 <translation id="2215746393279570703">Instellingen voor zwevende SSO</translation>
+<translation id="2219724363635419721">Live ondertiteling uitzetten</translation>
 <translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -5461,6 +5462,15 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
 Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="4960597185231686653">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spraakinvoer heeft.</translation>
+<translation id="49677896192199414">Zet de functie Live ondertiteling aan.
+
+Als je dit beleid toepast, staat Live ondertiteling altijd aan.
+
+Als je dit beleid niet toepast, staat Live ondertiteling altijd uit.
+
+Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
+
+Als je dit beleid niet instelt, staat Live ondertiteling in eerste instantie uit, maar kan de gebruiker deze functie op elk moment aanzetten.</translation>
 <translation id="4970046075219007744">Web-apps toestaan om de gebruiker toegang te geven tot bestandstypen via de File Handling API</translation>
 <translation id="4970855112942626932">Inloggen bij browser uitzetten</translation>
 <translation id="4974091268178043378">Chrome OS-kleurmodus</translation>
@@ -6231,6 +6241,7 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="5476152378885134514">Het klembord blokkeren op deze sites</translation>
 <translation id="5479841110985196412">Virtueel toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
+<translation id="548137908954174608">Live ondertiteling aanzetten</translation>
 <translation id="5483012943408894695">Beginpunten of hostnaampatronen waarvoor geen beperkingen voor niet-beveiligde herkomsten zouden moeten gelden.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
 <translation id="5486352219019836984">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
@@ -9643,6 +9654,9 @@ Opmerking: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> o
 <translation id="7841883965249733328">Automatisch upgraden van gemengde content uitzetten</translation>
 <translation id="7845130996290850593">Kerberos aanzetten</translation>
 <translation id="7846952520291088817">URL's waarvan lokale IP's zichtbaar zijn in WebRTC ICE-kandidaten</translation>
+<translation id="7847374643492493038">Als je het beleid instelt op Waar (of <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> instelt op Onwaar), hebben webpagina's geen toegang tot de WebGL API.
+
+      Als je het beleid instelt op Onwaar of niet instelt, kunnen webpagina's de WebGL API gebruiken, maar kunnen de standaardinstellingen van de browser nog steeds opdrachtregelargumenten vereisen om deze API's te gebruiken.</translation>
 <translation id="7848641140449742406">OS-instellingen</translation>
 <translation id="7850846808758624237">Als je het beleid toepast, wordt de homepage van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, wordt de homepage niet geïmporteerd bij de eerste uitvoering.
 
@@ -10878,6 +10892,17 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8705895771006864851">Als je het beleid instelt op True, wordt gebruikers vertaalfunctionaliteit aangeboden als dit gepast is. In dat geval is een geïntegreerde vertaalwerkbalk zichtbaar in <ph name="PRODUCT_NAME" /> en een vertaaloptie in het contextmenu als je klikt met de rechtermuisknop. Als je het beleid instelt op False, worden alle ingebouwde vertaalfuncties uitgezet.
 
       Als je het beleid instelt, kunnen gebruikers deze functie niet wijzigen. Als je het niet instelt, kunnen ze de instelling wel wijzigen.</translation>
+<translation id="8707290517123095787">Zet vertaling van live ondertiteling aan. Ondertiteling wordt naar Google gestuurd voor vertaling.
+
+Als je dit beleid toepast, staat Live vertalen altijd aan.
+
+Als je dit beleid niet toepast, staat Live Translate altijd uit.
+
+Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
+
+Als je dit beleid niet instelt, staat Live vertalen in eerste instantie uit, maar kan de gebruiker deze functie op elk moment aanzetten.
+
+Als je <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> niet toepast, staat Live vertalen uit, ongeacht deze beleidsinstelling.</translation>
 <translation id="8707790573162457301">Automatische schijfopruiming uitvoeren tijdens inloggen</translation>
 <translation id="8712609946151927008">Wekelijkse opschortingsintervallen plannen</translation>
 <translation id="8713535263782304771">Safe Browsing uitzetten</translation>

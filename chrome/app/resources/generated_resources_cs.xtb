@@ -3722,6 +3722,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3592260987370335752">&amp;Další informace</translation>
 <translation id="3592344177526089979">Probíhá odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktivovat režim Fuzzy-Pinyin</translation>
+<translation id="3593953853060020305">Povolit tomuto webu upravovat soubor <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Omezení názvu certifikátu</translation>
 <translation id="3596012367874587041">Nastavení aplikace</translation>
 <translation id="3596414637720633074">V anonymním režimu blokovat soubory cookie třetích stran</translation>
@@ -4683,6 +4684,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4249785854468467847">Využívejte v Chromu umělou inteligenci</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4250680216510889253">Ne</translation>
+<translation id="4251243704979202079">Web <ph name="ORIGIN" /> si bude moct prohlížet soubory ve složce <ph name="FOLDERNAME" /> a vytvářet z nich vlastní kopie</translation>
 <translation id="4251377547188244181">Registrace zařízení pro veřejný terminál a k signalizaci</translation>
 <translation id="4252828488489674554">Kliknutím pravým tlačítkem na název skupiny karet tuto skupinu upravíte a kliknutím ji sbalíte</translation>
 <translation id="4252899949534773101">Rozhraní Bluetooth je zakázáno</translation>
@@ -6625,6 +6627,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5643321261065707929">Měřená síť</translation>
 <translation id="5646376287012673985">Poloha</translation>
 <translation id="5646558797914161501">Businessman</translation>
+<translation id="5647989922796038257">Sdílet také všechny zvukové výstupy</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5648166631817621825">Posledních 7 dní</translation>
 <translation id="5651308944918885595">Viditelnost pro sdílení nablízko</translation>
@@ -8632,6 +8635,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7093220653036489319">Rychlé odpovědi</translation>
 <translation id="7093866338626856921">Výměna dat s následujícími zařízeními: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Velká pyramida v Gíze</translation>
+<translation id="7094834615934458012">Povolit tomuto webu upravovat soubory?</translation>
 <translation id="7098389117866926363">Zařízení USB Type-C (levý zadní port)</translation>
 <translation id="7098447629416471489">Zde se zobrazí ostatní uložené vyhledávače</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Odstranit aplikaci}few{Odstranit aplikace}many{Odstranit aplikace}other{Odstranit aplikace}}</translation>
@@ -9005,6 +9009,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7377481913241237033">Připojit pomocí kódu</translation>
 <translation id="73786666777299047">Otevřít Internetový obchod Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Další úloha ve stejné skupině: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Další # úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Dalších # úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Dalších # úloh ve stejné skupině: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">Web <ph name="ORIGIN" /> si bude moct prohlížet soubor <ph name="FILENAME" /> a vytvářet z něj vlastní kopie</translation>
 <translation id="7380272457268061606">Zakázat místní obnovení dat?</translation>
 <translation id="7380459290951585794">Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda na něm je zapnuté Bluetooth a Wi-Fi</translation>
 <translation id="7380622428988553498">Název zařízení obsahuje neplatné znaky</translation>
@@ -9749,6 +9754,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7886279613512920452">{COUNT,plural, =1{položka}few{# položky}many{# položky}other{# položek}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Podívejte se na komentovanou prohlídku klíčových ovládacích prvků ochrany soukromí a zabezpečení. Pro další možnosti přejděte na jednotlivá nastavení.</translation>
+<translation id="7887286029584695415">Povolit tomuto webu prohlížet si a kopírovat soubory?</translation>
 <translation id="7887334752153342268">Duplikovat</translation>
 <translation id="7887864092952184874">Myš Bluetooth byla spárována</translation>
 <translation id="7889371445710865055">Změna jazyka diktování</translation>
@@ -9834,6 +9840,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7944847494038629732">Odpojte kabel USB skeneru, znovu ho připojte a zkuste to znovu</translation>
 <translation id="7945703887991230167">Preferovaný hlas</translation>
+<translation id="7946243258100028201">Dokud nezavřete všechny karty webu <ph name="ORIGIN" />, bude si moct prohlížet soubory ve složce <ph name="FOLDERNAME" /> a vytvářet z nich vlastní kopie</translation>
 <translation id="7946586320617670168">Původ musí být zabezpečený</translation>
 <translation id="7946681191253332687">K dispozici jsou rozšířené aktualizace zabezpečení</translation>
 <translation id="794676567536738329">Potvrdit oprávnění</translation>
@@ -10043,6 +10050,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8079606020824373126">Správce hesel Google vám může účet aktualizovat na silné heslo a uložit ho do účtu <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Weby mohou žádat o správu oken na všech obrazovkách</translation>
 <translation id="8080028325999236607">Zavřít všechny karty</translation>
+<translation id="8080530871547404884">Dokud nezavřete všechny karty webu <ph name="ORIGIN" />, bude si moct prohlížet soubory ve složce <ph name="FILENAME" /> a vytvářet z nich vlastní kopie</translation>
 <translation id="8081989000209387414">Deaktivovat ladění ADB?</translation>
 <translation id="8082106343289440791">Spárovat se zařízením <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082132721957920509">Karta je uložena</translation>
@@ -10810,6 +10818,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="862750493060684461">Mezipaměť CSS</translation>
 <translation id="8627795981664801467">Pouze zabezpečená spojení</translation>
 <translation id="8627804903623428808">Přečtěte si tyto podmínky a ovládejte data dítěte</translation>
+<translation id="862907440446514309">Váš administrátor pomocí aplikace <ph name="APP0_NAME" /> nahrává vaši obrazovku.</translation>
 <translation id="8630338733867813168">Režim spánku při nabíjení</translation>
 <translation id="8631032106121706562">Kopretina</translation>
 <translation id="8632104508818855045">Dříve jste zakázali všechna rozšíření na stránce <ph name="ORIGIN" /></translation>
@@ -11330,6 +11339,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="897525204902889653">Karanténní služba</translation>
 <translation id="8975396729541388937">Z odběru se můžete kdykoli odhlásit kliknutím na odkaz v doručených e-mailech.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a 1 další karta}few{„<ph name="TAB_TITLE" />“ a # další karty}many{„<ph name="TAB_TITLE" />“ a # další karty}other{„<ph name="TAB_TITLE" />“ a # dalších karet}}</translation>
+<translation id="897565255818387330">Povolit tomuto webu prohlížet si a kopírovat soubor <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Nastavte si školní profil, abyste mohli ukládat a používat hesla a další údaje ve svém účtu</translation>
 <translation id="8977811652087512276">Nesprávné heslo nebo poškozený soubor</translation>
 <translation id="8978154919215542464">Zapnuto – synchronizovat vše</translation>

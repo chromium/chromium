@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />을(를) 통해 페어링 허용</translation>
 <translation id="1421484961346698724">계정 삭제됨</translation>
 <translation id="14222610277930434">자주 방문함</translation>
+<translation id="1422795627423046860">날짜가 잘못되었습니다.</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1427192966110103169">가정용 수영장, 사우나, 스파</translation>
@@ -2870,7 +2871,6 @@
 <translation id="5847181246682413476">전원 공급 장치</translation>
 <translation id="584902713199270089">만남 및 데이트</translation>
 <translation id="5851548754964597211">탭 목록</translation>
-<translation id="5851868085455377790">발행기관</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862579898803147654">스태커 8</translation>
@@ -3730,6 +3730,7 @@
 <translation id="7292031607255951991">수취인 이름</translation>
 <translation id="7298195798382681320">권장</translation>
 <translation id="7299471494012161875">디스플레이 주변기기 연결됨</translation>
+<translation id="7299769361777046949">Google 월렛에서 포인트 카드 관리</translation>
 <translation id="7300012071106347854">코발트 녹색</translation>
 <translation id="7304030187361489308">높음</translation>
 <translation id="7304562222803846232">Google 계정 개인 정보 보호 설정 관리</translation>
@@ -4147,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />분 전}=1{<ph name="TIME_COUNT" />시간 전}other{<ph name="TIME_COUNT" />일 전}}</translation>
 <translation id="7979595116210197019">푸드 서비스</translation>
 <translation id="798134797138789862">가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
-<translation id="7982789257301363584">네트워크</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">현재 <ph name="SITE" />에서 Chrome이 처리할 수 없는 암호화된 자격증명 정보를 전송했기 때문에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 잠시 후 페이지가 정상화될 것입니다.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4815,6 +4815,7 @@
 <translation id="9155211586651734179">연결된 오디오 주변기기</translation>
 <translation id="9155646082713385498">잡지</translation>
 <translation id="9157595877708044936">설정 중...</translation>
+<translation id="9158491153040481956">최근에 공개 정보 유출로 인해 노출된 비밀번호를 변경했습니다. 문제가 발생하면 비밀번호 관리자를 통해 로그인할 수 있습니다.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}other{파일 <ph name="FILE_COUNT" />개에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="9163287596625611517">Slack 메시지</translation>

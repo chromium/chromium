@@ -400,7 +400,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
 <translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
-<translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1263231323834454256">Lista de Leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
@@ -2488,7 +2488,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Endereço MAC da rede</translation>
 <translation id="2702720509009999256">Confira sua conexão de Internet e escolha "Tentar de novo" ou "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>
-<translation id="2702801445560668637">Lista de leitura</translation>
+<translation id="2702801445560668637">Lista de Leitura</translation>
 <translation id="270414148003105978">Redes móveis</translation>
 <translation id="2704184184447774363">Assinatura de documentos da Microsoft</translation>
 <translation id="2704606927547763573">Copiado</translation>
@@ -6645,6 +6645,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5643321261065707929">Rede limitada</translation>
 <translation id="5646376287012673985">Local</translation>
 <translation id="5646558797914161501">Empresário</translation>
+<translation id="5647989922796038257">Compartilhar também todas as saídas de áudio</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5651308944918885595">Detecção do Compartilhar por proximidade</translation>

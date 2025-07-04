@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1140317858355046628">اگر گروه برگه را حذف کنید، همه دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه برگه از همه دستگاه‌ها حذف می‌شود.</translation>
 <translation id="1142732900304639782">ترجمه این سایت‌ها پیشنهاد نشود</translation>
-<translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. درصورت ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
 <translation id="1154555449933432029">‏هیچ گذرواژه‌ای در «مدیر گذرواژه Google» ذخیره نکرده‌اید.</translation>
 <translation id="115483310321669804">استفاده از گذرواژه <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">ترتیب براساس ی تا الف</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> روشن است</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">ادغام کردن داده‌های من</translation>
 <translation id="3931947361983910192">۴ هفته گذشته</translation>
 <translation id="393697183122708255">هیچ جستجوی گفتاری فعالی در دسترس نیست</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">پیوستن با نام <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">برگه «گذرواژه‌ها در همه دستگاه‌ها دردسترس است» به‌صورت نیمه باز شد</translation>
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
-<translation id="5517095782334947753">نشانک، سابقه، گذرواژه و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
 <translation id="5517326820028369152">برگ زیرین فعالیت اخیر</translation>
 <translation id="5526281268548144413">بستن در چند پنجره امکان‌پذیر نیست</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
@@ -1277,7 +1274,7 @@
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
 <translation id="671928215901716392">قفل صفحه</translation>
-<translation id="6723740634201835758">‏در حساب Google</translation>
+<translation id="6723740634201835758">‏در «حساب Google»</translation>
 <translation id="6734310707649923383">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
 <translation id="674388916582496364">‏طبیعی است اگر سایت‌هایی که بازدید می‌کنید برای شخصی‌سازی تجربه‌تان، علایق شما را به‌خاطر آورند. به‌علاوه، سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند.</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{اشتراک ۱ سایت لغو شد}one{اشتراک # سایت لغو شد}other{اشتراک # سایت لغو شد}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{‫۱ گذرواژه}one{‫# گذرواژه}other{‫# گذرواژه}}</translation>
 <translation id="688730033107341407">‏بعداز خروج از سیستم، نشانک‌ها، گذرواژه‌ها، و چیزهای دیگری که در «حساب Google» شما ذخیره شده است از این دستگاه حذف خواهد شد.</translation>
-<translation id="688738109438487280">افزودن داده‌های موجود به <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">برای کپی کردن گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6898797562238201317">‏استفاده از گذرعبارت خودتان برای رمزگذاری همه داده‌های Chrome در «حساب Google» شما</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">پیش‌بارگذاری گسترده:</translation>
 <translation id="8063895661287329888">نشانک اضافه نشد.</translation>
 <translation id="8066816452984416180">به‌سرعت برای این صفحه نشانک بگذارید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
-<translation id="806745655614357130">داده‌های من مجزا باشد</translation>
 <translation id="8073388330009372546">باز کردن تصویر در برگه جدید</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8078096376109663956">فقط نوشتار را هم‌رسانی کنید</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">‏رفتن به یک زبانه مشخص (‎۱–۸)</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{‫<ph name="TAB_GROUPS_ONE" /> گروه برگه}one{‫<ph name="TAB_GROUPS_MANY" /> گروه برگه}other{‫<ph name="TAB_GROUPS_MANY" /> گروه برگه}}</translation>
-<translation id="8378850197701296741">نشانک، سابقه، گذرواژه، و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
 <translation id="8387617938027387193">هویتتان را درستی‌سنجی کنید</translation>
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8396098434728053815">صدای برگه نیز هم‌رسانی شود</translation>

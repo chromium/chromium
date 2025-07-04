@@ -256,6 +256,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronización</translation>
 <translation id="1421484961346698724">Conta eliminada</translation>
 <translation id="14222610277930434">Acceso frecuente</translation>
+<translation id="1422795627423046860">A data non é válida</translation>
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1427192966110103169">Piscinas, saunas e spa para o fogar</translation>
@@ -2870,7 +2871,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5847181246682413476">Subministracións eléctricas</translation>
 <translation id="584902713199270089">Citas e anuncios persoais</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
-<translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862579898803147654">Amontoador 8</translation>
@@ -4147,7 +4147,6 @@ Detalles adicionais:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hai <ph name="TIME_COUNT" /> min}=1{Hai <ph name="TIME_COUNT" /> h}other{Hai <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Servizo de comida</translation>
 <translation id="798134797138789862">Pode pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
-<translation id="7982789257301363584">Rede</translation>
 <translation id="7983008347525536475">Vehículos SUV</translation>
 <translation id="7984945080620862648">Non podes visitar <ph name="SITE" /> agora mesmo porque o sitio web enviou credenciais cifradas que Chrome non pode procesar. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@ Detalles adicionais:
 <translation id="9155211586651734179">Os periféricos de audio conectados</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
+<translation id="9158491153040481956">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais pode axudarche a iniciar sesión.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluír contido delicado}other{<ph name="FILE_COUNT" /> ficheiros poden incluír contido delicado}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para saír da pantalla completa, preme |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensaxe de Slack</translation>

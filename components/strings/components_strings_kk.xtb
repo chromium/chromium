@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">Жұптауға рұқсат беру үшін <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Жойылған аккаунт</translation>
 <translation id="14222610277930434">Жиі кіргенсіз</translation>
+<translation id="1422795627423046860">Күні жарамсыз.</translation>
 <translation id="1422930527989633628">Маңайдағы Bluetooth құрылғыларын анықтауды сұрай алады</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="1427192966110103169">Үйдегі бассейн, сауна және спа</translation>
@@ -2869,7 +2870,6 @@
 <translation id="5847181246682413476">Қуат көздері</translation>
 <translation id="584902713199270089">Танысу және жеке өмір</translation>
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
-<translation id="5851868085455377790">Эмитент</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Қосу</translation>
 <translation id="5862579898803147654">8-жинастырушы</translation>
@@ -4146,7 +4146,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мин бұрын}=1{<ph name="TIME_COUNT" /> сағ бұрын}other{<ph name="TIME_COUNT" /> күн бұрын}}</translation>
 <translation id="7979595116210197019">Тамақтану қызметі</translation>
 <translation id="798134797138789862">Виртуалдық шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
-<translation id="7982789257301363584">Желі</translation>
 <translation id="7983008347525536475">Кроссоверлер</translation>
 <translation id="7984945080620862648">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chrome өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4814,6 +4813,7 @@
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнатылуда…</translation>
+<translation id="9158491153040481956">Баршаға ашық қолды болған деректерден табылған құпия сөзіңізді жақында өзгерттіңіз. Қиындық туындаса, Password Manager аккаунтқа кіруге көмектесе алады.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында шетін контент болуы мүмкін.}other{<ph name="FILE_COUNT" /> файлда шетін контент болуы мүмкін.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="9163287596625611517">Slack хабары</translation>

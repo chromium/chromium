@@ -907,6 +907,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
        Välj vad du vill göra med befintlig webbinformation på den här enheten.</translation>
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="4682686630151240767">1. Öppna iPhone-inställningarna</translation>
+<translation id="4691892551491778176">När du använder den här funktionen skickas sidinnehåll och webbadresser till Google, men vi använder inte denna data för att förbättra generativa AI-modeller. Du kan inaktivera detta i inställningarna när som helst.</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4709570498586527752">Funktionerna som är mest relevanta för dig vid olika tidpunkter</translation>
 <translation id="4717844083556844785">Nuvarande webbsida är i inkognitoläge</translation>
@@ -1188,6 +1189,8 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5803566855766646066">Vill du slänga det här nya kortet?</translation>
 <translation id="5804012843049740908">Tips som hjälper dig att få ut mesta möjliga av Chrome</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
+<translation id="58081802114142635">Din aktivitet förbättrar Google AI</translation>
+<translation id="5813223718099710537">När du använder den här funktionen skickas sidinnehåll och webbadresser till Google. Du kan inaktivera detta i inställningarna när som helst.</translation>
 <translation id="5817176759448082654">Lösenordskontroll</translation>
 <translation id="5819208479324046259">Hanteras av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserar …</translation>
@@ -1457,6 +1460,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6759709389246683070">Du kan trycka länge på den här fliken för att ställa in en påminnelse om att besöka den senare</translation>
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
+<translation id="6775647281444147078">Organisationens chattar används inte för att förbättra våra modeller. Gemini kan visa felaktig information, inklusive om personer, så dubbelkolla svaren. Din integritet och Gemini</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6791425686608802741">Tryck på Lägg till fliken i en ny grupp</translation>
@@ -1592,6 +1596,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7412027924265291969">Fortsätt</translation>
 <translation id="741204030948306876">Ja</translation>
 <translation id="7417689656810783109">Byt namn på grupp</translation>
+<translation id="7418703176995102827">Varken dina konversationer med Gemini eller din Google Workspace-data granskas av mänskliga granskare och används för att förbättra generativa AI-modeller.</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
 <translation id="7425053386765766120">Lägg till betalningsmetod …</translation>
 <translation id="7425346204213733349">Ändringar i bokmärken, historik, lösenord och andra inställningar synkroniseras inte längre med ditt Google-konto. Befintlig data fortsätter dock att lagras i Google-kontot.</translation>
@@ -1648,6 +1653,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="760667371114328991">Inaktivera aviseringar från säkerhetskontroll</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612849887607288481">Öppna menyn för AI-prototyp</translation>
+<translation id="7615581988398168124">Googles villkor och integritetsmeddelandet för Gemini-apparna gäller. Gemini kan göra misstag, så dubbelkolla svaren.</translation>
 <translation id="7620522820075868385">Avbryt</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
@@ -1823,6 +1829,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="8273982424131314219">Uppgifterna fylls i på <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mer …</translation>
+<translation id="8277328362018795342">Ditt sidinnehåll delas för mer relevanta svar</translation>
 <translation id="8278488584187265939">Anpassa startsida</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
@@ -1897,6 +1904,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8560253818350321773">Visa ofta använda objekt först.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ för lösenord visas ovanför tangentbordet.}other{{count} alternativ för lösenord visas ovanför tangentbordet.}}</translation>
 <translation id="8564894539416715395">Sidan Ny flik</translation>
+<translation id="8569414323292250522">Chattar granskas och används för att förbättra Google AI. Läs mer om dina val. Information om din plats lagras tillsammans med din aktivitet.</translation>
 <translation id="8569721750632860947">Vilken webbadress vill du lägga till i din läslista?</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8577056989960190117">Autofyll utgångsåret <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9206887540681440657">Hastighet</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
 <translation id="926455622548529175">Byt och radera</translation>
+<translation id="927162192666499119">Organisationens data hålls privat och säker</translation>
 <translation id="929748059769569925">Markerad text</translation>
 <translation id="932305336591073205">{count,plural, =1{Stäng flik}other{Stäng flikar}}</translation>
 <translation id="932327136139879170">Startsida</translation>

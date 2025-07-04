@@ -3720,6 +3720,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3592260987370335752">&amp;Meer informatie</translation>
 <translation id="3592344177526089979">Een tabblad casten naar <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Fuzzy-pinyinmethode aanzetten</translation>
+<translation id="3593953853060020305">Toestaan dat deze site <ph name="FILE_NAME" /> bewerkt?</translation>
 <translation id="3593965109698325041">Naambeperkingen voor certificaten</translation>
 <translation id="3596012367874587041">App-instellingen</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
@@ -4681,6 +4682,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4249785854468467847">Chrome opnieuw vormgeven, aangedreven door AI</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nee</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken en er eigen kopieën van maken</translation>
 <translation id="4251377547188244181">Apparaatinschrijving voor kiosken en digitale borden</translation>
 <translation id="4252828488489674554">Klik met de rechtermuisknop op de naam van de tabbladgroep om deze groep te bewerken of klik om samen te vouwen</translation>
 <translation id="4252899949534773101">Bluetooth staat uit</translation>
@@ -6623,6 +6625,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5643321261065707929">Netwerk met datalimiet</translation>
 <translation id="5646376287012673985">Locatie</translation>
 <translation id="5646558797914161501">Zakenman</translation>
+<translation id="5647989922796038257">Ook alle audio-uitvoer delen</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
 <translation id="5651308944918885595">Vindbaarheid voor Dichtbij delen</translation>
@@ -8626,6 +8629,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7093220653036489319">Snelle antwoorden</translation>
 <translation id="7093866338626856921">Gegevens uitwisselen met de apparaten met de naam: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Grote Piramide van Gizeh</translation>
+<translation id="7094834615934458012">Toestaan dat deze site bestanden bewerkt?</translation>
 <translation id="7098389117866926363">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="7098447629416471489">Andere opgeslagen zoekmachines zie je hier</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{App verwijderen}other{Apps verwijderen}}</translation>
@@ -8999,6 +9003,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="73786666777299047">Open de Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Een andere taak in dezelfde takengroep: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # andere taken in dezelfde takengroep: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken en er eigen kopieën van maken</translation>
 <translation id="7380272457268061606">Herstel van lokale gegevens uitzetten?</translation>
 <translation id="7380459290951585794">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>
@@ -9742,6 +9747,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7886279613512920452">{COUNT,plural, =1{een item}other{# items}}</translation>
 <translation id="7886605625338676841">E-simkaart</translation>
 <translation id="7887174313503389866">Volg een rondleiding langs belangrijke privacy- en beveiligingsopties. Ga voor meer opties naar de afzonderlijke instellingen.</translation>
+<translation id="7887286029584695415">Toestaan dat deze site bestanden bekijkt en kopieert?</translation>
 <translation id="7887334752153342268">Dupliceren</translation>
 <translation id="7887864092952184874">Bluetooth-muis gekoppeld</translation>
 <translation id="7889371445710865055">Dicteertaal wijzigen</translation>
@@ -9827,6 +9833,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7944847494038629732">Koppel de USB-kabel van de scanner los en sluit deze opnieuw aan om het opnieuw te proberen</translation>
 <translation id="7945703887991230167">Voorkeurstem</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken en er eigen kopieën van maken totdat je alle tabbladen voor deze site sluit</translation>
 <translation id="7946586320617670168">Herkomst moet zijn beveiligd</translation>
 <translation id="7946681191253332687">Uitgebreide beveiligingsupdates beschikbaar</translation>
 <translation id="794676567536738329">Rechten bevestigen</translation>
@@ -10036,6 +10043,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8079606020824373126">Google Wachtwoordmanager kan je account updaten met een sterk wachtwoord en dit opslaan in <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Sites kunnen vragen of ze vensters mogen beheren op al je schermen</translation>
 <translation id="8080028325999236607">Alle tabbladen sluiten</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken en er eigen kopieën van maken totdat je alle tabbladen voor deze site sluit</translation>
 <translation id="8081989000209387414">ADB-foutopsporing uitzetten?</translation>
 <translation id="8082106343289440791">Koppelen met '<ph name="DEVICE_NAME" />'?</translation>
 <translation id="8082132721957920509">Je kaart is opgeslagen</translation>
@@ -10803,6 +10811,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="862750493060684461">CSS-cachegeheugen</translation>
 <translation id="8627795981664801467">Alleen beveiligde verbindingen</translation>
 <translation id="8627804903623428808">Bekijk deze voorwaarden en beheer de gegevens van je kind</translation>
+<translation id="862907440446514309">Je beheerder neemt je scherm op met <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Slaapstand tijdens het opladen</translation>
 <translation id="8631032106121706562">Madeliefje</translation>
 <translation id="8632104508818855045">Je hebt er eerder voor gekozen om geen extensies op <ph name="ORIGIN" /> toe te staan</translation>
@@ -11323,6 +11332,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="897525204902889653">Quarantineservice</translation>
 <translation id="8975396729541388937">Je kunt je altijd afmelden door op de link te klikken in de e-mails die je krijgt.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> en 1 ander tabblad}other{<ph name="TAB_TITLE" /> en # andere tabbladen}}</translation>
+<translation id="897565255818387330">Toestaan dat deze site <ph name="FILE_NAME" /> bekijkt en kopieert?</translation>
 <translation id="8977523125954274918">Stel een schoolprofiel in om onder meer je wachtwoorden op te slaan en te gebruiken in je account</translation>
 <translation id="8977811652087512276">Onjuist wachtwoord of beschadigd bestand</translation>
 <translation id="8978154919215542464">Aan: alles synchroniseren</translation>

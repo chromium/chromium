@@ -2866,7 +2866,6 @@
 <translation id="5847181246682413476">பவர் சப்ளைகள்</translation>
 <translation id="584902713199270089">டேட்டிங் மற்றும் பர்சனல்ஸ்</translation>
 <translation id="5851548754964597211">தாவல் பட்டியல்</translation>
-<translation id="5851868085455377790">வழங்குபவர்</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5862579898803147654">ஸ்டேக்கர் 8</translation>
@@ -4143,7 +4142,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />நி முன்பு}=1{<ph name="TIME_COUNT" />ம.நே முன்பு}other{<ph name="TIME_COUNT" />நா முன்பு}}</translation>
 <translation id="7979595116210197019">உணவுச் சேவை</translation>
 <translation id="798134797138789862">விர்ச்சுவல் ரியாலிட்டி சாதனங்களையும் தரவையும் பயன்படுத்த முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
-<translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7983008347525536475">SUVகள்</translation>
 <translation id="7984945080620862648">இணையதளமானது Chrome ஆல் செயல்படுத்த முடியாத வழக்கத்திற்கு மாறான நற்சான்றுகளை அனுப்பியுள்ளதால், நீங்கள் இப்போது <ph name="SITE" /> ஐப் பார்வையிட முடியாது, நெட்வொர்க் பிழைகள் மற்றும் தாக்குதல்கள் தற்காலிகமானவையாகும், எனவே இந்தப் பக்கம் சிறிது நேரம் கழித்து செயல்படும்.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

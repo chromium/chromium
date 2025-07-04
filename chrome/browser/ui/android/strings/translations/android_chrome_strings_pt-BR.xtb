@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1140317858355046628">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias <ph name="GROUP_NAME" /> e ele será excluído de todos os dispositivos.</translation>
 <translation id="1142732900304639782">Não oferecer a opção de traduzir estes sites</translation>
-<translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1150263420752757504">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Você não tem senhas salvas no Gerenciador de senhas do Google.</translation>
 <translation id="115483310321669804">Use a senha <ph name="PASSWORD" /></translation>
@@ -65,7 +64,7 @@
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle do Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Agora, você vai receber conteúdo de e sobre <ph name="SITE_NAME" /> na guia "Seguindo". Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
-<translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1263231323834454256">Lista de Leitura</translation>
 <translation id="1269129608791067105">Seu histórico será mostrado aqui</translation>
 <translation id="1273937721055267968">Bloquear o <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
@@ -142,7 +141,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 senha comprometida neste dispositivo}one{# senha comprometida neste dispositivo}other{# senhas comprometidas neste dispositivo}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="160275202205869636">Com essa opção ativada, você usa e salva dados na sua Conta do Google. Quando está desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="160275202205869636">Se estas opções forem ativadas, seus dados serão salvos na sua Conta do Google. Se forem desativadas, as informações serão salvas apenas neste dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -257,7 +256,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2184272387334793084">Faça login para ter acesso a senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="218608176142494674">Compartilhamento</translation>
-<translation id="2186779861549045980">Você pode escolher quais dados salvar na sua Conta do Google.\nTambém é possível consultar e gerenciar esses itens nos seus favoritos, na lista de leitura ou no gerenciador de senhas.</translation>
+<translation id="2186779861549045980">Você pode escolher quais dados salvar na sua Conta do Google.\nTambém é possível consultar e gerenciar estes itens nos seus favoritos, na Lista de Leitura ou no Gerenciador de Senhas.</translation>
 <translation id="219283042927675668">Guias no grupo</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="22091350895006575">Adicione um nome de usuário</translation>
@@ -393,7 +392,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Cancelar todas as inscrições</translation>
-<translation id="2820047235535485532">Você pode escolher quais dados salvar na sua Conta do Google, <ph name="ACCOUNT_EMAIL" />.\nTambém é possível consultar e gerenciar esses itens nos seus favoritos, na lista de leitura ou no gerenciador de senhas.</translation>
+<translation id="2820047235535485532">Você pode escolher quais dados salvar na sua Conta do Google, <ph name="ACCOUNT_EMAIL" />.\nTambém é possível consultar e gerenciar estes itens nos seus favoritos, na Lista de Leitura ou no Gerenciador de Senhas.</translation>
 <translation id="2826576843404243001">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras. Não é possível mudar essa configuração, porque a Proteção Avançada está ativada.</translation>
 <translation id="2827278682606527653">O menu do card do feed está aberto pela metade</translation>
 <translation id="2830783625999891985">Conteúdo da área de transferência oculto</translation>
@@ -635,7 +634,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3911609878849982353">Ordenar de Z a A</translation>
 <translation id="3924911262913579434">O modo <ph name="SAFE_BROWSING_MODE" /> está ativado</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">Integrar meus dados</translation>
 <translation id="3931947361983910192">das últimas quatro semanas</translation>
 <translation id="393697183122708255">Nenhuma pesq. por voz ativada disponível</translation>
 <translation id="3950820424414687140">Fazer login</translation>
@@ -994,7 +992,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="549660026907543296">Participar como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Senhas abertas na metade da altura em todos os seus dispositivos</translation>
 <translation id="5515439363601853141">Desbloqueie para ver sua senha</translation>
-<translation id="5517095782334947753">Você tem favoritos, histórico, senhas e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Página inferior de atividade recente</translation>
 <translation id="5526281268548144413">Não é possível fechar em várias janelas</translation>
 <translation id="5548606607480005320">Confirmação de segurança</translation>
@@ -1096,7 +1093,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
-<translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de leitura}one{# página na sua Lista de leitura}other{# páginas na sua Lista de leitura}}</translation>
+<translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de Leitura}one{# página na sua Lista de Leitura}other{# páginas na sua Lista de Leitura}}</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
 <translation id="5995726099713306770">Baixar página novamente?</translation>
@@ -1330,7 +1327,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{A inscrição de 1 site foi cancelada}one{A inscrição de # site foi cancelada}other{A inscrição de # sites foi cancelada}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 senha}one{# senha}other{# senhas}}</translation>
 <translation id="688730033107341407">Depois que você sair, os favoritos, as senhas e outros itens da sua Conta do Google serão removidos deste dispositivo.</translation>
-<translation id="688738109438487280">Adicionar os dados disponíveis à conta <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloqueie para copiar sua senha</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Use sua senha longa para criptografar todos os dados do Chrome na sua Conta do Google</translation>
@@ -1616,7 +1612,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8062594758852531064">Pré-carregamento estendido:</translation>
 <translation id="8063895661287329888">Falha ao adicionar favorito.</translation>
 <translation id="8066816452984416180">Adicione esta página aos favoritos rapidamente. Para editar este atalho, toque e pressione.</translation>
-<translation id="806745655614357130">Manter meus dados separados</translation>
 <translation id="8073388330009372546">Abrir imagem em nova guia</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8078096376109663956">Compartilhar somente o texto</translation>
@@ -1692,7 +1687,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8361737703487394103">Acessar uma guia específica (1–8)</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> grupo de guias}one{<ph name="TAB_GROUPS_MANY" /> grupo de guias}other{<ph name="TAB_GROUPS_MANY" /> grupos de guias}}</translation>
-<translation id="8378850197701296741">Você tem dados de favoritos, histórico e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8396098434728053815">Compartilhar também o áudio da guia</translation>

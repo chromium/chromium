@@ -2871,7 +2871,6 @@
 <translation id="5847181246682413476">પાવર સપ્લાય</translation>
 <translation id="584902713199270089">ડેટિંગ અને વ્યક્તિગત જરૂરિયાતો સંબંધિત સેવાઓ</translation>
 <translation id="5851548754964597211">ટેબ સૂચિ</translation>
-<translation id="5851868085455377790">રજૂકર્તા </translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5862579898803147654">સ્ટૅકર 8</translation>
@@ -4149,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> મિનિટ પહેલાં}=1{<ph name="TIME_COUNT" /> કલાક પહેલાં}one{<ph name="TIME_COUNT" /> દિવસ પહેલાં}other{<ph name="TIME_COUNT" /> દિવસ પહેલાં}}</translation>
 <translation id="7979595116210197019">ભોજન સેવા</translation>
 <translation id="798134797138789862">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસનો અને ડેટાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
-<translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">તમે અત્યારે <ph name="SITE" />ની મુલાકાત લઈ શકતાં નથી કારણ કે વેબસાઇટે સમજાય નહીં તેવા ઓળખપત્રો મોકલ્યા છે જેની પર Chrome પ્રક્રિયા કરી શકતું નથી. નેટવર્ક ભૂલો અને હુમલા સામાન્ય રીતે અસ્થાયી છે, તેથી આ પેજ સંભવિત રીતે પછીથી કાર્ય કરશે.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

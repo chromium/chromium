@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">ペア設定するには <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">削除されたアカウント</translation>
 <translation id="14222610277930434">頻繁にアクセス</translation>
+<translation id="1422795627423046860">日付が無効です</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1427192966110103169">家庭用スイミング プール、サウナ、スパ</translation>
@@ -2414,6 +2415,7 @@
 <translation id="5043753287208271200">黄 3</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5048293684454354469">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" /> です。Tab キーを押すと、この検索候補の後に使用できる検索ショートカットが表示されます</translation>
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
@@ -2870,7 +2872,6 @@
 <translation id="5847181246682413476">電源</translation>
 <translation id="584902713199270089">出会い</translation>
 <translation id="5851548754964597211">タブ リスト</translation>
-<translation id="5851868085455377790">発行元</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5862579898803147654">スタッカー 8</translation>
@@ -3730,6 +3731,7 @@
 <translation id="7292031607255951991">受取人の氏名</translation>
 <translation id="7298195798382681320">推奨</translation>
 <translation id="7299471494012161875">接続されたディスプレイ周辺機器</translation>
+<translation id="7299769361777046949">Google ウォレットでポイントカードを管理</translation>
 <translation id="7300012071106347854">コバルトブルー</translation>
 <translation id="7304030187361489308">高め</translation>
 <translation id="7304562222803846232">Google アカウントのプライバシー設定を管理</translation>
@@ -4149,7 +4151,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分前}=1{<ph name="TIME_COUNT" /> 時間前}other{<ph name="TIME_COUNT" /> 日前}}</translation>
 <translation id="7979595116210197019">飲食業</translation>
 <translation id="798134797138789862">バーチャル リアリティ デバイスとデータの使用を要求できる</translation>
-<translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> から、Chrome で処理できないスクランブル化された認証情報が返されたため、現在このサイトにはアクセスできません。通常、ネットワーク エラーや不正な操作は一時的なものです。少し時間をおくと、またページにアクセスできるようになる可能性があります。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4818,6 +4819,7 @@
 <translation id="9155211586651734179">接続されたオーディオ周辺機器</translation>
 <translation id="9155646082713385498">雑誌</translation>
 <translation id="9157595877708044936">セットアップ中...</translation>
+<translation id="9158491153040481956">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、パスワード マネージャーを使用してログインできます。</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> にはデリケートなコンテンツが含まれている可能性があります}other{<ph name="FILE_COUNT" /> 個のファイルにデリケートなコンテンツが含まれている可能性があります}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – 全画面表示を終了するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="9163287596625611517">Slack メッセージ</translation>

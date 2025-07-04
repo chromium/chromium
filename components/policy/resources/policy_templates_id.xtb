@@ -1783,6 +1783,7 @@ Jika kebijakan ini disetel ke Nonaktif, pengguna tidak diizinkan menjalankan fun
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="2215746393279570703">Setelan SSO Mengambang</translation>
+<translation id="2219724363635419721">Nonaktifkan Teks Otomatis</translation>
 <translation id="2221779615493499989">Melaporkan status jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
@@ -5748,6 +5749,15 @@ yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas leb
 Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut.
 Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="4960597185231686653">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan input suara.</translation>
+<translation id="49677896192199414">Aktifkan fitur Teks Otomatis.
+
+Jika kebijakan ini disetel ke Aktif, fitur Teks Otomatis akan selalu diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Teks Otomatis akan selalu dinonaktifkan.
+
+Jika Anda menyetel kebijakan ini sebagai wajib, pengguna tidak akan dapat mengubah atau menggantinya.
+
+Jika kebijakan ini tidak disetel, fitur Teks Otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4970046075219007744">Izinkan aplikasi web meminta pengguna memberikan akses ke berbagai jenis file melalui File Handling API</translation>
 <translation id="4970855112942626932">Nonaktifkan login browser</translation>
 <translation id="4974091268178043378">Mode warna ChromeOS</translation>
@@ -6536,6 +6546,7 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 <translation id="5476152378885134514">Memblokir papan klip di situs ini</translation>
 <translation id="5479841110985196412">Aktifkan keyboard virtual aksesibilitas</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
+<translation id="548137908954174608">Aktifkan Teks Otomatis</translation>
 <translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
 <translation id="5486352219019836984">Jika kebijakan ini Diaktifkan, pelaporan anonim terkait data penggunaan dan data terkait error <ph name="PRODUCT_NAME" /> ke Google direkomendasikan untuk diaktifkan secara default. Pengguna tetap dapat mengubah setelan ini.
@@ -10121,6 +10132,9 @@ Catatan: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> men
 <translation id="7841883965249733328">Nonaktifkan upgrade otomatis konten campuran</translation>
 <translation id="7845130996290850593">Aktifkan Kerberos</translation>
 <translation id="7846952520291088817">URL yang akan menampilkan IP lokal dalam kandidat WebRTC ICE</translation>
+<translation id="7847374643492493038">Jika kebijakan ini disetel ke Benar (True) (atau <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> disetel ke Salah (False)), halaman web tidak akan dapat mengakses WebGL API.
+
+      Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman web akan menggunakan WebGL API, tetapi setelan browser default mungkin masih memerlukan argumen command line untuk menggunakan API ini.</translation>
 <translation id="7848641140449742406">Setelan OS</translation>
 <translation id="7850846808758624237">Jika kebijakan disetel ke Aktif, halaman beranda akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, halaman beranda tidak akan diimpor saat pertama kali dijalankan.
 
@@ -11422,6 +11436,17 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="8705895771006864851">Jika kebijakan disetel ke Benar (True), fungsi terjemahan akan diberikan pada waktu yang tepat bagi pengguna dengan menampilkan toolbar terjemahan terintegrasi di <ph name="PRODUCT_NAME" /> dan opsi terjemahan di menu konteks yang muncul dengan mengklik kanan. Jika kebijakan disetel ke Salah (False), semua fitur terjemahan bawaan akan dinonaktifkan.
 
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubah fungsi ini. Jika Anda tidak menyetelnya, pengguna akan diizinkan mengubah setelan.</translation>
+<translation id="8707290517123095787">Mengaktifkan terjemahan teks otomatis. Teks akan dikirim ke Google untuk diterjemahkan.
+
+Jika kebijakan ini disetel ke Aktif, fitur Terjemahan Langsung akan selalu diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Terjemahan Langsung akan selalu dinonaktifkan.
+
+Jika Anda menyetel kebijakan ini sebagai wajib, pengguna tidak akan dapat mengubah atau menggantinya.
+
+Jika kebijakan ini tidak disetel, fitur Terjemahan Langsung mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.
+
+Jika <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> disetel ke Nonaktif, Terjemahan Langsung akan dinonaktifkan terlepas dari setelan kebijakan ini.</translation>
 <translation id="8707790573162457301">Jalankan pembersihan disk otomatis selama login</translation>
 <translation id="8712609946151927008">Menjadwalkan interval penangguhan mingguan</translation>
 <translation id="8713535263782304771">Nonaktifkan Safe Browsing</translation>

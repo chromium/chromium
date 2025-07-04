@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">Зөвшөөрөхийн тулд <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Бүртгэлийг устгасан</translation>
 <translation id="14222610277930434">Та ихэвчлэн зочилдог</translation>
+<translation id="1422795627423046860">Огноо буруу байна</translation>
 <translation id="1422930527989633628">Ойролцоох Bluetooth төхөөрөмжүүдийг илрүүлэхийг хүсэх боломжтой</translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1427192966110103169">Гэрийн усан сан, саун болон спанууд</translation>
@@ -2871,7 +2872,6 @@
 <translation id="5847181246682413476">Эрчим хүчний хангамжууд</translation>
 <translation id="584902713199270089">Болзох, танилцах зарууд</translation>
 <translation id="5851548754964597211">Цонхны жагсаалт</translation>
-<translation id="5851868085455377790">Сертификатыг олгосон</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5862579898803147654">Гарах цаасыг зэрэгцүүлэх тавцан 8</translation>
@@ -4147,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минутын өмнө}=1{<ph name="TIME_COUNT" /> цагийн өмнө}other{<ph name="TIME_COUNT" /> хоногийн өмнө}}</translation>
 <translation id="7979595116210197019">Хоолны үйлчилгээ</translation>
 <translation id="798134797138789862">Виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглахыг хүсэх боломжтой</translation>
-<translation id="7982789257301363584">Сүлжээ</translation>
 <translation id="7983008347525536475">Жийп</translation>
 <translation id="7984945080620862648">Та энэхүү <ph name="SITE" />-д хандах боломжгүй байна. Учир нь вебсайт эмх замбараагүй мэдээлэл илгээсэн тул Chrome энэ мэдээллийг боловсруулах боломжгүй байна. Сүлжээний алдаа болон халдлага нь ихэвчлэн түр зуурынх байдаг бөгөөд энэ хуудас хэсэг хугацааны дараа ажиллаж болох юм.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@
 <translation id="9155211586651734179">Аудионы нэмэлт хэрэгслийг залгасан</translation>
 <translation id="9155646082713385498">Сэтгүүлүүд</translation>
 <translation id="9157595877708044936">Тохиргоог хийж байна ...</translation>
+<translation id="9158491153040481956">Та олон нийтийн өгөгдлийн зөрчлөөс олдсон нууц үгийг саяхан өөрчилсөн. Асуудал гарсан тохиолдолд Нууц үгний менежер танд нэвтрэхэд туслах боломжтой.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> эмзэг контент агуулж байж магадгүй}other{<ph name="FILE_COUNT" /> файл эмзэг контент агуулж байж магадгүй}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />| дээр дарна уу</translation>
 <translation id="9163287596625611517">Slack-н мессеж</translation>

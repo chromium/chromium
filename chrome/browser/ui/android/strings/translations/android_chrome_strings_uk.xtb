@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1140317858355046628">Якщо видалити групу вкладок "<ph name="GROUP_NAME" />", усі користувачі відразу втратять доступ до неї, і її буде видалено з усіх пристроїв.</translation>
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
-<translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У вас немає збережених паролів у цьому сервісі.</translation>
 <translation id="115483310321669804">Використати пароль <ph name="PASSWORD" /></translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Сортування від Я до А</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> увімкнено</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">Об’єднати мої дані</translation>
 <translation id="3931947361983910192">останні 4 тижні</translation>
 <translation id="393697183122708255">Голосовий пошук вимкнено</translation>
 <translation id="3950820424414687140">Вхід</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">Приєднатися як <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Екран "Паролі на всіх ваших пристроях" відкрито на половину висоти</translation>
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
-<translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Нижній екран із даними про останні дії</translation>
 <translation id="5526281268548144413">Не можна закрити в кількох вікнах</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Скасовано підписку на 1 сайт}one{Скасовано підписку на # сайт}few{Скасовано підписку на # сайти}many{Скасовано підписку на # сайтів}other{Скасовано підписку на # сайту}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 пароль}one{# пароль}few{# паролі}many{# паролів}other{# пароля}}</translation>
 <translation id="688730033107341407">Коли ви вийдете, закладки, паролі тощо у вашому обліковому записі Google буде вилучено із цього пристрою.</translation>
-<translation id="688738109438487280">Додати наявні дані в обліковий запис <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Розблокуйте, щоб скопіювати пароль</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6898797562238201317">Використовувати власну парольну фразу для шифрування всіх даних Chrome в обліковому записі Google</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">Розширене попереднє завантаження:</translation>
 <translation id="8063895661287329888">Не вдалося додати закладку.</translation>
 <translation id="8066816452984416180">Швидко зробіть закладку для цієї сторінки. Щоб змінити функцію кнопки, натисніть і утримуйте її.</translation>
-<translation id="806745655614357130">Зберігати мої дані окремо</translation>
 <translation id="8073388330009372546">Відкрити в новій вкладці</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8078096376109663956">Поділіться лише текстом</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">Перейти до певної вкладки (1–8)</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> групу вкладок}one{<ph name="TAB_GROUPS_MANY" /> групу вкладок}few{<ph name="TAB_GROUPS_MANY" /> групи вкладок}many{<ph name="TAB_GROUPS_MANY" /> груп вкладок}other{<ph name="TAB_GROUPS_MANY" /> групи вкладок}}</translation>
-<translation id="8378850197701296741">У вас є закладки, історія і інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Підтвердьте свою особу</translation>
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
 <translation id="8396098434728053815">Також надати доступ до аудіо на вкладці</translation>
@@ -1776,6 +1770,7 @@
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Зробіть паролі в обліковому записі Google надійнішими</translation>
+<translation id="8715300232952757586">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
 <translation id="8723453889042591629">Швидко перекладайте цю сторінку. Щоб змінити функцію цієї кнопки, натисніть і утримуйте її.</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8731268612289859741">Код безпеки</translation>

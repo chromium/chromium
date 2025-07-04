@@ -907,6 +907,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
        Pilih tindakan yang akan dilakukan pada data penjelajahan yang ada di perangkat ini.</translation>
 <translation id="4682496302933121474">Terjemahkan halaman?</translation>
 <translation id="4682686630151240767">1. Buka Settings di iPhone</translation>
+<translation id="4691892551491778176">Saat Anda menggunakan fitur ini, konten dan URL halaman akan dikirim ke Google, tetapi tidak akan digunakan untuk meningkatkan kualitas model AI generatif. Anda dapat menonaktifkannya di setelan kapan saja.</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4709570498586527752">Fitur yang paling relevan untuk Anda pada waktu tertentu</translation>
 <translation id="4717844083556844785">Halaman web saat ini sedang dalam mode Samaran</translation>
@@ -1188,6 +1189,8 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5803566855766646066">Yakin ingin menghapus kartu baru ini?</translation>
 <translation id="5804012843049740908">Tips penyiapan yang membantu Anda mengoptimalkan penggunaan Chrome</translation>
 <translation id="5804241973901381774">Izin</translation>
+<translation id="58081802114142635">Aktivitas Anda akan meningkatkan kualitas AI Google</translation>
+<translation id="5813223718099710537">Saat Anda menggunakan fitur ini, konten dan URL halaman akan dikirim ke Google. Anda dapat menonaktifkannya di setelan kapan saja.</translation>
 <translation id="5817176759448082654">Pemeriksaan Sandi</translation>
 <translation id="5819208479324046259">Dikelola oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Menyinkronkan…</translation>
@@ -1457,6 +1460,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6759709389246683070">Anda dapat menyentuh lama tab ini guna menyetel pengingat untuk membukanya kembali nanti</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[DIPESAN]</translation>
+<translation id="6775647281444147078">Percakapan organisasi Anda tidak digunakan untuk meningkatkan kualitas model kami. Gemini mungkin menampilkan info yang tidak akurat, termasuk tentang orang, jadi periksa kembali responsnya. Privasi Anda &amp; Gemini</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
@@ -1592,6 +1596,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7412027924265291969">Lanjutkan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7417689656810783109">Ganti Nama Grup</translation>
+<translation id="7418703176995102827">Percakapan Anda dengan Gemini serta data Google Workspace Anda tidak akan ditinjau oleh petugas peninjau atau digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
@@ -1648,6 +1653,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="760667371114328991">Nonaktifkan Notifikasi untuk Pemeriksaan Keamanan</translation>
 <translation id="7612619742409846846">Login ke Google sebagai</translation>
 <translation id="7612849887607288481">Buka Menu Pembuatan Prototipe AI</translation>
+<translation id="7615581988398168124">Persyaratan Google dan Pemberitahuan Privasi Aplikasi Gemini berlaku. Gemini dapat membuat kesalahan, jadi periksa kembali responsnya.</translation>
 <translation id="7620522820075868385">Batal</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Sandi telah dibobol}=1{{COUNT} sandi telah dibobol}other{{COUNT} sandi telah dibobol}}</translation>
@@ -1823,6 +1829,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="826614135184049678">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPad. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
 <translation id="8273982424131314219">Anda akan mengisi info ke <ph name="URL" /></translation>
 <translation id="8275068909952022340">Lainnya…</translation>
+<translation id="8277328362018795342">Konten halaman Anda dibagikan untuk menghasilkan jawaban yang lebih relevan</translation>
 <translation id="8278488584187265939">Sesuaikan halaman beranda</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Lewati</translation>
@@ -1897,6 +1904,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8560253818350321773">Tampilkan item yang sering digunakan terlebih dahulu.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opsi sandi tersedia di atas keyboard Anda.}other{{count} opsi sandi tersedia di atas keyboard Anda.}}</translation>
 <translation id="8564894539416715395">Halaman tab baru</translation>
+<translation id="8569414323292250522">Percakapan ditinjau dan digunakan untuk meningkatkan kualitas AI Google. Pelajari pilihan Anda. Info tentang lokasi Anda juga disimpan dengan aktivitas Anda.</translation>
 <translation id="8569721750632860947">URL apa yang ingin Anda tambahkan ke daftar bacaan?</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8577056989960190117">Isi otomatis tahun habis masa berlaku <ph name="YEAR" /></translation>
@@ -2079,6 +2087,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9206887540681440657">Kecepatan</translation>
 <translation id="9223358826628549784">Laporan kerusakan terkirim.</translation>
 <translation id="926455622548529175">Ganti dan Hapus</translation>
+<translation id="927162192666499119">Privasi dan keamanan data organisasi Anda tetap terjaga</translation>
 <translation id="929748059769569925">Teks yang ditandai</translation>
 <translation id="932305336591073205">{count,plural, =1{Tutup tab}other{Tutup tab}}</translation>
 <translation id="932327136139879170">Beranda</translation>

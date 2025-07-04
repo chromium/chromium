@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> да бисте омогућили упаривање</translation>
 <translation id="1421484961346698724">Избрисан налог</translation>
 <translation id="14222610277930434">Често посећујете</translation>
+<translation id="1422795627423046860">Датум је неважећи</translation>
 <translation id="1422930527989633628">Може да тражи да открива Bluetooth уређаје у близини</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1427192966110103169">Кућни базени, сауне и спа центри</translation>
@@ -2870,7 +2871,6 @@
 <translation id="5847181246682413476">Уређаји за напајање</translation>
 <translation id="584902713199270089">Познанства</translation>
 <translation id="5851548754964597211">Листа картица</translation>
-<translation id="5851868085455377790">Издавалац</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Укључи</translation>
 <translation id="5862579898803147654">8. преграда за слагање</translation>
@@ -3729,6 +3729,7 @@
 <translation id="7292031607255951991">Име примаоца</translation>
 <translation id="7298195798382681320">Препоручено</translation>
 <translation id="7299471494012161875">Прикључени периферни уређаји на екрану</translation>
+<translation id="7299769361777046949">Управљајте картицама лојалности у Google новчанику</translation>
 <translation id="7300012071106347854">Кобалтноплава</translation>
 <translation id="7304030187361489308">Висок</translation>
 <translation id="7304562222803846232">Управљајте подешавањима приватности Google налога</translation>
@@ -4147,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Пре <ph name="TIME_COUNT" /> м}=1{Пре <ph name="TIME_COUNT" /> с}one{Пре <ph name="TIME_COUNT" /> д}few{Пре <ph name="TIME_COUNT" /> д}other{Пре <ph name="TIME_COUNT" /> д}}</translation>
 <translation id="7979595116210197019">Припрема и достава хране</translation>
 <translation id="798134797138789862">Може да тражи да користи уређаје и податке виртуелне реалности</translation>
-<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983008347525536475">Спортско-теренска возила</translation>
 <translation id="7984945080620862648">Тренутно не можете да посетите <ph name="SITE" /> зато што је веб-сајт послао шифроване акредитиве које Chrome не може да обради. Грешке и напади на мрежи су обично привремени, па ће ова страница вероватно функционисати касније.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4817,6 +4817,7 @@
 <translation id="9155211586651734179">Аудио периферни уређаји су прикључени</translation>
 <translation id="9155646082713385498">Часописи</translation>
 <translation id="9157595877708044936">Подешавање...</translation>
+<translation id="9158491153040481956">Недавно сте променили лозинку која је пронађена у јавној повреди података. У случају проблема, Mенаџер лозинки може да вам помогне да се пријавите.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можда има осетљив садржај}one{<ph name="FILE_COUNT" /> фајл можда има осетљив садржај}few{<ph name="FILE_COUNT" /> фајла можда имају осетљив садржај}other{<ph name="FILE_COUNT" /> фајлова можда има осетљив садржај}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Да бисте изашли из режима целог екрана, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack порука</translation>

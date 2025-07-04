@@ -256,6 +256,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> a párosítás engedélyezéséhez</translation>
 <translation id="1421484961346698724">Törölt fiók</translation>
 <translation id="14222610277930434">Ön által gyakran felkeresett</translation>
+<translation id="1422795627423046860">A dátum érvénytelen</translation>
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1427192966110103169">Otthoni úszómedencék, szaunák és kényeztető fürdők</translation>
@@ -2867,7 +2868,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5847181246682413476">Tápegységek</translation>
 <translation id="584902713199270089">Párkeresés és ismerkedés</translation>
 <translation id="5851548754964597211">Laplista</translation>
-<translation id="5851868085455377790">Kiállító</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5862579898803147654">8. kötegelő</translation>
@@ -4145,7 +4145,6 @@ További részletek:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> perce}=1{<ph name="TIME_COUNT" /> órája}other{<ph name="TIME_COUNT" /> napja}}</translation>
 <translation id="7979595116210197019">Ételszolgálat</translation>
 <translation id="798134797138789862">Hozzáférést kérhet a virtuálisvalóság-eszközökhöz és -adatokhoz</translation>
-<translation id="7982789257301363584">Hálózat</translation>
 <translation id="7983008347525536475">Városi terepjárók</translation>
 <translation id="7984945080620862648">Pillanatnyilag nem tudja felkeresni a(z) <ph name="SITE" /> webhelyet, mivel a webhely olyan titkosított hitelesítő adatokat küldött, amelyeket a Chrome nem tud feldolgozni. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal később valószínűleg már működni fog.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@ További részletek:
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>
 <translation id="9155646082713385498">Magazinok</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
+<translation id="9158491153040481956">Nemrég módosított egy olyan jelszót, amely egy nyilvános adatvédelmi incidensben volt érintett. Probléma esetén a Jelszókezelő segíthet a bejelentkezésben.</translation>
 <translation id="9161794544616754735">{0,plural, =1{A(z) <ph name="FILE_NAME" /> bizalmas adatokat tartalmazhat}other{<ph name="FILE_COUNT" /> fájl bizalmas adatokat tartalmazhat}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-üzenet</translation>

@@ -2871,7 +2871,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5847181246682413476">Fonts d'alimentació</translation>
 <translation id="584902713199270089">Cites i anuncis personals</translation>
 <translation id="5851548754964597211">Llista de pestanyes</translation>
-<translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5862579898803147654">Apiladora 8</translation>
@@ -4149,7 +4148,6 @@ Detalls addicionals:
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Fa <ph name="TIME_COUNT" /> min}=1{Fa <ph name="TIME_COUNT" /> h}other{Fa <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Serveis alimentaris</translation>
 <translation id="798134797138789862">Pot demanar permís per utilitzar dispositius i dades de realitat virtual</translation>
-<translation id="7982789257301363584">Xarxa</translation>
 <translation id="7983008347525536475">Vehicles tot camí</translation>
 <translation id="7984945080620862648">En aquest moment no podeu visitar <ph name="SITE" /> perquè el lloc web ha enviat credencials barrejades que Chrome no pot processar. Els errors i els atacs de xarxa solen ser temporals, de manera que és probable que aquesta pàgina torni a funcionar més tard.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4817,7 +4815,7 @@ Detalls addicionals:
 <translation id="9155211586651734179">Els perifèrics d'àudio enllaçats</translation>
 <translation id="9155646082713385498">Revistes</translation>
 <translation id="9157595877708044936">S'està configurant...</translation>
-<translation id="9158491153040481956">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes per iniciar la sessió, el gestor de contrasenyes et pot ajudar.</translation>
+<translation id="9158491153040481956">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes, el gestor de contrasenyes et pot ajudar.</translation>
 <translation id="9161794544616754735">{0,plural, =1{És possible que <ph name="FILE_NAME" /> inclogui contingut sensible}other{És possible que <ph name="FILE_COUNT" /> fitxers incloguin contingut sensible}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />. Per sortir de la pantalla completa, prem |<ph name="ACCELERATOR" />|.</translation>
 <translation id="9163287596625611517">Missatge de Slack</translation>

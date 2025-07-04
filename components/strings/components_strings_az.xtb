@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">Cütləməyə icazə vermək üçün <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Hesab silindi</translation>
 <translation id="14222610277930434">Tez-tez daxil olursunuz</translation>
+<translation id="1422795627423046860">Tarix yanlışdır</translation>
 <translation id="1422930527989633628">Saytlar yaxınlıqdakı Bluetooth cihazlarını aşkarlamaq üçün icazə istəyə bilər</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1427192966110103169">Ev üçün üzgüçülük hovuzları, sauna və spalar</translation>
@@ -2866,7 +2867,6 @@
 <translation id="5847181246682413476">Enerji ləvazimatları</translation>
 <translation id="584902713199270089">Görüş və Şəxslər</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
-<translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>
@@ -4143,7 +4143,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dəq əvvəl}=1{<ph name="TIME_COUNT" /> saat əvvəl}other{<ph name="TIME_COUNT" /> gün əvvəl}}</translation>
 <translation id="7979595116210197019">Qida xidməti</translation>
 <translation id="798134797138789862">Saytlar virtual reallıq cihazları və datadan istifadə üçün icazə istəyə bilər</translation>
-<translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4812,6 +4811,7 @@
 <translation id="9155211586651734179">Köməkçi audio cihazları əlavə edilib</translation>
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Ayarlanır...</translation>
+<translation id="9158491153040481956">Yaxın günlərdə ictimai data pozuntusunda aşkar edilmiş parolu dəyişmisiniz. Hər hansı problem yaranarsa, Parol Meneceri hesabınıza daxil olmaqda sizə kömək edə bilər.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> faylında həssas kontent ola bilər}other{<ph name="FILE_COUNT" /> faylda həssas kontent ola bilər}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| üzərinə basın</translation>
 <translation id="9163287596625611517">Slack mesajı</translation>

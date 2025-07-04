@@ -1698,6 +1698,7 @@ Si elle est désactivée, les utilisateurs ne peuvent pas utiliser cette fonctio
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
 <translation id="2215746393279570703">Paramètres du SSO flottant</translation>
+<translation id="2219724363635419721">Désactiver les Sous-titres instantanés</translation>
 <translation id="2221779615493499989">Signale l'état du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -5493,6 +5494,15 @@ Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine
 
 Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="4960597185231686653">Flag booléen spécifiant si la saisie vocale est disponible ou non avec le clavier à l'écran.</translation>
+<translation id="49677896192199414">Activer la fonctionnalité Sous-titres instantanés.
+
+Si cette règle est activée, les Sous-titres instantanés seront toujours activés.
+
+Si cette règle est désactivée, ils seront toujours désactivés.
+
+Si vous définissez cette règle comme obligatoire, les utilisateurs ne pourront ni la modifier, ni l'ignorer.
+
+Si cette règle n'est pas définie, les Sous-titres instantanés seront initialement désactivés, mais les utilisateurs pourront les activer à tout moment.</translation>
 <translation id="4970046075219007744">Autoriser les applications Web à demander aux utilisateurs l'accès à ces types de fichiers via l'API File Handling</translation>
 <translation id="4970855112942626932">Désactiver la connexion au navigateur</translation>
 <translation id="4974091268178043378">Mode couleur de Chrome OS</translation>
@@ -6266,6 +6276,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5476152378885134514">Bloquer le presse-papiers sur ces sites</translation>
 <translation id="5479841110985196412">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5480380613778757009">Si cette règle est désactivée ou qu'elle n'est pas configurée, tous les paramètres d'affichage définis dans la session Invité gérée sont réinitialisés à la fermeture de la session. Si cette règle est définie sur "True", les propriétés d'affichage sont conservées après la fermeture de la session Invité gérée.</translation>
+<translation id="548137908954174608">Activer les Sous-titres instantanés</translation>
 <translation id="5483012943408894695">Origines ou modèles de nom d'hôte non soumis aux restrictions applicables aux origines non sécurisées</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
 <translation id="5486352219019836984">Si cette règle est activée, il est recommandé d'activer par défaut l'envoi à Google de rapports anonymes sur les données liées à l'utilisation et aux plantages de <ph name="PRODUCT_NAME" />. Les utilisateurs pourront toujours modifier ce paramètre.
@@ -9693,6 +9704,9 @@ Remarque : <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> 
 <translation id="7841883965249733328">Désactiver la mise à niveau automatique du contenu mixte</translation>
 <translation id="7845130996290850593">Activer Kerberos</translation>
 <translation id="7846952520291088817">URL pour lesquelles les candidats WebRTC ICE affichent les adresses IP locales</translation>
+<translation id="7847374643492493038">Si cette règle est définie sur "True" (ou que <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> est définie sur "False"), les pages Web ne peuvent pas accéder à l'API WebGL.
+
+      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
 <translation id="7848641140449742406">Paramètres de l'OS</translation>
 <translation id="7850846808758624237">Si cette règle est activée, la page d'accueil configurée dans le précédent navigateur par défaut sera importée lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, la page d'accueil n'est pas importée lors de la première exécution.
 
@@ -10930,6 +10944,17 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 <translation id="8705895771006864851">Si cette règle est définie sur "True", vous pouvez proposer une fonctionnalité de traduction aux utilisateurs, le cas échéant. Une barre d'outils intégrée de traduction s'affiche alors dans <ph name="PRODUCT_NAME" />, ainsi qu'une option de traduction disponible dans le menu contextuel que l'utilisateur peut afficher en effectuant un clic droit. Si cette règle est définie sur "False", toutes les fonctionnalités de traduction intégrées sont fermées.
 
       Si cette règle est configurée, les utilisateurs ne peuvent pas modifier la fonctionnalité. Si elle n'est pas configurée, les utilisateurs peuvent modifier le paramètre.</translation>
+<translation id="8707290517123095787">Activer la traduction instantanée de sous-titres. Les sous-titres seront envoyés à Google pour être traduits.
+
+Si cette règle est activée, la traduction instantanée sera toujours activée.
+
+Si cette règle est désactivée, la traduction instantanée sera toujours désactivée.
+
+Si vous définissez cette règle comme obligatoire, les utilisateurs ne pourront ni la modifier, ni l'ignorer.
+
+Si cette règle n'est pas définie, la traduction instantanée sera initialement désactivée, mais les utilisateurs pourront l'activer à tout moment.
+
+Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traduction instantanée sera désactivée, quel que soit le paramètre de cette règle.</translation>
 <translation id="8707790573162457301">Lancer le nettoyage de disque automatique lors de la connexion</translation>
 <translation id="8712609946151927008">Planifier des intervalles de suspension hebdomadaires</translation>
 <translation id="8713535263782304771">Désactiver la navigation sécurisée</translation>

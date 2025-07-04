@@ -1717,6 +1717,7 @@ Politika, Devre Dışı değerine ayarlanırsa bu işlev kullanılamaz.
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (2 değeri) ayarlanırsa giriş ekranında tarayıcıya hiçbir varyasyonun uygulanmasına izin verilmez. Bu modun, <ph name="PRODUCT_OS_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamalarını engelleyebileceğini ve dolayısıyla önerilmediğini lütfen unutmayın.</translation>
 <translation id="2215746393279570703">Kayan TOA ayarları</translation>
+<translation id="2219724363635419721">Canlı Altyazı özelliğini devre dışı bırak</translation>
 <translation id="2221779615493499989">Kayıtlı cihazlardaki kullanıcıların ağ durumunu raporla.
 
       Bu politika yanlış değerine ayarlanırsa bilgi raporlanmaz.
@@ -5589,6 +5590,15 @@ Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve baz
 
 Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="4960597185231686653">Dokunmatik klavyede ses girişi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
+<translation id="49677896192199414">Canlı Altyazı özelliğini etkinleştirin.
+
+Bu politika, Etkin değerine ayarlanırsa Canlı Altyazı özelliği her zaman açık olur.
+
+Bu politika, Devre Dışı değerine ayarlanırsa Canlı Altyazı özelliği her zaman kapalı olur.
+
+Bu politikayı zorunlu olarak ayarlarsanız kullanıcılar politikayı değiştiremez veya geçersiz kılamaz.
+
+Bu politika ayarlanmadan bırakılırsa Canlı Altyazı özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilir.</translation>
 <translation id="4970046075219007744">Web uygulamalarının, kullanıcıdan File Handling API üzerinden dosya türlerine erişim istemesine izin ver</translation>
 <translation id="4970855112942626932">Tarayıcıda oturum açmayı devre dışı bırak</translation>
 <translation id="4974091268178043378">ChromeOS renk modu</translation>
@@ -6371,6 +6381,7 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 <translation id="5476152378885134514">Bu sitelerde panoyu engelle</translation>
 <translation id="5479841110985196412">Erişilebilirlik sanal klavyesini etkinleştir</translation>
 <translation id="5480380613778757009">Bu politika, devre dışı bırakılır veya ayarlanmazsa Yönetilen misafir oturumunda ayarlanan tüm görüntü ayarları, oturum biter bitmez sıfırlanır. Bu politika, Doğru değerine ayarlanırsa yönetilen misafir oturumundan çıkıldıktan sonra görüntü özellikleri tutulur.</translation>
+<translation id="548137908954174608">Canlı Altyazıyı Etkinleştir</translation>
 <translation id="5483012943408894695">Güvenli olmayan başlangıç noktalarında kısıtlamaların uygulanmaması gereken başlangıç noktaları ve ana makine adı kalıpları</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
 <translation id="5486352219019836984">Bu politika etkinleştirildiğinde <ph name="PRODUCT_NAME" /> ile ilgili kullanım ve kilitlenme verilerinin anonim olarak Google'a raporlanmasının varsayılan olarak etkinleştirilmesi önerilir. Kullanıcılar yine de bu ayarı değiştirebilirler.
@@ -9865,6 +9876,9 @@ Not: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> belirti
 <translation id="7841883965249733328">Karma içerik otomatik yükseltmesini devre dışı bırak</translation>
 <translation id="7845130996290850593">Kerberos'u etkinleştir</translation>
 <translation id="7846952520291088817">WebRTC ICE adaylarında sunulan yerel IP'ler için URL'ler</translation>
+<translation id="7847374643492493038">Politika, Doğru değerine ayarlanırsa (veya <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" />, Yanlış değerine ayarlanırsa) web sayfalarının WebGL API'ye erişimi engellenir.
+
+      Politika, Yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa web sayfaları WebGL API'yi kullanabilir. Bu API'leri kullanmak için tarayıcının varsayılan ayarları yine de komut satırı bağımsız değişkenlerini gerektirebilir.</translation>
 <translation id="7848641140449742406">OS Ayarları</translation>
 <translation id="7850846808758624237">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcının ana sayfası ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ana sayfa ilk çalıştırmada içe aktarılmaz.
 
@@ -11140,6 +11154,17 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
 <translation id="8705895771006864851">Politikayı True (Doğru) değerine ayarlamak, kullanıcılar için uygun olduğunda hem <ph name="PRODUCT_NAME" /> ürününde entegre çeviri araç çubuğu hem de sağ tıklanan içerik menüsünde çeviri seçeneği göstererek çeviri işlevselliği sağlar. Politikayı False (Yanlış) değerine ayarlamak, tüm yerleşik çeviri özelliklerini kapatır.
 
       Politikayı ayarlarsanız kullanıcılar bu fonksiyonu değiştiremez. Ayarlamadan bırakırsanız kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="8707290517123095787">Canlı altyazıların çevrilmesini etkinleştirin. Altyazılar, çeviri için Google'a gönderilir.
+
+Bu politika, Etkin değerine ayarlanırsa Canlı Çeviri özelliği her zaman açık olur.
+
+Bu politika, Devre Dışı değerine ayarlanırsa Canlı Çeviri özelliği her zaman kapalı olur.
+
+Bu politikayı zorunlu olarak ayarlarsanız kullanıcılar politikayı değiştiremez veya geçersiz kılamaz.
+
+Bu politika ayarlanmadan bırakılırsa Canlı Çeviri özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilir.
+
+<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />, Devre Dışı değerine ayarlanırsa bu politika ayarından bağımsız olarak Canlı Çeviri devre dışı bırakılır.</translation>
 <translation id="8707790573162457301">Giriş sırasında otomatik disk temizlemeyi çalıştır</translation>
 <translation id="8712609946151927008">Haftalık askıya alma aralıkları programla</translation>
 <translation id="8713535263782304771">Güvenli Tarama'yı devre dışı bırak</translation>

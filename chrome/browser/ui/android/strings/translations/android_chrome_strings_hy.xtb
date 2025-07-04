@@ -36,7 +36,6 @@
 <translation id="1138458427267715730">Ստացեք ծանուցում, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="1140317858355046628">Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
 <translation id="1142732900304639782">Չառաջարկել թարգմանել այս կայքերը</translation>
-<translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="1154555449933432029">Դուք չունեք Google գաղտնաբառերի կառավարիչում պահված գաղտնաբառեր։</translation>
 <translation id="115483310321669804">Օգտագործել <ph name="PASSWORD" /> գաղտնաբառը</translation>
@@ -635,7 +634,6 @@
 <translation id="3911609878849982353">Ֆ-ից Ա տեսակավորում</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />ը միացված է</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
 <translation id="3931947361983910192">վերջին 4 շաբաթվա</translation>
 <translation id="393697183122708255">Մատչելի միացված ձայնային որոնում չկա</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
@@ -993,7 +991,6 @@
 <translation id="549660026907543296">Միանալ որպես <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">«Գաղտնաբառերը ձեր բոլոր սարքերում» պատուհանը բացված է էկրանի կեսով</translation>
 <translation id="5515439363601853141">Գաղտնաբառը տեսնելու համար ապակողպեք էկրանը</translation>
-<translation id="5517095782334947753">Դուք էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ ունեք <ph name="FROM_ACCOUNT" /> հաշվից:</translation>
 <translation id="5517326820028369152">Վերջին գործողությունների ներքևի էկրան</translation>
 <translation id="5526281268548144413">Հնարավոր չէ փակել ներդիրները, որոնք բացված են մեկից ավելի պատուհանում</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
@@ -1329,7 +1326,6 @@
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 կայքի բաժանորդագրությունը չեղարկվեց}one{# կայքի բաժանորդագրությունը չեղարկվեց}other{# կայքի բաժանորդագրությունը չեղարկվեց}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 գաղտնաբառ}one{# գաղտնաբառ}other{# գաղտնաբառ}}</translation>
 <translation id="688730033107341407">Երբ դուրս գաք, ձեր Google հաշվի էջանիշները, գաղտնաբառերը և այլ տվյալներ կհեռացվեն այս սարքից։</translation>
-<translation id="688738109438487280">Ավելացնել առկա տվյալները <ph name="TO_ACCOUNT" /> հաշվում:</translation>
 <translation id="6891726759199484455">Գաղտնաբառը պատճենելու համար ապակողպեք էկրանը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6898797562238201317">Օգտագործեք ձեր անցաբառը՝ Chrome-ի բոլոր տվյալները ձեր Google հաշվում գաղտնագրելու համար</translation>
@@ -1615,7 +1611,6 @@
 <translation id="8062594758852531064">Ընդլայնված նախաբեռնում՝</translation>
 <translation id="8063895661287329888">Չհաջողվեց ավելացնել էջանիշը:</translation>
 <translation id="8066816452984416180">Արագ ավելացնել էջանիշներում։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
-<translation id="806745655614357130">Իմ տվյալները պահել առանձին</translation>
 <translation id="8073388330009372546">Բացել պատկերը նոր ներդիրով</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8078096376109663956">Կիսվեք միայն տեքստով</translation>
@@ -1691,7 +1686,6 @@
 <translation id="8361737703487394103">Անցնել որոշակի ներդիր (1–8)</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{Ներդիրների <ph name="TAB_GROUPS_ONE" /> խումբ}one{Ներդիրների <ph name="TAB_GROUPS_MANY" /> խումբ}other{Ներդիրների <ph name="TAB_GROUPS_MANY" /> խումբ}}</translation>
-<translation id="8378850197701296741">Դուք էջանիշներ, պատմություն և այլ կարգավորումներ ունեք <ph name="FROM_ACCOUNT" /> հաշվից։</translation>
 <translation id="8387617938027387193">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8396098434728053815">Նաև հասանելի դարձնել ներդիրի աուդիո բովանդակությունը</translation>

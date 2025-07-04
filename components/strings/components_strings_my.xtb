@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">တွဲချိတ်ခြင်းအား ခွင့်ပြုရန် <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">ဖျက်ထားသည့် အကောင့်</translation>
 <translation id="14222610277930434">မကြာခဏ သင်ဝင်ကြည့်သည်များ</translation>
+<translation id="1422795627423046860">ရက်စွဲ မမှန်ပါ</translation>
 <translation id="1422930527989633628">အနီးရှိ ဘလူးတုသ်သုံးစက်များ ရှာဖွေရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1427192966110103169">အိမ်သုံးရေကူးကန်၊ ချွေးပေါင်းအိမ်နှင့် ရေပူစမ်း</translation>
@@ -2871,7 +2872,6 @@
 <translation id="5847181246682413476">ပါဝါပင်ရင်း</translation>
 <translation id="584902713199270089">ချိန်းတွေ့ခြင်း၊ ကိုယ်ရေးကိုယ်တာ</translation>
 <translation id="5851548754964597211">တဲပ် စာရင်း</translation>
-<translation id="5851868085455377790">ထုတ်ပေးသူ</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="5862579898803147654">စီထည့်သည့်ပုံး ၈</translation>
@@ -4148,7 +4148,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{ပြီးခဲ့သော <ph name="TIME_COUNT" /> မိနစ်}=1{ပြီးခဲ့သော <ph name="TIME_COUNT" /> နာရီ}other{ပြီးခဲ့သော <ph name="TIME_COUNT" /> ရက်}}</translation>
 <translation id="7979595116210197019">အစားအသောက် ဝန်ဆောင်မှု</translation>
 <translation id="798134797138789862">ပကတိအသွင် စက်နှင့် ဒေတာများ သုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
-<translation id="7982789257301363584">ကွန်ရက်</translation>
 <translation id="7983008347525536475">SUV များ</translation>
 <translation id="7984945080620862648">ဝက်ဘ်ဆိုက်က ပို့ပေးခဲ့သည့် စိတ်ချရသည့် အချက်အလက်များမှာ ရောနှောနေ၍ Chrome အနေနှင့် စီမံလုပ်ကိုင် မရသောကြောင့် သင်သည် <ph name="SITE" />ကို ယခုချက်ချင်း ဝင်ကြည့် မရနိုင်ပါ။ ကွန်ရက် အမှားများ နှင့် တိုက်ခိုက်မှုများမှာ အများအားဖြင့် ခဏယာယီပါ၊ သို့ဖြစ်၍ ဒီစာမျက်နှာသည်
 နောက်ပိုင်းတွင် အလုပ်လုပ် နိုင်ဖွယ် ရှိပါသည်။</translation>
@@ -4818,6 +4817,7 @@
 <translation id="9155211586651734179">တွဲချိတ်ထားသည့် အသံဆိုင်ရာချိတ်ဆက်ပစ္စည်းများ</translation>
 <translation id="9155646082713385498">မဂ္ဂဇင်း</translation>
 <translation id="9157595877708044936">စဖွင့်သတ်မှတ်နေ...</translation>
+<translation id="9158491153040481956">သင်သည် အများမြင် ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိရသော စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားသည်။ ပြဿနာရှိပါက သင်လက်မှတ်ထိုးဝင်ရာတွင် Password Manager က ကူညီနိုင်ပါသည်။</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="9163287596625611517">Slack မက်ဆေ့ဂျ်</translation>

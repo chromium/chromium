@@ -256,6 +256,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om saambinding moontlik te maak</translation>
 <translation id="1421484961346698724">Rekening uitgevee</translation>
 <translation id="14222610277930434">Jy besoek gereeld</translation>
+<translation id="1422795627423046860">Datum is ongeldig</translation>
 <translation id="1422930527989633628">Kan vra om Bluetooth-toestelle in die omtrek te ontdek</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427192966110103169">Huisswembaddens, -saunas en -spa’s</translation>
@@ -2870,7 +2871,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5847181246682413476">Kragbronne</translation>
 <translation id="584902713199270089">Ontmoetings en persoonlike advertensies</translation>
 <translation id="5851548754964597211">Oortjielys</translation>
-<translation id="5851868085455377790">Uitreiker</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5862579898803147654">Stapelaar 8</translation>
@@ -4147,7 +4147,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> m. gelede}=1{<ph name="TIME_COUNT" /> u. gelede}other{<ph name="TIME_COUNT" /> d. gelede}}</translation>
 <translation id="7979595116210197019">Kosdiens</translation>
 <translation id="798134797138789862">Kan vra om virtuelerealiteittoestelle en -data te gebruik</translation>
-<translation id="7982789257301363584">Netwerk</translation>
 <translation id="7983008347525536475">SNV's (sportnutsvoertuie)</translation>
 <translation id="7984945080620862648">Jy kan nie <ph name="SITE" /> op die oomblik besoek nie, want die webwerf het deurmekaar eiebewyse gestuur wat Chrome nie kan verwerk nie. Netwerkfoute en aanvalle is gewoonlik tydelik en daarom sal hierdie bladsy waarskynlik later werk.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4816,6 +4815,7 @@ Bykomende besonderhede:
 <translation id="9155211586651734179">Oudiorandtoestelle is aangeheg</translation>
 <translation id="9155646082713385498">Tydskrifte</translation>
 <translation id="9157595877708044936">Stel tans op …</translation>
+<translation id="9158491153040481956">Jy het onlangs ’n wagwoord verander wat in ’n publieke dataskending gekry is. Wagwoordbestuurder kan jou help om aan te meld as jy sukkel.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat dalk sensitiewe inhoud}other{<ph name="FILE_COUNT" /> lêers bevat dalk sensitiewe inhoud}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Druk |<ph name="ACCELERATOR" />| om volskerm te verlaat</translation>
 <translation id="9163287596625611517">Slack-boodskap</translation>

@@ -2870,7 +2870,6 @@
 <translation id="5847181246682413476">แหล่งจ่ายไฟ</translation>
 <translation id="584902713199270089">หาคู่และโฆษณาหาเพื่อน</translation>
 <translation id="5851548754964597211">รายการแท็บ</translation>
-<translation id="5851868085455377790">ผู้ออกใบรับรอง</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5862579898803147654">สแต็กเกอร์ 8</translation>
@@ -4148,7 +4147,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> นาทีที่ผ่านมา}=1{<ph name="TIME_COUNT" /> ชม. ที่ผ่านมา}other{<ph name="TIME_COUNT" /> วันที่ผ่านมา}}</translation>
 <translation id="7979595116210197019">บริการด้านอาหาร</translation>
 <translation id="798134797138789862">สามารถขอใช้อุปกรณ์และข้อมูล Virtual Reality ได้</translation>
-<translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้ เนื่องจากเว็บไซต์ดังกล่าวส่งข้อมูลรับรองที่สลับกัน ซึ่ง Chrome ไม่สามารถเข้าถึงได้ โดยปกติข้อผิดพลาดของเครือข่ายและการบุกรุกจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงน่าจะใช้งานได้ในภายหลัง</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

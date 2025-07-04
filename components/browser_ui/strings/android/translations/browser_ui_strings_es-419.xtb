@@ -61,6 +61,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
+<translation id="1717996979683942279">Cuando esta opción está activada, los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas. Cuando está desactivada, los sitios no pueden administrar las ventanas de todas tus pantallas.</translation>
 <translation id="1743802530341753419">Preguntar antes de permitir que los sitios se conecten a un dispositivo (recomendado)</translation>
 <translation id="1777815584158991902">Hoja inferior del feed de Descubre</translation>
 <translation id="1779089405699405702">Decodificador de imágenes</translation>
@@ -171,6 +172,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="2968755619301702150">Visualizador de certificados</translation>
 <translation id="2979365474350987274">Las cookies de terceros están limitadas</translation>
 <translation id="2990583317361835189">No permitir que los sitios utilicen sensores de movimiento</translation>
+<translation id="3004438526346162184">Los sitios pueden usar esta función para administrar las ventanas de todas tus pantallas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
 <translation id="3064871050034234884">Permitir que los sitios reproduzcan sonido</translation>
@@ -439,6 +441,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="6071501408666570960">Es posible que se cierre tu sesión en este sitio</translation>
 <translation id="6085954183010297841">¿Quieres borrar la autorización de edición de archivos? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Cuando esta opción está activada, los sitios pueden solicitar saber si estás usando activamente el dispositivo. Cuando está desactivada, los sitios no pueden saber si estás usando activamente el dispositivo.</translation>
+<translation id="615886654739818377">No permitir que los sitios administren las ventanas de todas tus pantallas</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6171020522141473435">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos Bluetooth. Cuando está desactivada, los sitios no pueden usar dispositivos Bluetooth.</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>

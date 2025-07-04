@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允许配对</translation>
 <translation id="1421484961346698724">已删除的账号</translation>
 <translation id="14222610277930434">您经常访问</translation>
+<translation id="1422795627423046860">日期无效</translation>
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427192966110103169">家庭泳池、桑拿和水疗</translation>
@@ -2866,7 +2867,6 @@
 <translation id="5847181246682413476">电力供应</translation>
 <translation id="584902713199270089">约会与交友</translation>
 <translation id="5851548754964597211">标签列表</translation>
-<translation id="5851868085455377790">颁发者</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5862579898803147654">堆叠出纸器 8</translation>
@@ -4143,7 +4143,6 @@
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分钟前}=1{<ph name="TIME_COUNT" /> 小时前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">餐饮服务</translation>
 <translation id="798134797138789862">可以询问能否使用虚拟现实设备和数据</translation>
-<translation id="7982789257301363584">网络</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">您目前无法访问<ph name="SITE" />，因为此网站发送了Chrome无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -4812,6 +4811,7 @@
 <translation id="9155211586651734179">已连接音频外围设备</translation>
 <translation id="9155646082713385498">杂志</translation>
 <translation id="9157595877708044936">正在设置...</translation>
+<translation id="9158491153040481956">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，密码管理工具可以帮助您登录。</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack 消息</translation>
