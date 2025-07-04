@@ -80,7 +80,7 @@ declare_args() {
   ios_enable_background_mode = true
 
   # Disable iOS 26 liquid glass until reasonably supported.
-  ios_enable_liquid_glass = false
+  ios_enable_liquid_glass = true
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
