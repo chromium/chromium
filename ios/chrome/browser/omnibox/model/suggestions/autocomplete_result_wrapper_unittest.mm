@@ -12,7 +12,6 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"

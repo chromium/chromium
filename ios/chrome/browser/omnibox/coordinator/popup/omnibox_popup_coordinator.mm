@@ -57,7 +57,7 @@
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
-// Owned by OmniboxEditModel.
+// Owned by OmniboxAutocompleteController.
 @property(nonatomic, assign) AutocompleteController* autocompleteController;
 
 @end

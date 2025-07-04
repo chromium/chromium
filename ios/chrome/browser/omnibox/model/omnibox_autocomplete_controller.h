@@ -16,12 +16,12 @@
 
 @protocol AutocompleteSuggestion;
 struct AutocompleteMatch;
+class AutocompleteController;
 class AutocompleteResult;
 @class AutocompleteResultWrapper;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 class OmniboxClient;
-class OmniboxControllerIOS;
 @class OmniboxMetricsRecorder;
 @class OmniboxTextController;
 struct OmniboxTextModel;
@@ -51,13 +51,14 @@ struct OmniboxTextModel;
 // Whether or not the popup has suggestions.
 @property(nonatomic, assign, readonly) BOOL hasSuggestions;
 
-/// Initializes with an OmniboxController.
-- (instancetype)initWithOmniboxController:
-                    (OmniboxControllerIOS*)omniboxController
-                            omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
+
+/// Returns the underlying autocomplete controller.
+- (AutocompleteController*)autocompleteController;
 
 /// Removes all C++ references.
 - (void)disconnect;

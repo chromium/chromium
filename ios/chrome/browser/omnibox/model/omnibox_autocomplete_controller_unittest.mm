@@ -23,7 +23,6 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller+Testing.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -96,7 +95,6 @@ class MockAutocompleteController : public AutocompleteController {
     _openSelectionClosure.Reset();
   }
 }
-
 @end
 
 class OmniboxAutocompleteControllerTest : public PlatformTest {
@@ -111,13 +109,9 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
-    omnibox_controller_ =
-        std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
 
     auto autocomplete = std::make_unique<MockAutocompleteController>();
     autocomplete_controller_ = autocomplete.get();
-    omnibox_controller_->SetAutocompleteControllerForTesting(
-        std::move(autocomplete));
 
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
@@ -126,17 +120,16 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[TestOmniboxAutocompleteController alloc]
-        initWithOmniboxController:omnibox_controller_.get()
-                    omniboxClient:omnibox_client_.get()
-                 omniboxTextModel:omnibox_text_model_.get()];
+        initWithOmniboxClient:omnibox_client_.get()
+             omniboxTextModel:omnibox_text_model_.get()];
     controller_.delegate = controller_delegate_;
+    [controller_ setAutocompleteController:std::move(autocomplete)];
 
     omnibox_metrics_recorder_ = [[OmniboxMetricsRecorder alloc]
         initWithClient:omnibox_client_.get()
              textModel:omnibox_text_model_.get()];
     [omnibox_metrics_recorder_
-        setAutocompleteController:omnibox_controller_
-                                      ->autocomplete_controller()];
+        setAutocompleteController:controller_.autocompleteController];
     controller_.omniboxMetricsRecorder = omnibox_metrics_recorder_;
   }
 
@@ -144,7 +137,6 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     [controller_ disconnect];
     clipboard_ = nullptr;
     autocomplete_controller_ = nullptr;
-    omnibox_controller_ = nullptr;
     omnibox_client_ = nullptr;
     omnibox_text_model_ = nullptr;
     controller_delegate_ = nil;
@@ -198,7 +190,6 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
-  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
   OmniboxMetricsRecorder* omnibox_metrics_recorder_;
   id controller_delegate_;
@@ -218,7 +209,8 @@ MATCHER_P(IsSameAsMatch, expected, "") {
 TEST_F(OmniboxAutocompleteControllerTest, AddFakeMatches) {
   ACMatches sample_matches = SampleMatches();
   autocomplete_controller_->SetAutocompleteMatches(sample_matches);
-  EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
+  EXPECT_EQ([controller_ autocompleteController]->result().size(),
+            sample_matches.size());
 }
 
 #pragma mark - Request suggestion
@@ -240,7 +232,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultsAllVisible) {
   // Expect one group of suggestions.
   EXPECT_CALL(*autocomplete_controller_,
               GroupSuggestionsBySearchVsURL(
-                  1, autocomplete_controller_->result().size()));
+                  1, [controller_ autocompleteController]->result().size()));
 
   OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
                                      didUpdateSuggestionsGroups:[OCMArg any]]);
@@ -258,7 +250,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultVisibleOverflow) {
   // Expect one group of suggestions.
   EXPECT_CALL(*autocomplete_controller_,
               GroupSuggestionsBySearchVsURL(
-                  1, autocomplete_controller_->result().size()));
+                  1, [controller_ autocompleteController]->result().size()));
 
   OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
                                      didUpdateSuggestionsGroups:[OCMArg any]]);
@@ -273,7 +265,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultVisibleOverflow) {
 TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
   autocomplete_controller_->SetAutocompleteMatches(SampleMatches());
 
-  size_t result_size = autocomplete_controller_->result().size();
+  size_t result_size = [controller_ autocompleteController]->result().size();
   size_t visible_count = 2;
   EXPECT_LT(visible_count, result_size);
 

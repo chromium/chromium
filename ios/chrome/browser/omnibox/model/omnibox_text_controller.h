@@ -11,10 +11,10 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 
+class AutocompleteController;
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
 class OmniboxClient;
-class OmniboxControllerIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
@@ -39,11 +39,9 @@ class OmniboxControllerIOS;
 @property(nonatomic, assign, readonly) NSRange currentSelection;
 
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
-- (instancetype)initWithOmniboxController:
-                    (OmniboxControllerIOS*)omniboxController
-                            omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                            inLensOverlay:(BOOL)inLensOverlay
+- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+                        inLensOverlay:(BOOL)inLensOverlay
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -122,6 +120,10 @@ class OmniboxControllerIOS;
 /// change should be immediately user-visible, because either the user is not
 /// editing or the edit does not have focus.
 - (bool)resetDisplayTexts;
+
+/// Sets the autocompleteController.
+- (void)setAutocompleteController:
+    (AutocompleteController*)autocompleteController;
 
 #pragma mark - Autocomplete event
 

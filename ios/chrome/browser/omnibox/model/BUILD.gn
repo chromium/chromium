@@ -12,8 +12,6 @@ source_set("model") {
     "omnibox_autocomplete_controller.mm",
     "omnibox_autocomplete_controller_debugger_delegate.h",
     "omnibox_autocomplete_controller_delegate.h",
-    "omnibox_controller_ios.h",
-    "omnibox_controller_ios.mm",
     "omnibox_image_fetcher.h",
     "omnibox_image_fetcher.mm",
     "omnibox_metrics_recorder.h",
@@ -100,7 +98,6 @@ source_set("unit_tests") {
   sources = [
     "chrome_omnibox_client_ios_unittest.mm",
     "omnibox_autocomplete_controller_unittest.mm",
-    "omnibox_controller_ios_unittest.mm",
     "omnibox_text_controller_unittest.mm",
     "omnibox_text_model_unittest.mm",
   ]

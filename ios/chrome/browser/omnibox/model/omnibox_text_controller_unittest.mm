@@ -7,8 +7,12 @@
 #import "base/test/task_environment.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -50,17 +54,33 @@ class OmniboxTextControllerTest : public PlatformTest {
  public:
   OmniboxTextControllerTest() {
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
-
-    omnibox_controller_ =
-        std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
 
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterLocalStatePrefs(local_state_->registry());
+    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
+
+    omnibox_autocomplete_controller_ = [[OmniboxAutocompleteController alloc]
+        initWithOmniboxClient:omnibox_client_.get()
+             omniboxTextModel:omnibox_text_model_.get()];
+
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
-        initWithOmniboxController:omnibox_controller_.get()
-                    omniboxClient:omnibox_client_.get()
-                 omniboxTextModel:omnibox_text_model_.get()
-                    inLensOverlay:NO];
+        initWithOmniboxClient:omnibox_client_.get()
+             omniboxTextModel:omnibox_text_model_.get()
+                inLensOverlay:NO];
+
+    omnibox_text_controller_.omniboxAutocompleteController =
+        omnibox_autocomplete_controller_;
+  }
+
+  ~OmniboxTextControllerTest() override {
+    omnibox_client_ = nullptr;
+    [omnibox_autocomplete_controller_ disconnect];
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
+    local_state_.reset();
+    omnibox_autocomplete_controller_ = nil;
+    omnibox_text_controller_ = nil;
   }
 
   TestLocationBarModel* location_bar_model() {
@@ -77,8 +97,10 @@ class OmniboxTextControllerTest : public PlatformTest {
   base::test::TaskEnvironment environment_;
 
   TestOmniboxTextController* omnibox_text_controller_;
+  // Application pref service.
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
-  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
 };
 
