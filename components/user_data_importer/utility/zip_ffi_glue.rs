@@ -29,6 +29,8 @@ mod ffi {
         url: String,
         title: String,
         time_usec: u64,
+        destination_url: String,
+        source_url: String,
         visit_count: u64,
     }
 
@@ -93,7 +95,7 @@ struct HistoryJSONEntry {
     time_usec: u64,
 
     // An optional string that, if present, is the URL of the next item in the redirect chain.
-    // UNUSED: destination_url: Option<String>,
+    destination_url: Option<String>,
 
     // An optional integer that’s present if destination_url is also present and is the UNIX
     // timestamp (the number of microseconds since midnight UTC, January 1, 1970) of the next
@@ -102,7 +104,7 @@ struct HistoryJSONEntry {
 
     // An optional string that, if present, is the URL of the previous item in the redirect
     // chain.
-    // UNUSED: source_url: Option<String>,
+    source_url: Option<String>,
 
     // An optional integer that’s present if source_url is also present and is the UNIX
     // timestamp in microseconds of the previous navigation in the redirect chain.
@@ -177,6 +179,8 @@ impl From<HistoryJSONEntry> for ffi::HistoryEntry {
             url: entry.url,
             title: entry.title.unwrap_or(String::new()),
             time_usec: entry.time_usec,
+            destination_url: entry.destination_url.unwrap_or(String::new()),
+            source_url: entry.source_url.unwrap_or(String::new()),
             visit_count: entry.visit_count,
         }
     }

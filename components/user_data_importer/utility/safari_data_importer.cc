@@ -26,9 +26,12 @@
 
 namespace {
 
+std::string_view RustStringToStringView(const rust::String& rust_string) {
+  return std::string_view(rust_string.data(), rust_string.length());
+}
+
 std::u16string RustStringToUTF16(const rust::String& rust_string) {
-  return base::UTF8ToUTF16(
-      std::string_view(rust_string.data(), rust_string.length()));
+  return base::UTF8ToUTF16(RustStringToStringView(rust_string));
 }
 
 autofill::CreditCard ConvertToAutofillCreditCard(
@@ -45,19 +48,85 @@ autofill::CreditCard ConvertToAutofillCreditCard(
   // (server, etc) is too complex for an import flow.
   credit_card.set_record_type(autofill::CreditCard::RecordType::kLocalCard);
 
-  credit_card.SetInfo(
-      autofill::CREDIT_CARD_NAME_FULL,
-      base::UTF8ToUTF16(std::string_view(card.cardholder_name.data(),
-                                         card.cardholder_name.length())),
-      app_locale);
+  credit_card.SetInfo(autofill::CREDIT_CARD_NAME_FULL,
+                      RustStringToUTF16(card.cardholder_name), app_locale);
 
   return credit_card;
 }
 
+bool IsRedirect(const GURL& source_url, const GURL& destination_url) {
+  // If URLs are identical strings, it's not a redirect.
+  if (source_url == destination_url) {
+    return false;
+  }
+
+  // Check if URLs are valid.
+  if (!source_url.is_valid() || !destination_url.is_valid()) {
+    return false;  // Cannot reliably determine redirect if URLs are unparsable.
+  }
+
+  // Check for differences in scheme.
+  if ((source_url.has_scheme() != destination_url.has_scheme()) ||
+      (source_url.has_scheme() && destination_url.has_scheme() &&
+       !source_url.SchemeIs(destination_url.scheme()))) {
+    return true;
+  }
+
+  // Check for differences in host.
+  if ((source_url.has_host() != destination_url.has_host()) ||
+      (source_url.has_host() && destination_url.has_host() &&
+       source_url.host() != destination_url.host())) {
+    return true;
+  }
+
+  // Check for differences in path.
+  if ((source_url.has_path() != destination_url.has_path()) ||
+      (source_url.has_path() && destination_url.has_path() &&
+       source_url.path() != destination_url.path())) {
+    return true;
+  }
+
+  // Check for specific redirect pattern: source has no query, but destination
+  // does.
+  if (!source_url.has_query() && destination_url.has_query()) {
+    return true;
+  }
+
+  // If none of the above conditions are met, it's not considered a redirect
+  // by this logic (e.g., only fragment changes, or query changes where source
+  // already had a query).
+  return false;
+}
+
+// Returns whether to skip this history entry.
+bool IsSkippedEntry(const user_data_importer::HistoryEntry& entry) {
+  // If either source or destination URL is missing, we can't determine if this
+  // entry should be skipped.
+  if (entry.source_url.empty() || entry.destination_url.empty()) {
+    return false;
+  }
+
+  // Parse URLs using GURL.
+  GURL source_url(RustStringToStringView(entry.source_url));
+  GURL destination_url(RustStringToStringView(entry.destination_url));
+
+  // Only import history entries if the scheme is http or https.
+  if ((source_url.has_scheme() && !source_url.SchemeIs(url::kHttpsScheme) &&
+       !source_url.SchemeIs(url::kHttpScheme)) ||
+      (destination_url.has_scheme() &&
+       !destination_url.SchemeIs(url::kHttpsScheme) &&
+       !destination_url.SchemeIs(url::kHttpScheme))) {
+    return true;
+  }
+
+  // Redirects are skipped.
+  return IsRedirect(source_url, destination_url);
+}
+
 std::optional<history::URLRow> ConvertToURLRow(
     const user_data_importer::HistoryEntry& history_entry) {
-  GURL gurl(RustStringToUTF16(history_entry.url));
-  if (!gurl.is_valid()) {
+  GURL gurl(RustStringToStringView(history_entry.url));
+  if (!gurl.is_valid() || IsSkippedEntry(history_entry)) {
     return std::nullopt;
   }
 

@@ -40,6 +40,38 @@
       "visit_count" : 6,
       "title" : "Access Denied",
       "latest_visit_was_load_failure" : true
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from scheme",
+      "source_url" : "http://www.example.com/",
+      "destination_url" : "https://www.example.com/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from host",
+      "source_url" : "https://www.example.com/",
+      "destination_url" : "https://www.example2.com/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from path",
+      "source_url" : "https://www.example.com/",
+      "destination_url" : "https://www.example.com/more_path/"
+    },
+    {
+      "url" : "https://www.example.com/",
+      "time_usec" : 1746019846689580,
+      "visit_count" : 1,
+      "title" : "Explicit redirect from query",
+      "source_url" : "https://www.example.com/test",
+      "destination_url" : "https://www.example.com/test?q=query"
     }
   ]
 }

@@ -114,12 +114,6 @@ class SafariDataImporterTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void WaitUntilPresenterIsReady() {
-    ASSERT_TRUE(base::test::RunUntil([&]() { return presenter_ready_; }));
-  }
-
-  void OnPresenterReady() { presenter_ready_ = true; }
-
   password_manager::ImportResults GetImportResults() const {
     return import_results_;
   }
@@ -141,26 +135,6 @@ class SafariDataImporterTest : public testing::Test {
   }
 
   int GetNumberOfURLsImported() const { return number_urls_imported_; }
-
-  void OnBookmarksConsumed(int number_imported) {
-    bookmarks_callback_called_ = true;
-    number_bookmarks_imported_ = number_imported;
-  }
-
-  void OnPasswordsConsumed(const password_manager::ImportResults& results) {
-    passwords_callback_called_ = true;
-    import_results_ = results;
-  }
-
-  void OnPaymentCardsConsumed(int number_imported) {
-    payment_cards_callback_called_ = true;
-    number_payment_cards_imported_ = number_imported;
-  }
-
-  void OnURLsConsumed(int number_imported) {
-    history_callback_called_ = true;
-    number_urls_imported_ = number_imported;
-  }
 
   void ImportBookmarks(std::string html_data) {
     bookmarks_callback_called_ = false;
@@ -202,26 +176,10 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
   }
 
-  void ExecuteImport() {
-    passwords_callback_called_ = false;
-    importer_->ContinueImport(
-        std::vector<int>(),
-        // Use of Unretained below is safe because the RunUntil loop below
-        // guarantees this outlives the tasks.
-        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
-                       base::Unretained(this)));
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return passwords_callback_called_; }));
-  }
+  // Executes the import, using selected_ids to resolve password conflicts.
+  void ExecuteImport(const std::vector<int>& selected_ids) {
+    PrepareCallbacks();
 
-  void ResolvePasswordConflicts(const std::vector<int>& selected_ids) {
-    passwords_callback_called_ = false;
     importer_->ContinueImport(
         selected_ids,
         // Use of Unretained below is safe because the RunUntil loop below
@@ -234,8 +192,8 @@ class SafariDataImporterTest : public testing::Test {
                        base::Unretained(this)),
         base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
                        base::Unretained(this)));
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return passwords_callback_called_; }));
+
+    WaitForCallbacks();
   }
 
   void ImportPaymentCards(std::vector<PaymentCardEntry> payment_cards) {
@@ -251,58 +209,13 @@ class SafariDataImporterTest : public testing::Test {
   }
 
   void ImportInvalidFile() {
-    passwords_callback_called_ = false;
-    bookmarks_callback_called_ = false;
-    history_callback_called_ = false;
-    payment_cards_callback_called_ = false;
-
-    importer_->StartImport(
-        base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/zip/file")),
-        // Use of Unretained below is safe because the RunUntil loop below
-        // guarantees this outlives the tasks.
-        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
-                       base::Unretained(this)));
-
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return passwords_callback_called_ && payment_cards_callback_called_ &&
-             bookmarks_callback_called_ && history_callback_called_;
-    })) << CallbackTimeoutMessage();
+    ImportFile(base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/zip/file")));
   }
 
   void ImportFile() {
     base::FilePath zip_archive_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
-    zip_archive_path =
-        zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip"));
-
-    passwords_callback_called_ = false;
-    bookmarks_callback_called_ = false;
-    history_callback_called_ = false;
-    payment_cards_callback_called_ = false;
-
-    importer_->StartImport(
-        zip_archive_path,
-        // Use of Unretained below is safe because the RunUntil loop below
-        // guarantees this outlives the tasks.
-        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
-                       base::Unretained(this)),
-        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
-                       base::Unretained(this)));
-
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return passwords_callback_called_ && payment_cards_callback_called_ &&
-             bookmarks_callback_called_ && history_callback_called_;
-    })) << CallbackTimeoutMessage();
+    ImportFile(zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip")));
   }
 
   void CancelImport() { importer_->CancelImport(); }
@@ -324,6 +237,65 @@ class SafariDataImporterTest : public testing::Test {
   }
 
  private:
+  void WaitUntilPresenterIsReady() {
+    ASSERT_TRUE(base::test::RunUntil([&]() { return presenter_ready_; }));
+  }
+
+  void OnPresenterReady() { presenter_ready_ = true; }
+
+  void OnBookmarksConsumed(int number_imported) {
+    bookmarks_callback_called_ = true;
+    number_bookmarks_imported_ = number_imported;
+  }
+
+  void OnPasswordsConsumed(const password_manager::ImportResults& results) {
+    passwords_callback_called_ = true;
+    import_results_ = results;
+  }
+
+  void OnPaymentCardsConsumed(int number_imported) {
+    payment_cards_callback_called_ = true;
+    number_payment_cards_imported_ = number_imported;
+  }
+
+  void OnURLsConsumed(int number_imported) {
+    history_callback_called_ = true;
+    number_urls_imported_ = number_imported;
+  }
+
+  void PrepareCallbacks() {
+    passwords_callback_called_ = false;
+    bookmarks_callback_called_ = false;
+    history_callback_called_ = false;
+    payment_cards_callback_called_ = false;
+  }
+
+  void WaitForCallbacks() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return passwords_callback_called_ && payment_cards_callback_called_ &&
+             bookmarks_callback_called_ && history_callback_called_;
+    })) << CallbackTimeoutMessage();
+  }
+
+  void ImportFile(const base::FilePath& file) {
+    PrepareCallbacks();
+
+    importer_->StartImport(
+        file,
+        // Use of Unretained below is safe because the RunUntil loop below
+        // guarantees this outlives the tasks.
+        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
+                       base::Unretained(this)));
+
+    WaitForCallbacks();
+  }
+
   // Formats an error message when timing out while waiting for callbacks.
   std::string CallbackTimeoutMessage() {
     std::string message = "Timed out waiting for: ";
@@ -674,7 +646,7 @@ TEST_F(SafariDataImporterTest, PasswordImport) {
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImport();
+  ExecuteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -699,7 +671,7 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImport();
+  ExecuteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -716,7 +688,7 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   std::vector<int> selected_ids;
   selected_ids.push_back(0);
   selected_ids.push_back(1);
-  ResolvePasswordConflicts(selected_ids);
+  ExecuteImport(selected_ids);
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 2u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -735,7 +707,7 @@ TEST_F(SafariDataImporterTest, CancelImport) {
   // implemented.
   ExpectBookmarksIfImplemented(7);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 7);  // Note: Approximation.
+  ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 
   CancelImport();
 }
@@ -750,13 +722,13 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // implemented.
   ExpectBookmarksIfImplemented(7);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 7);  // Note: Approximation.
+  ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 
   // Use a small history size threshold so that ParseHistoryCallback gets called
   // multiple times internally.
   SetHistorySizeThreshold(3u);
 
-  ExecuteImport();
+  ExecuteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -764,7 +736,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // implemented.
   ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 6);
+  ASSERT_EQ(GetNumberOfURLsImported(), 7);
 }
 
 }  // namespace user_data_importer
