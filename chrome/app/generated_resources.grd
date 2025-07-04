@@ -18384,12 +18384,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_USED_ON_THIS_SITE" desc="A string indicating to the user that they have used the identity providers' account for federation in the RP in the past. This is based primarily on the knowledge indicated by the identity provider, so no timestamp is known or displayed to the user in this case.">
       You used on this site
     </message>
-    <message name="IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE" desc="Lets the user know that this is the account which was last used in FedCM on this site. It may be used as the second parameter to IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED. Only used for the account which was most recently used.">
-      last used on this site
-    </message>
-    <message name="IDS_MULTI_IDP_ACCOUNT_USED_TIME_AGO" desc="Lets the user know that this account was used some specific time ago. This may be used as used as the second parameter to IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED. Used for accounts which are not the most recently used but for which we know the time when they were last used.">
-      used <ph name="TIME_AGO">$1<ex>1 month ago</ex></ph>
-    </message>
     <message name="IDS_VERIFY_SHEET_TITLE" desc="Header shown to the user while signing in happens.">
       Verifying…
     </message>

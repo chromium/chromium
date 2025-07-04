@@ -696,7 +696,7 @@ void AccountSelectionBubbleView::AddAccounts(
     // We notify the user that the account has been used in the past based on
     // the IdP's knowledge, e.g. `approved_clients` (or the browser knowledge if
     // that one is not present).
-    std::optional<std::u16string> last_used_string =
+    std::optional<std::u16string> used_string =
         account->idp_claimed_login_state.value_or(
             account->browser_trusted_login_state) ==
                 Account::LoginState::kSignIn
@@ -706,7 +706,7 @@ void AccountSelectionBubbleView::AddAccounts(
     accounts_content->AddChildView(
         CreateAccountRow(account, /*clickable_position=*/out_position++,
                          /*should_include_idp=*/true, /*is_modal_dialog=*/false,
-                         /*additional_vertical_padding=*/0, last_used_string));
+                         /*additional_vertical_padding=*/0, used_string));
   }
 }
 

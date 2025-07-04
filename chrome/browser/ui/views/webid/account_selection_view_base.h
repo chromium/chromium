@@ -212,14 +212,15 @@ class AccountSelectionViewBase {
   // the account on the left, and information about the account on the right.
   // |clickable_position| contains an int if and only if the account is a
   // HoverButton, and in that case the number is the 0-based position of that
-  // account in the overall dialog.
+  // account in the overall dialog. |used_string| is set if this is a returning
+  // account in a multi IDP dialog.
   std::unique_ptr<views::View> CreateAccountRow(
       const IdentityRequestAccountPtr& account,
       std::optional<int> clickable_position,
       bool should_include_idp,
       bool is_modal_dialog = false,
       int additional_vertical_padding = 0,
-      std::optional<std::u16string> last_used_string = std::nullopt);
+      std::optional<std::u16string> used_string = std::nullopt);
 
   // Returns a StyledLabel containing a disclosure label. The label links to
   // privacy policy and terms of service URLs, if available.

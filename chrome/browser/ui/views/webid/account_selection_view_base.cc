@@ -347,7 +347,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     bool should_include_idp,
     bool is_modal_dialog,
     int additional_vertical_padding,
-    std::optional<std::u16string> last_used_string) {
+    std::optional<std::u16string> used_string) {
   int avatar_size =
       is_modal_dialog ? webid::kModalAvatarSize : webid::kDesiredAvatarSize;
   views::style::TextStyle account_display_name_style =
@@ -384,10 +384,10 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
     std::u16string footer = u"";
     if (should_include_idp) {
-      if (last_used_string) {
+      if (used_string) {
         footer = l10n_util::GetStringFUTF16(
             IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED,
-            base::UTF8ToUTF16(idp_data.idp_for_display), *last_used_string);
+            base::UTF8ToUTF16(idp_data.idp_for_display), *used_string);
       } else {
         footer = base::UTF8ToUTF16(idp_data.idp_for_display);
       }
