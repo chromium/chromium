@@ -67,13 +67,10 @@ class ProfileManagementFlowControllerImpl
   // Creates, registers and switches to steps to implement the identity flow
   // (signing in then doing the post sign in, which are driven by `Delegate`).
   // Uses an existing profile if the `profile_path` is not empty.
-  // If `initial_email` is not empty, it will be used to pre-fill the email
-  // field in the sign-in screen.
   void SwitchToIdentityStepsFromAccountSelection(
       StepSwitchFinishedCallback step_switch_finished_callback,
       signin_metrics::AccessPoint access_point,
-      base::FilePath profile_path,
-      const std::string& initial_email = std::string());
+      base::FilePath profile_path);
 #endif
 
  private:

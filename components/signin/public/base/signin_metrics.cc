@@ -636,10 +636,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNonModalSigninBookmarkPromo"));
       break;
-    case AccessPoint::kUserManagerWithPrefilledEmail:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Signin_FromUserManagerWithPrefilledEmail"));
-      break;
   }
 }
 
@@ -770,10 +766,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAddressBubble:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromAddressBubble"));
-      break;
-    case AccessPoint::kUserManagerWithPrefilledEmail:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Impression_FromUserManagerWithPrefilledEmail"));
       break;
     case AccessPoint::kEnterpriseSignoutCoordinator:
     case AccessPoint::kExtensions:

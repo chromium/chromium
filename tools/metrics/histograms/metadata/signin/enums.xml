@@ -829,7 +829,6 @@ chromium-metrics-reviews@google.com.
       label="Contextual non modal sign-in password promo (iOS only)"/>
   <int value="84"
       label="Contextual non modal sign-in bookmark promo (iOS only)"/>
-  <int value="85" label="Profile picker with prefilled email"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

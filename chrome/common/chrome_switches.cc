@@ -527,12 +527,6 @@ const char kIgnoreProfileDirectoryIfNotExists[] =
 // takes priority.
 const char kProfileEmail[] = "profile-email";
 
-// If provided with kProfileEmail, prompts the user to create a new profile with
-// kProfileEmail as the email address if that email is not found in any existing
-// profile.
-const char kCreateProfileEmailIfNotExists[] =
-    "create-profile-email-if-not-exists";
-
 // Forces proxy auto-detection.
 const char kProxyAutoDetect[] = "proxy-auto-detect";
 

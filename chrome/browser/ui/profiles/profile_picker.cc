@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <string>
 
-#include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -20,8 +18,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -64,14 +60,6 @@ ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
   CHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
   CHECK_NE(entry_point, EntryPoint::kGlicManager);
   return ProfilePicker::Params(entry_point, GetPickerProfilePath());
-}
-
-ProfilePicker::Params ProfilePicker::Params::FromStartupWithEmail(
-    const std::string& email) {
-  Params params = ProfilePicker::Params::FromEntryPoint(
-      EntryPoint::kOnStartupCreateProfileWithEmail);
-  params.initial_email_ = email;
-  return params;
 }
 
 // static
@@ -163,13 +151,6 @@ StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
   }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kCreateProfileEmailIfNotExists) &&
-      !command_line->GetSwitchValueASCII(switches::kProfileEmail).empty() &&
-      base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists)) {
-    return StartupProfileModeReason::kProfileEmailSwitchCreateProfile;
-  }
 
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
   // Need to consider 0 profiles as this is what happens in some browser-tests.

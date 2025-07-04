@@ -80,9 +80,8 @@ enum class StartupProfileModeReason {
   kSingleProfile = 27,
   kInactiveProfiles = 28,
   kUserOptedOut = 29,
-  kProfileEmailSwitchCreateProfile = 30,
 
-  kMaxValue = kProfileEmailSwitchCreateProfile,
+  kMaxValue = kUserOptedOut,
 };
 
 // Bundles the startup profile path together with a `StartupProfileMode`.

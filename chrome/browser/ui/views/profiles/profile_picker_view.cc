@@ -146,7 +146,6 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
     case ProfilePicker::EntryPoint::kProfileIdle:
     case ProfilePicker::EntryPoint::kOnStartupNoProfile:
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcessNoProfile:
-    case ProfilePicker::EntryPoint::kOnStartupCreateProfileWithEmail:
       return true;
     case ProfilePicker::EntryPoint::kFirstRun:
     case ProfilePicker::EntryPoint::kGlicManager:
@@ -706,7 +705,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
   DCHECK(IsClassicProfilePickerFlow(params_));
   return std::make_unique<ProfilePickerFlowController>(
       /*host=*/this, std::move(clear_host_callback), params_.entry_point(),
-      params_.on_select_profile_target_url(), params_.initial_email());
+      params_.on_select_profile_target_url());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

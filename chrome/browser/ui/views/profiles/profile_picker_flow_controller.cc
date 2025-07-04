@@ -86,7 +86,6 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
-    case ProfilePicker::EntryPoint::kOnStartupCreateProfileWithEmail:
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
     case ProfilePicker::EntryPoint::kFirstRun:
@@ -476,12 +475,10 @@ ProfilePickerFlowController::ProfilePickerFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
     ProfilePicker::EntryPoint entry_point,
-    const GURL& selected_profile_target_url,
-    const std::string& initial_email)
+    const GURL& selected_profile_target_url)
     : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
       entry_point_(entry_point),
-      selected_profile_target_url_(selected_profile_target_url),
-      initial_email_(initial_email) {}
+      selected_profile_target_url_(selected_profile_target_url) {}
 
 ProfilePickerFlowController::~ProfilePickerFlowController() = default;
 
@@ -489,15 +486,6 @@ void ProfilePickerFlowController::Init() {
   RegisterStep(Step::kProfilePicker,
                ProfileManagementStepController::CreateForProfilePickerApp(
                    host(), GetInitialURL(entry_point_)));
-  // If an initial email was provided, switch to the account selection step and
-  // prefill the email field.
-  if (!initial_email_.empty()) {
-    SwitchToIdentityStepsFromAccountSelection(
-        StepSwitchFinishedCallback(),
-        signin_metrics::AccessPoint::kUserManagerWithPrefilledEmail,
-        base::FilePath(), initial_email_);
-    return;
-  }
   SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
@@ -616,8 +604,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     case ProfilePicker::EntryPoint::kProfileLocked:
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
-    case ProfilePicker::EntryPoint::kProfileIdle:
-    case ProfilePicker::EntryPoint::kOnStartupCreateProfileWithEmail: {
+    case ProfilePicker::EntryPoint::kProfileIdle: {
       SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
       UnregisterStep(Step::kPostSignInFlow);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

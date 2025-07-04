@@ -157,7 +157,6 @@ extern const char kProductVersion[];
 extern const char kProfileDirectory[];
 extern const char kIgnoreProfileDirectoryIfNotExists[];
 extern const char kProfileEmail[];
-extern const char kCreateProfileEmailIfNotExists[];
 extern const char kProxyAutoDetect[];
 extern const char kProxyBypassList[];
 extern const char kProxyPacUrl[];
