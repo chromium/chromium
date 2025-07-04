@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -56,6 +57,9 @@ using ::password_manager::BrowserSavePasswordProgressLogger;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
+constexpr char kLeakDialogTimeSpentHistogram[] =
+    "PasswordManager.PasswordChange.LeakDetectionDialog.TimeSpent";
+
 void LogPasswordFormDetectedMetric(bool form_detected,
                                    base::TimeDelta time_delta) {
   base::UmaHistogramBoolean("PasswordManager.ChangePasswordFormDetected",
@@ -64,6 +68,19 @@ void LogPasswordFormDetectedMetric(bool form_detected,
     base::UmaHistogramMediumTimes(
         "PasswordManager.ChangePasswordFormDetectionTime", time_delta);
   }
+}
+
+void LogLeakDialogTimeSpent(PasswordChangeDelegate::State state,
+                            base::TimeDelta time_delta) {
+  CHECK(state == PasswordChangeDelegate::State::kWaitingForAgreement ||
+        state == PasswordChangeDelegate::State::kOfferingPasswordChange);
+
+  std::string suffix =
+      state == PasswordChangeDelegate::State::kWaitingForAgreement
+          ? ".WithPrivacyNotice"
+          : ".WithoutPrivacyNotice";
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kLeakDialogTimeSpentHistogram, suffix}), time_delta);
 }
 
 std::u16string GeneratePassword(
@@ -197,6 +214,7 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 
   UpdateState(IsPrivacyNoticeAcknowledged() ? State::kOfferingPasswordChange
                                             : State::kWaitingForAgreement);
+  leak_dialog_display_time_ = base::Time::Now();
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
@@ -211,6 +229,8 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
 
 void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   flow_start_time_ = base::Time::Now();
+  LogLeakDialogTimeSpent(current_state_,
+                         flow_start_time_ - leak_dialog_display_time_);
   UpdateState(State::kWaitingForChangePasswordForm);
 
   executor_ = CreateWebContents(profile_, change_password_url_);
@@ -238,8 +258,10 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
     password_manager::PasswordFormManager* form_manager) {
   form_finder_.reset();
 
-  LogPasswordFormDetectedMetric(/*form_detected=*/form_manager,
-                                base::Time::Now() - flow_start_time_);
+  change_password_form_found_time_ = base::Time::Now();
+  LogPasswordFormDetectedMetric(
+      /*form_detected=*/form_manager,
+      change_password_form_found_time_ - flow_start_time_);
   if (!form_manager) {
     UpdateState(State::kChangePasswordFormNotFound);
     return;
@@ -411,10 +433,15 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
 }
 
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
-  base::TimeDelta password_change_duration =
-      base::Time::Now() - flow_start_time_;
+  base::Time time_now = base::Time::Now();
+  base::TimeDelta password_change_duration_overall =
+      time_now - flow_start_time_;
+  base::UmaHistogramMediumTimes(
+      "PasswordManager.ChangingPasswordToast.TimeSpent",
+      time_now - change_password_form_found_time_);
   base::UmaHistogramMediumTimes("PasswordManager.PasswordChangeTimeOverall",
-                                password_change_duration);
+                                password_change_duration_overall);
+
   if (!result) {
     UpdateState(State::kPasswordChangeFailed);
   } else {
@@ -424,7 +451,7 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     NotifyPasswordChangeFinishedSuccessfully(originator_);
     UpdateState(State::kPasswordSuccessfullyChanged);
     MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeSuccess,
-                      password_change_duration, profile_, originator_);
+                      password_change_duration_overall, profile_, originator_);
   }
   // TODO(crbug.com/407503334): Upload final log on destructor.
   logs_uploader_->UploadFinalLog();

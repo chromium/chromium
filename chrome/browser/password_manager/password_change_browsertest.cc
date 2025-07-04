@@ -250,6 +250,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        PasswordChangeDoesNotStartUntilPrivacyNoticeAccepted) {
+  base::HistogramTester histogram_tester;
   TabStripModel* tab_strip = browser()->tab_strip_model();
   // Assert that there is a single tab.
   ASSERT_EQ(tab_strip->count(), 1);
@@ -281,6 +282,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_EQ(web_contents->GetURL(), GURL(kChangePasswordURL));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.TimeSpent."
+      "WithPrivacyNotice",
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
@@ -470,6 +475,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       "PasswordManager.ChangePasswordFormDetected", true, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ChangePasswordFormDetectionTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ChangingPasswordToast.TimeSpent", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.TimeSpent."
+      "WithoutPrivacyNotice",
+      1);
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(
           test_ukm_recorder,

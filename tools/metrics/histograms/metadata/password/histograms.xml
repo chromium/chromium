@@ -1195,6 +1195,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ChangingPasswordToast.TimeSpent" units="ms"
+    expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds it takes to fill and submit the change password
+    form. The metric is recorded from the moment the form is found until the
+    flow produces an outcome.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2025-11-02">
@@ -2749,6 +2760,23 @@ useful for Chirp alerts (go/crca-alerts). -->
     shown when password change flow is available. The metric is recorded during
     the bubble closure.
   </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordChange.LeakDetectionDialog.TimeSpent{DialogType}"
+    units="ms" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds the user spends on the initial dialog of the
+    password change flow. {DialogType}
+  </summary>
+  <token key="DialogType">
+    <variant name=".WithoutPrivacyNotice"
+        summary="This is the version without privacy notice."/>
+    <variant name=".WithPrivacyNotice"
+        summary="This is the version with privacy notice."/>
+  </token>
 </histogram>
 
 <histogram

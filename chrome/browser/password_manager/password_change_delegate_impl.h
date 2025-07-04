@@ -119,7 +119,12 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
+  // The time when the initial dialog was displayed to the user.
+  base::Time leak_dialog_display_time_;
+  // The time when the user started the password change flow.
   base::Time flow_start_time_;
+  // The time when the password change form was found.
+  base::Time change_password_form_found_time_;
 
   // The controller for password change views.
   std::unique_ptr<PasswordChangeUIController> ui_controller_;
