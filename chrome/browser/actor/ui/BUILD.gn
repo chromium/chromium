@@ -3,6 +3,8 @@ source_set("ui") {
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
+    "actor_ui_state_manager_prefs.cc",
+    "actor_ui_state_manager_prefs.h",
     "actor_ui_tab_controller.cc",
     "actor_ui_tab_controller.h",
     "actor_ui_tab_controller_interface.h",
