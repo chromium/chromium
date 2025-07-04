@@ -152,6 +152,8 @@ class CSSToStyleMap {
   static TimelineOffsetOrAuto MapAnimationTimelineTriggerExitRangeEnd(
       StyleResolverState&,
       const CSSValue&);
+  static StyleTimeline MapAnimationTimelineTriggerTimeline(StyleResolverState&,
+                                                           const CSSValue&);
 };
 
 }  // namespace blink

@@ -448,6 +448,7 @@ All changes to this list should go through Blink's feature review process: http:
     timeline-trigger-name
     timeline-trigger-range-end
     timeline-trigger-range-start
+    timeline-trigger-timeline
     top
     touch-action
     transform

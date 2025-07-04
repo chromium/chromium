@@ -253,6 +253,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForTimelineTriggerExitRangeEndList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);
+  static CSSValue* ValueForTimelineTriggerTimelineList(const CSSAnimationData*,
+                                                       const ComputedStyle&);
   static CSSValue* ValueForAnimationTriggerTimelineList(const CSSAnimationData*,
                                                         const ComputedStyle&);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,

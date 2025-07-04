@@ -893,4 +893,10 @@ TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeEnd(
   return TimelineOffsetOrAuto(MapAnimationRange(state, value, 100));
 }
 
+StyleTimeline CSSToStyleMap::MapAnimationTimelineTriggerTimeline(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationTimeline(state, value);
+}
+
 }  // namespace blink

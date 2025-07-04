@@ -2840,6 +2840,17 @@ CSSValue* ComputedStyleUtils::ValueForTimelineTriggerExitRangeEndList(
       style, Length::Percent(100.0));
 }
 
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerTimelineList(
+    const CSSAnimationData* animation_data,
+    const ComputedStyle& style) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->TimelineTriggerTimelineList()
+          : Vector<StyleTimeline>{CSSAnimationData::
+                                      InitialTimelineTriggerTimeline()},
+      &ValueForAnimationTimeline, style);
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTimelineList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {

@@ -48,6 +48,12 @@ const StyleTimeline& CSSAnimationData::InitialTriggerTimeline() {
   return trigger_timeline;
 }
 
+const StyleTimeline& CSSAnimationData::InitialTimelineTriggerTimeline() {
+  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline_trigger_timeline,
+                      (CSSValueID::kAuto));
+  return timeline_trigger_timeline;
+}
+
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
     const CSSAnimationData& other) const {
   return name_list_ == other.name_list_ &&

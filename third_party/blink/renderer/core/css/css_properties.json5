@@ -1177,6 +1177,19 @@
       runtime_flag: "AnimationTrigger",
     },
     {
+      name: "timeline-trigger-timeline",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "TimelineTriggerTimeline",
+      },
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      separator: ",",
+      valid_for_marker: true,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
       name: "transition-delay",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "transition",

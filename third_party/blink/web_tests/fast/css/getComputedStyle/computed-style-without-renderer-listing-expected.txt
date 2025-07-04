@@ -415,6 +415,7 @@ timeline-trigger-exit-range-start: auto
 timeline-trigger-name: none
 timeline-trigger-range-end: normal
 timeline-trigger-range-start: normal
+timeline-trigger-timeline: auto
 top: auto
 touch-action: auto
 transform: none

@@ -7845,6 +7845,7 @@ Called by update_use_counter_css.py.-->
   <int value="874" label="timeline-trigger-range-end"/>
   <int value="875" label="timeline-trigger-exit-range-start"/>
   <int value="876" label="timeline-trigger-exit-range-end"/>
+  <int value="877" label="timeline-trigger-timeline"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

@@ -541,6 +541,7 @@ timelineTriggerExitRangeStart
 timelineTriggerName
 timelineTriggerRangeEnd
 timelineTriggerRangeStart
+timelineTriggerTimeline
 top
 touchAction
 transform
