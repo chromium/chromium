@@ -1737,31 +1737,20 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, ErrorCodeRetryEligibility) {
   base::WeakPtr<KeepAliveURLLoader> loader =
       loader_service().GetLoaderWithRequestIdForTesting(
           FakeRemoteURLLoaderFactory::kRequestId);
-  net::Error eligible_errors[] = {
-      net::ERR_TIMED_OUT, net::ERR_CONNECTION_TIMED_OUT,
-      net::ERR_CONNECTION_CLOSED, net::ERR_CONNECTION_REFUSED,
-      net::ERR_CONNECTION_RESET, net::ERR_CONNECTION_FAILED,
-      net::ERR_ADDRESS_UNREACHABLE, net::ERR_NETWORK_CHANGED,
-      // Proxy/tunnel-specific connection issues.
-      net::ERR_TUNNEL_CONNECTION_FAILED, net::ERR_PROXY_CONNECTION_FAILED,
-      net::ERR_SOCKS_CONNECTION_FAILED, net::ERR_HTTP2_PING_FAILED,
-      net::ERR_HTTP2_PROTOCOL_ERROR, net::ERR_QUIC_PROTOCOL_ERROR,
-      // DNS failures.
-      net::ERR_NAME_NOT_RESOLVED, net::ERR_INTERNET_DISCONNECTED,
-      net::ERR_NAME_RESOLUTION_FAILED};
-  for (net::Error error : eligible_errors) {
-    ASSERT_TRUE(
-        loader->IsEligibleForRetry(network::URLLoaderCompletionStatus(error)))
-        << " Should be eligible for retry: " << error;
+  std::vector<int> error_codes({
+#define NET_ERROR(label, value) value,
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+  });
+  for (int error_code : error_codes) {
+    // All non-OK error code is eligible for retry.
+    ASSERT_TRUE(loader->IsEligibleForRetry(
+        network::URLLoaderCompletionStatus(error_code)))
+        << " error code is: " << error_code;
   }
   // Not passing an error code is possible for disconnect loader timeout
   // failure.
   ASSERT_TRUE(loader->IsEligibleForRetry(std::nullopt));
-  // Other error codes are not eligible for retry. Testing a sample here.
-  ASSERT_FALSE(
-      loader->IsEligibleForRetry(network::URLLoaderCompletionStatus(net::OK)));
-  ASSERT_FALSE(loader->IsEligibleForRetry(
-      network::URLLoaderCompletionStatus(net::ERR_ABORTED)));
 }
 
 // Test failing with an eligible error with OnComplete causes the fetch to be
@@ -1788,63 +1777,6 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, OnCompleteWillBeRetried) {
   loader->OnComplete(
       network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
   EXPECT_TRUE(loader->IsAttemptingRetry());
-}
-// Test which errors are eligible for retry when opting in to retry only if the
-// server is not reached yet.
-TEST_F(KeepAliveURLLoaderServiceRetryTest,
-       ErrorCodeRetryEligibility_OnlyIfServerUnreached) {
-  FakeRemoteURLLoaderFactory renderer_loader_factory;
-  MockReceiverURLLoaderClient renderer_loader_client;
-  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
-
-  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
-  network::FetchRetryOptions options;
-  options.max_attempts = 1;
-  options.retry_only_if_server_unreached = true;
-  resource_request.fetch_retry_options = options;
-
-  // Loads keepalive request:
-  renderer_loader_factory.CreateLoaderAndStart(
-      resource_request, renderer_loader_client.BindNewPipeAndPassRemote());
-  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
-  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
-
-  base::WeakPtr<KeepAliveURLLoader> loader =
-      loader_service().GetLoaderWithRequestIdForTesting(
-          FakeRemoteURLLoaderFactory::kRequestId);
-  net::Error eligible_errors[] = {
-      net::ERR_CONNECTION_REFUSED,       net::ERR_ADDRESS_UNREACHABLE,
-      net::ERR_TUNNEL_CONNECTION_FAILED, net::ERR_PROXY_CONNECTION_FAILED,
-      net::ERR_SOCKS_CONNECTION_FAILED,  net::ERR_NAME_NOT_RESOLVED,
-      net::ERR_NAME_RESOLUTION_FAILED};
-  for (net::Error error : eligible_errors) {
-    ASSERT_TRUE(
-        loader->IsEligibleForRetry(network::URLLoaderCompletionStatus(error)))
-        << " Should be eligible for retry: " << error;
-  }
-  net::Error ineligible_errors[] = {
-      net::ERR_TIMED_OUT, net::ERR_CONNECTION_TIMED_OUT,
-      net::ERR_CONNECTION_CLOSED, net::ERR_CONNECTION_RESET,
-      net::ERR_CONNECTION_FAILED, net::ERR_NETWORK_CHANGED,
-      // Proxy/tunnel-specific connection issues.
-      net::ERR_HTTP2_PING_FAILED, net::ERR_HTTP2_PROTOCOL_ERROR,
-      net::ERR_QUIC_PROTOCOL_ERROR,
-      // DNS failures.
-      net::ERR_INTERNET_DISCONNECTED};
-  for (net::Error error : ineligible_errors) {
-    ASSERT_FALSE(
-        loader->IsEligibleForRetry(network::URLLoaderCompletionStatus(error)))
-        << " Should not be eligible for retry: " << error;
-  }
-  // Not passing an error code is possible for disconnect loader timeout
-  // failure. We can't guarantee that the server has not been reached yet since
-  // there's no error information.
-  ASSERT_FALSE(loader->IsEligibleForRetry(std::nullopt));
-  // Other error codes are also not eligible for retry. Testing a sample here.
-  ASSERT_FALSE(
-      loader->IsEligibleForRetry(network::URLLoaderCompletionStatus(net::OK)));
-  ASSERT_FALSE(loader->IsEligibleForRetry(
-      network::URLLoaderCompletionStatus(net::ERR_ABORTED)));
 }
 
 // Test failing with an eligible error with CancelWithStatus causes the fetch to

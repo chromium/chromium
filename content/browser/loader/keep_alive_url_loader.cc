@@ -214,41 +214,6 @@ bool IsRedirectAllowedByCSP(
       .IsAllowed();
 }
 
-bool IsNetErrorEligibleForRetry(int net_error) {
-  // Check if the error we encountered is likely transient / can succeed with
-  // another attempt.
-  return  // Generic transient errors.
-      net_error == net::ERR_TIMED_OUT ||
-      net_error == net::ERR_CONNECTION_TIMED_OUT ||
-      net_error == net::ERR_CONNECTION_CLOSED ||
-      net_error == net::ERR_CONNECTION_REFUSED ||
-      net_error == net::ERR_CONNECTION_RESET ||
-      net_error == net::ERR_CONNECTION_FAILED ||
-      net_error == net::ERR_ADDRESS_UNREACHABLE ||
-      net_error == net::ERR_NETWORK_CHANGED ||
-      // Proxy/tunnel-specific connection issues.
-      net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
-      net_error == net::ERR_PROXY_CONNECTION_FAILED ||
-      net_error == net::ERR_SOCKS_CONNECTION_FAILED ||
-      net_error == net::ERR_HTTP2_PING_FAILED ||
-      net_error == net::ERR_HTTP2_PROTOCOL_ERROR ||
-      net_error == net::ERR_QUIC_PROTOCOL_ERROR ||
-      // DNS failures.
-      net_error == net::ERR_NAME_NOT_RESOLVED ||
-      net_error == net::ERR_INTERNET_DISCONNECTED ||
-      net_error == net::ERR_NAME_RESOLUTION_FAILED;
-}
-
-bool IsServerGuaranteedToBeNotReachedYet(int net_error) {
-  return net_error == net::ERR_CONNECTION_REFUSED ||
-         net_error == net::ERR_ADDRESS_UNREACHABLE ||
-         net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
-         net_error == net::ERR_PROXY_CONNECTION_FAILED ||
-         net_error == net::ERR_SOCKS_CONNECTION_FAILED ||
-         net_error == net::ERR_NAME_NOT_RESOLVED ||
-         net_error == net::ERR_NAME_RESOLUTION_FAILED;
-}
-
 }  // namespace
 
 // A wrapper class around the target URLLoaderClient connected to Renderer,
@@ -943,31 +908,14 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
   if (!completion_status.has_value()) {
     // No completion status. This can only happen when we hit the renderer
     // disconnect timeout before getting any results. The request should be
-    // eligible to retry, except if explicitly opting in to retry only if the
-    // server is guaranteed to be not reached yet. We can't guarantee that in
-    // this case, because we don't know if the server has been reached yet or
-    // not.
-    return !retry_options->retry_only_if_server_unreached;
+    // eligible to retry.
+    return true;
   }
 
-  if (completion_status->resolve_error_info.is_secure_network_error) {
-    // Don't retry if the error was a secure DNS network error,
-    // since the retry may interfere with the captive portal probe state.
-    // TODO(crbug.com/40104002): Explore how to allow retries for secure
-    // DNS network errors without interfering with the captive portal
-    // probe state.
-    return false;
-  }
-
-  if (retry_options->retry_only_if_server_unreached) {
-    // Only retry in this case if we've never encountered redirect yet (since if
-    // we've been redirected, we must have reached the redirector server
-    // before), and the error indicates that the server is not reached yet.
-    return !did_encounter_redirect_ &&
-           IsServerGuaranteedToBeNotReachedYet(completion_status->error_code);
-  }
-
-  return IsNetErrorEligibleForRetry(completion_status->error_code);
+  CHECK_NE(completion_status->error_code, net::OK);
+  // All errors should be retried, to prevent the fetch callers inferring
+  // anything about the error code.
+  return true;
 }
 
 bool KeepAliveURLLoader::MaybeScheduleRetry(
