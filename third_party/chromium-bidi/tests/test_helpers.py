@@ -580,3 +580,7 @@ def get_origin(url):
     """ Return the origin for the given url."""
     parts = urlparse(url)
     return parts.scheme + '://' + parts.netloc
+
+
+def to_base64(str):
+    return base64.b64encode(str.encode('utf-8')).decode()

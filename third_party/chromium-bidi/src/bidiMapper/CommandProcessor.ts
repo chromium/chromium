@@ -132,6 +132,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,
       networkStorage,
+      userContextStorage,
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
@@ -346,9 +347,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Network module
       // keep-sorted start block=yes
       case 'network.addDataCollector':
-        this.#parser.parseAddDataCollectorParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.addDataCollector(
+          this.#parser.parseAddDataCollectorParams(command.params),
         );
       case 'network.addIntercept':
         return await this.#networkProcessor.addIntercept(
@@ -367,27 +367,24 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseContinueWithAuthParams(command.params),
         );
       case 'network.disownData':
-        this.#parser.parseDisownDataParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return this.#networkProcessor.disownData(
+          this.#parser.parseDisownDataParams(command.params),
         );
       case 'network.failRequest':
         return await this.#networkProcessor.failRequest(
           this.#parser.parseFailRequestParams(command.params),
         );
       case 'network.getData':
-        this.#parser.parseGetDataParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.getData(
+          this.#parser.parseGetDataParams(command.params),
         );
       case 'network.provideResponse':
         return await this.#networkProcessor.provideResponse(
           this.#parser.parseProvideResponseParams(command.params),
         );
       case 'network.removeDataCollector':
-        this.#parser.parseRemoveDataCollectorParams(command.params);
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#networkProcessor.removeDataCollector(
+          this.#parser.parseRemoveDataCollectorParams(command.params),
         );
       case 'network.removeIntercept':
         return await this.#networkProcessor.removeIntercept(

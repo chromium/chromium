@@ -21,6 +21,7 @@ import {
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
+import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -31,11 +32,14 @@ import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
 export class NetworkProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #userContextStorage: UserContextStorage;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
+    userContextStorage: UserContextStorage,
   ) {
+    this.#userContextStorage = userContextStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
   }
@@ -55,11 +59,8 @@ export class NetworkProcessor {
       contexts: params.contexts,
     });
 
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map((context) => {
-        return context.cdpTarget.toggleNetwork();
-      }),
-    );
+    // Adding interception may require enabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {
       intercept,
@@ -174,16 +175,26 @@ export class NetworkProcessor {
     return {};
   }
 
-  async removeIntercept(
-    params: Network.RemoveInterceptParameters,
-  ): Promise<EmptyResult> {
-    this.#networkStorage.removeIntercept(params.intercept);
-
+  /**
+   * In some states CDP Network and Fetch domains are not required, but in some they have
+   * to be updated. Whenever potential change in these kinds of states is introduced,
+   * update the states of all the CDP targets.
+   */
+  async #toggleNetwork() {
     await Promise.all(
       this.#browsingContextStorage.getAllContexts().map((context) => {
         return context.cdpTarget.toggleNetwork();
       }),
     );
+  }
+
+  async removeIntercept(
+    params: Network.RemoveInterceptParameters,
+  ): Promise<EmptyResult> {
+    this.#networkStorage.removeIntercept(params.intercept);
+
+    // Removing interception may allow for disabling CDP Network domains.
+    await this.#toggleNetwork();
 
     return {};
   }
@@ -466,6 +477,62 @@ export class NetworkProcessor {
       return new InvalidArgumentException(error.message);
     }
     return error;
+  }
+
+  async addDataCollector(
+    params: Network.AddDataCollectorParameters,
+  ): Promise<Network.AddDataCollectorResult> {
+    if (params.userContexts !== undefined && params.contexts !== undefined) {
+      throw new InvalidArgumentException(
+        "'contexts' and 'userContexts' are mutually exclusive",
+      );
+    }
+    if (params.userContexts !== undefined) {
+      // Assert the user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(
+        params.userContexts,
+      );
+    }
+    if (params.contexts !== undefined) {
+      for (const browsingContextId of params.contexts) {
+        // Assert the browsing context exists and are top-level.
+        const browsingContext =
+          this.#browsingContextStorage.getContext(browsingContextId);
+        if (!browsingContext.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            `Data collectors are available only on top-level browsing contexts`,
+          );
+        }
+      }
+    }
+    const collectorId = this.#networkStorage.addDataCollector(params);
+
+    // Adding data collectors may require enabling CDP Network domains.
+    await this.#toggleNetwork();
+
+    return {collector: collectorId};
+  }
+
+  async getData(
+    params: Network.GetDataParameters,
+  ): Promise<Network.GetDataResult> {
+    return await this.#networkStorage.getCollectedData(params);
+  }
+
+  async removeDataCollector(
+    params: Network.RemoveDataCollectorParameters,
+  ): Promise<EmptyResult> {
+    this.#networkStorage.removeDataCollector(params);
+
+    // Removing data collectors may allow disabling CDP Network domains.
+    await this.#toggleNetwork();
+
+    return {};
+  }
+
+  disownData(params: Network.DisownDataParameters): EmptyResult {
+    this.#networkStorage.disownData(params);
+    return {};
   }
 }
 

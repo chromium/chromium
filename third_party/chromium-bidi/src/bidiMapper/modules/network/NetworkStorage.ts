@@ -18,10 +18,13 @@ import type {Protocol} from 'devtools-protocol';
 
 import {
   type BrowsingContext,
+  InvalidArgumentException,
   Network,
   NoSuchInterceptException,
+  NoSuchNetworkCollectorException,
+  NoSuchNetworkDataException,
 } from '../../../protocol/protocol.js';
-import type {LoggerFn} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -38,6 +41,8 @@ type NetworkInterception = Omit<
   urlPatterns: ParsedUrlPattern[];
 };
 
+type NetworkCollector = Network.AddDataCollectorParameters;
+
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -52,6 +57,9 @@ export class NetworkStorage {
 
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
+
+  readonly #collectors = new Map<string, NetworkCollector>();
+  readonly #requestCollectors = new Map<Network.Request, Set<string>>();
 
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
     'default';
@@ -112,7 +120,7 @@ export class NetworkStorage {
 
           if (request && request.isRedirecting()) {
             request.handleRedirect(params);
-            this.deleteRequest(params.requestId);
+            this.disposeRequest(params.requestId);
             this.#getOrCreateNetworkRequest(
               params.requestId,
               cdpTarget,
@@ -199,6 +207,137 @@ export class NetworkStorage {
 
     for (const [event, listener] of listeners) {
       cdpClient.on(event, listener as any);
+    }
+  }
+
+  getCollectorsForBrowsingContext(
+    browsingContextId: BrowsingContext.BrowsingContext,
+  ) {
+    if (!this.#browsingContextStorage.hasContext(browsingContextId)) {
+      this.#logger?.(
+        LogType.debugError,
+        'trying to get collector for unknown browsing context',
+      );
+      return [];
+    }
+
+    const userContext =
+      this.#browsingContextStorage.getContext(browsingContextId).userContext;
+
+    const collectors = new Set<NetworkCollector>();
+    for (const collector of this.#collectors.values()) {
+      if (collector.contexts?.includes(browsingContextId)) {
+        // Collector is targeted to the browsing context.
+        collectors.add(collector);
+      }
+      if (collector.userContexts?.includes(userContext)) {
+        // Collector is targeted to the user context.
+        collectors.add(collector);
+      }
+      if (
+        collector.userContexts === undefined &&
+        collector.contexts === undefined
+      ) {
+        // Collector is global.
+        collectors.add(collector);
+      }
+    }
+    return [...collectors.values()];
+  }
+
+  async getCollectedData(
+    params: Network.GetDataParameters,
+  ): Promise<Network.GetDataResult> {
+    if (
+      params.collector !== undefined &&
+      !this.#collectors.has(params.collector)
+    ) {
+      throw new NoSuchNetworkCollectorException(
+        `Unknown collector ${params.collector}`,
+      );
+    }
+
+    const requestCollectors = this.#requestCollectors.get(params.request);
+    if (requestCollectors === undefined) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${params.request}`,
+      );
+    }
+
+    if (
+      params.collector !== undefined &&
+      !requestCollectors.has(params.collector)
+    ) {
+      throw new NoSuchNetworkDataException(
+        `Collector ${params.collector} didn't collect data for request ${params.request}`,
+      );
+    }
+
+    if (params.disown && params.collector === undefined) {
+      throw new InvalidArgumentException(
+        'Cannot disown collected data without collector ID',
+      );
+    }
+
+    const request = this.getRequestById(params.request)!;
+    if (request === undefined) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${params.request}`,
+      );
+    }
+
+    // TODO: handle CDP error in case of the renderer is gone.
+    const responseBody = await request.cdpClient.sendCommand(
+      'Network.getResponseBody',
+      {requestId: request.id},
+    );
+
+    if (params.disown && params.collector !== undefined) {
+      this.#requestCollectors.delete(params.request);
+      this.disposeRequest(request.id);
+    }
+
+    return {
+      bytes: {
+        type: responseBody.base64Encoded ? 'base64' : 'string',
+        value: responseBody.body,
+      },
+    };
+  }
+
+  #getCollectorIdsForRequest(request: NetworkRequest): string[] {
+    const collectors = new Set<string>();
+    for (const collectorId of this.#collectors.keys()) {
+      const collector = this.#collectors.get(collectorId)!;
+
+      if (!collector.userContexts && !collector.contexts) {
+        // A global collector.
+        collectors.add(collectorId);
+      }
+      if (collector.contexts?.includes(request.cdpTarget.topLevelId)) {
+        collectors.add(collectorId);
+      }
+      if (
+        collector.userContexts?.includes(
+          this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
+            .userContext,
+        )
+      ) {
+        collectors.add(collectorId);
+      }
+    }
+
+    this.#logger?.(
+      LogType.debug,
+      `Request ${request.id} has ${collectors.size} collectors`,
+    );
+    return [...collectors.values()];
+  }
+
+  markRequestCollectedIfNeeded(request: NetworkRequest) {
+    const collectorIds = this.#getCollectorIdsForRequest(request);
+    if (collectorIds.length > 0) {
+      this.#requestCollectors.set(request.id, new Set(collectorIds));
     }
   }
 
@@ -327,7 +466,12 @@ export class NetworkStorage {
     this.#requests.set(request.id, request);
   }
 
-  deleteRequest(id: Network.Request) {
+  disposeRequest(id: Network.Request) {
+    if (this.#requestCollectors.get(id)?.size ?? 0 > 0) {
+      // Keep request, as it's data can be accessed later.
+      return;
+    }
+    // TODO: dispose Network data from Chromium once there is a CDP command for that.
     this.#requests.delete(id);
   }
 
@@ -351,5 +495,62 @@ export class NetworkStorage {
 
   get defaultCacheBehavior() {
     return this.#defaultCacheBehavior;
+  }
+
+  addDataCollector(params: Network.AddDataCollectorParameters): string {
+    const collectorId = uuidv4();
+    this.#collectors.set(collectorId, params);
+    return collectorId;
+  }
+
+  removeDataCollector(params: Network.RemoveDataCollectorParameters) {
+    const collectorId = params.collector;
+    if (!this.#collectors.has(collectorId)) {
+      throw new NoSuchNetworkCollectorException(
+        `Collector ${params.collector} does not exist`,
+      );
+    }
+    this.#collectors.delete(params.collector);
+
+    // Clean up collected responses.
+    for (const [requestId, collectorIds] of this.#requestCollectors) {
+      if (collectorIds.has(collectorId)) {
+        collectorIds.delete(collectorId);
+        if (collectorIds.size === 0) {
+          this.#requestCollectors.delete(requestId);
+          this.disposeRequest(requestId);
+        }
+      }
+    }
+  }
+
+  disownData(params: Network.DisownDataParameters) {
+    const collectorId = params.collector;
+    const requestId = params.request;
+
+    if (!this.#collectors.has(collectorId)) {
+      throw new NoSuchNetworkCollectorException(
+        `Collector ${collectorId} does not exist`,
+      );
+    }
+
+    if (!this.#requestCollectors.has(requestId)) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${requestId}`,
+      );
+    }
+    const collectorIds = this.#requestCollectors.get(requestId)!;
+
+    if (!collectorIds.has(collectorId)) {
+      throw new NoSuchNetworkDataException(
+        `No collected data for request ${requestId} and collector ${collectorId}`,
+      );
+    }
+
+    collectorIds.delete(collectorId);
+    if (collectorIds.size === 0) {
+      this.#requestCollectors.delete(requestId);
+      this.disposeRequest(requestId);
+    }
   }
 }

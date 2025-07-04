@@ -137,7 +137,7 @@ export namespace Network {
   }
 
   export function parseProvideResponseParameters(params: unknown) {
-    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
       params,
       WebDriverBidi.Network.ProvideResponseParametersSchema,

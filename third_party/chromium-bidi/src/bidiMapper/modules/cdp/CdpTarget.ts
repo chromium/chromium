@@ -520,6 +520,9 @@ export class CdpTarget {
   }
 
   async toggleNetwork() {
+    // TODO: respect the data collectors once CDP Network domain is enabled on-demand:
+    // const networkEnable = this.#networkStorage.getCollectorsForBrowsingContext(this.topLevelId).length > 0;
+
     const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
     const fetchEnable = Object.values(stages).some((value) => value);
     const fetchChanged =
