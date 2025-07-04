@@ -431,8 +431,6 @@ ci.builder(
     ],
     siso_output_local_strategy = "greedy",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-    # crbug.com/427503493: It produces large amount of dwo files (>700GB).
-    # Enabling remote linking without bytes avoids downloading them to the bot.
     siso_remote_linking = True,
 )
 
@@ -527,6 +525,13 @@ ci.builder(
             ),
         ),
     }),
+    # crbug.com/427503493: It produces large amount of dwo files (>700GB).
+    # Enabling remote linking without bytes avoids downloading them to the bot.
+    # It also sets no-remote-timeout for long remote linking steps.
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
     siso_remote_linking = True,
 )
 

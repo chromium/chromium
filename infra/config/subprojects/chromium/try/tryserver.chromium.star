@@ -60,6 +60,11 @@ try_.builder(
     ssd = True,
     # crbug.com/427503493: It produces large amount of dwo files (>700GB).
     # Enabling remote linking without bytes avoids downloading them to the bot.
+    # It also sets no-remote-timeout for long remote linking steps.
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
     siso_remote_linking = True,
 )
 
