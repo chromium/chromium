@@ -428,21 +428,6 @@
             ]
         }
     ],
-    "AddAddressManually": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AddAddressManually"
-                    ]
-                }
-            ]
-        }
-    ],
     "AddSuggestStrongPasswordFromAddPassword": [
         {
             "platforms": [
