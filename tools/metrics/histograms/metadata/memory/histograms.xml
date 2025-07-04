@@ -2904,7 +2904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.PrivateSwapFootprint" units="MB"
-    expires_after="2025-11-16">
+    expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2999,7 +2999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.RendererPrivateSwapFootprint" units="MB"
-    expires_after="2025-11-16">
+    expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -3489,7 +3489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory{ProfiledProcess}.Pss" units="MiB"
-    expires_after="2025-07-13">
+    expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <summary>
     PSS metric for the process. Recorded on Android, Linux, and ChromeOS only.
@@ -3498,7 +3498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory{ProfiledProcess}.SwapPss" units="MiB"
-    expires_after="2025-07-13">
+    expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <summary>
     Swap PSS metric for the process. Recorded on Android, Linux, and ChromeOS
