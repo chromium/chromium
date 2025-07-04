@@ -442,6 +442,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap-mode
     text-wrap-style
     timeline-scope
+    timeline-trigger-name
     top
     touch-action
     transform

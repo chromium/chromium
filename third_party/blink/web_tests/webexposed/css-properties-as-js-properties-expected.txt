@@ -535,6 +535,7 @@ textWrap
 textWrapMode
 textWrapStyle
 timelineScope
+timelineTriggerName
 top
 touchAction
 transform

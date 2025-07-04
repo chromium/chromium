@@ -4528,12 +4528,22 @@ CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenStream& stream) {
                       CSSValueID::kY>(stream);
 }
 
-CSSValue* ConsumeSingleTimelineName(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context) {
+CSSValue* ConsumeNoneOrDashIdent(CSSParserTokenStream& stream,
+                                 const CSSParserContext& context) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(stream)) {
     return value;
   }
   return ConsumeDashedIdent(stream, context);
+}
+
+CSSValue* ConsumeSingleTimelineName(CSSParserTokenStream& stream,
+                                    const CSSParserContext& context) {
+  return ConsumeNoneOrDashIdent(stream, context);
+}
+
+CSSValue* ConsumeSingleTimelineTriggerName(CSSParserTokenStream& stream,
+                                           const CSSParserContext& context) {
+  return ConsumeNoneOrDashIdent(stream, context);
 }
 
 namespace {

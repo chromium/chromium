@@ -176,6 +176,18 @@ Color ResolveQuirkOrLinkOrFocusRingColor(
   }
 }
 
+ScopedCSSNameList* ConvertNoneOrCustomIdentList(StyleResolverState& state,
+                                                const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  DCHECK(value.IsBaseValueList());
+  HeapVector<Member<const ScopedCSSName>> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(
+        StyleBuilderConverter::ConvertNoneOrCustomIdent(state, *item));
+  }
+  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+}
+
 }  // namespace
 
 StyleReflection* StyleBuilderConverter::ConvertBoxReflect(
@@ -3721,13 +3733,7 @@ Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
 ScopedCSSNameList* StyleBuilderConverter::ConvertViewTimelineName(
     StyleResolverState& state,
     const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertNoneOrCustomIdent(state, *item));
-  }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+  return ConvertNoneOrCustomIdentList(state, value);
 }
 
 ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
@@ -4022,6 +4028,12 @@ FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
         To<CSSPrimitiveValue>(list.Item(next_index)), parent_size));
   }
   return FitText(target, method, size_limit);
+}
+
+ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineTriggerName(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertNoneOrCustomIdentList(state, value);
 }
 
 }  // namespace blink

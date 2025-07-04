@@ -78,6 +78,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() const {
     return trigger_exit_range_end_list_;
   }
+  const Vector<Persistent<const ScopedCSSName>>& TimelineTriggerNameList()
+      const {
+    return timeline_trigger_name_list_;
+  }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -121,6 +125,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() {
     return trigger_exit_range_end_list_;
+  }
+  Vector<Persistent<const ScopedCSSName>>& TimelineTriggerNameList() {
+    return timeline_trigger_name_list_;
   }
 
   bool HasSingleInitialTimeline() const {
@@ -170,6 +177,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static TimelineOffsetOrAuto InitialTriggerExitRangeEnd() {
     return TimelineOffsetOrAuto();
   }
+  static Persistent<const ScopedCSSName> InitialTimelineTriggerName() {
+    return nullptr;
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -187,6 +197,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<std::optional<TimelineOffset>> trigger_range_end_list_;
   Vector<TimelineOffsetOrAuto> trigger_exit_range_start_list_;
   Vector<TimelineOffsetOrAuto> trigger_exit_range_end_list_;
+
+  Vector<Persistent<const ScopedCSSName>> timeline_trigger_name_list_;
 };
 
 }  // namespace blink

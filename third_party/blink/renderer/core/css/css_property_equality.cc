@@ -971,6 +971,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     // be defined for them.
     case CSSPropertyID::kScrollTimelineAxis:
     case CSSPropertyID::kScrollTimelineName:
+    case CSSPropertyID::kTimelineTriggerName:
     case CSSPropertyID::kViewTimelineAxis:
     case CSSPropertyID::kViewTimelineInset:
     case CSSPropertyID::kViewTimelineName:

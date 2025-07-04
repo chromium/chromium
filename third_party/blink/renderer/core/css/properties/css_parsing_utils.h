@@ -681,6 +681,10 @@ CSSValue* ConsumePositionArea(CSSParserTokenStream&);
 // the omitted value should be the first one repeated.
 bool IsRepeatedPositionAreaValue(CSSValueID value_id);
 
+// https://drafts.csswg.org/css-animations-2/#animation-trigger
+CSSValue* ConsumeSingleTimelineTriggerName(CSSParserTokenStream& stream,
+                                           const CSSParserContext& context);
+
 // Template implementations are at the bottom of the file for readability.
 
 template <typename... emptyBaseCase>

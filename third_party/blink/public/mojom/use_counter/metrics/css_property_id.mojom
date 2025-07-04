@@ -928,6 +928,7 @@ enum CSSSampleId {
     kCorners = 868,
     kBorderShape = 869,
     kAnimationTriggerBehavior = 870,
+    kTimelineTriggerName = 871,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -429,6 +429,9 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&);
   static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
+
+  static ScopedCSSNameList* ConvertTimelineTriggerName(StyleResolverState&,
+                                                       const CSSValue&);
 };
 
 template <typename T>
