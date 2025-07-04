@@ -193,14 +193,6 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void ClickOnLock() {
-    views::test::ButtonTestApi(GetLocationBarView()->location_icon_view())
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
-  }
-
   // Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.
   // |permission_policy| can be used to set permission policy to the iframe.
   // For instance:
@@ -409,71 +401,6 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(GetChip()->GetVisible());
-}
-
-class ConfirmationChipUmaInteractiveTest
-    : public PermissionChipInteractiveUITest {
- public:
-  ConfirmationChipUmaInteractiveTest() = default;
-};
-
-IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
-  base::HistogramTester histograms;
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-  test_api_->manager()->Accept();
-
-  ClickOnChip(GetChip());
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(
-          permissions::PageInfoDialogAccessType::CONFIRMATION_CHIP_CLICK),
-      1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-
-  base::RunLoop().RunUntilIdle();
-
-  GetLocationBarView()->SetConfirmationChipShownTimeForTesting(
-      base::TimeTicks::Now() - base::Seconds(10));
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::
-                           LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP),
-      1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-
-  base::RunLoop().RunUntilIdle();
-
-  GetLocationBarView()->SetConfirmationChipShownTimeForTesting(
-      base::TimeTicks::Now() - base::Seconds(21));
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 2);
 }
 
 class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {

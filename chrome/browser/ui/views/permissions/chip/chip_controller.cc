@@ -487,21 +487,17 @@ void ChipController::ShowPageInfoDialog() {
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->GetWidget()->Show();
   bubble_tracker_.SetView(bubble);
-  permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
-      permissions::PageInfoDialogAccessType::CONFIRMATION_CHIP_CLICK);
 }
 
 void ChipController::OnPageInfoBubbleClosed(
     views::Widget::ClosedReason closed_reason,
     bool reload_prompt) {
-  GetLocationBarView()->ResetConfirmationChipShownTime();
   HideChip();
 }
 
 void ChipController::CollapseConfirmation() {
   is_confirmation_showing_ = false;
   is_waiting_for_confirmation_collapse_ = true;
-  GetLocationBarView()->ResetConfirmationChipShownTime();
   chip_->AnimateCollapse(
       gfx::Animation::RichAnimationDuration(base::Milliseconds(75)));
 }

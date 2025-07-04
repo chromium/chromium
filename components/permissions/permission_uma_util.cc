@@ -1469,13 +1469,6 @@ void PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
 }
 
 // static
-void PermissionUmaUtil::RecordPageInfoDialogAccessType(
-    PageInfoDialogAccessType access_type) {
-  base::UmaHistogramEnumeration(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType", access_type);
-}
-
-// static
 std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
     ContentSettingsType type) {
   // `FILE_SYSTEM_WRITE_GUARD` is not part of `OneTimePermission`,

@@ -122,14 +122,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:OsScreenAction) -->
 
-<enum name="PageInfoDialogAccessType">
-  <int value="0" label="Click on lock without confirmation chip context"/>
-  <int value="1" label="Click on lock while confirmation chip is displayed"/>
-  <int value="2" label="Click on confirmation chip"/>
-  <int value="3"
-      label="Click on lock within 20 seconds after confirmation chip collapse"/>
-</enum>
-
 <enum name="PermissionAction">
   <int value="0" label="GRANTED"/>
   <int value="1" label="DENIED"/>
