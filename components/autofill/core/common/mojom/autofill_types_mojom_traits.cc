@@ -525,6 +525,9 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
   if (!data.ReadAutofillAiType(&out->autofill_ai_type)) {
     return false;
   }
+  if (!data.ReadAttributeTypes(&out->attribute_types)) {
+    return false;
+  }
   if (!data.ReadFormatString(&out->format_string)) {
     return false;
   }

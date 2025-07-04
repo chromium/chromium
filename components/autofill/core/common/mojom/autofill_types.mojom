@@ -445,6 +445,7 @@ struct FormFieldDataPredictions {
   string html_type;
   string overall_type;
   string autofill_ai_type;
+  string attribute_types;
   string format_string;
   string parseable_name;
   string parseable_label;
