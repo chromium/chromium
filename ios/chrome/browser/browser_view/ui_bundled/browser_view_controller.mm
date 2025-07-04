@@ -2788,6 +2788,10 @@ enum HeaderBehaviour {
   self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
 }
 
+- (void)lensOverlayDidReadjustPresentation {
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
+}
+
 - (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay {
   if (IsRegularXRegularSizeClass(self)) {
     return NSDirectionalEdgeInsetsMake([self expandedTopToolbarHeight], 0, 0,

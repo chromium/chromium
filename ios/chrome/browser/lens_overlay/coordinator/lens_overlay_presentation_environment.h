@@ -19,6 +19,9 @@
 // Notifies the embedder that Lens Overlay is about to disappear.
 - (void)lensOverlayWillDisappear;
 
+// Notifies the embedder that Lens Overlay readjusted its presentation.
+- (void)lensOverlayDidReadjustPresentation;
+
 // Returns the required insets for the Lens Overlay presentation.
 - (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay;
 
