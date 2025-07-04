@@ -17,13 +17,13 @@ static_library("wallpaper") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/image_decoder",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/user_manager",
     "//content/public/browser",
+    "//services/data_decoder/public/cpp",
     "//ui/gfx",
   ]
 }
@@ -40,7 +40,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
-    "//chrome/browser/image_decoder",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common",

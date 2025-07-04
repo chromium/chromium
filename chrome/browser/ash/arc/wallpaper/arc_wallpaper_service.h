@@ -11,9 +11,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/experiences/arc/mojom/wallpaper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+class SkBitmap;
 
 namespace content {
 class BrowserContext;
@@ -30,6 +32,17 @@ class ArcBridgeService;
 // Lives on the UI thread.
 class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
  public:
+  class ImageDecoder {
+   public:
+    virtual ~ImageDecoder() = default;
+
+    using ResultCallback = base::OnceCallback<void(const SkBitmap&)>;
+    virtual void DecodeImage(const std::vector<uint8_t>& data,
+                             ResultCallback callback) = 0;
+  };
+
+  static void EnsureFactoryBuilt();
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcWallpaperService* GetForBrowserContext(
@@ -49,41 +62,32 @@ class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
   void SetDefaultWallpaper() override;
   void GetWallpaper(GetWallpaperCallback callback) override;
 
-  class DecodeRequestSender {
-   public:
-    virtual ~DecodeRequestSender();
-
-    // Decodes image |data| and notifies the result to |request|.
-    virtual void SendDecodeRequest(ImageDecoder::ImageRequest* request,
-                                   const std::vector<uint8_t>& data) = 0;
-  };
-
-  // Replace a way to decode images for unittests. Originally it uses
-  // ImageDecoder which communicates with the external process.
-  void SetDecodeRequestSenderForTesting(
-      std::unique_ptr<DecodeRequestSender> sender);
-
-  static void EnsureFactoryBuilt();
+  // Replace a way to decode images for unittests.
+  void SetImageDecoderForTesting(std::unique_ptr<ImageDecoder> decoder);
 
  private:
   friend class TestApi;
   class AndroidIdStore;
-  class DecodeRequest;
+
+  void OnImageDecoded(int wallpaper_id, const SkBitmap& bitmap);
 
   // Initiates a set wallpaper request to //ash.
-  void OnWallpaperDecoded(const gfx::ImageSkia& image, int32_t android_id);
+  void OnWallpaperDecoded(int32_t wallpaper_id, const gfx::ImageSkia& image);
 
   // Notifies wallpaper change if we have wallpaper instance.
-  void NotifyWallpaperChanged(int android_id);
+  void NotifyWallpaperChanged(int wallpaper_id);
 
-  // Notifies wallpaper change of |android_id|, then notify wallpaper change of
-  // -1 to reset wallpaper cache at Android side.
-  void NotifyWallpaperChangedAndReset(int android_id);
+  // Notifies wallpaper change of |wallpaper_id|, then notify wallpaper change
+  // of -1 to reset wallpaper cache at Android side.
+  void NotifyWallpaperChangedAndReset(int wallpaper_id);
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
-  std::unique_ptr<DecodeRequest> decode_request_;
-  std::unique_ptr<DecodeRequestSender> decode_request_sender_;
+
+  std::unique_ptr<ImageDecoder> image_decoder_;
+
+  // This is used to cancel decoding requests.
+  base::WeakPtrFactory<ArcWallpaperService> weak_ptr_factory_for_decode_{this};
 };
 
 }  // namespace arc

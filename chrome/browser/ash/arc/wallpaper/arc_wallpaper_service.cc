@@ -22,6 +22,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "ipc/ipc_channel.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -62,59 +64,29 @@ class ArcWallpaperServiceFactory
   ~ArcWallpaperServiceFactory() override = default;
 };
 
-class DecodeRequestSenderImpl
-    : public ArcWallpaperService::DecodeRequestSender {
+class ImageDecoderImpl : public ArcWallpaperService::ImageDecoder {
  public:
-  void SendDecodeRequest(ImageDecoder::ImageRequest* request,
-                         const std::vector<uint8_t>& data) override {
-    ImageDecoder::StartWithOptions(request, data, ImageDecoder::DEFAULT_CODEC,
-                                   true, gfx::Size());
+  ImageDecoderImpl() = default;
+  ImageDecoderImpl(const ImageDecoderImpl&) = delete;
+  ImageDecoderImpl& operator=(const ImageDecoderImpl&) = delete;
+  ~ImageDecoderImpl() override = default;
+
+  // ArcWallpaperService::ImageDecoder:
+  void DecodeImage(const std::vector<uint8_t>& data,
+                   ResultCallback callback) override {
+    data_decoder::DecodeImageIsolated(
+        base::as_byte_span(data), data_decoder::mojom::ImageCodec::kDefault,
+        /*shrink_to_fit=*/true,
+        static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+        /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
   }
 };
 
 }  // namespace
 
-class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
- public:
-  DecodeRequest(ArcWallpaperService* service, int32_t android_id)
-      : service_(service), android_id_(android_id) {}
-
-  DecodeRequest(const DecodeRequest&) = delete;
-  DecodeRequest& operator=(const DecodeRequest&) = delete;
-
-  ~DecodeRequest() override = default;
-
-  // ImageDecoder::ImageRequest overrides.
-  void OnImageDecoded(const SkBitmap& bitmap) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    // Make the SkBitmap immutable as we won't modify it. This is important
-    // because otherwise it gets duplicated during painting, wasting memory.
-    SkBitmap immutable_bitmap(bitmap);
-    immutable_bitmap.setImmutable();
-    gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(immutable_bitmap);
-    image.MakeThreadSafe();
-
-    service_->OnWallpaperDecoded(image, android_id_);
-  }
-
-  void OnDecodeImageFailed() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DLOG(ERROR) << "Failed to decode wallpaper image.";
-    service_->NotifyWallpaperChangedAndReset(android_id_);
-  }
-
- private:
-  // ArcWallpaperService owns DecodeRequest, so it will outlive this.
-  const raw_ptr<ArcWallpaperService> service_;
-  const int32_t android_id_;
-};
-
-ArcWallpaperService::DecodeRequestSender::~DecodeRequestSender() = default;
-
-void ArcWallpaperService::SetDecodeRequestSenderForTesting(
-    std::unique_ptr<DecodeRequestSender> sender) {
-  decode_request_sender_ = std::move(sender);
+// static
+void ArcWallpaperService::EnsureFactoryBuilt() {
+  ArcWallpaperServiceFactory::GetInstance();
 }
 
 // static
@@ -126,7 +98,7 @@ ArcWallpaperService* ArcWallpaperService::GetForBrowserContext(
 ArcWallpaperService::ArcWallpaperService(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
-      decode_request_sender_(std::make_unique<DecodeRequestSenderImpl>()) {
+      image_decoder_(std::make_unique<ImageDecoderImpl>()) {
   arc_bridge_service_->wallpaper()->SetHost(this);
 }
 
@@ -142,19 +114,20 @@ void ArcWallpaperService::SetWallpaper(const std::vector<uint8_t>& data,
   if (wallpaper_id == 0)
     wallpaper_id = -1;
 
-  // Previous request will be cancelled at destructor of
-  // ImageDecoder::ImageRequest.
-  decode_request_ = std::make_unique<DecodeRequest>(this, wallpaper_id);
-  DCHECK(decode_request_sender_);
-  decode_request_sender_->SendDecodeRequest(decode_request_.get(), data);
+  // Cancel previous request if any and start new one.
+  weak_ptr_factory_for_decode_.InvalidateWeakPtrs();
+  image_decoder_->DecodeImage(
+      data,
+      base::BindOnce(&ArcWallpaperService::OnImageDecoded,
+                     weak_ptr_factory_for_decode_.GetWeakPtr(), wallpaper_id));
 }
 
 void ArcWallpaperService::SetDefaultWallpaper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Previous request will be cancelled at destructor of
-  // ImageDecoder::ImageRequest.
-  decode_request_.reset();
+  // Cancel pending decoding request if any.
+  weak_ptr_factory_for_decode_.InvalidateWeakPtrs();
+
   const user_manager::User* const primary_user =
       UserManager::Get()->GetPrimaryUser();
   ash::WallpaperController::Get()->SetDefaultWallpaper(
@@ -168,13 +141,40 @@ void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   if (!image.isNull())
     image.SetReadOnly();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&EncodeImagePng, image), std::move(callback));
 }
 
-void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
-                                             int32_t android_id) {
+void ArcWallpaperService::SetImageDecoderForTesting(
+    std::unique_ptr<ImageDecoder> decoder) {
+  CHECK(decoder);
+  image_decoder_ = std::move(decoder);
+}
+
+void ArcWallpaperService::OnImageDecoded(int wallpaper_id,
+                                         const SkBitmap& bitmap) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (bitmap.isNull()) {
+    DLOG(ERROR) << "Failed to decode wallpaper image.";
+    NotifyWallpaperChangedAndReset(wallpaper_id);
+    return;
+  }
+
+  // Make the SkBitmap immutable as we won't modify it. This is important
+  // because otherwise it gets duplicated during painting, wasting memory.
+  SkBitmap immutable_bitmap(bitmap);
+  immutable_bitmap.setImmutable();
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(immutable_bitmap);
+  image.MakeThreadSafe();
+
+  OnWallpaperDecoded(wallpaper_id, image);
+}
+
+void ArcWallpaperService::OnWallpaperDecoded(int32_t wallpaper_id,
+                                             const gfx::ImageSkia& image) {
   const AccountId account_id =
       UserManager::Get()->GetPrimaryUser()->GetAccountId();
 
@@ -185,32 +185,27 @@ void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
 
   // Notify the Android side whether the request is going through or not.
   if (result)
-    NotifyWallpaperChanged(android_id);
+    NotifyWallpaperChanged(wallpaper_id);
   else
-    NotifyWallpaperChangedAndReset(android_id);
+    NotifyWallpaperChangedAndReset(wallpaper_id);
 }
 
-void ArcWallpaperService::NotifyWallpaperChanged(int android_id) {
+void ArcWallpaperService::NotifyWallpaperChanged(int wallpaper_id) {
   mojom::WallpaperInstance* const wallpaper_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->wallpaper(),
                                   OnWallpaperChanged);
   if (wallpaper_instance == nullptr)
     return;
-  wallpaper_instance->OnWallpaperChanged(android_id);
+  wallpaper_instance->OnWallpaperChanged(wallpaper_id);
 }
 
-void ArcWallpaperService::NotifyWallpaperChangedAndReset(int32_t android_id) {
+void ArcWallpaperService::NotifyWallpaperChangedAndReset(int32_t wallpaper_id) {
   // Invoke NotifyWallpaperChanged so that setWallpaper completes in Android
   // side.
-  NotifyWallpaperChanged(android_id);
+  NotifyWallpaperChanged(wallpaper_id);
   // Invoke NotifyWallpaperChanged with -1 so that Android side regards the
-  // wallpaper of |android_id_| is no longer used at Chrome side.
+  // wallpaper of |wallpaper_id| is no longer used at Chrome side.
   NotifyWallpaperChanged(-1);
-}
-
-// static
-void ArcWallpaperService::EnsureFactoryBuilt() {
-  ArcWallpaperServiceFactory::GetInstance();
 }
 
 }  // namespace arc
