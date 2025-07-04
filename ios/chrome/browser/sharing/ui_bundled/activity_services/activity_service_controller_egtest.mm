@@ -62,6 +62,8 @@
     [ChromeEarlGrey loadURL:url];
     [ChromeEarlGreyUI openShareMenu];
 
+    [ChromeEarlGrey verifyActivitySheetVisible];
+
     if (@available(iOS 19.0, *)) {
       // On iOS26 an additional click on "More" button needs to be performed.
       // Clicking on Activity Sheet doesn't work with EG if there are multiple
@@ -69,7 +71,6 @@
       XCUIApplication* app = [[XCUIApplication alloc] init];
       XCUIElementQuery* more_buttons =
           [[app staticTexts] matchingIdentifier:@"More"];
-
       if (more_buttons.count == 2) {
         // There are two "More" buttons, select the one at the bottom.
         XCUIElement* more_button_0 = [more_buttons elementBoundByIndex:0];
@@ -81,7 +82,7 @@
         [more_button tap];
       }
     }
-    [ChromeEarlGrey verifyActivitySheetVisible];
+
     [ChromeEarlGrey tapButtonInActivitySheetWithID:@"EGOpenExtension"];
 
     GREYCondition* tabCountCheck =
