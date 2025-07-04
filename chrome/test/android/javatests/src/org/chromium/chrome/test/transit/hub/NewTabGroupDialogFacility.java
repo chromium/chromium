@@ -228,7 +228,7 @@ public class NewTabGroupDialogFacility<
      */
     public void pressDoneToExit() {
         ensureSoftKeyboardClosed();
-        mHostStation.exitFacilitySync(this, doneButtonElement.getClickTrigger());
+        doneButtonElement.clickTo().exitFacility();
     }
 
     /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */

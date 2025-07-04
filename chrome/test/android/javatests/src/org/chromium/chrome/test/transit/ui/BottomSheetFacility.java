@@ -8,8 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
-
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Facility;
@@ -45,6 +43,6 @@ public abstract class BottomSheetFacility<HostStationT extends Station<ChromeTab
 
     /** Press the system backpress to close the bottom sheet. */
     public void close() {
-        mHostStation.exitFacilitySync(this, Espresso::pressBack);
+        pressBackTo().exitFacility();
     }
 }

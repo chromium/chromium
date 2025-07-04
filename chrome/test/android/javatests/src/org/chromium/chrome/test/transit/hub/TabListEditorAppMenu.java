@@ -14,7 +14,6 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -173,10 +172,11 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         TabModel tabModel = mHostStation.tabModelElement.get();
         Condition tabCountDecreased =
                 new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
-        mHostStation.exitFacilitiesSync(
-                List.of(this, mListEditor, itemOnScreen),
-                Transition.conditionOption(tabCountDecreased),
-                itemOnScreen.viewElement.getClickTrigger());
+        itemOnScreen
+                .viewElement
+                .clickTo()
+                .waitForAnd(tabCountDecreased)
+                .exitFacilities(this, mListEditor, itemOnScreen);
 
         return null;
     }

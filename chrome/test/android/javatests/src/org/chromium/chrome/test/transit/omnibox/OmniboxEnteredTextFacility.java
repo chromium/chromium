@@ -55,6 +55,6 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
 
     /** Click the delete button to erase the text entered. */
     public void clickDelete() {
-        mHostStation.exitFacilitySync(this, deleteButtonElement.getForgivingClickTrigger());
+        deleteButtonElement.clickEvenIfPartiallyOccludedTo().exitFacility();
     }
 }

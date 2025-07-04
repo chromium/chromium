@@ -110,6 +110,6 @@ public class OmniboxPTTest {
         enteredText.clickDelete();
 
         keyboard.close();
-        omniboxAndKeyboard.first.pressBackToClose();
+        omniboxAndKeyboard.first.pressBackTo().exitFacility();
     }
 }

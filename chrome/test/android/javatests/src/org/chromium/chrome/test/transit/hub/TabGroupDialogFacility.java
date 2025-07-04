@@ -157,7 +157,7 @@ public class TabGroupDialogFacility<
 
     /** Press back to exit the facility. */
     public void pressBackArrowToExit() {
-        mHostStation.exitFacilitySync(this, backButtonElement.getClickTrigger());
+        backButtonElement.clickTo().exitFacility();
     }
 
     /**

@@ -8,7 +8,7 @@ import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.ui.test.transit.SoftKeyboardElement;
 
@@ -38,15 +38,15 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
 
             // If this fails, the keyboard was closed before, but not by this facility.
             recheckActiveConditions();
-            Transition.TransitionOptions.Builder options = Transition.newOptions();
-            options.withRetry();
+
+            TripBuilder tripBuilder = runTo(Espresso::closeSoftKeyboard);
             for (ViewElement<?> viewElement : viewElementsToSettle) {
-                options.withCondition(viewElement.createSettleCondition());
+                tripBuilder = tripBuilder.waitForAnd(viewElement.createSettleCondition());
             }
-            mHostStation.exitFacilitySync(this, options.build(), Espresso::closeSoftKeyboard);
+            tripBuilder.withRetry().exitFacility();
         } else {
             // Keyboard was not expected to be shown
-            mHostStation.exitFacilitySync(this, /* trigger= */ null);
+            noopTo().exitFacility();
         }
     }
 }

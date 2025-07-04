@@ -6,14 +6,10 @@ package org.chromium.chrome.test.transit.context_menu;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
-
-import java.util.List;
 
 /**
  * Facility represents a context menu triggered for a text link. This has to be used for a webpage.
@@ -53,11 +49,11 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
 
     private Void createTabInBackground(ItemOnScreenFacility<Void> itemOnScreen) {
         assert mHostStation != null;
-        Condition tabCountIncrease = new TabCountChangedCondition(mHostStation.getTabModel(), 1);
-        mHostStation.exitFacilitiesSync(
-                List.of(this, itemOnScreen),
-                Transition.conditionOption(tabCountIncrease),
-                itemOnScreen.viewElement.getClickTrigger());
+        itemOnScreen
+                .viewElement
+                .clickTo()
+                .waitForAnd(new TabCountChangedCondition(mHostStation.getTabModel(), 1))
+                .exitFacilities(this, itemOnScreen);
         return null;
     }
 

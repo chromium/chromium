@@ -20,7 +20,7 @@ import androidx.test.espresso.action.ViewActions;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -53,13 +53,16 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
 
     /** Dismiss the message banner. */
     public void dismiss() {
+        swipeTo().exitFacility();
+    }
+
+    /** Swipe the message banner to start a Transition. */
+    public TripBuilder swipeTo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // b/329707221: For S+, GeneralSwipeAction is not working in the current version of
             // Espresso (3.2). Workaround by using the test helpers to dismiss the popup
             // programmatically.
-            mHostStation.exitFacilitySync(
-                    this,
-                    Transition.runTriggerOnUiThreadOption(),
+            return runOnUiThreadTo(
                     () -> {
                         MessageDispatcher messageDispatcher =
                                 MessageDispatcherProvider.from(
@@ -73,15 +76,13 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
                         messageDispatcher.dismissMessage(m, DismissReason.GESTURE);
                     });
         } else {
-            mHostStation.exitFacilitySync(
-                    this,
-                    bannerElement.getPerformTrigger(
-                            ViewActions.actionWithAssertions(
-                                    new GeneralSwipeAction(
-                                            Swipe.FAST,
-                                            GeneralLocation.CENTER,
-                                            GeneralLocation.TOP_CENTER,
-                                            Press.FINGER))));
+            return bannerElement.performViewActionTo(
+                    ViewActions.actionWithAssertions(
+                            new GeneralSwipeAction(
+                                    Swipe.FAST,
+                                    GeneralLocation.CENTER,
+                                    GeneralLocation.TOP_CENTER,
+                                    Press.FINGER)));
         }
     }
 

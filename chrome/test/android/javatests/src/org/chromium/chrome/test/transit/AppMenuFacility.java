@@ -24,7 +24,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
@@ -190,6 +190,11 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     /** Clicks outside the menu to close it. */
     public void clickOutsideToClose() {
+        clickOutsideTo().exitFacility();
+    }
+
+    /** Click outside the menu to start a Transition. */
+    public TripBuilder clickOutsideTo() {
         GeneralClickAction clickBetweenViewAndLeftEdge =
                 new GeneralClickAction(
                         Tap.SINGLE,
@@ -202,16 +207,13 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                             return new float[] {clickX, clickY};
                         },
                         Press.FINGER);
-        mHostStation.exitFacilitySync(
-                this, menuListElement.getPerformTrigger(clickBetweenViewAndLeftEdge));
+        return menuListElement.performViewActionTo(clickBetweenViewAndLeftEdge);
     }
 
     /** Close the menu programmatically. */
     public void closeProgrammatically() {
-        mHostStation.exitFacilitySync(
-                this,
-                Transition.runTriggerOnUiThreadOption(),
-                () -> getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
+        runOnUiThreadTo(() -> getAppMenuCoordinator().getAppMenuHandler().hideAppMenu())
+                .exitFacility();
     }
 
     /** Verify that the menu model has the expected menu item ids and nothing beyond them. */

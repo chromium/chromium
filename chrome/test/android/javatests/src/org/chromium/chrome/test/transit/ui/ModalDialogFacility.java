@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.test.espresso.Espresso;
-
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
@@ -78,11 +76,11 @@ public class ModalDialogFacility extends Facility<Station<ChromeTabbedActivity>>
 
     /** Click Cancel to close the dialog with no action. */
     public void clickCancel() {
-        mHostStation.exitFacilitySync(this, negativeButtonElement.getClickTrigger());
+        negativeButtonElement.clickTo().exitFacility();
     }
 
     /** Press the back button to dismiss the dialog. */
     public void pressBackToDismiss() {
-        mHostStation.exitFacilitySync(this, Espresso::pressBack);
+        pressBackTo().exitFacility();
     }
 }

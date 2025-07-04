@@ -91,7 +91,7 @@ public class TabSwitcherListEditorPTTest {
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
-        editor.pressBackToExit();
+        editor.pressBackTo().exitFacility();
 
         // Go back to PageStation for InitialStateRule to reset
         firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
