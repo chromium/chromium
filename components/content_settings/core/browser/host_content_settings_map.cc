@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -44,6 +45,8 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -255,7 +258,27 @@ void CheckContentTypeRegistration(ContentSettingsType content_type) {
             content_settings_uma_util::ContentSettingTypeToHistogramValue(
                 content_type)));
 
-    CHECK(false);
+    NOTREACHED();
+  }
+}
+
+void CheckPermissionTypeRegistration(ContentSettingsType content_type) {
+  if (!content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_type)) {
+    static auto* const type_key = base::debug::AllocateCrashKeyString(
+        "content_settings-content_type", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        type_key, base::NumberToString(static_cast<int>(content_type)));
+
+    static auto* const histogram_key = base::debug::AllocateCrashKeyString(
+        "content_settings-histogram_value", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(
+        histogram_key,
+        base::NumberToString(
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                content_type)));
+
+    NOTREACHED();
   }
 }
 
@@ -433,6 +456,27 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
       GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
                                 ProviderFilter::kUserModifiable, nullptr);
   return content_settings::ValueToContentSetting(value);
+}
+
+PermissionSetting HostContentSettingsMap::GetPermissionSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
+  // TODO(crbug.com/425642101): Register all content settings as permission
+  // settings to avoid this special case.
+  if (content_settings::ContentSettingsRegistry::GetInstance()->Get(
+          content_type)) {
+    return GetContentSetting(primary_url, secondary_url, content_type, info);
+  }
+
+  CheckPermissionTypeRegistration(content_type);
+  auto* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_type);
+  const base::Value value =
+      GetWebsiteSetting(primary_url, secondary_url, content_type, info);
+  return content_settings::ValueToPermissionSetting(permission_info, value);
 }
 
 ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(

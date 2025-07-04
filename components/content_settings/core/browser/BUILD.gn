@@ -37,8 +37,14 @@ static_library("browser") {
     "content_settings_uma_util.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
+    "geolocation_setting_delegate.cc",
+    "geolocation_setting_delegate.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
+    "permission_settings_info.cc",
+    "permission_settings_info.h",
+    "permission_settings_registry.cc",
+    "permission_settings_registry.h",
     "single_value_wildcard_rule_iterator.cc",
     "single_value_wildcard_rule_iterator.h",
     "user_modifiable_provider.cc",
@@ -120,6 +126,7 @@ source_set("unit_tests") {
     "content_settings_rule_unittest.cc",
     "content_settings_utils_unittest.cc",
     "cookie_settings_unittest.cc",
+    "geolocation_delegate_unittest.cc",
     "website_settings_registry_unittest.cc",
   ]
 

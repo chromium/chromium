@@ -22,15 +22,6 @@ ContentSetting ValueToContentSetting(const base::Value& value);
 // a valid content setting. Otherwise, returns an empty value.
 base::Value ContentSettingToValue(ContentSetting setting);
 
-// Converts a |value| to a |PermissionSetting| based on |content_type|.
-std::optional<PermissionSetting> ValueToPermissionSetting(
-    ContentSettingsType content_type,
-    const base::Value& value);
-
-// Returns a base::Value representation of |setting| if |setting| is
-// a valid content setting. Otherwise, returns an empty value.
-base::Value PermissionSettingToValue(const PermissionSetting& setting);
-
 // Adaptor for converting from the new way of base::Value to the old one.
 // Like base::Value::ToUniquePtrValue but converts NONE-type values to nullptr.
 std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value);

@@ -17,6 +17,7 @@
 class HostContentSettingsMap;
 
 namespace content_settings {
+class PermissionSettingsInfo;
 
 typedef std::pair<ContentSettingsPattern, ContentSettingsPattern> PatternPair;
 
@@ -115,6 +116,11 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
 // upon their expiration. All other expired content settings will only be
 // expired upon the first reload after the expiration date.
 bool ShouldTypeExpireActively(ContentSettingsType type);
+
+// Convert a base::Value to a permission setting for a permission represented by
+// |info|. Expects that the value represents a valid setting.
+PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
+                                           const base::Value& value);
 
 }  // namespace content_settings
 

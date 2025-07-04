@@ -118,7 +118,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // Returns a single |ContentSetting| which applies to the given URLs.  Note
   // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,
   // |CookieSettings| should be used instead. For content types that can't be
-  // converted to a |ContentSetting|, |GetContentSettingValue| should be called.
+  // converted to a |ContentSetting|, |GetWebsiteSetting| should be called.
   // If there is no content setting, returns CONTENT_SETTING_DEFAULT. |info| is
   // populated as explained in |GetWebsiteSetting()|.
   //
@@ -135,6 +135,15 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type) const;
+
+  // Same as |GetContentSetting| but returns a variant for either
+  // ContentSettings or other more complex permission state. May be called on
+  // any thread.
+  PermissionSetting GetPermissionSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // Returns a single content setting |Value| which applies to the given URLs.
   // If |info| is not NULL, then the |source| field of |info| is set to the
@@ -228,6 +237,9 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
+
+  // TODO(crbug.com/425642101): Add functions to set and reset
+  // PermissionSettings.
 
   // Sets the |value| for the default scope of the url that is appropriate for
   // the given |content_type| applying any provided |constraints|. Setting the

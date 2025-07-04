@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -272,6 +273,14 @@ bool ShouldTypeExpireActively(ContentSettingsType type) {
   return base::FeatureList::IsEnabled(
              content_settings::features::kActiveContentSettingExpiry) &&
          base::Contains(GetTypesWithTemporaryGrantsInHcsm(), type);
+}
+
+PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
+                                           const base::Value& value) {
+  auto setting = info->delegate().FromValue(value);
+  DCHECK(setting.has_value()) << value.DebugString();
+  DCHECK(info->delegate().IsValid(*setting)) << value.DebugString();
+  return setting.value_or(info->GetInitialDefaultSetting());
 }
 
 }  // namespace content_settings

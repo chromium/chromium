@@ -68,7 +68,6 @@ source_set("unit_tests") {
     "content_settings_partition_key_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
-    "content_settings_utils_unittest.cc",
     "cookie_settings_base_unittest.cc",
     "host_indexed_content_settings_unittest.cc",
   ]
