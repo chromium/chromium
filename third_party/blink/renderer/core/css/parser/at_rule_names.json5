@@ -37,6 +37,9 @@
       alias: "-webkit-font-feature-settings",
     },
     {
+      name: "font-variation-settings",
+    },
+    {
       name: "font-stretch",
     },
     {

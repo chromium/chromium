@@ -28,7 +28,6 @@
 namespace blink {
 
 namespace cssvalue {
-class CSSFontFeatureValue;
 class CSSScopedKeywordValue;
 class CSSURIValue;
 }  // namespace cssvalue
@@ -537,8 +536,8 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeFontWeight(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream&,
                                      const CSSParserContext&);
-cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream&,
-                                                     const CSSParserContext&);
+CSSValue* ConsumeFontVariationSettings(CSSParserTokenStream&,
+                                       const CSSParserContext&);
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream&);
 CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream&);
 CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenStream&);

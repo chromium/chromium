@@ -495,6 +495,7 @@ class PLATFORM_EXPORT FontDescription {
 
   ResolvedFontFeatures ResolveFontFeatures() const;
   void MergeFontFeatureSettingsWithDescriptor(const FontFeatureSettings*);
+  void MergeFontVariationSettingsWithDescriptor(const FontVariationSettings*);
 
   String ToString() const;
 

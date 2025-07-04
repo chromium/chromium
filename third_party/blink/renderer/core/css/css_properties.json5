@@ -1592,6 +1592,7 @@
     {
       name: "font-variation-settings",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      is_descriptor: true,
       interpolable: true,
       inherited: true,
       font: true,

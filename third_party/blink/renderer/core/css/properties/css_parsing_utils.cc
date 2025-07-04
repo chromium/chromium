@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
+#include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
@@ -110,6 +111,7 @@ namespace blink {
 
 using cssvalue::CSSBracketedValueList;
 using cssvalue::CSSFontFeatureValue;
+using cssvalue::CSSFontVariationValue;
 
 namespace css_parsing_utils {
 namespace {
@@ -6068,30 +6070,14 @@ CSSValue* ConsumeFontWeight(CSSParserTokenStream& stream,
   return CombineToRangeList(start_weight, end_weight);
 }
 
-CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream& stream,
-                                     const CSSParserContext& context) {
-  if (stream.Peek().Id() == CSSValueID::kNormal) {
-    return ConsumeIdent(stream);
-  }
-  CSSValueList* settings = CSSValueList::CreateCommaSeparated();
-  do {
-    CSSFontFeatureValue* font_feature_value =
-        ConsumeFontFeatureTag(stream, context);
-    if (!font_feature_value) {
-      return nullptr;
-    }
-    settings->Append(*font_feature_value);
-  } while (ConsumeCommaIncludingWhitespace(stream));
-  return settings;
-}
-
-CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream& stream,
-                                           const CSSParserContext& context) {
-  // Feature tag name consists of 4-letter characters.
+template <typename T>
+T* ConsumeFontSettingsTagAndValue(CSSParserTokenStream& stream,
+                                  const CSSParserContext& context) {
+  // Tag name consists of 4-letter characters.
   const unsigned kTagNameLength = 4;
 
   const CSSParserToken& token = stream.Peek();
-  // Feature tag name comes first
+  // Tag name comes first for both features and variations.
   if (token.GetType() != kStringToken) {
     return nullptr;
   }
@@ -6110,8 +6096,8 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream& stream,
   }
 
   CSSPrimitiveValue* tag_value = nullptr;
-  // Feature tag values could follow: <integer> | on | off
-  if (CSSPrimitiveValue* value = ConsumeInteger(stream, context, 0)) {
+  // Tag values could follow: <integer> | on | off
+  if (CSSPrimitiveValue* value = ConsumeInteger(stream, context)) {
     tag_value = value;
   } else if (stream.Peek().Id() == CSSValueID::kOn ||
              stream.Peek().Id() == CSSValueID::kOff) {
@@ -6122,7 +6108,37 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenStream& stream,
     tag_value =
         CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kNumber);
   }
-  return MakeGarbageCollected<CSSFontFeatureValue>(tag, tag_value);
+  return MakeGarbageCollected<T>(tag, tag_value);
+}
+
+template <typename T>
+CSSValue* ConsumeFontSettings(CSSParserTokenStream& stream,
+                              const CSSParserContext& context) {
+  if (stream.Peek().Id() == CSSValueID::kNormal) {
+    return ConsumeIdent(stream);
+  }
+
+  CSSValueList* settings = CSSValueList::CreateCommaSeparated();
+
+  do {
+    T* font_settings = ConsumeFontSettingsTagAndValue<T>(stream, context);
+    if (!font_settings) {
+      return nullptr;
+    }
+    settings->Append(*font_settings);
+  } while (ConsumeCommaIncludingWhitespace(stream));
+
+  return settings;
+}
+
+CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream& stream,
+                                     const CSSParserContext& context) {
+  return ConsumeFontSettings<CSSFontFeatureValue>(stream, context);
+}
+
+CSSValue* ConsumeFontVariationSettings(CSSParserTokenStream& stream,
+                                       const CSSParserContext& context) {
+  return ConsumeFontSettings<CSSFontVariationValue>(stream, context);
 }
 
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream& stream) {

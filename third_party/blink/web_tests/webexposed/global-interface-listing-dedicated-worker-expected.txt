@@ -625,6 +625,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter style
 [Worker]     getter unicodeRange
 [Worker]     getter variant
+[Worker]     getter variationSettings
 [Worker]     getter weight
 [Worker]     method constructor
 [Worker]     method load
@@ -639,6 +640,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter style
 [Worker]     setter unicodeRange
 [Worker]     setter variant
+[Worker]     setter variationSettings
 [Worker]     setter weight
 [Worker] interface FormData
 [Worker]     attribute @@toStringTag

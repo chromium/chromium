@@ -29,6 +29,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
+#include <set>
+
 #include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
@@ -553,6 +555,36 @@ void FontDescription::MergeFontFeatureSettingsWithDescriptor(
       ResolveFontFeatureSettingsDescriptor(FeatureSettings(),
                                            feature_settings_descriptor);
   SetResolvedFontFeatures(std::move(resolved_font_features));
+}
+
+void FontDescription::MergeFontVariationSettingsWithDescriptor(
+    const FontVariationSettings* variation_settings_descriptor) {
+  scoped_refptr<FontVariationSettings> font_variation_settings =
+      FontVariationSettings::Create();
+
+  if ((!variation_settings_ || variation_settings_->size() == 0) &&
+      (!variation_settings_descriptor ||
+       variation_settings_descriptor->size() == 0)) {
+    SetVariationSettings(font_variation_settings);
+    return;
+  }
+
+  std::set<uint32_t> existing_tags;
+  // Store the existing axis settings
+  if (variation_settings_) {
+    for (const FontVariationAxis& axis : *variation_settings_) {
+      existing_tags.insert(axis.Tag());
+      font_variation_settings->Append(axis);
+    }
+  }
+  for (const FontVariationAxis& axis : *variation_settings_descriptor) {
+    if (existing_tags.find(axis.Tag()) == existing_tags.end()) {
+      font_variation_settings->Append(
+          FontVariationAxis(axis.Tag(), axis.Value()));
+    }
+  }
+  std::sort(font_variation_settings->begin(), font_variation_settings->end());
+  SetVariationSettings(font_variation_settings);
 }
 
 String FontDescription::ToString(GenericFamilyType familyType) {

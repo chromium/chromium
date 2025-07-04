@@ -51,6 +51,7 @@ typedef (ArrayBuffer or ArrayBufferView) BinaryData;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString unicodeRange;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString variant;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString featureSettings;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, RuntimeEnabled=FontVariationSettingsDescriptor] attribute CSSOMString variationSettings;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString display;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString ascentOverride;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString descentOverride;

@@ -56,6 +56,7 @@ class ExceptionState;
 class MediaValues;
 class FontFaceDescriptors;
 class FontFeatureSettings;
+class FontVariationSettings;
 class StyleRuleFontFace;
 class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
@@ -93,6 +94,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   String unicodeRange() const;
   String variant() const;
   String featureSettings() const;
+  String variationSettings() const;
   String display() const;
   String ascentOverride() const;
   String descentOverride() const;
@@ -109,6 +111,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setUnicodeRange(ExecutionContext*, const String&, ExceptionState&);
   void setVariant(ExecutionContext*, const String&, ExceptionState&);
   void setFeatureSettings(ExecutionContext*, const String&, ExceptionState&);
+  void setVariationSettings(ExecutionContext*, const String&, ExceptionState&);
   void setDisplay(ExecutionContext*, const String&, ExceptionState&);
   void setAscentOverride(ExecutionContext*, const String&, ExceptionState&);
   void setDescentOverride(ExecutionContext*, const String&, ExceptionState&);
@@ -159,6 +162,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool HasSizeAdjust() const { return size_adjust_ != nullptr; }
   float GetSizeAdjust() const;
   scoped_refptr<FontFeatureSettings> GetFontFeatureSettings() const;
+  scoped_refptr<FontVariationSettings> GetFontVariationSettings() const;
 
   Document* GetDocument() const;
 
@@ -200,6 +204,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   Member<const CSSValue> unicode_range_;
   Member<const CSSValue> variant_;
   Member<const CSSValue> feature_settings_;
+  Member<const CSSValue> variation_settings_;
   Member<const CSSValue> display_;
   Member<const CSSValue> ascent_override_;
   Member<const CSSValue> descent_override_;

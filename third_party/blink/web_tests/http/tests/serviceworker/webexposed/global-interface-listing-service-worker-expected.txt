@@ -612,6 +612,7 @@ interface FontFace
     getter style
     getter unicodeRange
     getter variant
+    getter variationSettings
     getter weight
     method constructor
     method load
@@ -626,6 +627,7 @@ interface FontFace
     setter style
     setter unicodeRange
     setter variant
+    setter variationSettings
     setter weight
 interface FormData
     attribute @@toStringTag
