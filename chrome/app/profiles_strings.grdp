@@ -932,6 +932,9 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
       desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS"
+      desc="Profile picker profile type choice subtitle"> Sign in to get your bookmarks, passwords and more on all your devices
+    </message>
 
     <!-- First Run Experience strings -->
     <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
