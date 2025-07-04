@@ -2373,7 +2373,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.ManualFallback.ShowSuggestions.Latency"
-    units="ms" expires_after="2025-04-25">
+    units="ms" expires_after="2026-04-25">
   <owner>tchudakov@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>
@@ -2381,7 +2381,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     password manual fallback from the Chrome context menu and the suggestions
     being displayed. The delay between these two events is caused by the async
     credential data fetching. This is recorded once per navigation because the
-    fetched data is reset on navigation.
+    fetched data is reset on navigation. Warning: this histogram was expired
+    from 2025-04-25 to 2025-07-04; data may be missing.
   </summary>
 </histogram>
 

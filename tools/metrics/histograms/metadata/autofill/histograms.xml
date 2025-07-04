@@ -961,7 +961,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.AddressSuggestionOnTypingAcceptance"
     enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
-    expires_after="2025-06-13">
+    expires_after="2026-06-13">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3461,7 +3461,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Funnel.ClassifiedAsTargetFilling.FillAfterSuggestion.Password"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-06-05">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2026-06-05">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
