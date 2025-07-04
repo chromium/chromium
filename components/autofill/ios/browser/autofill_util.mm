@@ -380,6 +380,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   field_data->set_is_focusable(
       field.FindBool("is_focusable").value_or(field_data->is_focusable()));
+  field_data->set_is_visible(field_data->is_focusable());
   field_data->set_should_autocomplete(
       field.FindBool("should_autocomplete")
           .value_or(field_data->should_autocomplete()));

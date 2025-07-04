@@ -452,8 +452,9 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
              "AutofillReplaceFormElementObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, FormFieldData::is_visible is a heuristic for actual visibility.
-// Otherwise, it's an alias for FormFieldData::is_focusable.
+// If enabled, FormFieldData::is_visible is a heuristic for actual visibility on
+// Blink platforms.
+// Otherwise and on iOS, it's an alias for FormFieldData::is_focusable.
 // TODO(crbug.com/324199622) When abandoned, remove FormFieldData::is_visible.
 BASE_FEATURE(kAutofillDetectFieldVisibility,
              "AutofillDetectFieldVisibility",
