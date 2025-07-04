@@ -305,12 +305,6 @@ public class AutofillProvider {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         if (mRequest != null) notifyViewExitBeforeDestroyRequest();
 
-        // Check focusField inside short value? Autofill Manager might have session that wasn't
-        // started by AutofillProvider, we just always cancel existing session here.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            getAutofillManagerWrapper().cancel();
-        }
-
         transformFormFieldToContainViewCoordinates(formData);
         initializeFrameworkWrapper(mContext);
         mAutofillUMA.onSessionStarted(getAutofillManagerWrapper().isDisabled());
@@ -428,21 +422,6 @@ public class AutofillProvider {
         short sIndex = (short) index;
         FormFieldData fieldData = mRequest.getField(sIndex);
         if (fieldData != null) fieldData.updateBounds(new RectF(x, y, x + width, y + height));
-
-        // crbug.com/730764 - from P and above, Android framework listens to the onScrollChanged()
-        // and repositions the autofill UI automatically.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return;
-
-        FocusField focusField = mRequest.getFocusField();
-        if (focusField == null || sIndex != focusField.fieldIndex) return;
-
-        Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
-        // Notify the new position to the Android framework. Note that we do not call
-        // notifyVirtualViewExited() here intentionally to avoid flickering.
-        notifyVirtualViewEntered(mContainerView, index, absBound);
-
-        // Update focus field position.
-        mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
     }
 
     // Add a specific method in order to mock it in test.
