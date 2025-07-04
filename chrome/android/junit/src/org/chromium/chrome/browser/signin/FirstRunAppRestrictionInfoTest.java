@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import static org.robolectric.Shadows.shadowOf;
 
@@ -32,7 +32,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
-import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.components.policy.PolicySwitches;
 
 /** Unit test for {@link AppRestrictionSupplier}. */

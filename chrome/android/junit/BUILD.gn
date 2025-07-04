@@ -711,7 +711,6 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.firstrun") {
     sources = [
-      "src/org/chromium/chrome/browser/firstrun/FirstRunAppRestrictionInfoTest.java",
       "src/org/chromium/chrome/browser/firstrun/FirstRunFilterTouchUnitTest.java",
       "src/org/chromium/chrome/browser/firstrun/FirstRunFlowSequencerTest.java",
       "src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationUnitTest.java",
@@ -983,6 +982,7 @@ if (is_android) {
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.signin") {
     sources = [
       "src/org/chromium/chrome/browser/signin/ChildAccountStatusSupplierTest.java",
+      "src/org/chromium/chrome/browser/signin/FirstRunAppRestrictionInfoTest.java",
       "src/org/chromium/chrome/browser/signin/PolicyLoadListenerUnitTest.java",
       "src/org/chromium/chrome/browser/signin/SigninAndHistorySyncActivityLauncherImplTest.java",
       "src/org/chromium/chrome/browser/signin/SigninAndHistorySyncBundleHelperTest.java",
