@@ -1063,6 +1063,9 @@
   [self updateFeedLayout];
   [self cancelOmniboxEdit];
   [self.NTPViewController setContentOffsetToTop];
+
+  _headerViewController.isGoogleDefaultSearchEngine =
+      [self isGoogleDefaultSearchEngine];
 }
 
 #pragma mark - ContentSuggestionsDelegate
@@ -1648,9 +1651,6 @@
 // Updates the NTP to take into account a change in module visibility
 - (void)handleChangeInModules {
   DCHECK(self.NTPViewController);
-
-  _headerViewController.isGoogleDefaultSearchEngine =
-      [self isGoogleDefaultSearchEngine];
 
   [self.NTPViewController resetViewHierarchy];
 
