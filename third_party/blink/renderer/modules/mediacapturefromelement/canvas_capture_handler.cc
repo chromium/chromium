@@ -269,9 +269,9 @@ void CanvasCaptureHandler::SendFrame(
     video_frame->set_color_space(color_space);
 
   last_frame_ = video_frame;
-  PostCrossThreadTask(*io_task_runner_, FROM_HERE,
-                      WTF::CrossThreadBindOnce(
-                          &CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
+  PostCrossThreadTask(
+      *io_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
                               SendNewFrameOnIOThread,
                           delegate_->GetWeakPtrForIOThread(),
                           std::move(video_frame), this_frame_ticks));

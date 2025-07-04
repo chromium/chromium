@@ -52,7 +52,7 @@ class CrossThreadBindPostTaskTrampoline {
   template <typename... Args>
   void RunOnce(Args... args) {
     task_runner_->PostTask(
-        location_, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+        location_, ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
                        std::move(callback_), std::forward<Args>(args)...)));
   }
 
@@ -61,7 +61,7 @@ class CrossThreadBindPostTaskTrampoline {
     // Safe since the destruction of `this` is posted to `task_runner_`.
     task_runner_->PostTask(
         location_,
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+        ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
             &RunOnTaskRunner<Args...>, CrossThreadUnretained(&callback_),
             std::forward<Args>(args)...)));
   }
@@ -91,8 +91,8 @@ CrossThreadOnceFunction<void(Args...)> BindPostTask(
   std::unique_ptr<Helper, base::OnTaskRunnerDeleter> helper(
       new Helper(task_runner, location, std::move(callback)),
       base::OnTaskRunnerDeleter(task_runner));
-  return CrossThreadBindOnce(&Helper::template RunOnce<Args...>,
-                             std::move(helper));
+  return blink::CrossThreadBindOnce(&Helper::template RunOnce<Args...>,
+                                    std::move(helper));
 }
 
 template <typename ReturnType, typename... Args>
@@ -107,8 +107,8 @@ CrossThreadFunction<void(Args...)> BindPostTask(
   std::unique_ptr<Helper, base::OnTaskRunnerDeleter> helper(
       new Helper(task_runner, location, std::move(callback)),
       base::OnTaskRunnerDeleter(task_runner));
-  return CrossThreadBindRepeating(&Helper::template RunRepeating<Args...>,
-                                  std::move(helper));
+  return blink::CrossThreadBindRepeating(
+      &Helper::template RunRepeating<Args...>, std::move(helper));
 }
 
 }  // namespace WTF

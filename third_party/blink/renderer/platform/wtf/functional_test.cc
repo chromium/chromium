@@ -101,7 +101,7 @@ TEST(FunctionalTest, ThreadRestriction) {
   base::Thread thread("testing");
   thread.Start();
   thread.task_runner()->PostTask(
-      FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      FROM_HERE, ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
                      &MakeClosure, CrossThreadUnretained(&closure))));
   thread.Stop();
 

@@ -49,9 +49,9 @@ ScriptCacheConsumer::ScriptCacheConsumer(
                                                    script_url_string_);
         });
 
-    worker_pool::PostTask(FROM_HERE, WTF::CrossThreadBindOnce(
-                                         &ScriptCacheConsumer::RunTaskOffThread,
-                                         WrapCrossThreadWeakPersistent(this)));
+    worker_pool::PostTask(
+        FROM_HERE, CrossThreadBindOnce(&ScriptCacheConsumer::RunTaskOffThread,
+                                       WrapCrossThreadWeakPersistent(this)));
   } else {
     // If the consume task failed to be created, consider the consumption
     // immediately completed. TakeV8ConsumeTask will return nullptr, but this is
@@ -132,8 +132,8 @@ void ScriptCacheConsumer::PostFinishCallbackTask() {
   CHECK(finish_callback_task_runner_);
   PostCrossThreadTask(
       *finish_callback_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(&ScriptCacheConsumer::CallFinishCallback,
-                               WrapCrossThreadWeakPersistent(this)));
+      CrossThreadBindOnce(&ScriptCacheConsumer::CallFinishCallback,
+                          WrapCrossThreadWeakPersistent(this)));
 }
 
 void ScriptCacheConsumer::RunMergeTaskOffThread() {
@@ -202,8 +202,8 @@ void ScriptCacheConsumer::NotifyClientWaiting(
 
       worker_pool::PostTask(
           FROM_HERE,
-          WTF::CrossThreadBindOnce(&ScriptCacheConsumer::RunMergeTaskOffThread,
-                                   WrapCrossThreadWeakPersistent(this)));
+          CrossThreadBindOnce(&ScriptCacheConsumer::RunMergeTaskOffThread,
+                              WrapCrossThreadWeakPersistent(this)));
     } else {
       AdvanceState(State::kMergeDoneOrNotNeededBit);
       CallFinishCallback();

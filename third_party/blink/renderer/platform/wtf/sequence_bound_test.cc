@@ -38,11 +38,12 @@ TEST_F(SequenceBoundTest, CanInstantiate) {
       base::ThreadPool::CreateSingleThreadTaskRunner({}));
 
   sequence_bound.AsyncCall(&Foo::Bar).WithArgs(5);
-  sequence_bound.PostTaskWithThisObject(CrossThreadBindOnce([](Foo* foo) {}));
+  sequence_bound.PostTaskWithThisObject(
+      blink::CrossThreadBindOnce([](Foo* foo) {}));
 
   int test_value = -1;
   base::RunLoop run_loop;
-  sequence_bound.AsyncCall(&Foo::Baz).Then(CrossThreadBindOnce(
+  sequence_bound.AsyncCall(&Foo::Baz).Then(blink::CrossThreadBindOnce(
       &SequenceBoundTest::CheckValue, CrossThreadUnretained(this),
       CrossThreadUnretained(&run_loop), CrossThreadUnretained(&test_value)));
   run_loop.Run();

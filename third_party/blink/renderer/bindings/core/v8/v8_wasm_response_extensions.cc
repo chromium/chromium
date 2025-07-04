@@ -139,7 +139,7 @@ class WasmCodeCachingCallback {
 
     DCHECK(execution_context_task_runner_.get());
     execution_context_task_runner_->PostTask(
-        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+        FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
                        &SendCachedData, response_url_, response_time_,
                        cache_storage_cache_name_, execution_context_,
                        std::move(serialized_data))));

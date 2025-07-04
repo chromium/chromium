@@ -93,9 +93,9 @@ class PassThroughPingPong final : public PingPongBase {
   void Ping() {
     PostCrossThreadTask(
         *thread_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(&PassThroughPingPong::PingOnOtherThread,
-                                 scoped_refptr(this),
-                                 MakeCrossThreadHandle(needle_.Get())));
+        CrossThreadBindOnce(&PassThroughPingPong::PingOnOtherThread,
+                            scoped_refptr(this),
+                            MakeCrossThreadHandle(needle_.Get())));
     TestSupportingGC::PreciselyCollectGarbage();
   }
 
@@ -105,8 +105,8 @@ class PassThroughPingPong final : public PingPongBase {
     auto main_runner = ping_pong->main_runner_;
     PostCrossThreadTask(
         *main_runner, FROM_HERE,
-        WTF::CrossThreadBindOnce(&PassThroughPingPong::PongOnMainThread,
-                                 std::move(ping_pong), std::move(handle)));
+        CrossThreadBindOnce(&PassThroughPingPong::PongOnMainThread,
+                            std::move(ping_pong), std::move(handle)));
   }
 
   static void PongOnMainThread(scoped_refptr<PassThroughPingPong> ping_pong,
@@ -138,9 +138,9 @@ class UnwrappingPingPong final : public PingPongBase {
   void Ping() {
     PostCrossThreadTask(
         *thread_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(&UnwrappingPingPong::PingOnOtherThread,
-                                 scoped_refptr(this),
-                                 MakeCrossThreadHandle(needle_.Get())));
+        CrossThreadBindOnce(&UnwrappingPingPong::PingOnOtherThread,
+                            scoped_refptr(this),
+                            MakeCrossThreadHandle(needle_.Get())));
     TestSupportingGC::PreciselyCollectGarbage();
   }
 
@@ -150,7 +150,7 @@ class UnwrappingPingPong final : public PingPongBase {
     auto main_runner = ping_pong->main_runner_;
     PostCrossThreadTask(
         *main_runner, FROM_HERE,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             &UnwrappingPingPong::PongOnMainThread, std::move(ping_pong),
             MakeUnwrappingCrossThreadHandle(std::move(handle))));
   }
@@ -184,9 +184,9 @@ class BindToMethodPingPong final : public PingPongBase {
   void Ping() {
     PostCrossThreadTask(
         *thread_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(&BindToMethodPingPong::PingOnOtherThread,
-                                 scoped_refptr(this),
-                                 MakeCrossThreadHandle(needle_.Get())));
+        CrossThreadBindOnce(&BindToMethodPingPong::PingOnOtherThread,
+                            scoped_refptr(this),
+                            MakeCrossThreadHandle(needle_.Get())));
     TestSupportingGC::PreciselyCollectGarbage();
     ASSERT_TRUE(needle_);
   }
@@ -195,9 +195,9 @@ class BindToMethodPingPong final : public PingPongBase {
   static void PingOnOtherThread(scoped_refptr<BindToMethodPingPong> ping_pong,
                                 CrossThreadHandle<GCed> handle) {
     auto main_runner = ping_pong->main_runner_;
-    PostCrossThreadTask(*main_runner, FROM_HERE,
-                        WTF::CrossThreadBindOnce(
-                            &GCed::SetReceivedPong,
+    PostCrossThreadTask(
+        *main_runner, FROM_HERE,
+        CrossThreadBindOnce(&GCed::SetReceivedPong,
                             MakeUnwrappingCrossThreadHandle(std::move(handle)),
                             std::move(ping_pong)));
   }
@@ -223,9 +223,9 @@ class BindToMethodDiscardingPingPong final : public PingPongBase {
   void Ping() {
     PostCrossThreadTask(
         *thread_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &BindToMethodDiscardingPingPong::PingOnOtherThread,
-            scoped_refptr(this), MakeCrossThreadWeakHandle(needle_.Get())));
+        CrossThreadBindOnce(&BindToMethodDiscardingPingPong::PingOnOtherThread,
+                            scoped_refptr(this),
+                            MakeCrossThreadWeakHandle(needle_.Get())));
     TestSupportingGC::PreciselyCollectGarbage();
     ASSERT_FALSE(needle_);
   }
@@ -235,12 +235,11 @@ class BindToMethodDiscardingPingPong final : public PingPongBase {
       scoped_refptr<BindToMethodDiscardingPingPong> ping_pong,
       CrossThreadWeakHandle<GCed> handle) {
     auto main_runner = ping_pong->main_runner_;
-    PostCrossThreadTask(
-        *main_runner, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &GCed::SetReceivedPong,
-            MakeUnwrappingCrossThreadWeakHandle(std::move(handle)),
-            std::move(ping_pong)));
+    PostCrossThreadTask(*main_runner, FROM_HERE,
+                        CrossThreadBindOnce(&GCed::SetReceivedPong,
+                                            MakeUnwrappingCrossThreadWeakHandle(
+                                                std::move(handle)),
+                                            std::move(ping_pong)));
   }
 };
 

@@ -7,7 +7,7 @@
 #include <utility>
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
 // Tests that "currying" CrossThreadFunction and CrossThreadOnceFunction works,
@@ -43,4 +43,4 @@ TEST(CrossThreadFunctionalTest, CrossThreadBindOnce_CrossThreadFunction) {
 }
 
 }  // namespace
-}  // namespace WTF
+}  // namespace blink

@@ -80,12 +80,12 @@ AudioTrackRecorder::AudioTrackRecorder(
           codec,
           WTF::BindPostTask(
               main_thread_task_runner,
-              WTF::CrossThreadBindRepeating(
+              CrossThreadBindRepeating(
                   &CallbackInterface::OnEncodedAudio,
                   MakeUnwrappingCrossThreadHandle(callback_interface))),
           WTF::BindPostTask(
               main_thread_task_runner,
-              WTF::CrossThreadBindOnce(
+              CrossThreadBindOnce(
                   &CallbackInterface::OnAudioEncodingError,
                   MakeUnwrappingCrossThreadHandle(callback_interface))),
           bits_per_second,

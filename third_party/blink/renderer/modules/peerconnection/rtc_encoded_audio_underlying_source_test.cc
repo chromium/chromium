@@ -30,7 +30,7 @@ class RTCEncodedAudioUnderlyingSourceTest : public testing::Test {
  public:
   RTCEncodedAudioUnderlyingSource* CreateSource(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+        script_state, CrossThreadBindOnce(disconnect_callback_.Get()));
   }
 
  protected:

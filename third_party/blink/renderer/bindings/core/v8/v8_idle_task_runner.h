@@ -55,7 +55,7 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
     DCHECK(RuntimeEnabledFeatures::V8IdleTasksEnabled());
     scheduler_->PostIdleTask(
         FROM_HERE,
-        ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
             [](std::unique_ptr<v8::IdleTask> task, base::TimeTicks deadline) {
               task->Run(deadline.since_origin().InSecondsF());
             },

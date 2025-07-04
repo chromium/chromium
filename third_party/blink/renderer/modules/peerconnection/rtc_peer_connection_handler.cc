@@ -1278,7 +1278,7 @@ void RTCPeerConnectionHandler::AddIceCandidate(
          CrossThreadPersistent<RTCIceCandidatePlatform> candidate,
          webrtc::RTCError result, RTCVoidRequest* request) {
         // Inform tracker (chrome://webrtc-internals).
-        // Note that because the WTF::CrossThreadBindOnce() below uses a
+        // Note that because the CrossThreadBindOnce() below uses a
         // CrossThreadWeakPersistent when binding |tracker_ptr| this lambda may
         // be invoked with a null |tracker_ptr| so we have to guard against it.
         if (handler_weak_ptr && tracker_ptr) {
@@ -1330,7 +1330,7 @@ void RTCPeerConnectionHandler::AddIceCandidate(
         // a fake |native_peer_connection_|). Jump back to the renderer thread.
         PostCrossThreadTask(
             *task_runner, FROM_HERE,
-            WTF::CrossThreadBindOnce(
+            CrossThreadBindOnce(
                 std::move(callback_on_task_runner), handler_weak_ptr,
                 tracker_weak_ptr, std::move(pending_local_description),
                 std::move(current_local_description),

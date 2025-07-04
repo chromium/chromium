@@ -14,6 +14,9 @@
 
 namespace WTF {
 
+using blink::CrossThreadBindOnce;
+using blink::CrossThreadBindRepeating;
+
 namespace {
 
 void Increment(int* value) {

@@ -51,7 +51,7 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
   source->CreateAudioUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()),
       base::UnguessableToken::Create());
   NonThrowableExceptionState exception_state;
   auto* reader =
@@ -87,7 +87,7 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest, AudioCancelStream) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       v8_scope.GetScriptState(), source, 0);
   source->CreateAudioUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()),
       base::UnguessableToken::Create());
   EXPECT_CALL(disconnect_callback_, Run());
   NonThrowableExceptionState exception_state;
@@ -102,7 +102,7 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest,
   auto* stream =
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
   source->CreateVideoUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()),
       base::UnguessableToken::Create());
   NonThrowableExceptionState exception_state;
   auto* reader =
@@ -137,7 +137,7 @@ TEST_F(RTCEncodedUnderlyingSourceWrapperTest, VideoCancelStream) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       v8_scope.GetScriptState(), source, 0);
   source->CreateVideoUnderlyingSource(
-      WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()),
       base::UnguessableToken::Create());
   EXPECT_CALL(disconnect_callback_, Run());
   NonThrowableExceptionState exception_state;

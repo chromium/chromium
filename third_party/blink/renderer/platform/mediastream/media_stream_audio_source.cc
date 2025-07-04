@@ -258,8 +258,8 @@ void MediaStreamAudioSource::SetMutedState(bool muted_state) {
                                 base::ToString(muted_state).c_str()));
   PostCrossThreadTask(
       *GetTaskRunner(), FROM_HERE,
-      WTF::CrossThreadBindOnce(&WebPlatformMediaStreamSource::SetSourceMuted,
-                               GetWeakPtr(), muted_state));
+      CrossThreadBindOnce(&WebPlatformMediaStreamSource::SetSourceMuted,
+                          GetWeakPtr(), muted_state));
 }
 
 int MediaStreamAudioSource::NumPreferredChannels() const {

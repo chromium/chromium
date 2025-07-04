@@ -58,7 +58,7 @@ void RTCEncodedUnderlyingSourceWrapper::CreateVideoUnderlyingSource(
 RTCEncodedUnderlyingSourceWrapper::VideoTransformer
 RTCEncodedUnderlyingSourceWrapper::GetVideoTransformer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return WTF::CrossThreadBindRepeating(
+  return CrossThreadBindRepeating(
       &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
       WrapCrossThreadPersistent(video_from_encoder_underlying_source_.Get()));
 }
@@ -66,7 +66,7 @@ RTCEncodedUnderlyingSourceWrapper::GetVideoTransformer() {
 RTCEncodedUnderlyingSourceWrapper::AudioTransformer
 RTCEncodedUnderlyingSourceWrapper::GetAudioTransformer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return WTF::CrossThreadBindRepeating(
+  return CrossThreadBindRepeating(
       &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
       WrapCrossThreadPersistent(audio_from_encoder_underlying_source_.Get()));
 }

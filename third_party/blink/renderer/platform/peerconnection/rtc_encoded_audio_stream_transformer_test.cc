@@ -82,7 +82,7 @@ TEST_F(RTCEncodedAudioStreamTransformerTest,
        TransformerForwardsFrameToTransformerCallback) {
   EXPECT_FALSE(encoded_audio_stream_transformer_.HasTransformerCallback());
   encoded_audio_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
           WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
   EXPECT_TRUE(encoded_audio_stream_transformer_.HasTransformerCallback());

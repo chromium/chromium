@@ -184,7 +184,7 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
   // Unretained is safe because we're waiting for the operation to complete.
   PostCrossThreadTask(
       *worker_thread_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           &RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread,
           WTF::CrossThreadUnretained(this),
           WTF::CrossThreadUnretained(&receivers),

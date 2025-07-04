@@ -144,7 +144,7 @@ void RTCRtpScriptTransform::SetUpAudioRtpTransformer(
   CHECK(rtp_transformer_);
   PostCrossThreadTask(
       *rtp_transformer_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           &RTCRtpScriptTransformer::SetUpAudio,
           MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_),
           std::move(disconnect_callback_source),
@@ -159,7 +159,7 @@ void RTCRtpScriptTransform::SetUpVideoRtpTransformer(
   CHECK(rtp_transformer_);
   PostCrossThreadTask(
       *rtp_transformer_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           &RTCRtpScriptTransformer::SetUpVideo,
           MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_),
           std::move(disconnect_callback_source),
@@ -198,11 +198,10 @@ void RTCRtpScriptTransform::Detach() {
   encoded_audio_transformer_ = nullptr;
   disconnect_callback_source_.Reset();
   if (rtp_transformer_) {
-    PostCrossThreadTask(
-        *rtp_transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::Clear,
-            MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+    PostCrossThreadTask(*rtp_transformer_task_runner_, FROM_HERE,
+                        CrossThreadBindOnce(&RTCRtpScriptTransformer::Clear,
+                                            MakeUnwrappingCrossThreadWeakHandle(
+                                                *rtp_transformer_)));
   }
 }
 
@@ -237,7 +236,7 @@ void RTCRtpScriptTransform::SendKeyFrameRequestToReceiver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendKeyFrameRequestResult result = HandleSendKeyFrameRequestResults();
   PostCrossThreadTask(*rtp_transformer_task_runner_, FROM_HERE,
-                      WTF::CrossThreadBindOnce(std::move(callback), result));
+                      CrossThreadBindOnce(std::move(callback), result));
 }
 
 void RTCRtpScriptTransform::Trace(Visitor* visitor) const {

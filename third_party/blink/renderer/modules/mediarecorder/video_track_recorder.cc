@@ -358,7 +358,7 @@ GetCreateHardwareVideoEncoderCallback(
           MediaVideoCodecFromCodecId(codec_id))
           ? media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference
           : media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
-  return WTF::CrossThreadBindRepeating(
+  return CrossThreadBindRepeating(
       [](media::VideoEncodeAccelerator::Config::EncoderType
              required_encoder_type,
          media::GpuVideoAcceleratorFactories* gpu_factories)
@@ -378,7 +378,7 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
   switch (codec_id) {
 #if BUILDFLAG(ENABLE_OPENH264)
     case CodecId::kH264:
-      return WTF::CrossThreadBindRepeating(
+      return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::OpenH264VideoEncoder>();
           });
@@ -386,14 +386,14 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
 #if BUILDFLAG(ENABLE_LIBVPX)
     case CodecId::kVp8:
     case CodecId::kVp9:
-      return WTF::CrossThreadBindRepeating(
+      return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::VpxVideoEncoder>();
           });
 #endif
 #if BUILDFLAG(ENABLE_LIBAOM)
     case CodecId::kAv1:
-      return WTF::CrossThreadBindRepeating(
+      return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::Av1VideoEncoder>();
           });
@@ -977,15 +977,14 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
     // TODO(crbug.com/1441395): This should be handled by using
     // media::VideoEncoderFallback. This should be achieved after refactoring
     // VideoTrackRecorder to call media::VideoEncoder directly.
-    on_error_cb =
-        WTF::BindPostTask(main_thread_task_runner_,
-                          WTF::CrossThreadBindOnce(
-                              &VideoTrackRecorderImpl::OnHardwareEncoderError,
-                              weak_factory_.GetWeakPtr()));
+    on_error_cb = WTF::BindPostTask(
+        main_thread_task_runner_,
+        CrossThreadBindOnce(&VideoTrackRecorderImpl::OnHardwareEncoderError,
+                            weak_factory_.GetWeakPtr()));
   } else {
     on_error_cb = WTF::BindPostTask(
         main_thread_task_runner_,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             &CallbackInterface::OnVideoEncodingError,
             MakeUnwrappingCrossThreadHandle(callback_interface())));
   }
@@ -999,7 +998,7 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
           : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
       WTF::BindPostTask(
           main_thread_task_runner_,
-          WTF::CrossThreadBindRepeating(
+          CrossThreadBindRepeating(
               &CallbackInterface::OnEncodedVideo,
               MakeUnwrappingCrossThreadHandle(callback_interface()))),
       std::move(on_error_cb));

@@ -880,7 +880,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     )");
   // TODO(crbug.com/40265716): remove batch_udp_packets parameter.
   socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &PeerConnectionDependencyFactory::DoGetDevtoolsToken,
           WrapCrossThreadWeakPersistent(this)),
       p2p_socket_dispatcher_.Get(), traffic_annotation, /*batch_udp_packets=*/
@@ -961,7 +961,7 @@ void PeerConnectionDependencyFactory::DoGetDevtoolsToken(
     base::OnceCallback<void(std::optional<base::UnguessableToken>)> then) {
   context_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
           [](PeerConnectionDependencyFactory* factory)
               -> std::optional<base::UnguessableToken> {
             if (!factory) {

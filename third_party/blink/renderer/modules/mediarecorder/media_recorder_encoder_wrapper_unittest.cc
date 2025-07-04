@@ -145,14 +145,14 @@ class MediaRecorderEncoderWrapperTest
         scheduler::GetSingleThreadTaskRunnerForTesting(), profile_,
         kDefaultBitrate, is_screencast,
         /*is_hardware_encoder=*/false,
-        WTF::CrossThreadBindRepeating(
+        CrossThreadBindRepeating(
             &MediaRecorderEncoderWrapperTest::CreateMockVideoEncoder,
             WTF::CrossThreadUnretained(this)),
-        WTF::CrossThreadBindRepeating(
+        CrossThreadBindRepeating(
             &MediaRecorderEncoderWrapperTest::OnEncodedVideo,
             WTF::CrossThreadUnretained(this)),
-        WTF::CrossThreadBindOnce(&MediaRecorderEncoderWrapperTest::OnError,
-                                 WTF::CrossThreadUnretained(this)));
+        CrossThreadBindOnce(&MediaRecorderEncoderWrapperTest::OnError,
+                            WTF::CrossThreadUnretained(this)));
     EXPECT_EQ(is_screencast,
               encoder_wrapper_->IsScreenContentEncodingForTesting());
     auto metrics_provider =

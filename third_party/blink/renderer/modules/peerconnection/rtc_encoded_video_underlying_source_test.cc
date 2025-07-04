@@ -29,7 +29,7 @@ class RTCEncodedVideoUnderlyingSourceTest : public testing::Test {
  public:
   RTCEncodedVideoUnderlyingSource* CreateSource(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+        script_state, CrossThreadBindOnce(disconnect_callback_.Get()));
   }
 
  protected:

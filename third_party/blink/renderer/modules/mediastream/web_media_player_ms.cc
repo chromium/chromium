@@ -439,7 +439,7 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
     // must trampoline through both to ensure a safe destruction.
     PostCrossThreadTask(
         *video_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                std::unique_ptr<WebMediaPlayerMSCompositor> compositor) {
               task_runner->DeleteSoon(FROM_HERE, std::move(compositor));
@@ -881,14 +881,14 @@ void WebMediaPlayerMS::Pause(PauseReason pause_reason) {
   // frames passed on video task runner.
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              WTF::CrossThreadOnceClosure copy_cb) {
             PostCrossThreadTask(*task_runner, FROM_HERE, std::move(copy_cb));
           },
           main_render_task_runner_,
-          WTF::CrossThreadBindOnce(
-              &WebMediaPlayerMS::ReplaceCurrentFrameWithACopy, weak_this_)));
+          CrossThreadBindOnce(&WebMediaPlayerMS::ReplaceCurrentFrameWithACopy,
+                              weak_this_)));
 
   if (audio_renderer_)
     audio_renderer_->Pause();

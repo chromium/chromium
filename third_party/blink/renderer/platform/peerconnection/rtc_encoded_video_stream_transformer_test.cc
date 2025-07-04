@@ -133,7 +133,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
        TransformerForwardsFrameToTransformerCallback) {
   EXPECT_FALSE(encoded_video_stream_transformer_.HasTransformerCallback());
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
           WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
   EXPECT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
@@ -190,7 +190,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
     return;
   }
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
           WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
   ASSERT_TRUE(encoded_video_stream_transformer_.HasTransformerCallback());
@@ -283,7 +283,7 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
   EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
       .Times(transform_count);
   encoded_video_stream_transformer_.SetTransformerCallback(
-      WTF::CrossThreadBindRepeating(
+      CrossThreadBindRepeating(
           &MockTransformerCallbackHolder::OnEncodedFrame,
           WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }

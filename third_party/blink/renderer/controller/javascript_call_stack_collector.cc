@@ -83,7 +83,7 @@ void PostHandleCollectedCallStackTask(
   DCHECK(Platform::Current());
   PostCrossThreadTask(
       *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
-      WTF::CrossThreadBindOnce(
+      CrossThreadBindOnce(
           &JavaScriptCallStackCollector::HandleCallStackCollected,
           WTF::CrossThreadUnretained(collector), builder.ReleaseString(),
           frame_token));

@@ -271,7 +271,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
   if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
         *service_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated,
             WTF::CrossThreadUnretained(this), std::move(v8_desc),
             std::move(iframe_attribution_data)));
@@ -288,7 +288,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
   if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
         *service_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached,
             WTF::CrossThreadUnretained(this), token));
   } else {
@@ -302,7 +302,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
   if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
         *service_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
+        CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed,
             WTF::CrossThreadUnretained(this), token));
   } else {
