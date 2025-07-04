@@ -2783,6 +2783,17 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
       &ValueForAnimationTriggerBehavior);
 }
 
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerBehaviorList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->TimelineTriggerBehaviorList()
+          : Vector<
+                EAnimationTriggerBehavior>{CSSAnimationData::
+                                               InitialTimelineTriggerBehavior()},
+      &ValueForAnimationTriggerBehavior);
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerTimelineList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {

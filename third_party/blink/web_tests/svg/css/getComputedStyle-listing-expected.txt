@@ -409,6 +409,7 @@ text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
+timeline-trigger-behavior: once
 timeline-trigger-name: none
 top: auto
 touch-action: auto

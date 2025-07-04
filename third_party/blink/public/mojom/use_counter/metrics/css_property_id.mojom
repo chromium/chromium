@@ -927,8 +927,10 @@ enum CSSSampleId {
     kCornerInlineEndShape = 867,
     kCorners = 868,
     kBorderShape = 869,
+    // TODO(crbug.com/429392773): This is deprecated.
     kAnimationTriggerBehavior = 870,
     kTimelineTriggerName = 871,
+    kTimelineTriggerBehavior = 872,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

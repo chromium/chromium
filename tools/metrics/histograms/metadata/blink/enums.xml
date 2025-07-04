@@ -7840,6 +7840,7 @@ Called by update_use_counter_css.py.-->
   <int value="869" label="border-shape"/>
   <int value="870" label="animation-trigger-behavior"/>
   <int value="871" label="timeline-trigger-name"/>
+  <int value="872" label="timeline-trigger-behavior"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

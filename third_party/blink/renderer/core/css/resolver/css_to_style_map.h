@@ -137,6 +137,9 @@ class CSSToStyleMap {
   static Persistent<const ScopedCSSName> MapAnimationTimelineTriggerName(
       StyleResolverState&,
       const CSSValue&);
+  static EAnimationTriggerBehavior MapAnimationTimelineTriggerBehavior(
+      StyleResolverState&,
+      const CSSValue&);
 };
 
 }  // namespace blink

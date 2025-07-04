@@ -855,4 +855,10 @@ Persistent<const ScopedCSSName> CSSToStyleMap::MapAnimationTimelineTriggerName(
   return nullptr;
 }
 
+EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTimelineTriggerBehavior(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationTriggerBehavior(state, value);
+}
+
 }  // namespace blink

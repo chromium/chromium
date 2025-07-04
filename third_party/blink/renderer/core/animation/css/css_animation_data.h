@@ -82,6 +82,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
       const {
     return timeline_trigger_name_list_;
   }
+  const Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() const {
+    return timeline_trigger_behavior_list_;
+  }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -128,6 +131,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   Vector<Persistent<const ScopedCSSName>>& TimelineTriggerNameList() {
     return timeline_trigger_name_list_;
+  }
+  Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() {
+    return timeline_trigger_behavior_list_;
   }
 
   bool HasSingleInitialTimeline() const {
@@ -180,6 +186,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static Persistent<const ScopedCSSName> InitialTimelineTriggerName() {
     return nullptr;
   }
+  static EAnimationTriggerBehavior InitialTimelineTriggerBehavior() {
+    return EAnimationTriggerBehavior::kOnce;
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -191,6 +200,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::FillMode> fill_mode_list_;
   Vector<EAnimPlayState> play_state_list_;
   Vector<EffectModel::CompositeOperation> composition_list_;
+  // TODO(crbug.com/429392773): trigger_* properties are deprecated in favor of
+  // timeline_trigger_* properties.
   Vector<EAnimationTriggerBehavior> trigger_behavior_list_;
   Vector<StyleTimeline> trigger_timeline_list_;
   Vector<std::optional<TimelineOffset>> trigger_range_start_list_;
@@ -199,6 +210,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto> trigger_exit_range_end_list_;
 
   Vector<Persistent<const ScopedCSSName>> timeline_trigger_name_list_;
+  Vector<EAnimationTriggerBehavior> timeline_trigger_behavior_list_;
 };
 
 }  // namespace blink

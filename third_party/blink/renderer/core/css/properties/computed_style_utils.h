@@ -242,6 +242,7 @@ class CORE_EXPORT ComputedStyleUtils {
       const EAnimationTriggerBehavior);
   static CSSValue* ValueForAnimationTriggerBehaviorList(
       const CSSAnimationData*);
+  static CSSValue* ValueForTimelineTriggerBehaviorList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationTriggerTimelineList(const CSSAnimationData*,
                                                         const ComputedStyle&);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
