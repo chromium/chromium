@@ -447,9 +447,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         return false;
       }
       frame = media::VideoFrame::WrapMappableSharedImage(
-          shared_image, sync_token,
-          media::VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), visible_rect,
-          natural_size, timestamp);
+          shared_image, sync_token, media::VideoFrame::ReleaseMailboxCB(),
+          visible_rect, natural_size, timestamp);
     } else {
       frame = media::VideoFrame::WrapSharedImage(
           format, shared_image, sync_token,

@@ -37,7 +37,6 @@
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encoder_info.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -223,8 +222,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
   // |shared_image| will be used when MappableSI is enabled. It will be null
   // otherwise.
   void ReuseFrame(scoped_refptr<gpu::ClientSharedImage> shared_image,
-                  const gpu::SyncToken& token,
-                  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+                  const gpu::SyncToken& token) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     constexpr size_t kMaxPooledFrames = 5;
     if (shared_image && (available_shared_images_.size() < kMaxPooledFrames)) {

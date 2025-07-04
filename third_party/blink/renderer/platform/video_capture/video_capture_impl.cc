@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "media/base/mac/video_frame_mac.h"
@@ -140,18 +139,14 @@ struct VideoCaptureImpl::BufferContext
     return gmb_resources_->gpu_memory_buffer_handle.Clone();
   }
 
-  static void MailboxHolderReleased(
-      scoped_refptr<BufferContext> buffer_context,
-      const gpu::SyncToken& release_sync_token,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+  static void MailboxHolderReleased(scoped_refptr<BufferContext> buffer_context,
+                                    const gpu::SyncToken& release_sync_token) {
     if (!buffer_context->media_task_runner_->RunsTasksInCurrentSequence()) {
       buffer_context->media_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BufferContext::MailboxHolderReleased, buffer_context,
-                         release_sync_token, std::move(gpu_memory_buffer)));
+          FROM_HERE, base::BindOnce(&BufferContext::MailboxHolderReleased,
+                                    buffer_context, release_sync_token));
       return;
     }
-    CHECK(!gpu_memory_buffer);
     buffer_context->gmb_resources_->release_sync_token = release_sync_token;
   }
 

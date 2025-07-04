@@ -266,8 +266,7 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
 
   CHECK(shared_image_);
   auto video_frame = VideoFrame::WrapMappableSharedImage(
-      shared_image_, sync_token_,
-      VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), visible_rect,
+      shared_image_, sync_token_, VideoFrame::ReleaseMailboxCB(), visible_rect,
       natural_size, base::TimeDelta());
   if (!video_frame) {
     return nullptr;

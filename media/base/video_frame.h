@@ -98,12 +98,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_MAX = STORAGE_GPU_MEMORY_BUFFER,
   };
 
-  // CB to be called on the mailbox backing this frame and its GpuMemoryBuffers
-  // (if they exist) when the frame is destroyed.
+  // CB to be called on the mailbox backing this frame when the frame is
+  // destroyed.
   using ReleaseMailboxCB = base::OnceCallback<void(const gpu::SyncToken&)>;
-  using ReleaseMailboxAndGpuMemoryBufferCB =
-      base::OnceCallback<void(const gpu::SyncToken&,
-                              std::unique_ptr<gfx::GpuMemoryBuffer>)>;
 
   // Interface representing client operations on a SyncToken, i.e. insert one in
   // the GPU Command Buffer and wait for it.
@@ -269,7 +266,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static scoped_refptr<VideoFrame> WrapMappableSharedImage(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       gpu::SyncToken sync_token,
-      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
+      ReleaseMailboxCB mailbox_holder_release_cb,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
@@ -855,7 +852,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const bool enable_mappable_si,
-      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
+      ReleaseMailboxCB mailbox_holder_release_cb,
       base::TimeDelta timestamp);
 
   void MakeScopedMappingForGpuMemoryBuffer(
@@ -927,7 +924,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Sync token associated with the `shared_image_`.
   gpu::SyncToken acquire_sync_token_;
-  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
+  ReleaseMailboxCB mailbox_holder_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
   // created via VideoFrame::WrapSharedImage().
