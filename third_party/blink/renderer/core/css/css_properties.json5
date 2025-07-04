@@ -1133,6 +1133,50 @@
       runtime_flag: "AnimationTrigger",
     },
     {
+      name: "timeline-trigger-range-start",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "TimelineTriggerRangeStart",
+      },
+      separator: ",",
+      valid_for_marker: true,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
+      name: "timeline-trigger-range-end",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "TimelineTriggerRangeEnd",
+      },
+      separator: ",",
+      valid_for_marker: true,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
+      name: "timeline-trigger-exit-range-start",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "TimelineTriggerExitRangeStart",
+      },
+      separator: ",",
+      valid_for_marker: true,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
+      name: "timeline-trigger-exit-range-end",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "TimelineTriggerExitRangeEnd",
+      },
+      separator: ",",
+      valid_for_marker: true,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
       name: "transition-delay",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "transition",

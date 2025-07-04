@@ -873,6 +873,7 @@ enum CSSSampleId {
     kMasonryFlow = 814,
     // kMasonryAutoTracks = 815,
     kResult = 816,
+    // TODO(crbug.com/429392773): kAnimationTrigger* entries are deprecated.
     // renamed to kAnimationTriggerBehavior
     //kAnimationTriggerType = 817,
     kAnimationTriggerTimeline = 818,
@@ -931,6 +932,10 @@ enum CSSSampleId {
     kAnimationTriggerBehavior = 870,
     kTimelineTriggerName = 871,
     kTimelineTriggerBehavior = 872,
+    kTimelineTriggerRangeStart = 873,
+    kTimelineTriggerRangeEnd = 874,
+    kTimelineTriggerExitRangeStart = 875,
+    kTimelineTriggerExitRangeEnd = 876,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -140,6 +140,18 @@ class CSSToStyleMap {
   static EAnimationTriggerBehavior MapAnimationTimelineTriggerBehavior(
       StyleResolverState&,
       const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTimelineTriggerRangeStart(
+      StyleResolverState&,
+      const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationTimelineTriggerRangeEnd(
+      StyleResolverState&,
+      const CSSValue&);
+  static TimelineOffsetOrAuto MapAnimationTimelineTriggerExitRangeStart(
+      StyleResolverState&,
+      const CSSValue&);
+  static TimelineOffsetOrAuto MapAnimationTimelineTriggerExitRangeEnd(
+      StyleResolverState&,
+      const CSSValue&);
 };
 
 }  // namespace blink

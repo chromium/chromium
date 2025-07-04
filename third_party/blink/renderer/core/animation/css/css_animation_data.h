@@ -85,6 +85,21 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() const {
     return timeline_trigger_behavior_list_;
   }
+  const Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeStartList()
+      const {
+    return timeline_trigger_range_start_list_;
+  }
+  const Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeEndList()
+      const {
+    return timeline_trigger_range_end_list_;
+  }
+  const Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeStartList()
+      const {
+    return timeline_trigger_exit_range_start_list_;
+  }
+  const Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeEndList() const {
+    return timeline_trigger_exit_range_end_list_;
+  }
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -134,6 +149,18 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() {
     return timeline_trigger_behavior_list_;
+  }
+  Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeStartList() {
+    return timeline_trigger_range_start_list_;
+  }
+  Vector<std::optional<TimelineOffset>>& TimelineTriggerRangeEndList() {
+    return timeline_trigger_range_end_list_;
+  }
+  Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeStartList() {
+    return timeline_trigger_exit_range_start_list_;
+  }
+  Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeEndList() {
+    return timeline_trigger_exit_range_end_list_;
   }
 
   bool HasSingleInitialTimeline() const {
@@ -189,6 +216,18 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static EAnimationTriggerBehavior InitialTimelineTriggerBehavior() {
     return EAnimationTriggerBehavior::kOnce;
   }
+  static std::optional<TimelineOffset> InitialTimelineTriggerRangeStart() {
+    return std::nullopt;
+  }
+  static std::optional<TimelineOffset> InitialTimelineTriggerRangeEnd() {
+    return std::nullopt;
+  }
+  static TimelineOffsetOrAuto InitialTimelineTriggerExitRangeStart() {
+    return TimelineOffsetOrAuto();
+  }
+  static TimelineOffsetOrAuto InitialTimelineTriggerExitRangeEnd() {
+    return TimelineOffsetOrAuto();
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -211,6 +250,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
 
   Vector<Persistent<const ScopedCSSName>> timeline_trigger_name_list_;
   Vector<EAnimationTriggerBehavior> timeline_trigger_behavior_list_;
+  Vector<std::optional<TimelineOffset>> timeline_trigger_range_start_list_;
+  Vector<std::optional<TimelineOffset>> timeline_trigger_range_end_list_;
+  Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_start_list_;
+  Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_end_list_;
 };
 
 }  // namespace blink

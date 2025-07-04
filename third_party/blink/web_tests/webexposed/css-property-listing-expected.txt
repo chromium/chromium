@@ -443,7 +443,11 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap-style
     timeline-scope
     timeline-trigger-behavior
+    timeline-trigger-exit-range-end
+    timeline-trigger-exit-range-start
     timeline-trigger-name
+    timeline-trigger-range-end
+    timeline-trigger-range-start
     top
     touch-action
     transform

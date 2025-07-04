@@ -410,7 +410,11 @@ text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
 timeline-trigger-behavior: once
+timeline-trigger-exit-range-end: auto
+timeline-trigger-exit-range-start: auto
 timeline-trigger-name: none
+timeline-trigger-range-end: normal
+timeline-trigger-range-start: normal
 top: auto
 touch-action: auto
 transform: none
