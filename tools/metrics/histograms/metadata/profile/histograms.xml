@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ProfilePickerFlowType">
+  <variant name="FREFlow" summary="Recorded for the FRE flow."/>
+  <variant name="GlicFlow" summary="Recorded for the Glic flow."/>
+  <variant name="ProfilePickerFlow"
+      summary="Recorded for the regular Profile Picker Flow."/>
+</variants>
+
 <variants name="ProfileStateGroup">
   <variant name="_ActiveMultiProfile"
       summary="Recorded only for users with &gt;=2 active profiles; recorded
@@ -906,6 +913,88 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the action performed by the user in the profile picker.
   </summary>
+</histogram>
+
+<histogram name="ProfilePicker.{ProfilePickerFlowType}.FlowEndedAtStep"
+    enum="ProfileManagementFlowStep" expires_after="2026-07-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the step at which the flow was ended. The value is emitted when the
+    flow is completed or aborted.
+
+    {ProfilePickerFlowType}
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.{ProfilePickerFlowType}.FlowTotalDuration"
+    units="ms" expires_after="2026-07-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the total flow duration. The value is emitted when the flow is
+    completed or aborted.
+
+    {ProfilePickerFlowType}
+  </summary>
+</histogram>
+
+<histogram
+    name="ProfilePicker.{ProfilePickerFlowType}.{StepFlowDuration}{StepName}"
+    units="ms" expires_after="2026-07-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the duration of {StepName} {StepFlowDuration}. The value is emitted
+    when the step is ended or switched.
+
+    {ProfilePickerFlowType}
+  </summary>
+  <token key="StepName">
+<!-- LINT.IfChange(StepName) -->
+
+    <variant name="" summary="a single step"/>
+    <variant name=".DefaultBrowser" summary="the default browser promo step"/>
+    <variant name=".FinishFlow" summary="the Finish flow step"/>
+    <variant name=".FinishSamlFlow" summary="the Finish SAML flow step"/>
+    <variant name=".FREIntro" summary="the FRE main page step"/>
+    <variant name=".PickerMainApp" summary="the profile picker main page step"/>
+    <variant name=".PostSignInSteps" summary="the post sign in steps"/>
+    <variant name=".Reauth" summary="the reauth step"/>
+    <variant name=".SearchEngineChoice"
+        summary="the search engine choice screen step"/>
+    <variant name=".SigninFlow" summary="the sign in flow step"/>
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_management_flow_controller.cc:GetStepHistogramSuffix) -->
+
+  </token>
+  <token key="StepFlowDuration">
+    <variant name="StepShownDuration"
+        summary="from the time the step was shown to the user until it ended
+                 (includes the user action duration only). This is not
+                 recorded for skipped steps."/>
+    <variant name="StepTotalDuration"
+        summary="from the trigger of the step until it ended (includes step
+                 latency and user action duration). This is recorded for
+                 skipped steps; only includes latency."/>
+  </token>
+</histogram>
+
+<histogram name="ProfilePicker.{ProfilePickerFlowType}.{StepStatus}"
+    enum="ProfileManagementFlowStep" expires_after="2026-07-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the step that {StepStatus}. Recorded when the step status change
+    happens.
+
+    {ProfilePickerFlowType}
+  </summary>
+  <token key="StepStatus">
+    <variant name="StepEnd" summary="has ended"/>
+    <variant name="StepShown" summary="was shown"/>
+    <variant name="StepSkipped" summary="was skipped"/>
+    <variant name="StepStart" summary="has started"/>
+  </token>
 </histogram>
 
 </histograms>

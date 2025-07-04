@@ -28,7 +28,8 @@ class ProfileManagementFlowControllerImpl
     : public ProfileManagementFlowController {
  public:
   ProfileManagementFlowControllerImpl(ProfilePickerWebContentsHost* host,
-                                      ClearHostClosure clear_host_callback);
+                                      ClearHostClosure clear_host_callback,
+                                      std::string_view flow_type_string);
   ~ProfileManagementFlowControllerImpl() override;
 
  protected:
