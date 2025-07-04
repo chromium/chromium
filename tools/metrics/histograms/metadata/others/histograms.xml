@@ -10345,7 +10345,7 @@ regressions. -->
 <histogram name="WebUsb.DetachKernelDriverOutcome"
     enum="DetachKernelDriverOutcome" expires_after="2026-06-15">
   <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records the outcome of detaching a kernel driver during ClaimInterface (for
     Android and Linux only).

@@ -6649,7 +6649,7 @@ should be able to be added at any place in this file.
 
 <action name="ChromeOS.AppInstallDialog.AppLaunched">
   <owner>brettw@chromium.org</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <description>
     Recorded when the user requested a previously installed app to be launched
     in the CrOS App Install dialog.
@@ -6658,7 +6658,7 @@ should be able to be added at any place in this file.
 
 <action name="ChromeOS.AppInstallDialog.Cancelled">
   <owner>brettw@chromium.org</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <description>
     Recorded when the user closed an installation dialog without installing.
   </description>
@@ -6666,7 +6666,7 @@ should be able to be added at any place in this file.
 
 <action name="ChromeOS.AppInstallDialog.Installed">
   <owner>brettw@chromium.org</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <description>
     Recorded when the user requested an app to be installed in the CrOS App
     Install dialog.
@@ -6675,7 +6675,7 @@ should be able to be added at any place in this file.
 
 <action name="ChromeOS.AppInstallDialog.Shown">
   <owner>brettw@chromium.org</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <description>
     Recorded when the CrOS App Install dialog was opened by the user.
   </description>

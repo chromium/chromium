@@ -15,7 +15,7 @@ items:
   value: false
 owners:
 - ovn@google.com
-- cros-web-apps-team@google.com
+- lt-web-apps-team@google.com
 schema:
   type: boolean
 supported_on:

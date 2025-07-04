@@ -2371,7 +2371,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
     expires_after="2026-01-05">
   <owner>renkens@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
     measures the time from when we dispatch a call to install them, until we get
@@ -2384,7 +2384,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
     enum="BooleanSuccess" expires_after="2025-12-08">
   <owner>renkens@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records whether system web app icons are healthy for each user session that
     has system web apps installed. Failure indicates that at least one app has
@@ -2395,7 +2395,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
     expires_after="2025-12-08">
   <owner>renkens@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records whether a reinstall fixes previously broken system web app icons.
     This is recorded during icon check after a reinstall (when icons were broken

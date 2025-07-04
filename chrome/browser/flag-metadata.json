@@ -30,7 +30,7 @@
 [
   {
     "name": "aaudio-per-stream-device-selection",
-    "owners": [ "mjel@google.com", "cros-web-apps-team@google.com" ],
+    "owners": [ "mjel@google.com", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -354,20 +354,20 @@
     "name": "android-use-correct-display-work-area",
     "owners": [
       "renkens@google.com",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 145
   },
   {
     "name": "android-web-app-launch-handler",
-    "owners": [ "sselyvon@google.com", "tkachenkoo@google.com", "cros-web-apps-team@google.com" ],
+    "owners": [ "sselyvon@google.com", "tkachenkoo@google.com", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 145
   },
   {
     "name": "android-window-management-web-api",
     "owners": [
       "renkens@google.com",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 145
   },
@@ -985,7 +985,7 @@
   },
   {
     "name": "automatic-usb-detach",
-    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "owners": ["ovn@google.com", "lt-web-apps-team@google.com"],
     "expiry_milestone": 160
   },
   {
@@ -1746,7 +1746,7 @@
   },
   {
     "name": "content-settings-partitioning",
-    "owners": [ "brettw@chromium.org", "cros-web-apps-team@google.com"],
+    "owners": [ "brettw@chromium.org", "lt-web-apps-team@google.com"],
     "expiry_milestone": 132
   },
   {
@@ -2329,7 +2329,7 @@
   },
   {
     "name": "display-edge-to-edge-fullscreen",
-    "owners": [ "wzwonarz@google.com", "cros-web-apps-krk@google.com" ],
+    "owners": [ "wzwonarz@google.com", "lt-web-apps-krk@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -2702,7 +2702,7 @@
     "name": "enable-android-document-picture-in-picture",
     "owners": [
       "kkaplon@google.com",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 145
   },
@@ -2715,7 +2715,7 @@
     "name": "enable-android-mininal-ui-large-screen",
     "owners": [
       "vkorotkevich@google.com",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 145
   },
@@ -2723,7 +2723,7 @@
     "name": "enable-android-window-occlusion",
     "owners": [
       "edcourtney@chromium.org",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 142
   },
@@ -2731,7 +2731,7 @@
     "name": "enable-android-window-popup-large-screen",
     "owners": [
       "chominskib@google.com",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 142
   },
@@ -2799,7 +2799,7 @@
     "name": "enable-auxiliary-navigation-stays-in-browser",
     "owners": [
       "muratori@google.org",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 150
   },
@@ -3157,7 +3157,7 @@
   },
   {
     "name": "enable-desktop-pwas-tab-strip-customizations",
-    "owners": [ "cros-web-apps-core@google.com", "pwa-team@google.com" ],
+    "owners": [ "lt-web-apps-core@google.com", "pwa-team@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -3258,7 +3258,7 @@
   },
   {
     "name": "enable-exclusive-access-manager-on-android",
-    "owners": [ "abdoeed@google.org", "wzwonarz@chromium.org", "cros-web-apps-team@google.com" ],
+    "owners": [ "abdoeed@google.org", "wzwonarz@chromium.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -3889,7 +3889,7 @@
   },
   {
     "name": "enable-navigation-capture-refactor-android",
-    "owners": [ "muratori@google.org", "cros-web-apps-team@google.com" ],
+    "owners": [ "muratori@google.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -4104,7 +4104,7 @@
     "name": "enable-reparent-auxiliary-navigation-from-pwa",
     "owners": [
       "muratori@google.org",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 150
   },
@@ -4112,7 +4112,7 @@
     "name": "enable-reparent-top-level-navigation-from-pwa",
     "owners": [
       "muratori@google.org",
-      "cros-web-apps-team@google.com"
+      "lt-web-apps-team@google.com"
     ],
     "expiry_milestone": 150
   },
@@ -4195,7 +4195,7 @@
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
-    "owners": [ "ortuno@chromium.org", "cros-web-apps-team@google.com" ],
+    "owners": [ "ortuno@chromium.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 110
   },
   {
@@ -10177,7 +10177,7 @@
   },
   {
     "name": "web-serial-over-bluetooth",
-    "owners": ["xutan@chromium.org", "ovn@google.com", "cros-web-apps-team@google.com"],
+    "owners": ["xutan@chromium.org", "ovn@google.com", "lt-web-apps-team@google.com"],
     "expiry_milestone": 146
   },
   {

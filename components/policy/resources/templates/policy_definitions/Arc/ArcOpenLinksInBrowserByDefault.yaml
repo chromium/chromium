@@ -14,7 +14,7 @@ items:
 - caption: Open links in Android apps by default
   value: false
 owners:
-- cros-web-apps-team@google.com
+- lt-web-apps-team@google.com
 - ovn@google.com
 schema:
   type: boolean
