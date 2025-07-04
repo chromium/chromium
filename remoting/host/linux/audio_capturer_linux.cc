@@ -60,7 +60,9 @@ void AudioCapturerLinux::OnDataRead(
   if (silence_detector_.IsSilence(
           // TODO(danakj): This cast can cause UB, we should copy into integers
           // or pass it as a byte span.
-          reinterpret_cast<const int16_t*>(data->as_string().data()),
+          // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+          UNSAFE_TODO(
+              reinterpret_cast<const int16_t*>(data->as_string().data())),
           data->as_string().size() / sizeof(int16_t) /
               AudioPipeReader::kChannels)) {
     return;

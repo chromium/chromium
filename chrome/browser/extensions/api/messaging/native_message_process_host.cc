@@ -301,8 +301,9 @@ void NativeMessageProcessHost::ProcessIncomingData(
     if (incoming_data_.size() < kMessageHeaderSize)
       return;
 
+    // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
     size_t message_size =
-        *reinterpret_cast<const uint32_t*>(incoming_data_.data());
+        *UNSAFE_TODO(reinterpret_cast<const uint32_t*>(incoming_data_.data()));
 
     if (message_size > kMaximumNativeMessageSize) {
       LOG(ERROR) << "Native Messaging host tried sending a message that is "

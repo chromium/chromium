@@ -34,7 +34,9 @@ std::unique_ptr<media::AudioBus> AudioPacketToAudioBus(
   std::unique_ptr<media::AudioBus> result =
       media::AudioBus::Create(packet.channels(), frame_count);
   result->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      reinterpret_cast<const int16_t*>(packet.data(0).data()), frame_count);
+      // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+      UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet.data(0).data())),
+      frame_count);
   return result;
 }
 

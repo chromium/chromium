@@ -28,7 +28,9 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
   // to support evolution of the fuzzed input. Let's follow whatever it does.
   const std::string s8 = provider.ConsumeRandomLengthString();
   return std::u16string(
-      reinterpret_cast<const std::u16string::value_type*>(s8.data()),
+      // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+      UNSAFE_TODO(
+          reinterpret_cast<const std::u16string::value_type*>(s8.data())),
       s8.size() / 2);
 }
 

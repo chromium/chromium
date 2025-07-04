@@ -25,9 +25,10 @@ base::FilePath ReadChromePathFromLastBrowserFile(
     return base::FilePath();
   }
 
+  // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
   base::FilePath::StringType chrome_path(
-      reinterpret_cast<const base::FilePath::CharType*>(
-          last_browser_file_data.data()),
+      UNSAFE_TODO(reinterpret_cast<const base::FilePath::CharType*>(
+          last_browser_file_data.data())),
       last_browser_file_data.size() / sizeof(base::FilePath::CharType));
   const base::FilePath::StringViewType chrome_path_trimmed =
       base::TrimString(chrome_path, FILE_PATH_LITERAL(" \n"), base::TRIM_ALL);

@@ -103,8 +103,10 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
                                      &new_fake_index_contents));
   const disk_cache::FakeIndexData* fake_index_header;
   EXPECT_EQ(sizeof(*fake_index_header), new_fake_index_contents.size());
-  fake_index_header = reinterpret_cast<const disk_cache::FakeIndexData*>(
-      new_fake_index_contents.data());
+  // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+  fake_index_header =
+      UNSAFE_TODO(reinterpret_cast<const disk_cache::FakeIndexData*>(
+          new_fake_index_contents.data()));
   EXPECT_EQ(disk_cache::kSimpleVersion, fake_index_header->version);
   EXPECT_EQ(kSimpleInitialMagicNumber, fake_index_header->initial_magic_number);
 }
