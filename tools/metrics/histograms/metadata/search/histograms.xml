@@ -361,6 +361,22 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram
+    name="Search.ChoiceDebug.UnexpectedRecordDisplayStateReentryHasCompletion"
+    enum="Boolean" expires_after="2025-11-18">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    At the moment re-entry into MaybeRecordChoiceScreenDisplayState from user
+    choice moment is detected, records whether we already have valid completion
+    metadata written stored in prefs.
+
+    This is intended to monitor the ongoing prevalence of
+    https://crbug.com/390272573, to allow detection if the rate increases
+    significantly.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
     enum="UnknownCountryIdStored" expires_after="2025-11-18">
   <owner>cschlosser@chromium.org</owner>
