@@ -129,11 +129,21 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 
 @implementation ExplainWithGeminiMediatorTestCase
 
+// TODO(crbug.com/429537743): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testExplainWithGeminiInReadingMode \
+  testExplainWithGeminiInReadingMode
+#else
+#define MAYBE_testExplainWithGeminiInReadingMode \
+  DISABLED_testExplainWithGeminiInReadingMode
+#endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
       {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "2"}}}});
-  if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
+  if ([self
+          isRunningTest:@selector(MAYBE_testExplainWithGeminiInReadingMode)]) {
     config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
   }
   return config;
@@ -263,7 +273,7 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 }
 
 // Checks if Explain With Gemini button is present in Reading Mode.
-- (void)testExplainWithGeminiInReadingMode {
+- (void)MAYBE_testExplainWithGeminiInReadingMode {
   [self loadPage];
 
   // Open Reader Mode UI.
