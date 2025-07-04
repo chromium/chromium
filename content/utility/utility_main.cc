@@ -382,6 +382,14 @@ int UtilityMain(MainFunctionParams parameters) {
         sandbox_type, std::move(pre_sandbox_hook), sandbox_options);
   }
 
+  // Startup tracing creates a tracing thread, which is incompatible on
+  // platforms that require single-threaded sandbox initialization. In these
+  // cases, startup tracing is initialized right after sandbox initialization.
+  if (parameters.needs_startup_tracing_after_sandbox_init) {
+    tracing::InitTracingPostFeatureList(/*enable_consumer=*/false,
+                                        /*will_trace_thread_restart=*/false);
+  }
+
   // Start the HangWatcher now that the sandbox is engaged, if it hasn't
   // already been started.
   if (base::HangWatcher::IsEnabled() &&
@@ -420,13 +428,6 @@ int UtilityMain(MainFunctionParams parameters) {
   base::RunLoop run_loop;
   utility_process.set_main_thread(
       new UtilityThreadImpl(run_loop.QuitClosure()));
-
-  // Mojo IPC support is brought up by UtilityThreadImpl, so startup tracing
-  // is enabled here if it needs to start after mojo init (normally so the mojo
-  // broker can bypass the sandbox to allocate startup tracing's SMB).
-  if (parameters.needs_startup_tracing_after_mojo_init) {
-    tracing::EnableStartupTracingIfNeeded();
-  }
 
   // Both utility process and service utility process would come
   // here, but the later is launched without connection to service manager, so

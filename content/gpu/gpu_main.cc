@@ -381,6 +381,16 @@ int GpuMain(MainFunctionParams parameters) {
     client->PostSandboxInitialized();
   }
 
+  // Startup tracing creates a tracing thread, which is incompatible on
+  // platforms that require single-threaded sandbox initialization. In these
+  // cases, startup tracing is either initialized right after sandbox
+  // initialization, or we restart the tracing thread during sandbox
+  // initialization.
+  if (parameters.needs_startup_tracing_after_sandbox_init) {
+    tracing::InitTracingPostFeatureList(/*enable_consumer=*/false,
+                                        /*will_trace_thread_restart=*/false);
+  }
+
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
   base::ThreadType io_thread_type = base::ThreadType::kDisplayCritical;
@@ -399,13 +409,6 @@ int GpuMain(MainFunctionParams parameters) {
   child_thread->Init(start_time);
 
   gpu_process.set_main_thread(child_thread);
-
-  // Mojo IPC support is brought up by GpuChildThread, so startup tracing is
-  // enabled here if it needs to start after mojo init (normally so the mojo
-  // broker can bypass the sandbox to allocate startup tracing's SMB).
-  if (parameters.needs_startup_tracing_after_mojo_init) {
-    tracing::EnableStartupTracingIfNeeded();
-  }
 
 #if BUILDFLAG(IS_MAC)
   // A GPUEjectPolicy of 'wait' is set in the Info.plist of the browser

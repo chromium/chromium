@@ -205,15 +205,7 @@ base::Thread* PerfettoTracedProcess::GetTraceThread() {
 }
 
 // static
-PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstance() {
-  static base::NoDestructor<PerfettoTracedProcess> traced_process(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
-  return *traced_process;
-}
-
-// static
-PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstanceWithThread(
+PerfettoTracedProcess& PerfettoTracedProcess::MaybeCreateInstance(
     bool will_trace_thread_restart) {
   static base::NoDestructor<PerfettoTracedProcess> traced_process(
       will_trace_thread_restart);
@@ -294,14 +286,13 @@ void PerfettoTracedProcess::SetupForTesting(
   DataSourceBase::ResetTaskRunner(task_runner_);
 
   tracing_backend_ = std::make_unique<PerfettoTracingBackend>();
-  OnThreadPoolAvailable(
+  InitPostFeatureList(
       /* enable_consumer */ true);
   // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void PerfettoTracedProcess::ResetForTesting() {
-  startup_tracing_needed_ = false;
   base::WaitableEvent on_reset_done;
   // The tracing backend is used internally in Perfetto on the |task_runner_|
   // sequence. Reset and destroy the backend on the task runner to avoid racing
@@ -326,18 +317,6 @@ void PerfettoTracedProcess::ResetForTesting() {
     on_reset_done.Wait();
   }
   task_runner_ = nullptr;
-}
-
-void PerfettoTracedProcess::RequestStartupTracing(
-    const perfetto::TraceConfig& config,
-    const perfetto::Tracing::SetupStartupTracingOpts& opts) {
-  if (thread_pool_started_) {
-    perfetto::Tracing::SetupStartupTracingBlocking(config, opts);
-  } else {
-    saved_config_ = config;
-    saved_opts_ = opts;
-    startup_tracing_needed_ = true;
-  }
 }
 
 void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
@@ -402,14 +381,8 @@ void PerfettoTracedProcess::DeferOrConnectProducerSocket(
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
-  thread_pool_started_ = true;
+void PerfettoTracedProcess::InitPostFeatureList(bool enable_consumer) {
   SetupClientLibrary(enable_consumer);
-
-  if (startup_tracing_needed_) {
-    perfetto::Tracing::SetupStartupTracingBlocking(saved_config_, saved_opts_);
-    startup_tracing_needed_ = false;
-  }
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(

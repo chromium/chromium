@@ -262,6 +262,16 @@ int RendererMain(MainFunctionParams parameters) {
             : base::ThreadType::kDisplayCritical;
     base::PlatformThread::SetCurrentThreadType(thread_type);
 
+    // Startup tracing creates a tracing thread, which is incompatible on
+    // platforms that require single-threaded sandbox initialization. In these
+    // cases, startup tracing is initialized right after sandbox initialization.
+    if (parameters.needs_startup_tracing_after_sandbox_init) {
+      tracing::InitTracingPostFeatureList(/*enable_consumer=*/false,
+                                          /*will_trace_thread_restart=*/false);
+      TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
+                           "needs_startup_tracing_after_sandbox_init", true);
+    }
+
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
     // It's not a memory leak since RenderThread has the same lifetime
     // as a renderer process.
@@ -284,15 +294,6 @@ int RendererMain(MainFunctionParams parameters) {
       swap_init.reset();
     }
 #endif
-
-    // Mojo IPC support is brought up by RenderThreadImpl, so startup tracing
-    // is enabled here if it needs to start after mojo init (normally so the
-    // mojo broker can bypass the sandbox to allocate startup tracing's SMB).
-    if (parameters.needs_startup_tracing_after_mojo_init) {
-      tracing::EnableStartupTracingIfNeeded();
-      TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
-                           "needs_startup_tracing_after_mojo_init", true);
-    }
 
 #if BUILDFLAG(IS_WIN)
     // Now that Mojo is initialized, but before the sandbox is enabled, set up

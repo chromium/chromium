@@ -128,6 +128,7 @@ void TrackNameRecorder::SetProcessTrackDescriptor(
 TrackNameRecorder::TrackNameRecorder()
     : process_start_timestamp_(
           TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds()) {
+  perfetto::internal::TrackRegistry::InitializeInstance();
   base::ThreadIdNameManager::GetInstance()->AddObserver(this);
   base::CurrentProcess::GetInstance().SetDelegate(this, {});
   base::TrackEvent::AddSessionObserver(this);

@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_STARTUP_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/launch.h"
@@ -22,38 +23,24 @@ class CommandLine;
 
 namespace tracing {
 
+inline constexpr uint32_t kStartupTracingTimeoutMs = 30 * 1000;  // 30 sec
+
 // Returns true if `InitTracingPostFeatureList()` has been called
 // for this process.
 bool COMPONENT_EXPORT(TRACING_CPP) IsTracingInitialized();
 
-// Hooks up hooks up service callbacks in TraceLog for the perfetto backend and,
-// if startup tracing command line flags are present, enables TraceLog with a
-// config based on the flags. In zygote children, this should only be called
-// after mojo is initialized, as the zygote's sandbox prevents creation of the
-// tracing SMB before that point.
-//
-// TODO(eseckler): Consider allocating the SMB in parent processes outside the
-// sandbox and supply it via the command line. Then, we can revert to call this
-// earlier and from fewer places again.
-void COMPONENT_EXPORT(TRACING_CPP)
-    EnableStartupTracingIfNeeded(bool with_thread = false);
-
-// Enable startup tracing for the current process with the provided config. Sets
-// up ProducerClient and trace event and/or sampler profiler data sources, and
-// enables TraceLog. The caller should also instruct Chrome's tracing service to
-// start tracing, once the service is connected. Returns false on failure.
-//
-// TODO(eseckler): Figure out what startup tracing APIs should look like with
-// the client lib.
-bool COMPONENT_EXPORT(TRACING_CPP)
-    EnableStartupTracingForProcess(const perfetto::TraceConfig&);
-
-// Initialize tracing components that require task runners. Will switch
-// IsTracingInitialized() to return true.
-// |enable_consumer| should be true if the system consumer can be enabled.
-// Currently this is only the case if this is running in the browser process.
-void COMPONENT_EXPORT(TRACING_CPP)
-    InitTracingPostFeatureList(bool enable_consumer);
+// Initializes the perfetto backend and, if startup tracing command line flags
+// are present, enables startup tracing with a config based on the flags. This
+// should only be called after feature list initialization, and after sandbox
+// initialization on platforms that require single thread. Will switch
+// IsTracingInitialized() to return true. |enable_consumer| should be true if
+// the system consumer can be enabled. Currently this is only the case if this
+// is running in the browser process.
+void COMPONENT_EXPORT(TRACING_CPP) InitTracingPostFeatureList(
+    bool enable_consumer,
+    bool will_trace_thread_restart,
+    base::RepeatingCallback<bool()> should_allow_system_tracing =
+        base::NullCallback());
 
 // If tracing is enabled, grabs the current trace config & mode and tells the
 // child to begin tracing right away via startup tracing command line flags.

@@ -100,7 +100,11 @@ IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
   auto config = tracing::TraceStartupConfig::GetInstance()
                     .GetDefaultBackgroundStartupConfig();
 
-  CHECK(tracing::EnableStartupTracingForProcess(config));
+  perfetto::Tracing::SetupStartupTracingOpts opts;
+  opts.timeout_ms = tracing::kStartupTracingTimeoutMs;
+  opts.backend = perfetto::kCustomBackend;
+
+  perfetto::Tracing::SetupStartupTracingBlocking(config, opts);
 
   for (int i = 0; i < 1024; ++i) {
     auto data = std::make_unique<LargeTraceEventData>();

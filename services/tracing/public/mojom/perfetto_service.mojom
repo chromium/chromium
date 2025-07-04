@@ -140,6 +140,7 @@ struct DataSourceConfig {
 
 struct DataSourceRegistration {
   string name;
+  uint64 id;
   bool will_notify_on_start;
   bool will_notify_on_stop;
   bool handles_incremental_state_clear;

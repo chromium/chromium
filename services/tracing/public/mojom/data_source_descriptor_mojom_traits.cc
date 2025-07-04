@@ -16,6 +16,7 @@ bool StructTraits<tracing::mojom::DataSourceRegistrationDataView,
     return false;
   }
   out->set_name(name);
+  out->set_id(data.id());
   out->set_will_notify_on_start(data.will_notify_on_start());
   out->set_will_notify_on_stop(data.will_notify_on_stop());
   out->set_handles_incremental_state_clear(
