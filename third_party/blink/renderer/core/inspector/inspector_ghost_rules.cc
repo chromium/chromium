@@ -124,8 +124,9 @@ void InspectorGhostRules::ActivateTreeScope(TreeScope& tree_scope) {
        resolver->GetActiveStyleSheets()) {
     CSSStyleSheet* sheet = active_stylesheet.first.Get();
     if (affected_stylesheets_.Contains(sheet)) {
+      // TODO(sesse): Collect mixins from here.
       alternative_stylesheets.push_back(ActiveStyleSheet{
-          sheet, style_engine.CreateUnconnectedRuleSet(*sheet)});
+          sheet, style_engine.CreateUnconnectedRuleSet(*sheet, /*mixins=*/{})});
       any_affected = true;
     } else {
       alternative_stylesheets.push_back(active_stylesheet);

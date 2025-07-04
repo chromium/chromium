@@ -54,7 +54,7 @@ CSSRuleList* TestStyleSheet::CssRules() {
 
 RuleSet& TestStyleSheet::GetRuleSet() {
   RuleSet& rule_set = style_sheet_->Contents()->EnsureRuleSet(
-      MediaQueryEvaluator(document_->GetFrame()));
+      MediaQueryEvaluator(document_->GetFrame()), /*mixins=*/{});
   rule_set.CompactRulesIfNeeded();
   return rule_set;
 }
@@ -81,7 +81,8 @@ RuleSet* CreateRuleSet(Document& document, String text) {
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   auto* sheet = CSSStyleSheet::Create(document, init, exception_state);
   sheet->replaceSync(text, exception_state);
-  return &sheet->Contents()->EnsureRuleSet(*media_query_evaluator);
+  return &sheet->Contents()->EnsureRuleSet(*media_query_evaluator,
+                                           /*mixins=*/{});
 }
 
 PropertyRegistration* CreatePropertyRegistration(const String& name,

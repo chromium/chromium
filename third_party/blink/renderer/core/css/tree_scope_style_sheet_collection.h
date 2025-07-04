@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_TREE_SCOPE_STYLE_SHEET_COLLECTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"

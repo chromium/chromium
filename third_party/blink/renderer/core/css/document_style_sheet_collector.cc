@@ -47,8 +47,9 @@ void DocumentStyleSheetCollector::AppendActiveStyleSheet(CSSStyleSheet* sheet) {
 }
 
 void DocumentStyleSheetCollector::FinishCollectingStylesheets(
-    StyleEngine& engine) {
-  collection_->CreateRuleSets(engine);
+    StyleEngine& engine,
+    const MediaQueryEvaluator& medium) {
+  collection_->CreateRuleSets(engine, medium);
 }
 
 void DocumentStyleSheetCollector::AppendSheetForList(StyleSheet* sheet) {

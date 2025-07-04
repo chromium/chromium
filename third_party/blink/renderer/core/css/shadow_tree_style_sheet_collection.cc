@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -79,10 +80,11 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
 }
 
 void ShadowTreeStyleSheetCollection::UpdateActiveStyleSheets(
-    StyleEngine& engine) {
+    StyleEngine& engine,
+    const MediaQueryEvaluator& medium) {
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
   CollectStyleSheets(engine, *collection);
-  collection->CreateRuleSets(engine);
+  collection->CreateRuleSets(engine, medium);
   ApplyActiveStyleSheetChanges(*collection);
 }
 

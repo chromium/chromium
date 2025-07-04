@@ -173,8 +173,8 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
           kHTMLStandardMode, SecureContextMode::kInsecureContext));
   sheet->ParseString(css_text);
   HeapHashSet<Member<RuleSet>> rule_sets;
-  RuleSet& rule_set =
-      sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+  RuleSet& rule_set = sheet->EnsureRuleSet(
+      MediaQueryEvaluator(GetDocument().GetFrame()), /*mixins=*/{});
   rule_set.CompactRulesIfNeeded();
   rule_sets.insert(&rule_set);
   SelectorFilter selector_filter;
@@ -7292,7 +7292,8 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
   sheet->Contents()->ClearRuleSet();
   EXPECT_FALSE(sheet->Contents()->HasRuleSet());
 
-  RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
+  RuleSet* rule_set =
+      GetStyleEngine().CreateUnconnectedRuleSet(*sheet, /*mixins=*/{});
   ASSERT_TRUE(rule_set);
   rule_set->AssertCompacted();
   EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
@@ -7313,7 +7314,8 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
   CSSStyleSheet* sheet =
       To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
           ->sheet();
-  EXPECT_FALSE(GetStyleEngine().CreateUnconnectedRuleSet(*sheet));
+  EXPECT_FALSE(
+      GetStyleEngine().CreateUnconnectedRuleSet(*sheet, /*mixins=*/{}));
 }
 
 TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {

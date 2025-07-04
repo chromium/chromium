@@ -251,12 +251,14 @@ class CORE_EXPORT StyleSheetContents final
   }
 
   bool HasRuleSet() { return rule_set_.Get(); }
-  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&);
+  RuleSet& EnsureRuleSet(const MediaQueryEvaluator& medium,
+                         const MixinMap& mixins);
   void ClearRuleSet();
   // Create a RuleSet which is not associated (i.e. not owned)
   // by this StyleSheetContents. This is useful for matching rules
   // in  an "alternate reality", which is the case for InspectorGhostRules.
-  RuleSet* CreateUnconnectedRuleSet(const MediaQueryEvaluator&) const;
+  RuleSet* CreateUnconnectedRuleSet(const MediaQueryEvaluator& medium,
+                                    const MixinMap& mixins) const;
 
   String SourceMapURL() const { return source_map_url_; }
 

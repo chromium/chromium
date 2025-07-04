@@ -81,7 +81,7 @@ class CORE_EXPORT StyleSheetCollection
   // all stylesheets.
   //
   // Can only be called once.
-  void CreateRuleSets(StyleEngine& engine);
+  void CreateRuleSets(StyleEngine& engine, const MediaQueryEvaluator& medium);
 
   virtual void Trace(Visitor*) const;
   const char* GetHumanReadableName() const override {

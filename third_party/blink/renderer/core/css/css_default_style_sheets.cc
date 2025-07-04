@@ -226,10 +226,12 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_pseudo_element_style_.Clear();
   default_forced_colors_media_controls_style_.Clear();
 
-  default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
+  default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval(),
+                                         /*mixins=*/{});
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
-                                                ScreenEval());
-  default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
+                                                ScreenEval(), /*mixins=*/{});
+  default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval(),
+                                          /*mixins=*/{});
 
   default_html_style_->CompactRulesIfNeeded();
   default_html_quirks_style_->CompactRulesIfNeeded();
@@ -247,7 +249,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
     view_source_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_VIEW_SOURCE_CSS));
     default_view_source_style_->AddRulesFromSheet(view_source_style_sheet_,
-                                                  ScreenEval());
+                                                  ScreenEval(), /*mixins=*/{});
     default_view_source_style_->CompactRulesIfNeeded();
   }
   return default_view_source_style_.Get();
@@ -258,8 +260,8 @@ RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
     json_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
     default_json_document_style_ = MakeGarbageCollected<RuleSet>();
-    default_json_document_style_->AddRulesFromSheet(json_style_sheet_,
-                                                    ScreenEval());
+    default_json_document_style_->AddRulesFromSheet(
+        json_style_sheet_, ScreenEval(), /*mixins=*/{});
     default_json_document_style_->CompactRulesIfNeeded();
   }
   return default_json_document_style_.Get();
@@ -279,24 +281,27 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
     NamespaceType type) {
   switch (type) {
     case NamespaceType::kHTML:
-      default_html_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_html_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                             /*mixins=*/{});
       default_html_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kSVG:
-      default_svg_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_svg_style_->AddRulesFromSheet(rules, ScreenEval(), /*mixins=*/{});
       default_svg_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMathML:
-      default_mathml_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_mathml_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                               /*mixins=*/{});
       default_mathml_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMediaControls:
-      default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                                       /*mixins=*/{});
       default_media_controls_style_->CompactRulesIfNeeded();
       break;
   }
   // Add to print and forced color for all namespaces.
-  default_print_style_->AddRulesFromSheet(rules, PrintEval());
+  default_print_style_->AddRulesFromSheet(rules, PrintEval(), /*mixins=*/{});
   default_print_style_->CompactRulesIfNeeded();
   if (default_forced_color_style_) {
     switch (type) {
@@ -306,12 +311,12 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
               MakeGarbageCollected<RuleSet>();
         }
         default_forced_colors_media_controls_style_->AddRulesFromSheet(
-            rules, ForcedColorsEval());
+            rules, ForcedColorsEval(), /*mixins=*/{});
         default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
         break;
       default:
-        default_forced_color_style_->AddRulesFromSheet(rules,
-                                                       ForcedColorsEval());
+        default_forced_color_style_->AddRulesFromSheet(
+            rules, ForcedColorsEval(), /*mixins=*/{});
         default_forced_color_style_->CompactRulesIfNeeded();
         break;
     }
@@ -430,8 +435,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(ScrollButtonStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          ScrollButtonStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       // We just added a new :focus-visible rule to the UA stylesheet, and
       // RuleSetGroup caches whether we have any such rules or not, so we need
@@ -448,8 +453,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(ScrollMarkerStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          ScrollMarkerStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       // We just added a new :focus-visible rule to the UA stylesheet, and
       // RuleSetGroup caches whether we have any such rules or not, so we need
@@ -466,8 +471,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(MarkerStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          MarkerStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
@@ -496,7 +501,7 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen(
 
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
-      MediaQueryEvaluator(element.GetDocument().GetFrame()));
+      MediaQueryEvaluator(element.GetDocument().GetFrame()), /*mixins=*/{});
   default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
 }
@@ -515,7 +520,7 @@ void CSSDefaultStyleSheets::RebuildFullscreenRuleSetIfMediaQueriesChanged(
   default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
-      MediaQueryEvaluator(element.GetDocument().GetFrame()));
+      MediaQueryEvaluator(element.GetDocument().GetFrame()), /*mixins=*/{});
   default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
   rule_set_group_cache_.clear();
@@ -537,13 +542,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
   if (!default_forced_color_style_) {
     default_forced_color_style_ = MakeGarbageCollected<RuleSet>();
   }
-  default_forced_color_style_->AddRulesFromSheet(DefaultStyleSheet(),
-                                                 ForcedColorsEval());
-  default_forced_color_style_->AddRulesFromSheet(ForcedColorsStyleSheet(),
-                                                 ForcedColorsEval());
+  default_forced_color_style_->AddRulesFromSheet(
+      DefaultStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
+  default_forced_color_style_->AddRulesFromSheet(
+      ForcedColorsStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
   if (svg_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(SvgStyleSheet(),
-                                                   ForcedColorsEval());
+    default_forced_color_style_->AddRulesFromSheet(
+        SvgStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
   }
   default_forced_color_style_->CompactRulesIfNeeded();
 
@@ -552,7 +557,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_colors_media_controls_style_ =
         MakeGarbageCollected<RuleSet>();
     default_forced_colors_media_controls_style_->AddRulesFromSheet(
-        MediaControlsStyleSheet(), ForcedColorsEval());
+        MediaControlsStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
     default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
   }
 
