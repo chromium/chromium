@@ -65,7 +65,7 @@
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle do Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Agora, você vai receber conteúdo de e sobre <ph name="SITE_NAME" /> na guia "Seguindo". Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
-<translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1263231323834454256">Lista de Leitura</translation>
 <translation id="1269129608791067105">Seu histórico será mostrado aqui</translation>
 <translation id="1273937721055267968">Bloquear o <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
@@ -143,7 +143,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 senha comprometida neste dispositivo}one{# senha comprometida neste dispositivo}other{# senhas comprometidas neste dispositivo}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="160275202205869636">Com essa opção ativada, você usa e salva dados na sua Conta do Google. Quando está desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="160275202205869636">Se estas opções forem ativadas, seus dados serão salvos na sua Conta do Google. Se forem desativadas, as informações serão salvas apenas neste dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}one{# favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}other{# favoritos e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}}</translation>
 <translation id="1639239467298939599">Carregando</translation>
@@ -1084,7 +1084,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
-<translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de leitura}one{# página na sua Lista de leitura}other{# páginas na sua Lista de leitura}}</translation>
+<translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de Leitura}one{# página na sua Lista de Leitura}other{# páginas na sua Lista de Leitura}}</translation>
 <translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
 <translation id="5995726099713306770">Baixar página novamente?</translation>

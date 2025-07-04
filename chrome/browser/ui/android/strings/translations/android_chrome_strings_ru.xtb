@@ -496,7 +496,7 @@
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="327204079441056603">Пароли на этом устройстве теперь хранятся по-другому</translation>
 <translation id="3280562213547448728">Голосовой поиск</translation>
-<translation id="3282568296779691940">Аккаунт Chrome</translation>
+<translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
 <translation id="3301936297336370235">Подтверждение предложенного пароля</translation>
@@ -589,7 +589,7 @@
 <translation id="3701515417135397388">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="3703166520839776970">Если проблема не решится, нажмите кнопку "Подробнее" ниже, чтобы получить дополнительную информацию от сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3708100450779900829">Чтобы поменять положение адресной строки, когда устройство сложено, нажмите на нее и удерживайте или выберите один из вариантов ниже.</translation>
-<translation id="3710501561113687889">Для продолжения регистрации <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />).</translation>
+<translation id="3710501561113687889">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />).</translation>
 <translation id="3710560693796335511">Доступ для совместной работы</translation>
 <translation id="3714981814255182093">Открыть панель поиска</translation>
 <translation id="3718765429352682176">Вы можете просматривать историю из других приложений, которые открывают ссылки в Chrome.</translation>
@@ -1846,7 +1846,7 @@
 <translation id="9106148373857059373">Страница сохранения закладки закрыта</translation>
 <translation id="9108808586816295166">Иногда безопасный DNS-сервер может быть недоступен.</translation>
 <translation id="910908805481542201">Получить помощь</translation>
-<translation id="9130135798965366513">Для продолжения регистрации <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" /> сайта.</translation>
+<translation id="9130135798965366513">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" /> сайта.</translation>
 <translation id="9131209053278896908">Здесь появятся заблокированные сайты.</translation>
 <translation id="9133397713400217035">Офлайн-контент</translation>
 <translation id="9143389653531441385">Зарегистрируйтесь с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
