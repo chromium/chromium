@@ -54,6 +54,7 @@ class MockSmartCardContextFactory
 
   // Expect a ListReaders() call. Will return `readers`.
   void ExpectListReaders(std::vector<std::string> readers);
+  void ExpectListReadersError(device::mojom::SmartCardError error);
 
   void ClearContextReceivers();
 

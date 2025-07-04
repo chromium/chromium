@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "components/permissions/permission_request.h"
 
 namespace url {
@@ -23,6 +24,12 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
   ~SmartCardPermissionRequest() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SmartCardPermissionRequestTest, IsDuplicateOf);
+  FRIEND_TEST_ALL_PREFIXES(SmartCardPermissionRequestTest,
+                           IsDuplicateOf_DifferentReader);
+  FRIEND_TEST_ALL_PREFIXES(SmartCardPermissionRequestTest,
+                           IsDuplicateOf_DifferentOrigin);
+
   // permissions::PermissionRequest:
   bool IsDuplicateOf(
       permissions::PermissionRequest* other_request) const override;

@@ -71,6 +71,13 @@ void MockSmartCardContextFactory::ExpectListReaders(
               std::move(readers))));
 }
 
+void MockSmartCardContextFactory::ExpectListReadersError(
+    device::mojom::SmartCardError error) {
+  EXPECT_CALL(*this, ListReaders(_))
+      .WillOnce(RunOnceCallback<0>(
+          device::mojom::SmartCardListReadersResult::NewError(error)));
+}
+
 void MockSmartCardContextFactory::ClearContextReceivers() {
   context_receivers_.Clear();
 }

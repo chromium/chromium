@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/smart_card/smart_card_reader_tracker_impl.h"
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -241,6 +242,66 @@ class MockTrackerObserver : public SmartCardReaderTracker::Observer {
 
   MOCK_METHOD(void, OnError, (SmartCardError error), (override));
 };
+
+TEST_F(SmartCardReaderTrackerImplTest, ListReadersError) {
+  StrictMock<MockSmartCardContextFactory> mock_context_factory;
+  SmartCardReaderTrackerImpl tracker(mock_context_factory.GetRemote());
+  StrictMock<MockTrackerObserver> observer;
+  TestFuture<void> context_disconnected;
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectListReadersError(SmartCardError::kInternalError);
+
+    EXPECT_CALL(observer, OnError(SmartCardError::kInternalError));
+
+    EXPECT_CALL(mock_context_factory, ContextDisconnected())
+        .WillOnce(
+            [&context_disconnected]() { context_disconnected.SetValue(); });
+  }
+
+  TestFuture<std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>>>
+      start_future;
+  tracker.Start(&observer, start_future.GetCallback());
+
+  std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>> readers =
+      start_future.Take();
+  // This is treated as an error, no value should appear.
+  ASSERT_FALSE(readers.has_value());
+
+  ASSERT_TRUE(context_disconnected.Wait());
+}
+
+TEST_F(SmartCardReaderTrackerImplTest, NoReaders) {
+  StrictMock<MockSmartCardContextFactory> mock_context_factory;
+  SmartCardReaderTrackerImpl tracker(mock_context_factory.GetRemote());
+  StrictMock<MockTrackerObserver> observer;
+  TestFuture<void> context_disconnected;
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectListReadersError(
+        SmartCardError::kNoReadersAvailable);
+
+    EXPECT_CALL(mock_context_factory, ContextDisconnected())
+        .WillOnce(
+            [&context_disconnected]() { context_disconnected.SetValue(); });
+  }
+
+  TestFuture<std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>>>
+      start_future;
+  tracker.Start(&observer, start_future.GetCallback());
+
+  std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>> readers =
+      start_future.Take();
+  // This is not treated as an error, should yield empty list.
+  ASSERT_TRUE(readers.has_value());
+  EXPECT_TRUE(readers->empty());
+
+  ASSERT_TRUE(context_disconnected.Wait());
+}
 
 TEST_F(SmartCardReaderTrackerImplTest, ReaderChanged) {
   MockSmartCardContextFactory mock_context_factory;

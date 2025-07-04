@@ -61,6 +61,7 @@ if (is_chromeos) {
     testonly = true
     sources = [
       "smart_card_permission_context_unittest.cc",
+      "smart_card_permission_request_unittest.cc",
       "smart_card_reader_tracker_impl_unittest.cc",
     ]
     deps = [
