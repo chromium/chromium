@@ -54,7 +54,7 @@ enum EnterpriseManagementAuthority : int {
   NONE = 0,
   COMPUTER_LOCAL =
       1 << 0,  // local GPO or registry, /etc files, local root profile
-  DOMAIN_LOCAL = 1 << 1,  // AD joined, puppet
+  DOMAIN_LOCAL = 1 << 1,  // AD joined
   CLOUD = 1 << 2,         // MDM, GSuite user
   CLOUD_DOMAIN = 1 << 3   // Azure AD, CBCM, CrosEnrolled
 };
