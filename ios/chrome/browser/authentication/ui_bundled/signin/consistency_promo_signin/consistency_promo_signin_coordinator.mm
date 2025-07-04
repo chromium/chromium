@@ -287,7 +287,7 @@
       initWithBaseViewController:self.navigationController
                          browser:self.browser
                          account:account
-                     accessPoint:self.accessPoint];
+               signinAccessPoint:self.accessPoint];
   self.reauthCoordinator.delegate = self;
   [self.reauthCoordinator start];
 }

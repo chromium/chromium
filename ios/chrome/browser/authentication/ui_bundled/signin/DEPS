@@ -1,3 +1,9 @@
 include_rules = [
   "+ios/chrome/browser/feature_engagement",
 ]
+
+specific_include_rules = {
+  "reauth_coordinator\.mm": [
+    "+absl/functional/overload.h",
+  ],
+}

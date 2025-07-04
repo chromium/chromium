@@ -62,6 +62,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc:GetRotationHistogramTriggerSuffix) -->
 
+<!-- LINT.IfChange(ReauthFlowEvent) -->
+
+<variants name="ReauthFlowEvent">
+  <variant name="Cancelled" summary="cancelled by the user"/>
+  <variant name="Completed" summary="completed"/>
+  <variant name="Error" summary="finished with an error"/>
+  <variant name="Interrupted" summary="interrupted"/>
+  <variant name="Started" summary="started"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthFlowEvent) -->
+
 <variants name="SigninAccountStatus">
   <variant name=".NewAccountExistingAccount"
       summary="Using a new account, in the sign-in promo, while Chrome knows
@@ -2438,6 +2450,18 @@ should be kept to monitor/debug signin Multilogin issues-->
   <token key="AccessPoint" variants="SigninPromoAccessPoint"/>
 </histogram>
 
+<histogram name="Signin.Reauth.InExplicitFlow.{Event}" enum="ReauthAccessPoint"
+    expires_after="2026-05-28">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Recorded when a reauth flow triggered from an explicit reauthentication UI
+    is {Event}. Recorded bucket designates the explicit reauthentication UI in
+    which the reauthentication flow was triggered. Only recorded on iOS.
+  </summary>
+  <token key="Event" variants="ReauthFlowEvent"/>
+</histogram>
+
 <histogram name="Signin.Reauth.InSigninFlow.{Event}" enum="SigninAccessPoint"
     expires_after="2026-05-28">
   <owner>bsazonov@chromium.org</owner>
@@ -2447,13 +2471,7 @@ should be kept to monitor/debug signin Multilogin issues-->
     Recorded bucket designates the sign-in flow in which the reauthentication
     flow was triggered. Only recorded on iOS.
   </summary>
-  <token key="Event">
-    <variant name="Cancelled" summary="cancelled by the user"/>
-    <variant name="Completed" summary="completed"/>
-    <variant name="Error" summary="finished with an error"/>
-    <variant name="Interrupted" summary="interrupted"/>
-    <variant name="Started" summary="started"/>
-  </token>
+  <token key="Event" variants="ReauthFlowEvent"/>
 </histogram>
 
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"

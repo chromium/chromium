@@ -694,6 +694,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Sign out"/>
 </enum>
 
+<!-- LINT.IfChange(ReauthAccessPoint) -->
+
+<enum name="ReauthAccessPoint">
+  <int value="0" label="Account menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthAccessPoint) -->
+
 <enum name="ResumeBlockedRequestsTrigger">
   <int value="0" label="Cookie fresh notification"/>
   <int value="1"

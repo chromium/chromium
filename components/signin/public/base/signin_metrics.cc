@@ -347,6 +347,14 @@ void RecordReauthFlowEventInSigninFlow(signin_metrics::AccessPoint access_point,
                     ReauthFlowEventToHistogramSuffix(event)}),
       access_point);
 }
+
+void RecordReauthFlowEventInExplicitFlow(ReauthAccessPoint access_point,
+                                         ReauthFlowEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.Reauth.InExplicitFlow",
+                    ReauthFlowEventToHistogramSuffix(event)}),
+      access_point);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 void RecordOpenTabCountOnSignin(signin::ConsentLevel consent_level,
