@@ -85,6 +85,7 @@ import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
@@ -748,18 +749,32 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private void onTabSwitcherShown() {
         if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
-            assert mTabSwitcherGroupSuggestionService != null;
-            if (ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()) {
-                mTabSwitcherGroupSuggestionService.forceTabGroupSuggestion();
-            } else {
-                mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
-            }
+            showGroupSuggestionsAfterAnimations();
         }
 
         mTabListCoordinator.attachEmptyView();
     }
 
-    private View getTabGridDialogAnimationSourceView(int tabId) {
+    private void showGroupSuggestionsAfterAnimations() {
+        mIsAnimatingSupplier.addSyncObserver(
+                new Callback<>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        if (!Objects.equals(result, false)) return;
+
+                        assert mTabSwitcherGroupSuggestionService != null;
+                        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid
+                                .isEnabled()) {
+                            mTabSwitcherGroupSuggestionService.forceTabGroupSuggestion();
+                        } else {
+                            mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
+                        }
+                        mIsAnimatingSupplier.removeObserver(this);
+                    }
+                });
+    }
+
+    private @Nullable View getTabGridDialogAnimationSourceView(int tabId) {
         // Returning null causes the animation to be a fade.
         // Do so if we are animating to show or hide the HubLayout or this is a low end device.
         if (mIsAnimatingSupplier.get() || SysUtils.isLowEndDevice()) return null;

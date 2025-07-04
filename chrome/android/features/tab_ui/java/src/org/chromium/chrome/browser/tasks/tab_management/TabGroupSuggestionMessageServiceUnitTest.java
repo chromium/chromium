@@ -8,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,19 +45,27 @@ import java.util.List;
 /** Unit tests for {@link TabGroupSuggestionMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupSuggestionMessageServiceUnitTest {
-    private static final @TabId int TAB1_ID = 1;
-    private static final @TabId int TAB2_ID = 2;
+    private static final @TabId int TAB1_ID = 10;
+    private static final @TabId int TAB2_ID = 20;
+    private static final @TabId int TAB3_ID = 30;
+    private static final @TabId int TAB4_ID = 40;
+    private static final int TAB1_INDEX = 1;
+    private static final int TAB2_INDEX = 2;
+    private static final int TAB3_INDEX = 3;
+    private static final int TAB4_INDEX = 4;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
-    @Mock private Runnable mOnAddMessageListener;
+    @Mock private Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
     @Mock private Runnable mOnDismissMessageListener;
     @Mock private SuggestionLifecycleObserver mSuggestionLifecycleObserver;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
+    @Mock private Tab mTab4;
 
     @Captor private ArgumentCaptor<MessageData> mMessageDataCaptor;
 
@@ -69,7 +78,9 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         mTabGroupSuggestionMessageService =
                 spy(
                         new TabGroupSuggestionMessageService(
-                                mContext, tabGroupModelFilterSupplier, mOnAddMessageListener));
+                                mContext,
+                                tabGroupModelFilterSupplier,
+                                mAddOnMessageAfterTabCallback));
 
         when(mContext.getString(R.string.tab_group_suggestion_message, 2))
                 .thenReturn("Group 2 tabs?");
@@ -80,18 +91,28 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(mTab3);
+        when(mTabModel.getTabById(TAB4_ID)).thenReturn(mTab4);
+        when(mTabModel.getTabByIdChecked(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabByIdChecked(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabByIdChecked(TAB3_ID)).thenReturn(mTab3);
+        when(mTabModel.getTabByIdChecked(TAB4_ID)).thenReturn(mTab4);
+        when(mTabModel.indexOf(mTab1)).thenReturn(TAB1_INDEX);
+        when(mTabModel.indexOf(mTab2)).thenReturn(TAB2_INDEX);
+        when(mTabModel.indexOf(mTab3)).thenReturn(TAB3_INDEX);
+        when(mTabModel.indexOf(mTab4)).thenReturn(TAB4_INDEX);
     }
 
     @Test
     public void testAddGroupMessageForTabs_success() {
-        List<Integer> tabIds = List.of(1, 2);
+        List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
 
         verify(mTabGroupSuggestionMessageService)
                 .sendAvailabilityNotification(any(MessageData.class));
-        verify(mOnAddMessageListener).run();
+        verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
     }
 
     @Test
@@ -101,31 +122,44 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         verify(mTabGroupSuggestionMessageService, never())
                 .sendAvailabilityNotification(any(MessageData.class));
-        verify(mOnAddMessageListener, never()).run();
+        verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
     }
 
     @Test
     public void testAddGroupMessageForTabs_alreadyShowing() {
-        List<Integer> tabIds1 = List.of(1, 2);
-        List<Integer> tabIds2 = List.of(3, 4);
+        List<Integer> tabIds1 = List.of(TAB1_ID, TAB2_ID);
+        List<Integer> tabIds2 = List.of(TAB3_ID, TAB4_ID);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds1, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService, times(1))
+        verify(mTabGroupSuggestionMessageService)
                 .sendAvailabilityNotification(any(MessageData.class));
-        verify(mOnAddMessageListener, times(1)).run();
+        verify(mAddOnMessageAfterTabCallback).onResult(TAB2_ID);
 
+        reset(mAddOnMessageAfterTabCallback);
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds2, mSuggestionLifecycleObserver);
-        verify(mTabGroupSuggestionMessageService, times(1))
+        verify(mTabGroupSuggestionMessageService)
                 .sendAvailabilityNotification(any(MessageData.class));
-        verify(mOnAddMessageListener, times(1)).run();
+        verify(mAddOnMessageAfterTabCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testAddGroupMessageForTabs_outOfOrder() {
+        List<Integer> tabIds = List.of(TAB1_ID, TAB4_ID, TAB2_ID, TAB3_ID);
+
+        mTabGroupSuggestionMessageService.addGroupMessageForTabs(
+                tabIds, mSuggestionLifecycleObserver);
+
+        verify(mTabGroupSuggestionMessageService)
+                .sendAvailabilityNotification(any(MessageData.class));
+        verify(mAddOnMessageAfterTabCallback).onResult(TAB3_ID);
     }
 
     @Test
     public void testDismissMessage_whenShowing() {
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
-                List.of(1, 2), mSuggestionLifecycleObserver);
+                List.of(TAB1_ID, TAB2_ID), mSuggestionLifecycleObserver);
         mTabGroupSuggestionMessageService.dismissMessage(mOnDismissMessageListener);
 
         verify(mTabGroupSuggestionMessageService).sendInvalidNotification();
@@ -142,7 +176,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
     @Test
     public void testGroupTabsAction() {
-        List<Integer> tabIds = List.of(1, 2);
+        List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
         List<Tab> tabs = List.of(mTab1, mTab2);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
@@ -162,7 +196,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
     @Test
     public void testGroupTabsAction_tabsNoLongerExist() {
-        List<Integer> tabIds = List.of(1, 2);
+        List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(null);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(null);
 
@@ -184,7 +218,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
     @Test
     public void testDismissAction() {
-        List<Integer> tabIds = List.of(1, 2);
+        List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);

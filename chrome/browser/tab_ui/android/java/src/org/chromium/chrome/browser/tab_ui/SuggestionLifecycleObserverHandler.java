@@ -62,8 +62,8 @@ public class SuggestionLifecycleObserverHandler implements SuggestionLifecycleOb
     }
 
     @Override
-    public void onShowSuggestion(List<@TabId Integer> tabIds) {
-        mSuggestionLifecycleObserver.onShowSuggestion(tabIds);
+    public void onShowSuggestion(List<@TabId Integer> tabIdsSortedByIndex) {
+        mSuggestionLifecycleObserver.onShowSuggestion(tabIdsSortedByIndex);
     }
 
     /**

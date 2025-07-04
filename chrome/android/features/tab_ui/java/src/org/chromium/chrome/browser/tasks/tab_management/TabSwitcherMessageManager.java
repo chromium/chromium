@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
@@ -720,7 +722,24 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mPriceMessageService = priceMessageService;
     }
 
-    private void addTabGroupSuggestionMessage() {
-        appendNextMessage(MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
+    private void addTabGroupSuggestionMessage(@TabId int tabId) {
+        @MessageType int messageType = MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
+
+        assert mMessageCardProviderCoordinator != null;
+        TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
+        if (tabListCoordinator == null) return;
+
+        MessageCardProviderMediator.Message nextMessage =
+                mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
+        if (nextMessage == null || !shouldAppendMessage(nextMessage)) return;
+
+        int index = tabListCoordinator.getIndexFromTabId(tabId);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        tabListCoordinator.addSpecialListItem(
+                index + 1, TabProperties.UiType.MESSAGE, nextMessage.model);
+        for (MessageUpdateObserver observer : mObservers) {
+            observer.onAppendedMessage();
+        }
     }
 }
