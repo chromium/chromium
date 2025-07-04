@@ -55,8 +55,14 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.AutofillDelegate;
+import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillProfilePayload;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.FillingProduct;
+import org.chromium.components.autofill.FillingProductBridgeJni;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.ListObservable;
@@ -85,6 +91,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private AutofillDelegate mMockAutofillDelegate;
     @Mock private Profile mMockProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
+    @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
@@ -96,6 +103,7 @@ public class KeyboardAccessoryControllerTest {
     @Before
     public void setUp() {
         when(mMockButtonGroup.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
+        FillingProductBridgeJni.setInstanceForTesting(mMockFillingProductBridgeJni);
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
@@ -577,6 +585,32 @@ public class KeyboardAccessoryControllerTest {
     public void testFowardsAnimationEventsToVisibilityDelegate() {
         mModel.get(ANIMATION_LISTENER).onFadeInEnd();
         verify(mMockBarVisibilityDelegate).onBarFadeInAnimationEnd();
+    }
+
+    @Test
+    public void testHomeAndWorkBarItems() {
+        AutofillProfile profile =
+                AutofillProfile.builder().setRecordType(RecordType.ACCOUNT_HOME).build();
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        when(mMockPersonalDataManager.getProfile("123")).thenReturn(profile);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.ADDRESS_ENTRY))
+                .thenReturn(FillingProduct.ADDRESS);
+
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
+                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+        AutofillProfilePayload payload = new AutofillProfilePayload("123");
+        AutofillSuggestion addressSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("John")
+                        .setSubLabel("Main Str")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setPayload(payload)
+                        .build();
+        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
+        autofillSuggestionProvider.notifyObservers(List.of(addressSuggestion));
+
+        assertThat(getAutofillItemAt(0).getViewType(), is(BarItem.Type.HOME_AND_WORK_SUGGESTION));
     }
 
     private int getGenerationImpressionCount() {

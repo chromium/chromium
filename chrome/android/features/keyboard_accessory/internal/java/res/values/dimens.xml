@@ -10,6 +10,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_bar_item_padding">8dp</dimen>
     <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
     <dimen name="keyboard_accessory_height">48dp</dimen>
+    <dimen name="keyboard_accessory_chip_home_and_work_start_padding">12dp</dimen>
     <!--dimen name="keyboard_accessory_height_with_shadow">56dp</dimen-->
     <dimen name="keyboard_accessory_image_top_padding">12dp</dimen>
     <dimen name="keyboard_accessory_shadow">5dp</dimen>

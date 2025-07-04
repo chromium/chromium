@@ -9,12 +9,21 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillProfilePayload;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.FillingProduct;
+import org.chromium.components.autofill.FillingProductBridge;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
@@ -90,6 +99,7 @@ class KeyboardAccessoryProperties {
             Type.ACTION_BUTTON,
             Type.SUGGESTION,
             Type.LOYALTY_CARD_SUGGESTION,
+            Type.HOME_AND_WORK_SUGGESTION,
             Type.TAB_LAYOUT,
             Type.ACTION_CHIP
         })
@@ -98,8 +108,9 @@ class KeyboardAccessoryProperties {
             int ACTION_BUTTON = 0;
             int SUGGESTION = 1;
             int LOYALTY_CARD_SUGGESTION = 2;
-            int TAB_LAYOUT = 3;
-            int ACTION_CHIP = 4;
+            int HOME_AND_WORK_SUGGESTION = 3;
+            int TAB_LAYOUT = 4;
+            int ACTION_CHIP = 5;
         }
 
         private final @Type int mType;
@@ -184,7 +195,7 @@ class KeyboardAccessoryProperties {
          * @param action An {@link Action}.
          */
         AutofillBarItem(AutofillSuggestion suggestion, Action action) {
-            super(getBarItemType(suggestion.getSuggestionType()), action, 0);
+            super(getBarItemType(suggestion), action, 0);
             mSuggestion = suggestion;
         }
 
@@ -210,8 +221,25 @@ class KeyboardAccessoryProperties {
             return "Autofill" + super.toString();
         }
 
-        private static @Type int getBarItemType(@SuggestionType int suggestionType) {
-            return suggestionType == SuggestionType.LOYALTY_CARD_ENTRY
+        @VisibleForTesting
+        public static @Type int getBarItemType(AutofillSuggestion suggestion) {
+            AutofillProfilePayload payload = suggestion.getAutofillProfilePayload();
+            if (FillingProductBridge.getFillingProductFromSuggestionType(
+                                    suggestion.getSuggestionType())
+                            == FillingProduct.ADDRESS
+                    && payload != null) {
+                PersonalDataManager personalDataManager =
+                        PersonalDataManagerFactory.getForProfile(
+                                ProfileManager.getLastUsedRegularProfile());
+                AutofillProfile profile = personalDataManager.getProfile(payload.getGuid());
+                if (profile != null) {
+                    @RecordType int type = profile.getRecordType();
+                    if (type == RecordType.ACCOUNT_HOME || type == RecordType.ACCOUNT_WORK) {
+                        return Type.HOME_AND_WORK_SUGGESTION;
+                    }
+                }
+            }
+            return suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY
                     ? Type.LOYALTY_CARD_SUGGESTION
                     : Type.SUGGESTION;
         }

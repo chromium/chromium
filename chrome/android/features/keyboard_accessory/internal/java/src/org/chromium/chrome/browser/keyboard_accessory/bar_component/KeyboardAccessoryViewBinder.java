@@ -64,6 +64,7 @@ class KeyboardAccessoryViewBinder {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
             case BarItem.Type.LOYALTY_CARD_SUGGESTION:
+            case BarItem.Type.HOME_AND_WORK_SUGGESTION:
                 return new BarItemChipViewHolder(
                         parent,
                         keyboarAccessory,
@@ -230,6 +231,10 @@ class KeyboardAccessoryViewBinder {
                     return useLargeChips
                             ? R.style.KeyboardAccessoryLoyaltyCardLargeChip
                             : R.style.KeyboardAccessoryLoyaltyCardChip;
+                case BarItem.Type.HOME_AND_WORK_SUGGESTION:
+                    return useLargeChips
+                            ? R.style.KeyboardAccessoryHomeAndWorkLargeChip
+                            : R.style.KeyboardAccessoryHomeAndWorkChip;
                 case BarItem.Type.SUGGESTION:
                     return useLargeChips
                             ? R.style.KeyboardAccessoryLargeChip

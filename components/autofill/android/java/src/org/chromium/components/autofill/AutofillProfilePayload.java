@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -17,7 +19,8 @@ public final class AutofillProfilePayload implements Payload {
     private final String mGuid;
 
     @CalledByNative
-    private AutofillProfilePayload(@JniType("std::string") String guid) {
+    @VisibleForTesting
+    public AutofillProfilePayload(@JniType("std::string") String guid) {
         mGuid = guid;
     }
 

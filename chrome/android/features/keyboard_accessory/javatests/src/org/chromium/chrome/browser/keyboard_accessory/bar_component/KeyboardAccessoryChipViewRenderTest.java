@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
@@ -35,15 +37,23 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
-import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillProfilePayload;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.FillingProduct;
+import org.chromium.components.autofill.FillingProductBridgeJni;
+import org.chromium.components.autofill.RecordType;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -63,7 +73,10 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
+    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK
+})
 public class KeyboardAccessoryChipViewRenderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -87,6 +100,9 @@ public class KeyboardAccessoryChipViewRenderTest {
 
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
     @Mock private AutofillImageFetcher mMockImageFetcher;
+    @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
+    @Mock private Profile mMockProfile;
+    @Mock private PersonalDataManager mMockPersonalDataManager;
 
     private ViewGroup mContentView;
     private KeyboardAccessoryViewBinder.UiConfiguration mUiConfiguration;
@@ -103,6 +119,15 @@ public class KeyboardAccessoryChipViewRenderTest {
         mActivityTestRule.launchActivity(/* startIntent= */ null);
         Activity activity = mActivityTestRule.getActivity();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        FillingProductBridgeJni.setInstanceForTesting(mMockFillingProductBridgeJni);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.ADDRESS_ENTRY))
+                .thenReturn(FillingProduct.ADDRESS);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.LOYALTY_CARD_ENTRY))
+                .thenReturn(FillingProduct.LOYALTY_CARD);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         mContentView =
                 runOnUiThreadBlocking(
                         () -> {
@@ -153,10 +178,25 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setCustomIconUrl(new GURL(""))
                         .build();
 
+        AutofillProfile profile =
+                AutofillProfile.builder().setRecordType(RecordType.ACCOUNT_HOME).build();
+        when(mMockPersonalDataManager.getProfile("123")).thenReturn(profile);
+        AutofillSuggestion homeAndWorkSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Carl Johnson")
+                        .setSubLabel("carl@gmail.com")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setFeatureForIph("")
+                        .setApplyDeactivatedStyle(false)
+                        .setPayload(new AutofillProfilePayload("123"))
+                        .setIconId(R.drawable.home_logo)
+                        .build();
+
         // All suggestion types are rendered in the same test to minimize the number of render
         // tests.
         runOnUiThreadBlocking(() -> createChipViewFromSuggestion(addessSuggestion));
         runOnUiThreadBlocking(() -> createChipViewFromSuggestion(loyaltyCardSuggestion));
+        runOnUiThreadBlocking(() -> createChipViewFromSuggestion(homeAndWorkSuggestion));
         mRenderTestRule.render(mContentView, "keyboard_accessory_suggestions");
     }
 
@@ -168,7 +208,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         mKeyboardAccessoryView,
                         mUiConfiguration,
                         mContentView,
-                        BarItem.Type.SUGGESTION);
+                        AutofillBarItem.getBarItemType(suggestion));
         ChipView chipView = (ChipView) viewHolder.itemView;
         viewHolder.bind(new AutofillBarItem(suggestion, action), chipView);
         chipView.setLayoutParams(

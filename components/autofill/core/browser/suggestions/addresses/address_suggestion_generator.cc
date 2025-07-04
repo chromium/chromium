@@ -549,8 +549,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     } else {
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableSupportForHomeAndWork)) {
-        // TODO(crbug.com/6373444): Confirm that the distance between icon and
-        // text is correct.
         switch (profile.record_type()) {
           case AutofillProfile::RecordType::kAccountHome:
             suggestion.icon = Suggestion::Icon::kHome;
