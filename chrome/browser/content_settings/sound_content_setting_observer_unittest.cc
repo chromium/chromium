@@ -65,6 +65,11 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL(kURL1));
   }
 
+  void TearDown() override {
+    host_content_settings_map_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
  protected:
   void ChangeSoundContentSettingTo(ContentSetting setting) {
     GURL url = web_contents()->GetLastCommittedURL();
@@ -109,7 +114,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
 #endif
 
  private:
-  raw_ptr<HostContentSettingsMap, DanglingUntriaged> host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
