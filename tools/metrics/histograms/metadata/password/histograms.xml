@@ -1431,7 +1431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates3"
-    units="units" expires_after="2025-07-06">
+    units="units" expires_after="2026-01-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -4023,28 +4023,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Settings.ToggleAutoSignIn"
-    enum="BooleanEnabled" expires_after="2025-07-06">
-  <owner>ioanap@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    Records user action to enable or disable automatic sign-in in password
-    settings. Recorded when user interacts with the toggle. This metric is only
-    logged on Android.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.Settings.ToggleOfferToSavePasswords"
-    enum="BooleanEnabled" expires_after="2025-08-10">
-  <owner>ioanap@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    Records user action to enable or disable password saving in password
-    settings. Recorded when user interacts with the toggle. This metric is only
-    logged on Android.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.SharedPasswordsNotificationBubble.UserAction"
     enum="PasswordManager.SharedPasswordsNotificationInteractions"
     expires_after="2025-10-19">
@@ -4710,7 +4688,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.WeakCheck.CheckedPasswords" units="passwords"
-    expires_after="2025-07-06">
+    expires_after="2026-01-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
