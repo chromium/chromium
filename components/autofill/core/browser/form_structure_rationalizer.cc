@@ -949,7 +949,8 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
 void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
     LogManager* log_manager) {
   auto has_zip_type = [](const std::unique_ptr<AutofillField>& field) {
-    return field->ComputedType().GetStorableType() == ADDRESS_HOME_ZIP;
+    return field->is_visible() &&
+           field->ComputedType().GetStorableType() == ADDRESS_HOME_ZIP;
   };
   auto it = std::ranges::find_if(*fields_, has_zip_type);
   while (it != fields_->end()) {

@@ -39,8 +39,8 @@ UNKNOWN_TYPE | checkingAccountNumber | Bank Name |  | -default
 UNKNOWN_TYPE | codeCIN | Code CIN |  | -default
 UNKNOWN_TYPE | codeABI | Code ABI |  | -default
 UNKNOWN_TYPE | codeCAB | Code CAB |  | -default
-ADDRESS_HOME_ZIP_PREFIX | codigoEntidad | Codigo de Entidad |  | -default
-ADDRESS_HOME_ZIP_SUFFIX | codigoOficina | Codigo de Oficina |  | -default
+ADDRESS_HOME_ZIP | codigoEntidad | Codigo de Entidad |  | -default
+ADDRESS_HOME_ZIP | codigoOficina | Codigo de Oficina |  | -default
 UNKNOWN_TYPE | controlDigits | Digitos de Control |  | -default
 UNKNOWN_TYPE | identificationPaper | Digitos de Control | IDCARD | -default
 UNKNOWN_TYPE | identificationValue | Digitos de Control |  | -default
