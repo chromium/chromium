@@ -417,7 +417,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
-        sync_token, base::NullCallback(), timestamp);
+        sync_token, timestamp);
 #else
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

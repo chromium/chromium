@@ -381,16 +381,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Wraps |gpu_memory_buffer| along with the shared image created from
   // |gpu_memory_buffer|. This will transfer ownership of |gpu_memory_buffer|
-  // to the returned VideoFrame. |mailbox_holder_and_gmb_release_cb| will be
-  // called with a sync token and with |gpu_memory_buffer| as arguments when the
-  // VideoFrame is to be destroyed.
+  // to the returned VideoFrame.
   static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
-      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

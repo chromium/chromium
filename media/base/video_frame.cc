@@ -471,8 +471,12 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
     return nullptr;
   }
   frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
-  frame->mailbox_holder_and_gmb_release_cb_ =
-      std::move(mailbox_holder_and_gmb_release_cb);
+  if (enable_mappable_si) {
+    frame->mailbox_holder_and_gmb_release_cb_ =
+        std::move(mailbox_holder_and_gmb_release_cb);
+  } else {
+    CHECK(mailbox_holder_and_gmb_release_cb.is_null());
+  }
   frame->is_mappable_si_enabled_ = enable_mappable_si;
   return frame;
 }
@@ -820,14 +824,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
-    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
   scoped_refptr<VideoFrame> frame =
       CreateFrameForGpuMemoryBufferOrMappableSIInternal(
           visible_rect, natural_size, std::move(gpu_memory_buffer),
           /*shared_image=*/nullptr,
-          /*enable_mappable_si=*/false,
-          std::move(mailbox_holder_and_gmb_release_cb), timestamp);
+          /*enable_mappable_si=*/false, base::NullCallback(), timestamp);
   if (!frame) {
     return nullptr;
   }
