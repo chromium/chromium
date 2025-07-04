@@ -296,7 +296,7 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   CHECK(version_->GetResponseHeadForSyntheticResponse());
   // TODO(crbug.com/352578800): Handle other necessary headers e.g. encoding.
-  base::flat_set<std::string_view> ignored_headers = {"date", "alt-svc"};
+  base::flat_set<std::string> ignored_headers = {"date", "alt-svc"};
   if (IsBypassSyntheticResponseHeaderCheckEnabled()) {
     const std::string& ignored_headers_str = GetIgnoredHeadersForBypass();
     std::vector<std::string_view> testing_ignored_headers =
