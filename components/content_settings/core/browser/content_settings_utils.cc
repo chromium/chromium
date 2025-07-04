@@ -60,6 +60,15 @@ const ContentSetting kContentSettingOrder[] = {
     // clang-format on
 };
 
+// PermissionOptions sorted from most to least permissive.
+const PermissionOption kPermissionOptionOrder[] = {
+    // clang-format off
+    PermissionOption::kAllowed,
+    PermissionOption::kAsk,
+    PermissionOption::kDenied,
+    // clang-format on
+};
+
 static_assert(std::size(kContentSettingOrder) ==
                   CONTENT_SETTING_NUM_SETTINGS - 1,
               "kContentSettingOrder should have CONTENT_SETTING_NUM_SETTINGS-1"
@@ -143,10 +152,27 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
   // Check whether |a| or |b| is reached first in kContentSettingOrder.
   // If |a| is first, it means that |a| is more permissive than |b|.
   for (ContentSetting setting : kContentSettingOrder) {
-    if (setting == b)
+    if (setting == b) {
       return false;
-    if (setting == a)
+    }
+    if (setting == a) {
       return true;
+    }
+  }
+  NOTREACHED();
+}
+
+bool IsMorePermissive(PermissionOption a, PermissionOption b) {
+  // Check whether |a| or |b| is reached first in
+  // kPermissionOptionOrder. If |a| is first, it means that |a| is more
+  // permissive than |b|.
+  for (PermissionOption setting : kPermissionOptionOrder) {
+    if (setting == b) {
+      return false;
+    }
+    if (setting == a) {
+      return true;
+    }
   }
   NOTREACHED();
 }

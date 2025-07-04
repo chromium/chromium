@@ -31,6 +31,11 @@ void FilterRulesForType(ContentSettingsForOneType& settings,
 
 }  // namespace
 
+bool IsValidPermissionOption(PermissionOption setting) {
+  return setting >= PermissionOption::kMinValue &&
+         setting <= PermissionOption::kMaxValue;
+}
+
 ContentSetting IntToContentSetting(int content_setting) {
   return ((content_setting < 0) ||
           (content_setting >= CONTENT_SETTING_NUM_SETTINGS))

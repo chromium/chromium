@@ -38,9 +38,23 @@ enum ContentSetting {
   CONTENT_SETTING_NUM_SETTINGS
 };
 
+// Commonly used setting values for options of permission settings
+// Do not modify this enum. If different/additional  states are required, the
+// permission should define its own enum.
+enum class PermissionOption {
+  kAllowed = 1,
+  kDenied = 2,
+  kAsk = 3,
+
+  kMinValue = kAllowed,
+  kMaxValue = kAsk
+};
+
+bool IsValidPermissionOption(PermissionOption setting);
+
 struct GeolocationSetting {
-  ContentSetting approximate = CONTENT_SETTING_DEFAULT;
-  ContentSetting precise = CONTENT_SETTING_DEFAULT;
+  PermissionOption approximate = PermissionOption::kAsk;
+  PermissionOption precise = PermissionOption::kAsk;
 
   auto operator<=>(const GeolocationSetting&) const = default;
 };

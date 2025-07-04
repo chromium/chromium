@@ -68,6 +68,10 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
 // Returns true if setting |a| is more permissive than setting |b|.
 bool IsMorePermissive(ContentSetting a, ContentSetting b);
 
+// Returns true if permission option |a| is more permissive than permission
+// option |b|.
+bool IsMorePermissive(PermissionOption a, PermissionOption b);
+
 // Returns whether or not the supplied constraint should be persistently stored.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints);
 

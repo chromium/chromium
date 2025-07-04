@@ -14,12 +14,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
-namespace {
-bool IsValidOption(ContentSetting setting) {
-  return setting == CONTENT_SETTING_ASK || setting == CONTENT_SETTING_ALLOW ||
-         setting == CONTENT_SETTING_BLOCK;
-}
-}  // namespace
 
 bool GeolocationSettingDelegate::IsValid(
     const PermissionSetting& setting) const {
@@ -27,10 +21,10 @@ bool GeolocationSettingDelegate::IsValid(
   if (!geo_setting) {
     return false;
   }
-  if (!IsValidOption(geo_setting->approximate)) {
+  if (!IsValidPermissionOption(geo_setting->approximate)) {
     return false;
   }
-  if (!IsValidOption(geo_setting->precise)) {
+  if (!IsValidPermissionOption(geo_setting->precise)) {
     return false;
   }
   if (IsMorePermissive(geo_setting->precise, geo_setting->approximate)) {
@@ -52,8 +46,8 @@ base::Value GeolocationSettingDelegate::ToValue(
     const PermissionSetting& setting) const {
   const GeolocationSetting& geo_setting = std::get<GeolocationSetting>(setting);
   base::Value::Dict dict;
-  dict.Set("approximate", geo_setting.approximate);
-  dict.Set("precise", geo_setting.precise);
+  dict.Set("approximate", static_cast<int>(geo_setting.approximate));
+  dict.Set("precise", static_cast<int>(geo_setting.precise));
   return base::Value(std::move(dict));
 }
 
@@ -63,17 +57,22 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
     return std::nullopt;
   }
   const auto& dict = value.GetDict();
-  ContentSetting approximate = IntToContentSetting(
-      dict.FindInt("approximate").value_or(CONTENT_SETTING_DEFAULT));
-  if (approximate == CONTENT_SETTING_DEFAULT) {
+  auto approximate_optional = dict.FindInt("approximate");
+  if (!approximate_optional.has_value() ||
+      !IsValidPermissionOption(
+          static_cast<PermissionOption>(approximate_optional.value()))) {
     return std::nullopt;
   }
-  auto precise = IntToContentSetting(
-      dict.FindInt("precise").value_or(CONTENT_SETTING_DEFAULT));
-  if (precise == CONTENT_SETTING_DEFAULT) {
+
+  auto precise_optional = dict.FindInt("precise");
+  if (!precise_optional.has_value() ||
+      !IsValidPermissionOption(
+          static_cast<PermissionOption>(precise_optional.value()))) {
     return std::nullopt;
   }
-  return GeolocationSetting{approximate, precise};
+  return GeolocationSetting{
+      static_cast<PermissionOption>(approximate_optional.value()),
+      static_cast<PermissionOption>(precise_optional.value())};
 }
 
 }  // namespace content_settings
