@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 enum class NumberParsingResult {
   kSuccess,
@@ -142,13 +142,6 @@ WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
 WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
-}  // namespace WTF
-
-using WTF::CharactersToInt;
-using WTF::CharactersToUInt;
-using WTF::CharactersToInt64;
-using WTF::CharactersToUInt64;
-using WTF::CharactersToDouble;
-using WTF::CharactersToFloat;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_

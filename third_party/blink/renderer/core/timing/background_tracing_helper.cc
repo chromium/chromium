@@ -44,8 +44,8 @@ std::optional<uint32_t> ConvertToHashInteger(std::string_view chars) {
       return std::nullopt;
     }
   }
-  return WTF::HexCharactersToUInt(base::as_byte_span(chars),
-                                  WTF::NumberParsingOptions(), nullptr);
+  return HexCharactersToUInt(base::as_byte_span(chars), NumberParsingOptions(),
+                             nullptr);
 }
 
 static constexpr char kTriggerPrefix[] = "trigger:";
@@ -218,8 +218,7 @@ BackgroundTracingHelper::SplitMarkNameAndId(StringView mark_name) {
   auto suffix = StringView(mark_name, sequence_number_pos + 1);
   mark_name = StringView(mark_name, 0, sequence_number_pos);
   bool result = false;
-  int seq_num =
-      WTF::CharactersToInt(suffix, WTF::NumberParsingOptions(), &result);
+  int seq_num = CharactersToInt(suffix, NumberParsingOptions(), &result);
   if (!result) {
     return std::make_pair(mark_name, std::nullopt);
   }

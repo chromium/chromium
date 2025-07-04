@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(StringToNumberTest, CharactersToInt) {
 #define EXPECT_VALID(string, options, expectedValue)                   \
@@ -374,4 +374,4 @@ TEST(StringToNumberTest, CharactersToFloatParsedLength) {
   EXPECT_EQ(7u, ParseFloat("1.234e1"));
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -62,11 +62,11 @@ bool ParseScriptLevel(const AtomicString& attributeValue,
   }
 
   return WTF::VisitCharacters(value, [&](auto chars) {
-    WTF::NumberParsingResult result;
+    NumberParsingResult result;
     constexpr auto kOptions =
-        WTF::NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
+        NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
     scriptLevel = CharactersToUInt(chars, kOptions, &result);
-    return result == WTF::NumberParsingResult::kSuccess;
+    return result == NumberParsingResult::kSuccess;
   });
 }
 

@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
-namespace WTF {
+namespace blink {
 
 template <int base>
 bool IsCharacterAllowedInBase(UChar);
@@ -319,4 +319,4 @@ float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
       ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
 }
 
-}  // namespace WTF
+}  // namespace blink
