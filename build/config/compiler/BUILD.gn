@@ -1767,6 +1767,29 @@ config("clang_warning_suppression") {
   }
 }
 
+# Enable bounds checks when indexing directly (i.e. not via a pointer)
+# into C arrays. This aligns with libc++ hardening for
+# `std::array::operator[]`.
+#
+# UBSan already includes these checks and more.
+# GCC does not appear to support these flags.
+#
+# This config appears to tip "ASan Debug (32-bit x86 with V8-ARM)" just
+# over the brink and prevent ASan from grabbing its necessary 512 MB of
+# address space. (N.B. the issue is not seen on its release counterpart,
+# and it might have been possible to mitigate with
+# `is_component_build = false`.)
+#
+# See also: https://crbug.com/40891132#comment10
+config("sanitize_c_array_bounds") {
+  if (!is_ubsan && is_clang && !(is_asan && target_cpu == "x86")) {
+    cflags = [
+      "-fsanitize=array-bounds",
+      "-fsanitize-trap=array-bounds",
+    ]
+  }
+}
+
 config("rustc_revision") {
   if (rustc_revision != "") {
     # Similar to the above config, this is here so that all files get recompiled

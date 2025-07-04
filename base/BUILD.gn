@@ -3719,6 +3719,10 @@ test("base_unittests") {
 
   fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
 
+  if (is_clang) {
+    sources += [ "compiler_hardening_test.cc" ]
+  }
+
   defines = []
   frameworks = []
 

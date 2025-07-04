@@ -359,7 +359,7 @@ is_posix = !is_win && !is_fuchsia
 
 # Holds all configs used for running the compiler.
 default_compiler_configs = [
-  "//build/config:feature_flags",
+  "//build/config/compiler/pgo:default_pgo_flags",
   "//build/config/compiler:afdo",
   "//build/config/compiler:afdo_optimize_size",
   "//build/config/compiler:cet_shadow_stack",
@@ -379,12 +379,13 @@ default_compiler_configs = [
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:no_unresolved_symbols",
   "//build/config/compiler:runtime_library",
+  "//build/config/compiler:sanitize_c_array_bounds",
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:tot_warnings",
-  "//build/config/compiler/pgo:default_pgo_flags",
   "//build/config/coverage:default_coverage",
   "//build/config/sanitizers:default_sanitizer_flags",
+  "//build/config:feature_flags",
 ]
 
 if (is_win) {
