@@ -309,6 +309,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kStartingStyle:
     case StyleRule::kMixin:
     case StyleRule::kApplyMixin:
+    case StyleRule::kContents:
     case StyleRule::kPositionTry:
     case StyleRule::kCustomMedia:
       // TODO(andruud): Handle other descriptor types here.
