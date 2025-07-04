@@ -2060,7 +2060,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
             std::ranges::find(fields, form_util::GetFieldRendererId(element),
                               &FormFieldData::renderer_id);
         it != fields.end()) {
-      it->set_value(element.Value().Utf16());
+      it->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
       it->set_is_autofilled(element.IsAutofilled());
       form_util::MaybeUpdateUserInput(
           *it, form_util::GetFieldRendererId(element), field_data_manager());
