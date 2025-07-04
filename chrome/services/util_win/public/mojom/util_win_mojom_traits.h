@@ -91,9 +91,6 @@ struct StructTraits<chrome::mojom::ShortcutPropertiesDataView,
       const base::win::ShortcutProperties& input) {
     return input.app_id;
   }
-  static bool dual_mode(const base::win::ShortcutProperties& input) {
-    return input.dual_mode;
-  }
   static const CLSID& toast_activator_clsid(
       const base::win::ShortcutProperties& input) {
     return input.toast_activator_clsid;

@@ -134,8 +134,6 @@ struct ShortcutProperties {
   int32 icon_index = -1;
   // The app model id for the shortcut.
   mojo_base.mojom.WString app_id;
-  // Whether this is a dual mode shortcut (Win8+).
-  bool dual_mode;
   // The CLSID of the COM object registered with the OS via the shortcut. This
   // is for app activation via user interaction with a toast notification in the
   // Action Center. (Win10 version 1607, build 14393, and beyond).

@@ -234,9 +234,7 @@ class InstallShortcutTest : public testing::Test {
                                   chrome_properties.icon_index);
     expected_properties_.set_app_id(chrome_properties.app_id);
     expected_properties_.set_description(chrome_properties.description);
-    expected_properties_.set_dual_mode(false);
     expected_start_menu_properties_ = expected_properties_;
-    expected_start_menu_properties_.set_dual_mode(false);
 
     prefs_.reset(GetFakeInitialPrefs(false, false));
 

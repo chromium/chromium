@@ -214,7 +214,6 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     shortcut_properties.set_description(base::AsWString(description));
     shortcut_properties.set_icon(icon_file, 0);
     shortcut_properties.set_app_id(win_app_id);
-    shortcut_properties.set_dual_mode(false);
 
     // We only need to do this for shortcuts in the start menu but we don't know
     // which path is in the start menu. It shouldn't hurt to always set the

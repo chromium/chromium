@@ -164,12 +164,10 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
 
   bool has_app_id =
       (properties.options & ShortcutProperties::PROPERTIES_APP_ID) != 0;
-  bool has_dual_mode =
-      (properties.options & ShortcutProperties::PROPERTIES_DUAL_MODE) != 0;
   bool has_toast_activator_clsid =
       (properties.options &
        ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID) != 0;
-  if (has_app_id || has_dual_mode || has_toast_activator_clsid) {
+  if (has_app_id || has_toast_activator_clsid) {
     ComPtr<IPropertyStore> property_store;
     if (FAILED(i_shell_link.As(&property_store)) || !property_store.Get()) {
       return false;
@@ -177,11 +175,6 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
 
     if (has_app_id && !SetAppIdForPropertyStore(property_store.Get(),
                                                 properties.app_id.c_str())) {
-      return false;
-    }
-    if (has_dual_mode && !SetBooleanValueForPropertyStore(
-                             property_store.Get(), PKEY_AppUserModel_IsDualMode,
-                             properties.dual_mode)) {
       return false;
     }
     if (has_toast_activator_clsid &&
@@ -289,7 +282,6 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
   }
 
   if (options & (ShortcutProperties::PROPERTIES_APP_ID |
-                 ShortcutProperties::PROPERTIES_DUAL_MODE |
                  ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID)) {
     ComPtr<IPropertyStore> property_store;
     if (FAILED(i_shell_link.As(&property_store))) {
@@ -320,25 +312,6 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           LOG(WARNING) << "Unexpected variant type: " << pv_app_id.get().vt;
           break;
         }
-      }
-    }
-
-    if (options & ShortcutProperties::PROPERTIES_DUAL_MODE) {
-      ScopedPropVariant pv_dual_mode;
-      if (property_store->GetValue(PKEY_AppUserModel_IsDualMode,
-                                   pv_dual_mode.Receive()) != S_OK) {
-        return false;
-      }
-      switch (pv_dual_mode.get().vt) {
-        case VT_EMPTY:
-          properties->set_dual_mode(false);
-          break;
-        case VT_BOOL:
-          properties->set_dual_mode(pv_dual_mode.get().boolVal == VARIANT_TRUE);
-          break;
-        default:
-          LOG(WARNING) << "Unexpected variant type: " << pv_dual_mode.get().vt;
-          break;
       }
     }
 

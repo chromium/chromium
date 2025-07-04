@@ -247,7 +247,6 @@ bool StructTraits<chrome::mojom::ShortcutPropertiesDataView,
     Read(chrome::mojom::ShortcutPropertiesDataView input,
          base::win::ShortcutProperties* out) {
   out->icon_index = input.icon_index();
-  out->dual_mode = input.dual_mode();
   out->options = input.options();
 
   // out->toast_activator_clsid

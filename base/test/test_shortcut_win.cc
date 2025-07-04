@@ -139,23 +139,6 @@ void ValidateShortcut(const FilePath& shortcut_path,
         ADD_FAILURE() << "Unexpected variant type: " << pv_app_id.get().vt;
     }
   }
-
-  if (properties.options & ShortcutProperties::PROPERTIES_DUAL_MODE) {
-    ScopedPropVariant pv_dual_mode;
-    EXPECT_EQ(S_OK, property_store->GetValue(PKEY_AppUserModel_IsDualMode,
-                                             pv_dual_mode.Receive()));
-    switch (pv_dual_mode.get().vt) {
-      case VT_EMPTY:
-        EXPECT_FALSE(properties.dual_mode);
-        break;
-      case VT_BOOL:
-        EXPECT_EQ(properties.dual_mode,
-                  static_cast<bool>(pv_dual_mode.get().boolVal));
-        break;
-      default:
-        ADD_FAILURE() << "Unexpected variant type: " << pv_dual_mode.get().vt;
-    }
-  }
 }
 
 }  // namespace win

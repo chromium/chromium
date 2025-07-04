@@ -113,8 +113,7 @@ class ShellUtil {
       PROPERTIES_ICON = 1 << 3,
       PROPERTIES_APP_ID = 1 << 4,
       PROPERTIES_SHORTCUT_NAME = 1 << 5,
-      PROPERTIES_DUAL_MODE = 1 << 6,
-      PROPERTIES_TOAST_ACTIVATOR_CLSID = 1 << 7,
+      PROPERTIES_TOAST_ACTIVATOR_CLSID = 1 << 6,
     };
 
     explicit ShortcutProperties(ShellChange level_in);

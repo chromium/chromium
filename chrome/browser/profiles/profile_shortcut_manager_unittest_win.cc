@@ -201,7 +201,6 @@ class ProfileShortcutManagerTest : public testing::Test {
         shell_integration::win::GetAppUserModelIdForBrowser(profile_path));
     expected_properties.set_target(GetExePath());
     expected_properties.set_description(InstallUtil::GetAppDescription());
-    expected_properties.set_dual_mode(false);
     expected_properties.set_arguments(
         profiles::internal::CreateProfileShortcutFlags(profile_path));
     expected_properties.set_icon(icon_path, 0);
@@ -229,7 +228,6 @@ class ProfileShortcutManagerTest : public testing::Test {
         profiles::internal::CreateProfileShortcutFlags(profile_path));
     expected_properties.set_icon(GetExePath(), 0);
     expected_properties.set_description(InstallUtil::GetAppDescription());
-    expected_properties.set_dual_mode(false);
     PostValidateShortcut(location, shortcut_path, expected_properties);
   }
 
@@ -250,7 +248,6 @@ class ProfileShortcutManagerTest : public testing::Test {
     expected_properties.set_arguments(std::wstring());
     expected_properties.set_icon(GetExePath(), 0);
     expected_properties.set_description(InstallUtil::GetAppDescription());
-    expected_properties.set_dual_mode(false);
     PostValidateShortcut(location, shortcut_path, expected_properties);
   }
 

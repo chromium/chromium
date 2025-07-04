@@ -45,7 +45,6 @@ class ShortcutTest : public testing::Test {
       link_properties_.set_description(L"Chrome is awesome.");
       link_properties_.set_icon(link_properties_.target, 4);
       link_properties_.set_app_id(L"Chrome");
-      link_properties_.set_dual_mode(false);
 
       // The CLSID below was randomly selected.
       static constexpr CLSID toast_activator_clsid = {
@@ -71,7 +70,6 @@ class ShortcutTest : public testing::Test {
       link_properties_2_.set_description(L"The best in the west.");
       link_properties_2_.set_icon(icon_path_2, 0);
       link_properties_2_.set_app_id(L"Chrome.UserLevelCrazySuffix");
-      link_properties_2_.set_dual_mode(true);
       link_properties_2_.set_toast_activator_clsid(CLSID_NULL);
     }
   }
@@ -111,7 +109,6 @@ TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
   ValidatePathsAreEqual(link_properties_.icon, properties_read_1.icon);
   EXPECT_EQ(link_properties_.icon_index, properties_read_1.icon_index);
   EXPECT_EQ(link_properties_.app_id, properties_read_1.app_id);
-  EXPECT_EQ(link_properties_.dual_mode, properties_read_1.dual_mode);
   EXPECT_EQ(link_properties_.toast_activator_clsid,
             properties_read_1.toast_activator_clsid);
 
@@ -135,7 +132,6 @@ TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
   ValidatePathsAreEqual(FilePath(), properties_read_2.icon);
   EXPECT_EQ(0, properties_read_2.icon_index);
   EXPECT_EQ(L"", properties_read_2.app_id);
-  EXPECT_FALSE(properties_read_2.dual_mode);
   EXPECT_EQ(CLSID_NULL, properties_read_2.toast_activator_clsid);
 }
 
@@ -219,37 +215,6 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
   EXPECT_EQ(base::span(read_contents), base::span(kFileContents2));
 }
 
-TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         ShortcutOperation::kCreateAlways));
-
-  ShortcutProperties make_dual_mode_properties;
-  make_dual_mode_properties.set_dual_mode(true);
-
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, make_dual_mode_properties,
-                                         ShortcutOperation::kUpdateExisting));
-
-  ShortcutProperties expected_properties = link_properties_;
-  expected_properties.set_dual_mode(true);
-  ValidateShortcut(link_file_, expected_properties);
-}
-
-TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
-                                         ShortcutOperation::kCreateAlways));
-
-  ShortcutProperties remove_dual_mode_properties;
-  remove_dual_mode_properties.set_dual_mode(false);
-
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_,
-                                         remove_dual_mode_properties,
-                                         ShortcutOperation::kUpdateExisting));
-
-  ShortcutProperties expected_properties = link_properties_2_;
-  expected_properties.set_dual_mode(false);
-  ValidateShortcut(link_file_, expected_properties);
-}
-
 TEST_F(ShortcutTest, UpdateShortcutClearArguments) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          ShortcutOperation::kCreateAlways));
@@ -298,7 +263,6 @@ TEST_F(ShortcutTest, ReplaceShortcutSomeProperties) {
   expected_properties.set_working_dir(FilePath());
   expected_properties.set_icon(FilePath(), 0);
   expected_properties.set_app_id(std::wstring());
-  expected_properties.set_dual_mode(false);
   ValidateShortcut(link_file_, expected_properties);
 }
 
