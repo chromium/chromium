@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/files/safe_base_name.h"
 #include "base/functional/function_ref.h"
 #include "content/common/content_export.h"
 
@@ -50,7 +49,7 @@ bool IsPathTooLong(const base::FilePath& leveldb_dir);
 
 // The input correlates to any DOMString, which means it has arbitrary length
 // and may include invalid UTF16. The output is a length-constrained, valid path
-// component, with extension. This is only used for SQLite.
+// component. This is only used for SQLite.
 // TODO(crbug.com/419203257): add fuzz tests since the input is supplied by the
 // page.
 base::FilePath CONTENT_EXPORT

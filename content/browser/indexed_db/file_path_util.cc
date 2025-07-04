@@ -34,7 +34,7 @@ constexpr base::FilePath::CharType kBlobExtension[] =
     FILE_PATH_LITERAL(".blob");
 
 // The file name used for databases that have an empty name.
-constexpr char kEmptyDatabaseNameFileName[] = "0";
+constexpr char kSqliteEmptyDatabaseNameFileName[] = "0";
 }  // namespace
 
 const base::FilePath::CharType kLevelDBExtension[] =
@@ -148,7 +148,7 @@ base::FilePath DatabaseNameToFileName(std::u16string_view db_name) {
   // it uses only a character set that is safe for all file systems, including
   // case-insensitive ones.
   return db_name.empty()
-             ? base::FilePath::FromASCII(kEmptyDatabaseNameFileName)
+             ? base::FilePath::FromASCII(kSqliteEmptyDatabaseNameFileName)
              : base::FilePath::FromASCII(base32::Base32Encode(
                    crypto::hash::Sha256(base::as_byte_span(db_name)),
                    base32::Base32EncodePolicy::OMIT_PADDING));
@@ -161,7 +161,7 @@ void EnumerateDatabasesInDirectory(
                                   base::FileEnumerator::FILES);
   enumerator.ForEach([&](const base::FilePath& path) {
     if (path.BaseName() ==
-        base::FilePath::FromASCII(kEmptyDatabaseNameFileName)) {
+        base::FilePath::FromASCII(kSqliteEmptyDatabaseNameFileName)) {
       ref(path);
       return;
     }
