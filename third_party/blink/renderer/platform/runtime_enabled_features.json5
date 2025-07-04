@@ -1028,10 +1028,6 @@
       }
     },
     {
-      name: "ConsiderFullChildNodeContentForListify",
-      status: "stable",
-    },
-    {
       // Fix for https://crbug.com/40659076. When enabled, queryCommandState for
       // 'subscript' or 'superscript' with a caret selection will consider
       // ancestor <sub> or <sup> elements, matching the behavior for range

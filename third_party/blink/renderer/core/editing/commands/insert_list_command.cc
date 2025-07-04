@@ -589,18 +589,17 @@ void InsertListCommand::ToggleSelectedListItem(
   // According to spec file [1] if the selection node is part of a list child
   // node, toggle the visibility (or state) of the entire list child node.
   // [1]:https://w3c.github.io/editing/docs/execCommand/#toggling-lists
-  if (RuntimeEnabledFeatures::ConsiderFullChildNodeContentForListifyEnabled()) {
-    // If the list type needs to be switched, create a new list of list_tag type
-    // and use it as placeholder so that, list_item's children will remain
-    // unchanged.
-    Node* listified_placeholder = nullptr;
-    if (switch_list_type || force_create_list) {
-      listified_placeholder = ListifyParagraph(
-          initial_selection, insertion_point, list_tag, editing_state);
-      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-      if (listified_placeholder) {
-        insertion_point = VisiblePosition::BeforeNode(*listified_placeholder);
-      }
+
+  // If the list type needs to be switched, create a new list of list_tag type
+  // and use it as placeholder so that, list_item's children will remain
+  // unchanged.
+  Node* listified_placeholder = nullptr;
+  if (switch_list_type || force_create_list) {
+    listified_placeholder = ListifyParagraph(initial_selection, insertion_point,
+                                             list_tag, editing_state);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    if (listified_placeholder) {
+      insertion_point = VisiblePosition::BeforeNode(*listified_placeholder);
     }
   }
   visible_start = CreateVisiblePosition(start);
