@@ -1414,7 +1414,7 @@
       "--enable-blink-features=ForcedColors",
       "--enable-blink-features=CSSGapDecoration"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "fractional-scroll-offsets",
