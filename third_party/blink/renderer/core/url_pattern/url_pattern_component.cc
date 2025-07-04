@@ -229,8 +229,8 @@ Component* Component::Compile(v8::Isolate* isolate,
         parse_result.value().GenerateRegexString(&name_list);
 
     // Compile the regular expression to verify it is valid.
-    auto case_sensitive = options.sensitive ? WTF::kTextCaseSensitive
-                                            : WTF::kTextCaseASCIIInsensitive;
+    auto case_sensitive =
+        options.sensitive ? kTextCaseSensitive : kTextCaseASCIIInsensitive;
     DCHECK(base::IsStringASCII(regexp_string));
     regexp = MakeGarbageCollected<ScriptRegexp>(
         isolate, String(regexp_string), case_sensitive,

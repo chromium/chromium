@@ -83,7 +83,7 @@ struct UCharBufferTranslator {
   static unsigned GetHash(const UCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const UCharBuffer& buf) {
-    return WTF::Equal(str, buf.characters());
+    return blink::Equal(str, buf.characters());
   }
 
   static void Store(StringImpl*& location,
@@ -365,7 +365,7 @@ struct LCharBufferTranslator {
   static unsigned GetHash(const LCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const LCharBuffer& buf) {
-    return WTF::Equal(str, buf.characters());
+    return blink::Equal(str, buf.characters());
   }
 
   static void Store(StringImpl*& location,

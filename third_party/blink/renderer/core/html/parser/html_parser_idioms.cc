@@ -440,10 +440,10 @@ inline StringImpl* FindStringIfStatic(base::span<const CharType> characters) {
   // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
   unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
       reinterpret_cast<const char*>(characters.data()), characters.size());
-  const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
+  const StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 
-  WTF::StaticStringsTable::const_iterator it = table.find(hash);
+  StaticStringsTable::const_iterator it = table.find(hash);
   if (it == table.end())
     return nullptr;
   // It's possible to have hash collisions between arbitrary strings and known

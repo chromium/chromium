@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(StringImplTest, Create8Bit) {
   scoped_refptr<StringImpl> test_string_impl =
@@ -206,4 +206,4 @@ TEST(StringImplTest, WtfReverseFind) {
   EXPECT_EQ(kNotFound, ReverseFind(text, 'd', 2u));
 }
 
-}  // namespace WTF
+}  // namespace blink

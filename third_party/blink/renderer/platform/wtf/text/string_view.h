@@ -262,7 +262,7 @@ class WTF_EXPORT StringView {
     // with a zero offset and the same length we can just access the impl
     // directly since this == StringView(m_impl).
     if (impl_->RawByteSpan().data() == Bytes() && length_ == impl_->length()) {
-      return GetPtr(impl_);
+      return WTF::GetPtr(impl_);
     }
     return nullptr;
   }
@@ -426,8 +426,8 @@ inline bool operator!=(const StringView& a, const StringView& b) {
 
 inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
                                    wtf_size_t start) const {
-  return Is8Bit() ? WTF::Find(Span8(), match_function, start)
-                  : WTF::Find(Span16(), match_function, start);
+  return Is8Bit() ? blink::Find(Span8(), match_function, start)
+                  : blink::Find(Span16(), match_function, start);
 }
 
 template <bool isSpecialCharacter(UChar)>

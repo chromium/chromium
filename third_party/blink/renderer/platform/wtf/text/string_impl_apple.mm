@@ -24,7 +24,7 @@
 
 #include "base/apple/bridging.h"
 
-namespace WTF {
+namespace blink {
 
 base::apple::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
   return base::apple::ScopedCFTypeRef<CFStringRef>(
@@ -40,4 +40,4 @@ StringImpl::operator NSString*() {
   return base::apple::CFToNSOwnershipCast(CreateCFString().release());
 }
 
-}  // namespace WTF
+}  // namespace blink

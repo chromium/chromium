@@ -1951,8 +1951,8 @@ static bool ParseTransformTranslateArguments(
     unsigned expected_count,
     CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)),
-                                     expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = Find(UNSAFE_TODO(base::span(pos, end)),
+                                expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
@@ -1977,7 +1977,7 @@ static bool ParseTransformTranslateArguments(
 static bool ParseTransformRotateArgument(const LChar*& pos,
                                          const LChar* end,
                                          CSSFunctionValue* transform_value) {
-  wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)), ')');
+  wtf_size_t delimiter = Find(UNSAFE_TODO(base::span(pos, end)), ')');
   if (delimiter == kNotFound) {
     return false;
   }
@@ -2005,8 +2005,8 @@ static bool ParseTransformNumberArguments(const LChar*& pos,
                                           unsigned expected_count,
                                           CSSFunctionValue* transform_value) {
   while (expected_count) {
-    wtf_size_t delimiter = WTF::Find(UNSAFE_TODO(base::span(pos, end)),
-                                     expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = Find(UNSAFE_TODO(base::span(pos, end)),
+                                expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound) {
       return false;
     }
@@ -2167,7 +2167,7 @@ static bool TransformCanLikelyUseFastPath(base::span<const LChar> span) {
         // All other things, ex. skew.
         return false;
     }
-    wtf_size_t arguments_end = WTF::Find(span, ')', i);
+    wtf_size_t arguments_end = Find(span, ')', i);
     if (arguments_end == kNotFound) {
       return false;
     }

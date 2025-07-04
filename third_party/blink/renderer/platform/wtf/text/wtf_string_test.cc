@@ -230,20 +230,19 @@ TEST(WTF, SimplifyWhiteSpace) {
   String extra_spaces("  Hello  world  ");
   EXPECT_EQ(String("Hello world"), extra_spaces.SimplifyWhiteSpace());
   EXPECT_EQ(String("  Hello  world  "),
-            extra_spaces.SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace));
+            extra_spaces.SimplifyWhiteSpace(kDoNotStripWhiteSpace));
 
   String extra_spaces_and_newlines(" \nHello\n world\n ");
   EXPECT_EQ(String("Hello world"),
             extra_spaces_and_newlines.SimplifyWhiteSpace());
   EXPECT_EQ(
       String("  Hello  world  "),
-      extra_spaces_and_newlines.SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace));
+      extra_spaces_and_newlines.SimplifyWhiteSpace(kDoNotStripWhiteSpace));
 
   String extra_spaces_and_tabs(" \nHello\t world\t ");
   EXPECT_EQ(String("Hello world"), extra_spaces_and_tabs.SimplifyWhiteSpace());
-  EXPECT_EQ(
-      String("  Hello  world  "),
-      extra_spaces_and_tabs.SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace));
+  EXPECT_EQ(String("  Hello  world  "),
+            extra_spaces_and_tabs.SimplifyWhiteSpace(kDoNotStripWhiteSpace));
 
   auto is_space_or_g = [](UChar character) {
     return character == ' ' || character == 'G';
@@ -253,7 +252,7 @@ TEST(WTF, SimplifyWhiteSpace) {
             extra_spaces_and_gs.SimplifyWhiteSpace(is_space_or_g));
   EXPECT_EQ(String("     Hello   world    "),
             extra_spaces_and_gs.SimplifyWhiteSpace(is_space_or_g,
-                                                   WTF::kDoNotStripWhiteSpace));
+                                                   kDoNotStripWhiteSpace));
 }
 
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {

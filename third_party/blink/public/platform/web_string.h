@@ -44,11 +44,9 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"  // nogncheck
 #endif
 
-namespace WTF {
-class StringImpl;
-}
-
 namespace blink {
+
+class StringImpl;
 
 // Use either one of static methods to convert ASCII, Latin1, UTF-8 or
 // UTF-16 string into WebString:
@@ -178,7 +176,7 @@ class BLINK_PLATFORM_EXPORT WebString {
  private:
   bool Is8Bit() const;
 
-  scoped_refptr<WTF::StringImpl> impl_;
+  scoped_refptr<StringImpl> impl_;
 };
 
 #if INSIDE_BLINK

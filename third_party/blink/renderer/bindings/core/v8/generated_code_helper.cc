@@ -228,7 +228,7 @@ std::optional<size_t> FindIndexInEnumStringTable(
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
     // Avoid operator== because of the strlen inside a StringView construction.
-    if (WTF::EqualToCString(str_value, enum_value_table[i])) {
+    if (EqualToCString(str_value, enum_value_table[i])) {
       return i;
     }
   }

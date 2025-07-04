@@ -62,10 +62,8 @@ typedef const struct __CFString* CFStringRef;
 #endif
 
 namespace blink {
-class AtomicStringTable;
-}  // namespace blink
 
-namespace WTF {
+class AtomicStringTable;
 
 enum TextCaseSensitivity {
   kTextCaseSensitive,
@@ -160,7 +158,7 @@ class WTF_EXPORT StringImpl {
   static scoped_refptr<StringImpl> Create(base::span<const LChar>);
   static scoped_refptr<StringImpl> Create(
       base::span<const LChar>,
-      blink::AsciiStringAttributes ascii_attributes);
+      AsciiStringAttributes ascii_attributes);
   static scoped_refptr<StringImpl> Create8BitIfPossible(
       base::span<const UChar>);
 
@@ -510,7 +508,7 @@ class WTF_EXPORT StringImpl {
   static const std::array<UChar, 256> kLatin1CaseFoldTable;
 
  private:
-  friend class blink::AtomicStringTable;
+  friend class AtomicStringTable;
   enum Flags {
     // These two fields are never modified for the lifetime of the StringImpl.
     // It is therefore safe to read them with a relaxed operation.
@@ -555,7 +553,7 @@ class WTF_EXPORT StringImpl {
   }
 
   static inline uint32_t AsciiStringAttributesToFlags(
-      blink::AsciiStringAttributes ascii_attributes) {
+      AsciiStringAttributes ascii_attributes) {
     uint32_t flags = kAsciiPropertyCheckDone;
     if (ascii_attributes.contains_only_ascii)
       flags |= kContainsOnlyAscii;
@@ -840,8 +838,8 @@ inline wtf_size_t ReverseFind(base::span<const LChar> characters,
 
 inline wtf_size_t StringImpl::Find(LChar character, wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Span8(), character, start);
-  return WTF::Find(Span16(), character, start);
+    return blink::Find(Span8(), character, start);
+  return blink::Find(Span16(), character, start);
 }
 
 ALWAYS_INLINE wtf_size_t StringImpl::Find(char character,
@@ -851,8 +849,8 @@ ALWAYS_INLINE wtf_size_t StringImpl::Find(char character,
 
 inline wtf_size_t StringImpl::Find(UChar character, wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Span8(), character, start);
-  return WTF::Find(Span16(), character, start);
+    return blink::Find(Span8(), character, start);
+  return blink::Find(Span16(), character, start);
 }
 
 // Null-terminated strings is generally discouraged as it has high chance to
@@ -939,6 +937,13 @@ inline void StringImpl::AppendTo(BufferType& result,
     result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
 }
 
+}  // namespace blink
+
+namespace WTF {
+
+// TODO(crbug.com/422768753): Remove this `using` directive.
+using blink::StringImpl;
+
 template <typename T>
 struct HashTraits;
 // Defined in string_hash.h.
@@ -948,22 +953,5 @@ template <>
 struct HashTraits<scoped_refptr<StringImpl>>;
 
 }  // namespace WTF
-
-namespace blink {
-using WTF::CharacterMatchFunctionPtr;
-using WTF::DeprecatedEqualIgnoringCase;
-using WTF::EqualIgnoringASCIICase;
-using WTF::IsWhiteSpaceFunctionPtr;
-using WTF::kStripExtraWhiteSpace;
-using WTF::StripBehavior;
-}  // namespace blink
-using WTF::Equal;
-using WTF::EqualNonNull;
-using WTF::kTextCaseASCIIInsensitive;
-using WTF::kTextCaseSensitive;
-using WTF::LengthOfNullTerminatedString;
-using WTF::ReverseFind;
-using WTF::StringImpl;
-using WTF::TextCaseSensitivity;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

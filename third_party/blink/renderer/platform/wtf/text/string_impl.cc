@@ -52,7 +52,10 @@
 
 using std::numeric_limits;
 
-namespace WTF {
+namespace blink {
+
+using WTF::Partitions;
+using WTF::VisitCharacters;
 
 namespace {
 
@@ -132,7 +135,7 @@ void CopyStringFragment(const StringView& fragment,
 
 void* StringImpl::operator new(size_t size) {
   DCHECK_EQ(size, sizeof(StringImpl));
-  return Partitions::BufferMalloc(size, "WTF::StringImpl");
+  return Partitions::BufferMalloc(size, "blink::StringImpl");
 }
 
 void StringImpl::operator delete(void* ptr) {
@@ -146,7 +149,7 @@ inline StringImpl::~StringImpl() {
 void StringImpl::DestroyIfNeeded() const {
   if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
     // TODO: Remove const_cast
-    if (blink::AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
+    if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
             const_cast<StringImpl*>(this))) {
       delete this;
     } else {
@@ -164,8 +167,8 @@ void StringImpl::DestroyIfNeeded() const {
 }
 
 unsigned StringImpl::ComputeASCIIFlags() const {
-  blink::AsciiStringAttributes ascii_attributes = VisitCharacters(
-      *this, [](auto chars) { return blink::CharacterAttributes(chars); });
+  AsciiStringAttributes ascii_attributes = VisitCharacters(
+      *this, [](auto chars) { return CharacterAttributes(chars); });
   uint32_t new_flags = AsciiStringAttributesToFlags(ascii_attributes);
   const uint32_t previous_flags =
       hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
@@ -235,7 +238,7 @@ const StaticStringsTable& StringImpl::AllStaticStrings() {
 }
 
 void StringImpl::FreezeStaticStrings() {
-  DCHECK(blink::IsMainThread());
+  DCHECK(IsMainThread());
 
 #if DCHECK_IS_ON()
   g_allow_creation_of_static_strings = false;
@@ -292,7 +295,7 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   impl->AssertHashIsCorrect();
 #endif
 
-  DCHECK(blink::IsMainThread());
+  DCHECK(IsMainThread());
   highest_static_string_length_ =
       std::max(highest_static_string_length_, narrowed_length);
   StaticStrings().insert(hash, impl);
@@ -336,7 +339,7 @@ scoped_refptr<StringImpl> StringImpl::Create(
 
 scoped_refptr<StringImpl> StringImpl::Create(
     base::span<const LChar> characters,
-    blink::AsciiStringAttributes ascii_attributes) {
+    AsciiStringAttributes ascii_attributes) {
   scoped_refptr<StringImpl> ret = Create(characters);
   if (!characters.empty()) {
     // If length is 0 then `ret` is empty_ and should not have its
@@ -399,7 +402,7 @@ UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
   if (Is8Bit()) {
     return Span8()[i];
   }
-  const UChar32 c = blink::CodePointAt(Span16(), i);
+  const UChar32 c = CodePointAt(Span16(), i);
   return U_IS_SURROGATE(c) ? 0 : c;
 }
 
@@ -430,13 +433,11 @@ class StringImplAllocator {
 };
 
 scoped_refptr<StringImpl> StringImpl::LowerASCII() {
-  return blink::ConvertAsciiCase(*this, blink::LowerConverter(),
-                                 StringImplAllocator());
+  return ConvertAsciiCase(*this, LowerConverter(), StringImplAllocator());
 }
 
 scoped_refptr<StringImpl> StringImpl::UpperASCII() {
-  return blink::ConvertAsciiCase(*this, blink::UpperConverter(),
-                                 StringImplAllocator());
+  return ConvertAsciiCase(*this, UpperConverter(), StringImplAllocator());
 }
 
 scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
@@ -474,7 +475,7 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
     // Do a slower implementation for cases that include non-ASCII Latin-1
     // characters.
     for (size_t i = 0; i < source8.size(); ++i) {
-      data8[i] = static_cast<LChar>(blink::unicode::ToLower(source8[i]));
+      data8[i] = static_cast<LChar>(unicode::ToLower(source8[i]));
     }
     return new_impl;
   }
@@ -495,16 +496,16 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
 
   // Do a slower implementation for cases that include non-ASCII characters.
   bool error;
-  const int32_t real_length = blink::unicode::FoldCase(
+  const int32_t real_length = unicode::FoldCase(
       data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
       static_cast<int32_t>(source16.size()), &error);
   if (!error && real_length == static_cast<int32_t>(data16.size())) {
     return new_impl;
   }
   new_impl = CreateUninitialized(real_length, data16);
-  blink::unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
-                           source16.data(),
-                           static_cast<int32_t>(source16.size()), &error);
+  unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
+                    source16.data(), static_cast<int32_t>(source16.size()),
+                    &error);
   if (error)
     return this;
   return new_impl;
@@ -587,7 +588,7 @@ class SpaceOrNewlinePredicate final {
 
  public:
   inline bool operator()(UChar ch) const {
-    return blink::unicode::IsSpaceOrNewline(ch);
+    return unicode::IsSpaceOrNewline(ch);
   }
 };
 
@@ -619,7 +620,7 @@ ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     return this;
   }
 
-  blink::StringBuffer<CharType> data(characters.size());
+  StringBuffer<CharType> data(characters.size());
   auto to = data.Span();
   size_t outc = i;
 
@@ -664,7 +665,7 @@ scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
   return VisitCharacters(
       *this, [start, length_to_remove, removed_end](auto chars) {
         using CharType = decltype(chars)::value_type;
-        blink::StringBuffer<CharType> buffer(chars.size() - length_to_remove);
+        StringBuffer<CharType> buffer(chars.size() - length_to_remove);
         auto [before, after] = buffer.Span().split_at(start);
         CopyChars(before, chars.first(start));
         CopyChars(after, chars.subspan(removed_end));
@@ -677,7 +678,7 @@ inline scoped_refptr<StringImpl> StringImpl::SimplifyMatchedCharactersToSpace(
     base::span<const CharType> from,
     UCharPredicate predicate,
     StripBehavior strip_behavior) {
-  blink::StringBuffer<CharType> data(length_);
+  StringBuffer<CharType> data(length_);
 
   size_t outc = 0;
   bool changed_to_space = false;
@@ -857,7 +858,7 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   if (a.data() == b.data()) {
     return true;
   }
-  return !blink::unicode::Umemcasecmp(a.data(), b.data(), length);
+  return !unicode::Umemcasecmp(a.data(), b.data(), length);
 }
 
 bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
@@ -869,7 +870,7 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   while (length--) {
     // SAFETY: The above `CHECK_EQ()` and `while (length--)` guarantees that
     // `a_data` moves inside `a`, and `b_data` moves inside `b`.
-    if (UNSAFE_BUFFERS(blink::unicode::FoldCase(*a_data++) !=
+    if (UNSAFE_BUFFERS(unicode::FoldCase(*a_data++) !=
                        StringImpl::kLatin1CaseFoldTable[*b_data++])) {
       return false;
     }
@@ -880,8 +881,8 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
 wtf_size_t StringImpl::Find(CharacterMatchFunctionPtr match_function,
                             wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Span8(), match_function, start);
-  return WTF::Find(Span16(), match_function, start);
+    return blink::Find(Span8(), match_function, start);
+  return blink::Find(Span16(), match_function, start);
 }
 
 wtf_size_t StringImpl::Find(base::RepeatingCallback<bool(UChar)> match_callback,
@@ -949,8 +950,8 @@ wtf_size_t StringImpl::Find(const StringView& match_string,
   // Optimization 1: fast case for strings of length 1.
   if (match_length == 1) {
     if (Is8Bit())
-      return WTF::Find(Span8(), match_string[0], index);
-    return WTF::Find(Span16(), match_string[0], index);
+      return blink::Find(Span8(), match_string[0], index);
+    return blink::Find(Span16(), match_string[0], index);
   }
 
   if (!match_length) [[unlikely]] {
@@ -1078,8 +1079,8 @@ wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
 
 wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
   if (Is8Bit())
-    return WTF::ReverseFind(Span8(), c, index);
-  return WTF::ReverseFind(Span16(), c, index);
+    return blink::ReverseFind(Span8(), c, index);
+  return blink::ReverseFind(Span16(), c, index);
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
@@ -1136,8 +1137,8 @@ wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
   // Optimization 1: fast case for strings of length 1.
   if (match_length == 1) {
     if (Is8Bit())
-      return WTF::ReverseFind(Span8(), match_string[0], index);
-    return WTF::ReverseFind(Span16(), match_string[0], index);
+      return blink::ReverseFind(Span8(), match_string[0], index);
+    return blink::ReverseFind(Span16(), match_string[0], index);
   }
 
   // Check index & matchLength are in range.
@@ -1184,7 +1185,7 @@ bool StringImpl::DeprecatedStartsWithIgnoringCase(
 bool StringImpl::StartsWithIgnoringCaseAndAccents(
     const StringView& prefix) const {
   std::u16string s = ToU16String();
-  std::u16string p = ::WTF::ToU16String(prefix);
+  std::u16string p = blink::ToU16String(prefix);
   size_t match_index = 1U;
 
   if (base::i18n::StringSearchIgnoringCaseAndAccents(
@@ -1197,7 +1198,7 @@ bool StringImpl::StartsWithIgnoringCaseAndAccents(
 }
 
 std::u16string StringImpl::ToU16String() const {
-  return ::WTF::ToU16String(StringView(*this));
+  return blink::ToU16String(StringView(*this));
 }
 
 bool StringImpl::StartsWithIgnoringASCIICase(const StringView& prefix) const {
@@ -1597,4 +1598,4 @@ int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
   });
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -77,9 +77,9 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
     return GetHash(reinterpret_cast<const char*>(key));
   }
   static unsigned GetHash(const UChar* key) {
-    return ComputeHashForWideString(
+    return blink::ComputeHashForWideString(
         // SAFETY: Safe when input is null-terminated string.
-        UNSAFE_BUFFERS({key, LengthOfNullTerminatedString(key)}));
+        UNSAFE_BUFFERS({key, blink::LengthOfNullTerminatedString(key)}));
   }
 
   static bool Equal(const String& a, const char* b) { return a == b; }

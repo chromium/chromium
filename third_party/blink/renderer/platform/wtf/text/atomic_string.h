@@ -106,7 +106,7 @@ class WTF_EXPORT AtomicString {
   wtf_size_t find(char c, wtf_size_t start = 0) const {
     return find(static_cast<LChar>(c), start);
   }
-  wtf_size_t Find(WTF::CharacterMatchFunctionPtr match_function,
+  wtf_size_t Find(CharacterMatchFunctionPtr match_function,
                   wtf_size_t start = 0) const {
     return string_.Find(match_function, start);
   }
