@@ -24529,6 +24529,9 @@
                     "name": "RetryOnly",
                     "enable_features": [
                         "PageAllocatorRetryOnCommitFailure"
+                    ],
+                    "disable_features": [
+                        "TerminationTargetPolicy"
                     ]
                 },
                 {
