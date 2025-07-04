@@ -101,7 +101,7 @@ void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
   v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-  DCHECK_EQ(isolate_, context->GetIsolate());
+  DCHECK_EQ(isolate_, v8::Isolate::GetCurrent());
   v8::Context::Scope context_scope(context);
 
   v8::Local<v8::Value> converted_message =

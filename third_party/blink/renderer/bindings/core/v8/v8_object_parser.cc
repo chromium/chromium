@@ -19,7 +19,7 @@ bool V8ObjectParser::ParseCSSPropertyList(
     Vector<CSSPropertyID>* native_properties,
     Vector<AtomicString>* custom_properties,
     ExceptionState& exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   TryRethrowScope rethrow_scope(isolate, exception_state);
 
   v8::Local<v8::Value> list_value;

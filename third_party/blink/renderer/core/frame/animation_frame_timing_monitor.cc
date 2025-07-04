@@ -799,7 +799,7 @@ void AnimationFrameTimingMonitor::Did(const probe::UserEntryPoint& probe_data) {
   user_entry_point.invoker_type =
       ScriptTimingInfo::InvokerType::kUserEntryPoint;
   user_entry_point.source_location = CaptureScriptSourceLocation(
-      probe_data.callback_object->GetIsolate(), probe_data.callback_object);
+      v8::Isolate::GetCurrent(), probe_data.callback_object);
   PopScriptEntryPointInternal(probe_data.context, probe_data.CaptureEndTime(),
                               user_entry_point);
   user_entry_points_.erase(it);

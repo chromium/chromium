@@ -17,7 +17,7 @@
 namespace blink {
 
 v8::Local<v8::Value> NodeV8Value(v8::Local<v8::Context> context, Node* node) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (!node ||
       !BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(isolate), node)) {
     return v8::Null(isolate);

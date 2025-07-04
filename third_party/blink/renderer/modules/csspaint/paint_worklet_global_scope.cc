@@ -39,7 +39,7 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
                          v8::Local<v8::Object> constructor,
                          Vector<CSSSyntaxDefinition>* input_argument_types,
                          ExceptionState& exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   TryRethrowScope rethrow_scope(isolate, exception_state);
 
   if (RuntimeEnabledFeatures::CSSPaintAPIArgumentsEnabled()) {
@@ -76,7 +76,7 @@ PaintRenderingContext2DSettings* ParsePaintRenderingContext2DSettings(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> constructor,
     ExceptionState& exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   TryRethrowScope rethrow_scope(isolate, exception_state);
 
   v8::Local<v8::Value> context_settings_value;

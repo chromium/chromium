@@ -126,7 +126,7 @@ base::Value GetJavaScriptExecutionResult(v8::Local<v8::Value> result,
 v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
                                       v8::Local<v8::Value> object,
                                       const String& name) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> name_str = V8String(isolate, name);
   v8::Local<v8::Object> object_obj;
   if (!object->ToObject(context).ToLocal(&object_obj)) {
@@ -143,7 +143,7 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
   v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
 
   v8::Context::Scope context_scope(context);
-  v8::LocalVector<v8::Value> args(context->GetIsolate());
+  v8::LocalVector<v8::Value> args(v8::Isolate::GetCurrent());
   for (const auto& argument : arguments) {
     args.push_back(converter->ToV8Value(argument, context));
   }

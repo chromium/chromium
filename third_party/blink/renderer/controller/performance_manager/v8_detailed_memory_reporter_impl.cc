@@ -70,7 +70,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
         isolate_memory_usage->detached_bytes_used += size;
         continue;
       }
-      v8::Isolate* isolate = context->GetIsolate();
+      v8::Isolate* isolate = v8::Isolate::GetCurrent();
       if (DOMWrapperWorld::World(isolate, context).GetWorldId() !=
           DOMWrapperWorld::kMainWorldId) {
         // TODO(crbug.com/1085129): Handle extension contexts once they get

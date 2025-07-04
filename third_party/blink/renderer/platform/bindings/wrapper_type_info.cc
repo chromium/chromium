@@ -52,7 +52,7 @@ const WrapperTypeInfo* ToWrapperTypeInfo(const ScriptWrappable* wrappable) {
 
 const WrapperTypeInfo* ToWrapperTypeInfo(v8::Local<v8::Object> wrapper) {
   const v8::Object::Wrappable* wrappable =
-      ToAnyWrappable(wrapper->GetIsolate(), wrapper);
+      ToAnyWrappable(v8::Isolate::GetCurrent(), wrapper);
   // It's either us or legacy embedders
   DCHECK(!wrappable || !WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   if (!wrappable) {

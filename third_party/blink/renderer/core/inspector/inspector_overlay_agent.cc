@@ -115,7 +115,7 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
 v8::MaybeLocal<v8::Value> GetV8Property(v8::Local<v8::Context> context,
                                         v8::Local<v8::Value> object,
                                         const String& name) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> name_str = V8String(isolate, name);
   v8::Local<v8::Object> object_obj;
   if (!object->ToObject(context).ToLocal(&object_obj)) {
@@ -1450,13 +1450,12 @@ void InspectorOverlayAgent::EvaluateInOverlay(const String& method,
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Context::Scope context_scope(context);
 
-  v8::LocalVector<v8::Value> args(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::LocalVector<v8::Value> args(isolate);
   int args_length = 2;
-  v8::Local<v8::Array> params(
-      v8::Array::New(context->GetIsolate(), args_length));
-  v8::Local<v8::Value> local_method(V8String(context->GetIsolate(), method));
-  v8::Local<v8::Value> local_argument(
-      V8String(context->GetIsolate(), argument));
+  v8::Local<v8::Array> params(v8::Array::New(isolate, args_length));
+  v8::Local<v8::Value> local_method(V8String(isolate, method));
+  v8::Local<v8::Value> local_argument(V8String(isolate, argument));
   params->CreateDataProperty(context, 0, local_method).Check();
   params->CreateDataProperty(context, 1, local_argument).Check();
   args.push_back(params);

@@ -37,7 +37,7 @@ constexpr char kSquarespace[] = "Squarespace";
 
 bool IsFrameworkVariableUsed(v8::Local<v8::Context> context,
                              const String& framework_variable_name) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> global = context->Global();
   v8::TryCatch try_catch(isolate);
   bool has_property;

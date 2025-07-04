@@ -200,7 +200,7 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
     v8::Local<v8::String> specifier,
     v8::Local<v8::FixedArray> import_attributes,
     v8::Local<v8::Module> referrer) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   Modulator* modulator = Modulator::From(ScriptState::From(isolate, context));
   DCHECK(modulator);
 
@@ -222,7 +222,7 @@ v8::MaybeLocal<v8::Object> ModuleRecord::ResolveSourceCallback(
     v8::Local<v8::String> specifier,
     v8::Local<v8::FixedArray> import_attributes,
     v8::Local<v8::Module> referrer) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   Modulator* modulator = Modulator::From(script_state);
   DCHECK(modulator);
@@ -253,7 +253,7 @@ Vector<ImportAttribute> ModuleRecord::ToBlinkImportAttributes(
   // in the form [key1, value1, key2, value2, ...].
   const int kV8AttributeEntrySize = v8_import_attributes_has_positions ? 3 : 2;
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   Vector<ImportAttribute> import_attributes;
   int number_of_import_attributes =
       v8_import_attributes->Length() / kV8AttributeEntrySize;

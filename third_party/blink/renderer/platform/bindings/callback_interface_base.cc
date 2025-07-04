@@ -16,7 +16,7 @@ CallbackInterfaceBase::CallbackInterfaceBase(
     SingleOperationOrNot single_op_or_not) {
   DCHECK(!callback_object.IsEmpty());
 
-  v8::Isolate* isolate = callback_object->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   callback_object_.Reset(isolate, callback_object);
 
   incumbent_script_state_ =

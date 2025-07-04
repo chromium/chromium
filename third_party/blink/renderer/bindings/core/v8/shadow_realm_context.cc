@@ -65,7 +65,7 @@ v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
   ExecutionContext* initiator_execution_context =
       ExecutionContext::From(initiator_context);
   DCHECK(initiator_execution_context);
-  v8::Isolate* isolate = initiator_context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DOMWrapperWorld* world = DOMWrapperWorld::Create(
       isolate, DOMWrapperWorld::WorldType::kShadowRealm);
   CHECK(world);  // Not yet run out of the world id.

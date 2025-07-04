@@ -41,7 +41,7 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
     // (crbug.com/976506)
     ContextFeatureSettings::CrashIfMojoJSNotAllowed();
   }
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld() ||
          script_state->World().IsWorkerOrWorkletWorld());
@@ -78,7 +78,7 @@ void WebV8Features::EnableMojoJSFileSystemAccessHelper(
     // (crbug.com/976506)
     ContextFeatureSettings::CrashIfMojoJSNotAllowed();
   }
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
 
@@ -104,7 +104,7 @@ void WebV8Features::AllowMojoJSForProcess() {
 
 // static
 bool WebV8Features::IsMojoJSEnabledForTesting(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
   ContextFeatureSettings* settings = ContextFeatureSettings::From(
@@ -116,7 +116,7 @@ bool WebV8Features::IsMojoJSEnabledForTesting(v8::Local<v8::Context> context) {
 // static
 void WebV8Features::EnableMojoJSWithoutSecurityChecksForTesting(
     v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
   ContextFeatureSettings::From(

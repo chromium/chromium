@@ -58,7 +58,7 @@ v8_inspector::V8DebuggerId GetDebuggerIdForContext(
   }
   int contextId = v8_inspector::V8ContextInfo::executionContextId(v8_context);
   ThreadDebugger* thread_debugger =
-      ThreadDebugger::From(v8_context->GetIsolate());
+      ThreadDebugger::From(v8::Isolate::GetCurrent());
   DCHECK(thread_debugger);
   v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
   DCHECK(inspector);

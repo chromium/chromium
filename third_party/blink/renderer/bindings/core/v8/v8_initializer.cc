@@ -148,7 +148,7 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
 
 String ToBlinkString(v8::Local<v8::Context> context,
                      v8::Local<v8::String> source) {
-  v8::String::Value source_str(context->GetIsolate(), source);
+  v8::String::Value source_str(v8::Isolate::GetCurrent(), source);
   size_t len = std::min(ContentSecurityPolicy::kMaxSampleLength,
                         static_cast<size_t>(source_str.length()));
   // SAFETY: v8::String::Value guarantees *source_str has source_str.length()
@@ -168,7 +168,7 @@ const size_t kWasmWireBytesLimit = 1 << 23;
 void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
                                                v8::Local<v8::Value> data) {
   DCHECK(IsMainThread());
-  v8::Isolate* isolate = message->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   if (isolate->GetEnteredOrMicrotaskContext().IsEmpty())
     return;
@@ -213,7 +213,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
 void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
                                            v8::Local<v8::Value> data) {
-  v8::Isolate* isolate = message->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   // During the frame teardown, there may not be a valid context.
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   if (!script_state->ContextIsValid())
@@ -301,9 +301,7 @@ void V8Initializer::PromiseRejectHandlerInMainThread(
     v8::PromiseRejectMessage data) {
   DCHECK(IsMainThread());
 
-  v8::Local<v8::Promise> promise = data.GetPromise();
-
-  v8::Isolate* isolate = promise->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   // TODO(ikilpatrick): Remove this check, extensions tests that use
   // extensions::ModuleSystemTest incorrectly don't have a valid script state.
@@ -368,10 +366,8 @@ void V8Initializer::ExceptionPropagationCallback(
 }
 
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
-  v8::Local<v8::Promise> promise = data.GetPromise();
-
   // Bail out if called during context initialization.
-  v8::Isolate* isolate = promise->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   if (!script_state->ContextIsValid())
     return;
@@ -424,11 +420,11 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
   return false;
 }
 
-static std::pair<bool, v8::MaybeLocal<v8::String>>
-TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
-                                v8::Local<v8::Value> source,
-                                bool is_code_like) {
-  v8::Isolate* isolate = context->GetIsolate();
+std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> source,
+    bool is_code_like) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
       !V8TrustedScript::HasInstance(isolate, source)) {
@@ -457,7 +453,7 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
-  return {true, V8String(context->GetIsolate(), stringified_source)};
+  return {true, V8String(isolate, stringified_source)};
 }
 
 // static
@@ -640,7 +636,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleWithPhaseDynamically(
     v8::Local<v8::String> v8_specifier,
     v8::ModuleImportPhase import_phase,
     v8::Local<v8::FixedArray> v8_import_attributes) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
 
   Modulator* modulator = Modulator::From(script_state);
@@ -727,7 +723,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 void HostGetImportMetaProperties(v8::Local<v8::Context> context,
                                  v8::Local<v8::Module> module,
                                  v8::Local<v8::Object> meta) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   v8::HandleScope handle_scope(isolate);
 

@@ -30,7 +30,7 @@ ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          DOMWrapperWorld* world,
                          ExecutionContext* execution_context)
-    : isolate_(context->GetIsolate()),
+    : isolate_(v8::Isolate::GetCurrent()),
       context_(isolate_, context),
       world_(world),
       per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {

@@ -233,14 +233,14 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
     return true;
   }
 
-  v8::Isolate* isolate = accessing_context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   return ShouldAllowAccessToV8ContextInternal(
       ScriptState::From(isolate, accessing_context),
       ScriptState::From(isolate, target_context));
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Local<v8::Object> holder) {
-  v8::Isolate* isolate = holder->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DOMWindow* target = FindWindow(isolate, holder);
   // Failing to find a target means something is wrong. Failing to throw an
   // exception could be a security issue, so just crash.

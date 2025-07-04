@@ -3826,7 +3826,7 @@ def make_cross_origin_access_check_callback(cg_context, function_name):
             _format(
                 "{blink_class}* blink_accessed_object = "
                 "${class_name}::ToWrappableUnsafe("
-                "accessing_context->GetIsolate(),"
+                "v8::Isolate::GetCurrent(),"
                 "${accessed_object});",
                 blink_class=blink_class)),
         TextNode("return BindingSecurity::ShouldAllowAccessTo("
@@ -4329,7 +4329,7 @@ def bind_installer_local_vars(code_node, cg_context):
         S("is_in_secure_context",
           ("const bool ${is_in_secure_context} = "
            "${execution_context}->IsSecureContext();")),
-        S("isolate", "v8::Isolate* ${isolate} = ${v8_context}->GetIsolate();"),
+        S("isolate", "v8::Isolate* ${isolate} = v8::Isolate::GetCurrent();"),
         S("script_state", ("ScriptState* ${script_state} = "
                            "ScriptState::From(${isolate}, ${v8_context});")),
         S("wrapper_type_info",

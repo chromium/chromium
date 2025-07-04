@@ -52,7 +52,7 @@ constexpr char kContextLabel[] = "V8PerContextData::context_";
 }  // namespace
 
 V8PerContextData::V8PerContextData(v8::Local<v8::Context> context)
-    : isolate_(context->GetIsolate()),
+    : isolate_(v8::Isolate::GetCurrent()),
       context_holder_(std::make_unique<gin::ContextHolder>(isolate_)),
       context_(isolate_, context),
       activity_logger_(nullptr) {
