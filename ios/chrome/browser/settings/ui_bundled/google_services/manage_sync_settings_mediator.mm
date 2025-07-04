@@ -917,7 +917,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (_ignoreSyncStateChanges || self.signOutFlowInProgress) {
+  if (_ignoreSyncStateChanges || self.signOutFlowInProgress ||
+      _identityManager->IsBatchOfPrimaryAccountChangesInProgress()) {
     // The UI should not updated so the switch animations can run smoothly.
     return;
   }
@@ -948,19 +949,19 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      _signedInIdentity = _authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
-      [self updatePrimaryAccountDetails];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Temporary state, we can ignore this event, until the UI is signed out.
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
+- (void)onEndBatchOfPrimaryAccountChanges {
+  if (!_authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    return;
   }
+  id<SystemIdentity> signedInIdentity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if ([signedInIdentity isEqual:_signedInIdentity]) {
+    // Identity is the same, nothing to do.
+    return;
+  }
+  _signedInIdentity = signedInIdentity;
+  [self updatePrimaryAccountDetails];
 }
 
 #pragma mark - ManageSyncSettingsServiceDelegate

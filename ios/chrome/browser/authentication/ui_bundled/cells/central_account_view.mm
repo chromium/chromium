@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -75,6 +76,8 @@ UIImage* GetEnterpriseIcon() {
     _useLargeMargins = useLargeMargins;
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
+    self.accessibilityIdentifier =
+        CentralAccountViewAccessibilityIdentifier(email);
 
     _imageView = [[UIImageView alloc] initWithImage:_avatarImage];
     // Creates the image rounded corners.

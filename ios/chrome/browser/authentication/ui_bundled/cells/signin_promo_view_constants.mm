@@ -10,3 +10,7 @@ NSString* const kSigninPromoSecondaryButtonId = @"SigninPromoSecondaryButtonId";
 NSString* const kSigninPromoCloseButtonId = @"SigninPromoCloseButtonId";
 NSString* const kSigninPromoActivityIndicatorId =
     @"SigninPromoActivityIndicatorId";
+
+NSString* CentralAccountViewAccessibilityIdentifier(NSString* email) {
+  return [NSString stringWithFormat:@"CentralAccountViewId-%@", email];
+}

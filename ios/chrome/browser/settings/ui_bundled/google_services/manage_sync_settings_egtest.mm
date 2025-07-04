@@ -1767,13 +1767,22 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                  base::Seconds(5), wait_for_disappearance),
              @"Account menu did not disappear.");
 
-  // Verify the account settings view is popped.
+  // Verify the account settings view remains on top of screen.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Verfiy account is switched.
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+  // And it displays the new account.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   CentralAccountViewAccessibilityIdentifier(
+                                       fakeIdentity2.userEmail))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify account is switched.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 

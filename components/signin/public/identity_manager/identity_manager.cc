@@ -725,6 +725,10 @@ void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
 }
 
 #if BUILDFLAG(IS_IOS)
+bool IdentityManager::IsBatchOfPrimaryAccountChangesInProgress() {
+  return batch_of_primary_account_changes_in_progress_;
+}
+
 void IdentityManager::BatchOfPrimaryAccountChangesDone() {
   CHECK(batch_of_primary_account_changes_in_progress_,
         base::NotFatalUntil::M140);

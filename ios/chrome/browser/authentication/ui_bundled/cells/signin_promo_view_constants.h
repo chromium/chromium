@@ -38,4 +38,8 @@ extern NSString* const kSigninPromoSecondaryButtonId;
 extern NSString* const kSigninPromoCloseButtonId;
 extern NSString* const kSigninPromoActivityIndicatorId;
 
+// Returns an accessibility label for the central account view displaying this
+// email.
+NSString* CentralAccountViewAccessibilityIdentifier(NSString* email);
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CELLS_SIGNIN_PROMO_VIEW_CONSTANTS_H_

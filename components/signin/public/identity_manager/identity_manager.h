@@ -185,6 +185,10 @@ class IdentityManager : public KeyedService,
   void RemoveObserver(Observer* observer);
 
 #if BUILDFLAG(IS_IOS)
+  // Whether a batch of primary account changes is in progress. See
+  // `OnEndBatchOfPrimaryAccountChanges()`.
+  bool IsBatchOfPrimaryAccountChangesInProgress();
+
   // Starts a batch of primary account changes by setting
   // `batch_of_primary_account_changes_in_progress_` to `true`. As long as the
   // batch is running, `OnEndBatchOfPrimaryAccountChanges()` are not sent when
