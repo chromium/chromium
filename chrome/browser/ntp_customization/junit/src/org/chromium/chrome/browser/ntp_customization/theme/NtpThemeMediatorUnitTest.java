@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
@@ -111,6 +112,15 @@ public class NtpThemeMediatorUnitTest {
         visibilityPair = mThemePropertyModel.get(IS_SECTION_TRAILING_ICON_VISIBLE);
         assertEquals(CHROME_COLORS, (int) visibilityPair.first);
         assertEquals(true, visibilityPair.second);
+    }
+
+    @Test
+    public void testSetLeadingIconForThemeCollectionsSection() {
+        createMediator(/* shouldShowAlone= */ true);
+
+        Pair<Integer, Integer> drawablePair =
+                mThemePropertyModel.get(LEADING_ICON_FOR_THEME_COLLECTIONS);
+        assertNotNull(drawablePair);
     }
 
     private void createMediator(boolean shouldShowAlone) {

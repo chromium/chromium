@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
@@ -37,6 +38,10 @@ public class NtpThemeViewBinder {
                     .setSectionOnClickListener(
                             model.get(SECTION_ON_CLICK_LISTENER).first,
                             model.get(SECTION_ON_CLICK_LISTENER).second);
+        } else if (propertyKey == LEADING_ICON_FOR_THEME_COLLECTIONS) {
+            ((NtpThemeBottomSheetView) view)
+                    .setLeadingIconForThemeCollections(
+                            model.get(LEADING_ICON_FOR_THEME_COLLECTIONS));
         }
     }
 }

@@ -11,11 +11,14 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordi
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -94,6 +97,20 @@ public class NtpThemeBottomSheetView extends ConstraintLayout {
         NtpThemeListItemView ntpThemeListItemView =
                 assumeNonNull(getItemBySectionType(sectionType));
         ntpThemeListItemView.setOnClickListener(onClickListener);
+    }
+
+    void setLeadingIconForThemeCollections(Pair<Integer, Integer> drawableSourcePair) {
+        Drawable primaryDrawable =
+                ContextCompat.getDrawable(getContext(), drawableSourcePair.first);
+        Drawable secondaryDrawable =
+                ContextCompat.getDrawable(getContext(), drawableSourcePair.second);
+        NtpThemeListItemView themeCollectionsItemView =
+                assumeNonNull(getItemBySectionType(THEME_COLLECTIONS));
+        NtpThemeListThemeCollectionItemIconView themeCollectionsItemIconView =
+                themeCollectionsItemView.findViewById(
+                        org.chromium.chrome.browser.ntp_customization.R.id.leading_icon);
+        themeCollectionsItemIconView.setImageDrawablePair(
+                new Pair<>(primaryDrawable, secondaryDrawable));
     }
 
     @Nullable NtpThemeListItemView getItemBySectionType(

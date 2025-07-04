@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordi
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
@@ -20,6 +21,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,6 +55,7 @@ public class NtpThemeMediator {
 
         setOnClickListenerForAllSection();
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, this::handleLearnMoreClick);
+        setLeadingIconForThemeCollectionsSection();
     }
 
     void destroy() {
@@ -95,6 +98,19 @@ public class NtpThemeMediator {
                 mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, false));
             }
         }
+    }
+
+    /**
+     * Sets the primary image and the secondary image for the leading icon of the theme collections
+     * section.
+     */
+    private void setLeadingIconForThemeCollectionsSection() {
+        // TODO(crbug.com/423579377): Update the drawable.
+        mThemePropertyModel.set(
+                LEADING_ICON_FOR_THEME_COLLECTIONS,
+                new Pair<>(
+                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
+                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet));
     }
 
     @VisibleForTesting

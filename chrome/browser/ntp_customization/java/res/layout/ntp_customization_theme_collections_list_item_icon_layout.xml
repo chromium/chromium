@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListThemeCollectionItemIconView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ntp_customization_theme_list_item_icon"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/no_image_placeholder_background"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+      <!-- Todo(crbug.com/423579377): Check if we need to consider the case when there is primary image or secondary image. -->
+      <ImageView
+          android:id="@+id/no_image_placeholder_image"
+          android:layout_width="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+          android:layout_height="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
+          android:layout_marginLeft="@dimen/ntp_customization_theme_collections_icon_placeholder_margin"
+          android:layout_marginTop="@dimen/ntp_customization_theme_collections_icon_placeholder_margin"
+          android:layout_gravity="top|left"
+          android:scaleType="center"
+          android:src="@drawable/ic_folder_outline_24dp"
+          app:tint="@macro/default_icon_color_secondary"
+          android:importantForAccessibility="no"
+          tools:ignore="RtlHardcoded" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/primary_image"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:scaleType="fitCenter"
+        android:clipToOutline="true"
+        android:importantForAccessibility="no" />
+
+    <!--
+      The secondary image has a container because it serves as the padding
+      between it and its neighbors. The container is slightly larger than its
+      contents so the background color is visible.
+    -->
+    <FrameLayout
+        android:id="@+id/secondary_image_container"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_outer_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+      <ImageView
+          android:id="@+id/secondary_image"
+          android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+          android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+          android:layout_gravity="right|top"
+          android:scaleType="fitCenter"
+          android:clipToOutline="true"
+          android:importantForAccessibility="no"
+          tools:ignore="RtlHardcoded" />
+    </FrameLayout>
+
+    <View
+        android:id="@+id/bottom_right_container"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_outer_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_outer_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <View
+        android:id="@+id/bottom_right_background"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageView
+        android:id="@+id/bottom_right_icon"
+        android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+        android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:scaleType="center"
+        android:src="@drawable/fitbit_heart_rate_icon"
+        android:importantForAccessibility="no" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListThemeCollectionItemIconView>

@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,16 +39,19 @@ public class NtpThemeViewBinderUnitTest {
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
 
-    private Activity mActivity;
+    private Context mContext;
     private PropertyModel mModel;
     private NtpThemeBottomSheetView mView;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mView =
                 (NtpThemeBottomSheetView)
-                        LayoutInflater.from(mActivity)
+                        LayoutInflater.from(mContext)
                                 .inflate(
                                         R.layout.ntp_customization_theme_bottom_sheet_layout,
                                         null,
@@ -92,5 +97,18 @@ public class NtpThemeViewBinderUnitTest {
         verify(mNtpThemeBottomSheetView)
                 .setSectionOnClickListener(
                         NTPThemeBottomSheetSection.CHROME_DEFAULT, mOnClickListener);
+    }
+
+    @Test
+    public void testLeadingIconForThemeCollections() {
+        PropertyModelChangeProcessor.create(
+                mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
+
+        final Pair<Integer, Integer> pair =
+                new Pair<>(
+                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
+                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        mModel.set(NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS, pair);
+        verify(mNtpThemeBottomSheetView).setLeadingIconForThemeCollections(pair);
     }
 }

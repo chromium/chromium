@@ -18,7 +18,7 @@ found in the LICENSE file.
   <group>
     <clip-path
         android:pathData="M25,25h30v30h-30z"/>
-    <!-- Todo(crbug.com/427250558): Update the color to dynamic color -->
+    <!-- TODO(crbug.com/423579377): Update the color to dynamic color -->
     <path
         android:pathData="M39,44V35.85L36.4,38.45L35,37L40,32L45,37L43.6,38.45L41,35.85V44H39ZM34,48C33.45,48 32.975,47.808 32.575,47.425C32.192,47.025 32,46.55 32,46V43H34V46H46V43H48V46C48,46.55 47.8,47.025 47.4,47.425C47.017,47.808 46.55,48 46,48H34Z"
         android:fillColor="#072711"/>
