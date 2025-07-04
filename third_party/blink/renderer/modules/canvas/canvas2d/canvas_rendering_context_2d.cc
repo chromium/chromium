@@ -640,6 +640,23 @@ int CanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
+bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
+  if (Host()->IsHibernating()) {
+    return true;
+  }
+
+  if (isContextLost()) {
+    return false;
+  }
+
+  if (canvas()->GetResourceProviderForCanvas2D() &&
+      !canvas()->GetResourceProviderForCanvas2D()->IsValid()) {
+    return false;
+  }
+
+  return !!canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+}
+
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
   return canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
 }
@@ -659,7 +676,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         canvas()->GetHibernationHandler()->GetImage());
   }
 
-  if (!canvas()->IsCanvas2DResourceValid()) {
+  if (!IsCanvas2DResourceValid()) {
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
@@ -1081,9 +1098,9 @@ bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
   return canvas()->ShouldDisableAccelerationBecauseOfReadback();
 }
 
-bool CanvasRenderingContext2D::IsCanvas2DBufferValid() const {
+bool CanvasRenderingContext2D::IsCanvas2DBufferValid() {
   if (IsPaintable()) {
-    return canvas()->IsCanvas2DResourceValid();
+    return IsCanvas2DResourceValid();
   }
   return false;
 }

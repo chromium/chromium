@@ -482,7 +482,7 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   return true;
 }
 
-bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
+bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() {
   if (IsPaintable())
     return GetCanvasResourceProvider()->IsValid();
   return false;

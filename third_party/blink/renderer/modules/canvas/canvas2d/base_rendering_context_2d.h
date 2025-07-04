@@ -309,7 +309,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void PutByteArray(const SkPixmap& source,
                     const gfx::Rect& source_rect,
                     const gfx::Vector2d& dest_offset);
-  virtual bool IsCanvas2DBufferValid() const { NOTREACHED(); }
+  virtual bool IsCanvas2DBufferValid() { NOTREACHED(); }
 
   void WillUseCurrentFont() const;
 

@@ -374,7 +374,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  if (!IsCanvas2DResourceValid()) {
+  if (!RenderingContext()->IsCanvas2DResourceValid()) {
     return false;
   }
 
@@ -425,26 +425,6 @@ bool HTMLCanvasElement::PrepareTransferableResource(
       ReleaseCanvasResource, std::move(release_callback), std::move(frame));
 
   return true;
-}
-
-bool HTMLCanvasElement::IsCanvas2DResourceValid() {
-  // This should be called only for 2D contexts.
-  CHECK(IsRenderingContext2D());
-
-  if (IsHibernating()) {
-    return true;
-  }
-
-  if (IsContextLost()) {
-    return false;
-  }
-
-  if (GetResourceProviderForCanvas2D() &&
-      !GetResourceProviderForCanvas2D()->IsValid()) {
-    return false;
-  }
-
-  return !!GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 
 void HTMLCanvasElement::Dispose() {

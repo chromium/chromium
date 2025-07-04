@@ -111,7 +111,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool PrepareTransferableResource(
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
-  bool IsCanvas2DResourceValid();
 
   // Attributes and functions exposed to script
   unsigned width() const { return Size().width(); }

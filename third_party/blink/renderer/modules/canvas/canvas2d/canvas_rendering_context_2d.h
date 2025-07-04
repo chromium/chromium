@@ -158,6 +158,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
 
   // CanvasRenderingContext implementation
+  bool IsCanvas2DResourceValid() override;
   int AllocatedBufferCountPerPixel() override {
     if (!Host()) {
       return 0;
@@ -312,7 +313,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void Stop() final;
 
   cc::Layer* CcLayer() const override;
-  bool IsCanvas2DBufferValid() const override;
+  bool IsCanvas2DBufferValid() override;
 
   void ColorSchemeMayHaveChanged() override;
 
