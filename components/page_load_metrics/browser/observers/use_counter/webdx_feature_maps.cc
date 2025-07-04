@@ -422,6 +422,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kScriptingMediaFeature, WebDXFeature::kScripting},
           {WebFeature::kEffectiveAlignContentForBlock,
            WebDXFeature::kAlignContentBlock},
+          {WebFeature::kAutoSizesLazy, WebDXFeature::kSizesAuto},
           // Add new features above this line.
       }};
 
