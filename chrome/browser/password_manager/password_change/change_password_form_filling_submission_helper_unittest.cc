@@ -57,6 +57,8 @@ using ::testing::Invoke;
 using ::testing::WithArg;
 using PasswordChangeOutcome = ::optimization_guide::proto::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
+using QualityStatus = optimization_guide::proto::
+    PasswordChangeQuality_StepQuality_SubmissionStatus;
 
 const std::u16string kUsername = u"user";
 const std::u16string kOldPassword = u"qwerty123";
@@ -170,6 +172,13 @@ void PostResponseForSubmissionButtonClick(
                                 /*log_entry=*/nullptr));
 }
 
+void CheckSubmitFormStatus(
+    const optimization_guide::proto::LogAiDataRequest& log,
+    const QualityStatus& expected_status) {
+  EXPECT_EQ(log.password_change_submission().quality().submit_form().status(),
+            expected_status);
+}
+
 }  // namespace
 
 class ChangePasswordFormFillingSubmissionHelperTest
@@ -262,6 +271,9 @@ class ChangePasswordFormFillingSubmissionHelperTest
 
   MockStubPasswordManagerDriver& driver() { return driver_; }
   password_manager::FakeFormFetcher& form_fetcher() { return form_fetcher_; }
+  const std::unique_ptr<ModelQualityLogsUploader>& logs_uploader() const {
+    return logs_uploader_;
+  }
 
   password_manager::MockPasswordStoreInterface* profile_password_store() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
@@ -667,6 +679,11 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_FALSE(completion_future.Get());
+
+  CheckSubmitFormStatus(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
@@ -718,6 +735,11 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   // Expects that form submission succeeded.
   EXPECT_TRUE(completion_future.Get());
+
+  CheckSubmitFormStatus(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
@@ -754,6 +776,11 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_FALSE(verifier->submission_verifier());
 
   EXPECT_FALSE(completion_future.Get());
+
+  CheckSubmitFormStatus(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,

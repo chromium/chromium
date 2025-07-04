@@ -120,26 +120,33 @@ void ModelQualityLogsUploader::SetCommonInformationQuality(
 }
 
 void ModelQualityLogsUploader::SetOpenFormQuality(
-    const optimization_guide::proto::PasswordChangeResponse& response,
+    const std::optional<optimization_guide::proto::PasswordChangeResponse>&
+        response,
     std::unique_ptr<LoggingData> logging_data,
     base::Time server_request_start_time) {
-  PageType open_form = response.open_form_data().page_type();
-  QualityStatus quality_status;
+  if (!logging_data) {
+    return;
+  }
 
-  if (open_form == PageType::OpenFormResponseData_PageType_SETTINGS_PAGE) {
-    if (response.open_form_data().dom_node_id_to_click()) {
-      // Assume success at this point, if fails to actuate on it the state
-      // will be changed to ELEMENT_NOT_FOUND if the element does not exist
-      // or FORM_NOT_FOUND if after clicking a form was not seen.
-      quality_status = QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+  QualityStatus quality_status = QualityStatus::
+      PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS;
+  if (response.has_value()) {
+    PageType open_form = response.value().open_form_data().page_type();
+    if (open_form == PageType::OpenFormResponseData_PageType_SETTINGS_PAGE) {
+      if (response.value().open_form_data().dom_node_id_to_click()) {
+        // Assume success at this point. If it fails to actuate on it the state
+        // will be changed to ELEMENT_NOT_FOUND if the element does not exist
+        // or FORM_NOT_FOUND if after clicking a form was not seen.
+        quality_status = QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+      } else {
+        quality_status = QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
+      }
     } else {
       quality_status = QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
     }
-  } else {
-    quality_status = QualityStatus::
-        PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
   }
 
   final_log_data_.mutable_password_change_submission()->MergeFrom(
@@ -165,6 +172,15 @@ void ModelQualityLogsUploader::FormNotDetectedAfterOpening() {
               PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_NOT_FOUND);
 }
 
+void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->mutable_open_form()
+      ->set_status(
+          QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
+}
+
 void ModelQualityLogsUploader::OpenFormTargetElementNotFound() {
   final_log_data_.mutable_password_change_submission()
       ->mutable_quality()
@@ -174,17 +190,33 @@ void ModelQualityLogsUploader::OpenFormTargetElementNotFound() {
               PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
+void ModelQualityLogsUploader::SubmitFormTargetElementNotFound() {
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->mutable_submit_form()
+      ->set_status(
+          QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
 void ModelQualityLogsUploader::SetSubmitFormQuality(
-    const optimization_guide::proto::PasswordChangeResponse& response,
+    const std::optional<optimization_guide::proto::PasswordChangeResponse>&
+        response,
     std::unique_ptr<LoggingData> logging_data,
     base::Time server_request_start_time) {
-  QualityStatus quality_status;
-  if (response.submit_form_data().dom_node_id_to_click()) {
-    quality_status = QualityStatus::
-        PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  } else {
-    quality_status = QualityStatus::
-        PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
+  if (!logging_data) {
+    return;
+  }
+  QualityStatus quality_status = QualityStatus::
+      PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS;
+  if (response.has_value()) {
+    if (response.value().submit_form_data().dom_node_id_to_click()) {
+      quality_status = QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+    } else {
+      quality_status = QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
+    }
   }
 
   final_log_data_.mutable_password_change_submission()->MergeFrom(
@@ -206,6 +238,9 @@ void ModelQualityLogsUploader::SetVerifySubmissionQuality(
         response,
     std::unique_ptr<LoggingData> logging_data,
     base::Time server_request_start_time) {
+  if (!logging_data) {
+    return;
+  }
   FinalModelStatus final_model_status = GetFinalModelStatus(response);
   QualityStatus quality_status = GetVerifySubmissionQualityStatus(response);
 

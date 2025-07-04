@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -54,9 +55,11 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
 
 ChangePasswordFormFinder::ChangePasswordFormFinder(
     content::WebContents* web_contents,
+    ModelQualityLogsUploader* logs_uploader,
     const GURL& change_password_url,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback)
     : web_contents_(web_contents),
+      logs_uploader_(logs_uploader),
       change_password_url_(change_password_url),
       callback_(std::move(callback)) {
   capture_annotated_page_content_ =
@@ -77,11 +80,13 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
 ChangePasswordFormFinder::ChangePasswordFormFinder(
     base::PassKey<class ChangePasswordFormFinderTest>,
     content::WebContents* web_contents,
+    ModelQualityLogsUploader* logs_uploader,
     const GURL& change_password_url,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
     base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
         capture_annotated_page_content)
     : ChangePasswordFormFinder(web_contents,
+                               logs_uploader,
                                change_password_url,
                                std::move(callback)) {
   capture_annotated_page_content_ = std::move(capture_annotated_page_content);
@@ -121,6 +126,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
     std::move(callback_).Run(nullptr);
     return;
   }
+
   optimization_guide::proto::PasswordChangeRequest request;
   request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
                        PasswordChangeRequest_FlowStep_OPEN_FORM_STEP);
@@ -135,7 +141,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ChangePasswordFormFinder::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
 }
 
 OptimizationGuideKeyedService*
@@ -145,6 +151,7 @@ ChangePasswordFormFinder::GetOptimizationService() {
 }
 
 void ChangePasswordFormFinder::OnExecutionResponseCallback(
+    base::Time request_time,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
@@ -152,17 +159,18 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
   CHECK(web_contents_);
   CHECK(callback_);
 
-  if (!execution_result.response.has_value()) {
-    // TODO(crbug.com/407503334): Record metrics here.
-    std::move(callback_).Run(nullptr);
-    return;
-  }
   std::optional<optimization_guide::proto::PasswordChangeResponse> response =
-      optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::PasswordChangeResponse>(
-          execution_result.response.value());
+      std::nullopt;
+  if (execution_result.response.has_value()) {
+    response = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::PasswordChangeResponse>(
+        execution_result.response.value());
+  }
+
+  logs_uploader_->SetOpenFormQuality(response, std::move(logging_data),
+                                     request_time);
+
   if (!response) {
-    // TODO(crbug.com/407503334): Record metrics here.
     std::move(callback_).Run(nullptr);
     return;
   }
@@ -181,7 +189,6 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     } else {
       std::move(callback_).Run(nullptr);
     }
-    // TODO(crbug.com/407503334): Record metrics here.
     return;
   }
 
@@ -198,7 +205,7 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
   click_helper_.reset();
 
   if (!result) {
-    // TODO(crbug.com/407503334): Record metrics here.
+    logs_uploader_->OpenFormTargetElementNotFound();
     std::move(callback_).Run(nullptr);
     return;
   }
@@ -216,7 +223,9 @@ void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
         Logger::STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT,
         form_manager);
   }
-  // TODO(crbug.com/407503334): Record metrics here.
+  if (!form_manager) {
+    logs_uploader_->FormNotDetectedAfterOpening();
+  }
   CHECK(callback_);
   std::move(callback_).Run(form_manager);
 }

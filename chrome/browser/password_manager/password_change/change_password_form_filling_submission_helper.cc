@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -62,8 +63,8 @@ ChangePasswordFormFillingSubmissionHelper::
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(bool)> callback)
     : web_contents_(web_contents),
-      callback_(std::move(callback)),
-      logs_uploader_(logs_uploader) {
+      logs_uploader_(logs_uploader),
+      callback_(std::move(callback)) {
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
@@ -78,8 +79,8 @@ ChangePasswordFormFillingSubmissionHelper::
             capture_annotated_page_content,
         base::OnceCallback<void(bool)> result_callback)
     : web_contents_(web_contents),
-      callback_(std::move(result_callback)),
       logs_uploader_(logs_uploader),
+      callback_(std::move(result_callback)),
       capture_annotated_page_content_(
           std::move(capture_annotated_page_content)) {}
 
@@ -244,10 +245,10 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
   if (!content) {
     // Fail immediately as submit element can't be identified without `content`.
+    logs_uploader_->SetOpenFormUnexpectedFailure();
     std::move(callback_).Run(false);
     return;
   }
-
   optimization_guide::proto::PasswordChangeRequest request;
   request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
                        PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP);
@@ -259,7 +260,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                          OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
 }
 
 OptimizationGuideKeyedService*
@@ -269,19 +270,22 @@ ChangePasswordFormFillingSubmissionHelper::GetOptimizationService() {
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
+    base::Time request_time,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
   CHECK(web_contents_);
-  if (!execution_result.response.has_value()) {
-    std::move(callback_).Run(false);
-    return;
-  }
   std::optional<optimization_guide::proto::PasswordChangeResponse> response =
-      optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::PasswordChangeResponse>(
-          execution_result.response.value());
+      std::nullopt;
+  if (execution_result.response.has_value()) {
+    response = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::PasswordChangeResponse>(
+        execution_result.response.value());
+  }
+  logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data),
+                                       request_time);
+
   if (!response) {
     std::move(callback_).Run(false);
     return;
@@ -318,6 +322,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
 
   if (!result) {
     // Fail immediately as click failed.
+    logs_uploader_->SubmitFormTargetElementNotFound();
     std::move(callback_).Run(false);
     return;
   }

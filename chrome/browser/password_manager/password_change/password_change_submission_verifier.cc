@@ -195,11 +195,8 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
     }
   }
 
-  if (logging_data) {
-    logs_uploader_->SetVerifySubmissionQuality(
-        response, std::move(logging_data), request_time);
-  }
-
+  logs_uploader_->SetVerifySubmissionQuality(response, std::move(logging_data),
+                                             request_time);
   if (!response) {
     // Password change failed as the response was empty or
     // unable to be parsed.

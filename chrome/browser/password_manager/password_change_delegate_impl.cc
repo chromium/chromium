@@ -218,6 +218,9 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
+  if (logs_uploader_) {
+    logs_uploader_->UploadFinalLog();
+  }
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
@@ -237,7 +240,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   CHECK(executor_);
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), change_password_url_,
+      executor_.get(), logs_uploader_.get(), change_password_url_,
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -453,8 +456,6 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeSuccess,
                       password_change_duration_overall, profile_, originator_);
   }
-  // TODO(crbug.com/407503334): Upload final log on destructor.
-  logs_uploader_->UploadFinalLog();
   submission_verifier_.reset();
 }
 

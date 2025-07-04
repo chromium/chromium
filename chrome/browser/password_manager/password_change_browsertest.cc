@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -152,8 +153,10 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     ASSERT_TRUE(observer.Wait());
   }
 
-  void VerifyUniqueQualityLog(FinalModelStatus final_status,
-                              QualityStatus quality_status) {
+  void VerifyUniqueQualityLog(QualityStatus open_form_status,
+                              QualityStatus submit_form_status,
+                              QualityStatus verify_submission_status,
+                              FinalModelStatus final_status) {
     const std::vector<
         std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs =
         logs_uploader().uploaded_logs();
@@ -168,7 +171,19 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                   ->mutable_quality()
                   ->verify_submission()
                   .status(),
-              quality_status);
+              verify_submission_status);
+    EXPECT_EQ(logs[0]
+                  ->mutable_password_change_submission()
+                  ->mutable_quality()
+                  ->open_form()
+                  .status(),
+              open_form_status);
+    EXPECT_EQ(logs[0]
+                  ->mutable_password_change_submission()
+                  ->mutable_quality()
+                  ->submit_form()
+                  .status(),
+              submit_form_status);
   }
 
   void SetPrivacyNoticeAcceptedPref() {
@@ -490,9 +505,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kSuccess));
   VerifyUniqueQualityLog(
-      FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS,
+      /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
@@ -670,9 +693,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kPageError));
   VerifyUniqueQualityLog(
-      FinalModelStatus::FINAL_MODEL_STATUS_FAILURE,
+      /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS);
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {

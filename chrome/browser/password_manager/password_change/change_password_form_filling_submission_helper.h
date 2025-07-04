@@ -105,6 +105,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   OptimizationGuideKeyedService* GetOptimizationService();
 
   void OnExecutionResponseCallback(
+      base::Time request_time,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
@@ -120,12 +121,10 @@ class ChangePasswordFormFillingSubmissionHelper {
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
 
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
   base::OnceCallback<void(bool)> callback_;
-
-  // Helper for uploading model logs.
-  raw_ptr<ModelQualityLogsUploader> logs_uploader_;
 
   // PasswordFormManager associated with current change password form.
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
