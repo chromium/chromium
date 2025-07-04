@@ -652,5 +652,10 @@ BASE_FEATURE_PARAM(size_t,
 BASE_FEATURE(kNetworkServiceTaskScheduler,
              "NetworkServiceTaskScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kNetworkServiceTaskSchedulerURLLoader,
+                   &kNetworkServiceTaskScheduler,
+                   "url_loader",
+                   false);
 
 }  // namespace network::features

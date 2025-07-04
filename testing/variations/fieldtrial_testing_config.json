@@ -15543,6 +15543,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "url_loader": "true"
+                    },
                     "enable_features": [
                         "NetworkServiceTaskScheduler"
                     ]

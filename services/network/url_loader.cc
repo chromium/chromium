@@ -52,6 +52,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cookies/canonical_cookie.h"
@@ -308,6 +309,14 @@ int32_t PopulateOptions(int32_t initial_options,
   return options;
 }
 
+const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
+    net::RequestPriority priority) {
+  if (features::kNetworkServiceTaskSchedulerURLLoader.Get()) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -383,11 +392,10 @@ URLLoader::URLLoader(
                          std::move(sync_url_loader_client)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunner::GetCurrentDefault()),
-      peer_closed_handle_watcher_(
-          FROM_HERE,
-          mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-          base::SequencedTaskRunner::GetCurrentDefault()),
+                               TaskRunner(request.priority)),
+      peer_closed_handle_watcher_(FROM_HERE,
+                                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+                                  TaskRunner(request.priority)),
       per_factory_orb_state_(context.GetMutableOrbState()),
       devtools_request_id_(request.devtools_request_id),
       options_(PopulateOptions(options,
@@ -579,10 +587,10 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
                    "NetworkContextClient is set.";
     // Defer calling NotifyCompleted to make sure the URLLoader finishes
     // initializing before getting deleted.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&URLLoader::NotifyCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), net::ERR_ACCESS_DENIED));
+    TaskRunner(url_request_->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+                                             weak_ptr_factory_.GetWeakPtr(),
+                                             net::ERR_ACCESS_DENIED));
     return;
   }
   url_request_->LogBlockedBy("Opening Files");
@@ -605,10 +613,10 @@ void URLLoader::SetUpUpload(
   if (!file_open_result.has_value()) {
     // Defer calling NotifyCompleted to make sure the URLLoader finishes
     // initializing before getting deleted.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  file_open_result.error()));
+    TaskRunner(url_request_->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+                                             weak_ptr_factory_.GetWeakPtr(),
+                                             file_open_result.error()));
     return;
   }
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -685,10 +693,10 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
   if (!result.has_value()) {
     // Defer calling NotifyCompleted to make sure the URLLoader
     // finishes initializing before getting deleted.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&URLLoader::NotifyCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), result.error()));
+    TaskRunner(url_request_->priority())
+        ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+                                             weak_ptr_factory_.GetWeakPtr(),
+                                             result.error()));
     return;
   }
   // Operation succeeded and returned headers to add/overwrite.
@@ -1360,8 +1368,9 @@ void URLLoader::CheckPartialDecoderResult(int result) {
     partial_decoder_.reset();
     // Defer calling NotifyCompleted to make sure the caller can still access
     // |this|.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+    TaskRunner(url_request_->priority())
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&URLLoader::NotifyCompleted,
                                   weak_ptr_factory_.GetWeakPtr(), result));
     return;
   }
@@ -1577,9 +1586,9 @@ void URLLoader::ReadMore() {
 void URLLoader::ReadMoreAsync() {
   CHECK_EQ(url_read_state_, URLReadState::kWaitMojoPipeWritable);
   url_read_state_ = URLReadState::kReadMoreTaskPosted;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&URLLoader::ReadMore, weak_ptr_factory_.GetWeakPtr()));
+  TaskRunner(url_request_->priority())
+      ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::ReadMore,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Handles the completion of a read. `num_bytes` is the number of bytes read, 0
@@ -1762,8 +1771,9 @@ int URLLoader::OnBeforeStartTransaction(
   // be invoked to ensure that the cookies are included in the request.
   if (!cookies_from_browser_.empty()) {
     CHECK_EQ(used_headers, &headers_with_bonus_cookies);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), net::OK,
+    TaskRunner(url_request_->priority())
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(std::move(callback), net::OK,
                                   std::move(headers_with_bonus_cookies)));
     return net::ERR_IO_PENDING;
   }
@@ -2338,8 +2348,9 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
     if (result != MOJO_RESULT_OK) {
       // Defer calling NotifyCompleted to make sure the caller can still access
       // |this|.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+      TaskRunner(url_request_->priority())
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(&URLLoader::NotifyCompleted,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     net::ERR_INSUFFICIENT_RESOURCES));
 
@@ -2368,9 +2379,9 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
   // DeleteSelf is posted asynchronously, to make sure that the callers (e.g.
   // URLLoader::OnResponseStarted and/or URLLoader::DidRead instance methods)
   // can still safely dereference |this|.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&URLLoader::DeleteSelf, weak_ptr_factory_.GetWeakPtr()));
+  TaskRunner(url_request_->priority())
+      ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::DeleteSelf,
+                                           weak_ptr_factory_.GetWeakPtr()));
   return kWillCancelRequest;
 }
 

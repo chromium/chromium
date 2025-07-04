@@ -2056,7 +2056,7 @@
       "external/wpt/loading/"
     ],
     "args": [
-      "--enable-features=NetworkServiceTaskScheduler"
+      "--enable-features=NetworkServiceTaskScheduler:url_loader/true"
     ],
     "expires": "Jun 20, 2026"
   },
