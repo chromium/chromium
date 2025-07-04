@@ -5649,11 +5649,6 @@
       name: "WindowDefaultStatus",
     },
     {
-      name: "WindowOnMoveEvent",
-      status: "experimental",
-      implied_by: ["DesktopPWAsAdditionalWindowingControls"],
-    },
-    {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "test",
     },
