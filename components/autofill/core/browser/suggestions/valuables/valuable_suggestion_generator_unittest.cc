@@ -111,9 +111,9 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
 };
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_NoMatchingDomain) {
+       GetSuggestionsForLoyaltyCards_NoMatchingDomain) {
   EXPECT_THAT(
-      GetLoyaltyCardSuggestions(
+      GetSuggestionsForLoyaltyCards(
           valuables_data_manager(),
           GURL("https://not-existing-domain.example/test"),
           /*trigger_field_is_autofilled=*/false),
@@ -129,9 +129,9 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_NoMatchingDomainAndFieldAutofilled) {
+       GetSuggestionsForLoyaltyCards_NoMatchingDomainAndFieldAutofilled) {
   EXPECT_THAT(
-      GetLoyaltyCardSuggestions(
+      GetSuggestionsForLoyaltyCards(
           valuables_data_manager(),
           GURL("https://not-existing-domain.example/test"),
           /*trigger_field_is_autofilled=*/true),
@@ -148,11 +148,11 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_WithMatchingDomain) {
+       GetSuggestionsForLoyaltyCards_WithMatchingDomain) {
   std::vector<Suggestion> suggestions_with_matching_domain =
-      GetLoyaltyCardSuggestions(valuables_data_manager(),
-                                GURL("https://domain2.example/test"),
-                                /*trigger_field_is_autofilled=*/false);
+      GetSuggestionsForLoyaltyCards(valuables_data_manager(),
+                                    GURL("https://domain2.example/test"),
+                                    /*trigger_field_is_autofilled=*/false);
   EXPECT_THAT(
       suggestions_with_matching_domain,
       testing::ElementsAre(
@@ -194,11 +194,11 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_WithMatchingDomainAndFieldAutofilled) {
+       GetSuggestionsForLoyaltyCards_WithMatchingDomainAndFieldAutofilled) {
   std::vector<Suggestion> suggestions_with_matching_domain =
-      GetLoyaltyCardSuggestions(valuables_data_manager(),
-                                GURL("https://domain2.example/test"),
-                                /*trigger_field_is_autofilled=*/true);
+      GetSuggestionsForLoyaltyCards(valuables_data_manager(),
+                                    GURL("https://domain2.example/test"),
+                                    /*trigger_field_is_autofilled=*/true);
   EXPECT_THAT(
       suggestions_with_matching_domain,
       testing::ElementsAre(
@@ -241,11 +241,11 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_AllMatchDomain) {
+       GetSuggestionsForLoyaltyCards_AllMatchDomain) {
   EXPECT_THAT(
-      GetLoyaltyCardSuggestions(valuables_data_manager(),
-                                GURL("https://common-domain.example/test"),
-                                /*trigger_field_is_autofilled=*/false),
+      GetSuggestionsForLoyaltyCards(valuables_data_manager(),
+                                    GURL("https://common-domain.example/test"),
+                                    /*trigger_field_is_autofilled=*/false),
       testing::ElementsAre(
           EqualsLoyaltyCardSuggestion(u"987654321987654321", u"CVS Pharmacy",
                                       "loyalty_card_id_1"),
@@ -258,7 +258,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_SuggestionsCustomIcon) {
+       GetSuggestionsForLoyaltyCards_SuggestionsCustomIcon) {
   test_api(valuables_data_manager()).ClearLoyaltyCards();
   const GURL program_logo = GURL("https://empty.url.com");
   gfx::Image fake_image = CustomIconForTest();
@@ -273,7 +273,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
   valuables_data_manager().CacheImage(program_logo, fake_image);
   test_api(valuables_data_manager()).NotifyObservers();
 
-  std::vector<Suggestion> suggestions = GetLoyaltyCardSuggestions(
+  std::vector<Suggestion> suggestions = GetSuggestionsForLoyaltyCards(
       valuables_data_manager(), GURL("https://common-domain.example/test"),
       /*trigger_field_is_autofilled=*/false);
 
@@ -493,7 +493,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
-       GetLoyaltyCardSuggestions_SuggestionsIPH) {
+       GetSuggestionsForLoyaltyCards_SuggestionsIPH) {
   test_api(valuables_data_manager()).ClearLoyaltyCards();
   test_api(valuables_data_manager())
       .AddLoyaltyCard(LoyaltyCard(
@@ -507,9 +507,9 @@ TEST_F(ValuableSuggestionGeneratorTest,
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature;
   EXPECT_THAT(
-      GetLoyaltyCardSuggestions(valuables_data_manager(),
-                                GURL("https://common-domain.example/test"),
-                                /*trigger_field_is_autofilled=*/false),
+      GetSuggestionsForLoyaltyCards(valuables_data_manager(),
+                                    GURL("https://common-domain.example/test"),
+                                    /*trigger_field_is_autofilled=*/false),
       testing::ElementsAre(HasIphFeature(kIphFeature), HasNoIphFeature(),
                            HasNoIphFeature()));
 }

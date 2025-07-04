@@ -2993,6 +2993,18 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   return suggestions;
 }
 
+std::vector<Suggestion> BrowserAutofillManager::GetLoyaltyCardSuggestions(
+    const GURL& url,
+    bool trigger_field_is_autofilled) {
+  ValuablesDataManager* valuables_manager = client().GetValuablesDataManager();
+  if (!valuables_manager) {
+    return {};
+  }
+  // TODO(crbug.com/429370505): Report polled suggestions user action.
+  return GetSuggestionsForLoyaltyCards(*valuables_manager, url,
+                                       trigger_field_is_autofilled);
+}
+
 // TODO(crbug.com/40219607) Eliminate and replace with a listener?
 // Should we do the same with all the other BrowserAutofillManager events?
 void BrowserAutofillManager::OnBeforeProcessParsedForms() {
@@ -3203,7 +3215,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                 client().GetValuablesDataManager()) {
           if (suggestions.empty()) {
             suggestions = GetLoyaltyCardSuggestions(
-                *valuables_manager,
                 client().GetLastCommittedPrimaryMainFrameURL(),
                 field.is_autofilled());
           } else {
@@ -3224,13 +3235,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
               features::kAutofillEnableLoyaltyCardsFilling)) {
         // Only loyalty card numbers filling is supported.
         if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
-          if (ValuablesDataManager* valuables_manager =
-                  client().GetValuablesDataManager()) {
-            suggestions = GetLoyaltyCardSuggestions(
-                *valuables_manager,
-                client().GetLastCommittedPrimaryMainFrameURL(),
-                field.is_autofilled());
-          }
+          suggestions = GetLoyaltyCardSuggestions(
+              client().GetLastCommittedPrimaryMainFrameURL(),
+              field.is_autofilled());
         }
       }
       break;

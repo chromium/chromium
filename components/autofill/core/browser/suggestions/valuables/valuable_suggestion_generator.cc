@@ -128,7 +128,7 @@ std::vector<Suggestion> GetLoyaltyCardsFooterSuggestions(
 
 }  // namespace
 
-std::vector<Suggestion> GetLoyaltyCardSuggestions(
+std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const ValuablesDataManager& valuables_manager,
     const GURL& url,
     bool trigger_field_is_autofilled) {
