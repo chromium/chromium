@@ -108,7 +108,6 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testIsSyncingUnencryptedUrlsWhileUsingKeystorePassphrase() {
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        SyncTestUtil.waitForSyncTransportActive();
 
         // By default Sync is being setup with KEYSTORE_PASSPHRASE.
         CriteriaHelper.pollUiThread(
@@ -137,7 +136,6 @@ public class SyncTest {
     public void testIsSyncingUnencryptedUrlsWhileUsingTrustedVaultPassprhase() {
         mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(new byte[] {1, 2, 3, 4});
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        SyncTestUtil.waitForSyncTransportActive();
 
         // isSyncingUnencryptedUrls() should treat TRUSTED_VAULT_PASSPHRASE in exactly the same way
         // as KEYSTORE_PASSPHRASE.

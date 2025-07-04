@@ -261,6 +261,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public CoreAccountInfo setUpAccountAndEnableHistorySync() {
         mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+        SyncTestUtil.waitForSyncTransportActive();
         return TestAccounts.ACCOUNT1;
     }
 

@@ -63,7 +63,6 @@ public class TabGroupSyncLocalToRemoteTest {
     public void setUp() {
         mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
         mSyncTestRule.setUpAccountAndEnableHistorySync();
-        SyncTestUtil.waitForHistorySyncEnabled();
         mHelper.assertSyncEntityCount(0);
     }
 
