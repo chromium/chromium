@@ -32,15 +32,18 @@ source_set("browser_agent") {
     ":model",
     ":tab_helper",
     "//base",
+    "//components/favicon/ios",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ui/gfx",
   ]
 }
 

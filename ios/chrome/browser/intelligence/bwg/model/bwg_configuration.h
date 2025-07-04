@@ -36,15 +36,18 @@ class PageContext;
     std::unique_ptr<optimization_guide::proto::PageContext>
         uniquePageContext;
 
+// The state of the BWG PageContext.
+@property(nonatomic, assign)
+    ios::provider::BWGPageContextState BWGPageContextState;
+
+// The favicon of the attached page. Uses a default icon if it's unavailable.
+@property(nonatomic, strong) UIImage* favicon;
+
 // The authentication service to be used.
 @property(nonatomic, assign) AuthenticationService* authService;
 
 // The SingleSignOnService instance.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
-
-// The state of the BWG PageContext.
-@property(nonatomic, assign)
-    ios::provider::BWGPageContextState BWGPageContextState;
 
 // The BWG gateway for bridging internal protocols.
 @property(nonatomic, weak) id<BWGGatewayProtocol> gateway;
