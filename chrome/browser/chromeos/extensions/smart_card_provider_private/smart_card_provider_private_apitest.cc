@@ -959,20 +959,22 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
       CreateConnection(*context.get());
   ASSERT_TRUE(connection.is_bound());
 
+  EventObserver event_observer;
+  EventRouter* event_router =
+      EventRouterFactory::GetForBrowserContext(profile());
+  event_router->AddObserverForTesting(&event_observer);
+
   base::test::TestFuture<SmartCardResultPtr> disconnect_result_future;
   connection->Disconnect(SmartCardDisposition::kLeave,
                          disconnect_result_future.GetCallback());
 
+  event_observer.WaitForEventCount(scard_api::OnDisconnectRequested::kEventName,
+                                   1u);
   ASSERT_TRUE(disconnect_result_future.Take()->is_success());
 
   DisconnectObserver disconnect_observer;
   ProviderAPI().SetDisconnectObserverForTesting(
       disconnect_observer.GetClosure());
-
-  EventObserver event_observer;
-  EventRouter* event_router =
-      EventRouterFactory::GetForBrowserContext(profile());
-  event_router->AddObserverForTesting(&event_observer);
 
   // Mojo disconnection from the remote endpoint should not cause
   // SmartCardProviderPrivateAPI to dispatch a
@@ -982,7 +984,9 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   disconnect_observer.Wait();
   EXPECT_EQ(event_observer.GetEventCount(
                 scard_api::OnDisconnectRequested::kEventName),
-            0u);
+            1u);
+
+  event_router->RemoveObserverForTesting(&event_observer);
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Cancel) {
