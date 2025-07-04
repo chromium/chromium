@@ -1565,6 +1565,23 @@ public class AutofillPaymentMethodsFragmentTest {
         intended(hasData(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL));
     }
 
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
+    })
+    public void testDisabledSettingsText_shownInThirdPartyMode() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE, true);
+                });
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        assertNotNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.DISABLED_SETTINGS_INFO));
+    }
+
     private void setUpBiometricAuthenticationResult(boolean success) {
         // We have to manually invoke the passed-in callback.
         doAnswer(
