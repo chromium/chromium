@@ -221,8 +221,9 @@ void AddSharedGroup(BOOL owner) {
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Cancel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Tap the close button of the tab cell and verify the alert.
