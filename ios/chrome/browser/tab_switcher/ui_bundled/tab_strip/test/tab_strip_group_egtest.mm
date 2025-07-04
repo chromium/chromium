@@ -955,9 +955,7 @@ void LongPressTabWithTitle(NSString* title) {
   DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(2),
                                         IdentifierForRegularCellAtIndex(3));
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+  [[EarlGrey selectElementWithMatcher:DeleteGroupConfirmationButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
@@ -1000,9 +998,9 @@ void LongPressTabWithTitle(NSString* title) {
   DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(2),
                                         IdentifierForRegularCellAtIndex(3));
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_CANCEL)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
                                                           kGroupTitle1)];
