@@ -81,6 +81,32 @@ void LogDialogAction(PasswordChangeDelegate::State state,
   }
 }
 
+// Logs `event` that happened for the toast displayed for `state`.
+void LogToastEvent(PasswordChangeDelegate::State state,
+                   PasswordChangeToastEvent event) {
+  switch (state) {
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.PasswordChange.CheckingSignInToast", event);
+      return;
+    case PasswordChangeDelegate::State::kChangingPassword:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.PasswordChange.ChangingPasswordToast", event);
+      return;
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kCanceled:
+      // Events for those toasts are already implicitly logged (e.g. logged
+      // cancel button press in other toasts implies `kCanceled` shown etc.).
+      return;
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kOtpDetected:
+      NOTREACHED();
+  }
+}
+
 // Creates dialog offering password change to the user. `with_privacy_notice`
 // specifies whether an additional privacy paragraph should be displayed.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
@@ -226,6 +252,7 @@ void PasswordChangeUIController::UpdateState(
       // If not showing a toast, show a new one.
       ShowToast(std::move(std::get<ToastOptions>(configuration)));
     }
+    LogToastEvent(state_, PasswordChangeToastEvent::kShown);
     return;
   }
 
@@ -392,6 +419,7 @@ void PasswordChangeUIController::ShowDialog(
 
 void PasswordChangeUIController::OnToastCanceled() {
   CHECK(password_change_delegate_);
+  LogToastEvent(state_, PasswordChangeToastEvent::kCanceled);
   password_change_delegate_->CancelPasswordChangeFlow();
 }
 

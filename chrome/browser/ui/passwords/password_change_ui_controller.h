@@ -31,6 +31,17 @@ enum class PasswordChangeDialogAction {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeDialogAction)
 
+// Events happening for toasts displayed by this controller. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+// LINT.IfChange(PasswordChangeToastEvent)
+enum class PasswordChangeToastEvent {
+  kShown = 0,
+  kCanceled = 1,
+  kMaxValue = kCanceled,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeToastEvent)
+
 // Responsible for creating and displaying appropriate views based on the
 // current state of the password change flow.
 class PasswordChangeUIController {

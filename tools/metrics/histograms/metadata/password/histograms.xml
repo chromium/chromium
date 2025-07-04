@@ -2693,6 +2693,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.ChangingPasswordToast"
+    enum="PasswordChangeToastEvent" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records password change toast events. This toast is diplayed during password
+    change flow when it is filling password fields on change password form. This
+    metric can include user interactions with the toast or events that happen
+    automatically.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.CheckingSignInToast"
+    enum="PasswordChangeToastEvent" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records checking sign in toast events. This toast is diplayed during
+    password change flow when it is waiting for change password form. This
+    metric can include user interactions with the toast or events that happen
+    automatically.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.FailedInteraction"
     enum="PasswordChangeDialogAction" expires_after="2025-11-30">
   <owner>rgod@google.com</owner>

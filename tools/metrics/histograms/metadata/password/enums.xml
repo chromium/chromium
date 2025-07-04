@@ -777,6 +777,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Password change failed"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordChangeToastEvent) -->
+
+<enum name="PasswordChangeToastEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_controller.h:PasswordChangeToastEvent) -->
+
 <enum name="PasswordCheckInteraction">
   <int value="0" label="Check started automatically"/>
   <int value="1" label="Check started manually"/>

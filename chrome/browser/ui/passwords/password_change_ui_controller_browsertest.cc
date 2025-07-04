@@ -12,9 +12,14 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/test_event.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
+
+using ::base::Bucket;
+using ::testing::ElementsAre;
 
 class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -38,6 +43,10 @@ class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
     return ui_controller_->dialog_widget()
         ->widget_delegate()
         ->AsDialogDelegate();
+  }
+
+  views::MdTextButton* GetToastActionButton() {
+    return ui_controller_->toast_view()->action_button();
   }
 
  protected:
@@ -160,6 +169,50 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
       "PasswordManager.PasswordChange.OTPRequested",
       PasswordChangeDialogAction::kCancelButtonClicked,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       CheckingSignInToastShown) {
+  UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.CheckingSignInToast",
+      PasswordChangeToastEvent::kShown,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       ChangingPasswordToastShown) {
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.ChangingPasswordToast",
+      PasswordChangeToastEvent::kShown,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       CheckingSignInToastShownAndCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  views::test::ButtonTestApi clicker(GetToastActionButton());
+  clicker.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "PasswordManager.PasswordChange.CheckingSignInToast"),
+              ElementsAre(Bucket(PasswordChangeToastEvent::kShown, 1),
+                          Bucket(PasswordChangeToastEvent::kCanceled, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       ChangingPasswordToastShownAndCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+
+  views::test::ButtonTestApi clicker(GetToastActionButton());
+  clicker.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "PasswordManager.PasswordChange.ChangingPasswordToast"),
+              ElementsAre(Bucket(PasswordChangeToastEvent::kShown, 1),
+                          Bucket(PasswordChangeToastEvent::kCanceled, 1)));
 }
 
 }  // namespace
