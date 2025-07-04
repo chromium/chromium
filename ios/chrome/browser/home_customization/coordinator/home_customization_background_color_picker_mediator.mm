@@ -7,7 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_consumer.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "skia/ext/skia_utils_ios.h"
@@ -42,10 +43,10 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 @implementation HomeCustomizationBackgroundColorPickerMediator
 
 - (void)configureColorPalettes {
-  NSMutableArray* configs = [NSMutableArray array];
+  NSMutableArray* colorPalettes = [NSMutableArray array];
 
-  HomeCustomizationColorPaletteConfiguration* defaultColorPalette =
-      [[HomeCustomizationColorPaletteConfiguration alloc] init];
+  NewTabPageColorPalette* defaultColorPalette =
+      [[NewTabPageColorPalette alloc] init];
 
   // The first choice should be the "no background" option (default appearance
   // colors).
@@ -56,16 +57,16 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   defaultColorPalette.darkColor =
       DynamicNamedColor(kBlueColor, kTextPrimaryColor);
 
-  [configs addObject:defaultColorPalette];
+  [colorPalettes addObject:defaultColorPalette];
 
-  for (int rgb : kSeedColorRGBs) {
-    [configs addObject:CreateColorPaletteConfigurationFromSeedColor(
-                           UIColorFromRGB(rgb))];
+  for (SkColor rgb : kSeedColorRGBs) {
+    [colorPalettes
+        addObject:CreateColorPaletteFromSeedColor(UIColorFromRGB(rgb))];
   }
 
   // TODO(crbug.com/408243803): Pass the current selection ID if the background
   // is a color; pass 0 if the background is set to "no background".
-  [_consumer setColorPaletteConfigurations:configs selectedColorIndex:@(0)];
+  [_consumer setColorPalettes:colorPalettes selectedColorIndex:@(0)];
 }
 
 @end

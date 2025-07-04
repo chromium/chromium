@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -131,12 +131,11 @@ const CGFloat kGapBorderWidth = 3.0;
   _innerContentView.clipsToBounds = YES;
 }
 
-- (void)setConfiguration:
-    (HomeCustomizationColorPaletteConfiguration*)configuration {
-  _configuration = configuration;
-  _lightColorView.backgroundColor = configuration.lightColor;
-  _darkColorView.backgroundColor = configuration.darkColor;
-  _mediumColorView.backgroundColor = configuration.mediumColor;
+- (void)setColorPalette:(NewTabPageColorPalette*)colorPalette {
+  _colorPalette = colorPalette;
+  _lightColorView.backgroundColor = colorPalette.lightColor;
+  _darkColorView.backgroundColor = colorPalette.darkColor;
+  _mediumColorView.backgroundColor = colorPalette.mediumColor;
 }
 
 - (void)setSelected:(BOOL)selected {

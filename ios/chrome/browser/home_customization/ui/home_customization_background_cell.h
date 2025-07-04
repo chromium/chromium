@@ -11,7 +11,7 @@
 @protocol HomeCustomizationMutator;
 @protocol BackgroundCustomizationConfiguration;
 
-@class HomeCustomizationColorPaletteConfiguration;
+@class NewTabPageColorPalette;
 
 // Represents a mini preview of how the NTP will look with a particular
 // background selected. This cell is part of the background customization
@@ -30,9 +30,7 @@
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)backgroundConfiguration
                            logoVendor:(id<LogoVendor>)logoVendor
-                         colorPalette:
-                             (HomeCustomizationColorPaletteConfiguration*)
-                                 colorPalette;
+                         colorPalette:(NewTabPageColorPalette*)colorPalette;
 
 // Updates the background image displayed behind the cell’s content.
 - (void)updateBackgroundImage:(UIImage*)image;

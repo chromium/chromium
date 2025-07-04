@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -37,10 +36,9 @@ const CGFloat kSectionInsetBottom = 20.0;
   // This view controller's main collection view for displaying content.
   UICollectionView* _collectionView;
 
-  // An array storing the available color palette configurations,
-  // ordered by their index in the palette.
-  NSArray<HomeCustomizationColorPaletteConfiguration*>*
-      _colorPaletteConfigurations;
+  // An array storing the available color palette, ordered by their index in the
+  // palette.
+  NSArray<NewTabPageColorPalette*>* _colorPalettes;
 
   // The `UICollectionViewCellRegistration` for registering  and configuring the
   // `HomeCustomizationColorPaletteCell` in the collection view.
@@ -74,11 +72,11 @@ const CGFloat kSectionInsetBottom = 20.0;
 
   _colorCellRegistration = [UICollectionViewCellRegistration
       registrationWithCellClass:[HomeCustomizationColorPaletteCell class]
-           configurationHandler:^(
-               HomeCustomizationColorPaletteCell* cell, NSIndexPath* indexPath,
-               HomeCustomizationColorPaletteConfiguration* configuration) {
+           configurationHandler:^(HomeCustomizationColorPaletteCell* cell,
+                                  NSIndexPath* indexPath,
+                                  NewTabPageColorPalette* colorPalette) {
              [weakSelf configureBackgroundCell:cell
-                                 configuration:configuration
+                                 configuration:colorPalette
                                    atIndexPath:indexPath];
            }];
 
@@ -103,11 +101,9 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 #pragma mark - HomeCustomizationBackgroundColorPickerConsumer
 
-- (void)setColorPaletteConfigurations:
-            (NSArray<HomeCustomizationColorPaletteConfiguration*>*)
-                colorPaletteConfigurations
-                   selectedColorIndex:(NSNumber*)selectedColorIndex {
-  _colorPaletteConfigurations = colorPaletteConfigurations;
+- (void)setColorPalettes:(NSArray<NewTabPageColorPalette*>*)colorPalettes
+      selectedColorIndex:(NSNumber*)selectedColorIndex {
+  _colorPalettes = colorPalettes;
   _selectedColorIndex = selectedColorIndex;
 }
 
@@ -115,15 +111,14 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  return _colorPaletteConfigurations.count;
+  return _colorPalettes.count;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   BackgroundCustomizationConfigurationItem* backgroundConfiguration =
       [[BackgroundCustomizationConfigurationItem alloc]
-          initWithBackgroundColor:_colorPaletteConfigurations[indexPath.item]
-                                      .seedColor];
+          initWithBackgroundColor:_colorPalettes[indexPath.item].seedColor];
   _selectedColorIndex = @(indexPath.item);
   [self.presentationDelegate
       applyBackgroundForConfiguration:backgroundConfiguration];
@@ -131,16 +126,15 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  HomeCustomizationColorPaletteConfiguration* configuration =
-      _colorPaletteConfigurations[indexPath.item];
+  NewTabPageColorPalette* colorPalette = _colorPalettes[indexPath.item];
 
   if (indexPath.item >= 0) {
     std::size_t index = static_cast<std::size_t>(indexPath.item);
-    if (index < _colorPaletteConfigurations.count) {
+    if (index < _colorPalettes.count) {
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:_colorCellRegistration
                                            forIndexPath:indexPath
-                                                   item:configuration];
+                                                   item:colorPalette];
     }
   }
 
@@ -153,10 +147,9 @@ const CGFloat kSectionInsetBottom = 20.0;
 // color configuration and selects it if it matches the currently selected
 // background color.
 - (void)configureBackgroundCell:(HomeCustomizationColorPaletteCell*)cell
-                  configuration:
-                      (HomeCustomizationColorPaletteConfiguration*)configuration
+                  configuration:(NewTabPageColorPalette*)colorPalette
                     atIndexPath:(NSIndexPath*)indexPath {
-  cell.configuration = configuration;
+  cell.colorPalette = colorPalette;
 
   if ([_selectedColorIndex isEqualToNumber:@(indexPath.item)]) {
     [_collectionView selectItemAtIndexPath:indexPath

@@ -22,6 +22,22 @@ source_set("ui_bundled") {
   ]
 }
 
+source_set("color") {
+  sources = [
+    "new_tab_page_color_palette.h",
+    "new_tab_page_color_palette.mm",
+    "new_tab_page_color_palette_util.h",
+    "new_tab_page_color_palette_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//skia",
+    "//skia:skia_core_public_headers",
+    "//third_party/material_color_utilities",
+    "//ui/color/dynamic_color",
+  ]
+}
+
 source_set("logo") {
   sources = [
     "logo_animation_controller.h",
@@ -213,6 +229,7 @@ source_set("ntp_internal") {
     "new_tab_page_view_controller.mm",
   ]
   deps = [
+    ":color",
     ":constants",
     ":feature_flags",
     ":logo",

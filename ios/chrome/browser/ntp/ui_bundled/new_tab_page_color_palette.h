@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_CONFIGURATION_H_
-#define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_CONFIGURATION_H_
+#ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COLOR_PALETTE_H_
+#define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COLOR_PALETTE_H_
 
 #import <UIKit/UIKit.h>
 
 // A model object that defines a background color palette, including
 // light, medium, and dark variants derived from a seed color.
-@interface HomeCustomizationColorPaletteConfiguration : NSObject
+@interface NewTabPageColorPalette : NSObject
 
 // A lighter tone variant of the seed color.
 @property(nonatomic, strong) UIColor* lightColor;
@@ -49,4 +49,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_CONFIGURATION_H_
+#endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COLOR_PALETTE_H_

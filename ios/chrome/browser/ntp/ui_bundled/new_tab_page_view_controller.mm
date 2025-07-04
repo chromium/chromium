@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 #import <algorithm>
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -826,7 +828,7 @@ CGFloat SpaceBetweenModules() {
   [self updateBackgroundImageView];
 }
 
-- (void)applyBaseBackgroundColor:(UIColor*)color {
+- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
   // TODO(crbug.com/421925819): Apply color palette to NTP UI elements.
 }
 

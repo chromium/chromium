@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -537,14 +538,16 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
 
-  if (colorTheme) {
+  if (colorTheme && colorTheme->color()) {
     [self.consumer
-        applyBaseBackgroundColor:skia::UIColorFromSkColor(colorTheme->color())];
+        updateBackgroundWithColorPalette:CreateColorPaletteFromSeedColor(
+                                             skia::UIColorFromSkColor(
+                                                 colorTheme->color()))];
     [self.consumer setBackgroundImage:nil];
     return;
   }
 
-  [self.consumer applyBaseBackgroundColor:nil];
+  [self.consumer updateBackgroundWithColorPalette:nil];
   if (!background) {
     [self.consumer setBackgroundImage:nil];
     return;

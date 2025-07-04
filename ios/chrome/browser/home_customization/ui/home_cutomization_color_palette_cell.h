@@ -8,15 +8,14 @@
 #import <UIKit/UIKit.h>
 
 // Configuration used to populate the color palette cell.
-@class HomeCustomizationColorPaletteConfiguration;
+@class NewTabPageColorPalette;
 
 // A collection view cell that displays a single background color palette option
 // for the background customization.
 @interface HomeCustomizationColorPaletteCell : UICollectionViewCell
 
-// The configuration model that specifies the colors shown in the cell.
-@property(nonatomic, strong)
-    HomeCustomizationColorPaletteConfiguration* configuration;
+// The color palette used to display the cell's colors.
+@property(nonatomic, strong) NewTabPageColorPalette* colorPalette;
 
 @end
 

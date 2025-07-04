@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_util.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -274,9 +274,9 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - HomeCustomizationColorPaletteProvider
 
-- (HomeCustomizationColorPaletteConfiguration*)provideColorPaletteFromSeedColor:
+- (NewTabPageColorPalette*)provideColorPaletteFromSeedColor:
     (UIColor*)seedColor {
-  return CreateColorPaletteConfigurationFromSeedColor(seedColor);
+  return CreateColorPaletteFromSeedColor(seedColor);
 }
 
 @end

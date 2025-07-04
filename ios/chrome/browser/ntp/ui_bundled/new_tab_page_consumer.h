@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+@class NewTabPageColorPalette;
 
 // Handles updates to the NTP ViewController.
 @protocol NewTabPageConsumer <NSObject>
@@ -55,9 +56,9 @@
 // if nil is passed.
 - (void)setBackgroundImage:(UIImage*)backgroundImage;
 
-// Sets the base background color palette of the NTP.
-// Pass nil to remove any currently applied background color.
-- (void)applyBaseBackgroundColor:(UIColor*)color;
+// Updates the NTP’s background using the given color palette.
+// Pass `nil` to clear any previously applied background colors.
+- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette;
 
 // Whether MIA is allowed from a policy perspective.
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;

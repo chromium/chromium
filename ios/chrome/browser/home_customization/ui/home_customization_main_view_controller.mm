@@ -377,10 +377,8 @@
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
-  HomeCustomizationColorPaletteConfiguration* colorPalette =
-      [self.colorPaletteProvider
-          provideColorPaletteFromSeedColor:backgroundConfiguration
-                                               .backgroundColor];
+  NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
+      provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
                            logoVendor:logoVendor

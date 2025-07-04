@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -196,9 +196,7 @@ const CGFloat kFeedsWidth = 70.0;
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)option
                            logoVendor:(id<LogoVendor>)logoVendor
-                         colorPalette:
-                             (HomeCustomizationColorPaletteConfiguration*)
-                                 colorPalette {
+                         colorPalette:(NewTabPageColorPalette*)colorPalette {
   if (_backgroundConfiguration) {
     return;
   }

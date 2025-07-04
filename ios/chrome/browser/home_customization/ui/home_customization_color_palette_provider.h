@@ -7,14 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-@class HomeCustomizationColorPaletteConfiguration;
+@class NewTabPageColorPalette;
 
 // A protocol for providing a color palette used in Home customization.
 @protocol HomeCustomizationColorPaletteProvider
 
 // Provides the color palette object from a seed color.
-- (HomeCustomizationColorPaletteConfiguration*)provideColorPaletteFromSeedColor:
-    (UIColor*)seedColor;
+- (NewTabPageColorPalette*)provideColorPaletteFromSeedColor:(UIColor*)seedColor;
 
 @end
 
