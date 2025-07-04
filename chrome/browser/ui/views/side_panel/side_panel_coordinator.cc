@@ -854,8 +854,10 @@ void SidePanelCoordinator::MaybeQueuePinPromo() {
 
   // Queue up the next promo to be shown, if there is one that can be shown.
   pending_pin_promo_ = iph_feature;
-  if (iph_feature && !browser_view_->CanShowFeaturePromo(*iph_feature)
-                          .is_blocked_this_instance()) {
+  if (iph_feature &&
+      !BrowserUserEducationInterface::From(browser_view_->browser())
+           ->CanShowFeaturePromo(*iph_feature)
+           .is_blocked_this_instance()) {
     // Default to ten second delay, but allow setting a different parameter via
     // field trial.
     const base::TimeDelta delay = base::GetFieldTrialParamByFeatureAsTimeDelta(
@@ -871,8 +873,8 @@ void SidePanelCoordinator::ShowPinPromo() {
     return;
   }
 
-  browser_view_->browser()->window()->MaybeShowFeaturePromo(
-      *pending_pin_promo_);
+  BrowserUserEducationInterface::From(browser_view_->browser())
+      ->MaybeShowFeaturePromo(*pending_pin_promo_);
 }
 
 void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
@@ -880,17 +882,19 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
     return;
   }
 
+  auto* const user_education =
+      BrowserUserEducationInterface::From(browser_view_->browser());
   if (pinned) {
-    browser_view_->NotifyFeaturePromoFeatureUsed(
+    user_education->NotifyFeaturePromoFeatureUsed(
         *pending_pin_promo_,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     if (pending_pin_promo_ ==
         &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature) {
-      browser_view_->MaybeShowFeaturePromo(
+      user_education->MaybeShowFeaturePromo(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature);
     }
   } else {
-    browser_view_->AbortFeaturePromo(*pending_pin_promo_);
+    user_education->AbortFeaturePromo(*pending_pin_promo_);
   }
 
   pin_promo_timer_.Stop();
@@ -1126,10 +1130,12 @@ void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(
     const base::Feature& promo_feature,
     SidePanelEntryId promo_id,
     SidePanelEntryId actual_id) {
+  auto* const user_education =
+      BrowserUserEducationInterface::From(browser_view_->browser());
   if (promo_id == actual_id) {
-    browser_view_->NotifyFeaturePromoFeatureUsed(
+    user_education->NotifyFeaturePromoFeatureUsed(
         promo_feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
-    browser_view_->AbortFeaturePromo(promo_feature);
+    user_education->AbortFeaturePromo(promo_feature);
   }
 }

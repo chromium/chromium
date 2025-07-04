@@ -409,8 +409,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_Abort) {
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       WithView(kBrowserViewElementId,
                [](BrowserView* browser_view) {
-                 browser_view->AbortFeaturePromo(
-                     kCustomWebUIHelpBubbleTestFeature);
+                 BrowserUserEducationInterface::From(browser_view->browser())
+                     ->AbortFeaturePromo(kCustomWebUIHelpBubbleTestFeature);
                }),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckIsDismissed(kCustomWebUIHelpBubbleTestFeature, false));
@@ -424,9 +424,10 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_FeatureUsed) {
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       WithView(kBrowserViewElementId,
                [](BrowserView* browser_view) {
-                 browser_view->NotifyFeaturePromoFeatureUsed(
-                     kCustomWebUIHelpBubbleTestFeature,
-                     FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+                 BrowserUserEducationInterface::From(browser_view->browser())
+                     ->NotifyFeaturePromoFeatureUsed(
+                         kCustomWebUIHelpBubbleTestFeature,
+                         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
                }),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckIsDismissed(kCustomWebUIHelpBubbleTestFeature, true));

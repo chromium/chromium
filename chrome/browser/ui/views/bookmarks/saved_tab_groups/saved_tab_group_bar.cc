@@ -653,7 +653,8 @@ void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
 
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature);
-  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
 }
 
 // New function implementation

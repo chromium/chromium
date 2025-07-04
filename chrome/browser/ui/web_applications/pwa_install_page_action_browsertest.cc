@@ -860,17 +860,19 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
+  auto* const user_education = BrowserUserEducationInterface::From(browser());
+
   // IPH is not shown when the site is not highly engaged.
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+  EXPECT_FALSE(user_education->IsFeaturePromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 
   // Manually set engagement score to be above IPH triggering threshold.
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   OpenTab(app_url);
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoQueued(
+  EXPECT_TRUE(user_education->IsFeaturePromoQueued(
                   feature_engagement::kIPHDesktopPwaInstallFeature) ||
-              browser()->window()->IsFeaturePromoActive(
+              user_education->IsFeaturePromoActive(
                   feature_engagement::kIPHDesktopPwaInstallFeature));
   // TODO(crbug.com/40796769): Once the above logic is deflaked, we should also
   // check that the highlights on the icon are appropriately set.
@@ -890,8 +892,9 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   ASSERT_TRUE(installable);
 
   // IPH is not shown when the IPH is ignored recently.
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHDesktopPwaInstallFeature));
+  EXPECT_FALSE(
+      BrowserUserEducationInterface::From(browser())->IsFeaturePromoActive(
+          feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {

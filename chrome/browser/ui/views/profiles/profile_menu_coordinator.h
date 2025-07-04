@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view_tracker.h"
 
-class BrowserUserEducationInterface;
 class BrowserWindowInterface;
 class Profile;
 class ProfileMenuViewBase;
@@ -48,7 +47,6 @@ class ProfileMenuCoordinator {
   const raw_ptr<BrowserWindowInterface> browser_;
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<BrowserUserEducationInterface> user_education_;
   views::ViewTracker bubble_tracker_;
 };
 

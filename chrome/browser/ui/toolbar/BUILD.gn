@@ -143,6 +143,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/web_applications",

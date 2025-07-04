@@ -228,8 +228,8 @@ void LensOverlayEntryPointController::InvokeAction(
           lens::AmbientSearchEntryPoint::LENS_OVERLAY_LOCATION_BAR);
       search_controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kOmnibox);
-      active_tab->GetBrowserWindowInterface()
-          ->GetUserEducationInterface()
+      BrowserUserEducationInterface::From(
+          active_tab->GetBrowserWindowInterface())
           ->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
     }
     return;

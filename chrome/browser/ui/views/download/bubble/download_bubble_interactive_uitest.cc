@@ -207,7 +207,7 @@ class DownloadBubbleInteractiveUiTest
   auto DownloadBubblePromoIsActive(bool active, const base::Feature& feature) {
     return base::BindOnce(
         [](Browser* browser, bool active, const base::Feature& feature) {
-          return active == BrowserView::GetBrowserViewForBrowser(browser)
+          return active == BrowserUserEducationInterface::From(browser)
                                ->GetFeaturePromoControllerForTesting()
                                ->IsPromoActive(feature);
         },

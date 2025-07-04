@@ -20,6 +20,8 @@
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/autofill_test_utils.h"
@@ -581,13 +583,14 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
     // Create the first tab so that `web_contents()` exists.
     AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
 
-    static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
-        std::make_unique<MockFeaturePromoController>());
+    BrowserUserEducationInterface::From(browser())
+        ->SetFeaturePromoControllerForTesting(
+            std::make_unique<MockFeaturePromoController>());
   }
 
   MockFeaturePromoController* feature_promo_controller() {
     return static_cast<MockFeaturePromoController*>(
-        static_cast<TestBrowserWindow*>(window())
+        BrowserUserEducationInterface::From(browser())
             ->GetFeaturePromoControllerForTesting());
   }
 

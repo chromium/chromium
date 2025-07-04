@@ -456,8 +456,8 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent
   // unnecessarily displaying the promo.
-  tab_strip_controller_->GetBrowserWindowInterface()
-      ->GetUserEducationInterface()
+  BrowserUserEducationInterface::From(
+      tab_strip_controller_->GetBrowserWindowInterface())
       ->NotifyFeaturePromoFeatureUsed(
           feature_engagement::kIPHGlicPromoFeature,
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent);

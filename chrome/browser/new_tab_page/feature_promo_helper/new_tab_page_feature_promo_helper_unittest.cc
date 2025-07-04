@@ -4,7 +4,10 @@
 
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 
+#include <memory>
+
 #include "build/build_config.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -24,6 +27,11 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
+    BrowserUserEducationInterface::From(browser())
+        ->SetFeaturePromoControllerForTesting(
+            std::make_unique<testing::NiceMock<
+                user_education::test::MockFeaturePromoController>>());
+
     iph_feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHDesktopCustomizeChromeFeature});
 
@@ -40,30 +48,15 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
 
   NewTabPageFeaturePromoHelper* helper() { return helper_.get(); }
 
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    auto test_window = std::make_unique<TestBrowserWindow>();
-
-    // This test only supports one window.
-    DCHECK(!mock_promo_controller_);
-
-    mock_promo_controller_ = static_cast<
-        testing::NiceMock<user_education::test::MockFeaturePromoController>*>(
-        test_window->SetFeaturePromoController(
-            std::make_unique<testing::NiceMock<
-                user_education::test::MockFeaturePromoController>>()));
-    return test_window;
-  }
-
   content::WebContents* tab() { return tab_; }
   user_education::test::MockFeaturePromoController* mock_promo_controller() {
-    return mock_promo_controller_;
+    return static_cast<user_education::test::MockFeaturePromoController*>(
+        BrowserUserEducationInterface::From(browser())
+            ->GetFeaturePromoControllerForTesting());
   }
  private:
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   raw_ptr<content::WebContents, DanglingUntriaged> tab_;
-  raw_ptr<testing::NiceMock<user_education::test::MockFeaturePromoController>,
-          DanglingUntriaged>
-      mock_promo_controller_ = nullptr;
   std::unique_ptr<NewTabPageFeaturePromoHelper> helper_;
 };
 

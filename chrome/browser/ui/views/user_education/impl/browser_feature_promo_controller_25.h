@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
@@ -17,11 +18,6 @@
 namespace feature_engagement {
 class Tracker;
 }
-
-namespace ui {
-class AcceleratorProvider;
-class TrackedElement;
-}  // namespace ui
 
 namespace user_education {
 class FeaturePromoRegistry;
@@ -41,7 +37,8 @@ class BrowserView;
 // requires understanding of the existence of views, not because this is a
 // views-specific implementation.
 class BrowserFeaturePromoController25
-    : public user_education::FeaturePromoController25 {
+    : public BrowserFeaturePromoController<
+          user_education::FeaturePromoController25> {
  public:
   // Create the instance for the given |browser_view|. Prefer to call
   // `MaybeCreateForBrowserView()` instead.
@@ -56,21 +53,9 @@ class BrowserFeaturePromoController25
       user_education::ProductMessagingController* messaging_controller);
   ~BrowserFeaturePromoController25() override;
 
-  // FeaturePromoController25:
   void Init() override;
 
  protected:
-  // FeaturePromoController:
-  ui::ElementContext GetAnchorContext() const override;
-  const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
-  std::u16string GetTutorialScreenReaderHint() const override;
-  std::u16string GetFocusHelpBubbleScreenReaderHint(
-      user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element) const override;
-  std::u16string GetBodyIconAltText() const override;
-  const base::Feature* GetScreenReaderPromptPromoFeature() const override;
-  const char* GetScreenReaderPromptPromoEventName() const override;
-
   // FeaturePromoController25:
   void AddDemoPreconditionProviders(
       user_education::ComposingPreconditionListProvider& to_add_to,
@@ -93,9 +78,6 @@ class BrowserFeaturePromoController25
   // Gets a forwarding precondition that wraps the precondition with
   // identifier `id` from the `shared_preconditions_` lookup.
   PreconditionPtr WrapSharedPrecondition(PreconditionId id) const;
-
-  // The browser window this instance is responsible for.
-  const raw_ptr<BrowserView> browser_view_;
 
   // Lookup of preconditions that are shared between all or a specific class of
   // promos.

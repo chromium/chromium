@@ -497,8 +497,9 @@ void BrowserTabStripController::CloseTab(int model_index) {
 
   // Try to show reading list IPH if needed.
   if (tabstrip_->GetTabCount() >= 7) {
-    browser_view_->MaybeShowFeaturePromo(
-        feature_engagement::kIPHReadingListEntryPointFeature);
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->MaybeShowFeaturePromo(
+            feature_engagement::kIPHReadingListEntryPointFeature);
   }
 }
 
@@ -1074,8 +1075,8 @@ void BrowserTabStripController::AddTabs(
   // Try to show tab search IPH if needed.
   constexpr int kTabSearchIPHTriggerThreshold = 8;
   if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
-    browser_view_->MaybeShowFeaturePromo(
-        feature_engagement::kIPHTabSearchFeature);
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->MaybeShowFeaturePromo(feature_engagement::kIPHTabSearchFeature);
   }
 }
 

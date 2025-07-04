@@ -69,6 +69,7 @@ source_set("download") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats:hats",
     "//chrome/browser/ui/tabs:tab_strip",

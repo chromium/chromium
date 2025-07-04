@@ -230,7 +230,8 @@ class BrowserFeaturePromoController2xUiTestBase
   }
 
   user_education::FeaturePromoController* promo_controller() const {
-    return browser()->window()->GetFeaturePromoControllerForTesting();
+    return BrowserUserEducationInterface::From(browser())
+        ->GetFeaturePromoControllerForTesting();
   }
 
  protected:
@@ -538,15 +539,18 @@ INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xLiveTrackerUiTest);
 // Regression test with live tracker for https://crbug.com/396344371
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xLiveTrackerUiTest,
                        ShowPromoTwice) {
-  RunTestSequence(WithView(kBrowserViewElementId,
-                           [](BrowserView* browser_view) {
-                             browser_view->MaybeShowFeaturePromo(kFeature);
-                           }),
-                  WithView(kBrowserViewElementId,
-                           [](BrowserView* browser_view) {
-                             browser_view->MaybeShowFeaturePromo(kFeature);
-                           }),
-                  WaitForPromo(kFeature));
+  RunTestSequence(
+      WithView(kBrowserViewElementId,
+               [](BrowserView* browser_view) {
+                 BrowserUserEducationInterface::From(browser_view->browser())
+                     ->MaybeShowFeaturePromo(kFeature);
+               }),
+      WithView(kBrowserViewElementId,
+               [](BrowserView* browser_view) {
+                 BrowserUserEducationInterface::From(browser_view->browser())
+                     ->MaybeShowFeaturePromo(kFeature);
+               }),
+      WaitForPromo(kFeature));
 }
 
 // Using the base interactive browser test re-enables window activation
@@ -568,7 +572,8 @@ class BrowserFeaturePromoController20CanShowPromoForElementUiTest
         spec,
         [this](ui::TrackedElement* anchor) {
           return static_cast<BrowserFeaturePromoController20*>(
-                     browser()->window()->GetFeaturePromoControllerForTesting())
+                     BrowserUserEducationInterface::From(browser())
+                         ->GetFeaturePromoControllerForTesting())
               ->CanShowPromoForElement(anchor);
         },
         expected);

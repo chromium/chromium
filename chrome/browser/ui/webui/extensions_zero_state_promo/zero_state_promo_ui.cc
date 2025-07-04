@@ -16,6 +16,7 @@
 #include "chrome/grit/extensions_zero_state_promo_resources.h"
 #include "chrome/grit/extensions_zero_state_promo_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

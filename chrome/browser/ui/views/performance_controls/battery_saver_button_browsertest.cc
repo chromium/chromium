@@ -50,7 +50,8 @@ class BatterySaverHelpPromoTest
 
   user_education::FeaturePromoControllerCommon* GetFeaturePromoController() {
     return static_cast<user_education::FeaturePromoControllerCommon*>(
-        browser()->window()->GetFeaturePromoControllerForTesting());
+        BrowserUserEducationInterface::From(browser())
+            ->GetFeaturePromoControllerForTesting());
   }
 };
 

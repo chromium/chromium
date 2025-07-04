@@ -318,7 +318,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
 
   // This will show the promo only after the IPH system is properly initialized.
   if (!web_app::AppBrowserController::IsWebApp(browser_)) {
-    browser_->window()->MaybeShowStartupFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHProfileSwitchFeature);
   } else {
     // Installable PasswordManager WebUI is the only web app that has an avatar
@@ -326,7 +326,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
     auto app_url = browser_->app_controller()->GetAppStartUrl();
     CHECK(content::HasWebUIScheme(app_url) &&
           (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
-    browser_->window()->MaybeShowStartupFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
   }
 }
@@ -372,7 +372,8 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHSupervisedUserProfileSigninFeature);
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
-  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -382,12 +383,15 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
       account_info.gaia.ToString());
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
-  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
 }
 
 void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
-  browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
-      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id.ToString()));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      user_education::FeaturePromoParams(
+          feature_engagement::kIPHSignoutWebInterceptFeature,
+          gaia_id.ToString()));
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -425,11 +429,12 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (browser_->window()->IsFeaturePromoActive(
+  if (BrowserUserEducationInterface::From(browser_)->IsFeaturePromoActive(
           feature_engagement::kIPHPasswordsSavePrimingPromoFeature)) {
-    browser_->window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    BrowserUserEducationInterface::From(browser_)
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 #endif
 

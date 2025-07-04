@@ -178,7 +178,7 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
   }
 }
 
-void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
+void TabSearchBubbleHost::OnOrganizationAccepted(Browser* browser) {
   if (browser != GetBrowser()) {
     return;
   }
@@ -186,7 +186,7 @@ void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
   if (browser->tab_strip_model()->group_model()->ListTabGroups().size() > 1) {
     return;
   }
-  browser->window()->MaybeShowFeaturePromo(
+  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       feature_engagement::kIPHTabOrganizationSuccessFeature);
 }
 
@@ -259,7 +259,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
   if (auto* const browser = GetBrowser()) {
     // Close the Tab Search IPH if it is showing.
-    browser->window()->NotifyFeaturePromoFeatureUsed(
+    BrowserUserEducationInterface::From(browser)->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHTabSearchFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }

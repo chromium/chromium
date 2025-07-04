@@ -899,7 +899,8 @@ void PopupViewViews::ShowIPHFeaturePromos() {
         params.body_params = iph_metadata.iph_params;
         params.screen_reader_params = iph_metadata.iph_params;
       }
-      browser->window()->MaybeShowFeaturePromo(std::move(params));
+      BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
+          std::move(params));
     }
   }
 }

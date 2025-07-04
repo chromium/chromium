@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/dotted_icon.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -469,7 +470,7 @@ void TabIcon::SetDiscarded(bool discarded) {
       // Potentially show an IPH if a tab was discarded.
       Browser* browser = chrome::FindBrowserWithUiElementContext(
           views::ElementTrackerViews::GetInstance()->GetContextForView(this));
-      browser->window()->MaybeShowFeaturePromo(
+      BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
           feature_engagement::kIPHDiscardRingFeature);
     } else {
       tab_discard_animation_.Stop();

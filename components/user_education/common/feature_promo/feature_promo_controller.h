@@ -191,6 +191,12 @@ class FeaturePromoController {
   // Returns a weak pointer to this object.
   virtual base::WeakPtr<FeaturePromoController> GetAsWeakPtr() = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // If `feature` has a registered promo, notifies the tracker that the feature
+  // has been used.
+  virtual void NotifyFeatureUsedIfValid(const base::Feature& feature) = 0;
+#endif
+
   // Posts `result` to `callback` on a fresh call stack. Requires a functioning
   // message pump.
   static void PostShowPromoResult(ShowPromoResultCallback callback,
@@ -229,12 +235,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // if a bubble is closed as a result.
   bool DismissNonCriticalBubbleInRegion(const gfx::Rect& screen_bounds);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // If `feature` has a registered promo, notifies the tracker that the feature
-  // has been used.
-  void NotifyFeatureUsedIfValid(const base::Feature& feature);
-#endif
-
   // FeaturePromoController:
   FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const override;
@@ -247,6 +247,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
                 EndFeaturePromoReason end_promo_reason) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) final;
+#if !BUILDFLAG(IS_ANDROID)
+  void NotifyFeatureUsedIfValid(const base::Feature& feature) override;
+#endif
+
   const HelpBubbleFactoryRegistry* bubble_factory_registry() const {
     return bubble_factory_registry_;
   }

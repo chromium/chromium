@@ -2743,15 +2743,15 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
 }
 
 void LensOverlayController::ShowTutorialIPH() {
-  if (auto* user_ed =
-          tab_->GetBrowserWindowInterface()->GetUserEducationInterface()) {
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
     user_ed->MaybeShowFeaturePromo(feature_engagement::kIPHLensOverlayFeature);
   }
 }
 
 void LensOverlayController::NotifyUserEducationAboutOverlayUsed() {
-  if (auto* user_ed =
-          tab_->GetBrowserWindowInterface()->GetUserEducationInterface()) {
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
     user_ed->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHLensOverlayFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);

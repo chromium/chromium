@@ -21,9 +21,7 @@ class View;
 // by the associated incognito browser.
 class IncognitoClearBrowsingDataDialogCoordinator {
  public:
-  IncognitoClearBrowsingDataDialogCoordinator(
-      Profile* profile,
-      BrowserUserEducationInterface* user_education);
+  explicit IncognitoClearBrowsingDataDialogCoordinator(Profile* profile);
   IncognitoClearBrowsingDataDialogCoordinator(
       const IncognitoClearBrowsingDataDialogCoordinator&) = delete;
   IncognitoClearBrowsingDataDialogCoordinator& operator=(
@@ -42,9 +40,7 @@ class IncognitoClearBrowsingDataDialogCoordinator {
 
  private:
   views::ViewTracker bubble_tracker_;
-
   const raw_ptr<Profile> profile_;
-  const raw_ptr<BrowserUserEducationInterface> user_education_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_

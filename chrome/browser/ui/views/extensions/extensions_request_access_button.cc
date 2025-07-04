@@ -187,7 +187,7 @@ void ExtensionsRequestAccessButton::UpdateTooltipText() {
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
-  browser_->window()->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   content::WebContents* web_contents = GetActiveWebContents();

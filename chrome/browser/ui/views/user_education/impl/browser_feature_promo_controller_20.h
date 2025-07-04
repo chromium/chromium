@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_
 
-#include <memory>
-#include <string>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -19,7 +17,6 @@ class Tracker;
 }
 
 namespace ui {
-class AcceleratorProvider;
 class TrackedElement;
 }  // namespace ui
 
@@ -41,7 +38,8 @@ class BrowserView;
 // requires understanding of the existence of views, not because this is a
 // views-specific implementation.
 class BrowserFeaturePromoController20
-    : public user_education::FeaturePromoController20 {
+    : public BrowserFeaturePromoController<
+          user_education::FeaturePromoController20> {
  public:
   // Create the instance for the given |browser_view|. Prefer to call
   // `MaybeCreateForBrowserView()` instead.
@@ -60,21 +58,8 @@ class BrowserFeaturePromoController20
   friend class BrowserFeaturePromoController20CanShowPromoForElementUiTest;
 
   // FeaturePromoController:
-  ui::ElementContext GetAnchorContext() const override;
   user_education::FeaturePromoResult CanShowPromoForElement(
       ui::TrackedElement* anchor_element) const override;
-  const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
-  std::u16string GetTutorialScreenReaderHint() const override;
-  std::u16string GetFocusHelpBubbleScreenReaderHint(
-      user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element) const override;
-  std::u16string GetBodyIconAltText() const override;
-  const base::Feature* GetScreenReaderPromptPromoFeature() const override;
-  const char* GetScreenReaderPromptPromoEventName() const override;
-
- private:
-  // The browser window this instance is responsible for.
-  const raw_ptr<BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_

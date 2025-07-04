@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "extensions/common/extension_urls.h"
 #include "mojo/public/cpp/bindings/message.h"

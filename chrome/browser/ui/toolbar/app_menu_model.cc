@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -905,9 +906,10 @@ void ToolsMenuModel::Build(Browser* browser) {
                                            ? IDS_DECLUTTER_MENU
                                            : IDS_DECLUTTER_MENU_NO_DEDUPE,
                                        kTabCloseInactiveIcon);
-      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
-                        browser->window()->MaybeShowNewBadgeFor(
-                            features::kTabstripDeclutter));
+      SetIsNewFeatureAt(
+          GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
+          BrowserUserEducationInterface::From(browser)->MaybeShowNewBadgeFor(
+              features::kTabstripDeclutter));
     }
   }
 
@@ -1131,9 +1133,10 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHPowerBookmarksSidePanelFeature,
-          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
+      BrowserUserEducationInterface::From(browser())
+          ->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+              FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
@@ -1400,9 +1403,10 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHReadingModeSidePanelFeature,
-          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
+      BrowserUserEducationInterface::From(browser())
+          ->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHReadingModeSidePanelFeature,
+              FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL:
       if (!uma_action_recorded_) {
@@ -1411,9 +1415,10 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
+      BrowserUserEducationInterface::From(browser())
+          ->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+              FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     // Zoom menu
     case IDC_ZOOM_MINUS:
@@ -1925,9 +1930,10 @@ void AppMenuModel::Build() {
                                      IDS_GLIC_THREE_DOT_MENU_ITEM,
                                      glic::GlicVectorIconManager::GetVectorIcon(
                                          IDR_GLIC_BUTTON_VECTOR_ICON));
-    SetIsNewFeatureAt(GetIndexOfCommandId(IDC_OPEN_GLIC).value(),
-                      browser()->window()->MaybeShowNewBadgeFor(
-                          features::kGlicAppMenuNewBadge));
+    SetIsNewFeatureAt(
+        GetIndexOfCommandId(IDC_OPEN_GLIC).value(),
+        BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
+            features::kGlicAppMenuNewBadge));
   }
 #endif
 
@@ -1946,9 +1952,10 @@ void AppMenuModel::Build() {
     const int lens_command_index =
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
     SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
-    SetIsNewFeatureAt(lens_command_index,
-                      browser()->window()->MaybeShowNewBadgeFor(
-                          lens::features::kLensOverlay));
+    SetIsNewFeatureAt(
+        lens_command_index,
+        BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
+            lens::features::kLensOverlay));
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,

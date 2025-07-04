@@ -43,7 +43,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/page_user_data.h"
@@ -675,25 +674,6 @@ class BrowserView : public BrowserWindow,
   BookmarkBarView* GetBookmarkBarView() const;
   LocationBarView* GetLocationBarView() const;
 
-  bool IsFeaturePromoQueued(const base::Feature& iph_feature) const override;
-  bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
-  user_education::FeaturePromoResult CanShowFeaturePromo(
-      const base::Feature& iph_feature) const override;
-  void MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams params) override;
-  void MaybeShowStartupFeaturePromo(
-      user_education::FeaturePromoParams params) override;
-  bool AbortFeaturePromo(const base::Feature& iph_feature) override;
-  user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
-      const base::Feature& iph_feature) override;
-  bool NotifyFeaturePromoFeatureUsed(
-      const base::Feature& feature,
-      FeaturePromoFeatureUsedAction action) override;
-  void NotifyAdditionalConditionEvent(const char* event_name) override;
-  user_education::DisplayNewBadge MaybeShowNewBadgeFor(
-      const base::Feature& feature) override;
-  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
-
   void ShowIncognitoClearBrowsingDataDialog() override;
 
   void ShowIncognitoHistoryDisclaimerDialog() override;
@@ -964,10 +944,6 @@ class BrowserView : public BrowserWindow,
 
   // Updates stored focus for web contents that is being activated.
   void MaybeUpdateStoredFocusForWebContents(content::WebContents*);
-
-  // BrowserUserEducationInterface private methods:
-  user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()
-      override;
 
   // Shared implementation by cut, copy and paste.
   void CutCopyPaste(int command_id);
@@ -1434,9 +1410,6 @@ class BrowserView : public BrowserWindow,
 #if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<AccessibilityFocusHighlight> accessibility_focus_highlight_;
 #endif
-
-  std::unique_ptr<user_education::FeaturePromoControllerCommon>
-      feature_promo_controller_ = nullptr;
 
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 

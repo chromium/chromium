@@ -113,8 +113,9 @@ void BatterySaverButton::OnClicked() {
 
 void BatterySaverButton::MaybeShowFeaturePromo() {
   pending_promo_ = false;
-  browser_view_->MaybeShowStartupFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature);
+  BrowserUserEducationInterface::From(browser_view_->browser())
+      ->MaybeShowStartupFeaturePromo(
+          feature_engagement::kIPHBatterySaverModeFeature);
 }
 
 void BatterySaverButton::CloseFeaturePromo(bool engaged) {
@@ -122,12 +123,13 @@ void BatterySaverButton::CloseFeaturePromo(bool engaged) {
   // attempting to close the promo bubble
   pending_promo_ = false;
   if (engaged) {
-    browser_view_->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHBatterySaverModeFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHBatterySaverModeFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
-    browser_view_->AbortFeaturePromo(
-        feature_engagement::kIPHBatterySaverModeFeature);
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->AbortFeaturePromo(feature_engagement::kIPHBatterySaverModeFeature);
   }
 }
 

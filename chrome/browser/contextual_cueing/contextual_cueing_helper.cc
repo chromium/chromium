@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
@@ -266,7 +267,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 
   auto* user_education_interface =
-      browser_window_interface->GetUserEducationInterface();
+      BrowserUserEducationInterface::From(browser_window_interface);
   if (!user_education_interface) {
     return false;
   }

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
@@ -307,7 +308,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
                   ->GetComboboxByUniqueId(kBookmarkFolderFieldId)
                   ->selected_index());
 
-    browser_->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHPowerBookmarksSidePanelFeature);
   }
 

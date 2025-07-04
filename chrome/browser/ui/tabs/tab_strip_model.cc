@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -3385,10 +3386,12 @@ TabStripSelectionChange TabStripModel::SetSelection(
         // if the user backgrounds an audible tab.
         if (selection.old_contents &&
             selection.old_contents->IsCurrentlyAudible()) {
-          Browser* browser = chrome::FindBrowserWithTab(selection.old_contents);
-          DCHECK(browser);
-          browser->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHTabAudioMutingFeature);
+          if (auto* const user_ed =
+                  BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+                      selection.old_contents)) {
+            user_ed->MaybeShowFeaturePromo(
+                feature_engagement::kIPHTabAudioMutingFeature);
+          }
         }
       }
     }

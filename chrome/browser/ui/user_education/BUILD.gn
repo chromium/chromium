@@ -12,6 +12,7 @@ source_set("user_education") {
     "//chrome/browser/user_education",
     "//components/user_education/common",
   ]
+  deps = [ "//chrome/browser/ui/unowned_user_data:unowned_user_data" ]
 }
 
 source_set("impl") {
@@ -20,5 +21,6 @@ source_set("impl") {
     ":user_education",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/unowned_user_data:unowned_user_data",
   ]
 }

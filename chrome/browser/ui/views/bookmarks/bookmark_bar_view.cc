@@ -2330,7 +2330,8 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
     }
   }
 
-  browser_view_->MaybeShowStartupFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser_view_->browser())
+      ->MaybeShowStartupFeaturePromo(std::move(params));
 }
 
 BEGIN_METADATA(BookmarkBarView)

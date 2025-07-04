@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -83,8 +84,9 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
     FocusMainFrameOfActiveWebContents();
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
 
-    static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
-        std::make_unique<MockFeaturePromoController>());
+    BrowserUserEducationInterface::From(browser())
+        ->SetFeaturePromoControllerForTesting(
+            std::make_unique<MockFeaturePromoController>());
 
     AutofillFieldPromoControllerWrapper::CreateForWebContents(web_contents());
   }
@@ -95,7 +97,7 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
 
   MockFeaturePromoController* feature_promo_controller() {
     return static_cast<MockFeaturePromoController*>(
-        static_cast<TestBrowserWindow*>(window())
+        BrowserUserEducationInterface::From(browser())
             ->GetFeaturePromoControllerForTesting());
   }
 

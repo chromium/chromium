@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
@@ -310,9 +312,10 @@ void ShowPwaInstallDialog(Browser* browser) {
   // Close PWA install IPH if it is showing.
   PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown;
   bool install_icon_clicked_after_iph_shown =
-      browser->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHDesktopPwaInstallFeature,
-          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      BrowserUserEducationInterface::From(browser)
+          ->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHDesktopPwaInstallFeature,
+              FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   if (install_icon_clicked_after_iph_shown) {
     iph_state = PwaInProductHelpState::kShown;
   }

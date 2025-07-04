@@ -236,9 +236,10 @@ void ProfileMenuView::BuildMenu() {
 
   const bool is_web_app = web_app::AppBrowserController::IsWebApp(&browser());
   if (is_web_app) {
-    browser().window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    BrowserUserEducationInterface::From(&browser())
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
   // Users should not be able to use features from WebApps.

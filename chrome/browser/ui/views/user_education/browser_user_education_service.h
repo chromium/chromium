@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 
 namespace user_education {
 class FeaturePromoControllerCommon;

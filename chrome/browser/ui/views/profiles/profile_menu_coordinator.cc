@@ -44,11 +44,11 @@ void ProfileMenuCoordinator::Show(
 
   signin_ui_util::RecordProfileMenuViewShown(profile_);
   // Close any existing IPH bubble for the profile menu.
-  user_education_->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHProfileSwitchFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  user_education_->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHSupervisedUserProfileSigninFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 #endif
@@ -95,6 +95,4 @@ ProfileMenuCoordinator::GetProfileMenuViewBaseForTesting() {
 }
 
 ProfileMenuCoordinator::ProfileMenuCoordinator(BrowserWindowInterface* browser)
-    : browser_(browser),
-      profile_(browser->GetProfile()),
-      user_education_(browser->GetUserEducationInterface()) {}
+    : browser_(browser), profile_(browser->GetProfile()) {}

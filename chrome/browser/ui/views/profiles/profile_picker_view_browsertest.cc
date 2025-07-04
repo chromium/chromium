@@ -527,8 +527,10 @@ class ProfilePickerCreationFlowBrowserTest
 
   static bool HasPromoBeenShown(Browser* browser,
                                 const base::Feature& feature) {
-    return browser->window()->IsFeaturePromoActive(feature) ||
-           browser->window()->IsFeaturePromoQueued(feature);
+    return BrowserUserEducationInterface::From(browser)->IsFeaturePromoActive(
+               feature) ||
+           BrowserUserEducationInterface::From(browser)->IsFeaturePromoQueued(
+               feature);
   }
 
   // Returns true if the profile switch IPH has been shown.

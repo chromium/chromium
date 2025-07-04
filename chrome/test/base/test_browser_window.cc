@@ -14,9 +14,6 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/sharing_message/sharing_dialog_data.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo/feature_promo_handle.h"
-#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -375,89 +372,6 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
 
-user_education::FeaturePromoController*
-TestBrowserWindow::GetFeaturePromoControllerImpl() {
-  return feature_promo_controller_.get();
-}
-
-bool TestBrowserWindow::IsFeaturePromoQueued(
-    const base::Feature& iph_feature) const {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->GetPromoStatus(iph_feature) ==
-             user_education::FeaturePromoStatus::kQueued;
-}
-
-bool TestBrowserWindow::IsFeaturePromoActive(
-    const base::Feature& iph_feature) const {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->IsPromoActive(
-             iph_feature, user_education::FeaturePromoStatus::kContinued);
-}
-
-user_education::FeaturePromoResult TestBrowserWindow::CanShowFeaturePromo(
-    const base::Feature& iph_feature) const {
-  if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
-  }
-  return feature_promo_controller_->CanShowPromo(iph_feature);
-}
-
-void TestBrowserWindow::MaybeShowFeaturePromo(
-    user_education::FeaturePromoParams params) {
-  if (!feature_promo_controller_) {
-    user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback),
-        user_education::FeaturePromoResult::kBlockedByContext);
-    return;
-  }
-
-  feature_promo_controller_->MaybeShowPromo(std::move(params));
-}
-
-void TestBrowserWindow::MaybeShowStartupFeaturePromo(
-    user_education::FeaturePromoParams params) {
-  if (feature_promo_controller_) {
-    feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
-  }
-}
-
-bool TestBrowserWindow::AbortFeaturePromo(const base::Feature& iph_feature) {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(
-             iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
-}
-
-user_education::FeaturePromoHandle
-TestBrowserWindow::CloseFeaturePromoAndContinue(
-    const base::Feature& iph_feature) {
-  return feature_promo_controller_
-             ? feature_promo_controller_->CloseBubbleAndContinuePromo(
-                   iph_feature)
-             : user_education::FeaturePromoHandle();
-}
-
-bool TestBrowserWindow::NotifyFeaturePromoFeatureUsed(
-    const base::Feature& feature,
-    FeaturePromoFeatureUsedAction action) {
-  if (feature_promo_controller_ &&
-      action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
-    return feature_promo_controller_->EndPromo(
-        feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
-  }
-  return false;
-}
-
-void TestBrowserWindow::NotifyAdditionalConditionEvent(const char* event_name) {
-}
-
-user_education::DisplayNewBadge TestBrowserWindow::MaybeShowNewBadgeFor(
-    const base::Feature& new_badge_feature) {
-  return user_education::DisplayNewBadge();
-}
-
-void TestBrowserWindow::NotifyNewBadgeFeatureUsed(
-    const base::Feature& feature) {}
-
 bool TestBrowserWindow::IsTabModalPopupDeprecated() const {
   return is_tab_modal_popup_deprecated_;
 }
@@ -465,14 +379,6 @@ bool TestBrowserWindow::IsTabModalPopupDeprecated() const {
 void TestBrowserWindow::SetIsTabModalPopupDeprecated(
     bool is_tab_modal_popup_deprecated) {
   is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
-}
-
-user_education::FeaturePromoController*
-TestBrowserWindow::SetFeaturePromoController(
-    std::unique_ptr<user_education::FeaturePromoController>
-        feature_promo_controller) {
-  feature_promo_controller_ = std::move(feature_promo_controller);
-  return feature_promo_controller_.get();
 }
 
 // TestBrowserWindowOwner -----------------------------------------------------

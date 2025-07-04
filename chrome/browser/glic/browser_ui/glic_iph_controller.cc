@@ -65,7 +65,7 @@ void GlicIphController::MaybeShowPromo() {
       feature_engagement::kIPHGlicPromoFeature);
   params.show_promo_result_callback = base::BindOnce(
       &GlicIphController::OnShowPromoResult, weak_ptr_factory_.GetWeakPtr());
-  window_->GetUserEducationInterface()->MaybeShowFeaturePromo(
+  BrowserUserEducationInterface::From(&*window_)->MaybeShowFeaturePromo(
       std::move(params));
 }
 

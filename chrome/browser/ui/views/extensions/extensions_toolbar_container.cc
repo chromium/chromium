@@ -1001,12 +1001,13 @@ void ExtensionsToolbarContainer::OnMenuOpening() {
   // Record IPH usage, which should only be shown when any extension has access.
   if (GetExtensionsButton()->state() ==
       ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHExtensionsMenuFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    BrowserUserEducationInterface::From(browser_)
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHExtensionsMenuFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
     // Otherwise, just close the IPH if it's present.
-    browser_->window()->AbortFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->AbortFeaturePromo(
         feature_engagement::kIPHExtensionsMenuFeature);
   }
 

@@ -15,6 +15,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/models/image_model.h"
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
  public:

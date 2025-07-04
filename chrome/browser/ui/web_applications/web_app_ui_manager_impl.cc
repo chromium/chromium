@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -574,7 +575,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     return;
   }
 
-  const Browser* app_browser =
+  Browser* const app_browser =
       browser ? browser : AppBrowserController::FindForWebApp(*profile, app_id);
   if (!app_browser) {
     return;
@@ -805,7 +806,7 @@ const base::Feature& GetPromoFeatureEngagementFromBrowser(
 }
 
 void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    const Browser* browser,
+    Browser* browser,
     const webapps::AppId& app_id,
     bool is_activated) {
   if (!is_activated) {
@@ -825,7 +826,8 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
         }
       });
 
-  browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
+  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
+      std::move(promo_params));
 
   // This is only needed for IPH bubbles that are anchored to a tab in a
   // browser. App browsers don't require this logic since tab switching and
@@ -843,14 +845,14 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
 }
 
 void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
-    const Browser* browser,
+    Browser* browser,
     const webapps::AppId& app_id) {
   if (!browser) {
     return;
   }
 
   const auto* const feature_promo_controller =
-      browser->window()->GetFeaturePromoController(
+      BrowserUserEducationInterface::From(browser)->GetFeaturePromoController(
           base::PassKey<WebAppUiManagerImpl>());
   if (!feature_promo_controller) {
     return;
@@ -883,13 +885,14 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
   }
 }
 
-void WebAppUiManagerImpl::OnTabChangedDuringIph(const Browser* browser) {
+void WebAppUiManagerImpl::OnTabChangedDuringIph(Browser* browser) {
   const auto& feature =
       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab;
-  if (browser->window()->IsFeaturePromoQueued(feature)) {
-    browser->window()->AbortFeaturePromo(feature);
-  } else if (browser->window()->IsFeaturePromoActive(feature)) {
-    browser->window()->NotifyFeaturePromoFeatureUsed(
+  auto* const user_education = BrowserUserEducationInterface::From(browser);
+  if (user_education->IsFeaturePromoQueued(feature)) {
+    user_education->AbortFeaturePromo(feature);
+  } else if (user_education->IsFeaturePromoActive(feature)) {
+    user_education->NotifyFeaturePromoFeatureUsed(
         feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 }

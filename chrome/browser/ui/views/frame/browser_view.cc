@@ -227,7 +227,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
@@ -964,10 +963,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // Add any legal notices required for the user to the queue.
   QueueLegalAndPrivacyNotices(browser_->profile());
-
-  // Not all browsers do feature promos. Conditionally create one (or don't) for
-  // this browser window.
-  feature_promo_controller_ = CreateUserEducationResources(this);
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);
@@ -2948,9 +2943,10 @@ void BrowserView::FocusWebContentsPane() {
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
-  if (feature_promo_controller_ &&
-      feature_promo_controller_->bubble_factory_registry()
-          ->ToggleFocusForAccessibility(GetElementContext())) {
+  auto* const user_education =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
+  if (user_education && user_education->help_bubble_factory_registry()
+                            .ToggleFocusForAccessibility(GetElementContext())) {
     // Record that the user successfully used the accelerator to focus the
     // bubble, reducing the need to describe the accelerator the next time a
     // help bubble is shown.
@@ -3175,7 +3171,7 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   if (pref_service &&
       pref_service->GetBoolean(
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
-    MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser())->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
 }
@@ -3189,8 +3185,9 @@ void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
       toolbar_->pinned_toolbar_actions_container()->IsActionPinned(
           kActionTabSearch);
   if (should_show) {
-    MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHTabSearchToolbarButtonFeature);
+    BrowserUserEducationInterface::From(browser())
+        ->MaybeShowStartupFeaturePromo(
+            feature_engagement::kIPHTabSearchToolbarButtonFeature);
   }
 }
 
@@ -5205,9 +5202,10 @@ void BrowserView::Layout(PassKey) {
         ->UpdateAnchor();
   }
 
-  if (feature_promo_controller_) {
-    feature_promo_controller_->bubble_factory_registry()
-        ->NotifyAnchorBoundsChanged(GetElementContext());
+  if (auto* const user_education =
+          UserEducationServiceFactory::GetForBrowserContext(GetProfile())) {
+    user_education->help_bubble_factory_registry().NotifyAnchorBoundsChanged(
+        GetElementContext());
   }
 }
 
@@ -6110,134 +6108,6 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
   return ShowEyeDropper(frame, listener);
-}
-
-user_education::FeaturePromoControllerCommon*
-BrowserView::GetFeaturePromoControllerImpl() {
-  return feature_promo_controller_.get();
-}
-
-bool BrowserView::IsFeaturePromoQueued(const base::Feature& iph_feature) const {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->GetPromoStatus(iph_feature) ==
-             user_education::FeaturePromoStatus::kQueued;
-}
-
-bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature) const {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->IsPromoActive(
-             iph_feature, user_education::FeaturePromoStatus::kContinued);
-}
-
-user_education::FeaturePromoResult BrowserView::CanShowFeaturePromo(
-    const base::Feature& iph_feature) const {
-  if (!initialized_) {
-    return user_education::FeaturePromoResult::kError;
-  }
-
-  if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
-  }
-
-  return feature_promo_controller_->CanShowPromo(iph_feature);
-}
-
-void BrowserView::MaybeShowFeaturePromo(
-    user_education::FeaturePromoParams params) {
-  // Trying to show a promo before the browser is initialized can result in a
-  // failure to retrieve accelerators, which can cause issues for screen reader
-  // users.
-  if (!initialized_) {
-    LOG(ERROR) << "Attempting to show IPH " << params.feature->name
-               << " before browser initialization; IPH will not be shown.";
-    user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback),
-        user_education::FeaturePromoResult::kError);
-    return;
-  }
-
-  if (!feature_promo_controller_) {
-    user_education::FeaturePromoController::PostShowPromoResult(
-        std::move(params.show_promo_result_callback),
-        user_education::FeaturePromoResult::kBlockedByContext);
-    return;
-  }
-
-  feature_promo_controller_->MaybeShowPromo(std::move(params));
-}
-
-void BrowserView::MaybeShowStartupFeaturePromo(
-    user_education::FeaturePromoParams params) {
-  if (feature_promo_controller_) {
-    // Preconditions for feature promos may require the browser to be fully
-    // constructed before they can be run. Post this task to ensure browser
-    // initialization is complete before attempting to show startup promos.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&user_education::FeaturePromoControllerCommon::
-                           MaybeShowStartupPromo,
-                       feature_promo_controller_->GetAsWeakPtr(),
-                       std::move(params)));
-  }
-}
-
-bool BrowserView::AbortFeaturePromo(const base::Feature& iph_feature) {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(
-             iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
-}
-
-user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
-    const base::Feature& iph_feature) {
-  if (!feature_promo_controller_ ||
-      feature_promo_controller_->GetPromoStatus(iph_feature) !=
-          user_education::FeaturePromoStatus::kBubbleShowing) {
-    return user_education::FeaturePromoHandle();
-  }
-  return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
-}
-
-bool BrowserView::NotifyFeaturePromoFeatureUsed(
-    const base::Feature& feature,
-    FeaturePromoFeatureUsedAction action) {
-  if (feature_promo_controller_) {
-    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
-    if (action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
-      return feature_promo_controller_->EndPromo(
-          feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
-    }
-  }
-  return false;
-}
-
-void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {
-  if (!feature_promo_controller_) {
-    return;
-  }
-  if (auto* const tracker =
-          feature_engagement::TrackerFactory::GetForBrowserContext(
-              GetProfile())) {
-    tracker->NotifyEvent(event_name);
-  }
-}
-
-user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
-    const base::Feature& feature) {
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (!service || !service->new_badge_controller()) {
-    return user_education::DisplayNewBadge();
-  }
-  return service->new_badge_controller()->MaybeShowNewBadge(feature);
-}
-
-void BrowserView::NotifyNewBadgeFeatureUsed(const base::Feature& feature) {
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (service && service->new_badge_registry() &&
-      service->new_badge_registry()->IsFeatureRegistered(feature)) {
-    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
-  }
 }
 
 void BrowserView::ActivateAppModalDialog() const {

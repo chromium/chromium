@@ -743,7 +743,7 @@ void MaybeShowFeatureBackNavigationMenuPromo(Browser* browser,
   }
 
   if (should_show_feature_promo) {
-    browser->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
         feature_engagement::kIPHBackNavigationMenuFeature);
   }
 }
@@ -1642,7 +1642,7 @@ void MoveTabsToReadLater(Browser* browser,
     model->AddOrReplaceEntry(url, base::UTF16ToUTF8(title),
                              reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
                              /*estimated_read_time=*/base::TimeDelta());
-    browser->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListDiscoveryFeature);
     base::UmaHistogramEnumeration(
         "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
@@ -1825,13 +1825,14 @@ void ShowTranslateBubble(Browser* browser) {
 }
 
 void ManagePasswordsForPage(Browser* browser) {
-  browser->window()->NotifyFeaturePromoFeatureUsed(
+  auto* const user_education = BrowserUserEducationInterface::From(browser);
+  user_education->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  browser->window()->NotifyFeaturePromoFeatureUsed(
+  user_education->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  browser->window()->NotifyFeaturePromoFeatureUsed(
+  user_education->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordManagerShortcutFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   WebContents* web_contents =
@@ -2456,7 +2457,8 @@ void ExecLensOverlay(Browser* browser) {
       LensSearchController::FromTabWebContents(web_contents);
   CHECK(controller);
   controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
-  browser->window()->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
+  BrowserUserEducationInterface::From(browser)->NotifyNewBadgeFeatureUsed(
+      lens::features::kLensOverlay);
 }
 
 void ExecLensRegionSearch(Browser* browser) {

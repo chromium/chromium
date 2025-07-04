@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/favicon_base/favicon_types.h"
@@ -250,7 +251,7 @@ void BackForwardMenuModel::MenuWillShow() {
   content::WebContentsObserver::Observe(GetWebContents());
 
   // Close the IPH popup if the user opens the menu.
-  browser_->window()->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHBackNavigationMenuFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 }

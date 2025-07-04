@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
@@ -846,7 +845,6 @@ class Browser : public TabStripModelObserver,
   ImmersiveModeController* GetImmersiveModeController() override;
   BrowserActions* GetActions() override;
   Type GetType() const override;
-  BrowserUserEducationInterface* GetUserEducationInterface() override;
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;

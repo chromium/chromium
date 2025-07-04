@@ -300,7 +300,11 @@ source_set("unit_tests") {
       "save_address_bubble_controller_unittest.cc",
       "update_address_bubble_controller_unittest.cc",
     ]
-    deps += [ "//chrome/browser/ui/hats:test_support" ]
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/user_education",
+    ]
   }
 }
 
@@ -351,6 +355,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/user_education",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

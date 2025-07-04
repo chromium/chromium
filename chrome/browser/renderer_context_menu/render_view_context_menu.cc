@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
@@ -4042,8 +4043,8 @@ void RenderViewContextMenu::ExecOpenCompose() {
         autofill::FieldGlobalId(
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-    GetBrowser()->window()->NotifyNewBadgeFeatureUsed(
-        compose::features::kEnableCompose);
+    BrowserUserEducationInterface::From(GetBrowser())
+        ->NotifyNewBadgeFeatureUsed(compose::features::kEnableCompose);
   } else {
     compose::LogOpenComposeDialogResult(
         compose::OpenComposeDialogResult::kNoContentAutofillDriver);

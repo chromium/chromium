@@ -362,7 +362,8 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
     if (app_id) {
       user_education::FeaturePromoParams params(
           feature_engagement::kIPHPwaQuietNotificationFeature, *app_id);
-      browser_->window()->MaybeShowFeaturePromo(std::move(params));
+      BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+          std::move(params));
     }
   }
 }

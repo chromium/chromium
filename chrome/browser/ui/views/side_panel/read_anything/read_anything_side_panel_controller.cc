@@ -226,7 +226,7 @@ void ReadAnythingSidePanelController::UpdateIphVisibility() {
 
   // Promo controller does not exist for incognito windows.
   auto* const user_ed =
-      tab_->GetBrowserWindowInterface()->GetUserEducationInterface();
+      BrowserUserEducationInterface::From(tab_->GetBrowserWindowInterface());
 
   if (should_show_iph) {
     user_ed->MaybeShowFeaturePromo(

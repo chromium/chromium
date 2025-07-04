@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class PinnedActionToolbarButtonMenuModelBrowserTest
     : public InProcessBrowserTest {

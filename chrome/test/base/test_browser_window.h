@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -45,10 +44,6 @@ class SendTabToSelfBubbleView;
 namespace sharing_hub {
 class SharingHubBubbleView;
 }  // namespace sharing_hub
-
-namespace user_education {
-class FeaturePromoController;
-}  // namespace user_education
 
 // WARNING WARNING WARNING WARNING
 // Do not use this class. See docs/chrome_browser_design_principles.md for
@@ -266,33 +261,9 @@ class TestBrowserWindow : public BrowserWindow {
           tab_search::mojom::TabOrganizationFeature::kNone) override {}
   void CloseTabSearchBubble() override {}
 
-  bool IsFeaturePromoQueued(const base::Feature& iph_feature) const override;
-  bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
-  user_education::FeaturePromoResult CanShowFeaturePromo(
-      const base::Feature& iph_feature) const override;
-  void MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams params) override;
-  void MaybeShowStartupFeaturePromo(
-      user_education::FeaturePromoParams params) override;
-  bool AbortFeaturePromo(const base::Feature& iph_feature) override;
-  user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
-      const base::Feature& iph_feature) override;
-  bool NotifyFeaturePromoFeatureUsed(
-      const base::Feature& feature,
-      FeaturePromoFeatureUsedAction action) override;
-  void NotifyAdditionalConditionEvent(const char* event_name) override;
-  user_education::DisplayNewBadge MaybeShowNewBadgeFor(
-      const base::Feature& new_badge_feature) override;
-  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
   bool IsTabModalPopupDeprecated() const override;
   void SetIsTabModalPopupDeprecated(
       bool is_tab_modal_popup_deprecated) override;
-
-  // Sets the controller returned by GetFeaturePromoController().
-  // Deletes the existing one, if any.
-  user_education::FeaturePromoController* SetFeaturePromoController(
-      std::unique_ptr<user_education::FeaturePromoController>
-          feature_promo_controller);
 
   void set_workspace(std::string workspace) { workspace_ = workspace; }
   void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {
@@ -333,9 +304,6 @@ class TestBrowserWindow : public BrowserWindow {
     void UpdateWithoutTabRestore() override {}
   };
 
-  user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
-      override;
-
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestDownloadShelf download_shelf_{nullptr};
   TestLocationBar location_bar_;
@@ -348,9 +316,6 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_closed_ = false;
   bool is_tab_strip_editable_ = true;
   bool is_tab_modal_popup_deprecated_ = false;
-
-  std::unique_ptr<user_education::FeaturePromoController>
-      feature_promo_controller_;
 
   ui::ElementContext element_context_;
   base::OnceClosure close_callback_;

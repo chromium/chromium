@@ -27,54 +27,17 @@ BrowserFeaturePromoController25::BrowserFeaturePromoController25(
     user_education::FeaturePromoSessionPolicy* session_policy,
     user_education::TutorialService* tutorial_service,
     user_education::ProductMessagingController* messaging_controller)
-    : FeaturePromoController25(feature_engagement_tracker,
-                               registry,
-                               help_bubble_registry,
-                               storage_service,
-                               session_policy,
-                               tutorial_service,
-                               messaging_controller),
-      browser_view_(browser_view) {}
+    : BrowserFeaturePromoController(browser_view,
+                                    feature_engagement_tracker,
+                                    registry,
+                                    help_bubble_registry,
+                                    storage_service,
+                                    session_policy,
+                                    tutorial_service,
+                                    messaging_controller) {}
 
 BrowserFeaturePromoController25::~BrowserFeaturePromoController25() {
   OnDestroying();
-}
-
-ui::ElementContext BrowserFeaturePromoController25::GetAnchorContext() const {
-  return views::ElementTrackerViews::GetContextForView(browser_view_);
-}
-
-const ui::AcceleratorProvider*
-BrowserFeaturePromoController25::GetAcceleratorProvider() const {
-  return browser_view_;
-}
-
-std::u16string BrowserFeaturePromoController25::GetTutorialScreenReaderHint()
-    const {
-  return BrowserHelpBubble::GetFocusTutorialBubbleScreenReaderHint(
-      browser_view_);
-}
-
-std::u16string
-BrowserFeaturePromoController25::GetFocusHelpBubbleScreenReaderHint(
-    user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element) const {
-  return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
-      promo_type, browser_view_, anchor_element);
-}
-
-std::u16string BrowserFeaturePromoController25::GetBodyIconAltText() const {
-  return l10n_util::GetStringUTF16(IDS_CHROME_TIP);
-}
-
-const base::Feature*
-BrowserFeaturePromoController25::GetScreenReaderPromptPromoFeature() const {
-  return &feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature;
-}
-
-const char*
-BrowserFeaturePromoController25::GetScreenReaderPromptPromoEventName() const {
-  return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
 }
 
 void BrowserFeaturePromoController25::Init() {
@@ -82,28 +45,27 @@ void BrowserFeaturePromoController25::Init() {
 
   // Create shared preconditions. This should be called after the browser view
   // is set.
-  CHECK(browser_view_);
   CHECK(shared_preconditions_.empty());
   PreconditionPtr ptr =
-      std::make_unique<OmniboxNotOpenPrecondition>(*browser_view_);
+      std::make_unique<OmniboxNotOpenPrecondition>(*browser_view());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
   ptr = std::make_unique<ContentNotFullscreenPrecondition>(
-      *browser_view_->browser());
+      *browser_view()->browser());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
-  ptr = std::make_unique<ToolbarNotCollapsedPrecondition>(*browser_view_);
+  ptr = std::make_unique<ToolbarNotCollapsedPrecondition>(*browser_view());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
-  ptr = std::make_unique<BrowserNotClosingPrecondition>(*browser_view_);
+  ptr = std::make_unique<BrowserNotClosingPrecondition>(*browser_view());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
-  ptr = std::make_unique<NoCriticalNoticeShowingPrecondition>(*browser_view_);
+  ptr = std::make_unique<NoCriticalNoticeShowingPrecondition>(*browser_view());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
   // Ensure that this uses the same time source as the rest of the User
   // Education system, so tests are consistent.
-  ptr = std::make_unique<UserNotActivePrecondition>(*browser_view_,
+  ptr = std::make_unique<UserNotActivePrecondition>(*browser_view(),
                                                     *storage_service());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);

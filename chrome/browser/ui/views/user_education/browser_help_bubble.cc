@@ -10,6 +10,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -166,8 +167,9 @@ void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
 
   if (auto* const controller =
           static_cast<user_education::FeaturePromoControllerCommon*>(
-              browser_view->GetFeaturePromoController(
-                  base::PassKey<BrowserHelpBubble>()))) {
+              BrowserUserEducationInterface::From(browser_view->browser())
+                  ->GetFeaturePromoController(
+                      base::PassKey<BrowserHelpBubble>()))) {
     controller->DismissNonCriticalBubbleInRegion(view->GetBoundsInScreen());
   }
 }

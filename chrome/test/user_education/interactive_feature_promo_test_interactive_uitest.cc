@@ -46,7 +46,8 @@ class InteractiveFeaturePromoTestUiTest : public InteractiveFeaturePromoTest {
       EXPECT_CALL(*GetMockTrackerFor(browser->browser()),
                   ShouldTriggerHelpUI(testing::Ref(kTestIphFeature)))
           .WillRepeatedly(testing::Return(true));
-      browser->MaybeShowFeaturePromo(kTestIphFeature);
+      BrowserUserEducationInterface::From(browser->browser())
+          ->MaybeShowFeaturePromo(kTestIphFeature);
     });
   }
 };

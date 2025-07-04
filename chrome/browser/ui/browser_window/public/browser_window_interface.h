@@ -51,7 +51,6 @@ class WebContentsModalDialogHost;
 
 class Browser;
 class BrowserActions;
-class BrowserUserEducationInterface;
 class BrowserWindowFeatures;
 class DesktopBrowserWindowCapabilities;
 class ExclusiveAccessManager;
@@ -270,11 +269,6 @@ class BrowserWindowInterface : public content::PageNavigator {
     // BrowserTest.StartMaximized.
   };
   virtual Type GetType() const = 0;
-
-  // Gets an object that provides common per-browser-window functionality for
-  // user education. The remainder of functionality is provided directly by the
-  // UserEducationService, which can be retrieved directly from the profile.
-  virtual BrowserUserEducationInterface* GetUserEducationInterface() = 0;
 
   virtual web_app::AppBrowserController* GetAppBrowserController() = 0;
 

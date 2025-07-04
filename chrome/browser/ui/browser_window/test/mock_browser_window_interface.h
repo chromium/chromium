@@ -40,7 +40,9 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(tabs::TabInterface*, GetActiveTabInterface, (), (override));
   MOCK_METHOD(BrowserWindowFeatures&, GetFeatures, (), (override));
   MOCK_METHOD(const BrowserWindowFeatures&, GetFeatures, (), (const, override));
-  MOCK_METHOD(UnownedUserDataHost&, GetUnownedUserDataHost, (), (override));
+  // The non-const version should never return something different from the
+  // const version, so implement one in terms of th other.
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
   MOCK_METHOD(const UnownedUserDataHost&,
               GetUnownedUserDataHost,
               (),
@@ -68,10 +70,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (override));
   MOCK_METHOD(BrowserActions*, GetActions, (), (override));
   MOCK_METHOD(Type, GetType, (), (const, override));
-  MOCK_METHOD(BrowserUserEducationInterface*,
-              GetUserEducationInterface,
-              (),
-              (override));
   MOCK_METHOD(web_app::AppBrowserController*,
               GetAppBrowserController,
               (),

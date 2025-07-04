@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -284,10 +285,10 @@ void HistoryEmbeddingsHandler::OpenSettingsPage() {
 }
 
 void HistoryEmbeddingsHandler::MaybeShowFeaturePromo() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  if (!browser) {
-    return;
+  if (auto* user_education =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_ui_->GetWebContents())) {
+    user_education->MaybeShowFeaturePromo(
+        feature_engagement::kIPHHistorySearchFeature);
   }
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHHistorySearchFeature);
 }

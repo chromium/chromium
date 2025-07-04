@@ -96,7 +96,7 @@ void PwaInstallView::OnTabStripModelChanged(
   bool web_content_replaced =
       change.type() == TabStripModelChange::Type::kReplaced;
   if ((active_tab_changed || web_content_replaced)) {
-    browser_->window()->AbortFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->AbortFeaturePromo(
         feature_engagement::kIPHDesktopPwaInstallFeature);
   }
 }
@@ -161,7 +161,8 @@ void PwaInstallView::UpdateImpl() {
         webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
     params.show_promo_result_callback = base::BindOnce(
         &PwaInstallView::OnIphShown, weak_ptr_factory_.GetWeakPtr());
-    browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+        std::move(params));
     iph_pending_ = true;
   }
 }
@@ -206,9 +207,10 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   web_app::PwaInProductHelpState iph_state =
       web_app::PwaInProductHelpState::kNotShown;
   install_icon_clicked_after_iph_shown_ =
-      browser_->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHDesktopPwaInstallFeature,
-          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      BrowserUserEducationInterface::From(browser_)
+          ->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHDesktopPwaInstallFeature,
+              FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   if (install_icon_clicked_after_iph_shown_) {
     iph_state = web_app::PwaInProductHelpState::kShown;
   }

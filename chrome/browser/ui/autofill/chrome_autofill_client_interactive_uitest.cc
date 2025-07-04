@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -158,8 +160,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   ShowSuggestions(/*bounds=*/gfx::RectF(100, 100));
   WaitUntilSuggestionsHaveBeenShown();
 
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHAutofillAiOptInFeature));
+  EXPECT_FALSE(
+      BrowserUserEducationInterface::From(browser())->IsFeaturePromoActive(
+          feature_engagement::kIPHAutofillAiOptInFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {

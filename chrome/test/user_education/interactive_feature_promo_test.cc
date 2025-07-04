@@ -173,7 +173,8 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
                     });
 
                 // Attempt to show the promo.
-                browser_view->MaybeShowFeaturePromo(std::move(params));
+                BrowserUserEducationInterface::From(browser_view->browser())
+                    ->MaybeShowFeaturePromo(std::move(params));
 
                 // If the promo showed, expect it to be dismissed at some point.
                 if (expected_result) {
@@ -256,18 +257,22 @@ InteractiveFeaturePromoTestApi::CheckPromoImpl(const base::Feature& iph_feature,
             bool actual = false;
             if (seq->IsCurrentStepInAnyContextForTesting()) {
               for (const auto browser : *BrowserList::GetInstance()) {
-                if (browser->window()->IsFeaturePromoActive(iph_feature) ||
+                if (BrowserUserEducationInterface::From(browser)
+                        ->IsFeaturePromoActive(iph_feature) ||
                     (include_queued &&
-                     browser->window()->IsFeaturePromoQueued(iph_feature))) {
+                     BrowserUserEducationInterface::From(browser)
+                         ->IsFeaturePromoQueued(iph_feature))) {
                   actual = true;
                   break;
                 }
               }
             } else {
               auto* const browser = AsView<BrowserView>(browser_el);
-              actual = browser->IsFeaturePromoActive(iph_feature) ||
+              actual = BrowserUserEducationInterface::From(browser->browser())
+                           ->IsFeaturePromoActive(iph_feature) ||
                        (include_queued &&
-                        browser->IsFeaturePromoQueued(iph_feature));
+                        BrowserUserEducationInterface::From(browser->browser())
+                            ->IsFeaturePromoQueued(iph_feature));
             }
             if (actual != requested) {
               seq->FailForTesting();
@@ -284,7 +289,8 @@ InteractiveFeaturePromoTestApi::AbortPromo(const base::Feature& iph_feature,
   auto steps = Steps(CheckView(
       kBrowserViewElementId,
       [&iph_feature](BrowserView* browser_view) {
-        return browser_view->AbortFeaturePromo(iph_feature);
+        return BrowserUserEducationInterface::From(browser_view->browser())
+            ->AbortFeaturePromo(iph_feature);
       },
       expected_result));
   if (expected_result) {

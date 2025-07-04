@@ -110,8 +110,8 @@ void MediaToolbarButtonView::Enable() {
   // before there is a valid widget to anchor anything to. Previously any
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
-  if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-    browser_->window()->MaybeShowFeaturePromo(
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHLiveCaptionFeature);
   }
 
@@ -128,14 +128,14 @@ void MediaToolbarButtonView::Disable() {
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
   if (service_->should_show_cast_local_media_iph()) {
-    browser_->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCLocalMediaCastingFeature);
   }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
   if (service_->HasLocalCastNotifications()) {
-    browser_->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }
 }
@@ -151,25 +151,21 @@ void MediaToolbarButtonView::ButtonPressed() {
 }
 
 void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
-  // This can get called during setup before the window is even added to the
-  // browser (and before any bubbles could possibly be shown) so if there is no
-  // window, just bail.
-  if (!browser_->window()) {
-    return;
-  }
-
-  if (engaged) {
-    browser_->window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHLiveCaptionFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-    browser_->window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHGMCCastStartStopFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  } else {
-    browser_->window()->AbortFeaturePromo(
-        feature_engagement::kIPHLiveCaptionFeature);
-    browser_->window()->AbortFeaturePromo(
-        feature_engagement::kIPHGMCCastStartStopFeature);
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser_)) {
+    if (engaged) {
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHLiveCaptionFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHGMCCastStartStopFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    } else {
+      user_education->AbortFeaturePromo(
+          feature_engagement::kIPHLiveCaptionFeature);
+      user_education->AbortFeaturePromo(
+          feature_engagement::kIPHGMCCastStartStopFeature);
+    }
   }
 }
 

@@ -122,7 +122,7 @@ void ManagePasswordsIconViews::UpdateImpl() {
 
 void ManagePasswordsIconViews::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  browser()->window()->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser())->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 }

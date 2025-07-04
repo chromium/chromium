@@ -1294,10 +1294,6 @@ BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }
 
-BrowserUserEducationInterface* Browser::GetUserEducationInterface() {
-  return window();
-}
-
 web_app::AppBrowserController* Browser::GetAppBrowserController() {
   return app_controller_.get();
 }

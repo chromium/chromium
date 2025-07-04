@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -16,6 +17,8 @@
 
 class AppMenuButton;
 class BrowserHelpBubble;
+class BrowserView;
+class BrowserWindowInterface;
 class UserEducationInternalsPageHandlerImpl;
 
 namespace content {
@@ -41,10 +44,15 @@ enum class FeaturePromoFeatureUsedAction {
 // Provides the interface for common User Education actions.
 class BrowserUserEducationInterface {
  public:
-  BrowserUserEducationInterface() = default;
+  DECLARE_USER_DATA(BrowserUserEducationInterface);
+
+  explicit BrowserUserEducationInterface(BrowserWindowInterface* browser);
   BrowserUserEducationInterface(const BrowserUserEducationInterface&) = delete;
   void operator=(const BrowserUserEducationInterface&) = delete;
-  virtual ~BrowserUserEducationInterface() = default;
+  virtual ~BrowserUserEducationInterface();
+
+  virtual void Init(BrowserView*);
+  virtual void TearDown();
 
   // Gets the windows's FeaturePromoController which manages display of
   // in-product help. Will return null in incognito and guest profiles.
@@ -156,6 +164,10 @@ class BrowserUserEducationInterface {
   // if you only have access ot a `BrowserContext` or `Profile`.
   virtual void NotifyNewBadgeFeatureUsed(const base::Feature& feature) = 0;
 
+  // Overrides for the promo controller used for a test.
+  virtual void SetFeaturePromoControllerForTesting(
+      std::unique_ptr<user_education::FeaturePromoController> controller) = 0;
+
   // Returns the interface associated with the browser containing `contents` in
   // its tabstrip, or null if `contents` is not a tab in any known browser.
   //
@@ -165,9 +177,18 @@ class BrowserUserEducationInterface {
   static BrowserUserEducationInterface* MaybeGetForWebContentsInTab(
       content::WebContents* contents);
 
+  // Retrieves from the a browser window interface, or null if none.
+  // Note: May return null in unit_tests, even for a valid `browser`.
+  static BrowserUserEducationInterface* From(BrowserWindowInterface* browser);
+
  protected:
-  virtual user_education::FeaturePromoController*
-  GetFeaturePromoControllerImpl() = 0;
+  virtual const user_education::FeaturePromoController*
+  GetFeaturePromoControllerImpl() const = 0;
+  user_education::FeaturePromoController* GetFeaturePromoControllerImpl();
+
+ private:
+  ScopedUnownedUserData<BrowserUserEducationInterface>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_USER_EDUCATION_INTERFACE_H_

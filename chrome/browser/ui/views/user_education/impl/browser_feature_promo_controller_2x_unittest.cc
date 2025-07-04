@@ -204,7 +204,8 @@ class BrowserFeaturePromoController2xTestBase
 
     TestWithBrowserView::SetUp();
     controller_ = static_cast<user_education::FeaturePromoControllerCommon*>(
-        browser_view()->GetFeaturePromoControllerForTesting());
+        BrowserUserEducationInterface::From(browser_view()->browser())
+            ->GetFeaturePromoControllerForTesting());
     lock_ = user_education::FeaturePromoControllerCommon::
         BlockActiveWindowCheckForTesting();
 

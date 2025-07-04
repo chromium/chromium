@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -639,8 +640,10 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
                        ShowsNewBadge) {
+  auto* const user_education = BrowserUserEducationInterface::From(browser());
+
   // Ensure both ways to check the badge work as expected.
-  EXPECT_EQ(GetParam(), browser()->window()->MaybeShowNewBadgeFor(
+  EXPECT_EQ(GetParam(), user_education->MaybeShowNewBadgeFor(
                             user_education::features::kNewBadgeTestFeature));
   EXPECT_EQ(GetParam(), UserEducationService::MaybeShowNewBadge(
                             browser()->profile(),
@@ -649,14 +652,14 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyNewBadgeFeatureUsed(
+    user_education->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 
   // The badge should now be blocked.
-  EXPECT_FALSE(browser()->window()->MaybeShowNewBadgeFor(
+  EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
       browser()->profile(), user_education::features::kNewBadgeTestFeature));
@@ -666,7 +669,8 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
                        IncognitoDoesNotShowBadge) {
   // Both ways to check the badge should return false for an OTR profile.
   auto* const incog = CreateIncognitoBrowser();
-  EXPECT_FALSE(incog->window()->MaybeShowNewBadgeFor(
+  auto* const user_education = BrowserUserEducationInterface::From(incog);
+  EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
       incog->profile(), user_education::features::kNewBadgeTestFeature));
@@ -674,14 +678,14 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyNewBadgeFeatureUsed(
+    user_education->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 
   // The badge should still be blocked.
-  EXPECT_FALSE(incog->window()->MaybeShowNewBadgeFor(
+  EXPECT_FALSE(user_education->MaybeShowNewBadgeFor(
       user_education::features::kNewBadgeTestFeature));
   EXPECT_FALSE(UserEducationService::MaybeShowNewBadge(
       incog->profile(), user_education::features::kNewBadgeTestFeature));

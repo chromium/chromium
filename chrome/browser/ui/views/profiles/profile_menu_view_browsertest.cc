@@ -430,15 +430,16 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewExtensionsIphDismissTest, CloseIPH) {
         ASSERT_TRUE(result);
         run_loop.Quit();
       });
-  browser()->window()->MaybeShowFeaturePromo(std::move(params));
+  auto* const user_ed = BrowserUserEducationInterface::From(browser());
+  user_ed->MaybeShowFeaturePromo(std::move(params));
   run_loop.Run();
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
+  EXPECT_TRUE(user_ed->IsFeaturePromoActive(GetIphFeature()));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
+  EXPECT_FALSE(user_ed->IsFeaturePromoActive(GetIphFeature()));
 }
 
 // Test that sets up a primary account (without sync) and simulates a click on

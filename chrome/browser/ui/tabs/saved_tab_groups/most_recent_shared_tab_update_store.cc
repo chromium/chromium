@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -54,10 +55,8 @@ ui::TrackedElement* MostRecentSharedTabUpdateStore::GetIPHAnchor(
 
 void MostRecentSharedTabUpdateStore::MaybeShowPromo(
     const base::Feature& feature) {
-  if (auto* user_education_interface =
-          browser_window_->GetUserEducationInterface()) {
-    user_education_interface->MaybeShowFeaturePromo(feature);
-  }
+  BrowserUserEducationInterface::From(browser_window_)
+      ->MaybeShowFeaturePromo(feature);
 }
 
 }  // namespace tab_groups

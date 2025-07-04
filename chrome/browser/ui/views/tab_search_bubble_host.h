@@ -48,7 +48,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // TabOrganizationObserver:
-  void OnOrganizationAccepted(const Browser* browser) override;
+  void OnOrganizationAccepted(Browser* browser) override;
   void OnUserInvokedFeature(const Browser* browser) override;
 
   // WebUIBubbleManagerObserver:

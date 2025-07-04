@@ -24,6 +24,7 @@ class Browser;
 class BrowserInstantController;
 class BrowserLocationBarModelDelegate;
 class BrowserSyncedWindowDelegate;
+class BrowserUserEducationInterface;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
@@ -506,6 +507,8 @@ class BrowserWindowFeatures {
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<WindowsTaskbarIconUpdater> windows_taskbar_icon_updater_;
 #endif
+
+  std::unique_ptr<BrowserUserEducationInterface> user_education_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

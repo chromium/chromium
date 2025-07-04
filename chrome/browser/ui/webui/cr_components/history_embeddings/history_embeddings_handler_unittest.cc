@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -137,9 +138,10 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     web_ui_.set_web_contents(web_contents_.get());
     browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
                                                     true);
-
-    static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
-        std::make_unique<user_education::test::MockFeaturePromoController>());
+    BrowserUserEducationInterface::From(browser())
+        ->SetFeaturePromoControllerForTesting(
+            std::make_unique<
+                user_education::test::MockFeaturePromoController>());
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_, base::BindRepeating(&BuildMockHatsService)));
@@ -165,7 +167,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
   user_education::test::MockFeaturePromoController* mock_promo_controller() {
     return static_cast<user_education::test::MockFeaturePromoController*>(
-        static_cast<TestBrowserWindow*>(window())
+        BrowserUserEducationInterface::From(browser())
             ->GetFeaturePromoControllerForTesting());
   }
 

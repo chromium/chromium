@@ -146,7 +146,8 @@ void CookieControlsIconView::MaybeShowIPH() {
                      weak_ptr_factory_.GetWeakPtr());
   params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
                                          weak_ptr_factory_.GetWeakPtr());
-  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
   // Note: originally we would animate here based on whether the promo showed,
   // but since promos are show asynchronously, the options are:
   //  - Always animate; if the IPH shows it shows
@@ -172,10 +173,10 @@ void CookieControlsIconView::OnIPHClosed() {
 }
 
 bool CookieControlsIconView::IsManagedIPHActive() const {
-  CHECK(browser_->window());
-  return browser_->window()->IsFeaturePromoActive(
+  auto* const user_ed = BrowserUserEducationInterface::From(browser_);
+  return user_ed->IsFeaturePromoActive(
              feature_engagement::kIPHCookieControlsFeature) ||
-         browser_->window()->IsFeaturePromoQueued(
+         user_ed->IsFeaturePromoQueued(
              feature_engagement::kIPHCookieControlsFeature);
 }
 
@@ -321,11 +322,10 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 }
 
 void CookieControlsIconView::ShowCookieControlsBubble() {
-  CHECK(browser_->window());
   // Need to close IPH before opening bubble view, as on some platforms closing
   // the IPH bubble can cause activation to move between windows, and cookie
   // control bubble is close-on-deactivate.
-  browser_->window()->NotifyFeaturePromoFeatureUsed(
+  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHCookieControlsFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   bubble_coordinator_->ShowBubble(

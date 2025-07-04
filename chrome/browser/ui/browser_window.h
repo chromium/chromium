@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -131,10 +130,9 @@ enum class BrowserThemeChangeType {
 //
 // NOTE: All getters may return NULL.
 //
-class BrowserWindow : public ui::BaseWindow,
-                      public BrowserUserEducationInterface {
+class BrowserWindow : public ui::BaseWindow {
  public:
-  ~BrowserWindow() override = default;
+  virtual ~BrowserWindow() = default;
 
   //////////////////////////////////////////////////////////////////////////////
   // ui::BaseWindow interface notes:

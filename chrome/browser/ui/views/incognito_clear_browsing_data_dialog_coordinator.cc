@@ -44,7 +44,5 @@ IncognitoClearBrowsingDataDialog* IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 IncognitoClearBrowsingDataDialogCoordinator::
-    IncognitoClearBrowsingDataDialogCoordinator(
-        Profile* profile,
-        BrowserUserEducationInterface* user_education)
-    : profile_(profile), user_education_(user_education) {}
+    IncognitoClearBrowsingDataDialogCoordinator(Profile* profile)
+    : profile_(profile) {}

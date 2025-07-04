@@ -160,7 +160,7 @@ void MaybeShowPasswordManagerShortcutIPH(Browser* browser) {
   if (!web_app::AreWebAppsEnabled(browser->profile())) {
     return;
   }
-  browser->window()->MaybeShowFeaturePromo(
+  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       feature_engagement::kIPHPasswordManagerShortcutFeature);
 }
 
@@ -438,7 +438,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   // Only one of these promos will be able to show. Try the more specific one
   // first.
   if (has_non_empty_note) {
-    browser->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
         feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
   }
   MaybeShowPasswordManagerShortcutIPH(browser);
@@ -946,7 +946,7 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   if (browser && !signin::ShouldShowPasswordSignInPromo(*browser->profile())) {
     // Only one of these promos will be able to show. Try the more specific one
     // first.
-    browser->window()->MaybeShowFeaturePromo(
+    BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
         feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
     MaybeShowPasswordManagerShortcutIPH(browser);
   }

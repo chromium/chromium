@@ -119,7 +119,7 @@ class FeaturePromoDialogTest : public TestBase {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
+        BrowserUserEducationInterface::From(browser())
             ->GetFeaturePromoControllerForTesting();
     ASSERT_TRUE(promo_controller);
 

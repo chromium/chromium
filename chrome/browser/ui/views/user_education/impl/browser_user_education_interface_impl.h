@@ -1,0 +1,73 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_USER_EDUCATION_INTERFACE_IMPL_H_
+#define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_USER_EDUCATION_INTERFACE_IMPL_H_
+
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+
+class BrowserView;
+class BrowserWindowInterface;
+class Profile;
+class UserEducationService;
+
+namespace user_education {
+class FeaturePromoController;
+}
+
+// Implementation of user education browser feature.
+class BrowserUserEducationInterfaceImpl : public BrowserUserEducationInterface {
+ public:
+  explicit BrowserUserEducationInterfaceImpl(BrowserWindowInterface* browser);
+  ~BrowserUserEducationInterfaceImpl() override;
+
+  void Init(BrowserView* browser_view) override;
+  void TearDown() override;
+
+  // BrowserUserEducationInterface:
+  bool IsFeaturePromoQueued(const base::Feature& iph_feature) const override;
+  bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
+  user_education::FeaturePromoResult CanShowFeaturePromo(
+      const base::Feature& iph_feature) const override;
+  void MaybeShowFeaturePromo(
+      user_education::FeaturePromoParams params) override;
+  void MaybeShowStartupFeaturePromo(
+      user_education::FeaturePromoParams params) override;
+  bool AbortFeaturePromo(const base::Feature& iph_feature) override;
+  user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) override;
+  bool NotifyFeaturePromoFeatureUsed(
+      const base::Feature& feature,
+      FeaturePromoFeatureUsedAction action) override;
+  void NotifyAdditionalConditionEvent(const char* event_name) override;
+  user_education::DisplayNewBadge MaybeShowNewBadgeFor(
+      const base::Feature& feature) override;
+  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
+  void SetFeaturePromoControllerForTesting(
+      std::unique_ptr<user_education::FeaturePromoController> controller)
+      override;
+
+ private:
+  // BrowserUserEducationInterface private methods:
+  using BrowserUserEducationInterface::GetFeaturePromoControllerImpl;
+  const user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
+      const override;
+
+  // Gets the corresponding user education service.
+  UserEducationService* GetUserEducationService();
+
+  void ClearQueuedPromos(
+      user_education::FeaturePromoResult::Failure failure =
+          user_education::FeaturePromoResult::Failure::kError);
+
+  enum class State { kUninitialized, kInitialized, kTornDown };
+
+  State state_ = State::kUninitialized;
+  raw_ptr<Profile> profile_ = nullptr;
+  std::vector<user_education::FeaturePromoParams> queued_params_;
+  std::unique_ptr<user_education::FeaturePromoController> controller_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_USER_EDUCATION_INTERFACE_IMPL_H_

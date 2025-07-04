@@ -118,12 +118,9 @@ void SharedTabGroupFeedbackController::MaybeShowIPH(
     return;
   }
 
-  BrowserUserEducationInterface* browser_user_education_interface =
-      browser_window_interface->GetUserEducationInterface();
-  CHECK(browser_user_education_interface);
-
-  browser_user_education_interface->MaybeShowFeaturePromo(
-      feature_engagement::kIPHTabGroupsSharedTabFeedbackFeature);
+  BrowserUserEducationInterface::From(browser_window_interface)
+      ->MaybeShowFeaturePromo(
+          feature_engagement::kIPHTabGroupsSharedTabFeedbackFeature);
 }
 
 void SharedTabGroupFeedbackController::OnInitialized() {

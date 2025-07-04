@@ -1040,8 +1040,9 @@ void DownloadToolbarUIController::ShowIphPromo() {
   if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
           safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
       !profile->IsOffTheRecord()) {
-    browser_view_->MaybeShowFeaturePromo(
-        feature_engagement::kIPHDownloadEsbPromoFeature);
+    BrowserUserEducationInterface::From(browser_view_->browser())
+        ->MaybeShowFeaturePromo(
+            feature_engagement::kIPHDownloadEsbPromoFeature);
   }
 #endif
 }

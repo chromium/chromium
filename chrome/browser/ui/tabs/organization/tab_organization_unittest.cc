@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "content/public/browser/render_process_host.h"
@@ -55,26 +56,24 @@ class TabOrganizationTest : public testing::Test {
     void OnResponse(TabOrganizationResponse* response) { was_called = true; }
   };
 
-  TabOrganizationTest()
-      : profile_(new TestingProfile),
-        delegate_(new TestTabStripModelDelegate),
-        tab_strip_model_(new TabStripModel(delegate(), profile())),
-        browser_window_interface_(new MockBrowserWindowInterface()) {
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
-        .WillByDefault(::testing::Return(tab_strip_model_.get()));
-    delegate_->SetBrowserWindowInterface(browser_window_interface_.get());
+  TabOrganizationTest() {
+    ON_CALL(browser_window_interface_, GetTabStripModel)
+        .WillByDefault(::testing::Return(&tab_strip_model_));
+    ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    delegate_.SetBrowserWindowInterface(&browser_window_interface_);
   }
 
   ~TabOrganizationTest() override {
     // Break loop so we can deconstruct without dangling pointers.
-    delegate_->SetBrowserWindowInterface(nullptr);
+    delegate_.SetBrowserWindowInterface(nullptr);
   }
 
-  TestingProfile* profile() { return profile_.get(); }
-  TestTabStripModelDelegate* delegate() { return delegate_.get(); }
-  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  TestingProfile* profile() { return &profile_; }
+  TestTabStripModelDelegate* delegate() { return &delegate_; }
+  TabStripModel* tab_strip_model() { return &tab_strip_model_; }
   MockBrowserWindowInterface* browser_window_interface() {
-    return browser_window_interface_.get();
+    return &browser_window_interface_;
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -97,7 +96,7 @@ class TabOrganizationTest : public testing::Test {
         ->NavigateAndCommit(url.has_value() ? url.value() : GetUniqueTestURL());
     content::WebContents* content_ptr = contents_unique_ptr.get();
     if (!tab_strip_model) {
-      tab_strip_model = tab_strip_model_.get();
+      tab_strip_model = &tab_strip_model_;
     }
     tab_strip_model->AppendWebContents(std::move(contents_unique_ptr), true);
     return tab_strip_model->GetTabForWebContents(content_ptr);
@@ -160,11 +159,11 @@ class TabOrganizationTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  const std::unique_ptr<TestingProfile> profile_;
-
-  const std::unique_ptr<TestTabStripModelDelegate> delegate_;
-  const std::unique_ptr<TabStripModel> tab_strip_model_;
-  const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
+  TestingProfile profile_;
+  TestTabStripModelDelegate delegate_;
+  TabStripModel tab_strip_model_{&delegate_, &profile_};
+  UnownedUserDataHost user_data_host_;
+  MockBrowserWindowInterface browser_window_interface_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
 

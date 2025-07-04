@@ -116,7 +116,7 @@ void PwaInstallPageActionController::OnPageActionIconShown(
     return;
   }
   BrowserUserEducationInterface* user_education =
-      browser_window->GetUserEducationInterface();
+      BrowserUserEducationInterface::From(browser_window);
   if (!user_education) {
     return;
   }

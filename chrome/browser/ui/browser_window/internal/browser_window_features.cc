@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -214,6 +215,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_group_deletion_dialog_controller_ =
       std::make_unique<tab_groups::DeletionDialogController>(browser);
+
+  user_education_ =
+      GetUserDataFactory().CreateInstance<BrowserUserEducationInterfaceImpl>(
+          *browser, browser);
 
   location_bar_model_delegate_ =
       std::make_unique<BrowserLocationBarModelDelegate>(tab_strip_model_);
@@ -351,7 +356,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   incognito_clear_browsing_data_dialog_coordinator_ =
       std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(
-          browser->GetProfile(), browser->GetUserEducationInterface());
+          browser->GetProfile());
 
   if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
     color_provider_browser_helper_ =
@@ -444,6 +449,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   windows_taskbar_icon_updater_ =
       std::make_unique<WindowsTaskbarIconUpdater>(*browser_view);
 #endif
+
+  user_education_->Init(browser_view);
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
@@ -501,6 +508,12 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_.reset();
 #endif
+
+  exclusive_access_manager_.reset();
+
+  if (user_education_) {
+    user_education_->TearDown();
+  }
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
