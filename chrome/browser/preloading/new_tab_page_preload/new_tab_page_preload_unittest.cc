@@ -81,8 +81,6 @@ class NewTabPagePreloadPipelineManagerTest
   content::test::PrerenderTestHelper prerender_helper_;
 
   net::EmbeddedTestServer test_server_;
-
-  // content::BrowserTaskEnvironment task_environment_;
 };
 
 // Test that a search related url is ignored by the prerender NewTabPage
