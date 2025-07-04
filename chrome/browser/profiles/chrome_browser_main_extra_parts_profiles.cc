@@ -353,6 +353,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 #include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
@@ -1039,6 +1040,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   MicrosoftAuthServiceFactory::GetInstance();
+#endif
+#if !BUILDFLAG(IS_ANDROID) && defined(USE_AURA)
+  IsolatedWebAppsOpenedTabsCounterServiceFactory::GetInstance();
 #endif
   NavigationPredictorKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
