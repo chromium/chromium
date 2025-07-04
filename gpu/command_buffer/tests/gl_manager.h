@@ -23,7 +23,6 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gl {
 
@@ -79,10 +78,6 @@ class GLManager : private GpuControl {
   // Each test needs to apply them, plus the specific settings a test wants
   // to test.
   static GpuFeatureInfo g_gpu_feature_info;
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format);
 
   void Initialize(const Options& options);
   void InitializeWithWorkarounds(const Options& options,

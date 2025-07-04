@@ -44,7 +44,6 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
@@ -67,95 +66,6 @@ void InitializeGpuPreferencesForTestingFromCommandLine(
   preferences->enable_gpu_service_logging_gpu =
       command_line.HasSwitch(switches::kEnableGPUServiceLoggingGPU);
 }
-
-class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
- public:
-  GpuMemoryBufferImplTest(base::RefCountedBytes* bytes,
-                          const gfx::Size& size,
-                          gfx::BufferFormat format)
-      : mapped_(false), bytes_(bytes), size_(size), format_(format) {}
-
-  // Overridden from gfx::GpuMemoryBuffer:
-  bool Map() override {
-    DCHECK(!mapped_);
-    mapped_ = true;
-    return true;
-  }
-  void* memory(size_t plane) override {
-    DCHECK(mapped_);
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return bytes_->as_vector().data() +
-           gfx::BufferOffsetForBufferFormat(size_, format_, plane);
-  }
-  void Unmap() override {
-    DCHECK(mapped_);
-    mapped_ = false;
-  }
-  gfx::Size GetSize() const override { return size_; }
-  gfx::BufferFormat GetFormat() const override { return format_; }
-  int stride(size_t plane) const override {
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
-  }
-  gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::SHARED_MEMORY_BUFFER;
-  }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
-
-  base::RefCountedBytes* bytes() { return bytes_.get(); }
-
- private:
-  bool mapped_;
-  scoped_refptr<base::RefCountedBytes> bytes_;
-  const gfx::Size size_;
-  gfx::BufferFormat format_;
-};
-
-#if BUILDFLAG(IS_MAC)
-class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
- public:
-  IOSurfaceGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
-      : mapped_(false), size_(size), format_(format) {
-    iosurface_ = gfx::CreateIOSurface(size, gfx::BufferFormat::BGRA_8888);
-  }
-
-  ~IOSurfaceGpuMemoryBuffer() override = default;
-
-  // Overridden from gfx::GpuMemoryBuffer:
-  bool Map() override {
-    DCHECK(!mapped_);
-    mapped_ = true;
-    return true;
-  }
-  void* memory(size_t plane) override {
-    DCHECK(mapped_);
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetBaseAddressOfPlane(iosurface_.get(), plane);
-  }
-  void Unmap() override {
-    DCHECK(mapped_);
-    mapped_ = false;
-  }
-  gfx::Size GetSize() const override { return size_; }
-  gfx::BufferFormat GetFormat() const override { return format_; }
-  int stride(size_t plane) const override {
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
-  }
-  gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::IO_SURFACE_BUFFER;
-  }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
-
-  IOSurfaceRef iosurface() { return iosurface_.get(); }
-
- private:
-  bool mapped_;
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> iosurface_;
-  const gfx::Size size_;
-  gfx::BufferFormat format_;
-};
-#endif  // BUILDFLAG(IS_MAC)
 
 class CommandBufferCheckLostContext : public CommandBufferDirect {
  public:
@@ -214,21 +124,6 @@ GLManager::~GLManager() {
       base_context_ = nullptr;
     }
   }
-}
-
-std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format) {
-#if BUILDFLAG(IS_MAC)
-  if (use_iosurface_memory_buffers_) {
-    return base::WrapUnique<gfx::GpuMemoryBuffer>(
-        new IOSurfaceGpuMemoryBuffer(size, format));
-  }
-#endif  // BUILDFLAG(IS_MAC)
-  auto bytes = base::MakeRefCounted<base::RefCountedBytes>(
-      gfx::BufferSizeForBufferFormat(size, format));
-  return base::WrapUnique<gfx::GpuMemoryBuffer>(
-      new GpuMemoryBufferImplTest(bytes.get(), size, format));
 }
 
 void GLManager::Initialize(const GLManager::Options& options) {
