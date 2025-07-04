@@ -1889,6 +1889,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.Eligibility"
+    enum="SyntheticResponseEligibility" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the eligibility of the synthetic response.
+
+    This is recorded when the main resource request is handled in ServiceWorker,
+    and the page is avalable to use the synthetic response.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.IsHeaderConsistent"
     enum="Boolean" expires_after="2025-08-31">
   <owner>sisidovski@chromium.org</owner>

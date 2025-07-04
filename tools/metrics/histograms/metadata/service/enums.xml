@@ -259,6 +259,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/frame/csp/content_security_policy.h:SyntheticResponseBlockedSrcType) -->
 
+<!-- LINT.IfChange(SyntheticResponseEligibility) -->
+
+<enum name="SyntheticResponseEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="NotEligibleByReload"/>
+  <int value="2" label="NotEligibleByNoHeaderStored"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_main_resource_loader.cc:SyntheticResponseEligibility) -->
+
 <enum name="WorkerOrWorkletInterfaceNameType">
   <int value="0" label="kOther"/>
   <int value="1" label="kDedicatedWorkerGlobalScope"/>

@@ -96,6 +96,21 @@ bool IsStaticRouterRaceRequestFixEnabled() {
       features::kServiceWorkerStaticRouterRaceRequestFix);
 }
 
+constexpr char kHistogramSyntheticResponseEligibility[] =
+    "ServiceWorker.SyntheticResponse.Eligibilty";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyntheticResponseEligibility)
+enum class SyntheticResponseEligibility {
+  kEligible = 0,
+  kNotEligibleByReload = 1,
+  kNotEligibleByNoHeaderStored = 2,
+  kMaxValue = kNotEligibleByNoHeaderStored,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseEligibility)
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -1000,13 +1015,20 @@ void ServiceWorkerMainResourceLoader::Fallback(
 bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     scoped_refptr<ServiceWorkerVersion> version) {
-  const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
   if (!service_worker_client_ || !resource_request_.is_outermost_main_frame ||
-      (resource_request_.load_flags & kReloadFlags) ||
       !service_worker_loader_helpers::IsEligibleForSyntheticResponse(
           context_wrapper->browser_context(), resource_request_.url)) {
     return false;
   }
+  const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
+  if (resource_request_.load_flags & kReloadFlags) {
+    // Synthetic response is not enabled in reloading the page.
+    base::UmaHistogramEnumeration(
+        kHistogramSyntheticResponseEligibility,
+        SyntheticResponseEligibility::kNotEligibleByReload);
+    return false;
+  }
+
   is_synthetic_response_used_ = true;
 
   synthetic_response_manager_.emplace(
@@ -1044,6 +1066,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       // When it's not ready, the header is not stored yet. That means we don't
       // create a synthetic response locally, and wait for the response from the
       // network.
+      base::UmaHistogramEnumeration(
+          kHistogramSyntheticResponseEligibility,
+          SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
       break;
     case SyntheticResponseStatus::kReady:
       // When it's ready, the header which the service worker locally storead is
@@ -1053,6 +1078,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       synthetic_response_manager_->StartSyntheticResponse(base::BindOnce(
           &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
           weak_factory_.GetWeakPtr()));
+      base::UmaHistogramEnumeration(kHistogramSyntheticResponseEligibility,
+                                    SyntheticResponseEligibility::kEligible);
       break;
   }
 
