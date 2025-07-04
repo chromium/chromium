@@ -130,8 +130,9 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
-  if (!GetOrCreateCanvasResourceProvider())
+  if (!GetOrCreateCanvas2DResourceProvider()) {
     return;
+  }
   Host()->FlushRecordingForCanvas2D(reason);
 }
 
@@ -157,11 +158,11 @@ bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
   if (host == nullptr || host->Size().IsEmpty()) [[unlikely]] {
     return false;
   }
-  return !!GetOrCreateCanvasResourceProvider();
+  return !!GetOrCreateCanvas2DResourceProvider();
 }
 
 CanvasResourceProvider*
-OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() {
+OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
   OffscreenCanvas* host = HostAsOffscreenCanvas();
   if (host == nullptr) [[unlikely]] {
@@ -280,7 +281,7 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
+  CanvasResourceProvider* provider = GetOrCreateCanvas2DResourceProvider();
   if (!provider) {
     return nullptr;
   }
@@ -328,8 +329,9 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     return nullptr;
   }
 
-  if (!GetOrCreateCanvasResourceProvider())
+  if (!GetOrCreateCanvas2DResourceProvider()) {
     return nullptr;
+  }
   scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kTransfer);
   if (!image)
     return nullptr;
@@ -369,7 +371,7 @@ Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
 
 cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (!is_valid_size_ || isContextLost() ||
-      !GetOrCreateCanvasResourceProvider()) [[unlikely]] {
+      !GetOrCreateCanvas2DResourceProvider()) [[unlikely]] {
     return nullptr;
   }
   return GetPaintCanvas();
@@ -504,11 +506,6 @@ OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
 
 UniqueFontSelector* OffscreenCanvasRenderingContext2D::GetFontSelector() const {
   return Host()->GetFontSelector();
-}
-
-CanvasResourceProvider*
-OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
-  return GetOrCreateCanvasResourceProvider();
 }
 
 }  // namespace blink
