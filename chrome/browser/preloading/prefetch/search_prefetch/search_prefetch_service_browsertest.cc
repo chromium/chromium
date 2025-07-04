@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -69,8 +70,10 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -3089,6 +3092,51 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       "window.performance.timing."
       "responseEnd - window.performance.timing.navigationStart";
   EXPECT_LE(0, content::EvalJs(frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       RespectOverridingUserAgent) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  // Set User-Agent override
+  // TODO(crbug.com/427866914): Check if CH headers are also respected after
+  // finishing implementation.
+  const std::string fake_user_agent = "The Test User Agent";
+  const auto ua_override =
+      blink::UserAgentOverride::UserAgentOnly(fake_user_agent);
+  GetWebContents()->SetUserAgentOverride(ua_override,
+                                         /*override_in_new_tabs=*/false);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          canonical_search_url);
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  const auto& requests = this->search_server_requests();
+  EXPECT_EQ(requests.size(), 1u);
+  const auto& headers = requests[0].headers;
+  EXPECT_TRUE(headers.contains("User-Agent"));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRespectUserAgentOverrideInSearchPrefetch)) {
+    ASSERT_EQ(headers.at("User-Agent"), fake_user_agent);
+  } else {
+    ASSERT_NE(headers.at("User-Agent"), fake_user_agent);
+  }
 }
 
 class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {

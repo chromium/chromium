@@ -1846,6 +1846,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoReferrerForPreloadFromSubresource);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcAllowDataChannelRecordingInWebrtcInternals);
 
+// Kill switch for https://crbug.com/427866914,
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRespectUserAgentOverrideInSearchPrefetch);
+
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
 // that feature grouped with the associated feature.

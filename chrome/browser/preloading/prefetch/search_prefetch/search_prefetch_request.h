@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
 class PrerenderManager;
@@ -98,7 +99,8 @@ class SearchPrefetchRequest {
   // Starts the network request to prefetch `prefetch_url_`. Sets various fields
   // on a resource request. Returns `false` if the request is not started (i.e.,
   // it would be deferred by throttles).
-  bool StartPrefetchRequest(Profile* profile);
+  bool StartPrefetchRequest(Profile* profile,
+                            blink::UserAgentOverride ua_override);
 
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.
