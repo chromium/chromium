@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -21,6 +22,9 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
 
 namespace {
+
+constexpr char kHistogramIsHeaderConsistent[] =
+    "ServiceWorker.SyntheticResponse.IsHeaderConsistent";
 
 // When this is enabled, the browser stores response headers for synthetic
 // responses even if there is no opt-in header in its response. This is for
@@ -239,9 +243,11 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::OnReceiveResponse");
   switch (status_) {
-    case SyntheticResponseStatus::kReady:
+    case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
-      if (CheckHeaderConsistency(response_head->headers)) {
+      bool is_header_consistent =
+          CheckHeaderConsistency(response_head->headers);
+      if (is_header_consistent) {
         simple_buffer_manager_.emplace(std::move(body));
         simple_buffer_manager_->Clone(
             write_buffer_manager_->ReleaseProducerHandle(),
@@ -259,7 +265,10 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
         version_->ResetResponseHeadForSyntheticResponse();
         NotifyReloading();
       }
+      base::UmaHistogramBoolean(kHistogramIsHeaderConsistent,
+                                is_header_consistent);
       break;
+    }
     case SyntheticResponseStatus::kNotReady:
       MaybeSetResponseHead(response_head.Clone());
       std::move(response_callback_)

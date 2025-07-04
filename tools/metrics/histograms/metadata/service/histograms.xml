@@ -1889,6 +1889,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.IsHeaderConsistent"
+    enum="Boolean" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the committed response headers are consistent with the
+    headers from the network.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.UpdateResourceSha256ChecksumsResult"
     enum="ServiceWorkerStatusCode" expires_after="2025-09-28">
   <owner>sisidovski@chromium.org</owner>
