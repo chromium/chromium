@@ -78,6 +78,9 @@ _IGNORE_WARNINGS = (
     # androidx/test/espresso/web/internal/deps/guava/collect/Maps$1.class:"
     # Also happens in espresso core.
     r'Warning in .*:androidx/test/espresso/.*/guava/collect/.*',
+    # This class is used by androidx.test.uiautomator.GestureController but is
+    # for optional XrExtensions usage.
+    r'Missing class com.android.extensions.xr.*Xr.*',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
