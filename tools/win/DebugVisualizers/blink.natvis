@@ -56,7 +56,7 @@
       <ExpandedItem Condition="impl_.ptr_ != 0">impl_.ptr_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="WTF::StringImpl">
+  <Type Name="blink::StringImpl">
     <DisplayString IncludeView="bare"
                    Condition="*(int*)&amp;hash_and_flags_ &amp; 1">
         {(this+1),[length_]sb}</DisplayString>

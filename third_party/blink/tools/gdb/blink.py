@@ -142,8 +142,8 @@ class BlinkAtomicStringPrinter(StringPrinter):
         return self.val['string_']
 
 
-class WTFStringImplPrinter(StringPrinter):
-    "Print a WTF::StringImpl"
+class BlinkStringImplPrinter(StringPrinter):
+    "Print a blink::StringImpl"
 
     def get_length(self):
         return self.val['length_']
@@ -171,7 +171,7 @@ class BlinkStringPrinter(StringPrinter):
     def get_length(self):
         if not self.stringimpl_ptr():
             return 0
-        return WTFStringImplPrinter(
+        return BlinkStringImplPrinter(
             self.stringimpl_ptr().dereference()).get_length()
 
     def to_string(self):
@@ -492,7 +492,6 @@ def add_pretty_printers():
     pretty_printers = (
         (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
         (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
-        (re.compile("^WTF::StringImpl$"), WTFStringImplPrinter),
         (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
         (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
@@ -502,6 +501,7 @@ def add_pretty_printers():
         (re.compile("^blink::PixelsAndPercent$"),
          BlinkPixelsAndPercentPrinter),
         (re.compile("^blink::String$"), BlinkStringPrinter),
+        (re.compile("^blink::StringImpl$"), BlinkStringImplPrinter),
         (re.compile("^blink::Length$"), BlinkLengthPrinter),
         (re.compile("^blink::DataRef<.*>$"), BlinkDataRefPrinter),
         (re.compile("^blink::JSONValue$"), BlinkJSONValuePrinter),
