@@ -243,7 +243,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       SetOnIncompatibleAction(
           OnIncompatibleAction::kSkipTest,
           "Programmatic window activation doesn't work on all platforms."),
-      ObserveState(views::test::kCurrentWidgetFocus),
 
       // Trigger the tab group editor.
       AfterShow(kTabGroupHeaderElementId,

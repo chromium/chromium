@@ -54,7 +54,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier {
   void OnWidgetActivated(Widget* widget) {
     // OnAnyWidgetActivated is only called for activation, so we don't have to
     // worry about spurious nullptrs from deactivation.
-    OnWidgetFocusChanged(widget->GetNativeView());
+    OnWidgetFocusChanged(widget);
   }
 
  protected:

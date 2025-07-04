@@ -666,8 +666,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
       WaitForState(views::test::kCurrentWidgetFocus,
                    [this]() {
                      return BrowserView::GetBrowserViewForBrowser(browser())
-                         ->GetWidget()
-                         ->GetNativeView();
+                         ->GetWidget();
                    }),
       // The content view should be focused.
       CheckHasFocus(ContentsWebView::kContentsWebViewElementId));

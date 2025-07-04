@@ -36,8 +36,7 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
                         ui::TrackedElement* anchor) mutable {
                       BrowserView* const browser_view =
                           BrowserView::GetBrowserViewForBrowser(browser());
-                      browser_native_view_ =
-                          browser_view->GetWidget()->GetNativeView();
+                      browser_widget_ = browser_view->GetWidget();
                       auto& registry =
                           UserEducationServiceFactory::GetForBrowserContext(
                               browser()->profile())
@@ -49,14 +48,17 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
         WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [this](views::View* view) {
-                   help_bubble_native_view_ =
-                       view->GetWidget()->GetNativeView();
+                   help_bubble_widget_ = view->GetWidget();
                  }));
   }
 
   auto CloseHelpBubble() {
     return Steps(
-        Do([this]() { help_bubble_.reset(); }),
+        Do([this]() {
+          browser_widget_ = nullptr;
+          help_bubble_widget_ = nullptr;
+          help_bubble_.reset();
+        }),
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
@@ -69,27 +71,27 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
 
  protected:
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
-  gfx::NativeView browser_native_view_ = gfx::NativeView();
-  gfx::NativeView help_bubble_native_view_ = gfx::NativeView();
+  raw_ptr<views::Widget> browser_widget_ = nullptr;
+  raw_ptr<views::Widget> help_bubble_widget_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusForAccessibility) {
-  RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
-                  // A help bubble without buttons should not start focused.
-                  CreateHelpBubble(kToolbarAppMenuButtonElementId,
-                                   GetDefaultHelpBubbleParams()),
-                  // Toggle focus to the help bubble.
-                  Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
-                  WaitForState(views::test::kCurrentWidgetFocus,
-                               std::ref(help_bubble_native_view_)),
-                  // Toggle focus to the anchor view.
-                  Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
-                  WaitForState(views::test::kCurrentWidgetFocus,
-                               std::ref(browser_native_view_)),
-                  CheckViewProperty(kToolbarAppMenuButtonElementId,
-                                    &views::View::HasFocus, true),
-                  CloseHelpBubble());
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      // A help bubble without buttons should not start focused.
+      CreateHelpBubble(kToolbarAppMenuButtonElementId,
+                       GetDefaultHelpBubbleParams()),
+      // Toggle focus to the help bubble.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(help_bubble_widget_)),
+      // Toggle focus to the anchor view.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
+      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
+                        true),
+      CloseHelpBubble());
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
@@ -105,11 +107,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
       // A help bubble with a button should start focused.
       CreateHelpBubble(kToolbarAppMenuButtonElementId, std::move(params)),
       WaitForState(views::test::kCurrentWidgetFocus,
-                   std::ref(help_bubble_native_view_)),
+                   std::ref(help_bubble_widget_)),
       // Toggle focus to the anchor view.
       Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
-      WaitForState(views::test::kCurrentWidgetFocus,
-                   std::ref(browser_native_view_)),
+      WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
       CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
                         true),
       CloseHelpBubble());
@@ -127,11 +128,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        GetDefaultHelpBubbleParams()),
       SendAccelerator(kBrowserViewElementId, next_pane),
       WaitForState(views::test::kCurrentWidgetFocus,
-                   std::ref(help_bubble_native_view_)),
+                   std::ref(help_bubble_widget_)),
       SendAccelerator(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
           next_pane),
-      WaitForState(views::test::kCurrentWidgetFocus,
-                   std::ref(browser_native_view_)),
+      WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
       CloseHelpBubble());
 }

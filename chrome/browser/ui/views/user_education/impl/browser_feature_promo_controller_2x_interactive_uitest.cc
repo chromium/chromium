@@ -209,21 +209,20 @@ class BrowserFeaturePromoController2xUiTestBase
   }
 
   auto PressEscAndWaitForClose(ElementSpecifier spec) {
-    auto native_view =
-        base::MakeRefCounted<base::RefCountedData<gfx::NativeView>>(
-            gfx::NativeView());
+    auto widget =
+        base::MakeRefCounted<base::RefCountedData<const views::Widget*>>(
+            nullptr);
     return Steps(
         WaitForShow(spec),
         IfView(
             spec,
-            [native_view](const views::View* view) {
-              native_view.get()->data = view->GetWidget()->GetNativeView();
+            [widget](const views::View* view) {
+              widget.get()->data = view->GetWidget();
               return !view->GetWidget()->IsActive();
             },
             Then(ObserveState(views::test::kCurrentWidgetFocus),
-                 WaitForState(
-                     views::test::kCurrentWidgetFocus,
-                     [native_view]() { return native_view.get()->data; }))),
+                 WaitForState(views::test::kCurrentWidgetFocus,
+                              [widget]() { return widget.get()->data; }))),
         SendAccelerator(spec,
                         ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
         WaitForHide(spec));
@@ -616,8 +615,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
                  widget->Activate();
                }),
       // Wait for widget activation to move to the new widget.
-      WaitForState(views::test::kCurrentWidgetFocus,
-                   [&widget]() { return widget->GetNativeView(); }),
+      WaitForState(views::test::kCurrentWidgetFocus, widget.get()),
       // Verify that we can no longer show the promo, since the browser is not
       // the active window.
       CheckCanShowPromoForElement(

@@ -53,7 +53,7 @@ class WidgetFocusObserverTest : public ViewsTestBase {
 TEST_F(WidgetFocusObserverTest, NoWidgets) {
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(gfx::NativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(nullptr, observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, OneWidget) {
@@ -64,7 +64,7 @@ TEST_F(WidgetFocusObserverTest, OneWidget) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, SeveralWidgets) {
@@ -85,7 +85,7 @@ TEST_F(WidgetFocusObserverTest, SeveralWidgets) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget2->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget2.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, AfterActivate) {
@@ -109,7 +109,7 @@ TEST_F(WidgetFocusObserverTest, AfterActivate) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget3->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget3.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, Bubble) {
@@ -129,7 +129,7 @@ TEST_F(WidgetFocusObserverTest, Bubble) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(bubble_widget->GetNativeView(),
+  EXPECT_EQ(bubble_widget,
             observer.GetStateObserverInitialState());
 }
 

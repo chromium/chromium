@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace views::test {
 
@@ -27,7 +26,7 @@ WidgetFocusSupplier::AddWidgetFocusChangedCallback(
   return callbacks_.Add(callback);
 }
 
-void WidgetFocusSupplier::OnWidgetFocusChanged(gfx::NativeView focused_now) {
+void WidgetFocusSupplier::OnWidgetFocusChanged(Widget* focused_now) {
   callbacks_.Notify(focused_now);
 }
 
@@ -72,13 +71,12 @@ WidgetFocusObserver::WidgetFocusObserver() {
 }
 WidgetFocusObserver::~WidgetFocusObserver() = default;
 
-gfx::NativeView WidgetFocusObserver::GetStateObserverInitialState() const {
-  auto* const widget =
-      internal::WidgetFocusSupplierFrame::GetCurrentFrame()->GetActiveWidget();
-  return widget ? widget->GetNativeView() : gfx::NativeView();
+Widget* WidgetFocusObserver::GetStateObserverInitialState() const {
+  return internal::WidgetFocusSupplierFrame::GetCurrentFrame()
+      ->GetActiveWidget();
 }
 
-void WidgetFocusObserver::OnWidgetFocusChanged(gfx::NativeView focused_now) {
+void WidgetFocusObserver::OnWidgetFocusChanged(Widget* focused_now) {
   OnStateObserverStateChanged(focused_now);
 }
 
