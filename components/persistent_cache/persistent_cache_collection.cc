@@ -13,14 +13,25 @@
 
 namespace {
 constexpr size_t kLruCacheCapacity = 100;
+
+// Reducing the footprint of the collection to exactly the desired target could
+// have the effect of rapidly going over the limit again. This might end up
+// issuing more reductions than desirable. This defines some headroom to try and
+// mitigate the issue.
+constexpr int64_t kFootPrintReductionHeadroomPercent = 10;
 }  // namespace
 
 namespace persistent_cache {
 
 PersistentCacheCollection::PersistentCacheCollection(
-    std::unique_ptr<BackendParamsManager> backend_params_manager)
+    std::unique_ptr<BackendParamsManager> backend_params_manager,
+    int64_t target_footprint)
     : backend_params_manager_(std::move(backend_params_manager)),
-      persistent_caches_(kLruCacheCapacity) {}
+      persistent_caches_(kLruCacheCapacity),
+      target_footprint_(target_footprint) {
+  ReduceFootPrint();
+}
+
 PersistentCacheCollection::~PersistentCacheCollection() = default;
 
 std::unique_ptr<Entry> PersistentCacheCollection::Find(
@@ -31,11 +42,36 @@ std::unique_ptr<Entry> PersistentCacheCollection::Find(
   return GetOrCreateCache(cache_id)->Find(key);
 }
 
+void PersistentCacheCollection::ReduceFootPrint() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Clear all managed persistent caches so they don't hold on to files or
+  // prevent their deletion.
+  persistent_caches_.Clear();
+
+  int64_t adjusted_target =
+      target_footprint_ / 100 * kFootPrintReductionHeadroomPercent;
+  int64_t current_footprint =
+      backend_params_manager_->BringDownTotalFootprintOfFiles(adjusted_target)
+          .current_footprint;
+
+  bytes_until_footprint_reduction_ = target_footprint_ - current_footprint;
+}
+
 void PersistentCacheCollection::Insert(const std::string& cache_id,
                                        std::string_view key,
                                        base::span<const uint8_t> content,
                                        EntryMetadata metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Approximate the footprint of this insert to the size of the key and value
+  // combined. This is optimistic in some ways since it doesn't account for any
+  // overhead and pessimimistic as it assumes every single write is both new and
+  // doesn't evict something else.
+  bytes_until_footprint_reduction_ -= (key.size() + content.size());
+  if (bytes_until_footprint_reduction_ <= 0) {
+    ReduceFootPrint();
+  }
 
   GetOrCreateCache(cache_id)->Insert(key, content, metadata);
 }
@@ -48,7 +84,7 @@ void PersistentCacheCollection::ClearForTesting() {
 void PersistentCacheCollection::DeleteAllFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Delete all managed parsistent caches so they don't hold on to files or
+  // Clear all managed persistent caches so they don't hold on to files or
   // prevent their deletion.
   persistent_caches_.Clear();
 

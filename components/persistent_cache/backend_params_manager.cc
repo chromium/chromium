@@ -201,7 +201,7 @@ void BackendParamsManager::DeleteAllFiles() {
   base::CreateDirectory(top_directory_);
 }
 
-int64_t BackendParamsManager::BringDownTotalFootprintOfFiles(
+FootprintReductionResult BackendParamsManager::BringDownTotalFootprintOfFiles(
     int64_t target_footprint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -232,7 +232,8 @@ int64_t BackendParamsManager::BringDownTotalFootprintOfFiles(
 
   // Nothing to do.
   if (total_footprint <= target_footprint) {
-    return 0;
+    return FootprintReductionResult{.current_footprint = total_footprint,
+                                    .number_of_bytes_deleted = 0};
   }
 
   // Order files from least to most recently modified to prioritize deleting
@@ -277,7 +278,9 @@ int64_t BackendParamsManager::BringDownTotalFootprintOfFiles(
     };
   }
 
-  return deleted_size;
+  return FootprintReductionResult{
+      .current_footprint = total_footprint - deleted_size,
+      .number_of_bytes_deleted = deleted_size};
 }
 
 // static

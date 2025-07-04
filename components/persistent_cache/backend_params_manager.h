@@ -20,6 +20,11 @@
 
 namespace persistent_cache {
 
+struct FootprintReductionResult {
+  int64_t current_footprint = 0;
+  int64_t number_of_bytes_deleted = 0;
+};
+
 // Use to retrieve or create BackendParams to open a PersistentCache. Existing
 // params are cached so that they can be retrieved synchronously when possible.
 //
@@ -63,7 +68,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
   // than `target_footprint`. Use when enforcing a quota or proactively saving
   // space. If the goal is to get rid of all files use `DeleteAllFiles()`
   // instead. Returns the number of bytes deleted.
-  int64_t BringDownTotalFootprintOfFiles(int64_t target_footprint);
+  FootprintReductionResult BringDownTotalFootprintOfFiles(
+      int64_t target_footprint);
 
   // Use to get a string containing all characters supported in keys.
   static std::string GetAllAllowedCharactersInKeysForTesting();

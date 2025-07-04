@@ -32,7 +32,8 @@ namespace persistent_cache {
 class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
  public:
   PersistentCacheCollection(
-      std::unique_ptr<BackendParamsManager> params_manager);
+      std::unique_ptr<BackendParamsManager> params_manager,
+      int64_t target_footprint);
   ~PersistentCacheCollection();
 
   // Not copyable or moveable.
@@ -58,6 +59,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   void DeleteAllFiles();
 
  private:
+  void ReduceFootPrint();
+
   PersistentCache* GetOrCreateCache(const std::string& cache_id);
 
   std::unique_ptr<BackendParamsManager> backend_params_manager_
@@ -65,6 +68,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
 
   base::HashingLRUCache<std::string, std::unique_ptr<PersistentCache>>
       persistent_caches_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Desired maximum disk footprint for the cache collection in bytes.
+  const int64_t target_footprint_;
+
+  // Running tally of how many bytes can be inserted before a footprint
+  // reduction is triggered.
+  int64_t bytes_until_footprint_reduction_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

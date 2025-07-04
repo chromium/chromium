@@ -210,9 +210,10 @@ TEST_F(BackendParamsManagerTest, NoFileReductionIfNotNeeded) {
 
   // The footprint of the files do not approach the requested target size so
   // nothing is done.
-  EXPECT_EQ(params_manager.BringDownTotalFootprintOfFiles(file_count *
-                                                          file_size * 10),
-            0);
+  EXPECT_EQ(
+      params_manager.BringDownTotalFootprintOfFiles(file_count * file_size * 10)
+          .number_of_bytes_deleted,
+      0);
 }
 
 TEST_F(BackendParamsManagerTest, BringDownTotalFootPrint) {
@@ -221,7 +222,9 @@ TEST_F(BackendParamsManagerTest, BringDownTotalFootPrint) {
   OverFill(params_manager);
   EXPECT_GE(base::ComputeDirectorySize(temp_dir_.GetPath()), kTargetFootprint);
 
-  EXPECT_GT(params_manager.BringDownTotalFootprintOfFiles(kTargetFootprint), 0);
+  EXPECT_GT(params_manager.BringDownTotalFootprintOfFiles(kTargetFootprint)
+                .number_of_bytes_deleted,
+            0);
 
   EXPECT_LE(base::ComputeDirectorySize(temp_dir_.GetPath()), kTargetFootprint);
 }
