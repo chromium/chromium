@@ -59,20 +59,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier {
 
  protected:
   Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS)
-    // On Ash, WidgetTest::GetAllWidgets() requires special test utils to be set
-    // up that are incompatible with browser tests. If a test helper has been
-    // set up, then use it, otherwise assume that the browser version will
-    // handle fetching the widgets.
-    Widget::Widgets result;
-    if (aura::test::AuraTestHelper* const aura_test_helper =
-            aura::test::AuraTestHelper::GetInstance()) {
-      result.merge(Widget::GetAllChildWidgets(aura_test_helper->GetContext()));
-    }
-    return result;
-#else
     return WidgetTest::GetAllWidgets();
-#endif
   }
 
  private:

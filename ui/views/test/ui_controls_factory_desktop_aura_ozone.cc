@@ -44,9 +44,9 @@ aura::Window* RootWindowForPoint(const gfx::Point& point,
   // other things to work properly. Therefore we hack around this by
   // iterating across the windows owned DesktopWindowTreeHostLinux since this
   // doesn't rely on having a DesktopScreenX11.
-  std::vector<aura::Window*> windows =
+  aura::Window::Windows windows =
       views::DesktopWindowTreeHostPlatform::GetAllOpenWindows();
-  const auto i = std::ranges::find_if(windows, [point](auto* window) {
+  const auto i = std::ranges::find_if(windows, [point](auto& window) {
     return window->GetBoundsInScreen().Contains(point) || window->HasCapture();
   });
 

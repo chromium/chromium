@@ -37,7 +37,6 @@ class InteractiveBrowserTestPrivate
   ~InteractiveBrowserTestPrivate() override;
 
   // views::test::internal::InteractiveViewsTestPrivate:
-  void DoTestSetUp() override;
   void DoTestTearDown() override;
 
   // Starts code coverage if the proper configuration is present.

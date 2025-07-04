@@ -231,8 +231,8 @@ DesktopWindowTreeHostPlatform* DesktopWindowTreeHostPlatform::GetHostForWidget(
 }
 
 // static
-std::vector<aura::Window*> DesktopWindowTreeHostPlatform::GetAllOpenWindows() {
-  std::vector<aura::Window*> windows(open_windows().size());
+aura::Window::Windows DesktopWindowTreeHostPlatform::GetAllOpenWindows() {
+  aura::Window::Windows windows(open_windows().size());
   std::ranges::transform(
       open_windows(), windows.begin(),
       DesktopWindowTreeHostPlatform::GetContentWindowForWidget);

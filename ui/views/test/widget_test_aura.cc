@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -22,6 +23,8 @@
 namespace views::test {
 
 namespace {
+
+base::NoDestructor<WidgetTest::RootWindowProvider> g_root_window_provider;
 
 // Perform a pre-order traversal of |children| and all descendants, looking for
 // |first| and |second|. If |first| is found before |second|, return true.
@@ -59,7 +62,7 @@ bool FindLayersInOrder(
 struct FindAllWindowsData {
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #reinterpret-cast-trivial-type
-  RAW_PTR_EXCLUSION std::vector<aura::Window*>* windows;
+  RAW_PTR_EXCLUSION aura::Window::Windows* windows;
 };
 
 BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
@@ -73,8 +76,12 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-std::vector<aura::Window*> GetAllTopLevelWindows() {
-  std::vector<aura::Window*> roots;
+aura::Window::Windows GetAllTopLevelWindows() {
+  aura::Window::Windows roots;
+  if (*g_root_window_provider) {
+    return g_root_window_provider->Run();
+  }
+
 #if BUILDFLAG(IS_WIN)
   {
     FindAllWindowsData data = {&roots};
@@ -86,10 +93,6 @@ std::vector<aura::Window*> GetAllTopLevelWindows() {
 #endif
   aura::test::AuraTestHelper* aura_test_helper =
       aura::test::AuraTestHelper::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS)
-  // Chrome OS browser tests must use ash::Shell::GetAllRootWindows.
-  DCHECK(aura_test_helper) << "Can't find all widgets without a test helper";
-#endif
   if (aura_test_helper) {
     roots.push_back(aura_test_helper->GetContext());
   }
@@ -97,6 +100,11 @@ std::vector<aura::Window*> GetAllTopLevelWindows() {
 }
 
 }  // namespace
+
+// static
+void WidgetTest::SetRootWindowProvider(RootWindowProvider provider) {
+  *g_root_window_provider = std::move(provider);
+}
 
 // static
 void WidgetTest::SimulateNativeActivate(Widget* widget) {

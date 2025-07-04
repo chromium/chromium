@@ -29,7 +29,6 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
-#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -39,88 +38,11 @@
 
 namespace internal {
 
-// Focus supplier that watches for browser activation specifically. For some
-// reason, on some platforms, in some circumstances, native widget activation
-// isn't properly communicated, so this serves as a backup.
-class BrowserWidgetFocusSupplier
-    : public views::test::internal::WidgetFocusSupplier,
-      public BrowserListObserver,
-      public views::WidgetObserver {
- public:
-  BrowserWidgetFocusSupplier() {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      ObserveBrowserActivationChange(browser);
-    }
-    observation_.Observe(BrowserList::GetInstance());
-  }
-
-  ~BrowserWidgetFocusSupplier() override {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      OnBrowserRemoved(browser);
-    }
-  }
-
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
-
-  void OnBrowserAdded(Browser* browser) override {
-    ObserveBrowserActivationChange(browser);
-  }
-
-  void OnBrowserRemoved(Browser* browser) override {
-    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
-      if (auto* const widget = view->GetWidget()) {
-        widget->RemoveObserver(this);
-      }
-    }
-  }
-
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
-    if (active) {
-      if (gfx::NativeView native_view = widget->GetNativeView()) {
-        OnWidgetFocusChanged(native_view);
-      }
-    }
-  }
-
- protected:
-  views::Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS)
-    // On Ash, this call is required to include shell/desktop widgets in
-    // addition to other widgets - see documentation in widget_test_aura.cc.
-    views::Widget::Widgets result;
-    for (const auto& window : ash::Shell::GetAllRootWindows()) {
-      result.merge(views::Widget::GetAllChildWidgets(window->GetRootWindow()));
-    }
-    return result;
-#else
-    return views::Widget::Widgets();
-#endif
-  }
-
- private:
-  void ObserveBrowserActivationChange(Browser* browser) {
-    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
-      if (auto* const widget = view->GetWidget()) {
-        widget->AddObserver(this);
-      }
-    }
-  }
-
-  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
-};
-
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserWidgetFocusSupplier)
-
 InteractiveBrowserTestPrivate::InteractiveBrowserTestPrivate(
     std::unique_ptr<InteractionTestUtilBrowser> test_util)
     : InteractiveViewsTestPrivate(std::move(test_util)) {}
 
 InteractiveBrowserTestPrivate::~InteractiveBrowserTestPrivate() = default;
-
-void InteractiveBrowserTestPrivate::DoTestSetUp() {
-  InteractiveViewsTestPrivate::DoTestSetUp();
-  widget_focus_suppliers().MaybeRegister<BrowserWidgetFocusSupplier>();
-}
 
 void InteractiveBrowserTestPrivate::DoTestTearDown() {
   // Release any remaining instrumented WebContents.

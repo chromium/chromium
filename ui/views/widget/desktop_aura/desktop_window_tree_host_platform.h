@@ -56,7 +56,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Get all open top-level windows. This includes windows that may not be
   // visible. This list is sorted in their stacking order, i.e. the first window
   // is the topmost window.
-  static std::vector<aura::Window*> GetAllOpenWindows();
+  static aura::Window::Windows GetAllOpenWindows();
 
   // Runs the |func| callback for each content-window, and deallocates the
   // internal list of open windows.

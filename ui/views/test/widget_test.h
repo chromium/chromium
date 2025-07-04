@@ -163,6 +163,15 @@ class WidgetTest : public ViewsTestBase {
   // Returns the set of all Widgets that currently have a NativeWindow.
   static Widget::Widgets GetAllWidgets();
 
+#if defined(USE_AURA)
+  // Sets a callback to be used by GetAllWidgets() to get the list of root
+  // windows. This is used on ChromeOS browser tests where the logic to get all
+  // root windows lives in a higher-level component.
+  using RootWindowProvider =
+      base::RepeatingCallback<aura::Window::Windows()>;
+  static void SetRootWindowProvider(RootWindowProvider provider);
+#endif
+
   // Waits for system app activation events, if any, to have happened. This is
   // necessary on macOS 10.15+, where the system will attempt to find and
   // activate a window owned by the app shortly after app startup, if there is
