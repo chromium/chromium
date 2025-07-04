@@ -116,8 +116,8 @@ class CORE_EXPORT TextDecorationInfo {
   // It can be different from FragmentItem::SvgScalingFactor() if the
   // text works as a resource.
   float ScalingFactor() const { return scaling_factor_; }
-  float InkSkipClipUpper(float bounds_upper) const {
-    return -TargetAscent() + bounds_upper - local_origin_.line_over.ToFloat();
+  float BaselineForInkSkip() const {
+    return local_origin_.line_over.ToFloat() + target_ascent_;
   }
 
   // |SetDecorationIndex| may change the results of these methods.
@@ -146,7 +146,6 @@ class CORE_EXPORT TextDecorationInfo {
 
   // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
-  float TargetAscent() const { return target_ascent_; }
 
   // |SetDecorationIndex| may change the results of these methods.
   float ComputedFontSize() const { return computed_font_size_; }

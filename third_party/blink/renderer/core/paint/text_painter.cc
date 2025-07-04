@@ -481,24 +481,10 @@ void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
   }
 }
 
-void TextPainter::PaintDecorationLine(
-    const TextDecorationInfo& decoration_info,
-    const Color& line_color,
-    const AutoDarkMode& auto_dark_mode,
-    const TextFragmentPaintInfo* fragment_paint_info) {
+void TextPainter::PaintDecorationLine(const TextDecorationInfo& decoration_info,
+                                      const Color& line_color,
+                                      const AutoDarkMode& auto_dark_mode) {
   const DecorationGeometry& geometry = decoration_info.GetGeometry();
-  if (fragment_paint_info &&
-      decoration_info.TargetStyle().TextDecorationSkipInk() ==
-          ETextDecorationSkipInk::kAuto) {
-    // In order to ignore intersects less than 0.5px, inflate by -0.5.
-    gfx::RectF decoration_bounds = DecorationLinePainter::Bounds(geometry);
-    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
-    ClipDecorationsStripe(
-        *fragment_paint_info,
-        decoration_info.InkSkipClipUpper(decoration_bounds.y()),
-        decoration_bounds.height(),
-        std::min(geometry.Thickness(), kDecorationClipMaxDilation));
-  }
 
   DecorationLinePainter decoration_painter(graphics_context_);
   if (svg_text_paint_state_.has_value() &&
@@ -518,20 +504,29 @@ void TextPainter::PaintDecorationLine(
   }
 }
 
-void TextPainter::ClipDecorationsStripe(
-    const TextFragmentPaintInfo& fragment_paint_info,
-    float upper,
-    float stripe_width,
-    float dilation) {
+void TextPainter::ClipDecorationLine(
+    const DecorationGeometry& geometry,
+    float text_baseline,
+    const TextFragmentPaintInfo& fragment_paint_info) {
   if (fragment_paint_info.from >= fragment_paint_info.to ||
-      !fragment_paint_info.shape_result)
+      !fragment_paint_info.shape_result) {
     return;
+  }
+
+  // In order to ignore intersects less than 0.5px, inflate by -0.5.
+  gfx::RectF decoration_bounds = DecorationLinePainter::Bounds(geometry);
+  decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
+
+  const float upper = decoration_bounds.y() - text_baseline;
+  const float stripe_width = decoration_bounds.height();
 
   Vector<Font::TextIntercept> text_intercepts;
   font_.GetTextIntercepts(fragment_paint_info, graphics_context_.FillFlags(),
                           std::make_tuple(upper, upper + stripe_width),
                           text_intercepts);
 
+  const float dilation =
+      std::min(geometry.Thickness(), kDecorationClipMaxDilation);
   for (auto intercept : text_intercepts) {
     gfx::PointF clip_origin(text_origin_);
     gfx::RectF clip_rect(

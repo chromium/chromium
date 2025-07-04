@@ -31,10 +31,9 @@ class TextCombinePainter final : public TextPainter {
   static bool ShouldPaint(const LayoutTextCombine& text_combine);
 
  protected:
-  void ClipDecorationsStripe(const TextFragmentPaintInfo&,
-                             float upper,
-                             float stripe_width,
-                             float dilation) override;
+  void ClipDecorationLine(const DecorationGeometry&,
+                          float ink_skip_offset,
+                          const TextFragmentPaintInfo&) override;
 
  private:
   // Paints emphasis mark as for ideographic full stop character. Callers of
