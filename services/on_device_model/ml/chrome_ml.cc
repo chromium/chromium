@@ -50,11 +50,20 @@ void FatalGpuErrorFn(const char* msg) {
   SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg", msg);
   std::string msg_str(msg);
   std::string msg_continued;
-  // The error message may be long, collect another 1k if needed.
-  if (msg_str.size() > 1024) {
-    msg_continued = msg_str.substr(1024);
+  constexpr size_t kCrashStringSize = 1024;
+  // The error message may be long as it potentially includes the shader,
+  // collect another 3k if needed.
+  if (msg_str.size() > kCrashStringSize) {
+    msg_continued = msg_str.substr(kCrashStringSize);
   }
   SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg2", msg_continued);
+  msg_continued =
+      msg_continued.substr(std::min(kCrashStringSize, msg_continued.size()));
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg3", msg_continued);
+  msg_continued =
+      msg_continued.substr(std::min(kCrashStringSize, msg_continued.size()));
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg4", msg_continued);
+
   GpuErrorReason error_reason = GpuErrorReason::kOther;
   if (msg_str.find("DXGI_ERROR_DEVICE_HUNG") != std::string::npos) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
