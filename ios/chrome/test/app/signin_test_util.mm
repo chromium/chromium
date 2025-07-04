@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync/service/sync_service.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -111,10 +113,11 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     };
 
     // Sign out current user and clear all browsing data on the device.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile);
-    if (authentication_service->HasPrimaryIdentity(
-            signin::ConsentLevel::kSignin)) {
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                       tasks_completion);
     } else {

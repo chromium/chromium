@@ -18,6 +18,7 @@ include_rules = [
   "+components/prefs",
   "+components/signin/internal/identity_manager",
   "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_sessions",
   "+components/sync_device_info",
