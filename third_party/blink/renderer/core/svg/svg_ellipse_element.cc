@@ -29,6 +29,21 @@
 
 namespace blink {
 
+namespace {
+
+bool TreatAsAuto(const Length& dimension, float resolved_value) {
+  if (dimension.IsAuto()) {
+    return true;
+  }
+  if (resolved_value < 0 &&
+      RuntimeEnabledFeatures::SvgIgnoreNegativeEllipseRadiiEnabled()) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 SVGEllipseElement::SVGEllipseElement(Document& document)
     : SVGGeometryElement(svg_names::kEllipseTag, document),
       cx_(MakeGarbageCollected<SVGAnimatedLength>(
@@ -76,12 +91,24 @@ PathBuilder SVGEllipseElement::AsMutablePath() const {
 
   gfx::Vector2dF radii =
       VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
-  if (style.Rx().IsAuto())
+  if (TreatAsAuto(style.Rx(), radii.x())) {
     radii.set_x(radii.y());
-  else if (style.Ry().IsAuto())
+  } else if (TreatAsAuto(style.Ry(), radii.y())) {
     radii.set_y(radii.x());
-  if (radii.x() < 0 || radii.y() < 0 || (!radii.x() && !radii.y()))
+  }
+
+  if (RuntimeEnabledFeatures::SvgIgnoreNegativeEllipseRadiiEnabled()) {
+    // Clamp any remaining negative values to zero to disable rendering. This
+    // shouldn't happen, but we still allow negative values to be parsed.
+    radii.set_x(std::max(radii.x(), 0.f));
+    radii.set_y(std::max(radii.y(), 0.f));
+  } else if (radii.x() < 0 || radii.y() < 0) {
     return builder;
+  }
+
+  if (!radii.x() && !radii.y()) {
+    return builder;
+  }
 
   gfx::PointF center =
       PointForLengthPair(style.Cx(), style.Cy(), viewport_resolver, style);

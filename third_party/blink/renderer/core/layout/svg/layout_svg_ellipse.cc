@@ -42,6 +42,17 @@ bool GeometryPropertiesChanged(const ComputedStyle& old_style,
          old_style.R() != new_style.R();
 }
 
+bool TreatAsAuto(const Length& dimension, float resolved_value) {
+  if (dimension.IsAuto()) {
+    return true;
+  }
+  if (resolved_value < 0 &&
+      RuntimeEnabledFeatures::SvgIgnoreNegativeEllipseRadiiEnabled()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
@@ -108,14 +119,15 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
         VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
     radius_x_ = radii.x();
     radius_y_ = radii.y();
-    if (style.Rx().IsAuto())
+    if (TreatAsAuto(style.Rx(), radius_x_)) {
       radius_x_ = radius_y_;
-    else if (style.Ry().IsAuto())
+    } else if (TreatAsAuto(style.Ry(), radius_y_)) {
       radius_y_ = radius_x_;
+    }
   }
 
-  // Spec: "A negative value is an error. A value of zero disables rendering of
-  // the element."
+  // "Clamp any remaining negative values to zero to disable rendering. This
+  // shouldn't happen, but we still allow negative values to be parsed."
   radius_x_ = std::max(radius_x_, 0.f);
   radius_y_ = std::max(radius_y_, 0.f);
 }
