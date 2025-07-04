@@ -3,8 +3,7 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "ChromeOS FYI Release Skylab (jacuzzi)": {
     "additional_compile_targets": [
-      "chromiumos_preflight",
-      "nacl_helper"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -316,8 +315,7 @@
   },
   "gpu-fyi-chromeos-brya-chrome": {
     "additional_compile_targets": [
-      "chromiumos_preflight",
-      "nacl_helper"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -346,8 +344,7 @@
   },
   "gpu-fyi-chromeos-corsola-chrome": {
     "additional_compile_targets": [
-      "chromiumos_preflight",
-      "nacl_helper"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -376,8 +373,7 @@
   },
   "gpu-fyi-chromeos-skyrim-chrome": {
     "additional_compile_targets": [
-      "chromiumos_preflight",
-      "nacl_helper"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {

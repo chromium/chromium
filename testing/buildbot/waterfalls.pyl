@@ -315,7 +315,6 @@
       'ChromeOS FYI Release Skylab (jacuzzi)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'nacl_helper',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
@@ -335,7 +334,6 @@
       'gpu-fyi-chromeos-brya-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'nacl_helper',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
@@ -352,7 +350,6 @@
       'gpu-fyi-chromeos-corsola-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'nacl_helper',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
@@ -369,7 +366,6 @@
       'gpu-fyi-chromeos-skyrim-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'nacl_helper',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
