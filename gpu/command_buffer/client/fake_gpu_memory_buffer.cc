@@ -68,22 +68,13 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
 #endif
 
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
-                                         gfx::BufferFormat format)
-    : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {}
-
-FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          bool premapped,
                                          MapCallbackController* controller)
-    : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {
-  premapped_ = premapped;
-  map_callback_controller_ = controller;
-}
-
-FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
-                                         gfx::BufferFormat format,
-                                         uint64_t modifier)
-    : size_(size), format_(format) {
+    : size_(size),
+      format_(format),
+      premapped_(premapped),
+      map_callback_controller_(controller) {
   std::optional<media::VideoPixelFormat> video_pixel_format =
       media::GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
