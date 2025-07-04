@@ -89,12 +89,12 @@ constexpr OptimizationTarget kAiv3OptTargetGeolocation = OptimizationTarget::
     OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE;
 
 constexpr auto kLikelihoodUnspecified =
-    PermissionUmaUtil::PredictionGrantLikelihood::
+    PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
 
 // This is the only server side reply that will tirgger quiet UI at the moment.
 constexpr auto kLikelihoodVeryUnlikely =
-    PermissionUmaUtil::PredictionGrantLikelihood::
+    PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
 
 constexpr std::string_view kNotificationsModelExecutionSuccessHistogram =
@@ -329,7 +329,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
       RequestType request_type,
       bool should_expect_quiet_ui,
       std::optional<PermissionRequestRelevance> expected_relevance,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           expected_prediction_likelihood) {
     auto* manager = GetPermissionRequestManager();
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
@@ -383,7 +383,7 @@ struct PredictionServiceHoldbackProbabilityTestCase {
   std::string test_name;
   std::string holdback_probability;
   bool should_expect_quiet_ui;
-  PermissionUmaUtil::PredictionGrantLikelihood prediction_service_likelihood;
+  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
 };
 
 class PredictionServiceHoldbackBrowserTest
@@ -497,7 +497,7 @@ struct HoldbackProbabilityTestCase {
   // will return unspecified.
   float max_likely_threshold;
   bool should_expect_quiet_ui;
-  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<PermissionUiSelector::PredictionGrantLikelihood>
       expected_prediction_likelihood;
 };
 
@@ -526,7 +526,7 @@ class SignatureModelPredictionServiceBrowserTest
       PermissionAction permission_action,
       bool should_expect_quiet_ui,
       std::optional<PermissionRequestRelevance> expected_relevance,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           expected_prediction_likelihood) {
     // We need 4 prompts for the CPSS to kick in on the next prompt.
     // This behaviour is defined by kRequestedPermissionMinimumHistoricalActions
@@ -641,7 +641,7 @@ struct ModelMetadata {
   // test).
   // It should define the decision shared with the permission request
   // manager.
-  PermissionUmaUtil::PredictionGrantLikelihood prediction_service_likelihood;
+  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
   bool should_expect_quiet_ui;
   int success_count_model_execution;
 };

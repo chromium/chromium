@@ -9,7 +9,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/permission_uma_util.h"
+#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "components/permissions/request_type.h"
 
 namespace content {
 class WebContents;
@@ -27,6 +28,9 @@ class PermissionRequest;
 // can support multiple requests, but only one at a time.
 class PermissionUiSelector {
  public:
+  using PredictionGrantLikelihood =
+      PermissionPrediction_Likelihood_DiscretizedLikelihood;
+
   enum class QuietUiReason {
     kEnabledInPrefs,
     kTriggeredByCrowdDeny,
@@ -97,7 +101,7 @@ class PermissionUiSelector {
   // Will return the selector's discretized prediction value, if any is
   // applicable to be recorded in UKMs. This is specific only to a selector that
   // uses of the Web Permission Predictions Service to make decisions.
-  virtual std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  virtual std::optional<PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM();
 
   // Will return the selector's discretized permission request relevance, if any

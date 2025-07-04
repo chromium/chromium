@@ -103,7 +103,7 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
 }
 
 bool ShouldPredictionTriggerQuietUi(
-    PermissionUmaUtil::PredictionGrantLikelihood likelihood) {
+    permissions::PermissionUiSelector::PredictionGrantLikelihood likelihood) {
   return likelihood == VeryUnlikely;
 }
 
@@ -439,7 +439,7 @@ bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
          request_type == permissions::RequestType::kGeolocation;
 }
 
-std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
 PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }

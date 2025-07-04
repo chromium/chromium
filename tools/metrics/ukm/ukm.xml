@@ -19684,7 +19684,7 @@ be describing additional metrics about the same event.
   <metric name="PredictionsApiResponse.GrantLikelihood"
       enum="PredictionGrantLikelihood">
     <summary>
-      An enum of type PermissionUmaUtil::PredictionGrantLikelihood describing
+      An enum of type PermissionUiSelector::PredictionGrantLikelihood describing
       the likelihood returned by the Web Permission Predictions Service, if the
       service was successfully queried.
     </summary>

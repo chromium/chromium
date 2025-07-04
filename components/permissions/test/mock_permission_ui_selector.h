@@ -19,7 +19,7 @@ class MockPermissionUiSelector : public permissions::PermissionUiSelector {
 
   ~MockPermissionUiSelector() override = default;
 
-  std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
       last_request_grant_likelihood_;
   std::optional<permissions::PermissionRequestRelevance>
       last_permission_request_relevance_;
@@ -34,7 +34,7 @@ class MockPermissionUiSelector : public permissions::PermissionUiSelector {
   bool IsPermissionRequestSupported(
       permissions::RequestType request_type) override;
 
-  std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM() override;
 
   std::optional<permissions::PermissionRequestRelevance>

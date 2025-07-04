@@ -237,7 +237,7 @@ class PermissionRequestManager
     current_request_first_display_time_ = time;
   }
 
-  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<PermissionUiSelector::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() const {
     return prediction_grant_likelihood_;
   }
@@ -542,7 +542,7 @@ class PermissionRequestManager
 
   // The likelihood value returned by the Web Permission Predictions Service,
   // to be recorded in UKM.
-  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<PermissionUiSelector::PredictionGrantLikelihood>
       prediction_grant_likelihood_;
 
   // The permission request relevance returned by an on-device ML model,

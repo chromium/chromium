@@ -17,7 +17,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
 #include "url/gurl.h"
@@ -609,9 +609,6 @@ enum class DismissalType {
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
-  using PredictionGrantLikelihood =
-      PermissionPrediction_Likelihood_DiscretizedLikelihood;
-
   static const char kPermissionsPromptShown[];
   static const char kPermissionsPromptShownGesture[];
   static const char kPermissionsPromptShownNoGesture[];
@@ -699,7 +696,8 @@ class PermissionUmaUtil {
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
-      std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
+          predicted_grant_likelihood,
       std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back,
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
@@ -941,7 +939,8 @@ class PermissionUmaUtil {
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
-      std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
+          predicted_grant_likelihood,
       std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<bool> prediction_decision_held_back);
 

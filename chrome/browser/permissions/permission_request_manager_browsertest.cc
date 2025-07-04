@@ -62,7 +62,7 @@
 
 namespace {
 using PredictionGrantLikelihood =
-    permissions::PermissionUmaUtil::PredictionGrantLikelihood;
+    permissions::PermissionUiSelector::PredictionGrantLikelihood;
 using ::permissions::PermissionRequestRelevance;
 using ::testing::Optional;
 

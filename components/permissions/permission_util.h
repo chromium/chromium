@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/permission_result.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"

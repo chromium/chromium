@@ -58,7 +58,7 @@ class PredictionBasedPermissionUiSelector
   };
 
   using PredictionGrantLikelihood =
-      permissions::PermissionUmaUtil::PredictionGrantLikelihood;
+      permissions::PermissionUiSelector::PredictionGrantLikelihood;
   // Constructs an instance in the context of the given |profile|.
   explicit PredictionBasedPermissionUiSelector(Profile* profile);
   ~PredictionBasedPermissionUiSelector() override;

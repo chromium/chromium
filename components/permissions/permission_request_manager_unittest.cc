@@ -946,7 +946,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
  public:
   explicit MockNotificationPermissionUiSelector(
       std::optional<QuietUiReason> quiet_ui_reason,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           prediction_likelihood,
       std::optional<base::TimeDelta> async_delay)
       : quiet_ui_reason_(quiet_ui_reason),
@@ -972,7 +972,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
            request_type == RequestType::kGeolocation;
   }
 
-  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<PermissionUiSelector::PredictionGrantLikelihood>
   PredictedGrantLikelihoodForUKM() override {
     return prediction_likelihood_;
   }
@@ -981,7 +981,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
       PermissionRequestManager* manager,
       std::optional<QuietUiReason> quiet_ui_reason,
       std::optional<base::TimeDelta> async_delay,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           prediction_likelihood = std::nullopt) {
     manager->add_permission_ui_selector_for_testing(
         std::make_unique<MockNotificationPermissionUiSelector>(
@@ -992,7 +992,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
 
  private:
   std::optional<QuietUiReason> quiet_ui_reason_;
-  std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+  std::optional<PermissionUiSelector::PredictionGrantLikelihood>
       prediction_likelihood_;
   std::optional<base::TimeDelta> async_delay_;
   bool selected_ui_to_use_ = false;
@@ -1005,7 +1005,7 @@ class MockCameraStreamPermissionUiSelector
  public:
   explicit MockCameraStreamPermissionUiSelector(
       std::optional<QuietUiReason> quiet_ui_reason,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           prediction_likelihood,
       std::optional<base::TimeDelta> async_delay)
       : MockNotificationPermissionUiSelector(quiet_ui_reason,
@@ -1020,7 +1020,7 @@ class MockCameraStreamPermissionUiSelector
       PermissionRequestManager* manager,
       std::optional<QuietUiReason> quiet_ui_reason,
       std::optional<base::TimeDelta> async_delay,
-      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           prediction_likelihood = std::nullopt) {
     manager->add_permission_ui_selector_for_testing(
         std::make_unique<MockCameraStreamPermissionUiSelector>(
@@ -1233,7 +1233,7 @@ TEST_F(PermissionRequestManagerTest, MultipleUiSelectors) {
 }
 
 TEST_F(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
-  using PredictionLikelihood = PermissionUmaUtil::PredictionGrantLikelihood;
+  using PredictionLikelihood = PermissionUiSelector::PredictionGrantLikelihood;
   const auto VeryLikely = PredictionLikelihood::
       PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
   const auto Neutral = PredictionLikelihood::

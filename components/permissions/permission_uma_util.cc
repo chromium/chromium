@@ -305,7 +305,7 @@ void RecordPermissionActionUkm(
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
     std::optional<bool> has_three_consecutive_denies,
     std::optional<bool> has_previously_revoked_permission,
-    std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+    std::optional<PermissionUiSelector::PredictionGrantLikelihood>
         predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
     PredictionRequestFeatures::ActionCounts
@@ -963,7 +963,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
-    std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    std::optional<PermissionUiSelector::PredictionGrantLikelihood>
+        predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
     std::optional<bool> prediction_decision_held_back,
     std::optional<permissions::PermissionIgnoredReason> ignored_reason,
@@ -1251,7 +1252,8 @@ void PermissionUmaUtil::RecordPermissionAction(
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
-    std::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    std::optional<PermissionUiSelector::PredictionGrantLikelihood>
+        predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
     std::optional<bool> prediction_decision_held_back) {
   DCHECK(PermissionUtil::IsPermission(permission));

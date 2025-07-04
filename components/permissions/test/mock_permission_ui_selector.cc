@@ -17,7 +17,7 @@ bool MockPermissionUiSelector::IsPermissionRequestSupported(
          request_type == permissions::RequestType::kGeolocation;
 }
 
-std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
 MockPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }

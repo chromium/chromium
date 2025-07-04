@@ -43,7 +43,7 @@ PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
   return Decision(UseNormalUi(), ShowNoWarning());
 }
 
-std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+std::optional<PermissionUiSelector::PredictionGrantLikelihood>
 PermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return std::nullopt;
 }
