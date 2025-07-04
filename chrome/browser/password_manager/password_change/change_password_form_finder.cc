@@ -24,7 +24,7 @@ namespace {
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto options = optimization_guide::ActionableAIPageContentOptions();
+  auto options = optimization_guide::DefaultAIPageContentOptions();
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
