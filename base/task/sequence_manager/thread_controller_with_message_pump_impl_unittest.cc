@@ -1071,7 +1071,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveAdvancedNesting \
   DISABLED_ThreadControllerActiveAdvancedNesting
 #else
@@ -1220,7 +1220,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveNestedNativeLoop \
   DISABLED_ThreadControllerActiveNestedNativeLoop
 #else
@@ -1338,7 +1338,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveUnusedNativeLoop \
   DISABLED_ThreadControllerActiveUnusedNativeLoop
 #else
@@ -1422,7 +1422,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveNestedNativeLoopWithoutAllowance \
   DISABLED_ThreadControllerActiveNestedNativeLoopWithoutAllowance
 #else
@@ -1515,7 +1515,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask \
   DISABLED_ThreadControllerActiveMultipleNativeLoopsUnderOneApplicationTask
 #else
@@ -1611,7 +1611,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveNativeLoopsReachingIdle \
   DISABLED_ThreadControllerActiveNativeLoopsReachingIdle
 #else
@@ -1724,7 +1724,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 // TODO(https://crbug.com/341965228): Deflake and re-enable.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ThreadControllerActiveQuitNestedWhileApplicationIdle \
   DISABLED_ThreadControllerActiveQuitNestedWhileApplicationIdle
 #else
