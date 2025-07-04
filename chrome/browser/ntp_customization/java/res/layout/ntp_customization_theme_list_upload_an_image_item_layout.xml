@@ -40,6 +40,6 @@ found in the LICENSE file.
       android:importantForAccessibility="no"
       app:tint="@color/default_icon_color_tint_list"
       android:src="@drawable/ic_check_googblue_24dp"
-      android:visibility="gone"/>
+      android:visibility="invisible"/>
 
 </org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView>

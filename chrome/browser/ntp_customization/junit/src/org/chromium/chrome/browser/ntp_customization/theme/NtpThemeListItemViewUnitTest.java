@@ -57,6 +57,6 @@ public class NtpThemeListItemViewUnitTest {
 
         mTrailingIcon.setVisibility(View.VISIBLE);
         mNtpThemeListItemView.setTrailingIconVisibility(false);
-        assertEquals(View.GONE, mTrailingIcon.getVisibility());
+        assertEquals(View.INVISIBLE, mTrailingIcon.getVisibility());
     }
 }

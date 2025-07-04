@@ -36,7 +36,7 @@ public class NtpThemeListItemView extends LinearLayout {
         if (visible) {
             ntpThemeListItemTrailingIcon.setVisibility(View.VISIBLE);
         } else {
-            ntpThemeListItemTrailingIcon.setVisibility(View.GONE);
+            ntpThemeListItemTrailingIcon.setVisibility(View.INVISIBLE);
         }
     }
 }
