@@ -348,6 +348,8 @@ bool ShowPredictions(const WebDocument& document,
           option_labels,
           "\noption values: ",
           option_values,
+          "\nax node id: ",
+          base::NumberToString(field_data.form_control_ax_id()),
       });
     }
 
