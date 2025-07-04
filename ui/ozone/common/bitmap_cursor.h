@@ -60,6 +60,7 @@ class BitmapCursor : public PlatformCursor {
 
   // For theme cursors.
   void* platform_data() { return platform_data_; }
+  void clear_platform_data() { platform_data_ = nullptr; }
 
   float cursor_image_scale_factor() const { return cursor_image_scale_factor_; }
 
@@ -74,7 +75,7 @@ class BitmapCursor : public PlatformCursor {
 
   // Platform cursor data.  Having this non-nullptr means that this cursor
   // is supplied by the platform.
-  const raw_ptr<void> platform_data_ = nullptr;
+  raw_ptr<void> platform_data_ = nullptr;
 
   float cursor_image_scale_factor_ = 1.f;
 };

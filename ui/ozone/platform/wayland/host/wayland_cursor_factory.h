@@ -96,6 +96,8 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   class ThemeData {
    public:
     using Callback = base::OnceCallback<void(wl_cursor_theme*)>;
+    using TypeCursorCache =
+        base::flat_map<mojom::CursorType, scoped_refptr<WaylandAsyncCursor>>;
 
     ThemeData();
     ~ThemeData();
@@ -107,11 +109,12 @@ class WaylandCursorFactory : public BitmapCursorFactory,
 
     wl_cursor_theme* theme() { return theme_.get(); }
 
-    base::flat_map<mojom::CursorType, scoped_refptr<WaylandAsyncCursor>> cache;
+    TypeCursorCache& cache() { return cache_; }
 
    private:
     bool loaded_ = false;
     wl::Object<wl_cursor_theme> theme_;
+    TypeCursorCache cache_;
     std::vector<Callback> callbacks_;
     base::WeakPtrFactory<ThemeData> weak_factory_{this};
   };

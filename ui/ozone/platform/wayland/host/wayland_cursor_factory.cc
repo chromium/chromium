@@ -38,7 +38,12 @@ float GetRoundedScale(float scale) {
 
 WaylandCursorFactory::ThemeData::ThemeData() = default;
 
-WaylandCursorFactory::ThemeData::~ThemeData() = default;
+WaylandCursorFactory::ThemeData::~ThemeData() {
+  for (auto& [cursor_type, cursor] : cache()) {
+    // Avoids Dangling raw_ptr of wl_cursor*.
+    cursor->bitmap_cursor()->clear_platform_data();
+  }
+}
 
 void WaylandCursorFactory::ThemeData::AddThemeLoadedCallback(
     Callback callback) {
@@ -159,14 +164,14 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
     float scale) {
   auto* const current_theme = GetThemeForScale(scale);
   DCHECK(current_theme);
-  if (current_theme->cache.count(type) == 0) {
+  if (current_theme->cache().count(type) == 0) {
     auto async_cursor = base::MakeRefCounted<WaylandAsyncCursor>();
-    current_theme->cache[type] = async_cursor;
+    current_theme->cache()[type] = async_cursor;
     current_theme->AddThemeLoadedCallback(
         base::BindOnce(&WaylandCursorFactory::FinishCursorLoad,
                        weak_factory_.GetWeakPtr(), async_cursor, type, scale));
   }
-  return current_theme->cache[type];
+  return current_theme->cache()[type];
 }
 
 wl_cursor* WaylandCursorFactory::GetCursorFromTheme(wl_cursor_theme* theme,
@@ -202,7 +207,7 @@ void WaylandCursorFactory::OnCursorBufferAttached(wl_cursor* cursor_data) {
     return;
   }
   for (auto& item : *theme_cache_) {
-    for (auto& subitem : item.second->cache) {
+    for (auto& subitem : item.second->cache()) {
       auto bitmap_cursor = subitem.second->bitmap_cursor();
       if (bitmap_cursor && bitmap_cursor->platform_data() == cursor_data) {
         // The cursor that has been just attached is from the current theme.
@@ -247,7 +252,7 @@ WaylandCursorFactory::ThemeData* WaylandCursorFactory::GetThemeForScale(
 void WaylandCursorFactory::FlushThemeCache(bool force) {
   size_t num_cursor_objects = 0;
   for (auto& entry : *theme_cache_) {
-    num_cursor_objects += entry.second->cache.size();
+    num_cursor_objects += entry.second->cache().size();
   }
   if (force) {
     unloaded_theme_.reset();
@@ -275,6 +280,8 @@ void WaylandCursorFactory::FinishThemeLoad(base::WeakPtr<ThemeData> cache_entry,
   // have to be cautious when we actually load the shape.
   if (cache_entry) {
     cache_entry->SetLoadedTheme(loaded_theme);
+  } else {
+    wl_cursor_theme_destroy(loaded_theme);
   }
 }
 
