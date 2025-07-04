@@ -1417,12 +1417,450 @@ TEST_F(LocalCaretRectTest, VerticalImage) {
                 Position::AfterNode(img), TextAffinity::kDownstream)));
 }
 
+TEST_F(LocalCaretRectTest, TextAndImageVlr) {
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable style='writing-mode: vertical-lr; font: 10px/10px "
+      "Ahem; width: "
+      "30px'>"
+      "X"
+      "<img id=img width=10px height=10px, style='vertical-align: text-bottom'>"
+      "p</div>");
+
+  const Element& img = *GetElementById("img");
+  const Node* text1 = img.previousSibling();
+  const Node* text2 = img.nextSibling();
+
+  // bar
+  EXPECT_EQ(LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text1, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position::BeforeNode(img), TextAffinity::kDownstream)));
+  EXPECT_EQ(LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position::AfterNode(img), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 20, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 29, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, TextAndImageSidewaysLr) {
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable style='writing-mode: sideways-lr; font: 10px/10px "
+      "Ahem; width: "
+      "30px'>"
+      "X"
+      "<img id=img width=10px height=10px, style='vertical-align: text-bottom'>"
+      "p</div>");
+
+  const Element& img = *GetElementById("img");
+  const Node* text1 = img.previousSibling();
+  const Node* text2 = img.nextSibling();
+
+  // bar
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 20, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 20, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position::BeforeNode(img), TextAffinity::kDownstream)));
+  EXPECT_EQ(LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position::AfterNode(img), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 0, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position(text2, 1), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 10, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, -9, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(9, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(9, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(9, 10, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(10, -9, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(9, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(9, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, TextAndImageVrl) {
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable style='writing-mode: vertical-rl; font: 10px/10px "
+      "Ahem; width: "
+      "30px'>"
+      "X"
+      "<img id=img width=10px height=10px, style='vertical-align: text-bottom'>"
+      "p</div>");
+
+  const Element& img = *GetElementById("img");
+  const Node* text1 = img.previousSibling();
+  const Node* text2 = img.nextSibling();
+
+  // bar
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position::BeforeNode(img), TextAffinity::kDownstream)));
+  EXPECT_EQ(LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position::AfterNode(img), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
+TEST_F(LocalCaretRectTest, TextAndImageSidewaysRl) {
+  LoadAhem();
+  SetBodyContent(
+      "<div contenteditable style='writing-mode: sideways-rl; font: 10px/10px "
+      "Ahem; width: "
+      "30px'>"
+      "X"
+      "<img id=img width=10px height=10px, style='vertical-align: text-bottom'>"
+      "p</div>");
+
+  const Element& img = *GetElementById("img");
+  const Node* text1 = img.previousSibling();
+  const Node* text2 = img.nextSibling();
+
+  // bar
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(
+          Position::BeforeNode(img), TextAffinity::kDownstream)));
+  EXPECT_EQ(LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+            LocalCaretRectOfPosition(PositionWithAffinity(
+                Position::AfterNode(img), TextAffinity::kDownstream)));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream)));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(0, 9, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(20, 10, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(-1, 9, 1, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 29, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+}
+
 TEST_F(LocalCaretRectTest, TextAndImageMixedHeight) {
   // This test only records the current behavior. Future changes are allowed.
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='font: 10px/10px Ahem; width: 30px'>"
+      "<div contenteditable id=div style='font: 10px/10px Ahem; width: 30px'>"
       "X"
       "<img id=img width=10px height=5px style='vertical-align: text-bottom'>"
       "p</div>");
@@ -1431,6 +1869,7 @@ TEST_F(LocalCaretRectTest, TextAndImageMixedHeight) {
   const Node* text1 = img.previousSibling();
   const Node* text2 = img.nextSibling();
 
+  // bar
   EXPECT_EQ(LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
                 Position(text1, 0), TextAffinity::kDownstream)));
@@ -1455,6 +1894,74 @@ TEST_F(LocalCaretRectTest, TextAndImageMixedHeight) {
       LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream)));
+
+  // block
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(10, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(9, -5, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kBlock));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(29, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kBlock));
+
+  // underscore
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text1, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text1->GetLayoutObject(), PhysicalRect(10, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::BeforeNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(img.GetLayoutObject(), PhysicalRect(9, 4, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(img),
+                                                    TextAffinity::kDownstream),
+                               CaretShape::kUnderscore));
+
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(20, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 0), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text2->GetLayoutObject(), PhysicalRect(29, 9, 10, 1)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text2, 1), TextAffinity::kDownstream),
+          CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, FloatFirstLetter) {
@@ -2034,16 +2541,35 @@ TEST_F(LocalCaretRectTest, BidiTextWithImage) {
   InsertStyleElement(
       "div { font: 10px/10px Ahem; width: 30px }"
       "img { width: 10px; height: 10px; vertical-align: bottom }");
-  SetBodyContent("<div dir=rtl>X<img id=image>Y</div>");
+  SetBodyContent("<div contenteditable dir=rtl>X<img id=image>Y</div>");
   const Element& image = *GetElementById("image");
   const LayoutObject* image_layout = image.GetLayoutObject();
   const LayoutObject* text_before = image.previousSibling()->GetLayoutObject();
+  // bar
   EXPECT_EQ(LocalCaretRect(text_before, PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOfPosition(
                 PositionWithAffinity(Position::BeforeNode(image))));
   EXPECT_EQ(LocalCaretRect(image_layout, PhysicalRect(9, 0, 1, 10)),
             LocalCaretRectOfPosition(
                 PositionWithAffinity(Position::AfterNode(image))));
+  // block
+  EXPECT_EQ(LocalCaretRect(text_before, PhysicalRect(10, 0, 10, 10)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position::BeforeNode(image)),
+                CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(image_layout, PhysicalRect(9, 0, 10, 10)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(image)),
+                               CaretShape::kBlock));
+  // underscore
+  EXPECT_EQ(LocalCaretRect(text_before, PhysicalRect(10, 9, 10, 1)),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(Position::BeforeNode(image)),
+                CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(image_layout, PhysicalRect(9, 9, 10, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(image)),
+                               CaretShape::kUnderscore));
 }
 
 // https://crbug.com/876044
