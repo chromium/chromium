@@ -26,8 +26,12 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_bwg_session_active_in_background_`.
   bool GetIsBwgSessionActiveInBackground();
 
+  // Whether BWG should show the zero-state UI for the current Web State and
+  // visible URL.
+  bool ShouldShowZeroState();
+
   // Creates, or updates, a new BWG session in storage with the current
-  // timestamp for the associated WebState.
+  // timestamp, server ID and URL for the associated WebState.
   void CreateOrUpdateBwgSessionInStorage(std::string server_id);
 
   // Removes the associated WebState's session from storage.
@@ -61,6 +65,10 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Removes the BWG session from the prefs.
   void CleanupSessionFromPrefs(std::string session_id);
+
+  // Gets the associated WebState's visible URL during the last interaction, if
+  // present and not expired, from storage.
+  std::optional<std::string> GetURLOnLastInteraction();
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;

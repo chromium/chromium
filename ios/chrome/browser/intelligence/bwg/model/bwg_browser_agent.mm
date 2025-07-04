@@ -71,9 +71,9 @@ void BwgBrowserAgent::PresentBwgOverlay(
   std::optional<std::string> maybe_server_id = bwg_tab_helper->GetServerId();
   config.serverID =
       maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
-
   config.shouldAnimatePresentation =
       !bwg_tab_helper->GetIsBwgSessionActiveInBackground();
+  config.shouldShowZeroState = bwg_tab_helper->ShouldShowZeroState();
 
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {

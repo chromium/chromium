@@ -20,4 +20,8 @@ extern const char kLastInteractionTimestampDictKey[];
 // Session map dictionary key for the server ID.
 extern const char kServerIDDictKey[];
 
+// Session map dictionary key for the visible URL during the last BWG
+// interaction.
+extern const char kURLOnLastInteractionDictKey[];
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_BWG_CONSTANTS_H_

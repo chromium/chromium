@@ -58,6 +58,9 @@ class PageContext;
 // Whether to animate the presentation of the BWG UI.
 @property(nonatomic, assign) BOOL shouldAnimatePresentation;
 
+// Whether the zero-state UI should be shown.
+@property(nonatomic, assign) BOOL shouldShowZeroState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_CONFIGURATION_H_

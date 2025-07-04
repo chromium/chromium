@@ -7,6 +7,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/google/core/common/google_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
@@ -17,9 +18,48 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/util/content_type_util.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Gets the session dictionary for `cliend_id` from `profile`'s prefs, if the
+// session is not expired.
+std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
+    std::string client_id,
+    ProfileIOS* profile) {
+  const base::Value::Dict& sessions_map =
+      profile->GetPrefs()->GetDict(prefs::kBwgSessionMap);
+  if (sessions_map.empty()) {
+    return std::nullopt;
+  }
+
+  const base::Value::Dict* current_session_dict =
+      sessions_map.FindDict(client_id);
+  if (!current_session_dict) {
+    return std::nullopt;
+  }
+
+  std::optional<double> creation_timestamp =
+      current_session_dict->FindInt(kLastInteractionTimestampDictKey);
+  if (!creation_timestamp) {
+    return std::nullopt;
+  }
+
+  // Return the session dict if it hasn't yet expired.
+  int64_t latest_valid_timestamp =
+      base::Time::Now().InMillisecondsSinceUnixEpoch() -
+      BWGSessionValidityDuration().InMilliseconds();
+  if (*creation_timestamp > latest_valid_timestamp) {
+    return current_session_dict;
+  }
+
+  return std::nullopt;
+}
+
+}  // namespace
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   web_state_observation_.Observe(web_state);
@@ -37,6 +77,18 @@ void BwgTabHelper::SetBwgUiShowing(bool showing) {
 
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
+}
+
+bool BwgTabHelper::ShouldShowZeroState() {
+  bool is_srp = google_util::IsGoogleSearchUrl(web_state_->GetVisibleURL());
+
+  std::optional<std::string> last_interaction_url = GetURLOnLastInteraction();
+  if (!last_interaction_url.has_value()) {
+    return !is_srp;
+  }
+
+  return !is_srp && !web_state_->GetVisibleURL().EqualsIgnoringRef(
+                        GURL(last_interaction_url.value()));
 }
 
 void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
@@ -71,32 +123,17 @@ std::string BwgTabHelper::GetClientId() {
 }
 
 std::optional<std::string> BwgTabHelper::GetServerId() {
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  std::string unique_identifier_string = GetClientId();
-
-  const base::Value::Dict& session_map =
-      profile->GetPrefs()->GetDict(prefs::kBwgSessionMap);
-  const base::Value::Dict* current_session_dict =
-      session_map.FindDict(unique_identifier_string);
-
-  if (!current_session_dict) {
+  std::optional<const base::Value::Dict*> session_dict =
+      GetSessionDictFromPrefs(
+          GetClientId(),
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+  if (!session_dict.has_value()) {
     return std::nullopt;
   }
 
-  std::optional<double> creation_timestamp =
-      current_session_dict->FindInt(kLastInteractionTimestampDictKey);
   const std::string* server_id =
-      current_session_dict->FindString(kServerIDDictKey);
-  if (!creation_timestamp || !server_id) {
-    return std::nullopt;
-  }
-
-  // Return the server ID if it hasn't yet expired, otherwise clean it up.
-  int64_t latest_valid_timestamp =
-      base::Time::Now().InMillisecondsSinceUnixEpoch() -
-      BWGSessionValidityDuration().InMilliseconds();
-  if (*creation_timestamp > latest_valid_timestamp) {
+      session_dict.value()->FindString(kServerIDDictKey);
+  if (server_id) {
     return *server_id;
   }
 
@@ -141,6 +178,8 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
   session_info_dict.Set(
       kLastInteractionTimestampDictKey,
       static_cast<double>(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+  session_info_dict.Set(kURLOnLastInteractionDictKey,
+                        web_state_->GetVisibleURL().spec());
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
@@ -157,4 +196,22 @@ void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
   update->Remove(session_id);
+}
+
+std::optional<std::string> BwgTabHelper::GetURLOnLastInteraction() {
+  std::optional<const base::Value::Dict*> session_dict =
+      GetSessionDictFromPrefs(
+          GetClientId(),
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+  if (!session_dict.has_value()) {
+    return std::nullopt;
+  }
+
+  const std::string* last_interaction_url =
+      session_dict.value()->FindString(kURLOnLastInteractionDictKey);
+  if (last_interaction_url) {
+    return *last_interaction_url;
+  }
+
+  return std::nullopt;
 }

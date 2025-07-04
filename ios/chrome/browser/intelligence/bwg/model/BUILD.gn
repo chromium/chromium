@@ -51,7 +51,8 @@ source_set("tab_helper") {
   ]
   deps = [
     ":bwg_service",
-    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    ":bwg_service_factory",
+    "//components/google/core/common",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
