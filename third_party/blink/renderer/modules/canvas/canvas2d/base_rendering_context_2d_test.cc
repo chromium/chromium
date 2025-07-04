@@ -91,7 +91,7 @@ class TestRenderingContext2D final
   int Width() const override { return 300; }
   int Height() const override { return 300; }
 
-  bool CanCreateCanvas2dResourceProvider() const override { return false; }
+  bool CanCreateCanvas2dResourceProvider() override { return false; }
 
   RespectImageOrientationEnum RespectImageOrientation() const override {
     return kRespectImageOrientation;

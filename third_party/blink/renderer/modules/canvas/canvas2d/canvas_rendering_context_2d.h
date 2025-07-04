@@ -181,7 +181,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   int Width() const final;
   int Height() const final;
 
-  bool CanCreateCanvas2dResourceProvider() const final;
+  bool CanCreateCanvas2dResourceProvider() final;
 
   RespectImageOrientationEnum RespectImageOrientation() const final;
 

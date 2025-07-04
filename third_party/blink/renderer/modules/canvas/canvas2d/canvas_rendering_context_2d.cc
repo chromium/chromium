@@ -640,7 +640,7 @@ int CanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
-bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
+bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
   return canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 

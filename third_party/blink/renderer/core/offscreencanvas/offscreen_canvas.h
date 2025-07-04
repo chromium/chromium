@@ -204,6 +204,15 @@ class CORE_EXPORT OffscreenCanvas final
 
   void Trace(Visitor*) const override;
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsRenderingContext2D());
+    CHECK(!resource_provider_for_canvas2d_);
+    resource_provider_for_canvas2d_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
   class ScopedInsideWorkerRAF {
     STACK_ALLOCATED();
 
@@ -260,15 +269,6 @@ class CORE_EXPORT OffscreenCanvas final
 
   void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
                                    const IdentifiableToken& token) const;
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsRenderingContext2D());
-    CHECK(!resource_provider_for_canvas2d_);
-    resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
 
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
