@@ -349,10 +349,15 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
   std::erase_if(vector, is_unknown);
 
   // Grab a memory dump for all processes.
-  memory_instrumentation::MemoryInstrumentation::GetInstance()
-      ->RequestPrivateMemoryFootprint(
-          base::kNullProcessId,
-          base::BindOnce(&MemoryDetails::DidReceiveMemoryDump, this));
+  auto* memory_instrumentation =
+      memory_instrumentation::MemoryInstrumentation::GetInstance();
+  if (memory_instrumentation) {
+    memory_instrumentation->RequestPrivateMemoryFootprint(
+        base::kNullProcessId,
+        base::BindOnce(&MemoryDetails::DidReceiveMemoryDump, this));
+  } else {
+    DidReceiveMemoryDump(false, nullptr);
+  }
 }
 
 void MemoryDetails::DidReceiveMemoryDump(
