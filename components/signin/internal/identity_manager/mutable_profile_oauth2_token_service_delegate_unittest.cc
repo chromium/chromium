@@ -1262,9 +1262,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   {
     testing::InSequence sequence;
-    // `OnAuthErrorChanged()` is not called when a token is updated without
-    // changing its error state.
-    EXPECT_CALL(observer, OnAuthErrorChanged).Times(0);
+    // `OnAuthErrorChanged()` is also called when a token is updated.
+    EXPECT_CALL(
+        observer,
+        OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
+                           testing::_));
     EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     EXPECT_CALL(observer, OnEndBatchChanges());
 

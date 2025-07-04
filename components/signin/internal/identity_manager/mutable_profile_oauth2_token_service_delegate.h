@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/optional_ref.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -24,6 +25,7 @@
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "crypto/process_bound_string.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -232,13 +234,14 @@ class MutableProfileOAuth2TokenServiceDelegate
       bool should_reencrypt = false);
 
   // Updates the in-memory representation of the credentials.
-  void UpdateCredentialsInMemory(const CoreAccountId& account_id,
-                                 const std::string& refresh_token
+  void UpdateCredentialsInMemory(
+      const CoreAccountId& account_id,
+      const std::string& refresh_token,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                 ,
-                                 const std::vector<uint8_t>& wrapped_binding_key
+      const std::vector<uint8_t>& wrapped_binding_key,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+      base::optional_ref<const GoogleServiceAuthError> error_for_invalid_token =
+          std::nullopt);
 
   // Sets refresh token in error.
   void InvalidateTokenForMultilogin(
@@ -265,15 +268,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   void CancelWebTokenFetch();
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
-
-  // Creates a new AccountStatus and adds it to the AccountStatusMap.
-  // The account must not be already in the map.
-  void AddAccountStatus(const CoreAccountId& account_id,
-                        const std::string& refresh_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                        const std::vector<uint8_t>& wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                        const GoogleServiceAuthError& error);
 
   // Called at when tokens are loaded. Performs housekeeping tasks and notifies
   // the observers.

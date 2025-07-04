@@ -552,14 +552,19 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
           signin::LoadCredentialsState::
               LOAD_CREDENTIALS_FINISHED_WITH_NO_TOKEN_FOR_PRIMARY_ACCOUNT);
     }
-    AddAccountStatus(loading_primary_account_id_,
-                     GaiaConstants::kInvalidRefreshToken,
+    UpdateCredentialsInMemory(
+        loading_primary_account_id_, GaiaConstants::kInvalidRefreshToken,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     /*wrapped_binding_key=*/std::vector<uint8_t>(),
+        /*wrapped_binding_key=*/std::vector<uint8_t>(),
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                             CREDENTIALS_MISSING));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_MISSING));
+    // Always call `OnAuthErrorChanged()` when refresh token is updated.
+    // TODO(https://crbug.com/366067964): change the notification order to match
+    // the documentation.
+    FireAuthErrorChanged(loading_primary_account_id_,
+                         GetAuthError(loading_primary_account_id_));
     FireRefreshTokenAvailable(loading_primary_account_id_);
   }
 
@@ -662,6 +667,10 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
                                 wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       );
+      // Always call `OnAuthErrorChanged()` when refresh token is updated.
+      // TODO(https://crbug.com/366067964): change the notification order to
+      // match the documentation.
+      FireAuthErrorChanged(account_id, GetAuthError(account_id));
       FireRefreshTokenAvailable(account_id);
     } else {
       RevokeCredentialsOnServer(refresh_token);
@@ -705,30 +714,40 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
                        wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     );
+    // Always call `OnAuthErrorChanged()` when refresh token is updated.
+    // TODO(https://crbug.com/366067964): change the notification order to match
+    // the documentation.
+    FireAuthErrorChanged(account_id, GetAuthError(account_id));
     FireRefreshTokenAvailable(account_id);
   }
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
     const CoreAccountId& account_id,
-    const std::string& refresh_token
+    const std::string& refresh_token,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    ,
-    const std::vector<uint8_t>& wrapped_binding_key
+    const std::vector<uint8_t>& wrapped_binding_key,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-) {
+    base::optional_ref<const GoogleServiceAuthError> error_for_invalid_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!account_id.empty());
   DCHECK(!refresh_token.empty());
 
   bool is_refresh_token_invalidated =
       refresh_token == GaiaConstants::kInvalidRefreshToken;
-  GoogleServiceAuthError error =
-      is_refresh_token_invalidated
-          ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                    CREDENTIALS_REJECTED_BY_CLIENT)
-          : GoogleServiceAuthError::AuthErrorNone();
+  GoogleServiceAuthError error = [&] {
+    if (!is_refresh_token_invalidated) {
+      return GoogleServiceAuthError::AuthErrorNone();
+    }
+
+    if (error_for_invalid_token.has_value()) {
+      return *error_for_invalid_token;
+    }
+
+    return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+            CREDENTIALS_REJECTED_BY_CLIENT);
+  }();
 
   bool refresh_token_present = refresh_tokens_.count(account_id) > 0;
   // If token present, and different from the new one, cancel its requests,
@@ -752,24 +771,19 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
     if (is_refresh_token_invalidated) {
       RevokeCredentialsOnServer(refresh_tokens_.at(account_id).value());
     }
-
-    refresh_tokens_.insert_or_assign(account_id,
-                                     crypto::ProcessBoundString(refresh_token));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    if (token_binding_helper_) {
-      token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
-    }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    UpdateAuthError(account_id, error);
   } else {
     VLOG(1) << "MutablePO2TS::UpdateCredentials; Refresh Token was absent. "
             << "account_id=" << account_id;
-    AddAccountStatus(account_id, refresh_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     error);
   }
+
+  refresh_tokens_.insert_or_assign(account_id,
+                                   crypto::ProcessBoundString(refresh_token));
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (token_binding_helper_) {
+    token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  UpdateAuthError(account_id, error, /*fire_auth_error_changed=*/false);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::PersistCredentials(
@@ -930,25 +944,6 @@ bool MutableProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
   return !fix_request_error_callback_.is_null()
              ? fix_request_error_callback_.Run()
              : false;
-}
-
-void MutableProfileOAuth2TokenServiceDelegate::AddAccountStatus(
-    const CoreAccountId& account_id,
-    const std::string& refresh_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    const std::vector<uint8_t>& wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    const GoogleServiceAuthError& error) {
-  DCHECK_EQ(0u, refresh_tokens_.count(account_id));
-  refresh_tokens_.insert_or_assign(account_id,
-                                   crypto::ProcessBoundString(refresh_token));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (token_binding_helper_) {
-    token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
-  }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  UpdateAuthError(account_id, error, /*fire_auth_error_changed=*/false);
-  FireAuthErrorChanged(account_id, error);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::FinishLoadingCredentials() {
