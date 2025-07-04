@@ -915,7 +915,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2512101340618156538">No se permite (predeterminado)</translation>
 <translation id="2512413427717747692">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado en la configuración de iOS</translation>
 <translation id="2514548229949738417">Casa y jardín</translation>
-<translation id="2515629240566999685">Verificar la señal en tu área.</translation>
+<translation id="2515629240566999685">Verificar la señal en tu área</translation>
 <translation id="2515761554693942801">Elegiste realizar la verificación con Touch ID en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Esta tarjeta no está disponible. Comunícate con el proveedor de la tarjeta.</translation>
 <translation id="2519250377986324805">Más detalles</translation>
@@ -1628,7 +1628,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3713277100229669269">Ahora puedes ver los beneficios de la tarjeta antes de pagar</translation>
 <translation id="371420189621607696">Videojuegos competitivos</translation>
 <translation id="3714633008798122362">Calendario web</translation>
-<translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi.</translation>
+<translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{No se permite cargar el archivo}other{No se permite cargar <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3715597595485130451">Conectar a Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS<ph name="END_LINK" />.</translation>
@@ -4357,7 +4357,7 @@ Detalles adicionales:
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
-<translation id="8363502534493474904">Desactivar el modo avión.</translation>
+<translation id="8363502534493474904">Desactivar el modo avión</translation>
 <translation id="8363929499301563123">Cookies de sitios web (se conservará el estado de acceso en los sitios web visitados recientemente)</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
 <translation id="8366057325711477500">Noticias del mundo</translation>
