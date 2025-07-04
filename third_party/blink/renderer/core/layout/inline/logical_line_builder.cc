@@ -28,14 +28,16 @@ LogicalLineBuilder::LogicalLineBuilder(InlineNode node,
                                        const ConstraintSpace& constraint_space,
                                        const InlineBreakToken* break_token,
                                        InlineLayoutStateStack* state_stack,
-                                       InlineChildLayoutContext* context)
+                                       InlineChildLayoutContext* context,
+                                       bool should_scale_line_height)
     : node_(node),
       constraint_space_(constraint_space),
       break_token_(break_token),
       box_states_(state_stack),
       context_(context),
       baseline_type_(node.Style().GetFontBaseline()),
-      quirks_mode_(node.GetDocument().InLineHeightQuirksMode()) {}
+      quirks_mode_(node.GetDocument().InLineHeightQuirksMode()),
+      should_scale_line_height_(should_scale_line_height) {}
 
 void LogicalLineBuilder::CreateLine(LineInfo* line_info,
                                     LogicalLineItems* line_box,
@@ -51,7 +53,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
       node_, line_style, baseline_type_, quirks_mode_, line_box);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (main_line_helper) {
-    main_line_helper->CheckBoxStates(*line_info);
+    main_line_helper->CheckBoxStates(*line_info, should_scale_line_height_);
   }
 #endif
 
@@ -545,8 +547,11 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
                      /* on_end_edge */ false, annotation_line);
 
   auto* line_items = MakeGarbageCollected<LogicalLineItems>();
+  // text-grow and text-shrink don't support ruby annotations now.
+  constexpr bool kShouldScaleLineHeight = false;
   LogicalLineBuilder annotation_builder(node_, constraint_space_, nullptr,
-                                        &logical_column.state_stack, context_);
+                                        &logical_column.state_stack, context_,
+                                        kShouldScaleLineHeight);
   if (item_result.ruby_column->is_continuation &&
       !annotation_line.Results().empty()) {
     CHECK(break_token_->RubyData());

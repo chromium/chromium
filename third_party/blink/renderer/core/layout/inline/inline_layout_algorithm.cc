@@ -235,11 +235,13 @@ void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
   }
 }
 
-void ScaleLine(bool is_grow,
+// Returns true if LogicalLineBuilder needs to scale line-height.
+bool ScaleLine(bool is_grow,
                float scale_factor,
                bool is_scaled_inline_only,
                std::optional<float> limit,
                LineInfo& line_info) {
+  bool should_scale_line_height = false;
   for (auto& item : *line_info.MutableResults()) {
     if (item.item->Type() != InlineItem::kText) {
       continue;
@@ -256,20 +258,25 @@ void ScaleLine(bool is_grow,
       item.fit_text_scale.scale = scale_factor;
     }
     item.fit_text_scale.is_scaled_inline_only = is_scaled_inline_only;
+    if (item.fit_text_scale.scale != 1.0f) {
+      should_scale_line_height = true;
+    }
   }
+  return !is_scaled_inline_only && should_scale_line_height;
 }
 
 // Updates text scaling factor of InlineItemResults in `line_info`.
+// Returns true if LogicalLineBuilder needs to scale line-height.
 //
 // `NOINLINE` prevents the size growth in the fuchsia-binary-size bot.
-NOINLINE void FitLine(const InlineNode node, LineInfo& line_info) {
+NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
   LayoutUnit epsilon =
       LayoutUnit(2.0 * node.GetDocument().GetFrame()->DevicePixelRatio());
   LayoutUnit original_width = line_info.Width();
   LayoutUnit container_width = line_info.AvailableWidth();
   LayoutUnit diff = container_width - original_width;
   if (diff.Abs() < epsilon) {
-    return;
+    return false;
   }
   const FitText& text_grow = node.Style().TextGrow();
   const FitText& text_shrink = node.Style().TextShrink();
@@ -277,7 +284,7 @@ NOINLINE void FitLine(const InlineNode node, LineInfo& line_info) {
   bool apply_text_shrink = text_shrink.Target() == FitTextTarget::kPerLine;
   if ((diff > LayoutUnit() && !apply_text_grow) ||
       (diff < LayoutUnit() && !apply_text_shrink)) {
-    return;
+    return false;
   }
   const bool is_grow = diff > LayoutUnit();
   const FitText& fit_text = is_grow ? text_grow : text_shrink;
@@ -300,19 +307,18 @@ NOINLINE void FitLine(const InlineNode node, LineInfo& line_info) {
 
   switch (fit_text.Method()) {
     case FitTextMethod::kScale:
-      ScaleLine(is_grow, scale_factor,
-                /* is_scaled_inline_only */ false, limit, line_info);
-      break;
+      return ScaleLine(is_grow, scale_factor,
+                       /* is_scaled_inline_only */ false, limit, line_info);
 
     case FitTextMethod::kScaleInline:
-      ScaleLine(is_grow, scale_factor,
-                /* is_scaled_inline_only */ true, limit, line_info);
-      break;
+      return ScaleLine(is_grow, scale_factor,
+                       /* is_scaled_inline_only */ true, limit, line_info);
 
     case FitTextMethod::kFontSize:
     case FitTextMethod::kLetterSpacing:
       NOTREACHED();
   }
+  return false;
 }
 
 }  // namespace
@@ -345,6 +351,7 @@ InlineLayoutAlgorithm::~InlineLayoutAlgorithm() = default;
 // Prepare InlineLayoutStateStack for a new line.
 void InlineLayoutAlgorithm::PrepareBoxStates(
     const LineInfo& line_info,
+    bool should_scale_line_height,
     const InlineBreakToken* break_token) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   is_box_states_from_context_ = false;
@@ -374,7 +381,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
   // If not, rebuild the box states for the break token.
   box_states_ = context_->ResetBoxStates();
   LogicalLineBuilder(Node(), GetConstraintSpace(), nullptr, box_states_,
-                     context_)
+                     context_, should_scale_line_height)
       .RebuildBoxStates(line_info, 0u, break_token->StartItemIndex());
 }
 
@@ -389,12 +396,15 @@ static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info) {
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
-void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
+void InlineLayoutAlgorithm::CheckBoxStates(
+    const LineInfo& line_info,
+    bool should_scale_line_height) const {
   if (!is_box_states_from_context_) {
     return;
   }
   InlineLayoutStateStack rebuilt;
-  LogicalLineBuilder(Node(), GetConstraintSpace(), nullptr, &rebuilt, context_)
+  LogicalLineBuilder(Node(), GetConstraintSpace(), nullptr, &rebuilt, context_,
+                     should_scale_line_height)
       .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
@@ -429,11 +439,8 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
 
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
                                        LineInfo* line_info,
+                                       bool should_scale_line_height,
                                        LogicalLineContainer* line_container) {
-  if (apply_fit_text_) {
-    FitLine(Node(), *line_info);
-  }
-
   LogicalLineItems* line_box = &line_container->BaseLine();
   // Apply justification before placing items, because it affects size/position
   // of items, which are needed to compute inline static positions.
@@ -443,7 +450,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   line_container->Shrink();
 
   LogicalLineBuilder line_builder(Node(), GetConstraintSpace(), GetBreakToken(),
-                                  box_states_, context_);
+                                  box_states_, context_,
+                                  should_scale_line_height);
   line_builder.CreateLine(line_info, line_box, this);
 
   const LayoutUnit hang_width = line_info->HangWidth();
@@ -1418,9 +1426,13 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       // to overflow in that case.
     }
 
-    PrepareBoxStates(line_info, break_token);
+    bool should_scale_line_height =
+        apply_fit_text_ && FitLine(Node(), line_info);
 
-    CreateLine(line_opportunity, &line_info, line_container);
+    PrepareBoxStates(line_info, should_scale_line_height, break_token);
+
+    CreateLine(line_opportunity, &line_info, should_scale_line_height,
+               line_container);
     is_line_created = true;
     is_end_paragraph = line_info.IsEndParagraph();
 
