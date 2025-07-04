@@ -504,6 +504,10 @@ crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/unif
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
+crbug.com/428022626 [ mac angle-metal passthrough graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/428022626 [ mac angle-metal passthrough graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/428022626 [ mac angle-metal passthrough graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+
 ## Mac AMD failures ##
 
 # TODO(kbr): uncomment the following expectation after test has
