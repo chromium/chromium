@@ -1052,12 +1052,6 @@ TEST_F(WebSocketChannelEventInterfaceTest, ConnectFailureReported) {
                                                            std::nullopt);
 }
 
-TEST_F(WebSocketChannelEventInterfaceTest, NonWebSocketSchemeRejected) {
-  EXPECT_CALL(*event_interface_, OnFailChannel("Invalid scheme", _, _));
-  connect_data_.socket_url = GURL("http://www.google.com/");
-  CreateChannelAndConnect();
-}
-
 TEST_F(WebSocketChannelEventInterfaceTest, ProtocolPassed) {
   EXPECT_CALL(*event_interface_, OnAddChannelResponse(_, "Bob", ""));
 

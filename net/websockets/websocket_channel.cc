@@ -427,13 +427,8 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   DCHECK_EQ(FRESHLY_CONSTRUCTED, state_);
-  if (!socket_url.SchemeIsWSOrWSS()) {
-    // TODO(ricea): Kill the renderer (this error should have been caught by
-    // Javascript).
-    event_interface_->OnFailChannel("Invalid scheme", ERR_FAILED, std::nullopt);
-    // |this| is deleted here.
-    return;
-  }
+  CHECK(socket_url.SchemeIsWSOrWSS());
+
   socket_url_ = socket_url;
   auto connect_delegate = std::make_unique<ConnectDelegate>(this);
   stream_request_ = std::move(callback).Run(
