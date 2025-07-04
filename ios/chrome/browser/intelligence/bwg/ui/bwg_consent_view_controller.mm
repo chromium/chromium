@@ -54,8 +54,18 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 @end
 
 @implementation BWGConsentViewController {
-  // Main stack view containing all the others views.
+  // The root vertical stack view that arranges the UI sections of the
+  // screen. It holds the `_contentScrollView` and the
+  // fixed action buttons at the bottom. This view itself does not scroll.
   UIStackView* _mainStackView;
+  // A scroll view that contains the `_contentStackView`. This allows the main
+  // content (info boxes, footnote) to scroll vertically if it
+  // doesn't fit on the screen.
+  UIScrollView* _contentScrollView;
+  // The vertical stack view placed inside the `_contentScrollView`. It arranges
+  // the actual informational UI elements, such as the info boxes and the
+  // footnote, which are intended to be scrolled together.
+  UIStackView* _contentStackView;
   // Whether the account is managed.
   BOOL _isAccountManaged;
 }
@@ -75,7 +85,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
-  [self configureMainStackView];
+  [self setupStackViews];
 }
 
 #pragma mark - Public
@@ -83,10 +93,46 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 - (CGFloat)contentHeight {
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height +
+      [_contentStackView
+          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
 }
 
 #pragma mark - Private
+
+// Configures all the stacks.
+- (void)setupStackViews {
+  [self configureMainStackView];
+  [self configureContentViews];
+  [_mainStackView addArrangedSubview:_contentScrollView];
+  [self configureButtons];
+}
+
+// Configures the scrollable content area, including the scroll view and its
+// content stack view.
+- (void)configureContentViews {
+  _contentScrollView = [[UIScrollView alloc] init];
+  _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _contentScrollView.showsVerticalScrollIndicator = NO;
+
+  _contentStackView = [[UIStackView alloc] init];
+  _contentStackView.axis = UILayoutConstraintAxisVertical;
+  _contentStackView.spacing = kMainStackSpacing;
+  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [_contentScrollView addSubview:_contentStackView];
+
+  AddSameConstraints(_contentStackView, _contentScrollView);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_contentStackView.widthAnchor
+        constraintEqualToAnchor:_contentScrollView.widthAnchor]
+  ]];
+
+  [_contentStackView addArrangedSubview:[self createBoxesStackView]];
+  [_contentStackView addArrangedSubview:[self createFootnoteView]];
+}
 
 // TODO(crbug.com/423816346): Manage links for attributes strings.
 // Creates an attributed string for the footnote with hyperlinks.
@@ -149,8 +195,10 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
       _mainStackView, self.view.safeAreaLayoutGuide,
       NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
                                   kMainStackHorizontalInset));
-  [_mainStackView addArrangedSubview:[self createBoxesStackView]];
-  [_mainStackView addArrangedSubview:[self createFootnoteView]];
+}
+
+// Configures primary and secondary buttons.
+- (void)configureButtons {
   UIView* primaryButtonView = [self createPrimaryButton];
   [_mainStackView addArrangedSubview:primaryButtonView];
   [_mainStackView setCustomSpacing:0.0 afterView:primaryButtonView];
@@ -161,7 +209,6 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 - (UIStackView*)createBoxesStackView {
   UIStackView* boxesStackView = [[UIStackView alloc] init];
   boxesStackView.axis = UILayoutConstraintAxisVertical;
-  boxesStackView.distribution = UIStackViewDistributionFillProportionally;
   boxesStackView.spacing = kBoxesStackViewSpacing;
   boxesStackView.layer.cornerRadius = kBoxesStackViewCornerRadius;
   boxesStackView.clipsToBounds = YES;
@@ -218,7 +265,6 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 - (UIView*)createHorizontalBoxWithIcon:(UIImageView*)iconImageView
                                boxView:(UIView*)boxView {
   UIStackView* horizontalStackView = [[UIStackView alloc] init];
-  horizontalStackView.distribution = UIStackViewDistributionFillProportionally;
   horizontalStackView.alignment = UIStackViewAlignmentTop;
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStackView.backgroundColor =
@@ -274,14 +320,12 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
 
-  titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
 
   UILabel* bodyLabel = [[UILabel alloc] init];
   bodyLabel.text = bodyText;
   bodyLabel.font = PreferredFontForTextStyle(UIFontTextStyleBody);
-  bodyLabel.adjustsFontForContentSizeCategory = YES;
   bodyLabel.numberOfLines = 0;
   bodyLabel.textColor = [UIColor colorNamed:kGrey700Color];
   [innerStackView addArrangedSubview:bodyLabel];

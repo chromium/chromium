@@ -145,6 +145,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 - (void)configureContentStackView {
   _contentScrollView = [[UIScrollView alloc] init];
   _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _contentScrollView.showsVerticalScrollIndicator = NO;
 
   _contentStackView = [[UIStackView alloc] init];
   _contentStackView.axis = UILayoutConstraintAxisVertical;
