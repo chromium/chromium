@@ -398,6 +398,7 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
           DynamicTo<HTMLImageElement>(image_element)) {
     loading_attr =
         html_image_element->FastGetAttribute(html_names::kLoadingAttr);
+    value->SetString("nodeName", html_image_element->DebugName());
   }
   value->SetString("loadingAttr", loading_attr);
 
