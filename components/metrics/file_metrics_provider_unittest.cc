@@ -31,24 +31,21 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/metrics/fre_source_trial.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-
-#if !BUILDFLAG(IS_FUCHSIA)
-#include "base/test/scoped_feature_list.h"
-#include "components/metrics/fre_source_trial.h"
-#include "components/variations/variations_test_utils.h"
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 const char kMetricsName[] = "TestMetrics";
@@ -1394,7 +1391,6 @@ TEST_P(FileMetricsProviderTest, MetricsDisabledRegisterActiveFile) {
   EXPECT_TRUE(base::PathExists(metrics_file()));
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 class FileMetricsProviderFRETrialTest : public FileMetricsProviderTestBase {
  public:
   FileMetricsProviderFRETrialTest()
@@ -1525,6 +1521,5 @@ TEST_P(FileMetricsProviderFRETrialGroupsTest, FRETrialPostFRERun) {
 
   EXPECT_FALSE(base::PathExists(dir));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace metrics
