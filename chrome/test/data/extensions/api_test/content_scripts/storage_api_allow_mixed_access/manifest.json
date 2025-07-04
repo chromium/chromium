@@ -1,14 +1,13 @@
 {
-  "name": "content_script_storage_api_default_access",
+  "name": "content_script_storage_api_allow_untrusted_access",
   "version": "1.0",
   "manifest_version": 3,
-  "description": "Tests the Storage API behavior with default access level from a content script.",
+  "description": "Tests the Storage API behavior with mixed access level from a content script.",
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["scripting", "storage"],
-  "host_permissions": ["http://example.com/*"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["http://*/extensions/test_file.html"],
@@ -16,8 +15,7 @@
     },
     {
       "matches": ["http://example.com/*"],
-      "js": ["listener_script.js"],
-      "runAt": "document_end"
+      "js": ["listener_script.js"]
     }
   ]
 }

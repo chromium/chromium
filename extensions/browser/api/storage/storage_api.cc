@@ -113,15 +113,19 @@ bool SettingsFunction::PreRunValidation(std::string* error) {
   EXTENSION_FUNCTION_PRERUN_VALIDATE(storage_area_ !=
                                      StorageAreaNamespace::kInvalid);
 
-  // Session is the only storage area that does not use ValueStore, and will
-  // return synchronously.
-  if (storage_area_ == StorageAreaNamespace::kSession) {
-    // Currently only `session` can restrict the storage access. This call will
-    // be moved after the other storage areas allow it.
-    if (!IsAccessToStorageAllowed()) {
+  if (storage_area_ == StorageAreaNamespace::kSession ||
+      storage_area_ == StorageAreaNamespace::kLocal ||
+      storage_area_ == StorageAreaNamespace::kSync) {
+    if (!IsAccessToStorageAllowed(storage_area_)) {
       *error = "Access to storage is not allowed from this context.";
       return false;
     }
+  }
+
+  // Session is the only storage area that does not use ValueStore, and will
+  // return synchronously. If access is allowed, validation is complete for it
+  // here.
+  if (storage_area_ == StorageAreaNamespace::kSession) {
     return true;
   }
 
@@ -152,12 +156,13 @@ bool SettingsFunction::PreRunValidation(std::string* error) {
   return true;
 }
 
-bool SettingsFunction::IsAccessToStorageAllowed() {
-  api::storage::AccessLevel access_level = storage_utils::GetSessionAccessLevel(
-      extension()->id(), *browser_context());
+bool SettingsFunction::IsAccessToStorageAllowed(
+    StorageAreaNamespace storage_area) {
+  api::storage::AccessLevel access_level = storage_utils::GetAccessLevelForArea(
+      extension()->id(), *browser_context(), storage_area);
 
-  // Only a privileged extension context is considered trusted.
   if (access_level == api::storage::AccessLevel::kTrustedContexts) {
+    // Only a privileged extension context is considered trusted.
     return source_context_type() == mojom::ContextType::kPrivilegedExtension;
   }
 
@@ -419,9 +424,8 @@ void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseAction
 StorageStorageAreaSetAccessLevelFunction::Run() {
-  if (storage_area() != StorageAreaNamespace::kSession) {
-    // TODO(crbug.com/40949182). Support storage areas other than kSession. For
-    // now, we return an error.
+  if (storage_area() == StorageAreaNamespace::kManaged ||
+      storage_area() == StorageAreaNamespace::kInvalid) {
     return RespondNow(
         Error("This StorageArea is not available for setting access level"));
   }
@@ -443,7 +447,8 @@ StorageStorageAreaSetAccessLevelFunction::Run() {
          params->access_options.access_level ==
              api::storage::AccessLevel::kTrustedAndUntrustedContexts);
 
-  storage_utils::SetSessionAccessLevel(extension_id(), *browser_context(),
+  storage_utils::SetAccessLevelForArea(extension_id(), *browser_context(),
+                                       storage_area(),
                                        params->access_options.access_level);
 
   return RespondNow(NoArguments());

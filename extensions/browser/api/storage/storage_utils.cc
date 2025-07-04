@@ -20,35 +20,68 @@ constexpr PrefMap kPrefSessionStorageAccessLevel = {
     "storage_session_access_level", PrefType::kInteger,
     PrefScope::kExtensionSpecific};
 
+constexpr PrefMap kPrefLocalStorageAccessLevel = {
+    "storage_local_access_level", PrefType::kInteger,
+    PrefScope::kExtensionSpecific};
+
+constexpr PrefMap kPrefSyncStorageAccessLevel = {"storage_sync_access_level",
+                                                 PrefType::kInteger,
+                                                 PrefScope::kExtensionSpecific};
+
+const PrefMap* GetPrefMapForStorageArea(StorageAreaNamespace storage_area) {
+  switch (storage_area) {
+    case StorageAreaNamespace::kSession:
+      return &kPrefSessionStorageAccessLevel;
+    case StorageAreaNamespace::kLocal:
+      return &kPrefLocalStorageAccessLevel;
+    case StorageAreaNamespace::kSync:
+      return &kPrefSyncStorageAccessLevel;
+    // Managed and invalid storage areas do not have access levels.
+    case StorageAreaNamespace::kManaged:
+    case StorageAreaNamespace::kInvalid:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
-api::storage::AccessLevel GetSessionAccessLevel(
+api::storage::AccessLevel GetAccessLevelForArea(
     const ExtensionId& extension_id,
-    content::BrowserContext& browser_context) {
+    content::BrowserContext& browser_context,
+    StorageAreaNamespace storage_area) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(&browser_context);
+  const PrefMap* pref_map = GetPrefMapForStorageArea(storage_area);
 
-  // Default access level is only secure contexts.
-  int access_level =
-      base::to_underlying(api::storage::AccessLevel::kTrustedContexts);
-  prefs->ReadPrefAsInteger(extension_id, kPrefSessionStorageAccessLevel,
-                           &access_level);
-
-  // Return access level iff it's a valid value.
-  if (access_level > 0 &&
-      access_level <=
-          base::to_underlying(api::storage::AccessLevel::kMaxValue)) {
-    return static_cast<api::storage::AccessLevel>(access_level);
+  int stored_access_level_int = 0;
+  if (pref_map && prefs->ReadPrefAsInteger(extension_id, *pref_map,
+                                           &stored_access_level_int)) {
+    // Return access level iff it's a valid value.
+    if (stored_access_level_int > 0 &&
+        stored_access_level_int <=
+            base::to_underlying(api::storage::AccessLevel::kMaxValue)) {
+      return static_cast<api::storage::AccessLevel>(stored_access_level_int);
+    }
   }
 
-  // Otherwise, return the default session access level.
-  return api::storage::AccessLevel::kTrustedContexts;
+  // Otherwise, return the default access level for the specified storage area.
+  switch (storage_area) {
+    case StorageAreaNamespace::kSession:
+      return api::storage::AccessLevel::kTrustedContexts;
+    case StorageAreaNamespace::kLocal:
+    case StorageAreaNamespace::kSync:
+      return api::storage::AccessLevel::kTrustedAndUntrustedContexts;
+    case StorageAreaNamespace::kManaged:
+    case StorageAreaNamespace::kInvalid:
+      NOTREACHED();
+  }
 }
 
-void SetSessionAccessLevel(const ExtensionId& extension_id,
+void SetAccessLevelForArea(const ExtensionId& extension_id,
                            content::BrowserContext& browser_context,
+                           StorageAreaNamespace storage_area,
                            api::storage::AccessLevel access_level) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(&browser_context);
-  prefs->SetIntegerPref(extension_id, kPrefSessionStorageAccessLevel,
+  const PrefMap* pref_map = GetPrefMapForStorageArea(storage_area);
+  prefs->SetIntegerPref(extension_id, *pref_map,
                         base::to_underlying(access_level));
 }
 
@@ -87,7 +120,7 @@ bool CanRendererAccessExtensionStorage(
     }
 
     api::storage::AccessLevel access_level =
-        GetSessionAccessLevel(extension.id(), browser_context);
+        GetAccessLevelForArea(extension.id(), browser_context, *storage_area);
     if (access_level == api::storage::AccessLevel::kTrustedContexts) {
       ProcessMap* process_map = ProcessMap::Get(&browser_context);
       return process_map->IsPrivilegedExtensionProcess(

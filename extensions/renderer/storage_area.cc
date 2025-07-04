@@ -86,12 +86,17 @@ class LocalStorageArea final
         .SetMethod("remove", &LocalStorageArea::Remove)
         .SetMethod("clear", &LocalStorageArea::Clear)
         .SetMethod("getBytesInUse", &LocalStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &LocalStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &LocalStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::local::QUOTA_BYTES);
   }
 
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
+
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
 
   StorageArea storage_area_;
 };
@@ -128,6 +133,7 @@ class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
         .SetMethod("remove", &SyncStorageArea::Remove)
         .SetMethod("clear", &SyncStorageArea::Clear)
         .SetMethod("getBytesInUse", &SyncStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &SyncStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SyncStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::sync::QUOTA_BYTES)
         .SetValue("QUOTA_BYTES_PER_ITEM",
@@ -144,6 +150,10 @@ class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
 
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
+
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
 
   StorageArea storage_area_;
 };

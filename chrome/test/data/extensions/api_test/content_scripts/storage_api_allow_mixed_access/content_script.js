@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Since the extension set the access level to TRUSTED_AND_UNTRUSTED_CONTEXTS,
-// all storage areas are accessible.
-const accessibleStorageAreas = ['sync', 'local', 'session'];
-const contextCannotSetAccessLevelMessage =
-    'Error: Context cannot set the storage access level';
+// The extension set the access level to TRUSTED_AND_UNTRUSTED_CONTEXTS for the
+// `local` storage area, while setting `sync` and `session` to the
+// `TRUSTED_CONTEXTS` access level.
+const accessibleStorageAreas = ['local'];
+const invalidAccessMessage =
+    'Error: Access to storage is not allowed from this context.';
 
 async function testAccessibleStorageAreas(func, param) {
   // Content scripts can access the storage when the storage area has untrusted
@@ -31,9 +32,6 @@ async function testGetValueSetByBackgroundPage() {
 chrome.test.runTests([
   // This test must run before any other test clears the storage.
   async function getValueSetByBackgroundPageFromContentScript() {
-    // `sync` and `local` storage areas can always access background page
-    // values. `session` storage area with `TRUSTED_AND_UNTRUSTED_CONTEXTS`
-    // access level can access background page values.
     await testGetValueSetByBackgroundPage();
     chrome.test.succeed();
   },
@@ -73,14 +71,22 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.storage.session.setAccessLevel(
             {accessLevel: 'TRUSTED_CONTEXTS'}),
-        contextCannotSetAccessLevelMessage);
+        invalidAccessMessage);
     await chrome.test.assertPromiseRejects(
         chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
-        contextCannotSetAccessLevelMessage);
+        'Error: Context cannot set the storage access level');
     await chrome.test.assertPromiseRejects(
         chrome.storage.sync.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
-        contextCannotSetAccessLevelMessage);
+        invalidAccessMessage);
     chrome.test.succeed();
   },
 
+  async function accessSessionStorageGetShouldFailIfTrustedAccessOnly() {
+    // Validate that setting the access level for other namespaces doesn't "open
+    // up" session storage. Session storage is configured for
+    // TRUSTED_CONTEXTS_ONLY in background.js.
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.session.get('background'), invalidAccessMessage);
+    chrome.test.succeed();
+  },
 ]);

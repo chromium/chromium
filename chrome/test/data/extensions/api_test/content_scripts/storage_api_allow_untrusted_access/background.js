@@ -6,22 +6,19 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
 async function testSetAndGetValue(area) {
   const expectedEntry = {background: area};
-  await new Promise((resolve) => {
-    chrome.storage[area].set(expectedEntry, resolve);
-  });
-  const actualEntry = await new Promise((resolve) => {
-    chrome.storage[area].get('background', resolve);
-  });
+  await chrome.storage[area].set(expectedEntry);
+  const actualEntry = await chrome.storage[area].get('background');
   chrome.test.assertEq(expectedEntry, actualEntry);
 }
 
 chrome.test.runTests([
   function checkDefaultAccessLevel() {
-    // Make sure `setAccessLevel` is only exposed to the `session` storage area.
-    chrome.test.assertFalse(!!chrome.storage.local.setAccessLevel);
-    chrome.test.assertFalse(!!chrome.storage.sync.setAccessLevel);
-    chrome.test.assertFalse(!!chrome.storage.managed.setAccessLevel);
+    // Make sure `setAccessLevel` is exposed to all storage areas except
+    // `managed`
+    chrome.test.assertTrue(!!chrome.storage.local.setAccessLevel);
+    chrome.test.assertTrue(!!chrome.storage.sync.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
+    chrome.test.assertFalse(!!chrome.storage.managed.setAccessLevel);
     chrome.test.succeed();
   },
 
@@ -32,23 +29,55 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  function allowUntrustedAccessToSessionStorage() {
+  async function allowUntrustedAccessToSessionStorage() {
     // Allow context scripts to access the `session` storage.
-    chrome.storage.session.setAccessLevel(
-        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'}, () => {
-          chrome.test.assertNoLastError();
-          chrome.test.succeed();
-        });
+    await chrome.storage.session.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    chrome.test.succeed();
   },
 
-  // Tests that a content script can listen for storage.session.onChanged when
-  // session storage allows untrusted access.
+  async function allowUntrustedAccessToSyncStorage() {
+    // Allow context scripts to access the `sync` storage.
+    await chrome.storage.sync.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    chrome.test.succeed();
+  },
+
+  async function allowUntrustedAccessToLocalStorage() {
+    // Allow context scripts to access the `local` storage.
+    await chrome.storage.local.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    chrome.test.succeed();
+  },
+
+  // Tests that a content script can listen for storage.session.onChanged,
+  // storage.sync.onChanged, and storage.local.onChanged when these storage
+  // areas allow untrusted access.
   async function onChanged() {
-    // Listen for message from content script after it receives the onChanged
-    // event.
+    // Ensure content script can access all relevant storage areas.
+    await chrome.storage.session.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    await chrome.storage.sync.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    await chrome.storage.local.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+
+    const expectedMessages = [
+      'storage.session.onChanged received', 'storage.sync.onChanged received',
+      'storage.local.onChanged received'
+    ];
+    const receivedMessages = new Set();
+
+    // Listen for messages from content script after it receives the onChanged
+    // events.
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      chrome.test.assertEq(message, 'storage.session.onChanged received');
-      chrome.test.succeed();
+      chrome.test.assertTrue(
+          expectedMessages.includes(message), `Unexpected message:
+          ${message}`);
+      receivedMessages.add(message);
+      if (receivedMessages.size === expectedMessages.length) {
+        chrome.test.succeed();
+      }
     });
 
     // Navigate to url where listener_script.js will be injected.
@@ -57,5 +86,7 @@ chrome.test.runTests([
     await openTab(url);
 
     await chrome.storage.session.set({notify: 'yes'});
+    await chrome.storage.sync.set({notify: 'yes'});
+    await chrome.storage.local.set({notify: 'yes'});
   },
 ]);

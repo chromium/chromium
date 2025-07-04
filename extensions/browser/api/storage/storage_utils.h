@@ -19,13 +19,15 @@ class RenderProcessHost;
 namespace extensions::storage_utils {
 
 // Returns the session storage access level for `extension_id`.
-api::storage::AccessLevel GetSessionAccessLevel(
+api::storage::AccessLevel GetAccessLevelForArea(
     const ExtensionId& extension_id,
-    content::BrowserContext& browser_context);
+    content::BrowserContext& browser_context,
+    StorageAreaNamespace storage_area);
 
 // Sets the session storage access level for `extension_id` to `access_level`.
-void SetSessionAccessLevel(const ExtensionId& extension_id,
+void SetAccessLevelForArea(const ExtensionId& extension_id,
                            content::BrowserContext& browser_context,
+                           StorageAreaNamespace storage_area,
                            api::storage::AccessLevel access_level);
 
 // Returns a nested dictionary Value converted from a ValueChange.

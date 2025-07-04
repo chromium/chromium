@@ -27,7 +27,7 @@ class SettingsFunction : public ExtensionFunction {
   bool PreRunValidation(std::string* error) override;
 
   // Returns whether the caller's context has access to the storage or not.
-  bool IsAccessToStorageAllowed();
+  bool IsAccessToStorageAllowed(StorageAreaNamespace storage_area_);
 
   StorageAreaNamespace storage_area() const { return storage_area_; }
 

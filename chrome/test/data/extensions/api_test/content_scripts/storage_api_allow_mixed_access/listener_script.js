@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
   } else if (namespace === 'sync' && changes.notify?.newValue === 'yes') {
     chrome.runtime.sendMessage('storage.sync.onChanged received');
   } else {
-    chrome.runtime.sendMessage('script received an unexpected message');
+    chrome.runtime.sendMessage(
+        `script received an unexpected event: ${JSON.stringify(changes)}`);
   }
 })
