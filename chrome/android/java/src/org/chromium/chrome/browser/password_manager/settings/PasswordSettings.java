@@ -422,9 +422,6 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                 getPreferenceScreen().removePreference(passwordParent);
             } else {
                 displayPasswordNoResultScreenMessage();
-                getView()
-                        .announceForAccessibility(
-                                getString(R.string.accessible_find_in_page_no_results));
             }
         }
     }
