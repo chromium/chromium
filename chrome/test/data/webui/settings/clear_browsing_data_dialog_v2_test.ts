@@ -10,12 +10,13 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, SignedInState, StatusAction, SyncBrowserProxyImpl, Router, routes, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
@@ -23,6 +24,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 suite('DeleteBrowsingDataDialog', function() {
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let dialog: SettingsClearBrowsingDataDialogV2Element;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -37,9 +39,15 @@ suite('DeleteBrowsingDataDialog', function() {
         testClearBrowsingDataBrowserProxy);
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     setClearBrowsingDataPrefs(false);
     return createDialog();
+  });
+
+  teardown(function() {
+    resetRouterForTesting();
   });
 
   function setClearBrowsingDataPrefs(enableCheckboxes: boolean) {
@@ -265,6 +273,13 @@ suite('DeleteBrowsingDataDialog', function() {
     // </if>
   });
 
+  test('MetricsDialogCreated', async function() {
+    Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
+    assertEquals(
+        'ClearBrowsingData_DialogCreated',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
   test('ShowMoreButton', async function() {
     assertTrue(isVisible(dialog.$.showMoreButton));
 
@@ -288,6 +303,11 @@ suite('DeleteBrowsingDataDialog', function() {
 
     dialog.$.showMoreButton.click();
     await waitAfterNextRender(dialog);
+
+    assertEquals(
+        'Settings.DeleteBrowsingData.CheckboxesShowMoreClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+
     // On show more click, all checkboxes should be visible in default order.
     verifyCheckboxesVisibleForDataTypesInOrder([
       BrowsingDataType.HISTORY,
@@ -619,6 +639,11 @@ suite('DeleteBrowsingDataDialog', function() {
         {showHistoryNotice: false, showPasswordsNotice: false});
     await promiseResolver.promise;
 
+
+    const metricTimePeriod = await testClearBrowsingDataBrowserProxy.whenCalled(
+        'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram');
+    assertEquals(TimePeriod.LAST_DAY, metricTimePeriod);
+
     // Verify dialog is closed after deletion is completed.
     assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
@@ -710,6 +735,9 @@ suite('DeleteBrowsingDataDialog', function() {
 
     dialog.$.manageOtherGoogleDataRow.click();
     await flushTasks();
+    assertEquals(
+        'Settings.DeleteBrowsingData.OtherDataEntryPointClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
 
     otherGoogleDataDialog =
         dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
@@ -829,6 +857,9 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(!!signOutLink);
     signOutLink.click();
     await testSyncBrowserProxy.whenCalled('signOut');
+    assertEquals(
+        'Settings.DeleteBrowsingData.CookiesSignOutLinkClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
   // </if>
 });

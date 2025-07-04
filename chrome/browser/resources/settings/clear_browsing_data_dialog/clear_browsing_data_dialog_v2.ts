@@ -31,6 +31,11 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin} from '../router.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
@@ -134,7 +139,7 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
 }
 
 const SettingsClearBrowsingDataDialogV2ElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    RouteObserverMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsClearBrowsingDataDialogV2Element extends
     SettingsClearBrowsingDataDialogV2ElementBase {
@@ -229,6 +234,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
       ClearBrowsingDataBrowserProxyImpl.getInstance();
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -280,6 +287,12 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.clearBrowsingDataBrowserProxy_.initialize();
 
     this.setFocusOutlineToVisible_();
+  }
+
+  override currentRouteChanged(currentRoute: Route) {
+    if (currentRoute === routes.CLEAR_BROWSER_DATA) {
+      this.metricsBrowserProxy_.recordAction('ClearBrowsingData_DialogCreated');
+    }
   }
 
   private setUpDataTypeOptionLists_() {
@@ -379,6 +392,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
     const dataTypes = this.getSelectedDataTypes_();
     const timePeriod = this.$.timePicker.getSelectedTimePeriod();
+    this.clearBrowsingDataBrowserProxy_
+        .recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(timePeriod);
 
     // Update the DataType and TimePeriod prefs with the latest selection.
     this.$.deleteBrowsingDataDialog
@@ -436,6 +451,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onShowMoreClick_() {
     this.dataTypesExpanded_ = true;
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.CheckboxesShowMoreClick');
 
     // Set the focus to the first checkbox in the 'more' options list.
     afterNextRender(this, () => {
@@ -460,6 +477,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onManageOtherGoogleDataRowClick_() {
     this.showOtherGoogleDataDialog_ = true;
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.OtherDataEntryPointClick');
   }
 
   private setFocusOutlineToVisible_() {
@@ -488,6 +507,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     // <if expr="not is_chromeos">
     if (e.detail.id === 'signOutLink') {
       this.syncBrowserProxy_.signOut(/*delete_profile=*/ false);
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.DeleteBrowsingData.CookiesSignOutLinkClick');
       return;
     }
     // </if>

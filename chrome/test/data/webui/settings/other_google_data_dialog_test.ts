@@ -6,12 +6,13 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsOtherGoogleDataDialogElement} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, SignedInState} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, SignedInState} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // TODO(crbug.com/422340428): Add tests for back & cancel buttons.
@@ -19,6 +20,8 @@ suite('OtherGoogleDataDialog', function() {
   let dialog: SettingsOtherGoogleDataDialogElement;
   let passwordManagerProxy: TestPasswordManagerProxy;
   let testOpenWindowProxy: TestOpenWindowProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
 
   setup(function() {
     passwordManagerProxy = new TestPasswordManagerProxy();
@@ -26,6 +29,9 @@ suite('OtherGoogleDataDialog', function() {
 
     testOpenWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(testOpenWindowProxy);
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-other-google-data-dialog');
@@ -51,6 +57,10 @@ suite('OtherGoogleDataDialog', function() {
     assertEquals(
         PasswordManagerPage.PASSWORDS,
         await passwordManagerProxy.whenCalled('showPasswordManager'));
+
+    assertEquals(
+        'Settings.DeleteBrowsingData.PasswordManagerLinkClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('MyActivityLinkClick', async function() {
@@ -60,6 +70,10 @@ suite('OtherGoogleDataDialog', function() {
     const url = await testOpenWindowProxy.whenCalled('openUrl');
     assertEquals(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'), url);
+
+    assertEquals(
+        'Settings.DeleteBrowsingData.MyActivityLinkClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('GoogleSearchHistoryLinkClick', async function() {
@@ -69,6 +83,10 @@ suite('OtherGoogleDataDialog', function() {
     const url = await testOpenWindowProxy.whenCalled('openUrl');
     assertEquals(
         loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'), url);
+
+    assertEquals(
+        'Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('NonGoogleSearchHistorySubLabel', async function() {
