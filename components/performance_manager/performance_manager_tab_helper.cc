@@ -197,8 +197,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   // Get the outer document for a <fencedframe>, MPArch <webview>.
   FrameNodeImpl* outer_document_for_inner_frame_root = nullptr;
   if (parent) {
-    DCHECK(base::Contains(frames_, parent));
-    parent_frame_node = frames_[parent].get();
+    parent_frame_node = GetExistingFrameNode(parent);
   } else if (render_frame_host->IsFencedFrameRoot()) {
     content::RenderFrameHost* outer_document =
         render_frame_host->GetParentOrOuterDocument();
@@ -273,17 +272,12 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     content::RenderFrameHost* new_host) {
   // |old_host| is null when a new frame tree position is being created and a
   // new frame is its first occupant.
-  FrameNodeImpl* old_frame = nullptr;
-  if (old_host) {
-    auto it = frames_.find(old_host);
-    if (it != frames_.end()) {
-      // This can be received for a frame that hasn't yet been created. We can
-      // safely ignore this. It would be nice to track those frames too, but
-      // since they're not yet "created" we'd have no guarantee of seeing a
-      // corresponding delete and the frames can be leaked.
-      old_frame = it->second.get();
-    }
-  }
+  // Note that this notification can be received for a frame that hasn't yet
+  // been created (i.e. old_host != null but GetFrameNode() == null). We can
+  // safely ignore this. It would be nice to track those frames too, but since
+  // they're not yet "created" we'd have no guarantee of seeing a corresponding
+  // delete and the frames can be leaked.
+  FrameNodeImpl* old_frame = old_host ? GetFrameNode(old_host) : nullptr;
 
   // It's entirely possible that this is the first time we're seeing this frame.
   // We'll eventually see a corresponding RenderFrameCreated if the frame ends
@@ -293,11 +287,8 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
   // RenderFrameDeleted, and the frame node will be leaked until process tear
   // down.
   DCHECK(new_host);
-  FrameNodeImpl* new_frame = nullptr;
-  auto it = frames_.find(new_host);
-  if (it != frames_.end()) {
-    new_frame = it->second.get();
-  } else {
+  FrameNodeImpl* new_frame = GetFrameNode(new_host);
+  if (!new_frame) {
     DCHECK(!new_host->IsRenderFrameLive())
         << "There shouldn't be a case where RenderFrameHostChanged is "
            "dispatched before RenderFrameCreated with a live RenderFrame\n";
@@ -324,16 +315,15 @@ void PerformanceManagerTabHelper::OnAudioStateChanged(bool audible) {
 void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_audible) {
-  auto frame_it = frames_.find(render_frame_host);
-  // Ideally this would be a DCHECK, but it's possible to receive a notification
-  // for an unknown frame.
+  // Ideally this would call `GetExistingFrameNode`, but it's possible to
+  // receive a notification for an unknown frame.
   // TODO(crbug.com/40940232): Figure out how.
-  if (frame_it == frames_.end()) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
     // We should only ever see this for a frame transitioning to *not* audible.
     DCHECK(!is_audible);
     return;
   }
-  auto* frame_node = frame_it->second.get();
   frame_node->SetIsAudible(is_audible);
 }
 
@@ -342,11 +332,11 @@ void PerformanceManagerTabHelper::
         content::RenderFrameHost* render_frame_host,
         const blink::mojom::ViewportIntersectionState&
             viewport_intersection_state) {
-  auto frame_it = frames_.find(render_frame_host);
-  // This can be invoked for a crashed RenderFrameHost, as its view still
-  // occupies space on the page. Just ignore it as clearly its content is not
-  // visible.
-  if (frame_it == frames_.end()) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    // This can be invoked for a crashed RenderFrameHost, as its view still
+    // occupies space on the page. Just ignore it as clearly its content is not
+    // visible.
     CHECK(!render_frame_host->IsRenderFrameLive());
     return;
   }
@@ -374,18 +364,17 @@ void PerformanceManagerTabHelper::
     return ratio > ratio_threshold;
   }();
 
-  auto* frame_node = frame_it->second.get();
   frame_node->SetIsIntersectingLargeArea(is_intersecting_large_area);
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::FrameVisibility visibility) {
-  auto frame_it = frames_.find(render_frame_host);
-  // This can be invoked for a crashed RenderFrameHost, as its view still
-  // occupies space on the page. Just ignore it as clearly its content is not
-  // visible.
-  if (frame_it == frames_.end()) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    // This can be invoked for a crashed RenderFrameHost, as its view still
+    // occupies space on the page. Just ignore it as clearly its content is not
+    // visible.
     CHECK(!render_frame_host->IsRenderFrameLive());
     return;
   }
@@ -408,20 +397,18 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
     NOTREACHED();
   }();
 
-  auto* frame_node = frame_it->second.get();
   frame_node->SetViewportIntersection(viewport_intersection);
 }
 
 void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_capturing_media_stream) {
-  // Ignore notifications that are received after the frame was deleted.
-  auto frame_it = frames_.find(render_frame_host);
-  if (frame_it == frames_.end()) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    // Ignore notifications that are received after the frame was deleted.
     return;
   }
 
-  auto* frame_node = frame_it->second.get();
   frame_node->SetIsCapturingMediaStream(is_capturing_media_stream);
 }
 
@@ -437,13 +424,13 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
   // Find the associated frame node.
   content::RenderFrameHost* render_frame_host =
       navigation_handle->GetRenderFrameHost();
-  auto frame_it = frames_.find(render_frame_host);
-  // TODO(siggi): Ideally this would be a DCHECK, but it seems it's possible
-  //     to get a DidFinishNavigation notification for a deleted frame with
-  //     the network service.
-  if (frame_it == frames_.end())
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    // TODO(siggi): Ideally this would call `GetExistingFrameNode`, but it seems
+    //     it's possible to get a DidFinishNavigation notification for a deleted
+    //     frame with the network service.
     return;
-  auto* frame_node = frame_it->second.get();
+  }
 
   // Notify the frame of the committed URL.
   frame_node->OnNavigationCommitted(
@@ -529,12 +516,12 @@ void PerformanceManagerTabHelper::
 
 void PerformanceManagerTabHelper::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
-  // Ignore notifications that are received after the frame was deleted.
-  auto frame_it = frames_.find(render_frame_host);
-  if (frame_it == frames_.end()) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    // Ignore notifications that are received after the frame was deleted.
     return;
   }
-  auto* frame_node = frame_it->second.get();
+
   frame_node->SetHadUserActivation();
 }
 
@@ -619,15 +606,12 @@ void PerformanceManagerTabHelper::AboutToBeDiscarded(
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver) {
-  auto it = frames_.find(render_frame_host);
-  CHECK(it != frames_.end());
-
-  auto* frame_node = it->second.get();
+  auto* frame_node = GetExistingFrameNode(render_frame_host);
   frame_node->Bind(std::move(receiver));
 }
 
 FrameNodeImpl* PerformanceManagerTabHelper::GetFrameNode(
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host) const {
   auto it = frames_.find(render_frame_host);
   return it != frames_.end() ? it->second.get() : nullptr;
 }
@@ -653,9 +637,9 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id) {
 
 FrameNodeImpl* PerformanceManagerTabHelper::GetExistingFrameNode(
     content::RenderFrameHost* render_frame_host) const {
-  auto it = frames_.find(render_frame_host);
-  CHECK(it != frames_.end());
-  return it->second.get();
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  CHECK(frame_node);
+  return frame_node;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper);

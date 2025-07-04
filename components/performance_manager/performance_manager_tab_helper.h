@@ -108,7 +108,8 @@ class PerformanceManagerTabHelper
 
   // Retrieves the frame node associated with |render_frame_host|. Returns
   // nullptr if none exist for that frame.
-  FrameNodeImpl* GetFrameNode(content::RenderFrameHost* render_frame_host);
+  FrameNodeImpl* GetFrameNode(
+      content::RenderFrameHost* render_frame_host) const;
 
   class Observer : public base::CheckedObserver {
    public:
