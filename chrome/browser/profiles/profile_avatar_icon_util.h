@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -245,6 +246,13 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
 // transparent.
 gfx::ImageSkia AddBackgroundToImage(const gfx::ImageSkia& image,
                                     SkColor background_color);
+
+// Scales the `avatar` to `avatar_size` and crops it into a circle. Embeds the
+// circle onto an image with `resource_id` at `avatar_position`.
+ui::ImageModel EmbedAvatarOntoImage(int resource_id,
+                                    const gfx::Image& avatar,
+                                    const gfx::Point& avatar_position,
+                                    size_t avatar_size);
 
 }  // namespace profiles
 

@@ -195,6 +195,7 @@ source_set("impl") {
       "//chrome/app/vector_icons",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/feedback",
+      "//chrome/browser/profiles:profile_util",
       "//chrome/browser/promos:utils",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/promos:utils",

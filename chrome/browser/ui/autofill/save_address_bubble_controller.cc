@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -24,89 +25,16 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
-#include "skia/ext/image_operations.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_operations.h"
 
 namespace autofill {
-
-namespace {
-
-// CanvasImageSource that combines a background image with user's avatar,
-// the avatar is positioned and resized in terms of the background image DIPs,
-// it also is cropped in a circle.
-class MigrationHeaderImageSource : public gfx::CanvasImageSource {
- public:
-  MigrationHeaderImageSource(const ui::ImageModel& image,
-                             const ui::ImageModel& avatar,
-                             const gfx::Point& avatar_position,
-                             size_t avatar_size)
-      : gfx::CanvasImageSource(image.Size()),
-        image_(image),
-        avatar_(avatar),
-        avatar_position_(avatar_position),
-        avatar_size_(avatar_size) {}
-
-  MigrationHeaderImageSource(const MigrationHeaderImageSource&) = delete;
-  MigrationHeaderImageSource& operator=(const MigrationHeaderImageSource&) =
-      delete;
-
-  ~MigrationHeaderImageSource() override = default;
-
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override;
-
- private:
-  const ui::ImageModel image_;
-  const ui::ImageModel avatar_;
-  const gfx::Point avatar_position_;
-  const size_t avatar_size_;
-};
-
-void MigrationHeaderImageSource::Draw(gfx::Canvas* canvas) {
-  // Draw the background image first.
-  gfx::ImageSkia image = image_.GetImage().AsImageSkia();
-  canvas->DrawImageInt(image, 0, 0);
-
-  // Setting a clippath makes subsequent avatar drawing cropped in a circle.
-  SkPath avatar_bound = SkPath().addOval(
-      SkRect::MakeXYWH(avatar_position_.x(), avatar_position_.y(),
-                       /*w=*/avatar_size_, /*h=*/avatar_size_));
-  canvas->ClipPath(avatar_bound, /*do_anti_alias=*/true);
-
-  // Finally draw the avatar, above the background and cropped.
-  // Note that some testing profiles do not have an avatar.
-  if (!avatar_.IsEmpty()) {
-    gfx::ImageSkia avatar = gfx::ImageSkiaOperations::CreateResizedImage(
-        avatar_.GetImage().AsImageSkia(),
-        skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-        gfx::Size(avatar_size_, avatar_size_));
-    canvas->DrawImageInt(avatar, avatar_position_.x(), avatar_position_.y());
-  }
-}
-
-ui::ImageModel EmbedAvatar(int background_id,
-                           const ui::ImageModel& avatar,
-                           const gfx::Point& position,
-                           size_t size) {
-  return ui::ImageModel::FromImageSkia(
-      gfx::CanvasImageSource::MakeImageSkia<MigrationHeaderImageSource>(
-          ui::ImageModel::FromResourceId(background_id), avatar, position,
-          size));
-}
-
-}  // namespace
 
 SaveAddressBubbleController::SaveAddressBubbleController(
     base::WeakPtr<AddressBubbleControllerDelegate> delegate,
@@ -134,16 +62,17 @@ SaveAddressBubbleController::GetHeaderImages() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
     if (account) {
-      ui::ImageModel avatar = ui::ImageModel::FromImage(account->account_image);
       // The position and size must match the implied one in the image,
       // so these numbers are exclusively for ..._AVATAR50_X135_Y54.
       static constexpr gfx::Point kAvatarPosition{135, 54};
       static constexpr size_t kAvatarSize{50};
       return HeaderImages{
-          .light = EmbedAvatar(IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54, avatar,
-                               kAvatarPosition, kAvatarSize),
-          .dark = EmbedAvatar(IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
-                              avatar, kAvatarPosition, kAvatarSize)};
+          .light = profiles::EmbedAvatarOntoImage(
+              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54, account->account_image,
+              kAvatarPosition, kAvatarSize),
+          .dark = profiles::EmbedAvatarOntoImage(
+              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
+              account->account_image, kAvatarPosition, kAvatarSize)};
     }
   }
 
