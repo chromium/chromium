@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
@@ -167,7 +168,8 @@ void HTMLEmbedElement::UpdatePluginInternal() {
       GetDocument().GetFrame()->Client()->OverrideFlashEmbedWithHTML(
           GetDocument().CompleteURL(url_));
   if (!overriden_url.IsEmpty()) {
-    UseCounter::Count(GetDocument(), WebFeature::kOverrideFlashEmbedwithHTML);
+    Deprecation::CountDeprecation(GetDocument().GetExecutionContext(),
+                                      WebFeature::kOverrideFlashEmbedwithHTML);
     url_ = overriden_url.GetString();
     SetServiceType("text/html");
   }

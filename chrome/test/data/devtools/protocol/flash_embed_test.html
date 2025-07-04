@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Flash Embed Test</title>
+</head>
+<body>
+<h1>This page attempts to embed Flash based video</h1>
+<script>
+  // This script dynamically adds the flash embed to the DOM.
+  // This ensures the page loads first, then the resource is requested,
+  // which is a common real-world scenario.
+  function appendFlashEmbed() {
+    const object = document.createElement("object");
+    const embed = document.createElement("embed");
+    embed.src = "https://www.youtube.com/v/1AoZTDftNIU"; // Classic Flash embed URL
+    embed.setAttribute("type", "application/x-shockwave-flash");
+    object.appendChild(embed);
+    document.body.appendChild(object);
+  }
+  appendFlashEmbed();
+</script>
+</body>
+</html>

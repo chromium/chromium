@@ -387,6 +387,15 @@
       milestone: 108,
     },
     {
+      name: "OverrideFlashEmbedwithHTML",
+      message: "Legacy flash video embed has been rewritten to HTML iframe. Flash is long gone, this rewriting hack is deprecated and may be removed in the future.",
+      translation_note: "Warning displayed to developers when they use a Flash Embed URLS to let them know that the browser will not automatically link to their equivalent HTML5 link.",
+      web_features: [
+        "kOverrideFlashEmbedwithHTML",
+      ],
+      milestone: 140,
+    },
+    {
       name: "PaymentInstruments",
       message: "`paymentManager.instruments` is deprecated. Please use just-in-time install for payment handlers instead.",
       translation_note: "Warning displayed to developers when they use the PaymentInstruments API to let them know this API is deprecated.",
