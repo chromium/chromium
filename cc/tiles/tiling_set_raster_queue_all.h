@@ -213,9 +213,9 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
   size_t current_stage_;
 
-  // The max number of stages is 6: 1 low res, 3 high res, and 2 active non
-  // ideal pending high res.
-  absl::InlinedVector<IterationStage, 6> stages_;
+  // The max number of stages is 5: 3 high res for NOW/SOON/EVENTUALLY, and 2
+  // active non ideal pending high res for NOW/SOON.
+  absl::InlinedVector<IterationStage, 5> stages_;
   std::array<std::optional<TilingIterator>, NUM_ITERATORS> iterators_;
   bool is_drawing_layer_ = false;
 };
