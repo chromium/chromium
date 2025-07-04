@@ -90,7 +90,7 @@ export class MoveSinglePasswordDialogElement extends
   }
 
   private onMoveButtonClick_() {
-    assert(this.isAccountStoreUser);
+    assert(this.isAccountStorageEnabled);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         [this.password.id]);
     this.dispatchEvent(new CustomEvent('passwords-moved', {

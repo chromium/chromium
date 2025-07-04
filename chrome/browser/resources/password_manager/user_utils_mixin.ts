@@ -24,6 +24,14 @@ export const UserUtilMixin = dedupingMixin(
       (superClass) implements UserUtilMixinInterface {
         static get properties() {
           return {
+            /**
+             * Indicates whether the account-scoped password storage is enabled.
+             */
+            isAccountStorageEnabled: {
+              type: Boolean,
+              value: false,
+            },
+
             /* Account storage eligibility. */
             isEligibleForAccountStorage: {
               type: Boolean,
@@ -37,7 +45,8 @@ export const UserUtilMixin = dedupingMixin(
              */
             isAccountStoreUser: {
               type: Boolean,
-              value: false,
+              computed: 'computeIsAccountStoreUser_(' +
+                  'isAccountStorageEnabled, isEligibleForAccountStorage)',
             },
 
             isSyncingPasswords: {
@@ -65,7 +74,10 @@ export const UserUtilMixin = dedupingMixin(
           };
         }
 
+        declare isAccountStorageEnabled: boolean;
         declare isEligibleForAccountStorage: boolean;
+        // Whether account storage is enabled and the default storage is
+        // account.
         declare isAccountStoreUser: boolean;
         declare isSyncingPasswords: boolean;
         declare accountEmail: string;
@@ -81,7 +93,7 @@ export const UserUtilMixin = dedupingMixin(
 
           // Create listener functions.
           this.setIsAccountStorageEnabledListener_ = (enabled) =>
-              this.isAccountStoreUser = enabled;
+              this.isAccountStorageEnabled = enabled;
           const syncInfoChanged = (syncInfo: SyncInfo) => this.syncInfo_ =
               syncInfo;
           const accountInfoChanged = (accountInfo: AccountInfo) =>
@@ -136,6 +148,11 @@ export const UserUtilMixin = dedupingMixin(
         private computeAvatarImage_(): string {
           return this.accountInfo_?.avatarImage || '';
         }
+
+        private computeIsAccountStoreUser_(): boolean {
+          return this.isEligibleForAccountStorage &&
+              this.isAccountStorageEnabled;
+        }
       }
 
       return UserUtilMixin;
@@ -143,6 +160,7 @@ export const UserUtilMixin = dedupingMixin(
 
 
 export interface UserUtilMixinInterface {
+  isAccountStorageEnabled: boolean;
   isEligibleForAccountStorage: boolean;
   isAccountStoreUser: boolean;
   isSyncingPasswords: boolean;
