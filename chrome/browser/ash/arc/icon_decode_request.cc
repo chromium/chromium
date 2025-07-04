@@ -12,7 +12,9 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
+#include "ipc/ipc_channel.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -81,49 +83,52 @@ void IconDecodeRequest::DisableSafeDecodingForTesting() {
   disable_safe_decoding_for_testing = true;
 }
 
-IconDecodeRequest::IconDecodeRequest(SetIconCallback set_icon_callback,
-                                     int dimension_dip)
-    : ImageRequest(&GetDataDecoder()),
-      set_icon_callback_(std::move(set_icon_callback)),
-      dimension_dip_(dimension_dip) {}
+IconDecodeRequest::IconDecodeRequest(int dimension_dip)
+    : dimension_dip_(dimension_dip) {}
 
 IconDecodeRequest::~IconDecodeRequest() = default;
 
-void IconDecodeRequest::StartWithOptions(
-    const std::vector<uint8_t>& image_data) {
-  TRACE_EVENT0("ui", "IconDecodeRequest::StartWithOptions");
+void IconDecodeRequest::Start(const std::vector<uint8_t>& image_data,
+                              SetIconCallback set_icon_callback) {
+  TRACE_EVENT0("ui", "IconDecodeRequest::Start");
+
   if (disable_safe_decoding_for_testing) {
     if (image_data.empty()) {
-      OnDecodeImageFailed();
+      OnImageDecoded(std::move(set_icon_callback), SkBitmap());
       return;
     }
-    SkBitmap bitmap = gfx::PNGCodec::Decode(image_data);
-    if (bitmap.isNull()) {
-      OnDecodeImageFailed();
-      return;
-    }
-    OnImageDecoded(bitmap);
+    OnImageDecoded(std::move(set_icon_callback),
+                   gfx::PNGCodec::Decode(image_data));
     return;
   }
-  ImageDecoder::StartWithOptions(this, image_data, ImageDecoder::DEFAULT_CODEC,
-                                 true, gfx::Size());
+
+  data_decoder::DecodeImage(
+      &GetDataDecoder(), base::as_byte_span(image_data),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true,
+      static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&IconDecodeRequest::OnImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(set_icon_callback)));
 }
 
-void IconDecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
+void IconDecodeRequest::OnImageDecoded(SetIconCallback set_icon_callback,
+                                       const SkBitmap& bitmap) {
   TRACE_EVENT0("ui", "IconDecodeRequest::OnImageDecoded");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (bitmap.isNull()) {
+    DLOG(ERROR) << "Failed to decode an icon image.";
+    // NOTE: Proceed with the null bitmap.
+  }
+
   const gfx::ImageSkia icon(
       std::make_unique<IconSource>(bitmap, dimension_dip_),
       gfx::Size(dimension_dip_, dimension_dip_));
   icon.EnsureRepsForSupportedScales();
-  std::move(set_icon_callback_).Run(icon);
-}
 
-void IconDecodeRequest::OnDecodeImageFailed() {
-  TRACE_EVENT0("ui", "IconDecodeRequest::OnDecodeImageFailed");
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DLOG(ERROR) << "Failed to decode an icon image.";
-  OnImageDecoded(SkBitmap());
+  std::move(set_icon_callback).Run(icon);
 }
 
 }  // namespace arc

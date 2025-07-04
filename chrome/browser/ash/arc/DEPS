@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/extensions/api/tabs",
   "+chrome/browser/extensions/extension_tab_util.h",
-  "+chrome/browser/image_decoder",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/memory",

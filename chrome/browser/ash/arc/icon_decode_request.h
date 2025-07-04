@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
+#include "base/memory/weak_ptr.h"
+
+class SkBitmap;
 
 namespace gfx {
 class ImageSkia;
@@ -26,35 +28,33 @@ enum class ArcAppShortcutStatus {
   kMaxValue = kNotEmpty
 };
 
-class IconDecodeRequest : public ImageDecoder::ImageRequest {
+class IconDecodeRequest {
  public:
   using SetIconCallback = base::OnceCallback<void(const gfx::ImageSkia& icon)>;
 
-  IconDecodeRequest(SetIconCallback set_icon_callback, int dimension_dip);
-
+  explicit IconDecodeRequest(int dimension_dip);
   IconDecodeRequest(const IconDecodeRequest&) = delete;
   IconDecodeRequest& operator=(const IconDecodeRequest&) = delete;
-
-  ~IconDecodeRequest() override;
+  ~IconDecodeRequest();
 
   // Disables async safe decoding requests when unit tests are executed.
-  // Icons are decoded at a separate process created by ImageDecoder. In unit
-  // tests these tasks may not finish before the test exits, which causes a
-  // failure in the base::CurrentThread::Get()->IsIdleForTesting() check
-  // in content::~BrowserTaskEnvironment().
+  // Icons are decoded at a separate process. In unit tests these tasks may not
+  // finish before the test exits, which causes a failure in the
+  // base::CurrentThread::Get()->IsIdleForTesting() check in
+  // content::~BrowserTaskEnvironment().
   static void DisableSafeDecodingForTesting();
 
   // Starts image decoding. Safe asynchronous decoding is used unless
   // DisableSafeDecodingForTesting() is called.
-  void StartWithOptions(const std::vector<uint8_t>& image_data);
-
-  // ImageDecoder::ImageRequest:
-  void OnImageDecoded(const SkBitmap& bitmap) override;
-  void OnDecodeImageFailed() override;
+  void Start(const std::vector<uint8_t>& image_data,
+             SetIconCallback set_icon_callback);
 
  private:
-  SetIconCallback set_icon_callback_;
+  void OnImageDecoded(SetIconCallback callback, const SkBitmap& bitmap);
+
   const int dimension_dip_;
+
+  base::WeakPtrFactory<IconDecodeRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

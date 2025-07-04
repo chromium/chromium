@@ -953,9 +953,8 @@ AppIconLoader::CreateArcIconDecodeRequest(
     const std::vector<uint8_t>& icon_png_data) {
   TRACE_EVENT0("ui", "AppIconLoader::CreateArcIconDecodeRequest");
   std::unique_ptr<arc::IconDecodeRequest> arc_icon_decode_request =
-      std::make_unique<arc::IconDecodeRequest>(std::move(callback),
-                                               size_hint_in_dip_);
-  arc_icon_decode_request->StartWithOptions(icon_png_data);
+      std::make_unique<arc::IconDecodeRequest>(size_hint_in_dip_);
+  arc_icon_decode_request->Start(icon_png_data, std::move(callback));
   return arc_icon_decode_request;
 }
 

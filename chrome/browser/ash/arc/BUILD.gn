@@ -71,7 +71,6 @@ static_library("arc") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/arc",
-    "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources_grit",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
