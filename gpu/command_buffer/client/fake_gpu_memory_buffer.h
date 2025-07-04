@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -31,20 +32,13 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
 // A fake implementation of gfx::GpuMemoryBuffer for testing purposes.
 class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
-  // Used to defer execution of `MapAsync()` result callback.
-  // FakeGpuMemoryBuffer will pass the  callbacks to the configured instance
-  // of this class, which can execute them as the test requires.
-  class MapCallbackController {
-   public:
-    virtual void RegisterCallback(base::OnceCallback<void(bool)> result_cb) = 0;
-  };
-
   FakeGpuMemoryBuffer() = delete;
 
-  FakeGpuMemoryBuffer(const gfx::Size& size,
-                      gfx::BufferFormat format,
-                      bool premapped,
-                      MapCallbackController* controller);
+  FakeGpuMemoryBuffer(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      bool premapped,
+      ClientSharedImage::MapCallbackControllerForTesting* controller);
 
   FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
   FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
@@ -69,7 +63,8 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
-  raw_ptr<MapCallbackController> map_callback_controller_ = nullptr;
+  raw_ptr<ClientSharedImage::MapCallbackControllerForTesting>
+      map_callback_controller_ = nullptr;
 };
 
 }  // namespace gpu

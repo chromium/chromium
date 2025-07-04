@@ -438,7 +438,7 @@ TestSharedImageInterface::CreateSharedImageWithMapCallbackController(
     const SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage,
     bool premapped,
-    FakeGpuMemoryBuffer::MapCallbackController* controller) {
+    ClientSharedImage::MapCallbackControllerForTesting* controller) {
   CHECK(controller);
 
   // Create a FakeGpuMemoryBuffer.

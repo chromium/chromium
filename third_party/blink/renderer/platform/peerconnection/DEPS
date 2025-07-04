@@ -61,7 +61,4 @@ specific_include_rules = {
         "+third_party/blink/renderer/platform/testing/task_environment.h",
         "+third_party/blink/renderer/platform/testing/fuzzed_data_provider.h",
     ],
-    "webrtc_video_track_source_test.cc" : [
-        "+gpu/command_buffer/client/fake_gpu_memory_buffer.h"
-    ]
 }

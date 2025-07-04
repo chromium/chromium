@@ -215,6 +215,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const SharedImageMetadata& metadata,
       uint32_t texture_target);
 
+  // Used to defer execution of `MapAsync()` result callback. The callbacks
+  // will be passed to the configured instance of this class, which can execute
+  // them as the test requires.
+  class MapCallbackControllerForTesting {
+   public:
+    virtual void RegisterCallback(base::OnceCallback<void(bool)> result_cb) = 0;
+  };
+
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,
       const SharedImageMetadata& metadata,

@@ -9,6 +9,7 @@
 
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
@@ -117,16 +118,16 @@ class TestSharedImageInterface : public SharedImageInterface {
   // This is used only on windows for webrtc tests where test wants the
   // production code to trigger ClientSharedImage::MapAsync() but wants
   // to control when the callback runs from inside the test. This is achieved by
-  // using a custom MapCallbackController. The callback execution is deferred
-  // by registering the callback with the provided |controller|. The test
-  // manually triggers the mapping completion by invoking the |controller|
-  // later, simulating a delayed (asynchronous) mapping. This is required to
-  // test delayed mapping behavior.
+  // using a custom ClientSharedImage::MapCallbackControllerForTesting. The
+  // callback execution is deferred by registering the callback with the
+  // provided |controller|. The test manually triggers the mapping completion by
+  // invoking the |controller| later, simulating a delayed (asynchronous)
+  // mapping. This is required to test delayed mapping behavior.
   scoped_refptr<ClientSharedImage> CreateSharedImageWithMapCallbackController(
       const SharedImageInfo& si_info,
       gfx::BufferUsage buffer_usage,
       bool premapped,
-      FakeGpuMemoryBuffer::MapCallbackController* controller);
+      ClientSharedImage::MapCallbackControllerForTesting* controller);
 
   void CreateSharedImagePool(
       const SharedImagePoolId& pool_id,

@@ -67,10 +67,11 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
 }
 #endif
 
-FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
-                                         gfx::BufferFormat format,
-                                         bool premapped,
-                                         MapCallbackController* controller)
+FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    bool premapped,
+    ClientSharedImage::MapCallbackControllerForTesting* controller)
     : size_(size),
       format_(format),
       premapped_(premapped),
