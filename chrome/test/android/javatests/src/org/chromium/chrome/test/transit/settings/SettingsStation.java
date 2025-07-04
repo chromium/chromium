@@ -6,7 +6,6 @@ package org.chromium.chrome.test.transit.settings;
 
 import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
@@ -27,12 +26,8 @@ public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
     public PreferenceFacility scrollToPref(String prefKey) {
         assertInPhase(Phase.ACTIVE);
         String title = fragmentElement.get().findPreference(prefKey).getTitle().toString();
-        return enterFacilitySync(
-                new PreferenceFacility(title),
-                Transition.newOptions()
-                        .withPossiblyAlreadyFulfilled()
-                        .withRunTriggerOnUiThread()
-                        .build(),
-                () -> fragmentElement.get().scrollToPreference(prefKey));
+        return runOnUiThreadTo(() -> fragmentElement.get().scrollToPreference(prefKey))
+                .withPossiblyAlreadyFulfilled()
+                .enterFacility(new PreferenceFacility(title));
     }
 }

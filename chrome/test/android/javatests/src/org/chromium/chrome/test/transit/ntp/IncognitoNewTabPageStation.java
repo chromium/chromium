@@ -25,8 +25,6 @@ import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-import java.util.List;
-
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
 public class IncognitoNewTabPageStation extends PageStation {
     public ViewElement<UrlBar> urlBarElement;
@@ -56,8 +54,7 @@ public class IncognitoNewTabPageStation extends PageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(), menuButtonElement.getClickTrigger());
+        return menuButtonElement.clickTo().enterFacility(new IncognitoNewTabPageAppMenuFacility());
     }
 
     /** Click the URL bar to enter the Omnibox. */
@@ -66,8 +63,7 @@ public class IncognitoNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(
-                List.of(omniboxFacility, softKeyboard), urlBarElement.getClickTrigger());
+        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

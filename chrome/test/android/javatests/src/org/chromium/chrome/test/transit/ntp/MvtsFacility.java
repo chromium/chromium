@@ -121,9 +121,9 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         assert 0 <= i && i < tileItems.size()
                 : String.format("%d is out of bounds [0, %d]", i, tileItems.size());
 
-        tileItems.get(i).scrollTo();
+        tileItems.get(i).scrollToItemIfNeeded();
 
         SiteSuggestion siteSuggestion = mSiteSuggestionsByTileIndex.get(i);
-        return mHostStation.enterFacilitySync(new MvtsTileFacility(this, i, siteSuggestion), null);
+        return noopTo().enterFacility(new MvtsTileFacility(this, i, siteSuggestion));
     }
 }

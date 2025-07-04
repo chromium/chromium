@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.edge_to_edge;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPageStation.loadViewportFitCoverPage;
 
 import android.os.Build.VERSION_CODES;
@@ -94,9 +95,7 @@ public class EdgeToEdgePTTest {
     public void fromNtpToRegularPage() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mCtaTestRule.startOnNtp();
-        var chinOnNtp =
-                newTabPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(true), /* trigger= */ null);
+        var chinOnNtp = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(true));
         assertEquals(
                 "On ntp the bottom chin should be VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
@@ -106,9 +105,7 @@ public class EdgeToEdgePTTest {
         var pair =
                 TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), newTabPage);
         TopBottomLinksPageStation regularPage = pair.first;
-        var chinOnWebPage =
-                regularPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(false), /* trigger= */ null);
+        var chinOnWebPage = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(false));
         assertEquals(
                 "On a regular page the bottom chin should be always VISIBLE.",
                 LayerVisibility.VISIBLE,
@@ -123,9 +120,7 @@ public class EdgeToEdgePTTest {
     public void fromNtpToTabSwitcher() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mCtaTestRule.startOnNtp();
-        var chinOnNtp =
-                newTabPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(true), /* trigger= */ null);
+        var chinOnNtp = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(true));
         assertEquals(
                 "On ntp the bottom chin should be VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
@@ -134,9 +129,7 @@ public class EdgeToEdgePTTest {
         // Navigate the page to another web page, ensure the page has the chin visible.
         // On the hub, there's no "page", so don't set an expectation whether the page is opt-in.
         var tabSwitcher = newTabPage.openRegularTabSwitcher();
-        var chinOnHub =
-                tabSwitcher.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(null), /* trigger= */ null);
+        var chinOnHub = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(null));
         assertEquals(
                 "On the hub the bottom chin should be always VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
@@ -154,9 +147,7 @@ public class EdgeToEdgePTTest {
     public void fromNtpToOptInPage() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mCtaTestRule.startOnNtp();
-        var chinOnNtp =
-                newTabPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(true), /* trigger= */ null);
+        var chinOnNtp = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(true));
         assertEquals(
                 "On ntp the bottom chin should be VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
@@ -166,9 +157,7 @@ public class EdgeToEdgePTTest {
         var optInPage =
                 ViewportFitCoverPageStation.loadViewportFitCoverPage(
                         mCtaTestRule.getActivityTestRule(), newTabPage);
-        var chinOnOptInPage =
-                optInPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(true), /* trigger= */ null);
+        var chinOnOptInPage = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(true));
         assertEquals(
                 "On a opt-in page the bottom chin should be VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
@@ -183,9 +172,7 @@ public class EdgeToEdgePTTest {
     public void fromBlankPageToOptInPage() {
         // Start the page on NTP, chin is not visible.
         var blankPage = mCtaTestRule.startOnBlankPage();
-        var chinOnBlankPage =
-                blankPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(false), /* trigger= */ null);
+        var chinOnBlankPage = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(false));
         assertEquals(
                 "On the blank page (not opt-in e2e), chin should be visible.",
                 LayerVisibility.VISIBLE,
@@ -195,9 +182,7 @@ public class EdgeToEdgePTTest {
         var optInPage =
                 ViewportFitCoverPageStation.loadViewportFitCoverPage(
                         mCtaTestRule.getActivityTestRule(), blankPage);
-        var chinOnOptInPage =
-                optInPage.enterFacilitySync(
-                        new EdgeToEdgeBottomChinFacility<>(true), /* trigger= */ null);
+        var chinOnOptInPage = noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(true));
         assertEquals(
                 "On a opt-in page the bottom chin should be VISIBLE_IF_OTHERS_VISIBLE.",
                 LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,

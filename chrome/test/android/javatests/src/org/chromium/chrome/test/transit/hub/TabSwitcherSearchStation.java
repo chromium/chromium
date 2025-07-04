@@ -106,7 +106,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     public SuggestionFacility findSuggestion(
             @Nullable Integer index, @Nullable String title, @Nullable String text) {
         SUGGESTIONS_LIST.printFromRoot();
-        return enterFacilitySync(new SuggestionFacility(index, title, text), /* trigger= */ null);
+        return noopTo().enterFacility(new SuggestionFacility(index, title, text));
     }
 
     /** Expect suggestions with all the given |texts|. */
@@ -117,13 +117,13 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
             allSuggestionFacilities.add(
                     new SuggestionFacility(/* index= */ null, /* title= */ null, prefix + text));
         }
-        enterFacilitiesSync(allSuggestionFacilities, /* trigger= */ null);
+        noopTo().enterFacilities(allSuggestionFacilities.toArray(new Facility[0]));
     }
 
     /** Expect a suggestion with the given |index| and |text|. */
     public SectionHeaderFacility findSectionHeaderByIndexAndText(int index, String text) {
         SUGGESTIONS_LIST.printFromRoot();
-        return enterFacilitySync(new SectionHeaderFacility(index, text), /* trigger= */ null);
+        return noopTo().enterFacility(new SectionHeaderFacility(index, text));
     }
 
     /** A suggestion in the search results. */

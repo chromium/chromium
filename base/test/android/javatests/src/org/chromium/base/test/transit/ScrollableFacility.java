@@ -319,7 +319,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
          * @return the return value of the |selectHandler|. e.g. a Facility or Station.
          */
         public SelectReturnT scrollToAndSelect() {
-            return scrollTo().select();
+            return scrollToItemIfNeeded().select();
         }
 
         /**
@@ -328,7 +328,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
          * @return a ItemScrolledTo facility representing the item on the screen, which runs the
          *     |selectHandler| when selected.
          */
-        public ItemOnScreenFacility<SelectReturnT> scrollTo() {
+        public ItemOnScreenFacility<SelectReturnT> scrollToItemIfNeeded() {
             assert mPresence != Presence.ABSENT;
 
             // Could in theory try to scroll to a stub, but not supporting this prevents the
@@ -342,9 +342,9 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 onView(mViewSpec.getViewMatcher())
                         .withFailureHandler(RawFailureHandler.getInstance())
                         .check(matches(isCompletelyDisplayed()));
-                return mHostStation.enterFacilitySync(focusedItem, /* trigger= */ null);
+                return noopTo().enterFacility(focusedItem);
             } catch (AssertionError | NoMatchingViewException e) {
-                return mHostStation.enterFacilitySync(focusedItem, this::triggerScrollTo);
+                return scrollToItemTo().enterFacility(focusedItem);
             }
         }
 
@@ -369,12 +369,14 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             return mSelectHandler;
         }
 
-        private void triggerScrollTo() {
+        /** Scroll to the item to start a Transition. */
+        public TripBuilder scrollToItemTo() {
             if (mOffScreenDataMatcher != null) {
                 // If there is a data matcher, use it to scroll as the item might be in a
                 // RecyclerView.
                 try {
-                    onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo());
+                    return runTo(
+                            () -> onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo()));
                 } catch (PerformException performException) {
                     throw TravelException.newTravelException(
                             String.format(
@@ -387,7 +389,10 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 // created but not displayed.
                 assumeNonNull(mViewSpec);
                 try {
-                    onView(mViewSpec.getViewMatcher()).perform(ViewActions.scrollTo());
+                    return runTo(
+                            () ->
+                                    onView(mViewSpec.getViewMatcher())
+                                            .perform(ViewActions.scrollTo()));
                 } catch (PerformException performException) {
                     throw TravelException.newTravelException(
                             String.format(
@@ -484,7 +489,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         for (ScrollableFacility<?>.Item<?> item : getItems()) {
             if (item.getPresence() == Presence.PRESENT_AND_ENABLED
                     || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
-                item.scrollTo();
+                item.scrollToItemIfNeeded();
             }
         }
     }

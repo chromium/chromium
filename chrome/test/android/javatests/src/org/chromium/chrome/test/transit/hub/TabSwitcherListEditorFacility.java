@@ -119,8 +119,10 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
 
     /** Open the app menu, which looks different while selecting tabs. */
     public TabListEditorAppMenu<HostStationT> openAppMenuWithEditor() {
-        return mHostStation.enterFacilitySync(
-                new TabListEditorAppMenu<>(this), mHostStation.menuButtonElement.getClickTrigger());
+        return mHostStation
+                .menuButtonElement
+                .clickTo()
+                .enterFacility(new TabListEditorAppMenu<>(this));
     }
 
     /**

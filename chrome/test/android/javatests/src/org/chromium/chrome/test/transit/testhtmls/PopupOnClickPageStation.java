@@ -70,7 +70,6 @@ public class PopupOnClickPageStation extends WebPageStation {
      * message to be shown.
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
-        return enterFacilitySync(
-                new PopupBlockedMessageFacility<>(1), linkToPopup.getClickTrigger());
+        return linkToPopup.clickTo().enterFacility(new PopupBlockedMessageFacility<>(1));
     }
 }

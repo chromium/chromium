@@ -98,9 +98,9 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public TabSwitcherAppMenuFacility openAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(
-                new TabSwitcherAppMenuFacility<>(mIsIncognito),
-                menuButtonElement.getClickTrigger());
+        return menuButtonElement
+                .clickTo()
+                .enterFacility(new TabSwitcherAppMenuFacility<>(mIsIncognito));
     }
 
     /**
@@ -197,18 +197,16 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
         TabModel currentModel = tabModelElement.get();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup);
-        return enterFacilitySync(
-                new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title),
-                /* trigger= */ null);
+        return noopTo().enterFacility(
+                        new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title));
     }
 
     /** Expect a tab card to exist. */
     public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
         TabModel currentModel = tabModelElement.get();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabId);
-        return enterFacilitySync(
-                new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title),
-                /* trigger= */ null);
+        return noopTo().enterFacility(
+                        new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title));
     }
 
     /** Verify the tab switcher card count. */

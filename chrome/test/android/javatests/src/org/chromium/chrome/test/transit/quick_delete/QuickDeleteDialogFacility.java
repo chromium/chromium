@@ -128,7 +128,7 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
         } else {
             facility.declareNoView(spec);
         }
-        mHostStation.enterFacilitySync(facility, /* trigger= */ null);
+        noopTo().enterFacility(facility);
     }
 
     public void expectMoreOnSyncedDevices(boolean shown) {
@@ -140,7 +140,7 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
         } else {
             facility.declareNoView(spec);
         }
-        mHostStation.enterFacilitySync(facility, /* trigger= */ null);
+        noopTo().enterFacility(facility);
     }
 
     private class TimePeriodSelectedCondition extends UiThreadCondition {

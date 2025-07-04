@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.edge_to_edge;
 
 import static org.junit.Assert.assertNull;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
+
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.LargeTest;
@@ -59,9 +61,8 @@ public class EdgeToEdgeStartupTest {
     @Test
     @LargeTest
     public void testStartOnNewPage() {
-        mActivityTestRule
-                .startOnBlankPage()
-                .enterFacilitySync(new EdgeToEdgeBottomChinFacility<>(false), null);
+        mActivityTestRule.startOnBlankPage();
+        noopTo().enterFacility(new EdgeToEdgeBottomChinFacility<>(false));
 
         // Hop off, and assume invalid insets came in.
         EdgeToEdgeUtils.setObservedTappableNavigationBarForTesting(true);

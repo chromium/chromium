@@ -90,9 +90,9 @@ public class OmniboxFacility extends Facility<PageStation> {
 
     /** Enter text into the omnibox. */
     public OmniboxEnteredTextFacility typeText(String textToTypeAndExpect) {
-        return mHostStation.enterFacilitySync(
-                new OmniboxEnteredTextFacility(this, textToTypeAndExpect),
-                urlBarElement.getTypeTextTrigger(textToTypeAndExpect));
+        return urlBarElement
+                .typeTextTo(textToTypeAndExpect)
+                .enterFacility(new OmniboxEnteredTextFacility(this, textToTypeAndExpect));
     }
 
     /** Press back expecting the Omnibox to be closed. */

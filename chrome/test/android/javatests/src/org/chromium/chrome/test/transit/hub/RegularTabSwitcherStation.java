@@ -57,7 +57,7 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     }
 
     public ArchiveMessageCardFacility expectArchiveMessageCard() {
-        return enterFacilitySync(
-                new ArchiveMessageCardFacility(/* tabSwitcherStation= */ this), null);
+        return noopTo().enterFacility(
+                        new ArchiveMessageCardFacility(/* tabSwitcherStation= */ this));
     }
 }

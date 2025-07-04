@@ -71,8 +71,7 @@ public class RegularNewTabPageStation extends PageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(
-                new RegularNewTabPageAppMenuFacility(), menuButtonElement.getClickTrigger());
+        return menuButtonElement.clickTo().enterFacility(new RegularNewTabPageAppMenuFacility());
     }
 
     /**
@@ -86,8 +85,7 @@ public class RegularNewTabPageStation extends PageStation {
     public MvtsFacility focusOnMvts(
             List<SiteSuggestion> siteSuggestions, Set<Integer> separatorIndices) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
-        return enterFacilitySync(
-                new MvtsFacility(siteSuggestions, separatorIndices), /* trigger= */ null);
+        return noopTo().enterFacility(new MvtsFacility(siteSuggestions, separatorIndices));
     }
 
     /** Same as {@link #focusOnMvts(List, Set)} expecting no separatorIndices. */
@@ -101,8 +99,7 @@ public class RegularNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(
-                List.of(omniboxFacility, softKeyboard), searchBoxElement.getClickTrigger());
+        searchBoxElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

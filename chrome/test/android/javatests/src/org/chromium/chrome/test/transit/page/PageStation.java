@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
@@ -224,7 +223,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
         long downTime = SystemClock.uptimeMillis();
         Activity activity = getActivity();
 
-        Trigger firstPartTrigger =
+        Runnable firstPartTrigger =
                 () -> {
                     TouchCommon.dragStart(activity, coords.mFromX, coords.mY, downTime);
                     TouchCommon.dragTo(
@@ -240,7 +239,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
                 () -> {
                     TouchCommon.dragEnd(activity, coords.mToX, coords.mY, downTime);
                 };
-        return enterFacilitySync(new SwipingToTabFacility(secondPartTrigger), firstPartTrigger);
+        return runTo(firstPartTrigger).enterFacility(new SwipingToTabFacility(secondPartTrigger));
     }
 
     private static class ToolbarSwipeCoordinates {

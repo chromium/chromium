@@ -101,8 +101,7 @@ public abstract class HubBaseStation
         String contentDescription =
                 HubStationUtils.getContentDescriptionSubstringForIdPaneSelection(paneId);
         SwitchPaneButtonFacility button =
-                enterFacilitySync(
-                        new SwitchPaneButtonFacility(contentDescription), /* trigger= */ null);
+                noopTo().enterFacility(new SwitchPaneButtonFacility(contentDescription));
         return button.buttonElement.clickTo().arriveAt(destinationStation);
     }
 
