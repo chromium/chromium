@@ -10,9 +10,7 @@
 #include <algorithm>
 
 #include "BlinkGCPluginOptions.h"
-#include "Config.h"
 #include "DiagnosticsReporter.h"
-#include "RecordInfo.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -142,9 +140,7 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
       }
       // Optionals of non-GCed traceable or GCed collections are allowed on
       // stack.
-      if (is_optional &&
-          (!is_gced || Config::IsGCCollection(arg_type->getName())) &&
-          IsOnStack(bad_decl, record_cache_)) {
+      if (is_optional && !is_gced && IsOnStack(bad_decl, record_cache_)) {
         return;
       }
       if (is_optional) {
@@ -279,7 +275,7 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         return;
       }
       if (collection->getNameAsString() == "array") {
-        if (member || Config::IsGCCollection(gc_type->getName())) {
+        if (member) {
           // std::array of Members is fine as long as it is traced (which is
           // enforced by another checker).
           return;
@@ -601,9 +597,6 @@ class GCedVarOrField : public MatchFinder::MatchCallback {
   void run(const MatchFinder::MatchResult& result) override {
     const auto* gctype = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     assert(gctype);
-    if (Config::IsGCCollection(gctype->getName())) {
-      return;
-    }
     const auto* field = result.Nodes.getNodeAs<clang::FieldDecl>("bad_field");
     if (field) {
       if (Config::IsIgnoreAnnotated(field)) {

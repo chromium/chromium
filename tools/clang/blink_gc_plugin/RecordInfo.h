@@ -117,10 +117,8 @@ class RecordInfo {
 
   bool GetTemplateArgs(size_t count, TemplateArgs* output_args);
 
-  bool IsHeapAllocatedCollection();
   bool IsGCDerived();
   bool IsGCDirectlyDerived();
-  bool IsGCAllocated();
   bool IsGCMixin();
   bool IsStackAllocated();
   bool IsNewDisallowed();
@@ -150,8 +148,6 @@ class RecordInfo {
 
   Edge* CreateEdge(const clang::Type* type);
   Edge* CreateEdgeFromOriginalType(const clang::Type* type);
-
-  bool HasOptionalFinalizer();
 
   bool HasTypeAlias(std::string marker_name) const;
   bool GetTemplateArgsInternal(

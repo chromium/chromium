@@ -26,6 +26,8 @@ class OtherGCed : public GarbageCollected<OtherGCed> {
     v->Trace(mixin_);
     v->Trace(vector_);
     v->Trace(map_);
+    v->Trace(gced_vector_);
+    v->Trace(gced_map_);
   }
 
  private:
@@ -33,6 +35,8 @@ class OtherGCed : public GarbageCollected<OtherGCed> {
   Mixin mixin_;
   HeapVector<GCed> vector_;     // OK
   HeapHashMap<GCed, int> map_;  // OK
+  GCedHeapVector<GCed> gced_vector_;     // Not OK
+  GCedHeapHashMap<GCed, int> gced_map_;  // Not OK
 };
 
 }  // namespace blink

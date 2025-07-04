@@ -14,4 +14,7 @@ class HeapObject : public GarbageCollected<HeapObject> {
 ./unique_ptr_to_gc_managed_class.h:26:3: note: [blink-gc] std::unique_ptr field 'm_objs2' to a GC managed class declared here:
   std::unique_ptr<HeapVector<Member<HeapObject>>> m_objs2;
   ^
+./unique_ptr_to_gc_managed_class.h:27:3: note: [blink-gc] std::unique_ptr field 'm_objs3' to a GC managed class declared here:
+  std::unique_ptr<GCedHeapVector<Member<HeapObject>>> m_objs3;
+  ^
 2 warnings generated.

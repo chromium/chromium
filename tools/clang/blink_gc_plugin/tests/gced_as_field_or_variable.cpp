@@ -12,7 +12,9 @@ void Foo() {
   Mixin mixin;
   (void)mixin;
   HeapVector<GCed> vector;  // OK
-  HeapHashMap<GCed, int> map;
+  HeapHashMap<GCed, int> map;           // OK
+  GCedHeapVector<GCed> gced_vector;     // Not OK
+  GCedHeapHashMap<GCed, int> gced_map;  // Not OK
 }
 
 }  // namespace blink

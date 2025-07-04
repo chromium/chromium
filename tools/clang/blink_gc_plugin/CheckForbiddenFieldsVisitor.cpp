@@ -16,7 +16,7 @@ CheckForbiddenFieldsVisitor::forbidden_fields() {
 }
 
 bool CheckForbiddenFieldsVisitor::ContainsForbiddenFields(RecordInfo* info) {
-  bool managed_host = info->IsStackAllocated() || info->IsGCAllocated() ||
+  bool managed_host = info->IsStackAllocated() || info->IsGCDerived() ||
                       info->IsNewDisallowed();
   if (!managed_host)
     return false;

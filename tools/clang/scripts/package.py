@@ -748,6 +748,8 @@ def main():
   py_bindings_dir = os.path.join(LLVM_DIR, 'clang', 'bindings', 'python',
                                  'clang')
   for filename in os.listdir(py_bindings_dir):
+    if filename == "__pycache__":
+      continue
     shutil.copy(os.path.join(py_bindings_dir, filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
   PackageInArchive(libclang_dir, libclang_dir)

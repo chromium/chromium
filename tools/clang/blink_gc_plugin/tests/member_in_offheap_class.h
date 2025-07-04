@@ -20,7 +20,7 @@ public:
 private:
     Member<HeapObject> m_obj; // Must not contain Member.
     WeakMember<HeapObject> m_weak;  // Must not contain WeakMember.
-    Persistent<HeapVector<Member<HeapObject> > > m_objs; // OK
+    Persistent<GCedHeapVector<Member<HeapObject>>> m_objs;  // OK
     Member<HeapObject>* m_ptr;                           // Member may move
     Member<HeapObject>& m_ref;                           // Member may move
 };

@@ -27,7 +27,7 @@ private:
     PartObject m_part;
     HeapVector<PartObject> m_parts;
     std::unique_ptr<PartObject> m_unique_part;
-    Persistent<HeapVector<Member<HeapObject>>> m_objs;
+    Persistent<GCedHeapVector<Member<HeapObject>>> m_objs;
     WeakPersistent<HeapObject> m_weakPersistent;
     Persistent<HeapObject>& m_ref;
     Persistent<HeapObject>* m_ptr;

@@ -133,25 +133,15 @@ class Config {
   }
 
   static bool IsGCCollection(llvm::StringRef name) {
-    return name == "HeapVector" || name == "HeapDeque" ||
-           name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
-           name == "HeapHashCountedSet" || name == "HeapHashMap" ||
-           name == "HeapLinkedStack";
+    return name == "BasicHeapVector" || name == "BasicHeapDeque" ||
+           name == "BasicHeapHashSet" || name == "BasicHeapLinkedHashSet" ||
+           name == "BasicHeapHashCountedSet" || name == "BasicHeapHashMap" ||
+           name == "GCedHeapLinkedStack";
   }
 
   static bool IsHashMap(llvm::StringRef name) {
     return name == "HashMap" || name == "HeapHashMap" || name == "map" ||
            name == "unordered_map";
-  }
-
-  // Assumes name is a valid collection name.
-  static size_t CollectionDimension(llvm::StringRef name) {
-    // In case we're dealing with a variant, we want to collect the whole
-    // parameter pack.
-    if (name == "variant") {
-      return 0;
-    }
-    return (IsHashMap(name) || name == "pair") ? 2 : 1;
   }
 
   static bool IsRefCountedBase(llvm::StringRef name) {

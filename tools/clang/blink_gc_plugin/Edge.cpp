@@ -11,6 +11,9 @@ TracingStatus Value::NeedsTracing(NeedsTracingOption option) {
 }
 
 bool Value::NeedsFinalization() { return value_->NeedsFinalization(); }
+
+Collection::Collection(RecordInfo* info)
+    : info_(info), on_heap_(Config::IsGCCollection(info_->name())) {}
 bool Collection::NeedsFinalization() { return info_->NeedsFinalization(); }
 bool Collection::IsSTDCollection() {
   return Config::IsSTDCollection(info_->name());
@@ -18,7 +21,6 @@ bool Collection::IsSTDCollection() {
 std::string Collection::GetCollectionName() const {
   return info_->name();
 }
-
 TracingStatus Collection::NeedsTracing(NeedsTracingOption) {
   if (on_heap_) {
     return TracingStatus::Needed();
@@ -44,6 +46,9 @@ TracingStatus Collection::NeedsTracing(NeedsTracingOption) {
   }
   return status;
 }
+
+Iterator::Iterator(RecordInfo* info)
+    : info_(info), on_heap_(Config::IsGCCollection(info_->name())) {}
 
 void RecursiveEdgeVisitor::AtValue(Value*) {}
 void RecursiveEdgeVisitor::AtRawPtr(RawPtr*) {}

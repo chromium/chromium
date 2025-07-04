@@ -221,7 +221,7 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
   }
 
   {
-    CheckFieldsVisitor visitor(options_);
+    CheckFieldsVisitor visitor;
     if (visitor.ContainsInvalidFields(info))
       reporter_.ClassContainsInvalidFields(info, visitor.invalid_fields());
   }
