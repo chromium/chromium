@@ -78,6 +78,11 @@ BASE_FEATURE(kExoDisableRG88Format,
              "kExoDisableRG88Format",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for fixing SyncToken issue.
+BASE_FEATURE(kExoAlwaysUseSyncTokenFromTexture,
+             "ExoAlwaysUseSyncTokenFromTexture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
 // contents should not be used to create bitmap.
@@ -723,6 +728,12 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     // raster/composite when the fence already signaled at this stage.
     if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
+      sync_token = contents_texture->sync_token();
+    }
+
+    // TODO(crbug.com/369003507): Remove this post safe roll out and clean up
+    // `prev_sync_token` which will be not needed anymore.
+    if (base::FeatureList::IsEnabled(kExoAlwaysUseSyncTokenFromTexture)) {
       sync_token = contents_texture->sync_token();
     }
 
