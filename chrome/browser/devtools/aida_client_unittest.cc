@@ -25,8 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 const char kEmail[] = "alice@example.com";
-const char kEndpointUrlWithPath[] = "https://example.com/foo";
-const char kEndpointUrl[] = "https://example.com/";
 const char kScope[] = "bar";
 
 class AidaClientTest : public testing::Test {
@@ -105,8 +103,7 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaEndpointAndScopeForTesting("https://example.com/foo",
-                                                     kScope);
+  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -257,8 +254,7 @@ TEST_F(AidaClientTest, Succeeds) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaEndpointAndScopeForTesting(kEndpointUrlWithPath,
-                                                     kScope);
+  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_
@@ -267,7 +263,7 @@ TEST_F(AidaClientTest, Succeeds) {
           std::string() /*id_token*/, signin::ScopeSet{kScope});
   run_loop.Run();
 
-  EXPECT_EQ(kEndpointUrlWithPath, delegate.url_);
+  EXPECT_TRUE(delegate.succeed_);
 }
 
 TEST_F(AidaClientTest, ReusesOAuthToken) {
@@ -275,7 +271,7 @@ TEST_F(AidaClientTest, ReusesOAuthToken) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaEndpointAndScopeForTesting(kEndpointUrl, kScope);
+  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_
@@ -302,7 +298,7 @@ TEST_F(AidaClientTest, RefetchesTokenWhenExpired) {
   Delegate delegate;
 
   AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaEndpointAndScopeForTesting(kEndpointUrl, kScope);
+  aida_client.OverrideAidaScopeForTesting(kScope);
   aida_client.PrepareRequestOrFail(base::BindOnce(
       &Delegate::FinishCallback, base::Unretained(&delegate), &run_loop));
   identity_test_env_

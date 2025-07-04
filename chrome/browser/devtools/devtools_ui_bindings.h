@@ -240,9 +240,14 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                   const std::string& trigger) override;
   void CanShowSurvey(DispatchCallback callback,
                      const std::string& trigger) override;
+  bool EnsureAidaClientAvailable();
+  void HandleAidaClientUnavailable(DispatchCallback callback);
   void DoAidaConversation(DispatchCallback callback,
                           const std::string& request,
                           int stream_id) override;
+  void AidaCodeComplete(DispatchCallback callback,
+                        const std::string& request,
+                        int stream_id) override;
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
 
@@ -303,6 +308,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                                 permissions::PermissionAction result);
   bool MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
+  void HandleAidaRequestError(
+      DispatchCallback callback,
+      std::variant<network::ResourceRequest, std::string>
+          resource_request_or_error);
   void OnAidaConversationRequest(
       DispatchCallback callback,
       int stream_id,
@@ -319,14 +328,17 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
           resource_request_or_error,
       base::TimeTicks start_time,
       const base::Value* response);
-  void OnRegisterAidaClientEventRequest(
-      DispatchCallback callback,
-      const std::string& request,
-      std::variant<network::ResourceRequest, std::string>
-          resource_request_or_error);
-  void OnAidaClientResponse(
+  void OnAidaRequest(const GURL& url,
+                     const std::string& response_histogram_name,
+                     DispatchCallback callback,
+                     const std::string& request,
+                     std::variant<network::ResourceRequest, std::string>
+                         resource_request_or_error);
+  void OnAidaResponse(
+      const std::string& histogram_name,
       DispatchCallback callback,
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      base::TimeTicks start_time,
       std::optional<std::string> response_body);
 
   // Extensions support.

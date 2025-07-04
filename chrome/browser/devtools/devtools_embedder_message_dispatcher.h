@@ -142,6 +142,9 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void DoAidaConversation(DispatchCallback callback,
                                     const std::string& request,
                                     int stream_id) = 0;
+    virtual void AidaCodeComplete(DispatchCallback callback,
+                                    const std::string& request,
+                                    int stream_id) = 0;
     virtual void RegisterAidaClientEvent(DispatchCallback callback,
                                          const std::string& request) = 0;
   };

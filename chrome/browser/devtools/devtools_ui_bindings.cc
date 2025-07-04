@@ -975,19 +975,27 @@ constexpr net::NetworkTrafficAnnotationTag kAidaTrafficAnnotation =
         })");
 }  // namespace
 
+void DevToolsUIBindings::HandleAidaRequestError(
+    DispatchCallback callback,
+    std::variant<network::ResourceRequest, std::string>
+        resource_request_or_error) {
+  base::Value::Dict response_dict;
+  response_dict.Set("response",
+                    std::get<std::string>(resource_request_or_error));
+  auto response_value = base::Value(std::move(response_dict));
+  std::move(callback).Run(&response_value);
+}
+
 void DevToolsUIBindings::OnAidaConversationRequest(
-    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+    DispatchCallback callback,
     int stream_id,
     const std::string& request,
     base::TimeDelta delay,
     std::variant<network::ResourceRequest, std::string>
         resource_request_or_error) {
   if (std::holds_alternative<std::string>(resource_request_or_error)) {
-    base::Value::Dict response_dict;
-    response_dict.Set("response",
-                      std::get<std::string>(resource_request_or_error));
-    auto response_value = base::Value(std::move(response_dict));
-    std::move(callback).Run(&response_value);
+    HandleAidaRequestError(std::move(callback),
+                           std::move(resource_request_or_error));
     return;
   }
   DevToolsUIBindings::NetworkResourceLoader::URLLoaderFactoryHolder
@@ -996,39 +1004,37 @@ void DevToolsUIBindings::OnAidaConversationRequest(
                            ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request =
       std::get<network::ResourceRequest>(resource_request_or_error);
-  resource_request.url =
-      resource_request.url.Resolve(AidaClient::kDoConversationUrlPath);
+  resource_request.url = GURL(AidaClient::kDoConversationUrl);
   // Set a maximum timeout value, individual features may send a shorter timeout
   // in the DevTools repo.
   base::TimeDelta timeout = base::Seconds(120);
-  NetworkResourceLoader::Create(
-      stream_id, this, resource_request, kAidaTrafficAnnotation,
-      std::move(url_loader_factory),
+  auto response_handler_callback =
       base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
                      base::Unretained(this), std::move(callback), stream_id,
-                     request, delay, resource_request, base::TimeTicks::Now()),
+                     request, delay, resource_request, base::TimeTicks::Now());
+  NetworkResourceLoader::Create(
+      stream_id, this, resource_request, kAidaTrafficAnnotation,
+      std::move(url_loader_factory), std::move(response_handler_callback),
       delay, std::move(request), timeout);
 }
 
-void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
-    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+void DevToolsUIBindings::OnAidaRequest(
+    const GURL& url,
+    const std::string& response_histogram_name,
+    DispatchCallback callback,
     const std::string& request,
     std::variant<network::ResourceRequest, std::string>
         resource_request_or_error) {
   if (std::holds_alternative<std::string>(resource_request_or_error)) {
-    base::Value::Dict response_dict;
-    response_dict.Set("response",
-                      std::get<std::string>(resource_request_or_error));
-    auto response_value = base::Value(std::move(response_dict));
-    std::move(callback).Run(&response_value);
+    HandleAidaRequestError(std::move(callback),
+                           std::move(resource_request_or_error));
     return;
   }
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request = std::make_unique<network::ResourceRequest>(
       std::get<network::ResourceRequest>(resource_request_or_error));
-  resource_request->url =
-      resource_request->url.Resolve(AidaClient::kRegisterClientEventUrlPath);
+  resource_request->url = url;
   auto simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), kAidaTrafficAnnotation);
   simple_url_loader->AttachStringForUpload(request);
@@ -1036,14 +1042,15 @@ void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
   simple_url_loader_ptr->DownloadToString(
       url_loader_factory.get(),
-      base::BindOnce(&DevToolsUIBindings::OnAidaClientResponse,
-                     base::Unretained(this), std::move(callback),
-                     std::move(simple_url_loader)),
+      base::BindOnce(&DevToolsUIBindings::OnAidaResponse,
+                     base::Unretained(this), response_histogram_name,
+                     std::move(callback), std::move(simple_url_loader),
+                     base::TimeTicks::Now()),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void DevToolsUIBindings::OnAidaConversationResponse(
-    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+    DispatchCallback callback,
     int stream_id,
     const std::string request,
     base::TimeDelta delay,
@@ -1074,9 +1081,11 @@ void DevToolsUIBindings::OnAidaConversationResponse(
   }
 }
 
-void DevToolsUIBindings::OnAidaClientResponse(
-    DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
+void DevToolsUIBindings::OnAidaResponse(
+    const std::string& histogram_name,
+    DispatchCallback callback,
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+    base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader->ResponseInfo() &&
@@ -1095,6 +1104,7 @@ void DevToolsUIBindings::OnAidaClientResponse(
   base::Value::Dict response_dict;
   response_dict.Set("response", response_body.value_or(""));
   auto response = base::Value(std::move(response_dict));
+  base::UmaHistogramTimes(histogram_name, base::TimeTicks::Now() - start_time);
   std::move(callback).Run(&response);
 }
 
@@ -2463,39 +2473,60 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
   std::move(callback).Run(&response);
 }
 
-void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
-                                            const std::string& request,
-                                            int stream_id) {
+bool DevToolsUIBindings::EnsureAidaClientAvailable() {
   if (!can_access_aida_ || AidaClient::CanUseAida(profile_).blocked) {
-    base::Value::Dict response_dict;
-    response_dict.Set("error", "AIDA request was blocked");
-    base::Value response = base::Value(std::move(response_dict));
-    std::move(callback).Run(&response);
-    return;
+    return false;
   }
   if (!aida_client_) {
     aida_client_ = std::make_unique<AidaClient>(profile_);
+  }
+  return true;
+}
+
+void DevToolsUIBindings::HandleAidaClientUnavailable(
+    DispatchCallback callback) {
+  base::Value::Dict response_dict;
+  response_dict.Set("error", "AIDA request was blocked");
+  base::Value response = base::Value(std::move(response_dict));
+  std::move(callback).Run(&response);
+}
+
+void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
+                                            const std::string& request,
+                                            int stream_id) {
+  if (!EnsureAidaClientAvailable()) {
+    HandleAidaClientUnavailable(std::move(callback));
+    return;
   }
   aida_client_->PrepareRequestOrFail(base::BindOnce(
       &DevToolsUIBindings::OnAidaConversationRequest, base::Unretained(this),
       std::move(callback), stream_id, request, base::TimeDelta()));
 }
 
-void DevToolsUIBindings::RegisterAidaClientEvent(DispatchCallback callback,
-                                                 const std::string& request) {
-  if (!can_access_aida_ || AidaClient::CanUseAida(profile_).blocked) {
-    base::Value::Dict response_dict;
-    response_dict.Set("error", "AIDA request was blocked");
-    base::Value response = base::Value(std::move(response_dict));
-    std::move(callback).Run(&response);
+void DevToolsUIBindings::AidaCodeComplete(DispatchCallback callback,
+                                          const std::string& request,
+                                          int stream_id) {
+  if (!EnsureAidaClientAvailable()) {
+    HandleAidaClientUnavailable(std::move(callback));
     return;
   }
-  if (!aida_client_) {
-    aida_client_ = std::make_unique<AidaClient>(profile_);
+  aida_client_->PrepareRequestOrFail(base::BindOnce(
+      &DevToolsUIBindings::OnAidaRequest, base::Unretained(this),
+      GURL(AidaClient::kCompleteCodeUrl),
+      "DevTools.AidaCodeCompleteResponseTime", std::move(callback), request));
+}
+
+void DevToolsUIBindings::RegisterAidaClientEvent(DispatchCallback callback,
+                                                 const std::string& request) {
+  if (!EnsureAidaClientAvailable()) {
+    HandleAidaClientUnavailable(std::move(callback));
+    return;
   }
   aida_client_->PrepareRequestOrFail(
-      base::BindOnce(&DevToolsUIBindings::OnRegisterAidaClientEventRequest,
-                     base::Unretained(this), std::move(callback), request));
+      base::BindOnce(&DevToolsUIBindings::OnAidaRequest, base::Unretained(this),
+                     GURL(AidaClient::kRegisterClientEventUrl),
+                     "DevTools.RegisterAidaClientEventResponseTime",
+                     std::move(callback), request));
 }
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {

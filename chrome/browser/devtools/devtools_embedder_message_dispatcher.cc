@@ -510,6 +510,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
 
   d->RegisterHandlerWithCallback("doAidaConversation",
                                  &Delegate::DoAidaConversation, delegate);
+  d->RegisterHandlerWithCallback("aidaCodeComplete",
+                                 &Delegate::AidaCodeComplete, delegate);
   d->RegisterHandlerWithCallback("registerAidaClientEvent",
                                  &Delegate::RegisterAidaClientEvent, delegate);
   return d;
