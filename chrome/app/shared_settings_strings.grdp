@@ -103,6 +103,9 @@
   <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE" desc="Subtitle for the caption settings section for managing language packs.">
     Chrome can create and translate captions for the languages shown here
   </message>
+  <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE_LIVE_CAPTION_ONLY" desc="Subtitle for the caption settings section for managing language packs without live translate.">
+    Chrome can create captions for the languages shown here
+  </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE" desc="Description of the target language setting for the Live Translate feature.">
     Translate captions to
   </message>
