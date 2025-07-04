@@ -2717,3 +2717,54 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   }
   EXPECT_FALSE(icloud_mechanism_found);
 }
+
+// Test that when iCloud Keychain is dispatched to automatically because of
+// client hints, cancelling brings the user back to the mechanism selection
+// screen.
+// Regression test for crbug.com/413572038.
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       CancelICloudKeychainWithHints) {
+  // Set up a request with hints and iCloud Keychain.
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+  RequestCallbackReceiver request_callback;
+  controller.SetRequestCallback(request_callback.Callback());
+  const std::string kICloudKeychainId = "ickc";
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      kICloudKeychainId, AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kICloudKeychain));
+  controller.set_allow_icloud_keychain(true);
+  content::AuthenticatorRequestClientDelegate::Hints hints;
+  hints.transport = device::FidoTransportProtocol::kInternal;
+  controller.SetHints(std::move(hints));
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.available_transports = {
+      AuthenticatorTransport::kInternal,
+      AuthenticatorTransport::kUsbHumanInterfaceDevice};
+  transports_info.request_type = device::FidoRequestType::kMakeCredential;
+  transports_info.attestation_conveyance_preference =
+      device::AttestationConveyancePreference::kNone;
+  transports_info.has_icloud_keychain = true;
+  transports_info.available_transports = {AuthenticatorTransport::kInternal};
+  transports_info.transport_list_did_include_internal = true;
+  controller.StartFlow(std::move(transports_info), {});
+
+  // Verify that the request automatically dispatched to iCloud Keychain.
+  EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
+
+  // Simulate the user cancelling.
+  controller.OnUserConsentDenied();
+  EXPECT_EQ(model->step(), Step::kMechanismSelection);
+
+  // Select iCloud Keychain again and cancel. This time, the request should be
+  // cancelled.
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      kICloudKeychainId, AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kICloudKeychain));
+  controller.HideDialogAndDispatchToPlatformAuthenticator(
+      device::AuthenticatorType::kICloudKeychain);
+  controller.OnUserConsentDenied();
+  EXPECT_EQ(model->step(), Step::kNotStarted);
+}

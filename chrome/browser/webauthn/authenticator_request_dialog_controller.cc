@@ -946,6 +946,9 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
       // If the site sent a "hybrid" hint, focus the UI exclusively on the
       // hybrid case and don't suggest security keys.
       model_->show_security_key_on_qr_sheet = false;
+    } else if (transport == AuthenticatorTransport::kInternal) {
+      ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
+          true;
     }
     mech_it->callback.Run();
     return true;
