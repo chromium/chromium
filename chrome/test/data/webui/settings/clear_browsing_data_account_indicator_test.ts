@@ -6,8 +6,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsClearBrowsingDataAccountIndicator} from 'chrome://settings/lazy_load.js';
-import {SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -21,10 +22,13 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
   let indicator: SettingsClearBrowsingDataAccountIndicator;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
 
-  setup(async function() {
+  setup(function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
+    return createIndicator();
+  });
 
+  async function createIndicator() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     indicator = document.createElement(
         'settings-clear-browsing-data-account-indicator');
@@ -33,7 +37,25 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
     await testSyncBrowserProxy.whenCalled('getSyncStatus');
     await testSyncBrowserProxy.whenCalled('getStoredAccounts');
     await flushTasks();
-  });
+  }
+
+  function checkAccountIndicatorVisibility() {
+    const avatarRow =
+        indicator.shadowRoot!.querySelector<HTMLElement>('#avatarRow');
+    return isVisible(avatarRow);
+  }
+
+  function checkShownAccount(name: string, email: string) {
+    // Shown account must match the primary account which is the first account
+    // in the StoredAccounts list.
+    const userInfo =
+        indicator.shadowRoot!.querySelector<HTMLElement>('#userInfo')!;
+    assertTrue(!!userInfo);
+    const title = userInfo.children[0]!.textContent!;
+    const subtitle = userInfo.children[1]!.textContent!;
+    assertEquals(title.trim(), name);
+    assertEquals(subtitle.trim(), email);
+  }
 
   test('IndicatorVisibilityWithStoredAccounts', async function() {
     simulateStoredAccounts([
@@ -48,24 +70,6 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
         email: 'bar@bar.com',
       },
     ]);
-
-    function checkAccountIndicatorVisibility() {
-      const avatarRow =
-          indicator.shadowRoot!.querySelector<HTMLElement>('#avatarRow');
-      return isVisible(avatarRow);
-    }
-
-    function checkShownAccount() {
-      // Shown account must match the primary account which is the first account
-      // in the StoredAccounts list.
-      const userInfo =
-          indicator.shadowRoot!.querySelector<HTMLElement>('#userInfo')!;
-      assertTrue(!!userInfo);
-      const title = userInfo.children[0]!.textContent!;
-      const subtitle = userInfo.children[1]!.textContent!;
-      assertEquals(title.trim(), 'fooName');
-      assertEquals(subtitle.trim(), 'foo@foo.com');
-    }
 
     // Signed out: Account indicator is hidden.
     webUIListenerCallback('sync-status-changed', {
@@ -98,7 +102,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
     });
     await flushTasks();
     assertTrue(checkAccountIndicatorVisibility());
-    checkShownAccount();
+    checkShownAccount('fooName', 'foo@foo.com');
 
     // Syncing: Account indicator is Visible.
     webUIListenerCallback('sync-status-changed', {
@@ -107,14 +111,41 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
     });
     await flushTasks();
     assertTrue(checkAccountIndicatorVisibility());
-    checkShownAccount();
+    checkShownAccount('fooName', 'foo@foo.com');
+
+    // Sync paused: Account indicator is Hidden.
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      hasError: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    });
+    await flushTasks();
+    assertFalse(checkAccountIndicatorVisibility());
   });
 
   test('IndicatorVisibilityNoStoredAccounts', async function() {
     simulateStoredAccounts([]);
     await flushTasks();
-
-    assertFalse(
-        !!indicator.shadowRoot!.querySelector<HTMLElement>('#avatarRow'));
+    assertFalse(checkAccountIndicatorVisibility());
   });
+
+  // <if expr="not is_chromeos">
+  test('IndicatorVisibilityAccountDeletionDisabled', async function() {
+    loadTimeData.overrideValues({isClearPrimaryAccountAllowed: false});
+    await createIndicator();
+    simulateStoredAccounts([
+      {
+        fullName: 'fooName',
+        givenName: 'foo',
+        email: 'foo@foo.com',
+      },
+    ]);
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      hasError: false,
+    });
+    await flushTasks();
+    assertFalse(checkAccountIndicatorVisibility());
+  });
+  // </if>
 });
