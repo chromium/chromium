@@ -1014,10 +1014,6 @@
       status: "experimental",
     },
     {
-      name: "ComputeInsertionPositionBasedOnAnchorType",
-      status: "stable",
-    },
-    {
       name: "ComputePressure",
       status: {
         "Android": "",
