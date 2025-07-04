@@ -56,6 +56,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -1598,6 +1599,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
     public void testMakeCredential_isPaymentCredentialCreationPassedToFrameHost() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createErrorIntent(
@@ -1612,6 +1614,30 @@ public class Fido2CredentialRequestTest {
                 mOrigin,
                 mOrigin,
                 /* paymentOptions= */ null,
+                mCallback::onRegisterResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        Assert.assertTrue(mFrameHost.mIsPaymentCredentialCreation);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
+    public void
+            testMakeCredential_isPaymentCredentialCreationPassedToFrameHostWithPaymentOptions() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createErrorIntent(
+                        Fido2Api.INVALID_STATE_ERR,
+                        "One of the excluded credentials exists on the local device"));
+
+        mCreationOptions.isPaymentCredentialCreation = true;
+        Assert.assertFalse(mFrameHost.mIsPaymentCredentialCreation);
+        mRequest.handleMakeCredentialRequest(
+                mCreationOptions,
+                mBrowserOptions,
+                mOrigin,
+                mOrigin,
+                Fido2ApiTestHelper.createPaymentOptions(),
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);

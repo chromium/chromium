@@ -18,6 +18,11 @@ BrowserBoundKeyDeleter::BrowserBoundKeyDeleter(
 BrowserBoundKeyDeleter::~BrowserBoundKeyDeleter() = default;
 
 void BrowserBoundKeyDeleter::RemoveInvalidBBKs() {
+  if (!web_data_service_) {
+    // There are no browser bound keys to be removed when there is no
+    // PaymentManifestWebDataService.
+    return;
+  }
   if (!base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
     return;

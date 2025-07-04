@@ -4211,7 +4211,7 @@
     },
     {
       name: "SecurePaymentConfirmationBrowserBoundKeys",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationDebug",

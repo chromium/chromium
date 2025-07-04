@@ -86,6 +86,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -950,6 +951,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
+    GTEST_SKIP() << "With kSecurePaymentConfirmationBrowserBoundKeys the "
+                    "SecurePaymentConfirmationService directs the request to "
+                    "the internal authenticator.";
+  }
   if (!base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation)) {
     // SPC is not enabled in this configuration and so the `payment` extension
     // in the Javascript will be ignored.

@@ -5,10 +5,14 @@
 #ifndef CONTENT_BROWSER_PAYMENTS_STUB_SECURE_PAYMENT_CONFIRMATION_SERVICE_H_
 #define CONTENT_BROWSER_PAYMENTS_STUB_SECURE_PAYMENT_CONFIRMATION_SERVICE_H_
 
+#include <memory>
+
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 
 namespace content {
+
+class AuthenticatorCommonImpl;
 
 // A stub implementation of the SecurePaymentConfirmationService interface.
 // This exists to support content browsertests which cannot use the real
@@ -33,6 +37,7 @@ class StubSecurePaymentConfirmationService
       const StubSecurePaymentConfirmationService&) = delete;
   StubSecurePaymentConfirmationService& operator=(
       const StubSecurePaymentConfirmationService&) = delete;
+  ~StubSecurePaymentConfirmationService() override;
 
   // mojom::SecurePaymentConfirmationService:
   void SecurePaymentConfirmationAvailability(
@@ -54,6 +59,8 @@ class StubSecurePaymentConfirmationService
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
           receiver);
+
+  std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl_;
 };
 
 }  // namespace content
