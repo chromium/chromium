@@ -462,6 +462,7 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textAutospace
 textBox
 textBoxEdge
 textBoxTrim

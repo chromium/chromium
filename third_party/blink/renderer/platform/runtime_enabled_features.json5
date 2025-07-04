@@ -1578,7 +1578,7 @@
     {
       // crbug.com/1463890: CSS `text-autospace` property
       name: "CSSTextAutoSpace",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
