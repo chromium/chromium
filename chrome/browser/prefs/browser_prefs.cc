@@ -1021,6 +1021,12 @@ inline constexpr char kWebAuthnCablePairingsPrefName[] =
 inline constexpr char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Deprecated 07/2025.
+inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
+    "sync.first_full_sync_completed";
+inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
+    "google.services.second_last_gaia_id";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1414,12 +1420,17 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kSharingVapidKey);
   registry->RegisterBooleanPref(kHasSeenWelcomePage, false);
 
-  // Deprecated 06/2025
+  // Deprecated 06/2025.
   registry->RegisterBooleanPref(kStorageGarbageCollect, false);
   registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
   registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
   registry->RegisterStringPref(kLastUsedPairingFromSyncPublicKey, "");
   registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
+
+  // Deprecated 07/2025.
+  registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
+  registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
+                               std::string());
 }
 
 }  // namespace
@@ -2660,6 +2671,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kWebAuthnCablePairingsPrefName);
   profile_prefs->ClearPref(kLastUsedPairingFromSyncPublicKey);
   profile_prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
+
+  // Added 07/2025.
+  profile_prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
+  profile_prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

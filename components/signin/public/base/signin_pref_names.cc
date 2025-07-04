@@ -75,12 +75,6 @@ const char kGoogleServicesLastSyncingUsername[] =
 const char kGoogleServicesLastSignedInUsername[] =
     "google.services.last_signed_in_username";
 
-// Holds a copy of what `kGoogleServicesLastSyncingGaiaId` contained before it
-// was updated to contain the latest value, which happens when the Sync consent
-// is granted.
-const char kGoogleServicesSecondLastSyncingGaiaId[] =
-    "google.services.second_last_gaia_id";
-
 // Device id scoped to single signin. This device id will be regenerated if user
 // signs out and signs back in. When refresh token is requested for this user it
 // will be annotated with this device id.

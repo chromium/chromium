@@ -38,10 +38,6 @@ class BookmarkModelView;
 // truncating and the appending ' ' in some cases.
 std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title);
 
-// Returns the title for a bookmark node considering all supported fields.
-std::u16string NodeTitleFromSpecifics(
-    const sync_pb::BookmarkSpecifics& specifics);
-
 // Used to decide if entity needs to be reuploaded for each remote change.
 bool IsBookmarkEntityReuploadNeeded(
     const syncer::EntityData& remote_entity_data);

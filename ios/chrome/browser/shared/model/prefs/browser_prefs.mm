@@ -209,6 +209,12 @@ inline constexpr char kGaiaCookiePeriodicReportTimeDeprecated[] =
 inline constexpr char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Deprecated 07/2025.
+inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
+    "sync.first_full_sync_completed";
+inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
+    "google.services.second_last_gaia_id";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -1074,7 +1080,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kContextualSearchEnabled, std::string());
   registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 3);
 
-  // Deprecated 11/2024
+  // Deprecated 11/2024.
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
 
   // Deprecated 12/2024.
@@ -1104,6 +1110,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 06/2025.
   registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
   registry->RegisterStringPref(kSyncedDefaultSearchProviderGUID, std::string());
+
+  // Deprecated 07/2025.
+  registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
+  registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
+                               std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1289,7 +1300,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 04/2025.
   prefs->ClearPref(kMixedContentAutoupgradeEnabled);
 
-  // Added 04/2025
+  // Added 04/2025.
   MigrateBooleanFromUserDefaultsToProfilePrefs(
       @"SyncDisabledAlertShown", policy::policy_prefs::kSyncDisabledAlertShown,
       prefs);
@@ -1315,6 +1326,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(safety_check_prefs::kSafetyCheckInMagicStackDisabledPref);
   prefs->ClearPref(tab_resumption_prefs::kTabResumptionDisabledPref);
   prefs->ClearPref(kSyncedDefaultSearchProviderGUID);
+
+  // Added 07/2025.
+  prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
+  prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
 }
 
 void MigrateObsoleteUserDefault() {

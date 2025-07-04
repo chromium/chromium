@@ -200,6 +200,22 @@ bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
       base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
 }
 
+std::u16string NodeTitleFromSpecifics(
+    const sync_pb::BookmarkSpecifics& specifics) {
+  if (specifics.has_full_title()) {
+    return base::UTF8ToUTF16(specifics.full_title());
+  }
+
+  std::string node_title = specifics.legacy_canonicalized_title();
+  if (base::EndsWith(node_title, " ") &&
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
+    // Legacy clients added an extra space to the real title, so remove it here.
+    // See also FullTitleToLegacyCanonicalizedTitle().
+    node_title.pop_back();
+  }
+  return base::UTF8ToUTF16(node_title);
+}
+
 void MoveAllChildren(BookmarkModelView* model,
                      const bookmarks::BookmarkNode* old_parent,
                      const bookmarks::BookmarkNode* new_parent) {
@@ -240,22 +256,6 @@ std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
   base::TruncateUTF8ToByteSize(
       specifics_title, kLegacyCanonicalizedTitleLimitBytes, &specifics_title);
   return specifics_title;
-}
-
-std::u16string NodeTitleFromSpecifics(
-    const sync_pb::BookmarkSpecifics& specifics) {
-  if (specifics.has_full_title()) {
-    return base::UTF8ToUTF16(specifics.full_title());
-  }
-
-  std::string node_title = specifics.legacy_canonicalized_title();
-  if (base::EndsWith(node_title, " ") &&
-      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
-    // Legacy clients added an extra space to the real title, so remove it here.
-    // See also FullTitleToLegacyCanonicalizedTitle().
-    node_title.pop_back();
-  }
-  return base::UTF8ToUTF16(node_title);
 }
 
 bool IsBookmarkEntityReuploadNeeded(

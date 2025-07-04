@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/sync_mode.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/model/type_entities_count.h"
@@ -49,7 +48,6 @@ class DataTypeManager {
   struct ConfigureResult {
     ConfigureStatus status = ABORTED;
     DataTypeSet requested_types;
-    SyncMode sync_mode = SyncMode::kFull;
   };
 
   virtual ~DataTypeManager() = default;

@@ -364,10 +364,6 @@ class SyncServiceImpl : public SyncService,
       signin_metrics::AccessPoint access_point,
       signin::ConsentLevel consent_level);
 
-  // Computes the enum value that should be propagated via ConfigureContext.
-  PreviouslySyncingGaiaIdInfoForMetrics
-  DeterminePreviouslySyncingGaiaIdInfoForMetrics() const;
-
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
 

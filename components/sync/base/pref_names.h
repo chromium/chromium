@@ -31,11 +31,6 @@ inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
     "sync.has_setup_completed";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// A boolean representing whether or not configuration has completed at least
-// once since the legacy sync-the-feature was turned on.
-inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
-    "sync.first_full_sync_completed";
-
 // Boolean specifying whether to automatically sync all data types (including
 // future ones, as they're added).  If this is true, the following preferences
 // (kSyncBookmarks, kSyncPasswords, etc.) can all be ignored.

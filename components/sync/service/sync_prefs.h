@@ -82,12 +82,6 @@ class SyncPrefs {
   void ClearInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // A boolean representing whether or not configuration has completed at least
-  // once since the legacy sync-the-feature was turned on.
-  bool IsFirstSyncCompletedInFullSyncMode() const;
-  void SetFirstSyncCompletedInFullSyncMode();
-  void ClearFirstSyncCompletedInFullSyncMode();
-
   // Whether the "Sync everything" toggle is enabled. This flag only has an
   // effect if Sync-the-feature is enabled. Note that even if this is true, some
   // types may be disabled e.g. due to enterprise policy.

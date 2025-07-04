@@ -325,8 +325,6 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastSignedInUsername,
                                std::string());
-  registry->RegisterStringPref(prefs::kGoogleServicesSecondLastSyncingGaiaId,
-                               std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesAccountId, std::string());
   registry->RegisterBooleanPref(prefs::kGoogleServicesConsentedToSync, false);
   registry->RegisterStringPref(
@@ -551,12 +549,6 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
 
   SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
                             scoped_pref_commit);
-
-  // Before `kGoogleServicesLastSyncingGaiaId` is updated, keep a copy of the
-  // previous value, and store it in a separate pref.
-  scoped_pref_commit.SetString(
-      prefs::kGoogleServicesSecondLastSyncingGaiaId,
-      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
 
   // Go ahead and update the last signed in account info here as well. Once a
   // user is signed in the corresponding preferences should match. Doing it here

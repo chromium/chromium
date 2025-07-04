@@ -170,8 +170,6 @@ void DataTypeController::LoadModels(
   request.error_handler = base::BindRepeating(
       &DataTypeController::ReportModelError, weak_ptr_factory_.GetWeakPtr());
   request.authenticated_gaia_id = configure_context.authenticated_gaia_id;
-  request.previously_syncing_gaia_id_info =
-      configure_context.previously_syncing_gaia_id_info;
   request.cache_guid = configure_context.cache_guid;
   request.sync_mode = configure_context.sync_mode;
   request.configuration_start_time = configure_context.configuration_start_time;

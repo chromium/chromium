@@ -38,13 +38,6 @@ static_library("sync_bookmarks") {
     "synced_bookmark_tracker_entity.h",
   ]
 
-  if (!is_android && !is_ios && !is_chromeos) {
-    sources += [
-      "bookmark_model_merger_comparison_metrics.cc",
-      "bookmark_model_merger_comparison_metrics.h",
-    ]
-  }
-
   deps = [
     "//base",
     "//components/bookmarks/browser",
@@ -76,10 +69,6 @@ source_set("unit_tests") {
     "test_bookmark_model_view.cc",
     "test_bookmark_model_view.h",
   ]
-
-  if (!is_android && !is_ios && !is_chromeos) {
-    sources += [ "bookmark_model_merger_comparison_metrics_unittest.cc" ]
-  }
 
   deps = [
     ":sync_bookmarks",

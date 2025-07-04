@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/model/model_error.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -31,8 +30,6 @@ struct DataTypeActivationRequest {
 
   ModelErrorHandler error_handler;
   GaiaId authenticated_gaia_id;
-  PreviouslySyncingGaiaIdInfoForMetrics previously_syncing_gaia_id_info =
-      PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
 

@@ -121,22 +121,6 @@ void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
       {{syncer::BOOKMARKS, tracker.GetUnsyncedDataCount()}});
 }
 
-// Gaia-ID-related metrics should not be recorded on mobile platforms, where
-// Sync-the-feature is no longer a thing (excluding edge cases pending
-// migration). On desktop, use `wipe_model_upon_sync_disabled_behavior` as
-// a workaround to distinguish transport mode from full-sync mode, as
-// metrics should only be recorded for the latter.
-bool ShouldRecordPreviouslySyncingGaiaIdMetrics(
-    syncer::WipeModelUponSyncDisabledBehavior
-        wipe_model_upon_sync_disabled_behavior) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
-  return wipe_model_upon_sync_disabled_behavior ==
-         syncer::WipeModelUponSyncDisabledBehavior::kNever;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
-}
-
 }  // namespace
 
 BookmarkDataTypeProcessor::BookmarkDataTypeProcessor(
@@ -608,13 +592,8 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
         bookmark_model_, bookmark_model_observer_.get());
 
     bookmark_model_->EnsurePermanentNodesExist();
-    BookmarkModelMerger model_merger(
-        std::move(updates), bookmark_model_, favicon_service_,
-        bookmark_tracker_.get(),
-        ShouldRecordPreviouslySyncingGaiaIdMetrics(
-            wipe_model_upon_sync_disabled_behavior_)
-            ? activation_request_.previously_syncing_gaia_id_info
-            : syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified);
+    BookmarkModelMerger model_merger(std::move(updates), bookmark_model_,
+                                     favicon_service_, bookmark_tracker_.get());
     model_merger.Merge();
   }
 

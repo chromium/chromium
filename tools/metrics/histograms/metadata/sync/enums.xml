@@ -109,33 +109,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/engine/bookmark_update_preprocessing.cc:BookmarkGUIDSource) -->
 
-<!-- LINT.IfChange(BookmarkSetComparisonOutcome) -->
-
-<enum name="BookmarkSetComparisonOutcome">
-  <int value="0" label="Both datasets empty"/>
-  <int value="1" label="Local data empty (account data non-empty)"/>
-  <int value="2" label="Account data empty (local data non-empty)"/>
-  <int value="3" label="Both datasets equal and non-empty"/>
-  <int value="4"
-      label="Local data non-empty and a strict subset of account data"/>
-  <int value="5"
-      label="Intersection of local and account data [99%, 100%) of the total"/>
-  <int value="6"
-      label="Intersection of local and account data [95%, 99%) of the total"/>
-  <int value="7"
-      label="Intersection of local and account data [90%, 95%) of the total"/>
-  <int value="8"
-      label="Intersection of local and account data [50%, 90%) of the total"/>
-  <int value="9"
-      label="Intersection of local and account data [10%, 50%) of the total"/>
-  <int value="10"
-      label="Intersection of local and account data (0%, 10%) of the total"/>
-  <int value="11"
-      label="Local and account datasets are non-empty but do not intersect"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger_comparison_metrics.h:BookmarkSetComparisonOutcome) -->
-
 <!-- LINT.IfChange(BookmarksGUIDDuplicates) -->
 
 <enum name="BookmarksGUIDDuplicates">
@@ -203,33 +176,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_specifics_conversions.cc:InvalidBookmarkSpecificsError) -->
 
-<!-- LINT.IfChange(LegacyBookmarkSetComparisonOutcome) -->
-
-<enum name="LegacyBookmarkSetComparisonOutcome">
-  <int value="0" label="Both datasets empty"/>
-  <int value="1" label="Account data empty (local data non-empty)"/>
-  <int value="2" label="Local data empty (account data non-empty)"/>
-  <int value="3" label="Both datasets equal and non-empty"/>
-  <int value="4"
-      label="Account data non-empty and a strict subset of local data"/>
-  <int value="5"
-      label="Intersection of local and account data [99%, 100%) of the total"/>
-  <int value="6"
-      label="Intersection of local and account data [95%, 99%) of the total"/>
-  <int value="7"
-      label="Intersection of local and account data [90%, 95%) of the total"/>
-  <int value="8"
-      label="Intersection of local and account data [50%, 90%) of the total"/>
-  <int value="9"
-      label="Intersection of local and account data [10%, 50%) of the total"/>
-  <int value="10"
-      label="Intersection of local and account data (0%, 10%) of the total"/>
-  <int value="11"
-      label="Local and account datasets are non-empty but do not intersect"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics_unittests.cc:LegacyBookmarkSetComparisonOutcome) -->
-
 <!-- LINT.IfChange(NudgedUpdateResult) -->
 
 <enum name="NudgedUpdateResult">
@@ -279,18 +225,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
-
-<!-- LINT.IfChange(PreviouslySyncingGaiaIdInfoForMetrics) -->
-
-<enum name="PreviouslySyncingGaiaIdInfoForMetrics">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="(deprecated) Not enough information"/>
-  <int value="2" label="Sync feature never previously turned on"/>
-  <int value="3" label="Current Gaia ID matches previous with Sync on"/>
-  <int value="4" label="Current Gaia ID differs previous with Sync on"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/base/previously_syncing_gaia_id_info_for_metrics.h:PreviouslySyncingGaiaIdInfoForMetrics) -->
 
 <!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
