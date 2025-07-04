@@ -5777,8 +5777,8 @@
   },
   {
     "name": "invalidate-search-engine-choice-on-device-restore-detection",
-    "owners": [ "dgn@chromium.org", "chrome-regionalcapabilities@google.com" ],
-    "expiry_milestone": 140
+    "owners": [ "dgn@google.com", "jlebel@google.com","chrome-regionalcapabilities@google.com" ],
+    "expiry_milestone": 143
   },
   {
     "name": "ios-best-features-screen",
@@ -5932,11 +5932,6 @@
       "tmartino@chromium.org",
       "bling-transactions@google.com"
     ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "ios-prompt-search-engine-choice-after-device-restore",
-    "owners": ["jlebel@google.com", "dgn@google.com", "chrome-waffle-eng@google.com"],
     "expiry_milestone": 140
   },
   {
