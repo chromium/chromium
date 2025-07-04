@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.media.capture;
 
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.media.Image;
@@ -31,8 +32,11 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                 Rect cropRect);
 
         void onClose(ImageHandler imageHandler);
+
+        void recreateImageHandler(ScreenCapture.CaptureState captureState);
     }
 
+    private final ScreenCapture.CaptureState mCaptureState;
     private final Delegate mDelegate;
     private final Handler mHandler;
     private final ImageReader mImageReader;
@@ -47,6 +51,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * @param handler The handler on which to run callbacks.
      */
     ImageHandler(ScreenCapture.CaptureState captureState, Delegate delegate, Handler handler) {
+        mCaptureState = captureState;
         mDelegate = delegate;
         mHandler = handler;
         mImageReader =
@@ -60,6 +65,10 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
 
     Surface getSurface() {
         return mImageReader.getSurface();
+    }
+
+    ScreenCapture.CaptureState getCaptureState() {
+        return mCaptureState;
     }
 
     /**
@@ -105,11 +114,24 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
             // This happens if we have acquired the maximum number of images without closing
             // them. We will eventually close the images so this is not an error condition.
         } catch (UnsupportedOperationException ex) {
-            // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
-            // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
-            // case.
-            throw ex;
+            // This can happen if the `PixelFormat` does not match. We should recreate the
+            // `ImageReader` in this case. But there is no way to know what format the producer
+            // is using, so we just need to try a bunch of common ones.
+            final int recreateFormat =
+                    switch (mCaptureState.format) {
+                        case PixelFormat.RGBA_8888 -> ImageFormat.YUV_420_888;
+                        default -> throw new IllegalStateException(
+                                "No fallback format remaining from: " + mCaptureState.format);
+                    };
+
+            mDelegate.recreateImageHandler(
+                    new ScreenCapture.CaptureState(
+                            mCaptureState.width,
+                            mCaptureState.height,
+                            mCaptureState.dpi,
+                            recreateFormat));
         }
+
         return null;
     }
 
@@ -152,6 +174,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                         image.getCropRect());
                 break;
             default:
+                // TODO(crbug.com/352187279): Support YUV420.
                 throw new IllegalStateException("Unexpected image format: " + image.getFormat());
         }
     }

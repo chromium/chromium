@@ -204,12 +204,14 @@ public class ScreenCapture implements ImageHandler.Delegate {
             final Context context = maybeGetContext();
             if (context == null) return;
 
+            final int format =
+                    mImageHandlerQueue.get(mImageHandlerQueue.size() - 1).getCaptureState().format;
             recreateListener(
                     new CaptureState(
                             width,
                             height,
                             context.getResources().getConfiguration().densityDpi,
-                            PixelFormat.RGBA_8888));
+                            format));
         }
 
         @Override
@@ -299,6 +301,14 @@ public class ScreenCapture implements ImageHandler.Delegate {
     public void onClose(ImageHandler imageHandler) {
         final boolean removed = mImageHandlerQueue.remove(imageHandler);
         assert removed;
+    }
+
+    @Override
+    public void recreateImageHandler(CaptureState captureState) {
+        // If the native side was destroyed, then don't bother recreating the ImageHandler.
+        if (mNativeDesktopCapturerAndroid == 0) return;
+
+        recreateListener(captureState);
     }
 
     @NativeMethods
