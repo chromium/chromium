@@ -477,6 +477,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Manage profile item in the app menu"/>
   <int value="15" label="Add new profile item in the app menu"/>
   <int value="16" label="Glic Manager"/>
+  <int value="17" label="On startup create profile with email"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->

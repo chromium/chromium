@@ -52,6 +52,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kGlicLaunchButton,
     AccessPoint::kNonModalSigninPasswordPromo,
     AccessPoint::kNonModalSigninBookmarkPromo,
+    AccessPoint::kUserManagerWithPrefilledEmail,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -240,6 +241,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "NonModalSigninPasswordPromo";
       case AccessPoint::kNonModalSigninBookmarkPromo:
         return "NonModalSigninBookmarkPromo";
+      case AccessPoint::kUserManagerWithPrefilledEmail:
+        return "UserManagerWithPrefilledEmail";
     }
   }
 };

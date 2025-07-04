@@ -35,7 +35,8 @@ void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(
         StepSwitchFinishedCallback step_switch_finished_callback,
         signin_metrics::AccessPoint access_point,
-        base::FilePath profile_path) {
+        base::FilePath profile_path,
+        const std::string& initial_email) {
   DCHECK_NE(Step::kAccountSelection, current_step());
   DCHECK_NE(Step::kPostSignInFlow, current_step());
 
@@ -46,17 +47,23 @@ void ProfileManagementFlowControllerImpl::
         ProfileManagementStepController::CreateForDiceSignIn(
             host(),
             std::make_unique<ProfilePickerDiceSignInProvider>(
-                host(), access_point, std::move(profile_path)),
+                host(), access_point, initial_email, std::move(profile_path)),
             base::BindOnce(
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
                 // Binding as Unretained as `this`
                 // outlives the step controllers.
                 base::Unretained(this))));
   }
+
+  auto pop_back_step = current_step();
+  if (current_step() == Step::kUnknown) {
+    CHECK(!initial_email.empty());
+    pop_back_step = Step::kProfilePicker;
+  }
   SwitchToStep(Step::kAccountSelection,
                /*reset_state=*/step_needs_registration,
                std::move(step_switch_finished_callback),
-               CreateSwitchToStepPopCallback(current_step()));
+               CreateSwitchToStepPopCallback(pop_back_step));
 }
 #endif
 
