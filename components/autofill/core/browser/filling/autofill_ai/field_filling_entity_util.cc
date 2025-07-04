@@ -27,7 +27,7 @@ namespace autofill {
 namespace {
 
 // Looks for the day, month, or year from `attribute` to fill into `field`.
-std::optional<std::u16string> GetValueForDateSelectControl(
+std::optional<std::u16string> GetValueForDateSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
     const std::string& app_locale) {
@@ -36,7 +36,7 @@ std::optional<std::u16string> GetValueForDateSelectControl(
     return std::nullopt;
   }
 
-  auto get_part = [&](std::u16string format_string, uint32_t min = 0,
+  auto get_part = [&](const std::u16string& format_string, uint32_t min = 0,
                       uint32_t max =
                           std::numeric_limits<uint32_t>::max()) -> uint32_t {
     std::u16string s = attribute.GetInfo(field.Type().GetStorableType(),
@@ -84,14 +84,13 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
   }
 }
 
-std::u16string GetValueForSelectControl(const AttributeInstance& attribute,
-                                        const AutofillField& field,
-                                        const std::string& app_locale,
-                                        AddressNormalizer* address_normalizer) {
+std::u16string GetValueForSelect(const AttributeInstance& attribute,
+                                 const AutofillField& field,
+                                 const std::string& app_locale,
+                                 AddressNormalizer* address_normalizer) {
   FieldType type = field.Type().GetStorableType();
   if (IsDateFieldType(type)) {
-    return GetValueForDateSelectControl(attribute, field, app_locale)
-        .value_or(u"");
+    return GetValueForDateSelect(attribute, field, app_locale).value_or(u"");
   }
   std::u16string fill_value = GetValueForInput(attribute, field, app_locale);
   if (fill_value.empty()) {
@@ -195,8 +194,7 @@ std::u16string GetFillValueForEntity(
 
   std::u16string fill_value =
       field.IsSelectElement()
-          ? GetValueForSelectControl(*attribute, field, app_locale,
-                                     address_normalizer)
+          ? GetValueForSelect(*attribute, field, app_locale, address_normalizer)
           : GetValueForInput(*attribute, field, app_locale);
 
   const bool should_obfuscate =

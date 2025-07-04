@@ -71,10 +71,6 @@ class EntityTable;
 // `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
 // how this problem is handled.
 class AttributeInstance final {
-  using StateInfo = base::StrongAlias<class StateInfoTag, std::u16string>;
-  using InfoStructure =
-      std::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
-
  public:
   // Transparent less-than relation based on the AttributeType.
   struct CompareByType;
@@ -173,6 +169,10 @@ class AttributeInstance final {
                          const AttributeInstance& rhs) = default;
 
  private:
+  using StateInfo = base::StrongAlias<class StateInfoTag, std::u16string>;
+  using InfoStructure =
+      std::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
+
   FieldType GetNormalizedFieldType(FieldType field_type) const;
 
   AttributeType type_;
