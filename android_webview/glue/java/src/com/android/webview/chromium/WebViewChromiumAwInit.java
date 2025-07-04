@@ -655,7 +655,7 @@ public class WebViewChromiumAwInit {
                         longestUiBlockingTaskTimeMs,
                         Math.max(
                                 browserController.getContentStartDuration(),
-                                browserController.getFlushStartupTasksDuration()));
+                                browserController.getStartupTasksLongestBlockingDuration()));
 
         // Record histograms
         String startupModeString =

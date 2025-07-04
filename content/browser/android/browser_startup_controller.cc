@@ -16,9 +16,11 @@ using base::android::JavaParamRef;
 
 namespace content {
 
-void BrowserStartupComplete(int result) {
+void BrowserStartupComplete(int result,
+                            base::TimeDelta longest_blocking_duration) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_BrowserStartupControllerImpl_browserStartupComplete(env, result);
+  Java_BrowserStartupControllerImpl_browserStartupComplete(
+      env, result, longest_blocking_duration.InMilliseconds());
 }
 
 void MinimalBrowserStartupComplete() {

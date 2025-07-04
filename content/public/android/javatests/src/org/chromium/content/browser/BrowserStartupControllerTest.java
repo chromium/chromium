@@ -65,7 +65,8 @@ public class BrowserStartupControllerTest {
         void flushStartupTasks() {
             assert mFullBrowserLaunchCounter > 0;
             mFlushStartupTasksCalled = true;
-            BrowserStartupControllerImpl.browserStartupComplete(mStartupResult);
+            BrowserStartupControllerImpl.browserStartupComplete(
+                    mStartupResult, /* longestBlockingDuration= */ 0);
         }
 
         private int kickOffStartup(boolean startMinimalBrowser) {
@@ -74,7 +75,8 @@ public class BrowserStartupControllerTest {
                 mMinimalBrowserStarted = true;
             }
             if (!startMinimalBrowser) {
-                BrowserStartupControllerImpl.browserStartupComplete(mStartupResult);
+                BrowserStartupControllerImpl.browserStartupComplete(
+                        mStartupResult, /* longestBlockingDuration= */ 0);
             }
             return mStartupResult;
         }

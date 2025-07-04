@@ -129,7 +129,8 @@ public interface BrowserStartupController {
     long getContentStartDuration();
 
     /**
-     * @return how long it took to flush startup tasks.
+     * @return how long it took the longest startup task to run. If flushed, this is the total of
+     *     all the startup tasks.
      */
-    long getFlushStartupTasksDuration();
+    long getStartupTasksLongestBlockingDuration();
 }

@@ -9,11 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/common/content_export.h"
-
-#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_main_runner.h"
 
 namespace content {
@@ -37,9 +35,11 @@ class CONTENT_EXPORT StartupTaskRunner {
 
  public:
   // Constructor: Note that |startup_complete_callback| is optional. If it is
-  // not null it will be called once all the startup tasks have run.
-  StartupTaskRunner(base::OnceCallback<void(int)> startup_complete_callback,
-                    scoped_refptr<base::SingleThreadTaskRunner> proxy);
+  // not null it will be called, once all the startup tasks have run, with the
+  // result of running tasks and the duration spent blocking the UI thread.
+  StartupTaskRunner(
+      base::OnceCallback<void(int, base::TimeDelta)> startup_complete_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> proxy);
 
   StartupTaskRunner(const StartupTaskRunner&) = delete;
   StartupTaskRunner& operator=(const StartupTaskRunner&) = delete;
@@ -61,8 +61,12 @@ class CONTENT_EXPORT StartupTaskRunner {
   std::list<StartupTask> task_list_;
   void WrappedTask();
 
-  base::OnceCallback<void(int)> startup_complete_callback_;
+  base::OnceCallback<void(int, base::TimeDelta)> startup_complete_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
+  // Longest time spent blocking the thread when running the tasks. This is
+  // either the max duration of each individual task when running async or the
+  // time it took to run all tasks synchronously.
+  base::TimeDelta longest_blocking_duration_;
 };
 
 }  // namespace content

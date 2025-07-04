@@ -64,9 +64,10 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
     @VisibleForTesting
     @CalledByNative
-    static void browserStartupComplete(int result) {
+    static void browserStartupComplete(int result, long longestBlockingDuration) {
         if (sInstance != null) {
             sInstance.executeEnqueuedCallbacks(result);
+            sInstance.recordStartupTasksLongestBlockingDuration(longestBlockingDuration);
         }
     }
 
@@ -130,7 +131,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     private @Nullable TracingControllerAndroidImpl mTracingController;
 
     private long mContentStartDurationMs;
-    private long mFlushStartupTasksDurationMs;
+    private long mStartupTasksLongestBlockingDurationMs;
 
     BrowserStartupControllerImpl() {
         mAsyncStartupCallbacks = new ArrayList<>();
@@ -346,7 +347,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("flushStartupTasks")) {
             long startTime = SystemClock.uptimeMillis();
             BrowserStartupControllerImplJni.get().flushStartupTasks();
-            recordFlushStartupTasksDuration(SystemClock.uptimeMillis() - startTime);
+            recordStartupTasksLongestBlockingDuration(SystemClock.uptimeMillis() - startTime);
         }
     }
 
@@ -390,8 +391,8 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     }
 
     @Override
-    public long getFlushStartupTasksDuration() {
-        return mFlushStartupTasksDurationMs;
+    public long getStartupTasksLongestBlockingDuration() {
+        return mStartupTasksLongestBlockingDurationMs;
     }
 
     /**
@@ -478,9 +479,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         mContentStartDurationMs = Math.max(mContentStartDurationMs, contentStartDurationMs);
     }
 
-    private void recordFlushStartupTasksDuration(long flushStartupTasksDurationMs) {
-        mFlushStartupTasksDurationMs =
-                Math.max(mFlushStartupTasksDurationMs, flushStartupTasksDurationMs);
+    private void recordStartupTasksLongestBlockingDuration(long startupTasksDurationMaxMs) {
+        mStartupTasksLongestBlockingDurationMs =
+                Math.max(mStartupTasksLongestBlockingDurationMs, startupTasksDurationMaxMs);
     }
 
     @VisibleForTesting

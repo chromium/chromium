@@ -29,7 +29,7 @@ int observer_calls = 0;
 int task_count = 0;
 int observer_result;
 
-void Observer(int result) {
+void Observer(int result, base::TimeDelta max_task_duration) {
   observer_calls++;
   observer_result = result;
 }
@@ -85,7 +85,7 @@ class MockTaskRunner {
 
 class TaskRunnerProxy : public base::SingleThreadTaskRunner {
  public:
-  TaskRunnerProxy(MockTaskRunner* mock) : mock_(mock) {}
+  explicit TaskRunnerProxy(MockTaskRunner* mock) : mock_(mock) {}
   bool RunsTasksInCurrentSequence() const override { return true; }
   bool PostDelayedTask(const base::Location& location,
                        base::OnceClosure closure,
@@ -154,7 +154,8 @@ TEST_F(StartupTaskRunnerTest, NullObserver) {
   EXPECT_CALL(mock_runner, PostDelayedTask(_, _)).Times(0);
   EXPECT_CALL(mock_runner, PostNonNestableDelayedTask(_, _)).Times(0);
 
-  StartupTaskRunner runner(base::OnceCallback<void(int)>(), proxy);
+  StartupTaskRunner runner(base::OnceCallback<void(int, base::TimeDelta)>(),
+                           proxy);
 
   StartupTask task1 =
       base::BindOnce(&StartupTaskRunnerTest::Task1, base::Unretained(this));
@@ -287,10 +288,10 @@ TEST_F(StartupTaskRunnerTest, AsynchronousExecutionFailedTask) {
   EXPECT_EQ(GetLastTask(), 0);
   runner.StartRunningTasksAsync();
 
-  // No tasks should have run yet, since we the message loop hasn't run.
+  // No tasks should have run yet, since the message loop hasn't run.
   EXPECT_EQ(GetLastTask(), 0);
 
-  // Fake the actual message loop. Each time a task is run a new task should
+  // Fake the actual message loop. Each time a task is run, a new task should
   // be added to the queue, hence updating "task". The loop should actually run
   // at most twice (once for the failed task plus possibly once for the
   // observer), the "4" is a backstop.

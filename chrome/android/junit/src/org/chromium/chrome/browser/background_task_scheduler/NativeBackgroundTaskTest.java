@@ -125,7 +125,7 @@ public class NativeBackgroundTaskTest {
         }
 
         @Override
-        public long getFlushStartupTasksDuration() {
+        public long getStartupTasksLongestBlockingDuration() {
             return 0L;
         }
 
