@@ -55,7 +55,7 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 const CGFloat kFeedContainerExtraHeight = 500;
 
 // The spacing for the quick actions buttons.
-const CGFloat kQuickActionSpacingTop = 6.0;
+const CGFloat kQuickActionSpacingTop = 3.0;
 const CGFloat kQuickActionSpacingBotttom = 19.0;
 
 // Vertical spacing between modules.

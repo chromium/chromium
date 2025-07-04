@@ -119,14 +119,6 @@ const CGFloat kMIACircleAnimationSizeEnlarged = 48.0;
 // single button to avoid missing touches.
 const CGFloat kMIAButtonTouchAreaExtend = 5.0;
 
-// The amount to inset the Fakebox from the rest of the modules on Home.
-CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
-  if (IsSplitToolbarMode(environment) && ShouldEnlargeLogoAndFakebox()) {
-    return kLargeFakeboxHorizontalMargin;
-  }
-  return 0.0;
-}
-
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
   return UIAccessibilityIsReduceTransparencyEnabled()
@@ -247,6 +239,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 @property(nonatomic, readonly) BOOL shouldShowMIAEntrypoint;
 // Whether the fakebox is enlarged due to a MIA entry point variation.
 @property(nonatomic, readonly) BOOL useMIAEnlargedFakebox;
+// The amount to inset the Fakebox from the rest of the modules on Home.
+@property(nonatomic, readonly) CGFloat fakeboxHorizontalMargin;
 
 @end
 
@@ -447,10 +441,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       constraintEqualToAnchor:searchField.topAnchor];
   self.fakeLocationBarLeadingConstraint = [self.fakeLocationBar.leadingAnchor
       constraintEqualToAnchor:searchField.leadingAnchor
-                     constant:FakeboxHorizontalMargin(self)];
+                     constant:self.fakeboxHorizontalMargin];
   self.fakeLocationBarTrailingConstraint = [self.fakeLocationBar.trailingAnchor
       constraintEqualToAnchor:searchField.trailingAnchor
-                     constant:FakeboxHorizontalMargin(self)];
+                     constant:self.fakeboxHorizontalMargin];
   self.fakeLocationBarHeightConstraint = [self.fakeLocationBar.heightAnchor
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
   [NSLayoutConstraint activateConstraints:@[
@@ -648,7 +642,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
-  CGFloat horizontalMargin = FakeboxHorizontalMargin(self);
+  CGFloat horizontalMargin = self.fakeboxHorizontalMargin;
   self.fakeLocationBarLeadingConstraint.constant = Interpolate(
       horizontalMargin,
       safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
@@ -1244,6 +1238,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 #pragma mark - helpers
+
+- (CGFloat)fakeboxHorizontalMargin {
+  if (IsSplitToolbarMode(self) && ShouldEnlargeLogoAndFakebox() &&
+      !ShouldEnlargeNTPFakeboxForMIA()) {
+    return kLargeFakeboxHorizontalMargin;
+  }
+  return 0.0;
+}
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
