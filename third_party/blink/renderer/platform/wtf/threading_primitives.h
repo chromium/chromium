@@ -44,9 +44,6 @@
 
 namespace blink {
 class DeferredTaskHandler;
-}
-
-namespace WTF {
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
@@ -84,8 +81,6 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
   FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockThreads);
 };
 
-}  // namespace WTF
-
-using WTF::RecursiveMutex;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_

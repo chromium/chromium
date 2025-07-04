@@ -10,7 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
 class LambdaThreadDelegate : public base::PlatformThread::Delegate {
@@ -85,4 +85,4 @@ TEST(RecursiveMutexTest, LockUnlockThreads) NO_THREAD_SAFETY_ANALYSIS {
   mutex.unlock();
 }
 
-}  // namespace WTF
+}  // namespace blink
