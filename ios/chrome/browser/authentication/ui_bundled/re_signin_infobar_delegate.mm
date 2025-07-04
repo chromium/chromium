@@ -47,8 +47,7 @@ std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
     return nullptr;
   }
 
-  if (authentication_service->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     authentication_service->ResetReauthPromptForSignInAndSync();
     return nullptr;
   }
