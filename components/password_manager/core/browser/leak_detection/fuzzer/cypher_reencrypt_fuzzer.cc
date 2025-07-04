@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"

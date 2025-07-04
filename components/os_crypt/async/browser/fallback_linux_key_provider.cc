@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
 
+#include <array>
 #include <utility>
 
 #include "components/os_crypt/async/common/algorithm.mojom.h"

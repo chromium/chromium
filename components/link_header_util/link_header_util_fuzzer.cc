@@ -5,6 +5,7 @@
 #include "components/link_header_util/link_header_util.h"
 
 #include <assert.h>
+#include <stdint.h>
 
 #include <optional>
 #include <string>

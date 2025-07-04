@@ -6,6 +6,8 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_
 
+#include <array>
+
 #include "chrome/browser/ui/color/chrome_color_id.h"
 
 enum class OmniboxPartState { NORMAL, HOVERED, SELECTED, IPH, TOOLBELT };
