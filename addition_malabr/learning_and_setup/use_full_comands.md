@@ -1,42 +1,43 @@
 ### PODMAN
 
-build podman
+1. build podman
 
-```
+```bash
 podman build -t mycppserver .
 ```
 
-run podman container
+2. run podman container
 
-```
+```bash
 podman run -d -p 5000:5000 -v ./uploads:/app/uploads:rw --name cpp-server-container mycppserver;
 ```
 
-watch the container logs
-```
+3. watch the container logs
+
+```bash
 podman logs -f cpp-server-container
 ```
 
-stop podman container
+4. stop podman container
 
-```
+```bash
 podman stop cpp-server-container
 ```
 
-remove podman container
-```
+5. remove podman container
+
+```bash
 podman rm cpp-server-container
 ```
 
-### DOCKER
+6. to list all image
 
-to list all image
-
-```
-docker system df
+```bash
+podman system df
 ```
 
-to remove all image
-```
-docker system prune -af --volumes
+7. to remove all image
+
+```bash
+podman system prune -af --volumes
 ```
