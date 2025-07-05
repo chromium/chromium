@@ -903,7 +903,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama di kartu</translation>
 <translation id="4808744395915275922">Update</translation>
-<translation id="4813345808229079766">Sambungan</translation>
+<translation id="4813345808229079766">Koneksi</translation>
 <translation id="4821595350501541683">Tab ditutup dan data penjelajahan dihapus</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 lainnya}other{{domain} dan {count} lainnya}}</translation>
