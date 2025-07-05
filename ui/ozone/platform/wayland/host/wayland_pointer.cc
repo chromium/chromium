@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 #include <linux/input.h>
+#include <wayland-util.h>
 
 #include <optional>
 
@@ -165,8 +166,14 @@ void WaylandPointer::OnAxis(void* data,
                             uint32_t time,
                             uint32_t axis,
                             wl_fixed_t value) {
-  const double delta =
-      -wl_fixed_to_double(value) * MouseWheelEvent::kWheelDelta;
+  // Wayland compositors send axis events with values in the surface coordinate
+  // space. They send a value of 10 per mouse wheel click by convention, so
+  // clients (e.g. GTK+) typically scale down by this amount to convert to
+  // discrete step coordinates. wl_pointer version 5 improves the situation by
+  // adding axis sources and discrete axis events.
+  const double kAxisValueScale = 10.0;
+  const double delta = -wl_fixed_to_double(value) / kAxisValueScale *
+                       MouseWheelEvent::kWheelDelta;
   const auto timestamp = wl::EventMillisecondsToTimeTicks(time);
   auto* self = static_cast<WaylandPointer*>(data);
   self->OnAxisImpl(delta, axis, timestamp, /*is_high_resolution=*/false);
@@ -219,8 +226,7 @@ void WaylandPointer::OnAxisValue120(void* data,
                                     wl_pointer* pointer,
                                     uint32_t axis,
                                     int32_t value120) {
-  static const double kDetentAngleDegrees = 15.0;
-  const double delta = -value120 * kDetentAngleDegrees;
+  const double delta = -value120;
   auto* self = static_cast<WaylandPointer*>(data);
   self->OnAxisImpl(delta, axis, /*timestamp=*/std::nullopt,
                    /*is_high_resolution=*/true);

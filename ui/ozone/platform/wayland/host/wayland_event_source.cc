@@ -462,21 +462,15 @@ void WaylandEventSource::OnPointerAxisEvent(
     const gfx::Vector2dF& offset,
     std::optional<base::TimeTicks> timestamp,
     bool is_high_resolution) {
-  // Wayland compositors send axis events with values in the surface coordinate
-  // space. They send a value of 10 per mouse wheel click by convention, so
-  // clients (e.g. GTK+) typically scale down by this amount to convert to
-  // discrete step coordinates. wl_pointer version 5 improves the situation by
-  // adding axis sources and discrete axis events.
-  static const double kAxisValueScale = 10.0;
   EnsurePointerScrollData(timestamp);
   if (is_high_resolution == pointer_scroll_data_->is_high_resolution) {
-    pointer_scroll_data_->dx += offset.x() / kAxisValueScale;
-    pointer_scroll_data_->dy += offset.y() / kAxisValueScale;
+    pointer_scroll_data_->dx += offset.x();
+    pointer_scroll_data_->dy += offset.y();
   } else if (!is_high_resolution) {
     return;
   } else {
-    pointer_scroll_data_->dx = offset.x() / kAxisValueScale;
-    pointer_scroll_data_->dy = offset.y() / kAxisValueScale;
+    pointer_scroll_data_->dx = offset.x();
+    pointer_scroll_data_->dy = offset.y();
   }
   pointer_scroll_data_->is_high_resolution = is_high_resolution;
 }
