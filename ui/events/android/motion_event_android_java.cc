@@ -70,7 +70,7 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                          pointer0,
                          pointer1),
       is_latest_event_time_resampled_(is_latest_event_time_resampled) {
-  DCHECK(event);
+  CHECK(event);
   event_.Reset(env, event);
   if (GetPointerCount() > MAX_POINTERS_TO_CACHE || GetHistorySize() > 0) {
     DCHECK(event_.obj());
