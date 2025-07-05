@@ -2170,6 +2170,7 @@ test("content_browsertests") {
       "//ui/accessibility:ax_base_android",
       "//ui/android:android",
       "//ui/android:test_support",
+      "//ui/events:motionevent_jni_headers",
       "//ui/touch_selection:touch_selection",
     ]
     android_manifest =
@@ -3453,6 +3454,7 @@ test("content_unittests") {
       "//ui/android:android",
       "//ui/android:test_support",
       "//ui/android:ui_java_test_support",
+      "//ui/events:motionevent_jni_headers",
     ]
 
     if (enable_chrome_android_internal) {

@@ -422,6 +422,7 @@ public class EventForwarder {
                     EventForwarderJni.get()
                             .onMouseEvent(
                                     mNativeEventForwarder,
+                                    event,
                                     MotionEventUtils.getEventTimeNanos(event),
                                     MotionEvent.ACTION_BUTTON_RELEASE,
                                     event.getX(),
@@ -498,6 +499,7 @@ public class EventForwarder {
         EventForwarderJni.get()
                 .onMouseEvent(
                         mNativeEventForwarder,
+                        event,
                         MotionEventUtils.getEventTimeNanos(event),
                         eventAction,
                         event.getX(),
@@ -755,6 +757,7 @@ public class EventForwarder {
             EventForwarderJni.get()
                     .onMouseEvent(
                             mNativeEventForwarder,
+                            event,
                             MotionEventUtils.getEventTimeNanos(event),
                             event.getActionMasked(),
                             event.getX(),
@@ -892,6 +895,7 @@ public class EventForwarder {
 
         void onMouseEvent(
                 long nativeEventForwarder,
+                MotionEvent event,
                 long timeNs,
                 int action,
                 float x,

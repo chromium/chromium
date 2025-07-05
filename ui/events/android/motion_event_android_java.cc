@@ -43,7 +43,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jint android_gesture_classification,
     jint android_button_state,
     jint android_meta_state,
-    jint source,
     jfloat raw_offset_x_pixels,
     jfloat raw_offset_y_pixels,
     jboolean for_touch_handle,
@@ -65,13 +64,13 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                          android_gesture_classification,
                          android_button_state,
                          android_meta_state,
-                         source,
                          raw_offset_x_pixels,
                          raw_offset_y_pixels,
                          for_touch_handle,
                          pointer0,
                          pointer1),
       is_latest_event_time_resampled_(is_latest_event_time_resampled) {
+  DCHECK(event);
   event_.Reset(env, event);
   if (GetPointerCount() > MAX_POINTERS_TO_CACHE || GetHistorySize() > 0) {
     DCHECK(event_.obj());
@@ -94,7 +93,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jint android_gesture_classification,
     jint android_button_state,
     jint android_meta_state,
-    jint source,
     jfloat raw_offset_x_pixels,
     jfloat raw_offset_y_pixels,
     jboolean for_touch_handle,
@@ -117,7 +115,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                              android_gesture_classification,
                              android_button_state,
                              android_meta_state,
-                             source,
                              raw_offset_x_pixels,
                              raw_offset_y_pixels,
                              for_touch_handle,
@@ -187,6 +184,11 @@ float MotionEventAndroidJava::GetYPix(size_t pointer_index) const {
   }
   return JNI_MotionEvent::Java_MotionEvent_getY(AttachCurrentThread(), event_,
                                                 pointer_index);
+}
+
+int MotionEventAndroidJava::GetSource() const {
+  JNIEnv* env = AttachCurrentThread();
+  return JNI_MotionEvent::Java_MotionEvent_getSource(env, event_);
 }
 
 float MotionEventAndroidJava::GetTouchMajor(size_t pointer_index) const {

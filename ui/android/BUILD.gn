@@ -812,6 +812,7 @@ test("ui_android_unittests") {
     "//ui/display",
     "//ui/display/util:util",
     "//ui/events",
+    "//ui/events:motionevent_jni_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/resources:ui_test_pak",

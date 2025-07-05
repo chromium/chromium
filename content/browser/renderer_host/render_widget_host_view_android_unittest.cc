@@ -30,6 +30,7 @@
 #include "ui/android/window_android.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
 namespace content {
 
@@ -476,10 +477,15 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
+
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down(
-      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, false, &p, nullptr);
+      0, false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
@@ -499,10 +505,15 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
+
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down(
-      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, false, &p, nullptr);
+      0, false, &p, nullptr);
   rwhva->OnTouchEvent(touch_down);
 
   auto& gesture_provider = rwhva->GetGestureProvider();
@@ -563,19 +574,29 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
+
+  base::android::ScopedJavaLocalRef<jobject> obj1 =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down1(
-      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj1.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, false, &p, nullptr);
+      0, false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   rwhva->OnTouchEvent(touch_down1);
 
   time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+
+  base::android::ScopedJavaLocalRef<jobject> obj2 =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down2(
-      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj2.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, false, &p, nullptr);
+      0, false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down2);

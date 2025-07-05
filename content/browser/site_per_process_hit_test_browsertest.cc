@@ -75,9 +75,11 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/test/mock_overscroll_refresh_handler_android.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #endif
 
 namespace content {
@@ -811,10 +813,15 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
     const ui::MotionEventAndroid::Pointer& pointer) {
   float pix_to_dip = 1.0;
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   return ui::MotionEventAndroidJava(
-      nullptr, nullptr, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
+      env, obj.obj(), pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
       down_time, ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, false, &pointer, nullptr, false);
+      0, 0, 0, 0, 0, false, &pointer, nullptr, false);
 }
 #endif
 }  // namespace

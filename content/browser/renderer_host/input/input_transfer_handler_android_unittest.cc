@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/velocity_tracker/motion_event_generic.h"
 
 namespace content {
@@ -59,10 +61,16 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
     const ui::MotionEventAndroid::Pointer& pointer) {
   float pix_to_dip = 1.0;
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
+
   return ui::MotionEventAndroidJava(
-      nullptr, nullptr, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
+      env, obj.obj(), pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
       down_time, ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, false, &pointer, nullptr, false);
+      0, 0, 0, 0, 0, false, &pointer, nullptr, false);
 }
 
 }  // namespace

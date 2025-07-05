@@ -40,7 +40,6 @@ MotionEventAndroidNative::MotionEventAndroidNative(
     int android_gesture_classification,
     int android_button_state,
     int android_meta_state,
-    int source,
     float raw_offset_x_pixels,
     float raw_offset_y_pixels,
     bool for_touch_handle,
@@ -62,7 +61,6 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          android_gesture_classification,
                          android_button_state,
                          android_meta_state,
-                         source,
                          raw_offset_x_pixels,
                          raw_offset_y_pixels,
                          for_touch_handle,
@@ -158,7 +156,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
       pointer_count, history_size, action_index,
       /* android_action_button= */ 0, gesture_classification,
       AMotionEvent_getButtonState(event), AMotionEvent_getMetaState(event),
-      AInputEvent_getSource(event), raw_offset_x_pixels, raw_offset_y_pixels,
+      raw_offset_x_pixels, raw_offset_y_pixels,
       /* for_touch_handle= */ false, pointer0.get(), pointer1.get(),
       y_offset_pix));
 }
@@ -299,6 +297,10 @@ float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {
 }
 float MotionEventAndroidNative::GetYPix(size_t pointer_index) const {
   return GetY(pointer_index) / pix_to_dip();
+}
+
+int MotionEventAndroidNative::GetSource() const {
+  return AInputEvent_getSource(native_event_.a_input_event());
 }
 
 }  // namespace ui

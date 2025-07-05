@@ -40,14 +40,15 @@ class ContentUiEventHandler {
   bool ScrollTo(float x, float y);
 
   void SendMouseWheelEvent(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& event,
                            jlong time_ns,
                            jfloat x,
                            jfloat y,
                            jfloat ticks_x,
                            jfloat ticks_y,
-                           jint meta_state,
-                           jint source);
+                           jint meta_state);
   void SendMouseEvent(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& event,
                       jlong time_ns,
                       jint android_action,
                       jfloat x,

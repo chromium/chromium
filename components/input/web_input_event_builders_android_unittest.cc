@@ -8,6 +8,7 @@
 #include <android/keycodes.h>
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/key_event_utils.h"
@@ -16,6 +17,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 #include "ui/events/velocity_tracker/motion_event.h"
 
@@ -209,11 +211,16 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   const float raw_offset_y = 22.f;
   const float kPixToDip = 0.5f;
 
+  JNIEnv* env = AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
   ui::MotionEventAndroidJava motion_event(
-      AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
+      env, obj.obj(), kPixToDip, 0.f, 0.f, 0.f,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
-      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, 0,
-      raw_offset_x, raw_offset_y, false, &p0, nullptr);
+      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, raw_offset_x,
+      raw_offset_y, false, &p0, nullptr);
 
   WebMouseEvent web_event = input::WebMouseEventBuilder::Build(
       motion_event, blink::WebInputEvent::Type::kMouseDown, 1,

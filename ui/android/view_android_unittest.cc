@@ -4,6 +4,7 @@
 
 #include "ui/android/view_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
@@ -13,6 +14,7 @@
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 
 namespace ui {
@@ -77,10 +79,16 @@ class ViewAndroidBoundsTest : public testing::Test {
 
   void GenerateTouchEventAt(float x, float y) {
     ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
-    ui::MotionEventAndroidJava event(nullptr, JavaParamRef<jobject>(nullptr),
-                                     1.f, 0, 0, 0, base::TimeTicks(), 0, 1, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
-                                     nullptr);
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::ScopedJavaLocalRef<jobject> obj =
+        JNI_MotionEvent::Java_MotionEvent_obtain(
+            env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
+            /*y=*/0, /*metaState=*/0);
+
+    ui::MotionEventAndroidJava event(env, obj.obj(), 1.f, 0, 0, 0,
+                                     base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0, 0,
+                                     0, 0, false, &pointer0, nullptr);
     root_.OnTouchEvent(event);
   }
 

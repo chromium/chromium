@@ -80,6 +80,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       jboolean is_latest_event_time_resampled);
 
   void OnMouseEvent(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& motion_event,
                     jlong time_ns,
                     jint android_action,
                     jfloat x,

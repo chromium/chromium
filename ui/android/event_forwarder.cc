@@ -142,9 +142,9 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
       base::TimeTicks::FromJavaNanoTime(latest_event_time_ns), down_time,
       android_action, pointer_count, history_size, action_index,
       0 /* action_button */, android_gesture_classification,
-      android_button_state, android_meta_state, 0 /* source */,
-      raw_pos_x - pos_x_0, raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
-      pointer1.get(), is_latest_event_resampled);
+      android_button_state, android_meta_state, raw_pos_x - pos_x_0,
+      raw_pos_y - pos_y_0, for_touch_handle, &pointer0, pointer1.get(),
+      is_latest_event_resampled);
 
   if (send_touch_moves_to_observers ||
       android_action !=
@@ -161,19 +161,21 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
   return view_->OnTouchEvent(event);
 }
 
-void EventForwarder::OnMouseEvent(JNIEnv* env,
-                                  jlong time_ns,
-                                  jint android_action,
-                                  jfloat x,
-                                  jfloat y,
-                                  jint pointer_id,
-                                  jfloat pressure,
-                                  jfloat orientation,
-                                  jfloat tilt,
-                                  jint android_action_button,
-                                  jint android_button_state,
-                                  jint android_meta_state,
-                                  jint android_tool_type) {
+void EventForwarder::OnMouseEvent(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& motion_event,
+    jlong time_ns,
+    jint android_action,
+    jfloat x,
+    jfloat y,
+    jint pointer_id,
+    jfloat pressure,
+    jfloat orientation,
+    jfloat tilt,
+    jint android_action_button,
+    jint android_button_state,
+    jint android_meta_state,
+    jint android_tool_type) {
   // Construct a motion_event object minimally, only to convert the raw
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
@@ -183,13 +185,12 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
       /*pressure=*/pressure, /*orientation_rad=*/orientation, /*tilt_rad=*/tilt,
       /*tool_type=*/android_tool_type);
   ui::MotionEventAndroidJava event(
-      env, nullptr /* event */, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
-      base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
-      1 /* pointer_count */, 0 /* history_size */, 0 /* action_index */,
-      android_action_button, 0 /* gesture_classification */,
-      android_button_state, android_meta_state, 0 /* source */,
-      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
-      false /* for_touch_handle */, &pointer, nullptr);
+      env, /*event=*/motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f,
+      0.f, base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
+      /*pointer_count=*/1, /*history_size=*/0, /*action_index=*/0,
+      android_action_button, /*android_gesture_classification=*/0,
+      android_button_state, android_meta_state, /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0, /*for_touch_handle=*/false, &pointer, nullptr);
 
   observers_.Notify(&Observer::OnMouseEvent, event);
 
@@ -256,7 +257,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(event_time_ns),
       base::TimeTicks::FromJavaNanoTime(event_time_ns), down_time, 0, 1, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, false, &pointer0, nullptr, false);
+      0, 0, 0, 0, 0, 0, false, &pointer0, nullptr, false);
 
   observers_.Notify(&Observer::OnGenericMotionEvent, event);
 

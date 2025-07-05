@@ -42,7 +42,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_gesture_classification,
                          jint android_button_state,
                          jint meta_state,
-                         jint source,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,
@@ -66,7 +65,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_gesture_classification,
                          jint android_button_state,
                          jint meta_state,
-                         jint source,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,
@@ -107,6 +105,7 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
       const gfx::PointF& point) const override;
   float GetXPix(size_t pointer_index) const override;
   float GetYPix(size_t pointer_index) const override;
+  int GetSource() const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
   // End MotionEventAndroid overrides
 

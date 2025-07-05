@@ -142,7 +142,6 @@ MotionEventAndroid::MotionEventAndroid(float pix_to_dip,
                                        int android_gesture_classification,
                                        int android_button_state,
                                        int android_meta_state,
-                                       int source,
                                        float raw_offset_x_pixels,
                                        float raw_offset_y_pixels,
                                        bool for_touch_handle,
@@ -152,7 +151,6 @@ MotionEventAndroid::MotionEventAndroid(float pix_to_dip,
       ticks_x_(ticks_x),
       ticks_y_(ticks_y),
       tick_multiplier_(tick_multiplier),
-      source_(source),
       for_touch_handle_(for_touch_handle),
       cached_oldest_event_time_(FromAndroidTime(oldest_event_time)),
       cached_latest_event_time_(FromAndroidTime(latest_event_time)),
@@ -182,7 +180,6 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e,
       ticks_x_(e.ticks_x_),
       ticks_y_(e.ticks_y_),
       tick_multiplier_(e.tick_multiplier_),
-      source_(e.source_),
       for_touch_handle_(e.for_touch_handle_),
       cached_oldest_event_time_(e.cached_oldest_event_time_),
       cached_latest_event_time_(e.cached_latest_event_time_),
@@ -232,10 +229,6 @@ MotionEventAndroid::Action MotionEventAndroid::GetAction() const {
 
 int MotionEventAndroid::GetActionButton() const {
   return cached_action_button_;
-}
-
-int MotionEventAndroid::GetSource() const {
-  return source_;
 }
 
 MotionEvent::Classification MotionEventAndroid::GetClassification() const {

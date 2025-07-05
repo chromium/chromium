@@ -56,6 +56,7 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   // Start MotionEventAndroid overrides
   float GetXPix(size_t pointer_index) const override;
   float GetYPix(size_t pointer_index) const override;
+  int GetSource() const override;
   // End MotionEventAndroid overrides
 
   struct EventTimes {
@@ -85,7 +86,6 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
                            int android_gesture_classification,
                            int android_button_state,
                            int meta_state,
-                           int source,
                            float raw_offset_x_pixels,
                            float raw_offset_y_pixels,
                            bool for_touch_handle,

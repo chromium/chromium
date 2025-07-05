@@ -128,7 +128,10 @@ component("input") {
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
     ]
-    deps += [ "//components/input/android:jni_headers" ]
+    deps += [
+      "//components/input/android:jni_headers",
+      "//ui/events:motionevent_jni_headers",
+    ]
   }
   if (is_ios) {
     sources += [
@@ -205,6 +208,7 @@ source_set("unit_tests") {
       "utils_unittest.cc",
       "web_input_event_builders_android_unittest.cc",
     ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
   if (is_mac) {
     sources += [

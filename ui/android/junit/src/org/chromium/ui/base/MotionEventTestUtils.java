@@ -7,6 +7,10 @@ package org.chromium.ui.base;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
+import org.junit.Assert;
+
+import org.chromium.base.MathUtils;
+
 public final class MotionEventTestUtils {
     public static MotionEvent getTrackpadTouchDownEventNoClick() {
         return getTrackpadEvent(MotionEvent.ACTION_DOWN, 0);
@@ -74,5 +78,60 @@ public final class MotionEventTestUtils {
 
     private static int getTrackpadSource() {
         return InputDevice.SOURCE_MOUSE;
+    }
+
+    public static void assertEquals(MotionEvent a, MotionEvent b) {
+        if (a == b) {
+            return;
+        }
+        Assert.assertNotNull(a);
+        Assert.assertNotNull(b);
+
+        Assert.assertEquals(a.getDownTime(), b.getDownTime());
+        Assert.assertEquals(a.getEventTime(), b.getEventTime());
+        Assert.assertEquals(a.getAction(), b.getAction());
+        Assert.assertEquals(a.getPointerCount(), b.getPointerCount());
+        Assert.assertEquals(a.getMetaState(), b.getMetaState());
+        Assert.assertEquals(a.getButtonState(), b.getButtonState());
+        Assert.assertEquals(a.getXPrecision(), b.getXPrecision(), MathUtils.EPSILON);
+        Assert.assertEquals(a.getYPrecision(), b.getYPrecision(), MathUtils.EPSILON);
+        Assert.assertEquals(a.getDeviceId(), b.getDeviceId());
+        Assert.assertEquals(a.getEdgeFlags(), b.getEdgeFlags());
+        Assert.assertEquals(a.getSource(), b.getSource());
+        Assert.assertEquals(a.getFlags(), b.getFlags());
+        Assert.assertEquals(a.getClassification(), b.getClassification());
+
+        for (int i = 0; i < a.getPointerCount(); i++) {
+            MotionEvent.PointerProperties aProps = new MotionEvent.PointerProperties();
+            MotionEvent.PointerProperties bProps = new MotionEvent.PointerProperties();
+            a.getPointerProperties(i, aProps);
+            b.getPointerProperties(i, bProps);
+            MotionEvent.PointerCoords aCoords = new MotionEvent.PointerCoords();
+            MotionEvent.PointerCoords bCoords = new MotionEvent.PointerCoords();
+            a.getPointerCoords(i, aCoords);
+            b.getPointerCoords(i, bCoords);
+
+            Assert.assertEquals(aProps, bProps);
+            assertEquals(aCoords, bCoords);
+        }
+    }
+
+    private static void assertEquals(MotionEvent.PointerCoords a, MotionEvent.PointerCoords b) {
+        if (a == b) {
+            return;
+        }
+
+        Assert.assertNotNull(a);
+        Assert.assertNotNull(b);
+
+        Assert.assertEquals(a.orientation, b.orientation, MathUtils.EPSILON);
+        Assert.assertEquals(a.pressure, b.pressure, MathUtils.EPSILON);
+        Assert.assertEquals(a.size, b.size, MathUtils.EPSILON);
+        Assert.assertEquals(a.toolMajor, b.toolMajor, MathUtils.EPSILON);
+        Assert.assertEquals(a.toolMinor, b.toolMinor, MathUtils.EPSILON);
+        Assert.assertEquals(a.touchMajor, b.touchMajor, MathUtils.EPSILON);
+        Assert.assertEquals(a.touchMinor, b.touchMinor, MathUtils.EPSILON);
+        Assert.assertEquals(a.x, b.x, MathUtils.EPSILON);
+        Assert.assertEquals(a.y, b.y, MathUtils.EPSILON);
     }
 }

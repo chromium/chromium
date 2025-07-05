@@ -69,7 +69,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      int android_gesture_classification,
                      int android_button_state,
                      int meta_state,
-                     int source,
                      float raw_offset_x_pixels,
                      float raw_offset_y_pixels,
                      bool for_touch_handle,
@@ -113,7 +112,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   // End ui::MotionEvent overrides
 
   int GetActionButton() const;
-  int GetSource() const;
+  virtual int GetSource() const = 0;
   float ticks_x() const { return ticks_x_; }
   float ticks_y() const { return ticks_y_; }
   float GetTickMultiplier() const;
@@ -172,7 +171,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   const float ticks_x_;
   const float ticks_y_;
   const float tick_multiplier_;
-  const int source_;
 
   const bool for_touch_handle_;
 

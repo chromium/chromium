@@ -203,6 +203,7 @@
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/gfx/geometry/point_f.h"
 #endif
 
@@ -9496,10 +9497,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   float x = size.width() / 2;
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroidJava event(nullptr, nullptr,
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
+          /*metaState=*/0);
+  ui::MotionEventAndroidJava event(env, obj.obj(),
                                    1.f / root_view->GetDipScale(), 0.f, 0.f,
                                    0.f, base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, false, &pointer0, nullptr);
+                                   0, 0, 0, false, &pointer0, nullptr);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9836,10 +9843,16 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
                                       0);
     JNIEnv* env = base::android::AttachCurrentThread();
     auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+
+    base::android::ScopedJavaLocalRef<jobject> obj =
+        JNI_MotionEvent::Java_MotionEvent_obtain(
+            env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
+            /*y=*/0, /*metaState=*/0);
     ui::MotionEventAndroidJava touch(
-        env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+        env, obj.obj(), 1.f, 0, 0, 0,
+        base::TimeTicks::FromJavaNanoTime(time_ns),
         ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, false, &p, nullptr);
+        0, 0, false, &p, nullptr);
     view->OnTouchEvent(touch);
   }
 
