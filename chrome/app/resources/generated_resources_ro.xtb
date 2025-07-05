@@ -3722,6 +3722,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3592260987370335752">&amp;Aflați mai multe</translation>
 <translation id="3592344177526089979">Se proiectează o filă pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Activează modul Pinyin simplificat</translation>
+<translation id="3593953853060020305">Permiți ca acest site să editeze <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Limitări privind numele certificatului</translation>
 <translation id="3596012367874587041">Setările aplicației</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
@@ -4615,6 +4616,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4195814663415092787">Continuați de unde ați rămas</translation>
 <translation id="4198268995694216131">Site-uri suplimentare</translation>
 <translation id="4198420883535766848">Elimină fila din listă</translation>
+<translation id="4198664641856813238">Conectează-te pentru a-ți accesa marcajele, parolele și altele pe toate dispozitivele tale</translation>
 <translation id="4200609364258658652">Copiaz&amp;ă cadrul video</translation>
 <translation id="4200689466366162458">Cuvinte personalizate</translation>
 <translation id="4200983522494130825">Filă &amp;nouă</translation>
@@ -4684,6 +4686,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4249785854468467847">Reimaginează Chrome, cu AI</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4250680216510889253">Nu</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> va putea să vadă și să creeze propriile copii ale fișierelor din <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Înregistrarea dispozitivului chioșc și pentru semne</translation>
 <translation id="4252828488489674554">Dă clic dreapta pe numele grupului de file pentru a-l edita sau dă clic pentru a restrânge</translation>
 <translation id="4252899949534773101">Bluetooth este dezactivat</translation>
@@ -8635,6 +8638,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7093220653036489319">Răspunsuri rapide</translation>
 <translation id="7093866338626856921">Fă schimb de date cu dispozitivele numite: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Marea Piramidă din Giza</translation>
+<translation id="7094834615934458012">Permiți ca acest site să editeze fișiere?</translation>
 <translation id="7098389117866926363">Dispozitiv USB-C (portul din stânga în spate)</translation>
 <translation id="7098447629416471489">Alte motoare de căutare salvate vor fi afișate aici</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Elimină aplicația}few{Elimină aplicații}other{Elimină aplicații}}</translation>
@@ -9008,6 +9012,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7377481913241237033">Conectează-te cu un cod</translation>
 <translation id="73786666777299047">Deschide Magazinul web Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. O altă activitate din același grup de activități: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Alte # activități din același grup de activități: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Alte # de activități din același grup de activități: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> va putea să vadă și să creeze propriile copii pentru <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Dezactivezi recuperarea datelor locale?</translation>
 <translation id="7380459290951585794">Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate</translation>
 <translation id="7380622428988553498">Numele dispozitivului conține caractere nevalide</translation>
@@ -9753,6 +9758,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7886279613512920452">{COUNT,plural, =1{un element}few{# elemente}other{# de elemente}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Fă un tur asistat al celor mai importante opțiuni de confidențialitate și de securitate. Pentru mai multe opțiuni, accesează setările individuale.</translation>
+<translation id="7887286029584695415">Permiți ca acest site să vadă și să copieze fișiere?</translation>
 <translation id="7887334752153342268">Dublură</translation>
 <translation id="7887864092952184874">Mouse Bluetooth conectat</translation>
 <translation id="7889371445710865055">Schimbă limba de dictare</translation>
@@ -9838,6 +9844,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="7944847494038629732">Deconectează cablul USB al scanerului și reconectează-l pentru a încerca din nou</translation>
 <translation id="7945703887991230167">Voce preferată</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> va putea să vadă și să creeze propriile copii ale fișierelor din <ph name="FOLDERNAME" /> până când închizi toate filele pentru acest site</translation>
 <translation id="7946586320617670168">Originea trebuie să fie securizată</translation>
 <translation id="7946681191253332687">Sunt disponibile actualizări de securitate extinse</translation>
 <translation id="794676567536738329">Confirmați permisiunile</translation>
@@ -10047,6 +10054,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8079606020824373126">Managerul de parole Google îți poate actualiza contul cu o parolă puternică și o poate salva în <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele</translation>
 <translation id="8080028325999236607">Închide filele</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> va putea să vadă și să creeze propriile copii pentru <ph name="FILENAME" /> până când închizi toate filele pentru acest site</translation>
 <translation id="8081989000209387414">Dezactivezi remedierea erorilor prin ADB?</translation>
 <translation id="8082106343289440791">Asociezi cu „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082132721957920509">Cardul este salvat</translation>
@@ -10814,6 +10822,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="862750493060684461">Memorie cache CSS</translation>
 <translation id="8627795981664801467">Numai conexiuni sigure</translation>
 <translation id="8627804903623428808">Examinează acești termeni și controlează datele copilului</translation>
+<translation id="862907440446514309">Administratorul îți înregistrează ecranul cu <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Inactivitate în timpul încărcării</translation>
 <translation id="8631032106121706562">Petale</translation>
 <translation id="8632104508818855045">Anterior, ai ales să nu permiți extensii pe <ph name="ORIGIN" /></translation>
@@ -11334,6 +11343,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="897525204902889653">Serviciu de carantină</translation>
 <translation id="8975396729541388937">Dezabonează-te oricând dând clic pe linkul din e-mailurile pe care le primești.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” și încă o filă}few{„<ph name="TAB_TITLE" />” și încă # file}other{„<ph name="TAB_TITLE" />” și încă # de file}}</translation>
+<translation id="897565255818387330">Permiți ca acest site să vadă și să copieze <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Configurează un profil școlar pentru a salva și a folosi parolele și altele în contul tău</translation>
 <translation id="8977811652087512276">Parola nu este corectă sau fișierul este deteriorat</translation>
 <translation id="8978154919215542464">Activată – sincronizează tot</translation>

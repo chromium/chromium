@@ -3737,6 +3737,7 @@
 <translation id="3592260987370335752">자세히 알아보기(&amp;L)</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" /> 기기로 탭 전송 중</translation>
 <translation id="3593152357631900254">퍼지 병음 모드 사용</translation>
+<translation id="3593953853060020305">이 사이트에서 <ph name="FILE_NAME" /> 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
 <translation id="3596012367874587041">앱 설정</translation>
 <translation id="3596414637720633074">시크릿 모드에서 서드 파티 쿠키 차단</translation>
@@ -4628,6 +4629,7 @@
 <translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
 <translation id="4198268995694216131">추가 사이트</translation>
 <translation id="4198420883535766848">목록에서 탭 삭제</translation>
+<translation id="4198664641856813238">모든 기기에서 내 북마크, 비밀번호 등을 사용하려면 로그인하세요</translation>
 <translation id="4200609364258658652">동영상 프레임 복사(&amp;Y)</translation>
 <translation id="4200689466366162458">맞춤 단어</translation>
 <translation id="4200983522494130825">새 탭(&amp;T)</translation>
@@ -4697,6 +4699,7 @@
 <translation id="4249785854468467847">AI로 Chrome을 변신시키세요</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4250680216510889253">아니요</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 보고 사본을 만들 수 있게 됩니다.</translation>
 <translation id="4251377547188244181">키오스크 및 사이니지 기기 등록</translation>
 <translation id="4252828488489674554">탭 그룹 이름을 마우스 오른쪽 버튼으로 클릭하면 이 그룹을 수정할 수 있고 클릭하면 접을 수 있습니다.</translation>
 <translation id="4252899949534773101">블루투스가 사용 중지됨</translation>
@@ -8336,7 +8339,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6863496016067551393">모든 확장 프로그램이 허용됩니다.</translation>
 <translation id="686366188661646310">비밀번호를 삭제하시겠습니까?</translation>
 <translation id="6863925886424789941">콜로세움</translation>
-<translation id="6865313869410766144">양식 데이터 자동 완성</translation>
+<translation id="6865313869410766144">자동 완성 양식 데이터</translation>
 <translation id="6865708901122695652">WebRTC 이벤트 로그(<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">작게</translation>
 <translation id="686664946474413495">색상 온도</translation>
@@ -8649,6 +8652,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
 <translation id="7093866338626856921">이름이 <ph name="HOSTNAMES" />인 기기와 데이터 교환</translation>
 <translation id="7094768688212290897">기자의 대피라미드</translation>
+<translation id="7094834615934458012">이 사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
 <translation id="7098447629416471489">저장한 다른 검색엔진이 여기에 표시됨</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
@@ -9022,6 +9026,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 태스크: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 #개 태스크: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 보고 사본을 만들 수 있습니다.</translation>
 <translation id="7380272457268061606">로컬 데이터 복구를 사용 중지하시겠어요?</translation>
 <translation id="7380459290951585794">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
@@ -9767,6 +9772,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{항목 1개}other{항목 #개}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">주요 개인 정보 보호 및 보안 제어 기능을 둘러보세요. 추가 옵션을 알아보려면 개별 설정으로 이동합니다</translation>
+<translation id="7887286029584695415">이 사이트에서 파일을 보고 복사하도록 허용하시겠습니까?</translation>
 <translation id="7887334752153342268">새 탭에서 보기</translation>
 <translation id="7887864092952184874">블루투스 마우스 페어링됨</translation>
 <translation id="7889371445710865055">음성기록 언어 변경</translation>
@@ -9852,6 +9858,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7944847494038629732">스캐너의 USB 케이블을 분리했다가 다시 연결하여 재시도하세요.</translation>
 <translation id="7945703887991230167">기본 음성</translation>
+<translation id="7946243258100028201">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 보고 사본을 만들 수 있게 됩니다.</translation>
 <translation id="7946586320617670168">출처가 안전해야 합니다.</translation>
 <translation id="7946681191253332687">보안 업데이트 연장 사용 가능</translation>
 <translation id="794676567536738329">권한 확인</translation>
@@ -10061,6 +10068,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8079606020824373126">Google 비밀번호 관리자를 사용하면 안전한 비밀번호로 계정을 업데이트하고 비밀번호를 <ph name="EMAIL" />에 저장할 수 있습니다. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">사이트에서 모든 디스플레이의 창 관리 허용 여부를 확인할 수 있음</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
+<translation id="8080530871547404884">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 보고 사본을 만들 수 있게 됩니다.</translation>
 <translation id="8081989000209387414">ADB 디버깅을 사용 중지하시겠습니까?</translation>
 <translation id="8082106343289440791">‘<ph name="DEVICE_NAME" />’과(와) 페어링하시겠습니까?</translation>
 <translation id="8082132721957920509">카드가 저장되었습니다</translation>
@@ -10828,6 +10836,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="862750493060684461">CSS 캐시</translation>
 <translation id="8627795981664801467">보안 연결만</translation>
 <translation id="8627804903623428808">약관을 검토하고 자녀의 데이터를 관리하세요.</translation>
+<translation id="862907440446514309">관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화하고 있습니다.</translation>
 <translation id="8630338733867813168">충전 시 절전 모드로 설정</translation>
 <translation id="8631032106121706562">꽃잎</translation>
 <translation id="8632104508818855045">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
@@ -11347,6 +11356,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="897525204902889653">격리 서비스</translation>
 <translation id="8975396729541388937">수신한 이메일의 링크를 클릭하여 언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
+<translation id="897565255818387330">이 사이트에서 <ph name="FILE_NAME" /> 파일을 보고 복사하도록 허용하시겠습니까?</translation>
 <translation id="8977523125954274918">계정에서 비밀번호 등을 저장하고 사용할 수 있도록 학교 프로필을 설정하세요</translation>
 <translation id="8977811652087512276">잘못된 비밀번호이거나 손상된 파일입니다.</translation>
 <translation id="8978154919215542464">사용 - 모든 항목 동기화</translation>

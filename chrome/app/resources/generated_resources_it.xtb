@@ -3722,6 +3722,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3592260987370335752">&amp;Ulteriori informazioni</translation>
 <translation id="3592344177526089979">Trasmissione di una scheda a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="3593152357631900254">Abilita modalità Fuzzy pinyin</translation>
+<translation id="3593953853060020305">Consentire a questo sito di modificare <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Vincoli nomi certificati</translation>
 <translation id="3596012367874587041">Impostazioni app</translation>
 <translation id="3596414637720633074">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
@@ -4615,6 +4616,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4195814663415092787">Continua dal punto in cui avevi interrotto</translation>
 <translation id="4198268995694216131">Altri siti</translation>
 <translation id="4198420883535766848">Rimuovi scheda dall'elenco</translation>
+<translation id="4198664641856813238">Accedi per avere a disposizione i tuoi preferiti, le password e altri dati su tutti i dispositivi</translation>
 <translation id="4200609364258658652">Copia frame</translation>
 <translation id="4200689466366162458">Parole del dizionario personale</translation>
 <translation id="4200983522494130825">Nuova &amp;scheda</translation>
@@ -4684,6 +4686,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4249785854468467847">Reimmagina Chrome, potenziato dall'AI</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> potrà visualizzare e creare copie dei file nella cartella <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Registrazione dei dispositivi kiosk e segnaletica</translation>
 <translation id="4252828488489674554">Fai clic con il pulsante destro del mouse sul nome del gruppo di schede per modificarlo o fai clic per comprimerlo</translation>
 <translation id="4252899949534773101">Il Bluetooth è disabilitato</translation>
@@ -8631,6 +8634,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7093220653036489319">Risposte rapide</translation>
 <translation id="7093866338626856921">Scambio di dati con i dispositivi: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Grande Piramide di Giza</translation>
+<translation id="7094834615934458012">Consentire a questo sito di modificare i file?</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="7098447629416471489">Altri motori di ricerca salvati saranno visualizzati qui</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Rimuovi app}other{Rimuovi app}}</translation>
@@ -9004,6 +9008,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7377481913241237033">Connessione tramite codice</translation>
 <translation id="73786666777299047">Apri Chrome Web Store.</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Un'altra attività nello stesso gruppo di attività: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Altre # attività nello stesso gruppo di attività: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> potrà visualizzare e creare copie di <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Vuoi disattivare il recupero dei dati locali?</translation>
 <translation id="7380459290951585794">Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
@@ -9749,6 +9754,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementi}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
+<translation id="7887286029584695415">Consentire a questo sito di visualizzare e copiare i file?</translation>
 <translation id="7887334752153342268">Duplica</translation>
 <translation id="7887864092952184874">Mouse Bluetooth accoppiato</translation>
 <translation id="7889371445710865055">Cambia lingua dettatura</translation>
@@ -9834,6 +9840,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7944847494038629732">Scollega il cavo USB dello scanner e ricollegalo per riprovare</translation>
 <translation id="7945703887991230167">Voce preferita</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> potrà visualizzare e creare copie dei file nella cartella <ph name="FOLDERNAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
 <translation id="7946586320617670168">L'origine deve essere sicura</translation>
 <translation id="7946681191253332687">Aggiornamenti della sicurezza estesi disponibili</translation>
 <translation id="794676567536738329">Conferma autorizzazioni</translation>
@@ -10043,6 +10050,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8079606020824373126">Gestore delle password di Google può aggiornare il tuo account con una password efficace e salvarla in <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">I siti possono chiedere di gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> potrà visualizzare <ph name="FILENAME" /> e crearne copie fino alla chiusura di tutte le schede di questo sito</translation>
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
 <translation id="8082106343289440791">Vuoi eseguire l'accoppiamento con "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">La tua carta è stata salvata</translation>
@@ -10810,6 +10818,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Solo connessioni protette</translation>
 <translation id="8627804903623428808">Leggi attentamente questi termini e controlla i dati di tuo figlio</translation>
+<translation id="862907440446514309">L'amministratore sta registrando il tuo schermo con <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Modalità di sospensione durante la ricarica</translation>
 <translation id="8631032106121706562">Petalo</translation>
 <translation id="8632104508818855045">In precedenza hai scelto di non consentire nessuna estensione su <ph name="ORIGIN" /></translation>
@@ -11329,6 +11338,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="897525204902889653">Servizio di quarantena</translation>
 <translation id="8975396729541388937">Puoi annullare l'iscrizione in qualsiasi momento facendo clic sul link nelle email ricevute.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 altra scheda}other{"<ph name="TAB_TITLE" />" e altre # schede}}</translation>
+<translation id="897565255818387330">Consentire a questo sito di visualizzare e copiare <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Configura un profilo di scuola per salvare e usare le tue password e altri dati nel tuo account</translation>
 <translation id="8977811652087512276">Password errata o file danneggiato</translation>
 <translation id="8978154919215542464">On: sincronizza tutto</translation>

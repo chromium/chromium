@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Αυτόματο άνοιγμα PDF</translation>
 <translation id="1437543266176261764">Εκτελείται στην εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Οργανώστε τα προϊόντα παρακολούθησης σε Σελιδοδείκτες</translation>
+<translation id="1455845192930279203">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) από τον ιστότοπο <ph name="DOWNLOAD_DOMAIN" />;</translation>
 <translation id="1460751212339734034">Εξοικονομήστε χρόνο, πληκτρολογήστε λιγότερο</translation>
 <translation id="1466383950273130737">Επιλέξτε τη γλώσσα του Chrome</translation>
 <translation id="1477626028522505441">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω προβλημάτων στον διακομιστή.</translation>
@@ -493,6 +494,7 @@
 <translation id="3250563604907490871">Οι περιγραφές εικόνων θα συνεχιστούν όταν συνδεθείτε σε δίκτυο Wi-Fi.</translation>
 <translation id="3254409185687681395">Προσθήκη αυτής της σελίδας στους σελιδοδείκτες</translation>
 <translation id="3265093782546847662">Όλες οι σελίδες του τομέα <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Σύρετε προς τα επάνω για να δείτε τα αποτελέσματα αναζήτησης</translation>
 <translation id="3269093882174072735">Φόρτωση εικόνας</translation>
 <translation id="327204079441056603">Αλλάξαμε τον τρόπο αποθήκευσης των κωδικών πρόσβασης σε αυτή τη συσκευή</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
@@ -1055,11 +1057,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{Πριν από # ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="5810288467834065221">Πνευματικά δικαιώματα <ph name="YEAR" /> Google LLC. Με την επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="5814749351757353073">Ενημερωθείτε σχετικά με τους αγαπημένους σας ιστοτόπους</translation>
+<translation id="5823093032261493462">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" /> από τον ιστότοπο <ph name="DOWNLOAD_DOMAIN" />;</translation>
 <translation id="5828921839638612740">Μπορείτε να διαγράψετε τα δεδομένα στις ρυθμίσεις του Chrome</translation>
 <translation id="5829586821381540080">Αποθηκεύτηκε στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5833984609253377421">Κοινοποίηση συνδέσμου</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" />;</translation>
 <translation id="5842871376175639063">Οι καρτέλες και οι ομάδες καρτελών που δεν έχετε χρησιμοποιήσει για <ph name="DAYS_INACTIVE" /> ημέρες μετακινούνται εδώ<ph name="AUTODELETE_SECTION" />. Μπορείτε να αλλάξετε αυτή τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Άνοιγμα PDF με την εφαρμογή <ph name="APP_NAME" />;</translation>
 <translation id="5849288995120328556">Διακοπή κοινής χρήσης;</translation>
@@ -1280,6 +1284,7 @@
 <translation id="674388916582496364">Είναι σύνηθες οι ιστότοποι που επισκέπτεστε να απομνημονεύουν τα ενδιαφέροντά σας για να εξατομικεύουν την εμπειρία σας. Οι ιστότοποι μπορούν να αποθηκεύουν επίσης πληροφορίες σχετικά με τα ενδιαφέροντά σας στο Chrome.</translation>
 <translation id="6746338529702829275">Έλεγχος των δεδομένων του λογαριασμού σας</translation>
 <translation id="6751521182688001123">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
+<translation id="6752130751133944215">Για να επαναφέρετε ένα νέο παράθυρο, μειώστε τον συνολικό αριθμό των παραθύρων μεταξύ ενεργών και ανενεργών σε <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ή λιγότερα. Τα ανενεργά παράθυρα διαγράφονται μετά από 6 μήνες.</translation>
 <translation id="6754359471209693699">Έναρξη νέας αναζήτησης</translation>
 <translation id="6756507620369789050">Υποβολή σχολίων</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1451,7 @@
 <translation id="7388615499319468910">Οι ιστότοποι και οι διαφημιζόμενοι μπορούν να κατανοούν την απόδοση των διαφημίσεων. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Άλλο, 1 αρχείο στη λίστα}other{Άλλο, # αρχεία στη λίστα}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Για να ανοίξετε ένα νέο παράθυρο, μειώστε τον συνολικό αριθμό των παραθύρων μεταξύ ενεργών και ανενεργών σε <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ή λιγότερα.</translation>
 <translation id="7403691278183511381">Εμπειρία πρώτης εκτέλεσης Chrome</translation>
 <translation id="7411224099004328643">Χρήστης Λογαριασμού Google</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
@@ -1792,6 +1798,7 @@
 <translation id="8816556050903368450">Συμπεριλαμβανομένου του συνδέσμου: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Δεν υπάρχει δυνατότητα προβολής του περιεχομένου της καρτέλα προεπισκόπησης.</translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
+<translation id="8824359129672223138">Μπορείτε να έχετε έως <ph name="MAX_WINDOW_COUNT" /> παράθυρα.</translation>
 <translation id="8835786707922974220">Βεβαιωθείτε ότι έχετε πάντα πρόσβαση στους αποθηκευμένους κωδικούς πρόσβασης</translation>
 <translation id="883806473910249246">Παρουσιάστηκε σφάλμα κατά τη λήψη του περιεχομένου.</translation>
 <translation id="8840953339110955557">Αυτή η σελίδα μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
@@ -1876,6 +1883,7 @@
 <translation id="9168847423516963845">Μετακίνηση γραμμής διευθύνσεων στο κάτω μέρος</translation>
 <translation id="9169507124922466868">Το ιστορικό πλοήγησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />);</translation>
 <translation id="9190276265094487094">Το ιστορικό σας θα εμφανίζεται σε όλες τις συγχρονισμένες συσκευές, ώστε να μπορείτε να συνεχίζετε ό,τι κάνετε</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ελέγχθηκε πριν από ένα λεπτό}other{Ελέγχθηκε πριν από # λεπτά}}</translation>
 <translation id="9204021776105550328">Διαγραφή</translation>

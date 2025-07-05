@@ -6220,6 +6220,15 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="548137908954174608">启用实时字幕</translation>
 <translation id="5483012943408894695">针对不安全来源的安全性限制不适用于哪些来源或主机名模式</translation>
 <translation id="5483065054530244863">允许使用由本地信任锚颁发的 SHA-1 签名证书</translation>
+<translation id="5485491014653571963">此设置会控制 Gemini 应用集成。
+
+0/未设置表示用户可以集成 Gemini。
+
+1 表示用户无法集成 Gemini。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需了解详情，请参阅帮助中心文章 https://support.google.com/chrome/a?p=gemini_in_chrome。</translation>
 <translation id="5486352219019836984">如果已启用此政策，匿名报告功能会默认处于启用状态（推荐），自动向 Google 报告与 <ph name="PRODUCT_NAME" /> 的使用情况和崩溃情况相关的数据。用户将仍能更改此设置。
 
 如果已停用此政策，匿名报告功能会处于停用状态，不向 Google 发送任何与使用情况或崩溃情况相关的数据。用户将无法更改此设置。

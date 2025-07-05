@@ -3729,6 +3729,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3592260987370335752">&amp;Les mer</translation>
 <translation id="3592344177526089979">Caste en fane til <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktiver modusen Fuzzy pinyin</translation>
+<translation id="3593953853060020305">Vil du tillate at dette nettstedet endrer <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Begrensninger for sertifikatnavn</translation>
 <translation id="3596012367874587041">Appinnstillinger</translation>
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
@@ -4620,6 +4621,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4195814663415092787">Fortsett der du slapp</translation>
 <translation id="4198268995694216131">Flere nettsteder</translation>
 <translation id="4198420883535766848">Fjern fanen fra listen</translation>
+<translation id="4198664641856813238">Logg på for å få blant annet bokmerkene og passordene dine på alle enhetene dine</translation>
 <translation id="4200609364258658652">Kop&amp;ier videorammen</translation>
 <translation id="4200689466366162458">Egendefinerte ord</translation>
 <translation id="4200983522494130825">&amp;Ny fane</translation>
@@ -4689,6 +4691,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4249785854468467847">Opplev Chrome på en helt ny måte med AI</translation>
 <translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="4250680216510889253">Nei</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> kan se og lage sine egne kopier av filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Registrering som kiosk- og skiltenhet</translation>
 <translation id="4252828488489674554">Høyreklikk på navnet på fanegruppen for å endre denne gruppen, eller klikk for å skjule den</translation>
 <translation id="4252899949534773101">Bluetooth er slått av</translation>
@@ -8637,6 +8640,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7093220653036489319">Hurtigsvar</translation>
 <translation id="7093866338626856921">Utveksle data med enhetene <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Kheopspyramiden</translation>
+<translation id="7094834615934458012">Vil du la dette nettstedet redigere filer?</translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
 <translation id="7098447629416471489">Andre lagrede søkemotorer vises her</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Fjern appen}other{Fjern appene}}</translation>
@@ -9010,6 +9014,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7377481913241237033">Tilknytt med en kode</translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Et annet gjøremål i den samme gjøremålsgruppen: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # andre gjøremål i den samme gjøremålsgruppen: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> kan se og lage sine egne kopier av <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Vil du slå av gjenoppretting av lokale data?</translation>
 <translation id="7380459290951585794">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>
@@ -9755,6 +9760,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}other{# elementer}}</translation>
 <translation id="7886605625338676841">eSIM-kort</translation>
 <translation id="7887174313503389866">Få en innføring i viktige personvern- og sikkerhetskontroller. For å finne flere alternativer, gå til individuelle innstillinger.</translation>
+<translation id="7887286029584695415">Vil du la dette nettstedet se og kopiere filer?</translation>
 <translation id="7887334752153342268">Dupliser</translation>
 <translation id="7887864092952184874">En Bluetooth-mus er tilkoblet</translation>
 <translation id="7889371445710865055">Endre dikteringsspråk</translation>
@@ -9840,6 +9846,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7944847494038629732">Koble fra USB-kabelen på skanneren, og koble den til igjen for å prøve på nytt</translation>
 <translation id="7945703887991230167">Foretrukket stemme</translation>
+<translation id="7946243258100028201">Da kan <ph name="ORIGIN" /> se og lage sine egne kopier av filer i <ph name="FOLDERNAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
 <translation id="7946586320617670168">Opprinnelsen må være sikker</translation>
 <translation id="7946681191253332687">Du har forlenget tilgang til sikkerhetsoppdateringer</translation>
 <translation id="794676567536738329">Bekreftelse av tillatelser</translation>
@@ -10049,6 +10056,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8079606020824373126">Google Passordlagring kan oppdatere kontoen din med et sterkt passord og lagre det i <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Nettsteder kan be om å få administrere vinduer på alle skjermene dine</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
+<translation id="8080530871547404884">Da kan <ph name="ORIGIN" /> se og lage sine egne kopier av <ph name="FILENAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
 <translation id="8081989000209387414">Vil du slå av ADB-feilsøking?</translation>
 <translation id="8082106343289440791">Vil du sammenkoble med «<ph name="DEVICE_NAME" />»?</translation>
 <translation id="8082132721957920509">Kortet ditt er lagret</translation>
@@ -10816,6 +10824,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="862750493060684461">CSS-buffer</translation>
 <translation id="8627795981664801467">Bare sikre tilkoblinger</translation>
 <translation id="8627804903623428808">Gjennomgå disse vilkårene, og kontroller dataene til barnet ditt</translation>
+<translation id="862907440446514309">Administratoren din gjør opptak av skjermen din med <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Hvilemodus ved lading</translation>
 <translation id="8631032106121706562">Tusenfryd</translation>
 <translation id="8632104508818855045">Du har tidligere valgt å ikke tillate noen utvidelser på <ph name="ORIGIN" /></translation>
@@ -11335,6 +11344,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="897525204902889653">Karantenetjeneste</translation>
 <translation id="8975396729541388937">Du kan når som helst melde deg av ved å klikke på linken i e-postene du mottar.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» og 1 annen fane}other{«<ph name="TAB_TITLE" />» og # andre faner}}</translation>
+<translation id="897565255818387330">Vil du la dette nettstedet se og kopiere <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Konfigurer en skoleprofil for å lagre og bruke passordene dine med mer i kontoen din</translation>
 <translation id="8977811652087512276">Feil passord eller skadet fil</translation>
 <translation id="8978154919215542464">På – synkroniser alt</translation>

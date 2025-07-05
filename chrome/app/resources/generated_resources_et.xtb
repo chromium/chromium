@@ -3726,6 +3726,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3592260987370335752">&amp;Lisateave</translation>
 <translation id="3592344177526089979">Ühte muud vahelehte kantakse üle seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Luba hägus pinyini režiim</translation>
+<translation id="3593953853060020305">Kas lubada sellel saidil faili <ph name="FILE_NAME" /> muuta?</translation>
 <translation id="3593965109698325041">Sertifikaadi nimepiirangud</translation>
 <translation id="3596012367874587041">Rakenduse seaded</translation>
 <translation id="3596414637720633074">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
@@ -4619,6 +4620,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
 <translation id="4198420883535766848">Eemaldage loendist vahekaart</translation>
+<translation id="4198664641856813238">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele, paroolidele ja muule sisule.</translation>
 <translation id="4200609364258658652">K&amp;opeeri videokaader</translation>
 <translation id="4200689466366162458">Kohandatud sõnad</translation>
 <translation id="4200983522494130825">Uus &amp;vaheleht</translation>
@@ -4688,6 +4690,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4249785854468467847">Täiustatud Chrome, tänu AI-le võimsam</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4250680216510889253">Ei</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> saab kaustas <ph name="FOLDERNAME" /> faile vaadata ja neist koopiaid luua.</translation>
 <translation id="4251377547188244181">Kioski- ja teabeseadmete registreerimine</translation>
 <translation id="4252828488489674554">Paremklõpsake vahelehegrupi nimel, et seda redigeerida, või klõpsake, et see ahendada</translation>
 <translation id="4252899949534773101">Bluetooth on keelatud</translation>
@@ -8639,6 +8642,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7093220653036489319">Kiired vastused</translation>
 <translation id="7093866338626856921">Vaheta andmeid seadmetega <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Giza suur püramiid</translation>
+<translation id="7094834615934458012">Kas lubada sellel saidil faile muuta?</translation>
 <translation id="7098389117866926363">C-tüüpi USB-seade (vasakpoolne port taga)</translation>
 <translation id="7098447629416471489">Muud salvestatud otsingumootorid kuvatakse siin</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Eemalda rakendus}other{Eemalda rakendused}}</translation>
@@ -9012,6 +9016,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7377481913241237033">Ühendamine koodiga</translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Veel üks tegum samas tegumigrupis: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Veel # tegumit samas tegumigrupis: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> saab faili <ph name="FILENAME" /> vaadata ja sellest koopiaid luua.</translation>
 <translation id="7380272457268061606">Kas keelata kohalike andmete taastamine?</translation>
 <translation id="7380459290951585794">Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud</translation>
 <translation id="7380622428988553498">Seadme nimi sisaldab sobimatuid tähemärke</translation>
@@ -9757,6 +9762,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{üksus}other{# üksust}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Vaadake peamiste privaatsus- ja turvaseadete tutvustust. Lisavalikute nägemiseks avage individuaalsed seaded.</translation>
+<translation id="7887286029584695415">Kas lubada sellel saidil faile vaadata ja kopeerida?</translation>
 <translation id="7887334752153342268">Tee koopia</translation>
 <translation id="7887864092952184874">Bluetoothi hiir on seotud</translation>
 <translation id="7889371445710865055">Dikteerimise keele muutmine</translation>
@@ -9842,6 +9848,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7944847494038629732">Ühendage skanneri USB-kaabel lahti ja ühendage uuesti proovimiseks</translation>
 <translation id="7945703887991230167">Eelistatud hääl</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> saab kaustas <ph name="FOLDERNAME" /> faile vaadata ja neist koopiaid luua, kuni kõik selle saidi vahekaardid sulgete.</translation>
 <translation id="7946586320617670168">Lähtekoht peab olema turvaline</translation>
 <translation id="7946681191253332687">Pikendatud turvavärskendused on saadaval</translation>
 <translation id="794676567536738329">Kinnitage load</translation>
@@ -10051,6 +10058,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8079606020824373126">Google'i paroolihaldur saab teie konto parooli asendada tugeva parooliga ja salvestada selle aadressile <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Saidid võivad küsida luba kõikidel teie ekraanidel akende haldamiseks</translation>
 <translation id="8080028325999236607">Sule kõik vahelehed</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> saab faili <ph name="FILENAME" /> vaadata ja sellest koopiaid luua, kuni kõik selle saidi vahekaardid sulgete.</translation>
 <translation id="8081989000209387414">Kas keelata ADB silumine?</translation>
 <translation id="8082106343289440791">Kas siduda seadmega „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082132721957920509">Teie kaart on salvestatud</translation>
@@ -10818,6 +10826,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="862750493060684461">CSS-i vahemälu</translation>
 <translation id="8627795981664801467">Turvalised ühendused ainult</translation>
 <translation id="8627804903623428808">Vaadake need tingimused üle ja juhtige oma lapse andmeid</translation>
+<translation id="862907440446514309">Administraator salvestab rakendusega <ph name="APP0_NAME" /> teie ekraanikuva.</translation>
 <translation id="8630338733867813168">Unerežiim laadimisel</translation>
 <translation id="8631032106121706562">Kroonlehed</translation>
 <translation id="8632104508818855045">Valisite varem kõikide laienduste keelamise lehel <ph name="ORIGIN" /></translation>
@@ -11337,6 +11346,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="897525204902889653">Karantiini teenused</translation>
 <translation id="8975396729541388937">Tellimuse võite alati tühistada, klõpsates teile saadetud meilides oleval lingil.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” ja veel 1 vaheleht}other{„<ph name="TAB_TITLE" />” ja veel # vahelehte}}</translation>
+<translation id="897565255818387330">Kas lubada sellel saidil faili <ph name="FILE_NAME" /> vaadata ja kopeerida?</translation>
 <translation id="8977523125954274918">Seadistage kooliprofiil, et salvestada paroolid ja muud andmed eraldi kontole ning neid seal kasutada</translation>
 <translation id="8977811652087512276">Sobimatu parool või rikutud fail</translation>
 <translation id="8978154919215542464">Sees – sünkrooni kõik</translation>

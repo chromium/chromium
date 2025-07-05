@@ -3735,6 +3735,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3592260987370335752">&amp;Pelajari lebih lanjut</translation>
 <translation id="3592344177526089979">Mentransmisikan tab ke <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktifkan mode Pinyin Fuzi</translation>
+<translation id="3593953853060020305">Izinkan situs ini mengedit <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Kendala Nama Sertifikat</translation>
 <translation id="3596012367874587041">Setelan aplikasi</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
@@ -4628,6 +4629,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4195814663415092787">Lanjutkan dari halaman terakhir yang dibuka</translation>
 <translation id="4198268995694216131">Situs tambahan</translation>
 <translation id="4198420883535766848">Hapus tab dari daftar</translation>
+<translation id="4198664641856813238">Login untuk mendapatkan bookmark, sandi, dan lainnya di semua perangkat Anda</translation>
 <translation id="4200609364258658652">Salin frame video</translation>
 <translation id="4200689466366162458">Kata khusus</translation>
 <translation id="4200983522494130825">&amp;Tab baru</translation>
@@ -4697,6 +4699,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4249785854468467847">Chrome yang lebih canggih, dengan teknologi AI</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Tidak</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> akan dapat melihat dan membuat salinan file-nya sendiri di <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Pendaftaran perangkat kios dan reklame</translation>
 <translation id="4252828488489674554">Klik kanan nama grup tab untuk mengedit grup ini atau klik untuk menciutkan</translation>
 <translation id="4252899949534773101">Bluetooth dinonaktifkan</translation>
@@ -8648,6 +8651,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7093220653036489319">Jawaban instan</translation>
 <translation id="7093866338626856921">Menukar data dengan perangkat yang bernama: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Piramida Agung Giza</translation>
+<translation id="7094834615934458012">Izinkan situs ini mengedit file?</translation>
 <translation id="7098389117866926363">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="7098447629416471489">Mesin telusur lain yang disimpan akan muncul di sini</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Hapus Aplikasi}other{Hapus Aplikasi}}</translation>
@@ -9021,6 +9025,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7377481913241237033">Hubungkan dengan kode</translation>
 <translation id="73786666777299047">Buka Chrome Webstore</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Tugas lain dalam grup tugas yang sama: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # tugas lainnya dalam grup tugas yang sama: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> akan dapat melihat dan membuat salinannya sendiri di <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Nonaktifkan pemulihan data lokal?</translation>
 <translation id="7380459290951585794">Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif</translation>
 <translation id="7380622428988553498">Nama perangkat berisi karakter yang tidak valid</translation>
@@ -9765,6 +9770,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7886279613512920452">{COUNT,plural, =1{1 item}other{# item}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Lihat tur terpandu tentang kontrol privasi dan keamanan utama. Untuk opsi lainnya, buka masing-masing setelan.</translation>
+<translation id="7887286029584695415">Izinkan situs ini melihat dan menyalin file?</translation>
 <translation id="7887334752153342268">Duplikasikan</translation>
 <translation id="7887864092952184874">Mouse Bluetooth disandingkan</translation>
 <translation id="7889371445710865055">Ubah bahasa Dikte</translation>
@@ -9850,6 +9856,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7944847494038629732">Cabut kabel USB pemindai, lalu colokkan kembali untuk mencoba lagi</translation>
 <translation id="7945703887991230167">Suara pilihan</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> akan dapat melihat dan membuat salinan file-nya sendiri di <ph name="FOLDERNAME" /> hingga Anda menutup semua tab untuk situs ini</translation>
 <translation id="7946586320617670168">Nama domain harus aman</translation>
 <translation id="7946681191253332687">Update keamanan yang diperpanjang tersedia</translation>
 <translation id="794676567536738329">Konfirmasi Izin</translation>
@@ -10059,6 +10066,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8079606020824373126">Pengelola Sandi Google dapat mengubah sandi akun Anda menjadi sandi kuat dan menyimpannya di <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Situs dapat meminta untuk mengelola jendela di semua layar</translation>
 <translation id="8080028325999236607">Tutup Semua Tab</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> akan dapat melihat dan membuat salinan <ph name="FILENAME" />-nya sendiri hingga Anda menutup semua tab untuk situs ini</translation>
 <translation id="8081989000209387414">Nonaktifkan proses debug ADB?</translation>
 <translation id="8082106343289440791">Sambungkan dengan "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">Kartu Anda Disimpan</translation>
@@ -10826,6 +10834,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Hanya sambungan aman</translation>
 <translation id="8627804903623428808">Tinjau persyaratan ini dan kontrol data anak Anda</translation>
+<translation id="862907440446514309">Administrator Anda sedang merekam layar Anda dengan <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Tidur saat mengisi daya</translation>
 <translation id="8631032106121706562">Puspa</translation>
 <translation id="8632104508818855045">Anda Sebelumnya Memilih Untuk Tidak Mengizinkan Ekstensi Di <ph name="ORIGIN" /></translation>
@@ -11345,6 +11354,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="897525204902889653">Layanan Karantina</translation>
 <translation id="8975396729541388937">Berhenti berlangganan kapan saja dengan mengklik link di email yang Anda terima.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dan 1 tab lainnya}other{"<ph name="TAB_TITLE" />" dan # tab lainnya}}</translation>
+<translation id="897565255818387330">Izinkan situs ini melihat dan menyalin <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Siapkan profil sekolah untuk menyimpan serta menggunakan sandi dan lainnya di akun Anda</translation>
 <translation id="8977811652087512276">Sandi salah atau file rusak</translation>
 <translation id="8978154919215542464">Aktif - sinkronkan semuanya</translation>

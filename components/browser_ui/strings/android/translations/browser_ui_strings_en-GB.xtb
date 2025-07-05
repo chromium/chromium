@@ -61,6 +61,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
+<translation id="1717996979683942279">When on, sites can ask to manage windows on all your displays. When off, sites can't manage windows on all your displays.</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1777815584158991902">Discover feed bottom sheet</translation>
 <translation id="1779089405699405702">Image decoder</translation>
@@ -171,6 +172,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2968755619301702150">Certificate viewer</translation>
 <translation id="2979365474350987274">Third-party cookies are limited</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
+<translation id="3004438526346162184">Sites can use this feature to manage windows on all your displays</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3064871050034234884">Sites can play sound</translation>
@@ -439,6 +441,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6071501408666570960">You may be signed out of this site</translation>
 <translation id="6085954183010297841">Delete file editing grant? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
+<translation id="615886654739818377">Don't allow sites to manage windows on all your displays</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6171020522141473435">When on, sites can ask to use Bluetooth devices. When off, sites can't use Bluetooth devices.</translation>
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>

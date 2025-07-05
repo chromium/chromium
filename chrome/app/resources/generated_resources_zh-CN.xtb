@@ -3712,6 +3712,7 @@
 <translation id="3592260987370335752">了解详情(&amp;L)</translation>
 <translation id="3592344177526089979">正在将一个标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3593152357631900254">启用模糊拼音模式</translation>
+<translation id="3593953853060020305">允许此网站修改“<ph name="FILE_NAME" />”？</translation>
 <translation id="3593965109698325041">证书名称约束</translation>
 <translation id="3596012367874587041">应用设置</translation>
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
@@ -4604,6 +4605,7 @@
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4198420883535766848">从列表中移除标签页</translation>
+<translation id="4198664641856813238">登录后即可将您的书签、密码等信息同步到您的所有设备上</translation>
 <translation id="4200609364258658652">复制视频帧(&amp;Y)</translation>
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
@@ -4673,6 +4675,7 @@
 <translation id="4249785854468467847">AI 强力赋能，重塑 Chrome 体验</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4250680216510889253">否</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> 将能够查看“<ph name="FOLDERNAME" />”中的文件并自行复制</translation>
 <translation id="4251377547188244181">自助服务终端和数字标牌设备注册</translation>
 <translation id="4252828488489674554">右键点击标签页分组名称即可修改此分组，或点击该名称即可收起</translation>
 <translation id="4252899949534773101">已停用蓝牙</translation>
@@ -5623,7 +5626,7 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918134162946436591">显示提示叠加层</translation>
 <translation id="4918762404810341788">复制并打开</translation>
-<translation id="4918844574251943176">图片已复制</translation>
+<translation id="4918844574251943176">已复制图片</translation>
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="4922104989726031751">若要在您的操作系统中使用密码管理工具，请重新启动 Chromium 并允许使用计算机的密码管理工具。待 Chromium 重新启动后，您的标签页会自动重新打开。</translation>
 <translation id="4923561999941435531">{0,plural, =1{将 1 项内容保存在账号中}other{将 # 项内容保存在账号中}}</translation>
@@ -8619,6 +8622,7 @@
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093866338626856921">与具有下列名称的设备交换数据：<ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">吉萨大金字塔</translation>
+<translation id="7094834615934458012">允许此网站修改文件？</translation>
 <translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
 <translation id="7098447629416471489">其他已保存的搜索引擎将显示在这里</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除应用}other{移除应用}}</translation>
@@ -8992,6 +8996,7 @@
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="73786666777299047">打开 Chrome 应用商店</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同一任务分组中的其他任务：<ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同一任务分组中的其他 # 个任务：<ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”并自行复制</translation>
 <translation id="7380272457268061606">停用“本地数据恢复”？</translation>
 <translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
@@ -9737,6 +9742,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{1 项内容}other{# 项内容}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
+<translation id="7887286029584695415">允许此网站查看和复制文件？</translation>
 <translation id="7887334752153342268">复制</translation>
 <translation id="7887864092952184874">蓝牙鼠标已配对</translation>
 <translation id="7889371445710865055">更改语音输入语言</translation>
@@ -9822,6 +9828,7 @@
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
 <translation id="7944847494038629732">请拔下扫描仪的 USB 线，然后重新插上并重试</translation>
 <translation id="7945703887991230167">首选语音</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> 将能够查看“<ph name="FOLDERNAME" />”中的文件并自行复制，除非您关闭此网站的所有标签页</translation>
 <translation id="7946586320617670168">来源必须是安全的</translation>
 <translation id="7946681191253332687">有可用的延长安全更新</translation>
 <translation id="794676567536738329">确认权限</translation>
@@ -10031,6 +10038,7 @@
 <translation id="8079606020824373126">Google 密码管理工具可以为您的账号生成安全系数高的密码，并将其保存在 <ph name="EMAIL" /> 中。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">网站可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”并自行复制，除非您关闭此网站的所有标签页</translation>
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
 <translation id="8082106343289440791">与“<ph name="DEVICE_NAME" />”配对？</translation>
 <translation id="8082132721957920509">您的卡已保存</translation>
@@ -10798,6 +10806,7 @@
 <translation id="862750493060684461">CSS 缓存</translation>
 <translation id="8627795981664801467">仅限安全连接</translation>
 <translation id="8627804903623428808">查看这些条款并控制您孩子的数据</translation>
+<translation id="862907440446514309">管理员正在使用“<ph name="APP0_NAME" />”录制您的屏幕。</translation>
 <translation id="8630338733867813168">充电时休眠</translation>
 <translation id="8631032106121706562">花朵</translation>
 <translation id="8632104508818855045">您先前已选择禁止 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
@@ -11031,7 +11040,7 @@
 这可能包括与已安装的软件、文件、浏览器、设备的操作系统和 IP 地址相关的信息。</translation>
 <translation id="876956356450740926">运行开发者工具、IDE 和编辑器。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">扩展程序根目录</translation>
-<translation id="8773535891252326047">已复制指向突出显示内容的链接</translation>
+<translation id="8773535891252326047">已复制突出显示的内容的链接</translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
@@ -11317,6 +11326,7 @@
 <translation id="897525204902889653">隔离服务</translation>
 <translation id="8975396729541388937">您可以随时退订，只需点击您收到的电子邮件中的链接即可。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />”和另外 1 个标签页}other{“<ph name="TAB_TITLE" />”和另外 # 个标签页}}</translation>
+<translation id="897565255818387330">允许此网站查看和复制“<ph name="FILE_NAME" />”？</translation>
 <translation id="8977523125954274918">设置学校资料，即可将密码等信息存储到账号中以及使用账号中的密码等信息</translation>
 <translation id="8977811652087512276">密码不正确或文件已损坏</translation>
 <translation id="8978154919215542464">开启 - 同步所有内容</translation>

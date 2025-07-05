@@ -61,6 +61,7 @@
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
 <translation id="1704230497453185209">禁止網站播放音效</translation>
 <translation id="1717218214683051432">動作感應器</translation>
+<translation id="1717996979683942279">如果開啟，網站可以要求管理所有螢幕上的視窗；如果關閉，網站就無法管理所有螢幕上的視窗。</translation>
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
 <translation id="1777815584158991902">「探索」動態消息底部功能表</translation>
 <translation id="1779089405699405702">影像解碼器</translation>
@@ -171,6 +172,7 @@
 <translation id="2968755619301702150">憑證檢視器</translation>
 <translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="2990583317361835189">禁止網站使用動作感應器</translation>
+<translation id="3004438526346162184">網站可透過這項功能管理所有螢幕上的視窗</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3064871050034234884">網站可以播放音效</translation>
@@ -439,6 +441,7 @@
 <translation id="6071501408666570960">系統可能會將你登出這個網站</translation>
 <translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">如果啟用，網站就可以要求偵測你是否正在使用裝置。如果停用，網站將無法得知你是否正在使用裝置。</translation>
+<translation id="615886654739818377">不允許網站管理所有螢幕上的視窗</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6171020522141473435">如果啟用，網站就可以要求使用藍牙裝置。如果停用，網站將無法使用藍牙裝置。</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>

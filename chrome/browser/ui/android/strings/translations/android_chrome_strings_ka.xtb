@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">PDF-ების ავტომატურად გახსნა</translation>
 <translation id="1437543266176261764">გაშვებულია <ph name="APP_NAME" />-ში</translation>
 <translation id="1448440926884431741">ორგანიზებულად დაალაგეთ თვალმიდევნებული პროდუქტები „სანიშნეებში“</translation>
+<translation id="1455845192930279203">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) <ph name="DOWNLOAD_DOMAIN" />-დან?</translation>
 <translation id="1460751212339734034">დაზოგეთ დრო, აკრიფეთ ნაკლები</translation>
 <translation id="1466383950273130737">აირჩიეთ Chrome-ის ენა</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა სერვერთან დაკავშირებული პრობლემების გამო.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">სურათების აღწერა გაგრძელდება, როცა Wi-Fi ქსელს დაუკავშირდებით</translation>
 <translation id="3254409185687681395">ამ გვერდის სანიშნეებში დამატება</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-ის ყველა გვერდი</translation>
+<translation id="3268048651973962414">ძიების შედეგების სანახავად ჩავლებით გადაადგილდით ზემოთ</translation>
 <translation id="3269093882174072735">სურათის ჩატვირთვა</translation>
 <translation id="327204079441056603">შეიცვალა ამ მოწყობილობაზე პაროლების შენახვის წესი</translation>
 <translation id="3280562213547448728">ხმოვანი ძიება</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# საათის წინ}other{# საათის წინ}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="5814749351757353073">თვალყური ადევნეთ თქვენს რჩეულ საიტებს</translation>
+<translation id="5823093032261493462">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ <ph name="DOWNLOAD_DOMAIN" />-დან?</translation>
 <translation id="5828921839638612740">მონაცემების წაშლა შეგიძლიათ Chrome-ის პარამეტრებიდან</translation>
 <translation id="5829586821381540080">შენახულია <ph name="FOLDER_NAME" />-ში</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5833984609253377421">ბმულის გაზიარება</translation>
 <translation id="5839058148541733625">Chrome დინოზავრი</translation>
+<translation id="5841444063256914865">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“?</translation>
 <translation id="5842871376175639063">ჩანართები და ჩანართების ჯგუფები, რომლებიც არ გამოყენებულა <ph name="DAYS_INACTIVE" /> დღის განმავლობაში, გადავა აქ<ph name="AUTODELETE_SECTION" />. ამის შეცვლა ნებისმიერ დროს შეგიძლიათ აქ: <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">გსურთ, PDF გახსნათ <ph name="APP_NAME" />-ით?</translation>
 <translation id="5849288995120328556">გსურთ, შეწყვიტოთ გაზიარება?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">თქვენ მიერ მონახულებული საიტები, როგორც წესი, ინახავს თქვენს ინტერესებს ფუნქციების თქვენზე მორგების მიზნით. საიტებს Chrome-ის მეშვეობითაც შეუძლია თქვენს ინტერესებთან დაკავშირებული ინფორმაციის შენახვა.</translation>
 <translation id="6746338529702829275">შეამოწმეთ თქვენი ანგარიშის მონაცემები</translation>
 <translation id="6751521182688001123">სწრაფად გახსენით ახალი ჩანართი. ამ მალსახმობის რედაქტირებისთვის შეეხეთ ხანგრძლივად.</translation>
+<translation id="6752130751133944215">ახალი ფანჯრის აღსადგენად შეამცირეთ აქტიური და არააქტიური ფანჯრების რაოდენობა მაქსიმუმ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />-მდე. არააქტიური ფანჯრები წაიშლება 6 თვის შემდეგ.</translation>
 <translation id="6754359471209693699">ახალი ძიების დაწყება</translation>
 <translation id="6756507620369789050">გამოხმაურება</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი გამორთულია.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{სიაშია 1 სხვა ფაილი}other{სიაშია # სხვა ფაილი}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">ახალი ფანჯრის გასახსნელად შეამცირეთ აქტიური და არააქტიური ფანჯრების რაოდენობა მაქსიმუმ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />-მდე.</translation>
 <translation id="7403691278183511381">Chrome-ის პირველი გაშვება</translation>
 <translation id="7411224099004328643">Google ანგარიშის მომხმარებელი</translation>
 <translation id="7419565702166471774">ყოველთვის დაცული კავშირების გამოყენება</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">დართულია ბმული <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">გადახედვის ჩანართის კონტენტის ვიზუალიზაცია ვერ ხერხდება.</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
+<translation id="8824359129672223138">დაშვებულია მაქსიმუმ <ph name="MAX_WINDOW_COUNT" /> ფანჯარა.</translation>
 <translation id="8835786707922974220">ყოველთვის იქონიეთ წვდომა თქვენს შენახულ პაროლებზე</translation>
 <translation id="883806473910249246">კონტენტის ჩამოტვირთვისას შეცდომა მოხდა.</translation>
 <translation id="8840953339110955557">ეს გვერდი შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">გადაიტანეთ მისამართთა ზოლი ქვემოთ</translation>
 <translation id="9169507124922466868">ნავიგაციის ისტორია ნახევრადგახსნილია</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">ისტორია თქვენს ყველა სინქრონიზებულ მოწყობილობაზე გაქვთ ჩართული, ამიტომ შეგიძლიათ არ მოცდეთ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{შემოწმდა 1 წუთის წინ}other{შემოწმდა # წუთის წინ}}</translation>
 <translation id="9204021776105550328">მიმდინარეობს წაშლა</translation>

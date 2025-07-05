@@ -3736,6 +3736,7 @@
 <translation id="3592260987370335752">&amp;अधिक जानें</translation>
 <translation id="3592344177526089979">टैब को <ph name="DEVICE_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="3593152357631900254">अस्पष्ट-पिनयिन मोड सक्षम करें</translation>
+<translation id="3593953853060020305">क्या इस साइट को <ph name="FILE_NAME" /> में बदलाव करने की अनुमति देनी है?</translation>
 <translation id="3593965109698325041">प्रमाणपत्र नाम बाध्यताएं</translation>
 <translation id="3596012367874587041">ऐप्लिकेशन की सेटिंग</translation>
 <translation id="3596414637720633074">गुप्त मोड के दौरान तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
@@ -4628,6 +4629,7 @@
 <translation id="4195814663415092787">वहीं से जारी रखें जहां मैंने छोड़ा था</translation>
 <translation id="4198268995694216131">अन्य साइटें</translation>
 <translation id="4198420883535766848">सूची से टैब हटाएं</translation>
+<translation id="4198664641856813238">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाने के लिए साइन इन करें</translation>
 <translation id="4200609364258658652">वीडियो फ़्रेम कॉपी करें</translation>
 <translation id="4200689466366162458">पसंद के मुताबिक चुने गए शब्द</translation>
 <translation id="4200983522494130825">नया &amp;टैब</translation>
@@ -4697,6 +4699,7 @@
 <translation id="4249785854468467847">एआई की मदद से, Chrome को नए तरीके से इस्तेमाल करें</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4250680216510889253">नहीं</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में मौजूद फ़ाइलों को देख सकेगी और उनकी कॉपी बना सकेगी</translation>
 <translation id="4251377547188244181">किऑस्क और साइनेज का इस्तेमाल करके, डिवाइस का नाम दर्ज करना</translation>
 <translation id="4252828488489674554">इस ग्रुप में बदलाव करने के लिए, टैब ग्रुप के नाम पर राइट क्लिक करें या छोटा करने के लिए क्लिक करें</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद है</translation>
@@ -8648,6 +8651,7 @@
 <translation id="7093220653036489319">हाज़िर जवाब</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> नामक डिवाइस से डेटा का लेन-देन करें</translation>
 <translation id="7094768688212290897">ग्रेट पिरामिड ऑफ़ गीज़ा</translation>
+<translation id="7094834615934458012">क्या इस साइट को फ़ाइलों में बदलाव करने की अनुमति देनी है?</translation>
 <translation id="7098389117866926363">USB-C डिवाइस (पीछे बायां पोर्ट)</translation>
 <translation id="7098447629416471489">सेव किए गए दूसरे सर्च इंजन यहां दिखाई देंगे</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ऐप्लिकेशन हटाएं}one{ऐप्लिकेशन हटाएं}other{ऐप्लिकेशन हटाएं}}</translation>
@@ -9021,6 +9025,7 @@
 <translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
 <translation id="73786666777299047">Chrome Web Store खोलें</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. उसी टास्क ग्रुप में मौजूद अन्य टास्क: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. उसी टास्क ग्रुप में मौजूद # अन्य टास्क: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. उसी टास्क ग्रुप में मौजूद # अन्य टास्क: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकेगी और उसकी कॉपी बना सकेगी</translation>
 <translation id="7380272457268061606">डिवाइस पर सेव किए गए डेटा को वापस पाने की सुविधा बंद करनी है?</translation>
 <translation id="7380459290951585794">पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो</translation>
 <translation id="7380622428988553498">डिवाइस के नाम में अमान्य वर्ण हैं</translation>
@@ -9764,6 +9769,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{एक आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">गाइड की मदद से, निजता और सुरक्षा से जुड़े मुख्य कंट्रोल के बारे में जानकारी पाएं. ज़्यादा विकल्पों के लिए, हर एक सेटिंग पर जाएं.</translation>
+<translation id="7887286029584695415">क्या इस साइट को फ़ाइलें देखने और उनकी कॉपी बनाने की अनुमति देनी है?</translation>
 <translation id="7887334752153342268">डुप्लीकेट</translation>
 <translation id="7887864092952184874">ब्लूटूथ माउस युग्मित किया गया</translation>
 <translation id="7889371445710865055">लिखी जाने वाली भाषा बदलना</translation>
@@ -9849,6 +9855,7 @@
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
 <translation id="7944847494038629732">दोबारा कोशिश करने के लिए, स्कैनर के यूएसबी केबल को अनप्लग करके फिर से प्लग करें</translation>
 <translation id="7945703887991230167">पसंदीदा आवाज़</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> के पास तब तक <ph name="FOLDERNAME" /> में मौजूद फ़ाइलें देखने और उनकी कॉपी बनाने की अनुमति रहेगी, जब तक आप इस साइट के सभी टैब बंद न कर दें</translation>
 <translation id="7946586320617670168">शुरुआती जगह सुरक्षित होनी चाहिए</translation>
 <translation id="7946681191253332687">ज़्यादा समय तक मिलने वाले सुरक्षा से जुड़े अपडेट उपलब्ध हैं</translation>
 <translation id="794676567536738329">अनुमतियों की पुष्टि करें</translation>
@@ -10058,6 +10065,7 @@
 <translation id="8079606020824373126">Google Password Manager एक मज़बूत पासवर्ड जनरेट करके आपके मौजूदा पासवर्ड को अपडेट कर सकता है. नया पासवर्ड <ph name="EMAIL" /> में सेव हो जाएगा. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">साइटें, आपके सभी डिसप्ले पर विंडो मैनेज करने की अनुमति मांग सकती हैं</translation>
 <translation id="8080028325999236607">सभी टैब बंद करें</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> के पास तब तक <ph name="FILENAME" /> को देखने और उसकी कॉपी बनाने की अनुमति रहेगी, जब तक आप इस साइट के सभी टैब बंद न कर दें</translation>
 <translation id="8081989000209387414">ADB डीबग करने की सुविधा बंद करें?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" से जोड़ना चाहते हैं?</translation>
 <translation id="8082132721957920509">आपका कार्ड सेव किया गया</translation>
@@ -10825,6 +10833,7 @@
 <translation id="862750493060684461">CSS कैश मेमोरी</translation>
 <translation id="8627795981664801467">केवल सुरक्षित कनेक्शन</translation>
 <translation id="8627804903623428808">इन शर्तों की समीक्षा करें और अपने बच्चे के डेटा को कंट्रोल करें</translation>
+<translation id="862907440446514309">आपका एडमिन, <ph name="APP0_NAME" /> की मदद से आपके डिवाइस की स्क्रीन रिकॉर्ड कर रहा है.</translation>
 <translation id="8630338733867813168">चार्ज करते समय डिवाइस काम न करे</translation>
 <translation id="8631032106121706562">पेटल्स</translation>
 <translation id="8632104508818855045">पिछली बार, आपने <ph name="ORIGIN" /> पर किसी भी एक्सटेंशन को अनुमति न देने का विकल्प चुना था</translation>
@@ -11345,6 +11354,7 @@
 <translation id="897525204902889653">क्वॉरंटीन सेवा</translation>
 <translation id="8975396729541388937">आपको जो ईमेल मिला है उसमें दिए गए लिंक पर क्लिक करके, आप किसी भी समय सदस्यता छोड़ सकते हैं.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" और 1 अन्य टैब}one{"<ph name="TAB_TITLE" />" और # अन्य टैब}other{"<ph name="TAB_TITLE" />" और # अन्य टैब}}</translation>
+<translation id="897565255818387330">क्या इस साइट को <ph name="FILE_NAME" /> को देखने और उसकी कॉपी बनाने की अनुमति देनी है?</translation>
 <translation id="8977523125954274918">कोई स्कूल प्रोफ़ाइल सेट अप करें, ताकि आप अपने खाते में पासवर्ड वगैरह सेव कर सकें और उनका इस्तेमाल कर सकें</translation>
 <translation id="8977811652087512276">गलत पासवर्ड या खराब फ़ाइल</translation>
 <translation id="8978154919215542464">चालू - सब कुछ सिंक करें</translation>

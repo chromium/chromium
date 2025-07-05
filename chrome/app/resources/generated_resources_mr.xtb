@@ -3734,6 +3734,7 @@
 <translation id="3592260987370335752">&amp;अधिक जाणून घ्या</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करत आहे</translation>
 <translation id="3593152357631900254"> Fuzzy-Pinyin मोड सक्षम करा</translation>
+<translation id="3593953853060020305">या साइटला <ph name="FILE_NAME" /> संपादित करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3593965109698325041">सर्टिफिकेट नाव प्रतिबंध</translation>
 <translation id="3596012367874587041">अ‍ॅप सेटिंग्ज</translation>
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
@@ -4625,6 +4626,7 @@
 <translation id="4195814663415092787">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="4198268995694216131">अतिरिक्त साइट</translation>
 <translation id="4198420883535766848">टॅब सूचीमधून काढून टाका</translation>
+<translation id="4198664641856813238">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="4200609364258658652">व्हिडिओ फ्रेम कॉपी करा</translation>
 <translation id="4200689466366162458">कस्टम शब्द</translation>
 <translation id="4200983522494130825">नवीन &amp;टॅब</translation>
@@ -4694,6 +4696,7 @@
 <translation id="4249785854468467847">AI मुळे प्रभावी झालेल्या Chrome ची पुन्हा कल्पना करा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4250680216510889253">नाही</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> ही साइट <ph name="FOLDERNAME" /> मधील फाइल पाहू शकेल आणि त्यांच्या स्वतःच्या कॉपी तयार करू शकेल</translation>
 <translation id="4251377547188244181">कियोस्क आणि सिन्येज डिव्हाइसची नोंदणी करणे</translation>
 <translation id="4252828488489674554">हा गट संपादित करण्यासाठी टॅब गटाच्या नावावर राइट-क्लिक करा किंवा कोलॅप्स करण्यासाठी क्लिक करा</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद केले आहे</translation>
@@ -8648,6 +8651,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7093220653036489319">क्विक आन्सर्स</translation>
 <translation id="7093866338626856921">या नावाच्या डिव्हाइसेससह डेटा अदलाबदल करा: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">गिझामधील ग्रेट पिरॅमिड</translation>
+<translation id="7094834615934458012">या साइटला फाइल संपादित करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7098389117866926363">USB-C डिव्‍हाइस (मागील बाजूचे डावे पोर्ट)</translation>
 <translation id="7098447629416471489">इतर सेव्ह शोध इंजीन येथे दिसून येतील</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
@@ -9021,6 +9025,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7377481913241237033">कोड वापरून कनेक्ट करा</translation>
 <translation id="73786666777299047">Chrome वेब स्टोअर उघडा</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. एकाच टास्क गटामधील दुसरी टास्क: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. एकाच टास्क गटामधील इतर # टास्क: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> ही साइट <ph name="FILENAME" /> पाहू शकेल आणि तिच्या स्वतःच्या कॉपी तयार करू शकेल</translation>
 <translation id="7380272457268061606">स्थानिक डेटा रिकव्‍हरी बंद करायची का?</translation>
 <translation id="7380459290951585794">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा</translation>
 <translation id="7380622428988553498">डिव्हाइसच्या नावामध्ये चुकीच्या वर्णांचा समावेश आहे</translation>
@@ -9764,6 +9769,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{आयटम}other{# आयटम}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचा डेमो पहा. अधिक पर्यायांसाठी, वैयक्तिक सेटिंग्जवर जा.</translation>
+<translation id="7887286029584695415">या साइटला फाइल पाहण्याची आणि कॉपी करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="7887334752153342268">डुप्लिकेट</translation>
 <translation id="7887864092952184874">ब्लूटूथ माउस जोडला</translation>
 <translation id="7889371445710865055">डिक्टेशनची भाषा बदला</translation>
@@ -9849,6 +9855,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7944772052836377867">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
 <translation id="7944847494038629732">स्कॅनरची USB केबल अनप्लग करा आणि परत प्रयत्न करण्यासाठी पुन्हा प्लग करा</translation>
 <translation id="7945703887991230167">प्राधान्य दिलेला आवाज</translation>
+<translation id="7946243258100028201">तुम्ही <ph name="ORIGIN" /> चे सर्व टॅब बंद करत नाही, तोपर्यंत ही साइट <ph name="FOLDERNAME" /> मधील फाइल पाहू शकेल आणि त्यांच्या स्वतःच्या कॉपी तयार करू शकेल</translation>
 <translation id="7946586320617670168">मूळ सुरक्षित असणे आवश्यक आहे</translation>
 <translation id="7946681191253332687">विस्तारित सुरक्षा अपडेट उपलब्ध आहेत</translation>
 <translation id="794676567536738329">परवानग्यांची पुष्टी करा</translation>
@@ -10058,6 +10065,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8079606020824373126">Google Password Manager हे क्लिष्ट पासवर्ड वापरून तुमचे खाते अपडेट करू शकते आणि तो तुमच्या <ph name="EMAIL" /> मध्ये सेव्ह करू शकते. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">साइट तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
+<translation id="8080530871547404884">तुम्ही <ph name="ORIGIN" /> चे सर्व टॅब बंद करत नाही, तोपर्यंत ही साइट <ph name="FILENAME" /> पाहू शकेल आणि तिच्या स्वतःच्या कॉपी तयार करू शकेल</translation>
 <translation id="8081989000209387414">ADB डीबगिंग बंद करायचे?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सोबत पेअर करायचे?</translation>
 <translation id="8082132721957920509">तुमचे कार्ड सेव्ह केले आहे</translation>
@@ -10825,6 +10833,7 @@ I feel - विटांची इमारत</translation>
 <translation id="862750493060684461">CSS कॅशे </translation>
 <translation id="8627795981664801467">केवळ सुरक्षित कनेक्शन</translation>
 <translation id="8627804903623428808">या अटींचे पुनरावलोकन करा आणि तुमच्या लहान मुलाचा डेटा नियंत्रित करा</translation>
+<translation id="862907440446514309">तुमचा ॲडमिनिस्ट्रेटर <ph name="APP0_NAME" /> वापरून तुमची स्क्रीन रेकॉर्ड करत आहे.</translation>
 <translation id="8630338733867813168">चार्ज होत असताना स्लीप मोड ऑन करा</translation>
 <translation id="8631032106121706562">पाकळ्या</translation>
 <translation id="8632104508818855045">तुम्ही पूर्वी <ph name="ORIGIN" /> वर सर्व एक्स्टेंशनना अनुमती न देणे निवडले आहे</translation>
@@ -11345,6 +11354,7 @@ I feel - विटांची इमारत</translation>
 <translation id="897525204902889653">क्वारंटाइन सेवा</translation>
 <translation id="8975396729541388937">तुम्हाला मिळालेल्या ईमेलमधील लिंकवर क्लिक करून कधीही सदस्यत्व रद्द करा.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" आणि इतर एक टॅब}other{"<ph name="TAB_TITLE" />" आणि इतर # टॅब}}</translation>
+<translation id="897565255818387330">या साइटला <ph name="FILE_NAME" /> पाहण्याची आणि कॉपी करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="8977523125954274918">तुमच्या खात्यामध्ये तुमचा पासवर्ड आणि आणखी बरेच काही सेव्ह करण्यासाठी आणि वापरण्यासाठी शाळेची प्रोफाइल सेट करा</translation>
 <translation id="8977811652087512276">चुकीचा पासवर्ड किंवा करप्ट फाइल</translation>
 <translation id="8978154919215542464">ऑन - सर्वकाही सिंक करत आहे</translation>

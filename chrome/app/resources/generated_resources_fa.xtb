@@ -3732,6 +3732,7 @@
 <translation id="3592260987370335752">&amp;بیشتر بیاموزید</translation>
 <translation id="3592344177526089979">درحال پخش محتوای برگه به <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">‏فعال کردن حالت Fuzzy-Pinyin</translation>
+<translation id="3593953853060020305">به این سایت اجازه می‌دهید <ph name="FILE_NAME" /> را ویرایش کند؟</translation>
 <translation id="3593965109698325041">محدودیتهای نام گواهی</translation>
 <translation id="3596012367874587041">تنظیمات برنامه</translation>
 <translation id="3596414637720633074">مسدود کردن کوکی‌های طرف سوم در «حالت ناشناس»</translation>
@@ -4625,6 +4626,7 @@
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
 <translation id="4198420883535766848">برداشتن برگه از فهرست</translation>
+<translation id="4198664641856813238">به سیستم وارد شوید تا نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="4200609364258658652">کپی کردن فریم ویدیو</translation>
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
@@ -4694,6 +4696,7 @@
 <translation id="4249785854468467847">‏بازطراحی Chrome، تقویت‌شده با هوش مصنوعی</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4250680216510889253">نه</translation>
+<translation id="4251243704979202079">‫<ph name="ORIGIN" /> می‌تواند فایل‌های موجود در <ph name="FOLDERNAME" /> را مشاهده کند و نسخه‌های خودش را از آن‌ها بسازد</translation>
 <translation id="4251377547188244181">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال</translation>
 <translation id="4252828488489674554">برای ویرایش این گروه، روی نام گروه برگه کلیک راست کنید، یا کلیک کنید تا جمع شود</translation>
 <translation id="4252899949534773101">بلوتوث غیرفعال است</translation>
@@ -8647,6 +8650,7 @@
 <translation id="7093220653036489319">پاسخ‌های سریع</translation>
 <translation id="7093866338626856921">تبادل داده با دستگاه‌هایی با نام‌های: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">هرم بزرگ جیزه</translation>
+<translation id="7094834615934458012">به این سایت اجازه می‌دهید فایل‌ها را ویرایش کند؟</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7098447629416471489">سایر موتورهای جستجوی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{برداشتن برنامه}one{برداشتن برنامه}other{برداشتن برنامه‌ها}}</translation>
@@ -9020,6 +9024,7 @@
 <translation id="7377481913241237033">اتصال با کد</translation>
 <translation id="73786666777299047">‏باز کردن نت‌بازار Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{‫<ph name="TASK_ROW" />}=1{‫<ph name="TASK_ROW" />. وظیفه دیگر در همان گروه وظیفه: <ph name="OTHER_TASKS" />}one{‫<ph name="TASK_ROW" />.‏ # وظیفه دیگر در همان گروه وظیفه: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />.‏ # وظیفه دیگر در همان گروه وظیفه: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">‫<ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند و نسخه‌های خودش را از آن بسازد</translation>
 <translation id="7380272457268061606">بازیابی داده‌های محلی غیرفعال شود؟</translation>
 <translation id="7380459290951585794">‏مطمئن شوید تلفنتان همین اطراف باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد</translation>
 <translation id="7380622428988553498">نام دستگاه حاوی نویسه‌های نامعتبر است</translation>
@@ -9764,6 +9769,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{یک مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="7886605625338676841">سیم‌کارت داخلی</translation>
 <translation id="7887174313503389866">در گشت با راهنمای مربوط به کنترل‌های اصلی امنیت و حریم خصوصی شرکت کنید. برای گزینه‌های بیشتر، به‌طور جداگانه به هر تنظیم بروید.</translation>
+<translation id="7887286029584695415">به این سایت اجازه می‌دهید فایل‌ها را مشاهده و کپی کند؟</translation>
 <translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="7887864092952184874">موشواره بلوتوث مرتبط شد</translation>
 <translation id="7889371445710865055">تغییر زبان تایپ صوتی</translation>
@@ -9849,6 +9855,7 @@
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7944847494038629732">‏برای امتحان مجدد، کابل USB اسکنر را جدا و دوباره وصل کنید</translation>
 <translation id="7945703887991230167">صدای برگزیده</translation>
+<translation id="7946243258100028201">تا زمانی‌که همه زبانه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند فایل‌های موجود در <ph name="FOLDERNAME" /> را مشاهده کند و نسخه‌های خودش را از آن‌ها بسازد</translation>
 <translation id="7946586320617670168">مبدأ باید امن باشد</translation>
 <translation id="7946681191253332687">به‌روزرسانی امنیتی تمدیدشده دردسترس است</translation>
 <translation id="794676567536738329">تأیید اجازه‌ها</translation>
@@ -10058,6 +10065,7 @@
 <translation id="8079606020824373126">‏«مدیر گذرواژه Google» می‌تواند حسابتان را با گذرواژه‌ای قوی به‌روز کند و آن را در <ph name="EMAIL" /> ذخیره کند. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">سایت‌ها می‌توانند درخواست کنند پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
 <translation id="8080028325999236607">بستن همه برگه‌ها</translation>
+<translation id="8080530871547404884">تا زمانی‌که همه زبانه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند <ph name="FILENAME" /> را مشاهده کند و نسخه‌های خودش را از آن بسازد</translation>
 <translation id="8081989000209387414">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شود؟</translation>
 <translation id="8082106343289440791">با «<ph name="DEVICE_NAME" />» مرتبط شود؟</translation>
 <translation id="8082132721957920509">کارتتان ذخیره شد</translation>
@@ -10825,6 +10833,7 @@
 <translation id="862750493060684461">‏حافظه نهان CSS</translation>
 <translation id="8627795981664801467">فقط اتصالات ایمن</translation>
 <translation id="8627804903623428808">بررسی این شرایط و کنترل داده‌های فرزندتان</translation>
+<translation id="862907440446514309">سرپرست شما درحال ضبط کردن صفحه شما با <ph name="APP0_NAME" /> است.</translation>
 <translation id="8630338733867813168">حالت خواب هنگام شارژ شدن</translation>
 <translation id="8631032106121706562">گل</translation>
 <translation id="8632104508818855045">قبلاً انتخاب کرده‌اید هیچ افزونه‌ای در <ph name="ORIGIN" /> مجاز نباشد</translation>
@@ -11345,6 +11354,7 @@
 <translation id="897525204902889653">سرویس قرنطینه</translation>
 <translation id="8975396729541388937">با کلیک کردن روی پیوند درج‌شده در ایمیل‌هایی که دریافت می‌کنید، هرزمان خواستید لغو اشتراک کنید.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» و ۱ برگه دیگر}one{«<ph name="TAB_TITLE" />» و # برگه دیگر}other{«<ph name="TAB_TITLE" />» و # برگه دیگر}}</translation>
+<translation id="897565255818387330">به این سایت اجازه می‌دهید <ph name="FILE_NAME" /> را مشاهده و کپی کند؟</translation>
 <translation id="8977523125954274918">برای ذخیره و استفاده از گذرواژه‌ها و موارد دیگر در حسابتان، نمایه تحصیلی راه‌اندازی کنید</translation>
 <translation id="8977811652087512276">گذرواژه نادرست یا فایل خراب است</translation>
 <translation id="8978154919215542464">‏On (روشن) - همگام‌سازی همه‌چیز</translation>

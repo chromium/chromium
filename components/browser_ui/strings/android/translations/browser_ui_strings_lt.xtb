@@ -61,6 +61,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1703666494654169921">Neleisti svetainėms naudoti virtualiosios realybės įrenginių ar duomenų</translation>
 <translation id="1704230497453185209">Neleisti svetainėms leisti garso</translation>
 <translation id="1717218214683051432">Judesių jutikliai</translation>
+<translation id="1717996979683942279">Įjungus svetainėse gali būti prašoma tvarkyti langus visuose ekranuose. Išjungus svetainės negali tvarkyti langų visuose ekranuose.</translation>
 <translation id="1743802530341753419">Paklausti prieš leidžiant svetainėms prisijungti prie įrenginio (rekomenduojama)</translation>
 <translation id="1777815584158991902">„Discover“ sklaidos kanalo apatinis lapas</translation>
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
@@ -171,6 +172,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2968755619301702150">Sertifikato peržiūros priemonė</translation>
 <translation id="2979365474350987274">Trečiųjų šalių slapukai ribojami</translation>
 <translation id="2990583317361835189">Neleisti svetainėms naudoti judesio jutiklių</translation>
+<translation id="3004438526346162184">Svetainės gali naudoti šią funkciją, kad galėtų tvarkyti langus visuose ekranuose</translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3064871050034234884">Svetainėse galima leisti garsus</translation>
@@ -439,6 +441,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6071501408666570960">Galite būti atjungti šioje svetainėje</translation>
 <translation id="6085954183010297841">Ištrinti failo redagavimo leidimą? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Įjungus svetainėse gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį. Išjungus svetainės nežino, kada aktyviai naudojate įrenginį.</translation>
+<translation id="615886654739818377">Neleisti svetainėms tvarkyti langų visuose ekranuose</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6171020522141473435">Įjungus svetainėse gali būti prašoma naudoti „Bluetooth“ įrenginius. Išjungus svetainėse negalima naudoti „Bluetooth“ įrenginių.</translation>
 <translation id="6177128806592000436">Ryšys su šia svetaine nėra saugus</translation>

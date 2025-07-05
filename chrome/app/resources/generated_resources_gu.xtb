@@ -3720,6 +3720,7 @@
 <translation id="3592260987370335752">&amp;વધુ જાણો</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" /> પર ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin મોડને સક્ષમ કરો </translation>
+<translation id="3593953853060020305">આ સાઇટને <ph name="FILE_NAME" />માં ફેરફાર કરવાની મંજૂરી આપીએ?</translation>
 <translation id="3593965109698325041">પ્રમાણપત્રના નામની મર્યાદાઓ</translation>
 <translation id="3596012367874587041">ઍપ સેટિંગ</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
@@ -4613,6 +4614,7 @@
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
 <translation id="4198420883535766848">ટૅબને સૂચિમાંથી કાઢી નાખો</translation>
+<translation id="4198664641856813238">તમારા બધા ડિવાઇસ પર બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
 <translation id="4200609364258658652">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="4200689466366162458">કસ્ટમ શબ્દો</translation>
 <translation id="4200983522494130825">નવું &amp;ટૅબ</translation>
@@ -4682,6 +4684,7 @@
 <translation id="4249785854468467847">Chromeની ફરીથી કલ્પના કરો, AI વડે સુપરચાર્જ</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4250680216510889253">નહીં</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માંની ફાઇલો જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
 <translation id="4251377547188244181">કિઓસ્ક કે સાઇનેજ ડિવાઇસની નોંધણી</translation>
 <translation id="4252828488489674554">આ ગ્રૂપમાં ફેરફાર કરવા માટે ટૅબના ગ્રૂપના નામ પર રાઇટ ક્લિક કરો અથવા "નાનું કરો" પર ક્લિક કરો</translation>
 <translation id="4252899949534773101">બ્લૂટૂથ બંધ છે</translation>
@@ -8637,6 +8640,7 @@ USB ડિવાઇસ</translation>
 <translation id="7093220653036489319">ઝડપી જવાબો</translation>
 <translation id="7093866338626856921">આ નામના ઉપકરણ સાથે ડેટા વિનિમય કરો: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">ગીઝાનો મહાન પિરામિડ</translation>
+<translation id="7094834615934458012">આ સાઇટને ફાઇલોમાં ફેરફાર કરવાની મંજૂરી આપીએ?</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7098447629416471489">અન્ય સાચવેલા શોધ એન્જિન અહીં દેખાશે</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
@@ -9010,6 +9014,7 @@ USB ડિવાઇસ</translation>
 <translation id="7377481913241237033">કોડ વડે કનેક્ટ કરો</translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય કાર્ય: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય # કાર્ય: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય # કાર્ય: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> <ph name="FILENAME" /> જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
 <translation id="7380272457268061606">સ્થાનિક ડેટા રિકવરી બંધ કરીએ?</translation>
 <translation id="7380459290951585794">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ તેમજ વાઇ-ફાઇની સુવિધા ચાલુ હોય</translation>
 <translation id="7380622428988553498">ડિવાઇસના નામમાં અમાન્ય અક્ષરો છો</translation>
@@ -9754,6 +9759,7 @@ USB ડિવાઇસ</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{એક આઇટમ}one{# આઇટમ}other{# આઇટમ}}</translation>
 <translation id="7886605625338676841">ઇ-સિમ</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
+<translation id="7887286029584695415">આ સાઇટને ફાઇલો જોવાની અને કૉપિ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="7887334752153342268">ડુપ્લિકેટ</translation>
 <translation id="7887864092952184874">Bluetooth માઉસ જોડાયું</translation>
 <translation id="7889371445710865055">ડિક્ટેશનની ભાષા બદલો</translation>
@@ -9839,6 +9845,7 @@ USB ડિવાઇસ</translation>
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="7944847494038629732">ફરીથી પ્રયાસ કરવા માટે સ્કૅનરનો USB કેબલ અનપ્લગ કરીને ફરીથી પ્લગ કરો</translation>
 <translation id="7945703887991230167">પસંદગીનો વૉઇસ</translation>
+<translation id="7946243258100028201">જ્યાં સુધી તમે આ સાઇટ માટે તમામ ટૅબ બંધ ન કરો, ત્યાં સુધી <ph name="ORIGIN" /> <ph name="FOLDERNAME" />માંની ફાઇલો જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
 <translation id="7946586320617670168">મૂળ સુરક્ષિત હોવું જરૂરી છે</translation>
 <translation id="7946681191253332687">વધારેલી સુરક્ષા અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="794676567536738329">પરવાનગીઓની પુષ્ટિ કરો</translation>
@@ -10043,6 +10050,7 @@ USB ડિવાઇસ</translation>
 <translation id="8079606020824373126">Google Password Manager કોઈ સશક્ત પાસવર્ડનો ઉપયોગ કરીને તમારા એકાઉન્ટને અપડેટ કરી શકે છે અને તેને <ph name="EMAIL" />માં સાચવી શકે છે. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">સાઇટ તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવા માટે કહી શકે છે</translation>
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
+<translation id="8080530871547404884">જ્યાં સુધી તમે આ સાઇટ માટે તમામ ટૅબ બંધ ન કરો, ત્યાં સુધી <ph name="ORIGIN" /> <ph name="FILENAME" />માંની ફાઇલો જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
 <translation id="8081989000209387414">ADB ડિબગીંગ બંધ કરીએ?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" સાથે જોડી બનાવીએ?</translation>
 <translation id="8082132721957920509">તમારું કાર્ડ સાચવવામાં આવ્યું</translation>
@@ -10810,6 +10818,7 @@ USB ડિવાઇસ</translation>
 <translation id="862750493060684461">CSS કૅશ મેમરી</translation>
 <translation id="8627795981664801467">ફક્ત સુરક્ષિત કનેક્શન્સ</translation>
 <translation id="8627804903623428808">આ શરતોનો રિવ્યૂ કરો અને તમારા બાળકના ડેટાનું નિયંત્રણ કરો</translation>
+<translation id="862907440446514309">તમારા ઍડમિનિસ્ટ્રેટર <ph name="APP0_NAME" /> વડે તમારી સ્ક્રીન રેકોર્ડ કરી રહ્યાં છે.</translation>
 <translation id="8630338733867813168">ચાર્જિંગ વખતે નિષ્ક્રિય</translation>
 <translation id="8631032106121706562">પેટલ્સ</translation>
 <translation id="8632104508818855045">અગાઉ તમે <ph name="ORIGIN" /> પર કોઈપણ એક્સ્ટેન્શનને મંજૂરી ન આપવાનું પસંદ કર્યું હતું</translation>
@@ -11330,6 +11339,7 @@ USB ડિવાઇસ</translation>
 <translation id="897525204902889653">ક્વૉરન્ટીન સેવા</translation>
 <translation id="8975396729541388937">તમને પ્રાપ્ત થતા ઇમેઇલમાંની લિંક પર ક્લિક કરીને ગમે ત્યારે અનસબ્સ્ક્રાઇબ કરો.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" અને 1 અન્ય ટૅબ}one{"<ph name="TAB_TITLE" />" અને # અન્ય ટૅબ}other{"<ph name="TAB_TITLE" />" અને # અન્ય ટૅબ}}</translation>
+<translation id="897565255818387330">આ સાઇટને <ph name="FILE_NAME" /> જોવાની અને કૉપિ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="8977523125954274918">તમારા એકાઉન્ટમાં તમારા પાસવર્ડ અને તેના જેવી બીજી માહિતી સાચવવા અને તેનો ઉપયોગ કરવા માટે શાળાની પ્રોફાઇલ સેટઅપ કરો</translation>
 <translation id="8977811652087512276">ખોટો પાસવર્ડ અથવા દૂષિત ફાઇલ</translation>
 <translation id="8978154919215542464">ચાલુ - દરેક વસ્તુ સમન્વયિત કરો</translation>

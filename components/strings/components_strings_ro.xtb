@@ -372,7 +372,7 @@
 <translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="161612500287664753">Întreabă Căutarea Google despre această pagină</translation>
 <translation id="1617276713587758852">Crossovere</translation>
-<translation id="1619007254056372606">Gestionează datele privind site-urile pe dispozitiv</translation>
+<translation id="1619007254056372606">Gestionează datele privind site-urile de pe dispozitiv</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> a eliminat o filă</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622966923835127638">Finanțe comerciale</translation>
@@ -3730,6 +3730,7 @@ Detalii suplimentare:
 <translation id="7292031607255951991">Numele destinatarului</translation>
 <translation id="7298195798382681320">Recomandat</translation>
 <translation id="7299471494012161875">dispozitivele periferice de afișare conectate;</translation>
+<translation id="7299769361777046949">Gestionează cardurile de fidelitate în Portofel Google</translation>
 <translation id="7300012071106347854">Albastru cobalt</translation>
 <translation id="7304030187361489308">Înaltă</translation>
 <translation id="7304562222803846232">Gestionează setările de confidențialitate ale Contului Google</translation>

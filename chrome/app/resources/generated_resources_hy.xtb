@@ -3720,6 +3720,7 @@
 <translation id="3592260987370335752">&amp;Իմանալ ավելին</translation>
 <translation id="3592344177526089979">Ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="3593152357631900254">Միացնել Fuzzy-Pinyin ռեժիմը</translation>
+<translation id="3593953853060020305">Թույլատրե՞լ այս կայքին խմբագրել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="3593965109698325041">Վկայագրի անվան սահմանափակումներ</translation>
 <translation id="3596012367874587041">Հավելվածի կարգավորումներ</translation>
 <translation id="3596414637720633074">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
@@ -4613,6 +4614,7 @@
 <translation id="4195814663415092787">Շարունակել աշխատանքը նույն տեղից</translation>
 <translation id="4198268995694216131">Լրացուցիչ կայքեր</translation>
 <translation id="4198420883535766848">Հեռացնել ներդիրը ցանկից</translation>
+<translation id="4198664641856813238">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="4200609364258658652">Պատճենել տեսանյութի կադրը</translation>
 <translation id="4200689466366162458">Հատուկ բառեր</translation>
 <translation id="4200983522494130825">Նոր &amp;ներդիր</translation>
@@ -4682,6 +4684,7 @@
 <translation id="4249785854468467847">Նորացված Chrome՝ ընդլայնված ԱԲ գործառույթներով</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4250680216510889253">Ոչ</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> կայքը կարող է դիտել «<ph name="FOLDERNAME" />» պանակի ֆայլերն ու պատճենել դրանք</translation>
 <translation id="4251377547188244181">Սարքի գրանցում կրպակի և ցուցանակի ռեժիմում</translation>
 <translation id="4252828488489674554">Մկնիկի աջ կոճակով սեղմեք ներդիրների խմբի անվանման վրա՝ խումբը փոփոխելու համար, կամ սեղմեք ծալելու համար</translation>
 <translation id="4252899949534773101">Bluetooth-ն անջատված է</translation>
@@ -8630,6 +8633,7 @@
 <translation id="7093220653036489319">Արագ պատասխաններ</translation>
 <translation id="7093866338626856921">Փոխանակել տվյալները հետևյալ անուններով սարքերի հետ՝ <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Գիզայի Մեծ բուրգ</translation>
+<translation id="7094834615934458012">Թույլատրե՞լ այս կայքին խմբագրել ֆայլեր</translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7098447629416471489">Պահված մյուս որոնիչները կցուցադրվեն այստեղ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Հեռացնել հավելվածը}one{Հեռացնել հավելվածը}other{Հեռացնել հավելվածները}}</translation>
@@ -9003,6 +9007,7 @@
 <translation id="7377481913241237033">Միացում կոդով</translation>
 <translation id="73786666777299047">Բացել Chrome Web Store-ը</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />։ Մեկ այլ առաջադրանք նույն խմբում՝ <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />։ # այլ առաջադրանք նույն խմբում՝ <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />։ # այլ առաջադրանք նույն խմբում՝ <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> կայքը կարող է դիտել <ph name="FILENAME" /> ֆայլն ու պատճենել այն</translation>
 <translation id="7380272457268061606">Անջատե՞լ սարքի տվյալների վերականգնումը</translation>
 <translation id="7380459290951585794">Համոզվեք, որ այն մոտակայքում է, ապակողպված, և որ Bluetooth-ն ու Wi-Fi-ը միացված են</translation>
 <translation id="7380622428988553498">Սարքի անունն անվավեր նիշեր է պարունակում</translation>
@@ -9747,6 +9752,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը։ Լրացուցիչ պարամետրերի համար բացեք առանձին կարգավորումները։</translation>
+<translation id="7887286029584695415">Թույլատրե՞լ այս կայքին դիտել և պատճենել ֆայլերը</translation>
 <translation id="7887334752153342268">Կրկնօրինակել</translation>
 <translation id="7887864092952184874">Զուգավորվել է Bluetooth մկնիկ</translation>
 <translation id="7889371445710865055">Թելադրման լեզվի փոփոխում</translation>
@@ -9832,6 +9838,7 @@
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
 <translation id="7944847494038629732">Անջատեք սկաների USB մալուխը և նորից միացրեք՝ կրկին փորձելու համար</translation>
 <translation id="7945703887991230167">Նախընտրած ձայնը</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> կայքը կարող է դիտել «<ph name="FOLDERNAME" />» պանակի ֆայլերը և պատճենել դրանք, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="7946586320617670168">Սկզբնաղբյուրը պետք է անվտանգ լինի</translation>
 <translation id="7946681191253332687">Անվտանգության ընդլայնված թարմացումները հասանելի են</translation>
 <translation id="794676567536738329">Թույլտվությունների հաստատում</translation>
@@ -10040,6 +10047,7 @@
 <translation id="8079606020824373126">Google գաղտնաբառերի կառավարիչը կարող է թարմացնել ձեր հաշիվը նոր հուսալի գաղտնաբառով և պահել <ph name="EMAIL" /> էլփոստում։ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Կայքերը կարող են հայցել պատուհանները բոլոր էկրաններին կառավարելու թույլտվություն</translation>
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> կայքը կարող է դիտել <ph name="FILENAME" /> ֆայլն ու պատճենել այն, մինչև չփակեք այս կայքի բոլոր ներդիրները։</translation>
 <translation id="8081989000209387414">Անջատե՞լ ADB վրիպազերծումը</translation>
 <translation id="8082106343289440791">Զուգակցե՞լ «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="8082132721957920509">Ձեր քարտը պահվել է</translation>
@@ -10807,6 +10815,7 @@
 <translation id="862750493060684461">CSS-ի քեշ</translation>
 <translation id="8627795981664801467">Միայն ապահով կապակցումները</translation>
 <translation id="8627804903623428808">Ծանոթացեք այս պայմաններին և կառավարեք ձեր երեխայի հաշվի տվյալները</translation>
+<translation id="862907440446514309">Ձեր ադմինիստրատորը տեսանկարահանում է ձեր էկրանը <ph name="APP0_NAME" /> հավելվածի միջոցով։</translation>
 <translation id="8630338733867813168">Անջատել էկրանը լիցքավորման ժամանակ</translation>
 <translation id="8631032106121706562">Ծաղիկ</translation>
 <translation id="8632104508818855045">Դուք նախկինում արգելել եք բոլոր ընդլայնումները <ph name="ORIGIN" /> էջում</translation>
@@ -11327,6 +11336,7 @@
 <translation id="897525204902889653">Կարանտին</translation>
 <translation id="8975396729541388937">Դուք ցանկացած ժամանակ կարող եք չեղարկել բաժանորդագրությունը՝ սեղմելով հղումը նամակում։</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» ու ևս 1 ներդիր}one{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}other{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}}</translation>
+<translation id="897565255818387330">Թույլատրե՞լ այս կայքին դիտել <ph name="FILE_NAME" /> ֆայլ ու պատճենել այն</translation>
 <translation id="8977523125954274918">Ստեղծեք դպրոցի պրոֆիլ՝ ձեր գաղտնաբառերը և ավելին՝ ձեր հաշվում պահելու և օգտագործելու համար</translation>
 <translation id="8977811652087512276">Գաղտնաբառը սխալ է, կամ ֆայլը վնասված է</translation>
 <translation id="8978154919215542464">Միացած է – համաժամացնել ամեն ինչ</translation>

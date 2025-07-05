@@ -61,6 +61,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
 <translation id="1717218214683051432">Liiketunnistimet</translation>
+<translation id="1717996979683942279">Kun tämä on päällä, sivustot voivat pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä. Kun tämä on pois päältä, sivustot eivät voi hallinnoida ikkunoita kaikilla näytöillä.</translation>
 <translation id="1743802530341753419">Pyydä lupaa, kun sivustot yrittävät yhdistää laitteeseen (suositus)</translation>
 <translation id="1777815584158991902">Discover-fiidin alapaneeli</translation>
 <translation id="1779089405699405702">Kuvien dekooderi</translation>
@@ -171,6 +172,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2968755619301702150">Varmennetiedot</translation>
 <translation id="2979365474350987274">Kolmannen osapuolen evästeitä on rajoitettu</translation>
 <translation id="2990583317361835189">Älä salli sivustojen käyttää liiketunnistimia</translation>
+<translation id="3004438526346162184">Sivustot voivat käyttää tätä ominaisuutta ikkunoiden hallinnointiin kaikilla näytöillä</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
 <translation id="3064871050034234884">Sivustot voivat toistaa ääntä</translation>
@@ -439,6 +441,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6071501408666570960">Sinut voidaan kirjata ulos tältä sivustolta</translation>
 <translation id="6085954183010297841">Poistetaanko tiedoston muokkauslupa? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kun tämä on päällä, sivustot voivat pyytää lupaa nähdä, milloin käytät laitetta aktiivisesti. Kun tämä on pois päältä, sivustot eivät saa tietää, milloin käytät laitetta aktiivisesti.</translation>
+<translation id="615886654739818377">Älä salli sivustojen hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6171020522141473435">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää Bluetooth-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää Bluetooth-laitteita.</translation>
 <translation id="6177128806592000436">Sivustoon ei ole muodostettu turvallista yhteyttä.</translation>

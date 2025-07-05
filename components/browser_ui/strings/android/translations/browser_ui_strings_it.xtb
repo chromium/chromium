@@ -61,6 +61,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1703666494654169921">Non consentire ai siti di usare i dati o dispositivi per realtà virtuale</translation>
 <translation id="1704230497453185209">Non consentire ai siti di riprodurre l'audio</translation>
 <translation id="1717218214683051432">Sensori di movimento</translation>
+<translation id="1717996979683942279">Quando l'opzione è attiva, i siti possono chiedere di gestire le finestre su tutti i tuoi schermi. Quando l'opzione è disattivata, i siti non possono gestire le finestre su tutti i tuoi schermi.</translation>
 <translation id="1743802530341753419">Chiedi prima di consentire ai siti di connettersi a un dispositivo (opzione consigliata)</translation>
 <translation id="1777815584158991902">Riquadro inferiore del Feed personalizzato</translation>
 <translation id="1779089405699405702">Decoder di immagini</translation>
@@ -171,6 +172,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
 <translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
+<translation id="3004438526346162184">I siti possono usare questa funzionalità per gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="301521992641321250">Autorizzazione bloccata automaticamente</translation>
 <translation id="3064871050034234884">I siti possono riprodurre audio</translation>
@@ -439,6 +441,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6071501408666570960">Il tuo account potrebbe essere disconnesso da questo sito</translation>
 <translation id="6085954183010297841">Eliminare autorizzazione di modifica file? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando l'opzione è attiva, i siti possono chiederti di sapere quando stai utilizzando attivamente il tuo dispositivo. Quando l'opzione è disattivata, i siti non possono sapere quando stai utilizzando attivamente il tuo dispositivo.</translation>
+<translation id="615886654739818377">Non consentire ai siti di gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6171020522141473435">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi Bluetooth. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi Bluetooth.</translation>
 <translation id="6177128806592000436">La tua connessione a questo sito non è sicura</translation>

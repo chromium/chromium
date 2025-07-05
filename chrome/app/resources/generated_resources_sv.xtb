@@ -3735,6 +3735,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3592260987370335752">&amp;Läs mer</translation>
 <translation id="3592344177526089979">Castar en flik till <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktivera Fuzzy-Pinyin-läge</translation>
+<translation id="3593953853060020305">Vill du tillåta att den här webbplatsen redigerar <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Certifikatnamnsbegränsningar</translation>
 <translation id="3596012367874587041">Appinställningar</translation>
 <translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
@@ -4628,6 +4629,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4198268995694216131">Ytterligare webbplatser</translation>
 <translation id="4198420883535766848">Ta bort flik från listan</translation>
+<translation id="4198664641856813238">Logga in om du vill ha dina bokmärken, lösenord med mera på alla dina enheter</translation>
 <translation id="4200609364258658652">Kopiera videobildrutan</translation>
 <translation id="4200689466366162458">Anpassade ord</translation>
 <translation id="4200983522494130825">Ny &amp;flik</translation>
@@ -4697,6 +4699,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4249785854468467847">Upplev Chrome på ett nytt sätt, superladdat med AI</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4250680216510889253">Nej</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> får läsbehörighet till filer i <ph name="FOLDERNAME" /> och kan göra egna kopior av dem</translation>
 <translation id="4251377547188244181">Registrering av kiosk- och skyltningsenhet</translation>
 <translation id="4252828488489674554">Högerklicka på flikgruppens namn för att redigera gruppen eller klicka för att komprimera den</translation>
 <translation id="4252899949534773101">Bluetooth har inaktiverats</translation>
@@ -8648,6 +8651,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7093220653036489319">Snabbinfo</translation>
 <translation id="7093866338626856921">Utväxla data med enheterna <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Stora pyramiden i Giza</translation>
+<translation id="7094834615934458012">Vill du tillåta att den här webbplatsen redigerar filer?</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
 <translation id="7098447629416471489">Andra sparade sökmotorer visas här</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Ta bort appen}other{Ta bort appar}}</translation>
@@ -9021,6 +9025,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7377481913241237033">Anslut med en kod</translation>
 <translation id="73786666777299047">Öppna Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. 1 annan uppgift i samma uppgiftsgrupp: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # andra uppgifter i samma uppgiftsgrupp: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> får visa och skapa egna kopior av <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Vill du inaktivera lokal dataåterställning?</translation>
 <translation id="7380459290951585794">Kontrollera att telefonen finns i närheten, att den är olåst och att Bluetooth och wifi är aktiverat på den</translation>
 <translation id="7380622428988553498">Enhetsnamnet innehåller ogiltiga tecken</translation>
@@ -9766,6 +9771,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7886279613512920452">{COUNT,plural, =1{ett objekt}other{# objekt}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Få en guidad rundtur av viktiga integritets- och säkerhetskontroller. Öppna de enskilda inställningarna för att se fler alternativ.</translation>
+<translation id="7887286029584695415">Vill du tillåta att webbplatsen visar och kopierar filer?</translation>
 <translation id="7887334752153342268">Duplicera</translation>
 <translation id="7887864092952184874">Bluetooth-musen har kopplats</translation>
 <translation id="7889371445710865055">Ändra dikteringsspråk</translation>
@@ -9851,6 +9857,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7944847494038629732">Försök igen genom att koppla från skannerns USB-kabel och sätta i den igen</translation>
 <translation id="7945703887991230167">Önskad röst</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> har läsbehörighet till filer i <ph name="FOLDERNAME" /> och kan skapa egna kopior tills du stänger alla flikar för den här webbplatsen</translation>
 <translation id="7946586320617670168">Ursprunget måste vara säkert</translation>
 <translation id="7946681191253332687">Utökade säkerhetsuppdateringar är tillgängliga</translation>
 <translation id="794676567536738329">Bekräfta behörigheter</translation>
@@ -10060,6 +10067,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8079606020824373126">Google Lösenordshantering kan uppdatera kontot med ett starkt lösenord och spara det i <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Webbplatser kan begära att hantera fönster på alla skärmar</translation>
 <translation id="8080028325999236607">Stäng alla flikar</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> kan visa och göra egna kopior av <ph name="FILENAME" /> tills du stänger alla flikar för den här webbplatsen</translation>
 <translation id="8081989000209387414">Vill du inaktivera felsökning med ADB?</translation>
 <translation id="8082106343289440791">Vill du parkoppla med <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082132721957920509">Kortet har sparats</translation>
@@ -10827,6 +10835,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="862750493060684461">CSS-cacheminne</translation>
 <translation id="8627795981664801467">Endast säkra anslutningar</translation>
 <translation id="8627804903623428808">Granska dessa villkor och styr ditt barns data</translation>
+<translation id="862907440446514309">Administratören spelar in din skärm med <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Viloläge vid laddning</translation>
 <translation id="8631032106121706562">Blomster</translation>
 <translation id="8632104508818855045">Du har tidigare valt att inte ge något tillägg behörighet på <ph name="ORIGIN" /></translation>
@@ -11346,6 +11355,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="897525204902889653">Karantäntjänst</translation>
 <translation id="8975396729541388937">Du kan när som helst avsluta prenumerationen genom att klicka på länken i e-postmeddelandena du får.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> och 1 flik till}other{<ph name="TAB_TITLE" /> och # flikar till}}</translation>
+<translation id="897565255818387330">Vill du tillåta att webbplatsen ser och kopierar <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Ställ in en skolprofil för att spara och använda lösenord och annat i kontot</translation>
 <translation id="8977811652087512276">Felaktigt lösenord eller skadad fil</translation>
 <translation id="8978154919215542464">På – synkronisera allt</translation>

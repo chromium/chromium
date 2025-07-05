@@ -444,6 +444,7 @@
 <translation id="2708051474374549906">Googleకు పంపబడే మీ బ్రౌజింగ్ డేటా ఆధారంగా ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రియల్-టైమ్, క్రియాశీలమైన రక్షణ</translation>
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
 <translation id="271033894570825754">కొత్తది</translation>
+<translation id="2712929214961145009">సాన్స్ సెరిఫ్</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
 <translation id="2721190673959776287">ప్రోడక్ట్‌లోని శాంపిల్ రిచ్ సందర్భోచిత ప్యానెల్‌కు సహాయపడుతుంది, ఇది రోజులో చాలా సార్లు కనిపిస్తుంది.</translation>
 <translation id="2739887572830526131">ట్యాబ్‌లను తర్వాత జోడించడానికి ఈ గ్రూప్‌ను కొనసాగించండి, లేదా మీకు ఇది అవసరం లేకపోతే, దాన్ని తొలగించండి.</translation>
@@ -913,6 +914,7 @@
 <translation id="4717844083556844785">ప్రస్తుత వెబ్‌పేజీ అజ్ఞాత మోడ్‌లో ఉంది</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
 <translation id="4720530280568305198">మీ ఎంపిక కొత్త ట్యాబ్‌లో తెరవబడింది</translation>
+<translation id="4720782081196952026">టెక్స్ట్ సైజ్‌ను తగ్గించండి</translation>
 <translation id="472259426228234149">ధర $100 - $180</translation>
 <translation id="4735849923335729414">మీ సంస్థ మేనేజ్ చేసే <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి.</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5217329997012062137">మీరు Google Lensను ఉపయోగించినప్పుడు, పేజీ స్క్రీన్‌షాట్ Googleకు పంపబడుతుంది.</translation>
 <translation id="5220945116117011963">తేదీల నుండి క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయండి</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5234094073825090254">{count,plural, =1{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్ సేవ్ చేయబడింది.}other{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్‌లు సేవ్ చేయబడ్డాయి.}}</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
@@ -1072,6 +1075,7 @@
 <translation id="5343472494710226394">మీ ఆసక్తుల ఆధారంగా వార్తలు, క్రీడలు, కంటెంట్.</translation>
 <translation id="5352128922772839949">ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
+<translation id="5371112366564891538">టెక్స్ట్ సైజ్‌ను పెంచండి</translation>
 <translation id="537853552771686272">మీకు ఆసక్తి ఉన్న టాపిక్‌లను, సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}‌ను మూసివేయడం జరిగింది}other{{count}‌ను మూసివేయడం జరిగింది}}</translation>
 <translation id="5394975111793637642">మీ కార్డ్ కోసం ప్రోడక్ట్ రివ్యూలను దాచండి</translation>
@@ -1316,6 +1320,7 @@
 <translation id="6295751040240588413">కార్డ్ మారుపేరు చెల్లదు</translation>
 <translation id="629730747756840877">ఖాతా</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">ఈ పరికరంలో మీ పాస్‌వర్డ్‌లన్నింటిని పొందడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6316141353357700666">కనిపించే లిస్ట్ నుండి మీరు ఉపయోగించాలనుకునే పాస్‌వర్డ్‌ను ఎంచుకోండి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
@@ -2070,6 +2075,7 @@
 <translation id="9130317582644834675">జూమ్ టెక్స్ట్‌ను దాచండి</translation>
 <translation id="913036870884277353">లింక్‌లను సులభంగా ఇతర యాప్‌లలో తెరవవచ్చు.</translation>
 <translation id="9137013805542155359">అసలును చూపించు</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">మీరు సెట్ చేసిన రిమైండర్‌లు, ఇతర పరికరాల నుండి ట్యాబ్‌ల కోసం అప్‌డేట్‌లను అందుకోండి</translation>
 <translation id="914781932147356857">అన్నింటినీ మార్క్ చేయండి…</translation>
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>

@@ -444,6 +444,7 @@
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="271033894570825754">新</translation>
+<translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2721190673959776287">上下文面板的产品内帮助详细说明示例，每天会显示多次。</translation>
 <translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
@@ -913,6 +914,7 @@
 <translation id="4717844083556844785">当前网页处于无痕模式</translation>
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="4720530280568305198">您选择的内容已在新标签页中打开</translation>
+<translation id="4720782081196952026">缩小文字</translation>
 <translation id="472259426228234149">价格：100 美元 - 180 美元</translation>
 <translation id="4735849923335729414">以 <ph name="EMAIL" /> 的身份登录，该账号由组织管理。</translation>
 <translation id="473775607612524610">更新</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5217329997012062137">当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5222676887888702881">退出</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5234094073825090254">{count,plural, =1{书签已保存到您的 Google 账号 {email}。}other{书签已保存到您的 Google 账号 {email}。}}</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -1072,6 +1075,7 @@
 <translation id="5343472494710226394">根据您的兴趣推送的新闻、体育赛事和内容。</translation>
 <translation id="5352128922772839949">保存文件</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
+<translation id="5371112366564891538">放大文字</translation>
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 个已关闭}other{{count} 个已关闭}}</translation>
 <translation id="5394975111793637642">隐藏“为您推荐的商品评价”卡片</translation>
@@ -1316,6 +1320,7 @@
 <translation id="6295751040240588413">卡的别名无效</translation>
 <translation id="629730747756840877">账号</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
 <translation id="6316141353357700666">从显示的列表中选择要使用的密码。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
@@ -2070,6 +2075,7 @@
 <translation id="9130317582644834675">隐藏“缩放文字”</translation>
 <translation id="913036870884277353">轻松地打开其他应用中的链接。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">接收您在其他设备设置的提醒和标签页的最新动态</translation>
 <translation id="914781932147356857">全部标为…</translation>
 <translation id="9148126808321036104">重新登录</translation>

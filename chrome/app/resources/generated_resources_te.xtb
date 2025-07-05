@@ -3733,6 +3733,7 @@
 <translation id="3592260987370335752">&amp;మరింత తెలుసుకోండి</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" />‌లో ఒక ట్యాబ్‌ను ప్రసారం చేస్తున్నారు</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin మోడ్‌ను అనుమతించండి</translation>
+<translation id="3593953853060020305"><ph name="FILE_NAME" />‌ను ఎడిట్ చేయడానికి ఈ సైట్‌ను అనుమతించాలా?</translation>
 <translation id="3593965109698325041">సర్టిఫికెట్ పేరు పరిమితులు</translation>
 <translation id="3596012367874587041">యాప్ సెట్టింగ్‌లు</translation>
 <translation id="3596414637720633074">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
@@ -4626,6 +4627,7 @@
 <translation id="4195814663415092787">ఇంతకు ముందు ఆపిన చోట నుండే కొనసాగించండి</translation>
 <translation id="4198268995694216131">అదనపు సైట్‌లు</translation>
 <translation id="4198420883535766848">లిస్ట్ నుండి ట్యాబ్‌ను తీసివేయండి</translation>
+<translation id="4198664641856813238">మీ అన్ని పరికరాలలో మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="4200609364258658652">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
 <translation id="4200689466366162458">అనుకూల పదాలు</translation>
 <translation id="4200983522494130825">కొత్త &amp;ట్యాబ్</translation>
@@ -4695,6 +4697,7 @@
 <translation id="4249785854468467847">AIతో కొత్త మార్గాల్లో Chromeను ఉపయోగించండి</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4250680216510889253">లేదు</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" />, <ph name="FOLDERNAME" />‌లోని ఫైళ్లను చూడగలదు, సొంతంగా ఆ ఫైళ్ల కాపీలను క్రియేట్ చేసుకోగలదు</translation>
 <translation id="4251377547188244181">కియోస్క్, సంకేత చిహ్నాల పరికరంలో ఎన్‌రోల్‌మెంట్</translation>
 <translation id="4252828488489674554">ఈ గ్రూప్‌ను ఎడిట్ చేయడానికి ట్యాబ్ గ్రూప్ పేరు పైన కుడి క్లిక్ ఇవ్వండి లేదా కుదించడానికి క్లిక్ చేయండి</translation>
 <translation id="4252899949534773101">బ్లూటూత్ నిలిపివేయబడింది</translation>
@@ -8645,6 +8648,7 @@
 <translation id="7093220653036489319">క్విక్ ఆన్సర్స్</translation>
 <translation id="7093866338626856921">ఈ పేర్లు గల పరికరాలతో డేటాను ఇచ్చిపుచ్చుకోవడానికి అనుమతి: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">గ్రేట్ గిజా పిరమిడ్</translation>
+<translation id="7094834615934458012">ఫైళ్లను ఎడిట్ చేయడానికి ఈ సైట్‌ను అనుమతించాలా?</translation>
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
 <translation id="7098447629416471489">సేవ్ చేసిన ఇతర సెర్చ్ ఇంజిన్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{యాప్‌ను తీసివేయండి}other{యాప్‌లను తీసివేయండి}}</translation>
@@ -9018,6 +9022,7 @@
 <translation id="7377481913241237033">కోడ్ ద్వారా కనెక్ట్ అవ్వండి</translation>
 <translation id="73786666777299047">Chrome వెబ్ స్టోర్‌ను తెరవండి</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. అదే టాస్క్ గ్రూప్‌లో మరొక టాస్క్: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. అదే టాస్క్ గ్రూప్‌లో # ఇతర టాస్క్‌లు: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" />, <ph name="FILENAME" />‌ను చూడగలదు, సొంతంగా ఆ ఫైల్ కాపీలను క్రియేట్ చేసుకోగలదు</translation>
 <translation id="7380272457268061606">లోకల్ డేటా రికవరీని డిజేబుల్ చేయాలా?</translation>
 <translation id="7380459290951585794">మీ ఫోన్ సమీపంలోనే ఉండి, అన్‌లాక్ చేసి ఉండి, అలాగే అందులో బ్లూటూత్, Wi-Fi ఆన్ చేయబడి ఉన్నాయని నిర్ధారించుకోండి</translation>
 <translation id="7380622428988553498">పరికరం పేరులో చెల్లని అక్షరాలు ఉన్నాయి</translation>
@@ -9762,6 +9767,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{ఐటెమ్}other{# ఐటెమ్‌లు}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్ ఉత్పత్తి పరిచయ వివరాలను తెలుసుకోండి. మరిన్ని ఆప్షన్‌ల కోసం, ఒక్కో సెట్టింగ్‌కు వెళ్లండి.</translation>
+<translation id="7887286029584695415">ఫైళ్లను చూడటానికి, కాపీ చేయడానికి, ఈ సైట్‌ను అనుమతించాలా?</translation>
 <translation id="7887334752153342268">నకిలీ</translation>
 <translation id="7887864092952184874">బ్లూటూత్ మౌస్ జత చేయబడింది</translation>
 <translation id="7889371445710865055">డిక్టేషన్ భాషను మార్చండి</translation>
@@ -9847,6 +9853,7 @@
 <translation id="7944772052836377867">ఇది మీరేనని సింక్ వెరిఫై చేయాలి</translation>
 <translation id="7944847494038629732">స్కానర్ USB కేబుల్‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ట్రై చేయడానికి దాన్ని మళ్లీ ప్లగ్ చేయండి</translation>
 <translation id="7945703887991230167">ఎక్కువగా ఇష్టపడే వాయిస్</translation>
+<translation id="7946243258100028201">మీరు ఈ సైట్ అన్ని ట్యాబ్‌లను మూసివేసే వరకు, <ph name="ORIGIN" />, <ph name="FOLDERNAME" />‌లోని ఫైళ్లను చూడగలదు, సొంతంగా ఆ ఫైళ్ల కాపీలను క్రియేట్ చేసుకోగలదు</translation>
 <translation id="7946586320617670168">మూలం తప్పనిసరిగా సురక్షితంగా ఉండాలి</translation>
 <translation id="7946681191253332687">ఎక్స్‌టెండ్ సెక్యూరిటీ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి</translation>
 <translation id="794676567536738329">అనుమతులు నిర్ధారించండి</translation>
@@ -10053,6 +10060,7 @@
 <translation id="8079606020824373126">Google Password Manager మీ ఖాతాను బలమైన పాస్‌వర్డ్‌తో అప్‌డేట్ చేసి, దాన్ని <ph name="EMAIL" />‌లో సేవ్ చేయగలదు. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">సైట్‌లు మీ డిస్‌ప్లేలన్నింటిలో విండోలను మేనేజ్ చేయడానికి అనుమతిని అడగవచ్చు</translation>
 <translation id="8080028325999236607">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
+<translation id="8080530871547404884">మీరు ఈ సైట్ అన్ని ట్యాబ్‌లను మూసివేసే వరకు, <ph name="ORIGIN" />, <ph name="FILENAME" />‌ను చూడగలదు, సొంతంగా ఆ ఫైల్ కాపీలను క్రియేట్ చేసుకోగలదు</translation>
 <translation id="8081989000209387414">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేయాలా?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"తో పెయిర్ చేయాలా?</translation>
 <translation id="8082132721957920509">మీ కార్డ్ సేవ్ చేయబడింది</translation>
@@ -10820,6 +10828,7 @@
 <translation id="862750493060684461">CSS కాష్</translation>
 <translation id="8627795981664801467">సురక్షిత కనెక్షన్‌ల మాత్రమే</translation>
 <translation id="8627804903623428808">ఈ నియమాలను రివ్యూ చేయండి, మీ చిన్నారి డేటాను కంట్రోల్ చేయండి</translation>
+<translation id="862907440446514309">మీ అడ్మినిస్ట్రేటర్, <ph name="APP0_NAME" /> సహాయంతో మీ స్క్రీన్‌ను రికార్డ్ చేస్తున్నారు.</translation>
 <translation id="8630338733867813168">ఛార్జింగ్‌లో ఉన్నప్పుడు స్లీప్ మోడ్‌లో ఉండాలి</translation>
 <translation id="8631032106121706562">పూరేకులు</translation>
 <translation id="8632104508818855045">మీరు మునుపు <ph name="ORIGIN" />లో ఎటువంటి ఎక్స్‌టెన్షన్‌లను అనుమతించకూడదని ఎంచుకున్నారు</translation>
@@ -11339,6 +11348,7 @@
 <translation id="897525204902889653">క్వారెంటైన్ సేవ</translation>
 <translation id="8975396729541388937">మీరు అందుకునే ఇమెయిల్‌లలోని లింక్‌ను క్లిక్ చేయడం ద్వారా ఎప్పుడైనా సబ్‌స్క్రిప్షన్‌ను తీసివేయవచ్చు.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ఇంకా 1 వేరే ట్యాబ్}other{"<ph name="TAB_TITLE" />" ఇంకా # వేరే ట్యాబ్‌లు}}</translation>
+<translation id="897565255818387330">ఈ సైట్‌ను, <ph name="FILE_NAME" />‌ను చూడటానికి, కాపీ చేయడానికి అనుమతించాలా?</translation>
 <translation id="8977523125954274918">మీ ఖాతాలో మీ పాస్‌వర్డ్‌లు, మరిన్నింటిని సేవ్ చేయడానికి, అలాగే ఉపయోగించడానికి స్కూల్ ప్రొఫైల్‌ను సెటప్ చేయండి</translation>
 <translation id="8977811652087512276">పాస్‌వర్డ్ తప్పు లేదా ఫైల్ పాడైంది</translation>
 <translation id="8978154919215542464">ఆన్‌లో ఉంది - ప్రతిదీ సింక్ చేస్తుంది</translation>

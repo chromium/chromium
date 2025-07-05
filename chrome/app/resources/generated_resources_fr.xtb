@@ -3721,6 +3721,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3592260987370335752">&amp;En savoir plus</translation>
 <translation id="3592344177526089979">Caster un onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Activer le mode Pinyin fuzzy</translation>
+<translation id="3593953853060020305">Autoriser ce site à modifier <ph name="FILE_NAME" /> ?</translation>
 <translation id="3593965109698325041">Contraintes de nom du certificat</translation>
 <translation id="3596012367874587041">Paramètres de l'appli</translation>
 <translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
@@ -4614,6 +4615,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4195814663415092787">Reprendre où vous avez arrêté</translation>
 <translation id="4198268995694216131">Autres sites</translation>
 <translation id="4198420883535766848">Supprimer l'onglet de la liste</translation>
+<translation id="4198664641856813238">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="4200609364258658652">Cop&amp;ier l'image vidéo</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
@@ -4683,6 +4685,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4249785854468467847">Réinventez Chrome, boosté par l'IA</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4250680216510889253">Non</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> pourra consulter les fichiers de <ph name="FOLDERNAME" /> et en créer des copies</translation>
 <translation id="4251377547188244181">Enregistrement de l'appareil avec Kiosk &amp; Signage</translation>
 <translation id="4252828488489674554">Effectuez un clic droit sur le nom du groupe d'onglets pour le modifier ou cliquez pour le réduire</translation>
 <translation id="4252899949534773101">Bluetooth désactivé</translation>
@@ -8635,6 +8638,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093866338626856921">Échanger des données avec les appareils suivants : "<ph name="HOSTNAMES" />"</translation>
 <translation id="7094768688212290897">Grande pyramide de Gizeh</translation>
+<translation id="7094834615934458012">Autoriser ce site à modifier les fichiers ?</translation>
 <translation id="7098389117866926363">Appareil USB de type C (port situé sur l'arrière de l'appareil, à gauche)</translation>
 <translation id="7098447629416471489">Les autres moteurs de recherche enregistrés s'afficheront ici</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Supprimer l'appli}one{Supprimer l'appli}other{Supprimer les applis}}</translation>
@@ -9008,6 +9012,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7377481913241237033">Connecter un appareil avec un code</translation>
 <translation id="73786666777299047">Ouvrir le Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Une autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. # autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # autres tâches dans le même groupe de tâches : <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> pourra consulter <ph name="FILENAME" /> et en créer des copies</translation>
 <translation id="7380272457268061606">Désactiver la récupération des données locales ?</translation>
 <translation id="7380459290951585794">Vérifiez que votre téléphone est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>
@@ -9753,6 +9758,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7886279613512920452">{COUNT,plural, =1{un élément}one{# élément}other{# éléments}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Visite guidée des paramètres clés de confidentialité et de sécurité. Accédez à chaque paramètre pour obtenir plus d'options.</translation>
+<translation id="7887286029584695415">Autoriser ce site à consulter et copier les fichiers ?</translation>
 <translation id="7887334752153342268">Dupliquer</translation>
 <translation id="7887864092952184874">Souris Bluetooth associée.</translation>
 <translation id="7889371445710865055">Changer de langue de dictée</translation>
@@ -9838,6 +9844,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
 <translation id="7944847494038629732">Débranchez le câble USB du scanner, puis rebranchez-le pour réessayer</translation>
 <translation id="7945703887991230167">Voix favorite</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> pourra consulter les fichiers de <ph name="FOLDERNAME" /> et en créer des copies jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
 <translation id="7946586320617670168">L'origine doit être sûre</translation>
 <translation id="7946681191253332687">Mises à jour de sécurité étendues disponibles</translation>
 <translation id="794676567536738329">Confirmer les autorisations</translation>
@@ -10047,6 +10054,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8079606020824373126">Le Gestionnaire de mots de passe de Google peut mettre à jour votre compte avec un mot de passe sécurisé et l'enregistrer dans <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres de tous vos écrans</translation>
 <translation id="8080028325999236607">Fermer tous les onglets</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> pourra consulter <ph name="FILENAME" /> et en créer des copies jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
 <translation id="8081989000209387414">Désactiver le débogage ADB ?</translation>
 <translation id="8082106343289440791">Associer à "<ph name="DEVICE_NAME" />" ?</translation>
 <translation id="8082132721957920509">Votre carte est enregistrée</translation>
@@ -10814,6 +10822,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Uniquement les connexions sécurisées</translation>
 <translation id="8627804903623428808">Voir ces conditions et contrôler les données de votre enfant</translation>
+<translation id="862907440446514309">Votre administrateur enregistre votre écran avec <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Mettre en veille lorsque l'appareil est en charge</translation>
 <translation id="8631032106121706562">Fleur</translation>
 <translation id="8632104508818855045">Vous avez précédemment choisi de n'autoriser aucune extension sur <ph name="ORIGIN" /></translation>
@@ -11334,6 +11343,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="897525204902889653">Service de zone de quarantaine</translation>
 <translation id="8975396729541388937">Vous pouvez vous désabonner à tout moment en cliquant sur le lien correspondant dans les e-mails que vous recevez.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" et 1 autre onglet}one{"<ph name="TAB_TITLE" />" et # autre onglet}other{"<ph name="TAB_TITLE" />" et # autres onglets}}</translation>
+<translation id="897565255818387330">Autoriser ce site à consulter et à copier <ph name="FILE_NAME" /> ?</translation>
 <translation id="8977523125954274918">Configurez un profil scolaire pour enregistrer et utiliser vos mots de passe et plus encore dans votre compte</translation>
 <translation id="8977811652087512276">Mot de passe incorrect ou fichier corrompu</translation>
 <translation id="8978154919215542464">Activée – Tout synchroniser</translation>

@@ -3723,6 +3723,7 @@
 <translation id="3592260987370335752">&amp;Даведацца больш</translation>
 <translation id="3592344177526089979">Ідзе трансляцыя ўкладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3593152357631900254">Уключыць рэжым Fuzzy Pinyin</translation>
+<translation id="3593953853060020305">Дазволіць гэтаму сайту змяняць файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="3593965109698325041">Абмежаванні назваў сертыфікатаў</translation>
 <translation id="3596012367874587041">Налады праграмы</translation>
 <translation id="3596414637720633074">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
@@ -4614,6 +4615,7 @@
 <translation id="4195814663415092787">Працягнуць з месца, дзе вы спыніліся</translation>
 <translation id="4198268995694216131">Дадатковыя сайты</translation>
 <translation id="4198420883535766848">Выдаліць укладку са спіса</translation>
+<translation id="4198664641856813238">Увайдзіце, каб атрымаць доступ да закладак, пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="4200609364258658652">Кап&amp;іраваць кадр відэа</translation>
 <translation id="4200689466366162458">Словы, дададзеныя карыстальнікам</translation>
 <translation id="4200983522494130825">Новая &amp;ўкладка</translation>
@@ -4683,6 +4685,7 @@
 <translation id="4249785854468467847">Новыя ўражанні ад Chrome дзякуючы выкарыстанню штучнага інтэлекту</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="4250680216510889253">Не</translation>
+<translation id="4251243704979202079">Сайт <ph name="ORIGIN" /> зможа праглядаць файлы ў папцы "<ph name="FOLDERNAME" />" і ствараць іх копіі</translation>
 <translation id="4251377547188244181">Рэгістрацыя прылады для работы ў рэжыме кіёска і лічбавай знешняй рэкламы</translation>
 <translation id="4252828488489674554">Каб змяніць групу ўкладак, націсніце правай кнопкай мышы на яе назву, або націсніце левай кнопкай, каб згарнуць групу</translation>
 <translation id="4252899949534773101">Bluetooth выключаны</translation>
@@ -8638,6 +8641,7 @@
 <translation id="7093220653036489319">Хуткія адказы</translation>
 <translation id="7093866338626856921">Абмен данымі з прыладамі з назвамі: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Піраміда Хеопса ў Гізе</translation>
+<translation id="7094834615934458012">Дазволіць гэтаму сайту змяняць файлы?</translation>
 <translation id="7098389117866926363">Прылада USB-C (задні порт злева)</translation>
 <translation id="7098447629416471489">Тут з’явяцца іншыя захаваныя пошукавыя сістэмы</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Выдаліць праграму}one{Выдаліць праграмы}few{Выдаліць праграмы}many{Выдаліць праграмы}other{Выдаліць праграмы}}</translation>
@@ -9011,6 +9015,7 @@
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Яшчэ адна задача ў гэтай групе задач: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Яшчэ # задача ў гэтай групе задач: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Яшчэ # задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Яшчэ # задач у гэтай групе задач: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Яшчэ # задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">Сайт <ph name="ORIGIN" /> зможа праглядаць файл "<ph name="FILENAME" />" і ствараць яго копіі</translation>
 <translation id="7380272457268061606">Адключыць аднаўленне лакальных даных?</translation>
 <translation id="7380459290951585794">Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi</translation>
 <translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
@@ -9756,6 +9761,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
 <translation id="7887174313503389866">Даведайцеся пра ключавыя налады бяспекі і прыватнасці. Больш інфармацыі вы можаце атрымаць, знаёмячыся з кожнай наладай асобна.</translation>
+<translation id="7887286029584695415">Дазволіць гэтаму сайту праглядаць і капіраваць файлы?</translation>
 <translation id="7887334752153342268">Дубліраваць</translation>
 <translation id="7887864092952184874">Мыш Bluetooth спалучана</translation>
 <translation id="7889371445710865055">Змена мовы галасавога ўводу</translation>
@@ -9841,6 +9847,7 @@
 <translation id="7944772052836377867">Для сінхранізацыі неабходна спраўдзіць вашу асобу</translation>
 <translation id="7944847494038629732">Каб паўтарыць спробу, адключыце і зноў падключыце кабель USB сканера</translation>
 <translation id="7945703887991230167">Прыярытэтны голас</translation>
+<translation id="7946243258100028201">Сайт <ph name="ORIGIN" /> зможа праглядаць файлы ў папцы "<ph name="FOLDERNAME" />" і ствараць іх копіі, пакуль вы не закрыеце ўсе ўкладкі для яго</translation>
 <translation id="7946586320617670168">Крыніца павінна быць бяспечнай</translation>
 <translation id="7946681191253332687">Даступныя пашыраныя абнаўленні сістэмы бяспекі</translation>
 <translation id="794676567536738329">Пацвярджэнне дазволаў</translation>
@@ -10049,6 +10056,7 @@
 <translation id="8079606020824373126">Менеджар пароляў Google можа стварыць надзейны пароль для вашага ўліковага запісу і захаваць гэты пароль ва ўліковым запісе <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сайты могуць запытваць дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="8080028325999236607">Закрыць усе ўкладкі</translation>
+<translation id="8080530871547404884">Сайт <ph name="ORIGIN" /> зможа праглядаць файл "<ph name="FILENAME" />" і ствараць яго копіі, пакуль вы не закрыеце ўсе ўкладкі для гэтага сайта</translation>
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
 <translation id="8082106343289440791">Спалучыць з прыладай "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">Ваша картка захавана</translation>
@@ -10816,6 +10824,7 @@
 <translation id="862750493060684461">Кэш CSS</translation>
 <translation id="8627795981664801467">Толькі бяспечныя падключэнні</translation>
 <translation id="8627804903623428808">Азнаёмцеся з гэтымі ўмовамі і кіруйце данымі свайго дзіцяці</translation>
+<translation id="862907440446514309">Адміністратар запісвае змесціва вашага экрана з дапамогай праграмы "<ph name="APP0_NAME" />".</translation>
 <translation id="8630338733867813168">Рэжым сну падчас зарадкі</translation>
 <translation id="8631032106121706562">Пялёсткі</translation>
 <translation id="8632104508818855045">Раней вы забаранілі пашырэнні на старонцы <ph name="ORIGIN" /></translation>
@@ -11338,6 +11347,7 @@
 <translation id="897525204902889653">Каранцінны сэрвіс</translation>
 <translation id="8975396729541388937">Вы можаце адпісацца ў любы час, націснуўшы на адпаведную спасылку ў адным з электронных лістоў, якія вы атрымліваеце.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і яшчэ 1 укладка}one{"<ph name="TAB_TITLE" />" і яшчэ # укладка}few{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}many{"<ph name="TAB_TITLE" />" і яшчэ # укладак}other{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}}</translation>
+<translation id="897565255818387330">Дазволіць гэтаму сайту праглядаць і капіраваць файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="8977523125954274918">Вы можаце наладзіць навучальны профіль, які дазволіць захоўваць і выкарыстоўваць паролі і іншую інфармацыю ва ўліковым запісе</translation>
 <translation id="8977811652087512276">Няправільны пароль, або файл пашкоджаны</translation>
 <translation id="8978154919215542464">Уключана. Сінхранізуецца ўсё</translation>

@@ -3726,6 +3726,7 @@
 <translation id="3592260987370335752">&amp;ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3592344177526089979">ಒಂದು ಟ್ಯಾಬ್ ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3593152357631900254">ಅಸ್ಪಷ್ಟ -ಪಿನ್‌ಯಿನ್‌ ಮೋಡ್‌ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="3593953853060020305">ಈ ಸೈಟ್ <ph name="FILE_NAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="3593965109698325041">ಪ್ರಮಾಣಪತ್ರ ಹೆಸರು ನಿರ್ಬಂಧಗಳು</translation>
 <translation id="3596012367874587041">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3596414637720633074">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -4620,6 +4621,7 @@
 <translation id="4195814663415092787">ಎಲ್ಲಿ ಬಿಡಲಾಗಿದೆಯೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರೆಯಿರಿ</translation>
 <translation id="4198268995694216131">ಹೆಚ್ಚುವರಿ ಸೈಟ್‌ಗಳು</translation>
 <translation id="4198420883535766848">ಪಟ್ಟಿಯಿಂದ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="4198664641856813238">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4200609364258658652">ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4200689466366162458">ಕಸ್ಟಮ್ ಪದಗಳು</translation>
 <translation id="4200983522494130825">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
@@ -4689,6 +4691,7 @@
 <translation id="4249785854468467847">AI ಮೂಲಕ ಸೂಪರ್‌ಚಾರ್ಜ್‌ ಮಾಡಲಾದ Chrome ಅನ್ನು ಮರುರೂಪಿಸಿ</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4250680216510889253">ಇಲ್ಲ</translation>
+<translation id="4251243704979202079"><ph name="FOLDERNAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು <ph name="ORIGIN" /> ನೋಡಲು ಮತ್ತು ಅವುಗಳ ಪ್ರತಿಗಳನ್ನು ಸ್ವಂತವಾಗಿ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="4251377547188244181">ಕಿಯೋಸ್ಕ್ ಮತ್ತು ಸೈನೇಜ್ ಸಾಧನಗಳ ನೋಂದಣಿ</translation>
 <translation id="4252828488489674554">ಈ ಗುಂಪನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಟ್ಯಾಬ್ ಗುಂಪಿನ ಹೆಸರಿನ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4252899949534773101">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -8643,6 +8646,7 @@
 <translation id="7093220653036489319">ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
 <translation id="7093866338626856921">ಈ ಹೆಸರಿನ ಸಾಧನಗಳೊಂದಿಗೆ ಡೇಟಾ ವಿನಿಮಯ ಮಾಡಿ: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">ಗೀಜಾದ ಗ್ರೇಟ್ ಪಿರಮಿಡ್</translation>
+<translation id="7094834615934458012">ಈ ಸೈಟ್ ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="7098389117866926363">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿ ಎಡ ಪೋರ್ಟ್‌)</translation>
 <translation id="7098447629416471489">ಇತರೆ ಉಳಿಸಿದ ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ಆ್ಯಪ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ}one{ಆ್ಯಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಆ್ಯಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
@@ -9016,6 +9020,7 @@
 <translation id="7377481913241237033">ಕೋಡ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="73786666777299047">Chrome ವೆಬ್‌ ಸ್ಟೋರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. ಅದೇ ಕಾರ್ಯ ಗುಂಪಿನಲ್ಲಿರುವ ಮತ್ತೊಂದು ಕಾರ್ಯ: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. ಅದೇ ಕಾರ್ಯ ಗುಂಪಿನಲ್ಲಿರುವ ಇತರ # ಕಾರ್ಯಗಳು: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. ಅದೇ ಕಾರ್ಯ ಗುಂಪಿನಲ್ಲಿರುವ ಇತರ # ಕಾರ್ಯಗಳು: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> <ph name="FILENAME" /> ಫೈಲ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಅದರ ಸ್ವಂತ ಪ್ರತಿಗಳನ್ನು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="7380272457268061606">ಸ್ಥಳೀಯ ಡೇಟಾ ರಿಕವರಿಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="7380459290951585794">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="7380622428988553498">ಸಾಧನದ ಹೆಸರು ಅಮಾನ್ಯವಾದ ಅಕ್ಷರಗಳನ್ನು ಒಳಗೊಂಡಿದೆ</translation>
@@ -9759,6 +9764,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{ಒಂದು ಐಟಂ}one{# ಐಟಂಗಳು}other{# ಐಟಂಗಳು}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ಪ್ರಮುಖ ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತಾ ನಿಯಂತ್ರಣಗಳ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ಪರಿಶೀಲಿಸಿ. ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳಿಗಾಗಿ, ವೈಯಕ್ತಿಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
+<translation id="7887286029584695415">ಈ ಸೈಟ್ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಕಾಪಿ ಮಾಡಲು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="7887334752153342268">ನಕಲು</translation>
 <translation id="7887864092952184874">ಬ್ಲೂಟೂತ್‌ ಮೌಸ್ ಜೋಡಿಯಾಗಿದೆ</translation>
 <translation id="7889371445710865055">ಉಕ್ತಲೇಖನ ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -9844,6 +9850,7 @@
 <translation id="7944772052836377867">ಇದು ನೀವೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಿಂಕ್‌ಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7944847494038629732">ಸ್ಕ್ಯಾನರ್‌ನ USB ಕೇಬಲ್ ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಲು ಅದನ್ನು ಮರು-ಪ್ಲಗ್ ಮಾಡಿ</translation>
 <translation id="7945703887991230167">ಆದ್ಯತೆಯ ಧ್ವನಿ</translation>
+<translation id="7946243258100028201">ಈ ಸೈಟ್‌ನಲ್ಲಿರುವ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಮುಚ್ಚುವವರೆಗೆ, <ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಲು ಮತ್ತು ಅವುಗಳ ಸ್ವಂತ ಪ್ರತಿಗಳನ್ನು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="7946586320617670168">ಮೂಲವು ಸುರಕ್ಷಿತವಾಗಿರಬೇಕು</translation>
 <translation id="7946681191253332687">ವಿಸ್ತೃತ ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿವೆ</translation>
 <translation id="794676567536738329">ಅನುಮತಿಗಳನ್ನು ದೃಡೀಕರಿಸಿ</translation>
@@ -10050,6 +10057,7 @@
 <translation id="8079606020824373126">Google Password Manager ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು ಮತ್ತು ಅದನ್ನು <ph name="EMAIL" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಬಹುದು. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="8080028325999236607">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="8080530871547404884">ಈ ಸೈಟ್‌ಗಾಗಿ ನೀವು ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚುವವರೆಗೆ <ph name="FILENAME" /> ಅನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಕಾಪಿ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಅನುಮತಿ ಇರುತ್ತದೆ</translation>
 <translation id="8081989000209387414">ADB ಡೀಬಗ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕೇ?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" ಜೊತೆ ಪೇರ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="8082132721957920509">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -10817,6 +10825,7 @@
 <translation id="862750493060684461">CSS ಕ್ಯಾಷ್</translation>
 <translation id="8627795981664801467">ಸುರಕ್ಷಿತ ಸಂಪರ್ಕಗಳು ಮಾತ್ರ</translation>
 <translation id="8627804903623428808">ಈ ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಮಗುವಿನ ಡೇಟಾವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
+<translation id="862907440446514309">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="8630338733867813168">ಚಾರ್ಜ್‌ ಆಗುತ್ತಿರುವಾಗ ನಿದ್ರಾವಸ್ಥೆ ಸ್ಥಿತಿ</translation>
 <translation id="8631032106121706562">ಪೆಟಲ್ಸ್</translation>
 <translation id="8632104508818855045"><ph name="ORIGIN" /> ನಲ್ಲಿ ಯಾವುದೇ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸದಿರಲು ನೀವು ಈ ಹಿಂದೆ ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ</translation>
@@ -11337,6 +11346,7 @@
 <translation id="897525204902889653">ಕ್ವಾರಂಟೈನ್ ಸೇವೆ</translation>
 <translation id="8975396729541388937">ನೀವು ಸ್ವೀಕರಿಸುವ ಇಮೇಲ್‌ಗಳಲ್ಲಿರುವ ಲಿಂಕ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ಯಾವಾಗ ಬೇಕಾದರೂ ಅನ್‌ಸಬ್‌ಸ್ಕ್ರೈಬ್ ಮಾಡಿ.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ಮತ್ತು ಇನ್ನೂ 1 ಇತರ ಟ್ಯಾಬ್}one{"<ph name="TAB_TITLE" />" ಮತ್ತು ಇನ್ನೂ # ಇತರ ಟ್ಯಾಬ್‌ಗಳು}other{"<ph name="TAB_TITLE" />" ಮತ್ತು ಇನ್ನೂ # ಇತರ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="897565255818387330"><ph name="FILE_NAME" /> ಫೈಲ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಕಾಪಿ ಮಾಡಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="8977523125954274918">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಶಾಲಾ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="8977811652087512276">ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್‌ ಅಥವಾ ದೋಷಯುಕ್ತ ಫೈಲ್</translation>
 <translation id="8978154919215542464">ಆನ್- ಎಲ್ಲವನ್ನೂ ಸಿಂಕ್ ಮಾಡಿ</translation>

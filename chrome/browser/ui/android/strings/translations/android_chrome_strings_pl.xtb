@@ -186,6 +186,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="1829244130665387512">Znajdź na stronie</translation>
 <translation id="1832459821645506983">Tak, zgadzam się</translation>
 <translation id="1845958458910716240">Aby chronić swoje dane, zezwól Chrome na usunięcie uprawnień witryn, których ostatnio nie odwiedzasz</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Przeglądarka Chrome wyłączyła powiadomienia z tej witryny. Możesz je przeglądać i nimi zarządzać.}few{Przeglądarka Chrome wyłączyła powiadomienia z tej witryny. Możesz je przeglądać i nimi zarządzać.}many{Przeglądarka Chrome wyłączyła powiadomienia z tej witryny. Możesz je przeglądać i nimi zarządzać.}other{Przeglądarka Chrome wyłączyła powiadomienia z tej witryny. Możesz je przeglądać i nimi zarządzać.}}</translation>
 <translation id="1871098866036088250">Otwórz w przeglądarce Chrome</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1877073879466606884">Profil, na którym jesteś zalogowany(-a), jest profilem zarządzanym. Administrator może zdalnie wprowadzać zmiany w ustawieniach profilu, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania.</translation>
@@ -1770,6 +1771,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Zwiększ bezpieczeństwo haseł na swoim koncie Google</translation>
+<translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> zostanie zamknięta</translation>
 <translation id="8723453889042591629">Szybko przetłumacz tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8731268612289859741">Kod bezpieczeństwa</translation>

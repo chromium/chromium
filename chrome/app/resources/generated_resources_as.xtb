@@ -3733,6 +3733,7 @@
 <translation id="3592260987370335752">&amp;অধিক জানক</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" />লৈ এটা টেব কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin ম’ড সক্ষম কৰক</translation>
+<translation id="3593953853060020305">এই ছাইটটোক <ph name="FILE_NAME" /> সম্পাদনা কৰিবলৈ দিবনে?</translation>
 <translation id="3593965109698325041">প্ৰমাণপত্ৰৰ নামৰ সীমাবদ্ধতা</translation>
 <translation id="3596012367874587041">এপৰ ছেটিং</translation>
 <translation id="3596414637720633074">ইনক'গনিট'ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
@@ -4625,6 +4626,7 @@
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4198268995694216131">অতিৰিক্ত ছাইট</translation>
 <translation id="4198420883535766848">সূচীৰ পৰা আঁতৰাওক</translation>
+<translation id="4198664641856813238">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, পাছৱৰ্ড আৰু আন বহুতো লাভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="4200609364258658652">ভিডিঅ’ৰ ফ্ৰে’ম প্ৰতিলিপি কৰক</translation>
 <translation id="4200689466366162458">কাষ্টম শব্দ</translation>
 <translation id="4200983522494130825">নতুন &amp;টেব</translation>
@@ -4694,6 +4696,7 @@
 <translation id="4249785854468467847">Chromeক নতুন ৰূপ দিয়ক, AIৰ জৰিয়তে ছুপাৰচাৰ্জ কৰা হৈছে</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4250680216510889253">নহয়</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ৰ নিজা প্ৰতিলিপিসমূহ চাব আৰু সৃষ্টি কৰিব পাৰিব</translation>
 <translation id="4251377547188244181">কিঅ’স্ক আৰু ছাইনেজৰ ডিভাইচৰ পঞ্জীয়ন</translation>
 <translation id="4252828488489674554">এই গোটটো সম্পাদনা কৰিবলৈ টেবৰ গোটৰ নামত ৰাইট ক্লিক কৰক অথবা সংকোচন কৰিবলৈ ক্লিক কৰক</translation>
 <translation id="4252899949534773101">ব্লুটুথ অক্ষম কৰা হ’ল</translation>
@@ -8646,6 +8649,7 @@
 <translation id="7093220653036489319">দ্ৰুত উত্তৰ</translation>
 <translation id="7093866338626856921">এই ডিভাইচসমূহৰ সৈতে ডেটা বিনিময় কৰক: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">গ্ৰে’ট পিৰামিড অফ গিজা</translation>
+<translation id="7094834615934458012">এই ছাইটটোক ফাইল সম্পাদনা কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="7098389117866926363">USB-C ডিভাইচ (পিছফালৰ বাওঁফালৰ প’র্ট)</translation>
 <translation id="7098447629416471489">ছেভ কৰি থোৱা অন্য সন্ধান ইঞ্জিনসমূহ ইয়াত দেখা যাব</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{এপ্ আঁতৰাওক}one{এপ্‌সমূহ আঁতৰাওক}other{এপ্‌সমূহ আঁতৰাওক}}</translation>
@@ -9019,6 +9023,7 @@
 <translation id="7377481913241237033">এটা ক'ডৰ জৰিয়তে সংযোগ কৰক</translation>
 <translation id="73786666777299047">Chrome Web Store খোলক</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />। একেটা কাৰ্যৰ গোটত থকা অন্য এটা কাৰ্য <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />। একেটা কাৰ্যৰ গোটত থকা অন্য # টা কাৰ্য: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />। একেটা কাৰ্যৰ গোটত থকা অন্য # টা কাৰ্য: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" />এ <ph name="FILENAME" />ৰ নিজা প্ৰতিলিপিসমূহ চাব আৰু সৃষ্টি কৰিব পাৰিব</translation>
 <translation id="7380272457268061606">স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰাৰ সুবিধাটো অক্ষম কৰিবনে?</translation>
 <translation id="7380459290951585794">নিশ্চিত হৈ লওক যে, আপোনাৰ ফ’নটো ওচৰত আছে, আনলক কৰা আছে আৰু ব্লুটুথ আৰু ৱাই-ফাই অন কৰা আছে</translation>
 <translation id="7380622428988553498">ডিভাইচৰ নামত অমান্য বৰ্ণ আছে</translation>
@@ -9764,6 +9769,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{এটা বস্তু}one{# টা বস্তু}other{# টা বস্তু}}</translation>
 <translation id="7886605625338676841">ই-ছিম</translation>
 <translation id="7887174313503389866">গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহৰ বিষয়ে এক ধাৰণা লওক। অধিক বিকল্পৰ বাবে, ব্যক্তিগত ছেটিঙলৈ যাওক।</translation>
+<translation id="7887286029584695415">এই ছাইটটোক ফাইল চাবলৈ আৰু প্ৰতিলিপি কৰিবলৈ অনুমতি দিবনে?</translation>
 <translation id="7887334752153342268">ডুপ্লিকেট</translation>
 <translation id="7887864092952184874">ব্লুটুথ মাউচ যোৰা লগোৱা হৈছে</translation>
 <translation id="7889371445710865055">শ্ৰুতলিপিৰ ভাষা সলনি কৰক</translation>
@@ -9849,6 +9855,7 @@
 <translation id="7944772052836377867">ছিংক কৰিবলৈ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব লাগে</translation>
 <translation id="7944847494038629732">স্কেনাৰৰ ইউএছবি কে’বল আনপ্লাগ কৰক আৰু পুনৰ চেষ্টা কৰিবলৈ ইয়াক পুনৰ প্লাগ কৰক</translation>
 <translation id="7945703887991230167">অগ্ৰাধিকাৰ দিয়া কণ্ঠধ্বনি</translation>
+<translation id="7946243258100028201">আপুনি এই ছাইটটোৰ বাবে আটাইবোৰ টেব বন্ধ নকৰালৈকে <ph name="ORIGIN" />এ <ph name="FOLDERNAME" />ত ইয়াৰ নিজৰ ফাইলৰ প্ৰতিলিপিসমূহ চাব আৰু সৃষ্টি কৰিব পাৰিব</translation>
 <translation id="7946586320617670168">ছাইটৰ উৎসটো সুৰক্ষিত হ'বই লাগিব</translation>
 <translation id="7946681191253332687">সুৰক্ষা সম্পৰ্কীয় বৰ্ধিত আপডে’ট উপলব্ধ</translation>
 <translation id="794676567536738329">অনুমতি নিশ্চিত কৰক</translation>
@@ -10057,6 +10064,7 @@
 <translation id="8079606020824373126">Google Password Managerএ আপোনাৰ একাউণ্টটো এটা বিশ্বস্ত পাছৱৰ্ডেৰে আপডে’ট কৰিব পাৰে আৰু সেইটো <ph name="EMAIL" />ত ছেভ কৰিব পাৰে। <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">ছাইটসমূহে আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰাৰ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="8080028325999236607">আটাইবোৰ টেব বন্ধ কৰক</translation>
+<translation id="8080530871547404884">আপুনি এই ছাইটটোৰ বাবে আটাইবোৰ টেব বন্ধ নকৰালৈকে <ph name="ORIGIN" />এ <ph name="FILENAME" />ত ইয়াৰ নিজৰ প্ৰতিলিপিসমূহ চাব আৰু সৃষ্টি কৰিব পাৰিব</translation>
 <translation id="8081989000209387414">ADB ডিবাগিং অক্ষম কৰিবনে?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" ৰ সৈতে পেয়াৰ কৰিবনে?</translation>
 <translation id="8082132721957920509">আপোনাৰ কাৰ্ড ছেভ কৰা হৈছে</translation>
@@ -10824,6 +10832,7 @@
 <translation id="862750493060684461">CSS কেশ্ব</translation>
 <translation id="8627795981664801467">কেৱল সুৰক্ষিত সংযোগসমূহহে</translation>
 <translation id="8627804903623428808">এই চৰ্তাৱলী পৰ্যালোচনা কৰক আৰু আপোনাৰ শিশুৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>
+<translation id="862907440446514309">আপোনাৰ প্ৰশাসকে <ph name="APP0_NAME" />ৰ জৰিয়তে আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰি আছে।</translation>
 <translation id="8630338733867813168">চার্জ কৰি থকাৰ সময়ত সুপ্ত অৱস্থাত ৰাখক</translation>
 <translation id="8631032106121706562">ফুলৰ পাহি</translation>
 <translation id="8632104508818855045">আপুনি পূৰ্বে <ph name="ORIGIN" />ত কোনো এক্সটেনশ্বনক অনুমতি নিদিবলৈ সিদ্ধান্ত লৈছিল</translation>
@@ -11344,6 +11353,7 @@
 <translation id="897525204902889653">পৃথক কৰি ৰখা সেৱা</translation>
 <translation id="8975396729541388937">আপুনি পোৱা ইমেইলত থকা লিংকটোত ক্লিক কৰি যিকোনো সময়তে আনছাবস্ক্ৰাইব কৰক।</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" আৰু অন্য ১টা টেব}one{"<ph name="TAB_TITLE" />" আৰু অন্য #টা টেব}other{"<ph name="TAB_TITLE" />" আৰু অন্য #টা টেব}}</translation>
+<translation id="897565255818387330">এই ছাইটটোক <ph name="FILE_NAME" /> চাবলৈ আৰু প্ৰতিলিপি কৰিবলৈ অনুমতি দিবনে?</translation>
 <translation id="8977523125954274918">আপোনাৰ একাউণ্টত আপোনাৰ পাছৱৰ্ড আৰু আন বহুতো বস্তু ছেভ আৰু ব্যৱহাৰ কৰিবলৈ এটা বিদ্যালয়ৰ প্ৰ’ফাইল ছেট আপ কৰক</translation>
 <translation id="8977811652087512276">অশুদ্ধ পাছৱৰ্ড বা ব্যৱহাৰৰ অযোগ্য ফাইল</translation>
 <translation id="8978154919215542464">সকলো ডেটা ছিংক কৰি থকা হৈছে</translation>

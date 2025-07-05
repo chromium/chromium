@@ -3722,6 +3722,7 @@
 <translation id="3592260987370335752">&amp;შეიტყვეთ მეტი</translation>
 <translation id="3592344177526089979">მიმდინარეობს ჩანართის ტრანსლირება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin რეჟიმის ჩართვა</translation>
+<translation id="3593953853060020305">გსურთ ნება დართოთ ამ საიტს, დაარედაქტიროს „<ph name="FILE_NAME" />“?</translation>
 <translation id="3593965109698325041">სერტიფიკატის სახელის შეზღუდვები</translation>
 <translation id="3596012367874587041">აპის პარამეტრები</translation>
 <translation id="3596414637720633074">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში</translation>
@@ -4615,6 +4616,7 @@
 <translation id="4195814663415092787">გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
 <translation id="4198268995694216131">დამატებითი საიტები</translation>
 <translation id="4198420883535766848">ჩანართის ამოშლა სიიდან</translation>
+<translation id="4198664641856813238">შედით სისტემაში, რომ მიიღოთ თქვენი სანიშნეები, პაროლები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="4200609364258658652">ვიდეოს კადრის კო&amp;პირება</translation>
 <translation id="4200689466366162458">მორგებული სიტყვები</translation>
 <translation id="4200983522494130825">ახალი &amp;ჩანართი</translation>
@@ -4684,6 +4686,7 @@
 <translation id="4249785854468467847">განახლებული, ხელოვნური ინტელექტით აღჭურვილი Chrome</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4250680216510889253">არა</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> შეძლებს, ნახოს და ფაილების თავისი ასლები შექმნას „<ph name="FOLDERNAME" />“-ში</translation>
 <translation id="4251377547188244181">მოწყობილობა-ჯიხურის ან მიმთითებელი მოწყობილობის რეგისტრაცია</translation>
 <translation id="4252828488489674554">მარჯვენა დაწკაპუნებით არჩიეთ ჩანართების ჯგუფის სახელი მისი რედაქტირებისთვის, ან დააწკაპუნეთ მას ჩასაკეცად</translation>
 <translation id="4252899949534773101">Bluetooth გათიშულია</translation>
@@ -8634,6 +8637,7 @@
 <translation id="7093220653036489319">სწრაფი პასუხები</translation>
 <translation id="7093866338626856921">მოწყობილობებთან: <ph name="HOSTNAMES" /> მონაცემთა მიმოცვლა</translation>
 <translation id="7094768688212290897">გიზის პირამიდა</translation>
+<translation id="7094834615934458012">გსურთ, ნება დართოთ ამ საიტს, დაარედაქტიროს ფაილები?</translation>
 <translation id="7098389117866926363">USB-C მოწყობილობა (უკან მდებარე მარცხენა პორტი)</translation>
 <translation id="7098447629416471489">სხვა შენახული საძიებო სისტემები აქ გამოჩნდება</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{აპის ამოშლა}other{აპების ამოშლა}}</translation>
@@ -9007,6 +9011,7 @@
 <translation id="7377481913241237033">კოდით დაკავშირება</translation>
 <translation id="73786666777299047">Chrome Web Store-ის გახსნა</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. სხვა ამოცანა იმავე ჯგუფში: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # სხვა ამოცანა იმავე ჯგუფში: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> შეძლებს, ნახოს და „<ph name="FILENAME" />“-ის ასლები შექმნას</translation>
 <translation id="7380272457268061606">გსურთ, გათიშოთ ადგილობრივი მონაცემების აღდგენა?</translation>
 <translation id="7380459290951585794">დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ, განბლოკილია და მასზე ჩართულია Bluetooth/Wi-Fi</translation>
 <translation id="7380622428988553498">მოწყობილობის სახელი შეიცავს არასწორ სიმბოლოებს</translation>
@@ -9751,6 +9756,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">გაიარეთ ინტერაქტიური ტური კონფიდენციალურობისა და უსაფრთხოების მართვის საკვანძო საშუალებების თემაზე. სხვა ვარიანტებისთვის გადადით ცალკეულ პარამეტრებზე.</translation>
+<translation id="7887286029584695415">გსურთ, ამ საიტმა ნახოს და დააკოპიროს ფაილები?</translation>
 <translation id="7887334752153342268">დუბლირება</translation>
 <translation id="7887864092952184874">Bluetooth მაუსი დაწყვილებულია</translation>
 <translation id="7889371445710865055">შეცვალეთ კარნახის ენა</translation>
@@ -9836,6 +9842,7 @@
 <translation id="7944772052836377867">სინქრონიზაციის ფუნქციას სჭირდება თქვენი ვინაობის დადასტურება</translation>
 <translation id="7944847494038629732">გამოაერთეთ და ხელახლა მიაერთეთ სკანერის USB კაბელი, ხელახლა რომ ცადოთ</translation>
 <translation id="7945703887991230167">სასურველი ხმა</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> შეძლებს, ნახოს და შექმნას ფაილების თავისი ასლები <ph name="FOLDERNAME" />-ში, სანამ არ დახურავთ ამ საიტის ყველა ჩანართს</translation>
 <translation id="7946586320617670168">წყარო უნდა იყოს დაცული</translation>
 <translation id="7946681191253332687">ხელმისაწვდომია უსაფრთხოების გაფართოებული განახლებები</translation>
 <translation id="794676567536738329">დაადასტურეთ ნებართვები</translation>
@@ -10044,6 +10051,7 @@
 <translation id="8079606020824373126">Google პაროლების მმართველს შეუძლია განაახლოს თქვენი ანგარიშის პაროლი ძლიერი პაროლით და შეინახოს ის <ph name="EMAIL" />-ში. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">საიტებს შეუძლია თქვენს ყველა ეკრანზე ფანჯრების მართვის მოთხოვნა</translation>
 <translation id="8080028325999236607">ყველა ჩანართის დახურვა</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> შეძლებს, ნახოს და <ph name="FILENAME" />-ის ასლები შექმნას, სანამ არ დახურავთ ამ საიტის ყველა ჩანართს</translation>
 <translation id="8081989000209387414">გსურთ ADB გამართვის გამორთვა?</translation>
 <translation id="8082106343289440791">გსურთ „<ph name="DEVICE_NAME" />“-თან დაწყვილება?</translation>
 <translation id="8082132721957920509">თქვენი ბარათი შენახულია</translation>
@@ -10811,6 +10819,7 @@
 <translation id="862750493060684461">CSS ქეში</translation>
 <translation id="8627795981664801467">მხოლოდ დაცული კავშირები</translation>
 <translation id="8627804903623428808">გაეცანით ამ პირობებს და აკონტროლეთ თქვენი ბავშვის მონაცემები</translation>
+<translation id="862907440446514309">თქვენი ადმინისტრატორი იწერს თქვენს ეკრანს <ph name="APP0_NAME" />-ის მეშვეობით.</translation>
 <translation id="8630338733867813168">ძილი დატენის დროს</translation>
 <translation id="8631032106121706562">ფურცლები</translation>
 <translation id="8632104508818855045">ადრე აირჩიეთ, არ დაგეშვათ გაფართოებები <ph name="ORIGIN" />-ზე</translation>
@@ -11330,6 +11339,7 @@
 <translation id="897525204902889653">კარანტინის სერვისი</translation>
 <translation id="8975396729541388937">გამოწერის გაუქმება ნებისმიერ დროს შეგიძლიათ, ამისთვის დააწკაპუნეთ ელფოსტით მიღებულ შეტყობინებებში მოცემულ ბმულზე.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ და 1 სხვა ჩანართი}other{„<ph name="TAB_TITLE" />“ და # სხვა ჩანართი}}</translation>
+<translation id="897565255818387330">გსურთ, ნება დართოთ ამ საიტს, ნახოს და დააკოპიროს „<ph name="FILE_NAME" />“?</translation>
 <translation id="8977523125954274918">დააყენეთ სკოლის პროფილი, რომ შეინახოთ და გამოიყენოთ თქვენი პაროლები და სხვა მონაცემები თქვენს ანგარიშში</translation>
 <translation id="8977811652087512276">პაროლი არასწორია, ან დაზიანებულია ფაილი</translation>
 <translation id="8978154919215542464">ჩართული — ყველაფრის სინქრონიზაცია</translation>

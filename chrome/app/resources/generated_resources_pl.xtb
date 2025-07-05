@@ -3704,6 +3704,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3592260987370335752">&amp;Więcej informacji</translation>
 <translation id="3592344177526089979">Przesyłam kartę na: <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Włącz tryb „ujednolicony pinyin”</translation>
+<translation id="3593953853060020305">Zezwolić tej witrynie na edytowanie pliku <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Ograniczenia nazwy certyfikatu</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
@@ -4597,6 +4598,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4198268995694216131">Dodatkowe witryny</translation>
 <translation id="4198420883535766848">Usuń kartę z listy</translation>
+<translation id="4198664641856813238">Zaloguj się, aby mieć dostęp do zakładek, haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="4200609364258658652">Kopiu&amp;j klatkę wideo</translation>
 <translation id="4200689466366162458">Słowa niestandardowe</translation>
 <translation id="4200983522494130825">Nowa karta</translation>
@@ -4666,6 +4668,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4249785854468467847">Odkryj nowe możliwości Chrome dzięki AI</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4250680216510889253">Nie</translation>
+<translation id="4251243704979202079">Witryna <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" /> i tworzyć ich kopie</translation>
 <translation id="4251377547188244181">Trwa rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej</translation>
 <translation id="4252828488489674554">Kliknij prawym przyciskiem myszy nazwę grupy kart, aby edytować daną grupę, lub kliknij, aby ją zwinąć</translation>
 <translation id="4252899949534773101">Bluetooth jest wyłączony</translation>
@@ -8616,6 +8619,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7093220653036489319">Szybkie podpowiedzi</translation>
 <translation id="7093866338626856921">Wymiana danych z urządzeniami o nazwach: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Wielka Piramida w Gizie</translation>
+<translation id="7094834615934458012">Zezwolić tej witrynie na edytowanie plików?</translation>
 <translation id="7098389117866926363">Urządzenie USB-C (lewy port z tyłu)</translation>
 <translation id="7098447629416471489">Tutaj pojawią się inne zapisane wyszukiwarki</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Usuń aplikację}few{Usuń aplikacje}many{Usuń aplikacje}other{Usuń aplikacje}}</translation>
@@ -8989,6 +8993,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Inne zadanie w tej samej grupie zadań: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. # inne zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. # innych zadań w tej samej grupie zadań: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # innego zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">Witryna <ph name="ORIGIN" /> będzie mogła wyświetlać plik <ph name="FILENAME" /> i tworzyć jego kopie</translation>
 <translation id="7380272457268061606">Wyłączyć odzyskiwanie danych lokalnych?</translation>
 <translation id="7380459290951585794">Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi</translation>
 <translation id="7380622428988553498">Nazwa urządzenia zawiera niedozwolone znaki</translation>
@@ -9733,6 +9738,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7886279613512920452">{COUNT,plural, =1{element}few{# elementy}many{# elementów}other{# elementu}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Zapoznaj się z prezentacją najważniejszych funkcji prywatności i bezpieczeństwa. Więcej opcji znajdziesz w poszczególnych ustawieniach.</translation>
+<translation id="7887286029584695415">Zezwolić tej witrynie na wyświetlanie i kopiowanie plików?</translation>
 <translation id="7887334752153342268">Duplikuj</translation>
 <translation id="7887864092952184874">Sparowano mysz Bluetooth</translation>
 <translation id="7889371445710865055">Zmień język dyktowania</translation>
@@ -9818,6 +9824,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="7944847494038629732">Odłącz kabel USB skanera i podłącz go ponownie, aby spróbować jeszcze raz</translation>
 <translation id="7945703887991230167">Preferowany głos</translation>
+<translation id="7946243258100028201">Witryna <ph name="ORIGIN" /> będzie mogła wyświetlać pliki z folderu <ph name="FOLDERNAME" /> i tworzyć ich kopie, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="7946586320617670168">Źródło musi być bezpieczne</translation>
 <translation id="7946681191253332687">Dostępne są rozszerzone aktualizacje zabezpieczeń</translation>
 <translation id="794676567536738329">Potwierdź uprawnienia</translation>
@@ -10027,6 +10034,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8079606020824373126">Menedżer haseł Google może zaktualizować Twoje konto, tworząc silne hasło i zapisując je na koncie <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Strony mogą prosić o zgodę na zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="8080028325999236607">Zamknij wszystkie karty</translation>
+<translation id="8080530871547404884">Witryna <ph name="ORIGIN" /> będzie mogła wyświetlać plik <ph name="FILENAME" /> i tworzyć jego kopie, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="8081989000209387414">Wyłączyć debugowanie ADB?</translation>
 <translation id="8082106343289440791">Sparować z urządzeniem „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082132721957920509">Karta została zapisana</translation>
@@ -10794,6 +10802,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="862750493060684461">Pamięć podręczna CSS</translation>
 <translation id="8627795981664801467">Tylko bezpieczne połączenia</translation>
 <translation id="8627804903623428808">Przeczytaj te warunki i określ sposób użycia danych Twojego dziecka</translation>
+<translation id="862907440446514309">Administrator nagrywa Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Uśpienie podczas ładowania</translation>
 <translation id="8631032106121706562">Płatki</translation>
 <translation id="8632104508818855045">Poprzednio nie zezwoliłeś(-aś) na żadne rozszerzenia na <ph name="ORIGIN" /></translation>
@@ -11311,6 +11320,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="897525204902889653">Usługa kwarantanny</translation>
 <translation id="8975396729541388937">W każdej chwili możesz zrezygnować z subskrypcji. Wystarczy kliknąć link w otrzymywanych e-mailach.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” i jeszcze jedna karta}few{„<ph name="TAB_TITLE" />” i # inne karty}many{„<ph name="TAB_TITLE" />” i # innych kart}other{„<ph name="TAB_TITLE" />” i # innej karty}}</translation>
+<translation id="897565255818387330">Zezwolić tej witrynie na wyświetlanie i kopiowanie pliku <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Skonfiguruj profil szkolny, aby zapisywać hasła oraz inne dane na swoim koncie i ich używać</translation>
 <translation id="8977811652087512276">Nieprawidłowe hasło lub uszkodzony plik</translation>
 <translation id="8978154919215542464">Włączono synchronizację wszystkich danych</translation>

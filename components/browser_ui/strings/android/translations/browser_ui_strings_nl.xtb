@@ -61,6 +61,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704230497453185209">Niet toestaan dat sites geluid afspelen</translation>
 <translation id="1717218214683051432">Bewegingssensoren</translation>
+<translation id="1717996979683942279">Als deze optie aanstaat, kunnen sites vragen of ze vensters mogen beheren op al je schermen. Staat de optie uit, dan kunnen sites geen vensters beheren op al je schermen.</translation>
 <translation id="1743802530341753419">Vragen of sites verbinding mogen maken met een apparaat (aanbevolen)</translation>
 <translation id="1777815584158991902">Blad onderaan voor Discover-feed</translation>
 <translation id="1779089405699405702">Image Decoder</translation>
@@ -171,6 +172,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2968755619301702150">Certificaatviewer</translation>
 <translation id="2979365474350987274">Cookies van derden zijn beperkt</translation>
 <translation id="2990583317361835189">Niet toestaan dat sites bewegingssensoren gebruiken</translation>
+<translation id="3004438526346162184">Sites kunnen deze functie gebruiken om vensters te beheren op al je schermen</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3064871050034234884">Sites kunnen geluiden afspelen</translation>
@@ -439,6 +441,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6071501408666570960">Je wordt misschien uitgelogd bij deze site</translation>
 <translation id="6085954183010297841">Toestemming voor bewerken van bestanden verwijderen? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Als deze optie aanstaat, kunnen sites vragen om ze mogen weten wanneer je je apparaat actief gebruikt. Staat de optie uit, dan mogen sites niet weten wanneer je je apparaat actief gebruikt.</translation>
+<translation id="615886654739818377">Niet toestaan dat sites vensters beheren op al je schermen</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6171020522141473435">Als deze optie aanstaat, kunnen sites vragen of ze bluetooth-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen bluetooth-apparaten gebruiken.</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>

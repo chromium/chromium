@@ -3720,6 +3720,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3592260987370335752">&amp;Lortu informazio gehiago</translation>
 <translation id="3592344177526089979">Fitxa bat <ph name="DEVICE_NAME" /> gailura igortzen</translation>
 <translation id="3593152357631900254">Gaitu Fuzzy-Pinyin modua</translation>
+<translation id="3593953853060020305"><ph name="FILE_NAME" /> editatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="3593965109698325041">Ziurtagiri-izenen murriztapenak</translation>
 <translation id="3596012367874587041">Aplikazioen ezarpenak</translation>
 <translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
@@ -4613,6 +4614,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4195814663415092787">Jarraitu utzi zenuen tokitik</translation>
 <translation id="4198268995694216131">Webgune gehigarriak</translation>
 <translation id="4198420883535766848">Kendu fitxa zerrendatik</translation>
+<translation id="4198664641856813238">Hasi saioa laster-markak, pasahitzak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="4200609364258658652">Kop&amp;iatu bideo-fotograma</translation>
 <translation id="4200689466366162458">Hitz pertsonalizatuak</translation>
 <translation id="4200983522494130825">Fi&amp;txa berria</translation>
@@ -4682,6 +4684,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4249785854468467847">Irudikatu Chrome berriro, AAren bultzadarekin</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4250680216510889253">Ez</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak ikusi, eta haien kopiak egin ahalko ditu</translation>
 <translation id="4251377547188244181">Gailua kiosko eta seinaleztatze modurako erregistratzea</translation>
 <translation id="4252828488489674554">Egin klik eskuineko botoiarekin fitxa taldearen izenean taldea editatzeko, edo saka ezazu tolesteko</translation>
 <translation id="4252899949534773101">Bluetootha desgaituta dago</translation>
@@ -8627,6 +8630,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7093220653036489319">Erantzun bizkorrak</translation>
 <translation id="7093866338626856921">Izen hauek dituzten gailuekin datuak partekatu: <ph name="HOSTNAMES" />.</translation>
 <translation id="7094768688212290897">Gizako piramide handia</translation>
+<translation id="7094834615934458012">Fitxategiak editatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="7098389117866926363">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
 <translation id="7098447629416471489">Hemen agertuko dira gordetako gainerako bilatzaileak</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Kendu aplikazioa}other{Kendu aplikazioak}}</translation>
@@ -9000,6 +9004,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7377481913241237033">Konektatu kode bat erabilita</translation>
 <translation id="73786666777299047">Ireki Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Beste zeregin bat dago zeregin talde berean: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. Beste # zeregin daude zeregin talde berean: <ph name="OTHER_TASKS" />.}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> ikusi ahalko du, eta haren kopiak egin</translation>
 <translation id="7380272457268061606">Gailuko datuak berreskuratzeko zerbitzua desgaitu nahi duzu?</translation>
 <translation id="7380459290951585794">Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetootha eta wifia aktibatuta dauzkala</translation>
 <translation id="7380622428988553498">Balio ez duten karaktereak ditu gailuaren izenak</translation>
@@ -9744,6 +9749,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7886279613512920452">{COUNT,plural, =1{elementu bat}other{# elementu}}</translation>
 <translation id="7886605625338676841">eSIM sareak</translation>
 <translation id="7887174313503389866">Egin pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenei buruzko txango gidatu bat. Aukera gehiago ikusteko, joan ezarpen bakoitzera.</translation>
+<translation id="7887286029584695415">Fitxategiak ikusteko eta kopiatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="7887334752153342268">Bikoiztu</translation>
 <translation id="7887864092952184874">Bluetooth sagua parekatuta dago</translation>
 <translation id="7889371445710865055">Aldatu diktaketaren hizkuntza</translation>
@@ -9829,6 +9835,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7944772052836377867">Sinkronizazioak zure identitatea egiaztatu behar du</translation>
 <translation id="7944847494038629732">Berriro saiatzeko, deskonektatu eskanerraren USB kablea eta konekta ezazu berriro</translation>
 <translation id="7945703887991230167">Ahots hobetsia</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak ikusi, eta haien kopiak egin ahalko ditu, webgunearen fitxa guztiak ixten dituzun arte</translation>
 <translation id="7946586320617670168">Jatorriak segurua izan behar du</translation>
 <translation id="7946681191253332687">Segurtasun-eguneratze hedatuak daude erabilgarri</translation>
 <translation id="794676567536738329">Berretsi baimenak</translation>
@@ -10037,6 +10044,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8079606020824373126">Google-ren Pasahitz-kudeatzailea zerbitzuak kontua pasahitz konplexu batekin egunera dezake, eta <ph name="EMAIL" /> kontuan gorde. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Webguneek leihoak pantaila guztietan kudeatzea eska dezakete</translation>
 <translation id="8080028325999236607">Itxi fitxa guztiak</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> ikusi, eta haren kopiak egin ahalko ditu, webgunearen fitxa guztiak ixten dituzun arte</translation>
 <translation id="8081989000209387414">ADB arazketa desgaitu nahi duzu?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" gailuarekin parekatu?</translation>
 <translation id="8082132721957920509">Txartela gordeta dago</translation>
@@ -10804,6 +10812,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="862750493060684461">CSS cachea</translation>
 <translation id="8627795981664801467">Konexio seguruak soilik</translation>
 <translation id="8627804903623428808">Berrikusi baldintza hauek eta kontrolatu haurraren datuak</translation>
+<translation id="862907440446514309">Administratzailea <ph name="APP0_NAME" /> bidez zure pantaila grabatzen ari da.</translation>
 <translation id="8630338733867813168">Ezarri gailua inaktibo kargatzen ari denean</translation>
 <translation id="8631032106121706562">Petaloak</translation>
 <translation id="8632104508818855045"><ph name="ORIGIN" /> orrian ezein luzapen gaitzea aukeratu zenuen aurrez</translation>
@@ -11323,6 +11332,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="897525204902889653">Berrogeialdi-zerbitzua</translation>
 <translation id="8975396729541388937">Harpidetza kentzeko, sakatu horretarako esteka jasotzen dituzun mezu elektronikoetan.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" eta beste fitxa bat}other{"<ph name="TAB_TITLE" />" eta beste # fitxa}}</translation>
+<translation id="897565255818387330"><ph name="FILE_NAME" /> ikusteko eta kopiatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="8977523125954274918">Konfiguratu eskolako profila pasahitzak eta gauza gehiago gordetzeko eta erabiltzeko zure kontuan</translation>
 <translation id="8977811652087512276">Pasahitza okerra da edo fitxategia hondatuta dago</translation>
 <translation id="8978154919215542464">Aktibatuta: sinkronizatu guztia</translation>

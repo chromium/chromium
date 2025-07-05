@@ -3735,6 +3735,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3592260987370335752">&amp;Learn more</translation>
 <translation id="3592344177526089979">Casting a tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Enable Fuzzy-Pinyin mode</translation>
+<translation id="3593953853060020305">Allow this site to edit <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Certificate Name Constraints</translation>
 <translation id="3596012367874587041">App settings</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
@@ -4628,6 +4629,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4198268995694216131">Additional sites</translation>
 <translation id="4198420883535766848">Remove tab from list</translation>
+<translation id="4198664641856813238">Sign in to get your bookmarks, passwords and more on all your devices</translation>
 <translation id="4200609364258658652">Copy video frame</translation>
 <translation id="4200689466366162458">Customised words</translation>
 <translation id="4200983522494130825">New &amp;tab</translation>
@@ -4697,6 +4699,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4249785854468467847">Reimagine Chrome, supercharged with AI</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> will be able to view and make its own copies of files in <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Kiosk and signage device enrolment</translation>
 <translation id="4252828488489674554">Right-click on the tab group name to edit this group or click to collapse</translation>
 <translation id="4252899949534773101">Bluetooth is disabled</translation>
@@ -8648,6 +8651,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7093220653036489319">Quick Answers</translation>
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Great Pyramid of Giza</translation>
+<translation id="7094834615934458012">Allow this site to edit files?</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7098447629416471489">Other saved search engines will appear here</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Remove app}other{Remove apps}}</translation>
@@ -9021,6 +9025,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7377481913241237033">Connect with a code</translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Another task in the same task group: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Other # tasks in the same task group: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> will be able to view and make its own copies of <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Disable local data recovery?</translation>
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
@@ -9766,6 +9771,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{an item}other{# items}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
+<translation id="7887286029584695415">Allow this site to view and copy files?</translation>
 <translation id="7887334752153342268">Duplicate</translation>
 <translation id="7887864092952184874">Bluetooth mouse paired</translation>
 <translation id="7889371445710865055">Change dictation language</translation>
@@ -9851,6 +9857,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7944847494038629732">Unplug the scanner's USB cable and plug it in again to retry</translation>
 <translation id="7945703887991230167">Preferred voice</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> will be able to view and make its own copies of files in <ph name="FOLDERNAME" /> until you close all tabs for this site</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="7946681191253332687">Extended security updates available</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
@@ -10060,6 +10067,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8079606020824373126">Google Password Manager can update your account with a strong password and save it in <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Sites can ask to manage windows on all your displays</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> will be able to view and make its own copies of <ph name="FILENAME" /> until you close all tabs for this site</translation>
 <translation id="8081989000209387414">Disable ADB debugging?</translation>
 <translation id="8082106343289440791">Pair with "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">Your card is saved</translation>
@@ -10827,6 +10835,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="862750493060684461">CSS cache</translation>
 <translation id="8627795981664801467">Secure connections only</translation>
 <translation id="8627804903623428808">Review these terms and control your child's data</translation>
+<translation id="862907440446514309">Your administrator is recording your screen with <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Sleep while charging</translation>
 <translation id="8631032106121706562">Petals</translation>
 <translation id="8632104508818855045">You Previously Chose Not To Allow Any Extensions On <ph name="ORIGIN" /></translation>
@@ -11346,6 +11355,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="897525204902889653">Quarantine Service</translation>
 <translation id="8975396729541388937">Unsubscribe at any time by clicking the link in the emails that you receive.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
+<translation id="897565255818387330">Allow this site to view and copy <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Set up a school profile to save and use your passwords and more in your account</translation>
 <translation id="8977811652087512276">Incorrect password or corrupt file</translation>
 <translation id="8978154919215542464">On – sync everything</translation>

@@ -3718,6 +3718,7 @@
 <translation id="3592260987370335752">&amp;थप जान्नुहोस्</translation>
 <translation id="3592344177526089979">कुनै ट्याब <ph name="DEVICE_NAME" /> मा कास्ट गरिँदै छ</translation>
 <translation id="3593152357631900254">फज्जि-</translation>
+<translation id="3593953853060020305">यो साइटलाई <ph name="FILE_NAME" /> सम्पादन गर्ने अनुमति दिने हो?</translation>
 <translation id="3593965109698325041">प्रमाणपत्र नाम अवरोध</translation>
 <translation id="3596012367874587041">एपका सेटिङ</translation>
 <translation id="3596414637720633074">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
@@ -4610,6 +4611,7 @@
 <translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
 <translation id="4198268995694216131">थप साइटहरू</translation>
 <translation id="4198420883535766848">सूचीबाट ट्याब हटाउनुहोस्</translation>
+<translation id="4198664641856813238">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्क र पासवर्डलगायतका कुरा प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="4200609364258658652">भिडियो फ्रेम कपी गर्नुहोस्</translation>
 <translation id="4200689466366162458"> कस्टम गर्न मिल्ने शब्दहरू</translation>
 <translation id="4200983522494130825">नयाँ &amp;ट्याब</translation>
@@ -4679,6 +4681,7 @@
 <translation id="4249785854468467847">AI का शक्तिशाली सुविधाहरू समावेश गरिएको नयाँ Chrome प्रयोग गर्नुहोस्</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4250680216510889253">होइन</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू हेर्न र ती फाइलका कपीहरू बनाउन सक्छ</translation>
 <translation id="4251377547188244181">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="4252828488489674554">यो समूह सम्पादन गर्न ट्याब समूहको नाममा राइट क्लिक गर्नुहोस् वा कोल्याप्स गर्न क्लिक गर्नुहोस्</translation>
 <translation id="4252899949534773101">ब्लुटुथ असक्षम पारिएको छ</translation>
@@ -8628,6 +8631,7 @@
 <translation id="7093220653036489319">द्रुत जवाफहरू</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" />: नामको यन्त्रमार्फत डेटा सेयर गर्नुहोस्</translation>
 <translation id="7094768688212290897">गिजामा अवस्थित ग्रेट पिरामिड</translation>
+<translation id="7094834615934458012">यो साइटलाई फाइलहरू सम्पादन गर्ने अनुमति दिने हो?</translation>
 <translation id="7098389117866926363">USB-C यन्त्र (पछाडिमा बाँया पोर्ट)</translation>
 <translation id="7098447629416471489">सुरक्षित गरिएका अन्य खोज इन्जिनहरू यहाँ देखापर्ने छन्</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{एप हटाउनुहोस्}other{एपहरू हटाउनुहोस्}}</translation>
@@ -9001,6 +9005,7 @@
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>
 <translation id="73786666777299047">Chrome वेब स्टोर खोल्नुहोस्</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />। एउटै कार्य समूहको अर्को कार्य: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />। एउटै कार्य समूहका अन्य # वटा कार्य: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न र यो फाइलका कपीहरू बनाउन सक्छ</translation>
 <translation id="7380272457268061606">लोकल डेटा रिकभरी अफ गर्ने हो?</translation>
 <translation id="7380459290951585794">तपाईंको फोन नजिकै छ, अनलक गरिएको छ र उक्त फोनको ब्लुटुथ तथा Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7380622428988553498">यन्त्रको नाममा अवैध वर्णहरू छन्</translation>
@@ -9746,6 +9751,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{एउटा वस्तु}other{# वटा वस्तु}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">हामीले तयार पारेको मार्गदर्शन सामग्रीका सहायताले गोपनीयता तथा सुरक्षासम्बन्धी मुख्य नियन्त्रण सुविधाहरूका बारेमा जानकारी प्राप्त गर्नुहोस्। तपाईं थप विकल्पहरू हेर्न चाहनुहुन्छ भने प्रत्येक सेटिङमा जानुहोस्।</translation>
+<translation id="7887286029584695415">यो साइटलाई फाइलहरू हेर्ने तथा कपी गर्ने अनुमति दिने हो?</translation>
 <translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
 <translation id="7887864092952184874">ब्लुटुथ माउस जोडा मिलाइएको</translation>
 <translation id="7889371445710865055">स्पिच-टु-टेक्स्ट सुविधाको भाषा बदल्नुहोस्</translation>
@@ -9831,6 +9837,7 @@
 <translation id="7944772052836377867">"सिंक" ले तपाईंको पहिचान पुष्टि गर्नु पर्ने हुन्छ</translation>
 <translation id="7944847494038629732">स्क्यानरको USB केबल हटाउनुहोस् र पुनः प्रयास गर्न फेरि बिजुलीको स्रोतमा जोड्नुहोस्</translation>
 <translation id="7945703887991230167">रोजाइको आवाज</translation>
+<translation id="7946243258100028201">तपाईंले यो साइटका सबै ट्याब बन्द नगरेसम्म <ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू हेर्न र ती फाइलका कपीहरू बनाउन सक्छ</translation>
 <translation id="7946586320617670168">स्रोत अनिवार्य रूपमा सुरक्षित हुनु पर्छ</translation>
 <translation id="7946681191253332687">"सुरक्षासम्बन्धी विस्तारित अपडेट" उपलब्ध छ</translation>
 <translation id="794676567536738329">अनुमतिहरू पक्का गर्नुहोस्</translation>
@@ -10039,6 +10046,7 @@
 <translation id="8079606020824373126">Google पासवर्ड म्यानेजरले तपाईंको खाताको पासवर्ड परिवर्तन गरी भरपर्दो पासवर्ड सेट गरिदिन र उक्त पासवर्ड <ph name="EMAIL" /> मा सेभ गरिदिन सक्छ। <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">साइटहरूले तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="8080028325999236607">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
+<translation id="8080530871547404884">तपाईंले यो साइटका सबै ट्याब बन्द नगरेसम्म <ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न र यो फाइलका कपीहरू बनाउन सक्छ</translation>
 <translation id="8081989000209387414">ADB डिबग प्रक्रिया असक्षम पार्ने हो?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग कनेक्ट गर्ने हो?</translation>
 <translation id="8082132721957920509">तपाईंको कार्ड सेभ गरिएको छ</translation>
@@ -10806,6 +10814,7 @@
 <translation id="862750493060684461">CSS क्यास</translation>
 <translation id="8627795981664801467">सुरक्षित जडानहरू मात्र</translation>
 <translation id="8627804903623428808">यी सर्तहरू पढ्नुहोस् र आफ्ना बच्चाको डेटा नियन्त्रण गर्नुहोस्</translation>
+<translation id="862907440446514309">तपाईंका एड्मिन <ph name="APP0_NAME" /> मार्फत तपाईंको स्क्रिन रेकर्ड गर्दै हुनुहुन्छ।</translation>
 <translation id="8630338733867813168">चार्ज गरिरहेका बेला स्लिप मोडमा लैजानुहोस्</translation>
 <translation id="8631032106121706562">पेटल</translation>
 <translation id="8632104508818855045">तपाईंले यसअघि <ph name="ORIGIN" /> मा कुनै पनि एक्स्टेन्सनलाई अनुमति दिनुभएको थिएन</translation>
@@ -11325,6 +11334,7 @@
 <translation id="897525204902889653">अलग्गै राख्ने सेवा</translation>
 <translation id="8975396729541388937">तपाईंले प्राप्त गर्ने इमेलमा भएको लिंकमा क्लिक गरी जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" र अरू १ ट्याब}other{"<ph name="TAB_TITLE" />" र अरू # ट्याबहरू}}</translation>
+<translation id="897565255818387330">यो साइटलाई <ph name="FILE_NAME" /> हेर्ने तथा कपी गर्ने अनुमति दिने हो?</translation>
 <translation id="8977523125954274918">आफ्नो खातामा आफ्ना पासवर्ड र अन्य डेटा सेभ गर्न र ती डेटा प्रयोग गर्न विद्यालयको प्रोफाइल सेटअप गर्नुहोस्</translation>
 <translation id="8977811652087512276">गलत पासवर्ड वा बिग्रिएको फाइल</translation>
 <translation id="8978154919215542464">सक्रिय - सबै सिंक गर्नुहोस्</translation>

@@ -3721,6 +3721,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3592260987370335752">&amp;Máis información</translation>
 <translation id="3592344177526089979">Emitindo pestana en: <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Activar modo de pinyin difuso</translation>
+<translation id="3593953853060020305">Queres permitir que este sitio edite <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Restricións nos nomes de certificados</translation>
 <translation id="3596012367874587041">Axustes da aplicación</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
@@ -4617,6 +4618,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4195814663415092787">Continuar onde o deixaches</translation>
 <translation id="4198268995694216131">Máis sitios</translation>
 <translation id="4198420883535766848">Quitar a pestana da lista</translation>
+<translation id="4198664641856813238">Inicia sesión para poder acceder aos teus marcadores, contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="4200609364258658652">Copia&amp;r fotograma de vídeo</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nova pes&amp;tana</translation>
@@ -4686,6 +4688,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4249785854468467847">Reimaxina Chrome coa potencia da IA</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">Non</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> poderá ver e facer as súas propias copias dos ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Inscrición do dispositivo coa actualización de quiosco e de sinalización</translation>
 <translation id="4252828488489674554">Fai clic co botón dereito no nome do grupo de pestanas para editalo ou fai clic para contraelo</translation>
 <translation id="4252899949534773101">O Bluetooth está desactivado</translation>
@@ -8633,6 +8636,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093866338626856921">Intercambiar datos cos dispositivos denominados: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Gran pirámide de Gizeh</translation>
+<translation id="7094834615934458012">Queres permitir que este sitio edite ficheiros?</translation>
 <translation id="7098389117866926363">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="7098447629416471489">Outros motores de busca gardados aparecerán aquí</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Quitar aplicación}other{Quitar aplicacións}}</translation>
@@ -9006,6 +9010,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7377481913241237033">Conectar cun código</translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Outra tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. ·# tarefas máis no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> poderá ver e facer as súas propias copias de <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Queres desactivar a recuperación de datos locais?</translation>
 <translation id="7380459290951585794">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contén caracteres non válidos</translation>
@@ -9751,6 +9756,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7886279613512920452">{COUNT,plural, =1{1 elemento}other{# elementos}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Realiza un percorrido guiado polos controis clave de privacidade e seguranza. Para obter máis opcións, vai á configuración individual.</translation>
+<translation id="7887286029584695415">Queres permitir que este sitio vexa e copie ficheiros?</translation>
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="7887864092952184874">Rato Bluetooth sincronizado</translation>
 <translation id="7889371445710865055">Cambiar o idioma de ditado</translation>
@@ -9836,6 +9842,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7944847494038629732">Desenchufa o cable USB do escáner e volve enchufalo para tentalo de novo</translation>
 <translation id="7945703887991230167">Voz preferida</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> poderá ver e facer as súas propias copias dos ficheiros de <ph name="FOLDERNAME" /> ata que peches todas as pestanas deste sitio</translation>
 <translation id="7946586320617670168">A orixe debe ser segura</translation>
 <translation id="7946681191253332687">Hai actualizacións de seguranza ampliadas dispoñibles</translation>
 <translation id="794676567536738329">Confirmar permisos</translation>
@@ -10044,6 +10051,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8079606020824373126">O xestor de contrasinais de Google pode actualizar a túa conta cun contrasinal seguro e gardalo en <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Os sitios poden pedir permiso para xestionar ventás en todas as pantallas</translation>
 <translation id="8080028325999236607">Pechar pestanas</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> poderá ver e facer as súas propias copias de <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
 <translation id="8081989000209387414">Queres desactivar a depuración de ADB?</translation>
 <translation id="8082106343289440791">Queres sincronizar o dispositivo co teclado (<ph name="DEVICE_NAME" />)?</translation>
 <translation id="8082132721957920509">Gardouse a tarxeta</translation>
@@ -10811,6 +10819,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="862750493060684461">Caché de CSS</translation>
 <translation id="8627795981664801467">Só conexións seguras</translation>
 <translation id="8627804903623428808">Revisa estas condicións e controla os datos da túa filla ou fillo</translation>
+<translation id="862907440446514309">A persoa encargada de administrar a túa conta está gravando a túa pantalla con <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Activar modo de suspensión mentres se cargue a batería</translation>
 <translation id="8631032106121706562">Pétalos</translation>
 <translation id="8632104508818855045">Escolliches non permitir ningunha extensión en <ph name="ORIGIN" /></translation>
@@ -11330,6 +11339,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="897525204902889653">Servizo de corentena</translation>
 <translation id="8975396729541388937">Cancela a subscrición en calquera momento con só facer clic na ligazón que aparece nos correos electrónicos que recibas.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
+<translation id="897565255818387330">Queres permitir que este sitio vexa e copie <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Configura un perfil de centro educativo para gardar e usar os contrasinais e moita outra información na túa conta</translation>
 <translation id="8977811652087512276">O contrasinal é incorrecto ou o ficheiro está danado</translation>
 <translation id="8978154919215542464">Activado: sincronizar todo</translation>

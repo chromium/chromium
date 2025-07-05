@@ -3719,6 +3719,7 @@
 <translation id="3592260987370335752">瞭解詳情(&amp;L)</translation>
 <translation id="3592344177526089979">正在將其他分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3593152357631900254">啟用模糊拼音模式</translation>
+<translation id="3593953853060020305">要允許這個網站編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
 <translation id="3596012367874587041">應用程式設定</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
@@ -4611,6 +4612,7 @@
 <translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4198420883535766848">從清單中移除分頁</translation>
+<translation id="4198664641856813238">只要在裝置上登入帳戶，即可存取你的書籤、密碼等資訊</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
 <translation id="4200983522494130825">新增分頁(&amp;T)</translation>
@@ -4680,6 +4682,7 @@
 <translation id="4249785854468467847">重新定義 Chrome，運用 AI 大幅提升效能</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4250680216510889253">否</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> 將可查看「<ph name="FOLDERNAME" />」中的檔案，並自行建立副本</translation>
 <translation id="4251377547188244181">註冊資訊站或看板裝置</translation>
 <translation id="4252828488489674554">在分頁群組名稱上按一下滑鼠右鍵可編輯群組，按一下滑鼠左鍵即可收合</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
@@ -8625,6 +8628,7 @@
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093866338626856921">與下列名稱的裝置交換資料：<ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">吉薩大金字塔</translation>
+<translation id="7094834615934458012">要允許這個網站編輯檔案嗎？</translation>
 <translation id="7098389117866926363">USB-C 裝置 (背面左側連接埠)</translation>
 <translation id="7098447629416471489">你所儲存的其他搜尋引擎會顯示在這裡</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
@@ -8997,6 +9001,7 @@
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同一工作群組中的另外 1 項工作：<ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同一工作群組中的另外 # 項工作：<ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> 將可查看「<ph name="FILENAME" />」，並自行建立副本</translation>
 <translation id="7380272457268061606">要停用本機資料復原功能嗎？</translation>
 <translation id="7380459290951585794">請確認你的手機在附近且處於解鎖狀態，並已開啟藍牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
@@ -9742,6 +9747,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
+<translation id="7887286029584695415">要允許這個網站查看及複製檔案嗎？</translation>
 <translation id="7887334752153342268">複製</translation>
 <translation id="7887864092952184874">已配對藍牙滑鼠</translation>
 <translation id="7889371445710865055">變更語音輸入語言</translation>
@@ -9827,6 +9833,7 @@
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
 <translation id="7944847494038629732">請拔下掃描器的 USB 傳輸線並重新插上，然後再試一次</translation>
 <translation id="7945703887991230167">偏好語音</translation>
+<translation id="7946243258100028201">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以查看「<ph name="FOLDERNAME" />」中的檔案，並自行建立副本</translation>
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="7946681191253332687">有可用的延長安全性更新</translation>
 <translation id="794676567536738329">確認權限</translation>
@@ -10036,6 +10043,7 @@
 <translation id="8079606020824373126">Google 密碼管理工具可以提高帳戶密碼的強度，並儲存在 <ph name="EMAIL" /> 中。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">網站可以要求管理所有螢幕上的視窗</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
+<translation id="8080530871547404884">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以查看「<ph name="FILENAME" />」，並自行建立副本</translation>
 <translation id="8081989000209387414">是否要停用 ADB 偵錯？</translation>
 <translation id="8082106343289440791">要與「<ph name="DEVICE_NAME" />」配對嗎？</translation>
 <translation id="8082132721957920509">卡片已儲存</translation>
@@ -10803,6 +10811,7 @@
 <translation id="862750493060684461">CSS 快取</translation>
 <translation id="8627795981664801467">僅傳送安全性連線的 Cookie</translation>
 <translation id="8627804903623428808">請詳閱以下條款，並控管貴子女的資料</translation>
+<translation id="862907440446514309">管理員正在使用「<ph name="APP0_NAME" />」錄製螢幕畫面。</translation>
 <translation id="8630338733867813168">充電時進入休眠狀態</translation>
 <translation id="8631032106121706562">朵朵</translation>
 <translation id="8632104508818855045">你先前已選擇不允許 <ph name="ORIGIN" /> 上的任何擴充功能</translation>
@@ -11322,6 +11331,7 @@
 <translation id="897525204902889653">隔離服務</translation>
 <translation id="8975396729541388937">你隨時可以取消訂閱，只要在收到的電子郵件中按一下相關連結即可。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個分頁}other{「<ph name="TAB_TITLE" />」和另外 # 個分頁}}</translation>
+<translation id="897565255818387330">要允許這個網站查看及複製「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="8977523125954274918">設定學校設定檔，以便將密碼等資料儲存到帳戶，或使用帳戶中的密碼等資料</translation>
 <translation id="8977811652087512276">密碼不正確或檔案毀損</translation>
 <translation id="8978154919215542464">開啟 - 同步處理所有資料</translation>

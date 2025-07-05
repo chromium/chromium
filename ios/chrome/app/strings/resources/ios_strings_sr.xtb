@@ -444,6 +444,7 @@
 <translation id="2708051474374549906">Проактивна заштита у реалном времену од опасних сајтова, преузимања и додатака која се заснива на подацима прегледања који се шаљу Google-у</translation>
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
 <translation id="271033894570825754">Ново</translation>
+<translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
 <translation id="2721190673959776287">Пример детаљне помоћи у производу за контекстуално окно које треба да се приказује више пута дневно.</translation>
 <translation id="2739887572830526131">Задржите ову групу да бисте додали картице касније или је избришите ако вам више не треба.</translation>
@@ -913,6 +914,7 @@
 <translation id="4717844083556844785">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="4719927025381752090">Понуди превод</translation>
 <translation id="4720530280568305198">Избор је отворен на новој картици</translation>
+<translation id="4720782081196952026">Смањите величину текста</translation>
 <translation id="472259426228234149">Цена 100–180 USD</translation>
 <translation id="4735849923335729414">Пријавите се преко налога <ph name="EMAIL" />, којим управља организација.</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5217329997012062137">Када користите Google објектив, снимак екрана странице се шаље Google-у.</translation>
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">Нова картица</translation>
 <translation id="5234094073825090254">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}.}one{Обележивачи су сачувани на Google налогу, {email}.}few{Обележивачи су сачувани на Google налогу, {email}.}other{Обележивачи су сачувани на Google налогу, {email}.}}</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -1072,6 +1075,7 @@
 <translation id="5343472494710226394">Вести, спорт и садржај на основу интересовања.</translation>
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
+<translation id="5371112366564891538">Повећајте величину текста</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
 <translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>
@@ -1316,6 +1320,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6295751040240588413">Неважећи надимак картице</translation>
 <translation id="629730747756840877">налог</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">Потврдите идентитет да бисте добили све лозинке на овом уређају</translation>
 <translation id="6316141353357700666">Са листе која се прикаже одаберите лозинку коју желите да користите.</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
@@ -2070,6 +2075,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9130317582644834675">Сакриј опцију Зумирај текст</translation>
 <translation id="913036870884277353">Лако отварајте линкове у другим апликацијама.</translation>
 <translation id="9137013805542155359">Прикажи оригинал</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">Добијајте новости о подсетницима које подесите и картице са других уређаја</translation>
 <translation id="914781932147356857">Означи све…</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>

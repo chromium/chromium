@@ -3734,6 +3734,7 @@
 <translation id="3592260987370335752">למידע נוסף</translation>
 <translation id="3592344177526089979">מתבצעת העברה של כרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">‏הפיכת מצב Fuzzy-Pinyin לפעיל</translation>
+<translation id="3593953853060020305">לאפשר לאתר הזה לערוך את <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">מגבלות שם אישור </translation>
 <translation id="3596012367874587041">הגדרות האפליקציה</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
@@ -4627,6 +4628,7 @@
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4198268995694216131">אתרים נוספים</translation>
 <translation id="4198420883535766848">הסרת הכרטיסייה מהרשימה</translation>
+<translation id="4198664641856813238">לאחר הכניסה לחשבון הסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="4200609364258658652">העתקת הפריים</translation>
 <translation id="4200689466366162458">מילים מותאמות אישית</translation>
 <translation id="4200983522494130825">כרטיסייה חדשה</translation>
@@ -4696,6 +4698,7 @@
 <translation id="4249785854468467847">‏אפשר לשדרג את Chrome באמצעות AI</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4250680216510889253">לא</translation>
+<translation id="4251243704979202079">ל-<ph name="ORIGIN" /> תהיה הרשאה לגשת לקבצים בתיקייה <ph name="FOLDERNAME" /> וליצור מהם עותקים משלו</translation>
 <translation id="4251377547188244181">רישום של מכשיר שילוט וקיוסק</translation>
 <translation id="4252828488489674554">כדי לכווץ את קבוצת הכרטיסיות, לוחצים עליה, וכדי לערוך אותה, לוחצים לחיצה ימנית על השם שלה</translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
@@ -8652,6 +8655,7 @@
 <translation id="7093220653036489319">תשובות מהירות</translation>
 <translation id="7093866338626856921">החלפת נתונים עם המכשירים ששמותיהם: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">הפירמידה הגדולה של גיזה</translation>
+<translation id="7094834615934458012">לאפשר לאתר הזה לערוך קבצים?</translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
 <translation id="7098447629416471489">כאן יופיעו מנועי חיפוש אחרים ששמרת</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{הסרת האפליקציה}one{הסרת האפליקציות}two{הסרת האפליקציות}other{הסרת האפליקציות}}</translation>
@@ -9025,6 +9029,7 @@
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>
 <translation id="73786666777299047">‏פתיחת חנות האינטרנט של Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{‫<ph name="TASK_ROW" />. יש עוד משימה באותה קבוצה: <ph name="OTHER_TASKS" />}one{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}two{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509">ל-<ph name="ORIGIN" /> תהיה הרשאה לגשת לקובץ <ph name="FILENAME" /> וליצור ממנו עותקים משלו</translation>
 <translation id="7380272457268061606">להשבית את שחזור הנתונים המקומיים?</translation>
 <translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
 <translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>
@@ -9769,6 +9774,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{פריט}one{# פריטים}two{# פריטים}other{# פריטים}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">סיור מודרך באמצעי הבקרה החשובים ביותר על פרטיות ואבטחה. לאפשרויות נוספות, יש לעבור להגדרות ספציפיות.</translation>
+<translation id="7887286029584695415">לאפשר לאתר הזה לגשת לקבצים ולהעתיק אותם?</translation>
 <translation id="7887334752153342268">שכפול</translation>
 <translation id="7887864092952184874">‏עכבר Bluetooth מחובר</translation>
 <translation id="7889371445710865055">שינוי שפת ההכתבה</translation>
@@ -9854,6 +9860,7 @@
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7944847494038629732">‏כדי לנסות שוב, צריך לנתק את כבל ה-USB של הסורק ולחבר אותו בחזרה</translation>
 <translation id="7945703887991230167">הקול המועדף</translation>
+<translation id="7946243258100028201">לאתר <ph name="ORIGIN" /> תהיה הרשאה לגשת לקבצים בתיקייה <ph name="FOLDERNAME" /> וליצור מהם עותקים משלו עד שכל הכרטיסיות של האתר הזה ייסגרו</translation>
 <translation id="7946586320617670168">המקור חייב להיות מאובטח</translation>
 <translation id="7946681191253332687">יש עדכוני אבטחה מורחבים</translation>
 <translation id="794676567536738329">אישור הרשאות</translation>
@@ -10063,6 +10070,7 @@
 <translation id="8079606020824373126">‏מנהל הסיסמאות של Google יכול להגדיר לך סיסמה חזקה חדשה ולשמור אותה בחשבון <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">אתרים יכולים לבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="8080028325999236607">סגור את כל הכרטיסיות</translation>
+<translation id="8080530871547404884">לאתר <ph name="ORIGIN" /> תהיה הרשאה לגשת ל-<ph name="FILENAME" /> וליצור ממנו עותקים משלו עד שכל הכרטיסיות של האתר ייסגרו</translation>
 <translation id="8081989000209387414">‏להשבית ניפוי באגים באמצעות ADB?</translation>
 <translation id="8082106343289440791">האם להתאים עם "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">הכרטיס נשמר</translation>
@@ -10832,6 +10840,7 @@
 <translation id="862750493060684461">‏מטמון של CSS</translation>
 <translation id="8627795981664801467">התחברויות בטוחות בלבד</translation>
 <translation id="8627804903623428808">בדיקת התנאים האלה ושליטה בנתונים של הילד או הילדה שלך</translation>
+<translation id="862907440446514309">האדמין מקליט את המסך שלך באמצעות <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">מעבר למצב שינה בזמן טעינה</translation>
 <translation id="8631032106121706562">עלי כותרת</translation>
 <translation id="8632104508818855045">בחרת בעבר לא לתת הרשאה לשום תוסף ב‑<ph name="ORIGIN" /></translation>
@@ -11353,6 +11362,7 @@
 <translation id="897525204902889653">שירות הסגר</translation>
 <translation id="8975396729541388937">ניתן לבטל את ההרשמה בכל שלב בלחיצה על הקישור בהודעות האימייל שמקבלים.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ועוד כרטיסייה אחת}one{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}two{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}other{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}}</translation>
+<translation id="897565255818387330">לאפשר לאתר הזה לגשת ל-<ph name="FILE_NAME" /> ולהעתיק אותו?</translation>
 <translation id="8977523125954274918">כדי לשמור את הסיסמאות שלך ולהשתמש בהן ובעוד אפשרויות, צריך להגדיר פרופיל בית ספר בחשבון</translation>
 <translation id="8977811652087512276">הסיסמה שגויה או שהקובץ פגום</translation>
 <translation id="8978154919215542464">פועל - סנכרון הכול</translation>

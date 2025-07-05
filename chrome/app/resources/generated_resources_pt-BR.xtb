@@ -3736,6 +3736,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3592260987370335752">&amp;Saiba mais</translation>
 <translation id="3592344177526089979">Transmitindo uma guia para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Ativar o modo Fuzzy-Pinyn</translation>
+<translation id="3593953853060020305">Permitir que este site edite <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Restrições de nome do certificado</translation>
 <translation id="3596012367874587041">Configurações do app</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
@@ -4629,6 +4630,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4195814663415092787">Continuar de onde você parou</translation>
 <translation id="4198268995694216131">Outros sites</translation>
 <translation id="4198420883535766848">Remover guia da lista</translation>
+<translation id="4198664641856813238">Faça login para ter acesso a favoritos, senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="4200609364258658652">Copiar frame do vídeo</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
 <translation id="4200983522494130825">Nova &amp;guia</translation>
@@ -4698,6 +4700,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4249785854468467847">Personalize o Chrome turbinado com IA</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4250680216510889253">Não</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> poderá ver e fazer cópias dos arquivos em <ph name="FOLDERNAME" /></translation>
 <translation id="4251377547188244181">Registro do dispositivo com quiosque e sinalização</translation>
 <translation id="4252828488489674554">Clique com o botão direito do mouse no nome do grupo de guias para editá-lo ou clique para fechar</translation>
 <translation id="4252899949534773101">Bluetooth desativado</translation>
@@ -8652,6 +8655,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093866338626856921">Trocar dados com os dispositivos chamados: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Grande Pirâmide de Gizé</translation>
+<translation id="7094834615934458012">Permitir que este site edite arquivos?</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira da esquerda)</translation>
 <translation id="7098447629416471489">Outros mecanismos de pesquisa salvos serão exibidos aqui</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Remover app}one{Remover app}other{Remover apps}}</translation>
@@ -9025,6 +9029,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="73786666777299047">Abrir a Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Outra tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Mais # tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Mais # tarefas no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> poderá ver e fazer cópias de <ph name="FILENAME" /></translation>
 <translation id="7380272457268061606">Desativar a recuperação de dados locais?</translation>
 <translation id="7380459290951585794">Confira se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém caracteres inválidos</translation>
@@ -9770,6 +9775,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7886279613512920452">{COUNT,plural, =1{um item}one{# item}other{# itens}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Faça um tour guiado sobre os principais controles de privacidade e segurança. Para acessar mais opções, acesse as configurações individuais.</translation>
+<translation id="7887286029584695415">Permitir que este site veja e copie arquivos?</translation>
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="7887864092952184874">Mouse Bluetooth pareado</translation>
 <translation id="7889371445710865055">Mudar idioma do Ditado</translation>
@@ -9855,6 +9861,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7944772052836377867">A sincronização precisa confirmar sua identidade</translation>
 <translation id="7944847494038629732">Desconecte e reconecte o cabo USB do scanner para tentar de novo</translation>
 <translation id="7945703887991230167">Voz preferida</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> poderá ver e fazer cópias dos arquivos em <ph name="FOLDERNAME" /> até você fechar todas as guias deste site</translation>
 <translation id="7946586320617670168">A origem precisa ser segura</translation>
 <translation id="7946681191253332687">Atualizações de segurança estendidas disponíveis</translation>
 <translation id="794676567536738329">Confirmar permissões</translation>
@@ -10064,6 +10071,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8079606020824373126">O Gerenciador de senhas do Google pode atualizar sua conta com uma senha forte e salvá-la em <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Os sites podem pedir para gerenciar janelas em todas as suas telas</translation>
 <translation id="8080028325999236607">Fechar todas as guias</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> poderá ver e fazer cópias de <ph name="FILENAME" /> até você fechar todas as guias deste site</translation>
 <translation id="8081989000209387414">Desativar a depuração do adb?</translation>
 <translation id="8082106343289440791">Parear com "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082132721957920509">Seu cartão foi salvo</translation>
@@ -10831,6 +10839,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Somente conexões seguras</translation>
 <translation id="8627804903623428808">Leia estes termos e tenha controle sobre os dados da criança</translation>
+<translation id="862907440446514309">O administrador está gravando sua tela com o app <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Suspensão ao carregar</translation>
 <translation id="8631032106121706562">Bem-me-quer</translation>
 <translation id="8632104508818855045">Anteriormente, você escolheu não permitir nenhuma extensão em <ph name="ORIGIN" /></translation>
@@ -11351,6 +11360,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="897525204902889653">Serviço de quarentena</translation>
 <translation id="8975396729541388937">Cancele a inscrição a qualquer momento clicando no link nos e-mails recebidos.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 guia}one{"<ph name="TAB_TITLE" />" e mais # guia}other{"<ph name="TAB_TITLE" />" e mais # guias}}</translation>
+<translation id="897565255818387330">Permitir que este site veja e copie <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Configure um perfil escolar para salvar e usar suas senhas e outros itens na sua conta</translation>
 <translation id="8977811652087512276">Senha incorreta ou arquivo corrompido</translation>
 <translation id="8978154919215542464">Ativado - sincronizar tudo</translation>

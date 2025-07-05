@@ -3717,6 +3717,7 @@
 <translation id="3592260987370335752">&amp;Толығырақ</translation>
 <translation id="3592344177526089979">Қойынды <ph name="DEVICE_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin режимін қосу</translation>
+<translation id="3593953853060020305">Бұл сайтқа <ph name="FILE_NAME" /> файлын өзгертуге рұқсат беру қажет пе?</translation>
 <translation id="3593965109698325041">Сертификат атауы шектеулері</translation>
 <translation id="3596012367874587041">Қолданба параметрлері</translation>
 <translation id="3596414637720633074">Инкогнито режимінде үшінші тарап cookie файлдарын бөгеу</translation>
@@ -4610,6 +4611,7 @@
 <translation id="4195814663415092787">Тоқтаған жерден жалғастыру</translation>
 <translation id="4198268995694216131">Қосымша сайттар</translation>
 <translation id="4198420883535766848">Қойындыны тізімнен өшіру</translation>
+<translation id="4198664641856813238">Барлық құрылғыда бетбелгілер, құпия сөздер және т.б. алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="4200609364258658652">Бейнекадрды көшіру</translation>
 <translation id="4200689466366162458">Арнаулы сөздер</translation>
 <translation id="4200983522494130825">Жаңа &amp;қойынды</translation>
@@ -4679,6 +4681,7 @@
 <translation id="4249785854468467847">Chrome жасанды интеллект көмегімен түрленеді</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4250680216510889253">Жоқ</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> сайты <ph name="FOLDERNAME" /> қалтасын көріп, көшіре алады</translation>
 <translation id="4251377547188244181">Құрылғыны киоск режимінде немесе цифрлық тақтада тіркеу</translation>
 <translation id="4252828488489674554">Бұл топты өзгерту үшін қойындылар тобы атауын тінтуірдің оң жақ түймесімен басыңыз немесе жию үшін басыңыз.</translation>
 <translation id="4252899949534773101">Bluetooth өшірілді</translation>
@@ -8624,6 +8627,7 @@
 <translation id="7093220653036489319">Жылдам жауаптар</translation>
 <translation id="7093866338626856921">Деректерді мына құрылғылармен ауыстыру: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Хеопс пирамидасы</translation>
+<translation id="7094834615934458012">Бұл сайтқа файлдарды өзгертуге рұқсат беру қажет пе?</translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
 <translation id="7098447629416471489">Басқа сақталған іздеу жүйелері осында шығады</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Қолданбаны жою}other{Қолданбаларды жою}}</translation>
@@ -8997,6 +9001,7 @@
 <translation id="7377481913241237033">Код арқылы қосылу</translation>
 <translation id="73786666777299047">Chrome Web Store қызметін ашу</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Бір тапсырмалар тобында тағы тапсырма бар: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. Бір тапсырмалар тобында тағы # тапсырма бар: <ph name="OTHER_TASKS" />.}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> сайты <ph name="FILENAME" /> файлын көріп, көшіре алады</translation>
 <translation id="7380272457268061606">Жергілікті деректерді қалпына келтіру мүмкіндігін өшіру керек пе?</translation>
 <translation id="7380459290951585794">Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="7380622428988553498">Құрылғы атауында жарамсыз таңбалар бар.</translation>
@@ -9741,6 +9746,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}other{# элемент}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Құпиялық пен қауіпсіздікті басқарудың маңызды құралдары туралы қысқаша презентацияны қарап шығыңыз. Басқа опцияларды көру үшін әр параметрге жеке-жеке өтіңіз.</translation>
+<translation id="7887286029584695415">Бұл сайтқа файлдарды көруге және көшіруге рұқсат беру қажет пе?</translation>
 <translation id="7887334752153342268">Көшірме</translation>
 <translation id="7887864092952184874">Bluetooth тінтуірі жұптастырылды</translation>
 <translation id="7889371445710865055">Мәтінді дауыспен енгізу тілін өзгерту</translation>
@@ -9826,6 +9832,7 @@
 <translation id="7944772052836377867">Sync жеке басыңызды растау керек</translation>
 <translation id="7944847494038629732">Әрекетті қайталау үшін сканердің USB кабелін ажыратып, қайта жалғаңыз.</translation>
 <translation id="7945703887991230167">Таңдалған дауыс</translation>
+<translation id="7946243258100028201">Бұл сайттың барлық қойындысын жапқанша, <ph name="ORIGIN" /> сайты <ph name="FOLDERNAME" /> қалтасындағы файлдарды көріп, көшіре алады</translation>
 <translation id="7946586320617670168">Дереккөз қауіпсіз болуы қажет</translation>
 <translation id="7946681191253332687">Кеңейтілген қауіпсіздік жаңартулары қолжетімді</translation>
 <translation id="794676567536738329">Рұқсаттарды растау</translation>
@@ -10034,6 +10041,7 @@
 <translation id="8079606020824373126">Google Password Manager аккаунтыңызды күрделі құпия сөзбен жаңартып, оны <ph name="EMAIL" /> мекенжайына сақтай алады. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сайттар барлық дисплейде терезелерді басқаруды сұрай алады.</translation>
 <translation id="8080028325999236607">Барлық қойындыларды жабу</translation>
+<translation id="8080530871547404884">Бұл сайттың барлық қойындысын жапқанша, <ph name="ORIGIN" /> сайты <ph name="FILENAME" /> файлдарын көріп, көшіре алады</translation>
 <translation id="8081989000209387414">ADB түзетуін өшіру қажет пе?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" құрылғысымен жұпталсын ба?</translation>
 <translation id="8082132721957920509">Картаңыз сақталды</translation>
@@ -10801,6 +10809,7 @@
 <translation id="862750493060684461">CSS кэші</translation>
 <translation id="8627795981664801467">Тек қауіпсіз байланыстар</translation>
 <translation id="8627804903623428808">Осы шарттармен танысып шығып, балаңыздың деректерін қадағалаңыз</translation>
+<translation id="862907440446514309">Әкімші <ph name="APP0_NAME" /> қолданбасымен экраныңызды жазып жатыр.</translation>
 <translation id="8630338733867813168">Зарядтау кезінде ұйқы режиміне қою</translation>
 <translation id="8631032106121706562">Гүл</translation>
 <translation id="8632104508818855045">Бұған дейін <ph name="ORIGIN" /> сайтында ешқандай кеңейтімге рұқсат бермеуді таңдағансыз.</translation>
@@ -11320,6 +11329,7 @@
 <translation id="897525204902889653">Карантин қызметі</translation>
 <translation id="8975396729541388937">Электрондық хаттардағы жазылымнан бас тарту сілтемесін басып, жазылымды кез келген уақытта тоқтатыңыз.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" және тағы 1 қойынды}other{"<ph name="TAB_TITLE" />" және тағы # қойынды}}</translation>
+<translation id="897565255818387330">Бұл сайтқа <ph name="FILE_NAME" /> файлын көруге және көшіруге рұқсат беру қажет пе?</translation>
 <translation id="8977523125954274918">Құпия сөздеріңіз бен басқа ақпаратты аккаунтыңызда сақтау және пайдалану үшін мектеп профилін реттеңіз.</translation>
 <translation id="8977811652087512276">Құпия сөз дұрыс емес немесе файл бүлінген</translation>
 <translation id="8978154919215542464">Қосулы – барлығын синхрондау</translation>

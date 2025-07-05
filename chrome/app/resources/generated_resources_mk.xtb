@@ -3736,6 +3736,7 @@
 <translation id="3592260987370335752">&amp;Дознај повеќе</translation>
 <translation id="3592344177526089979">Се емитува картичка на <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Овозможи режим за нејасен Пин Јин</translation>
+<translation id="3593953853060020305">Да му се дозволи на сајтов да ја изменува датотеката <ph name="FILE_NAME" />?</translation>
 <translation id="3593965109698325041">Ограничувања на име на сертификат</translation>
 <translation id="3596012367874587041">Поставки за апликацијата</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
@@ -4629,6 +4630,7 @@
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
 <translation id="4198420883535766848">Отстрани ја картичката од списокот</translation>
+<translation id="4198664641856813238">Најавете се за да ги добиете обележувачите, лозинките и друго на сите ваши уреди</translation>
 <translation id="4200609364258658652">Копирај видеокадар</translation>
 <translation id="4200689466366162458">Приспособени зборови</translation>
 <translation id="4200983522494130825">Нова &amp;картичка</translation>
@@ -4698,6 +4700,7 @@
 <translation id="4249785854468467847">Редизајнирајте го Chrome, зајакнат со AI</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4250680216510889253">Не</translation>
+<translation id="4251243704979202079"><ph name="ORIGIN" /> ќе може да ги прегледува датотеките во <ph name="FOLDERNAME" /> и да создава свои копии од нив</translation>
 <translation id="4251377547188244181">Регистрирација на киоск или уред за сигнализација</translation>
 <translation id="4252828488489674554">Кликнете на името на групата картички со десното копче за да ја измените групава или кликнете за да ја соберете</translation>
 <translation id="4252899949534773101">Bluetooth е оневозможен</translation>
@@ -8650,6 +8653,7 @@
 <translation id="7093220653036489319">Брзи одговори</translation>
 <translation id="7093866338626856921">Разменете податоци со уредите наречени: <ph name="HOSTNAMES" /></translation>
 <translation id="7094768688212290897">Кеопсова пирамида</translation>
+<translation id="7094834615934458012">Да му се дозволи на сајтов да изменува датотеки?</translation>
 <translation id="7098389117866926363">USB-Ц уред (лева порта на задната страна)</translation>
 <translation id="7098447629416471489">Другите зачувани пребарувачи ќе се појават тука</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Отстрани ја апликацијата}one{Отстрани ги апликациите}other{Отстрани ги апликациите}}</translation>
@@ -9023,6 +9027,7 @@
 <translation id="7377481913241237033">Поврзете со код</translation>
 <translation id="73786666777299047">Отворете ја Веб-продавницата на Chrome</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Друга задача во истата група задачи: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Уште # задача во истата група задачи: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Уште # задачи во истата група задачи: <ph name="OTHER_TASKS" />}}</translation>
+<translation id="7380162005366861509"><ph name="ORIGIN" /> ќе може да ја прегледува датотеката <ph name="FILENAME" /> и да создава свои копии од неа</translation>
 <translation id="7380272457268061606">Да се оневозможи враќањето на локалните податоци?</translation>
 <translation id="7380459290951585794">Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi</translation>
 <translation id="7380622428988553498">Името на уредот содржи неважечки знаци</translation>
@@ -9768,6 +9773,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Разгледајте го упатството што ќе ве води низ клучните контроли за приватноста и безбедноста. За повеќе опции, одете на поединечните поставки.</translation>
+<translation id="7887286029584695415">Да му се дозволи на сајтов да прегледува и да копира датотеки?</translation>
 <translation id="7887334752153342268">Направи дупликат</translation>
 <translation id="7887864092952184874">Поврзан глушец со Bluetooth</translation>
 <translation id="7889371445710865055">Променете го јазикот за диктирање</translation>
@@ -9853,6 +9859,7 @@
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7944847494038629732">За да се обидете повторно, исклучете го USB-кабелот на скенерот, па вклучете го пак</translation>
 <translation id="7945703887991230167">Претпочитан глас</translation>
+<translation id="7946243258100028201"><ph name="ORIGIN" /> ќе може да ги прегледува датотеките во <ph name="FOLDERNAME" /> и да создава свои копии од нив сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="7946586320617670168">Потеклото мора да биде безбедно</translation>
 <translation id="7946681191253332687">Достапни се проширени безбедносни ажурирања</translation>
 <translation id="794676567536738329">Потврди дозволи</translation>
@@ -10061,6 +10068,7 @@
 <translation id="8079606020824373126">Google Password Manager може да ја ажурира сметката со силна лозинка и да ја зачува во <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сајтовите може да бараат да управуваат со прозорците на сите екрани</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>
+<translation id="8080530871547404884"><ph name="ORIGIN" /> ќе може да ја прегледува датотеката <ph name="FILENAME" /> и да создава свои копии од неа сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="8081989000209387414">Да се оневозможи отстранување грешки на ADB?</translation>
 <translation id="8082106343289440791">Да се спари со „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082132721957920509">Вашата картичка е зачувана</translation>
@@ -10831,6 +10839,7 @@
 <translation id="862750493060684461">CSS кеш</translation>
 <translation id="8627795981664801467">Само безбедни врски</translation>
 <translation id="8627804903623428808">Прегледајте ги условиве и контролирајте ги податоците на вашето дете</translation>
+<translation id="862907440446514309">Администраторот го снима вашиот екран со <ph name="APP0_NAME" />.</translation>
 <translation id="8630338733867813168">Во режим во мирување додека се полни</translation>
 <translation id="8631032106121706562">Цвеќе</translation>
 <translation id="8632104508818855045">Претходно одбравте да не дозволите екстензии на <ph name="ORIGIN" /></translation>
@@ -11351,6 +11360,7 @@
 <translation id="897525204902889653">Услуга за карантин</translation>
 <translation id="8975396729541388937">Отпишете се во секое време со кликнување на линкот во е-пораките што ги добивате.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и уште 1 картичка}one{„<ph name="TAB_TITLE" />“ и уште # картичка}other{„<ph name="TAB_TITLE" />“ и уште # картички}}</translation>
+<translation id="897565255818387330">Да му се дозволи на сајтов да ја прегледува и да ја копира датотеката <ph name="FILE_NAME" />?</translation>
 <translation id="8977523125954274918">Поставете училиштен профил за да ги зачувувате и користите лозинките и друго во сметката</translation>
 <translation id="8977811652087512276">Неточна лозинка или оштетена датотека</translation>
 <translation id="8978154919215542464">Вклучено - синхронизирај сѐ</translation>
