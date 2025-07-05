@@ -800,6 +800,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.NotUsableLostTime" units="ms"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time lost due to a successful lookup in the NoVarySearchCache that was
+    later found to not be usable, usually due to the disk entry either being
+    missing or not conditionalizable.
+
+    In these cases the transaction is restarted with the original URL without
+    using the NoVarySearchCache, and so time has been lost compared to if we'd
+    never used the NoVarySearchCache at all. This histogram measures that lost
+    time.
+
+    This doesn't include the actual lookup time, but that is recorded in
+    HttpCache.NoVarySearch.LookupTime and is usually an order of magnitude
+    smaller.
+
+    Recorded once for every cache transaction which is restarted due to getting
+    a hit in the NoVarySearchCache that was later found to be unusable. This
+    corresponds to the NoVarySearchUseResult cases &quot;Not openable&quot;,
+    &quot;Incomplete body&quot; and &quot;Couldn't conditionalize&quot;.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.ReplaceFileError"
     enum="PlatformFileError" expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>

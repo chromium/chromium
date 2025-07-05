@@ -733,6 +733,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks last_disk_cache_access_start_time_;
   base::TimeDelta total_disk_cache_read_time_;
   base::TimeDelta total_disk_cache_write_time_;
+  base::TimeTicks first_nvs_cache_lookup_end_time_;
   bool recorded_histograms_ = false;
   bool has_opened_or_created_entry_ = false;
   bool record_entry_open_or_creation_time_ = false;

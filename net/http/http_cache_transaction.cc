@@ -1121,6 +1121,19 @@ int HttpCache::Transaction::DoInitEntry() {
   if ((mode_ & READ_META) && read_no_vary_search_cache_ &&
       IsNoVarySearchApplicable()) {
     no_vary_search_use_result_ = LookupRequestInNoVarySearchCache();
+    if (no_vary_search_use_result_ == NoVarySearchUseResult::kUsed &&
+        first_nvs_cache_lookup_end_time_.is_null()) {
+      first_nvs_cache_lookup_end_time_ = base::TimeTicks::Now();
+    }
+  } else if (!first_nvs_cache_lookup_end_time_.is_null()) {
+    // A NoVarySearchCache lookup succeeded earlier for this transaction, but
+    // then for some reason the result was unusable. Record the time lost as a
+    // result. See the histogram "HttpCache.NoVarySearch.UseResult" for
+    // information about what went wrong.
+    base::UmaHistogramTimes(
+        "HttpCache.NoVarySearch.NotUsableLostTime",
+        base::TimeTicks::Now() - first_nvs_cache_lookup_end_time_);
+    first_nvs_cache_lookup_end_time_ = base::TimeTicks();
   }
 
   TransitionToState(STATE_OPEN_OR_CREATE_ENTRY);
