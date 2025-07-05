@@ -48,7 +48,7 @@
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -201,4 +201,4 @@ void InitializeDoubleConverter() {
 
 }  // namespace internal
 
-}  // namespace WTF
+}  // namespace blink

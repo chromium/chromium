@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(DtoaTest, TestNumberToFixedPrecisionString) {
   NumberToStringBuffer buffer;
@@ -39,4 +39,4 @@ TEST(DtoaTest, TestNumberToFixedPrecisionString) {
   EXPECT_STREQ("1.00000e-10", buffer);
 }
 
-}  // namespace WTF
+}  // namespace blink

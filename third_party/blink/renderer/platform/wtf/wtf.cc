@@ -81,7 +81,7 @@ void InitializeWtf() {
 
   Threading::Initialize();
 
-  WTF::internal::InitializeDoubleConverter();
+  internal::InitializeDoubleConverter();
 
   WTF::internal::InitializeMainThreadStackEstimate();
   AtomicString::Init();

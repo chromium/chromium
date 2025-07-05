@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
 // exponent digits.
@@ -54,12 +54,6 @@ void InitializeDoubleConverter();
 
 }  // namespace internal
 
-}  // namespace WTF
-
-using WTF::NumberToFixedPrecisionString;
-using WTF::NumberToFixedWidthString;
-using WTF::NumberToString;
-using WTF::NumberToStringBuffer;
-using WTF::ParseDouble;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
