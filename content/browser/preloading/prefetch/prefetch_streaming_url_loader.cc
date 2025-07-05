@@ -248,6 +248,10 @@ void PrefetchStreamingURLLoader::HandleRedirect(
   }
   is_waiting_handle_redirect_from_prefetch_service_ = false;
   CHECK(redirect_head);
+  if (response_reader_) {
+    response_reader_->HandleRedirect(redirect_status, redirect_info,
+                                     std::move(redirect_head));
+  }
 
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
@@ -271,11 +275,6 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       }
       break;
   }
-
-  if (response_reader_) {
-    response_reader_->HandleRedirect(redirect_status, redirect_info,
-                                     std::move(redirect_head));
-  }
 }
 
 void PrefetchStreamingURLLoader::OnUploadProgress(
@@ -296,7 +295,6 @@ void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
 void PrefetchStreamingURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
   is_waiting_handle_redirect_from_prefetch_service_ = false;
-  DisconnectPrefetchURLLoaderMojo();
 
   if (response_reader_) {
     response_reader_->OnComplete(completion_status);
@@ -310,6 +308,8 @@ void PrefetchStreamingURLLoader::OnComplete(
   }
 
   std::move(on_prefetch_response_completed_callback_).Run(completion_status);
+
+  DisconnectPrefetchURLLoaderMojo();
 }
 
 void PrefetchStreamingURLLoader::OnStartServing() {
