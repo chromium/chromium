@@ -94,7 +94,7 @@ void PageTestBase::MockClipboardHostProvider::Install(
       blink::mojom::blink::ClipboardHost::Name_,
       WTF::BindRepeating(
           &PageTestBase::MockClipboardHostProvider::BindClipboardHost,
-          base::Unretained(this)));
+          WTF::Unretained(this)));
 }
 
 void PageTestBase::MockClipboardHostProvider::BindClipboardHost(

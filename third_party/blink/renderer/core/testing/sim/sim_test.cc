@@ -59,7 +59,7 @@ void SimTest::SetUp() {
   page_ = std::make_unique<SimPage>();
   web_view_helper_ =
       std::make_unique<frame_test_helpers::WebViewHelper>(WTF::BindRepeating(
-          &SimTest::CreateWebFrameWidget, base::Unretained(this)));
+          &SimTest::CreateWebFrameWidget, WTF::Unretained(this)));
   // These tests don't simulate a browser interface and hence fetching code
   // caching doesn't work in these tests. Currently tests that use this testing
   // set up don't test / need code caches. Disable code caches for these tests.
