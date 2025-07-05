@@ -213,6 +213,10 @@ void TestNavigationObserver::OnDidStopLoading(WebContents* web_contents) {
 
 void TestNavigationObserver::OnDidStartNavigation(
     NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    return;
+  }
+
   if (expected_target_url_.has_value() &&
       expected_target_url_.value() != navigation_handle->GetURL()) {
     return;
@@ -232,6 +236,10 @@ void TestNavigationObserver::OnDidStartNavigation(
 
 void TestNavigationObserver::OnDidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    return;
+  }
+
   if (ignore_uncommitted_navigations_ && !navigation_handle->HasCommitted())
     return;
 

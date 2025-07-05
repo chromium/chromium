@@ -27,6 +27,13 @@ class WebContents;
 
 // For browser_tests, which run on the UI thread, run a second
 // MessageLoop and quit when the navigation completes loading.
+// This class ignores prerendering navigations as prerendering might be
+// triggered in the background and unrelated to be tested. Not ignoring
+// prerender navigations can cause those tests to mistakenly observe the
+// prerender navigations instead of the actual navigations it want to observe.
+// For prerendering tests, PrerenderTestHelper or other helper classes in
+// //content/public/test/prerender_test_util.h are useful to manage
+// prerendering, its activation, and to monitor internal behaviors.
 class TestNavigationObserver {
  public:
   enum class WaitEvent {
