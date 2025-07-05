@@ -1173,8 +1173,6 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   test_url_loader_factory()->DisconnectMojoPipes();
   on_deletion_scheduled_loop.Run();
   ASSERT_TRUE(streaming_loader);
-  streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
-                                   redirect_info, std::move(redirect_head));
   if (GetParam()) {
     on_head_received_loop.Run();
   }
