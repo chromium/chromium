@@ -10,7 +10,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -237,6 +237,32 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(
         loadTimeData.getString('clearData'),
         dialog.$.deleteButton.innerText.trim());
+
+    // Sync paused: Button label should be "delete data from device".
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      hasError: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    });
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('deleteDataFromDevice'),
+        dialog.$.deleteButton.innerText.trim());
+
+    // <if expr="not is_chromeos">
+    // Account deletion disabled: Button label should be "delete data from
+    // device".
+    loadTimeData.overrideValues({isClearPrimaryAccountAllowed: false});
+    await createDialog();
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      hasError: false,
+    });
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('deleteDataFromDevice'),
+        dialog.$.deleteButton.innerText.trim());
+    // </if>
   });
 
   test('ShowMoreButton', async function() {

@@ -4,7 +4,9 @@
 
 import {assertNotReached} from '//resources/js/assert.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, StatusAction} from '/shared/settings/people_page/sync_browser_proxy.js';
+
+import {loadTimeData} from '../i18n_setup.js';
 
 /**
  * Returns true if the deletion will affect account data. This is only the case
@@ -14,7 +16,8 @@ import {SignedInState} from '/shared/settings/people_page/sync_browser_proxy.js'
  */
 export function canDeleteAccountData(syncStatus: SyncStatus|undefined) {
   return isSignedIn(syncStatus) &&
-      syncStatus!.signedInState !== SignedInState.SIGNED_IN_PAUSED;
+      syncStatus!.signedInState !== SignedInState.SIGNED_IN_PAUSED &&
+      !isSyncPaused(syncStatus!) && isClearPrimaryAccountAllowed();
 }
 
 /** Returns true if the user is signed in to a Google account on Chrome. */
@@ -34,4 +37,18 @@ export function isSignedIn(syncStatus: SyncStatus|undefined) {
   }
 
   assertNotReached('Invalid SignedInState');
+}
+
+function isSyncPaused(syncStatus: SyncStatus): boolean {
+  return !!syncStatus.hasError && !syncStatus.hasUnrecoverableError &&
+      syncStatus.statusAction === StatusAction.REAUTHENTICATE;
+}
+
+function isClearPrimaryAccountAllowed(): boolean {
+  // <if expr="not is_chromeos">
+  return loadTimeData.getBoolean('isClearPrimaryAccountAllowed');
+  // </if>
+  // <if expr="is_chromeos">
+  return true;
+  // </if>
 }
