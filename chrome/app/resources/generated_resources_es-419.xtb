@@ -3226,7 +3226,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se quitó el límite de tiempo para <ph name="APP_NAME" /></translation>
 <translation id="3240299564104448052">Parece que no tienes conexión.</translation>
-<translation id="3240426699337459095">Vínculo copiado</translation>
+<translation id="3240426699337459095">Se copió el vínculo</translation>
 <translation id="3241638166094654466">Celdas en cada línea:</translation>
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3241810535741601486">Este cambio es permanente y no se puede revertir. Las actualizaciones extendidas se aplican a todos los usuarios de este dispositivo. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
@@ -8331,7 +8331,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6863496016067551393">Se permiten todas las extensiones</translation>
 <translation id="686366188661646310">¿Quieres borrar la contraseña?</translation>
 <translation id="6863925886424789941">El Coliseo</translation>
-<translation id="6865313869410766144">Datos del formulario de autocompletar</translation>
+<translation id="6865313869410766144">Datos para autocompletar formularios</translation>
 <translation id="6865708901122695652">Registros de acontecimientos de WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Silencio</translation>
 <translation id="686664946474413495">Temperatura de color</translation>

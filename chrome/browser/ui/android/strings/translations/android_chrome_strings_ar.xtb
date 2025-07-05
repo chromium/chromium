@@ -688,7 +688,7 @@
 <translation id="414128724510021958">المواقع الإلكترونية المتوافقة مع أجهزة الكمبيوتر المكتبي يتم طلبها تلقائيًا</translation>
 <translation id="4162867837470729563">قائمة خيارات المشاركة مفتوحة بطول الشاشة.</translation>
 <translation id="4170011742729630528">الخدمة غير متاحة، أعد المحاولة لاحقًا.</translation>
-<translation id="4177222230309051052">الحصول على جميع الإشارات المرجعية</translation>
+<translation id="4177222230309051052">سترافقك إشاراتك المرجعية كلها أينما كنت</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
 <translation id="4180726336228139707">على هذا الجهاز فقط</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -906,7 +906,7 @@
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5062960805900435602">تم إغلاق الإشعار المتعلّق بدمج كلمة المرور.</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
-<translation id="5085038751173179818">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للحصول على إشاراتك المرجعية وغيرها على جميع أجهزتك</translation>
+<translation id="5085038751173179818">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للوصول إلى إشاراتك المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="5091199029769593641">‏قريبًا، ستظهر لك قصص من <ph name="SITE_NAME" /> عند فتح علامة تبويب جديدة. تم حفظ المواقع الإلكترونية التي تتابعها في حسابك على Google. ويمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات "اقتراحات".</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
 <translation id="5096775069898886423">بالنسبة إلى المواقع الإلكترونية التي لا تتيح الاتصالات الآمنة، ستتلقّى تحذيرًا قبل الانتقال إليها</translation>
@@ -1804,7 +1804,7 @@
 <translation id="879027982257117598">على سبيل المثال، إذا انتقلت إلى موقع إلكتروني يبيع أحذية الركض لمسافة طويلة، قد يحدِّد هذا الموقع الإلكتروني أنّك مهتم بسباقات الماراثون. وعند زيارة موقع إلكتروني آخر لاحقًا، يمكن أن يعرض هذا الموقع الإلكتروني إعلانًا عن الأحذية المخصّصة للركض مقترَحًا من الموقع الإلكتروني الأول.</translation>
 <translation id="8798449543960971550">الصفحات المقروءة</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
-<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏تم حفظ عنصر واحد في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}zero{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}two{‏تم حفظ عنصرين في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}few{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}many{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}other{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}zero{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}two{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}few{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}many{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}other{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">الاحتفاظ بمجموعة علامات التبويب</translation>
 <translation id="8812260976093120287">يمكنك على مواقع إلكترونية معيّنة الدفع باستخدام تطبيقات الدفع المتوافقة أعلاه على جهازك.</translation>
 <translation id="8816556050903368450">تضمين الرابط: <ph name="ORIGIN" /></translation>
