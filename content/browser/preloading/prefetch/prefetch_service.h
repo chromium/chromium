@@ -470,6 +470,14 @@ class CONTENT_EXPORT PrefetchService {
 
   void DumpPrefetchesForDebug() const;
 
+  // Wrappers for `owned_prefetches_`. Use these wrappers and do not directly
+  // access `owned_prefetches_`, to avoid accidentally destructing existing
+  // `PrefetchContainer` e.g. by writing to `owned_prefetches_[key]`.
+  const std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>&
+  owned_prefetches() const {
+    return owned_prefetches_;
+  }
+
   raw_ptr<BrowserContext> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.
@@ -500,6 +508,14 @@ class CONTENT_EXPORT PrefetchService {
 
   // Prefetches owned by `this`. All `PrefetchContainer`s added by
   // `AddPrefetchContainer*` will be stored here.
+  //
+  // `PrefetchContainer`s in `owned_prefetches_` must be always destructed
+  // either by `ResetPrefetchContainer()` or `~PrefetchService()` dtor.
+  // Use `owned_prefetches()` wherever possible, to avoid unintentional
+  // destruction of `PrefetchContainer`s in `owned_prefetches_`.
+  // Note that `PrefetchContainer` not added to `owned_prefetches_` can be
+  // destroyed elsewhere even if it has a relevant `PrefetchService` (e.g. in
+  // `PrefetchContainer::MigrateNewlyAdded()`).
   std::map<PrefetchContainer::Key, std::unique_ptr<PrefetchContainer>>
       owned_prefetches_;
 
