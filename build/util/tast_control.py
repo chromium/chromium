@@ -27,6 +27,7 @@ def PopulateData(out, data, indent=2):
       continue
     if stripped.startswith('#'):
       continue
+    stripped = stripped.removeprefix('tast.')
     out.write(' ' * indent)
     out.write('"%s",\n' % stripped)
 

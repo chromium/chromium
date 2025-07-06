@@ -6,98 +6,97 @@
 # "login.Chrome" test only on "kevin" device). An asterisk is not supported in
 # the board name.
 #
-# As a last resort, you can use an asterisk ( * ) in an entry -- matches every
-# substring (eg. "crostini.*" disables the all tests that names are starting
-# with "crostini.").
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 
 # DO NOT ADD QUOTATION MARK AND TRAILING COMMA AT EACH LINE
 
+# WILDCARD IS NOT SUPPORTED
+
 # To disable on public builder only, modify chromeos/tast_control.gni.template
 # (for now)
 
 # https://crbug.com/1307940
-policy.URLCheck.blocklist
+tast.policy.URLCheck.blocklist
 
 # https://crbug.com/1312121
-policy.CookiesBlockedForUrls
+tast.policy.CookiesBlockedForUrls
 
 # http://crbug.com/1335213
-arc.WindowState.clamshell
+tast.arc.WindowState.clamshell
 
 # b/241122961
-policy.BlockThirdPartyCookies
+tast.policy.BlockThirdPartyCookies
 
 # b/287525851
-arc.AudioValidity.playback
-arc.AudioValidity.record
-arc.BuildProperties
+tast.arc.AudioValidity.playback
+tast.arc.AudioValidity.record
+tast.arc.BuildProperties
 
 # https://crbug.com/1455848
-arc.CheckAndroidVersion
-arc.Downloads
+tast.arc.CheckAndroidVersion
+tast.arc.Downloads
 
 # b/293976130, NaCl issues on arm64 boards
-nacl.Pnacl@jacuzzi
-nacl.Pnacl@trogdor
-terminal.SSH@jacuzzi
-terminal.SSH@trogdor
+tast.nacl.Pnacl@jacuzzi
+tast.nacl.Pnacl@trogdor
+tast.terminal.SSH@jacuzzi
+tast.terminal.SSH@trogdor
 
 # b/338111076
-crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
+tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
 
 # b/346793249, b/330290054
-videoconferencing.OpenCLCacher
+tast.videoconferencing.OpenCLCacher
 
 # b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
-nacl.Pnacl@brya
-terminal.SSH@brya
+tast.nacl.Pnacl@brya
+tast.terminal.SSH@brya
 
 # b/352703668: tests failing on trogdor.
-security.SELinuxFilesDataDir.arcvm_user@trogdor
+tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
 
 # b/384060114
-inputs.InputMethodShelfInputs@reven-vmtest
-inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
-inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
+tast.inputs.InputMethodShelfInputs@reven-vmtest
+tast.inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
+tast.inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
 
 # b/394108883
-security.NetworkListenersNonARC@jacuzzi
-security.NetworkListenersNonARC@octopus
+tast.security.NetworkListenersNonARC@jacuzzi
+tast.security.NetworkListenersNonARC@octopus
 
 # https://crbug.com/394821952
-ui.WebUIJSErrors
-ui.WebUIJSErrors.field_trial_off
-ui.WebUIJSErrors.field_trial_on
+tast.ui.WebUIJSErrors
+tast.ui.WebUIJSErrors.field_trial_off
+tast.ui.WebUIJSErrors.field_trial_on
 
 # b/394409115
-network.AllowCACertificateManagement
-network.AllowClientCertificateManagement
+tast.network.AllowCACertificateManagement
+tast.network.AllowClientCertificateManagement
 
 #b/400849446
-network.ARCCreateWifiInShillByCmd.manual_proxy
+tast.network.ARCCreateWifiInShillByCmd.manual_proxy
 
 # b/408102591
-network.ARCEAPWifiProvisioning.eap_wifi_tls
+tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
 
 # b/409064294
-apps.SystemWebAppsInstallGuest
-peripherals.LaunchAppFromGuestSession.diagnostics
-health.MonitorKeyboardDiagnosticEvent.tablet_mode_form_factors
-health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
+tast.apps.SystemWebAppsInstallGuest
+tast.peripherals.LaunchAppFromGuestSession.diagnostics
+tast.health.MonitorKeyboardDiagnosticEvent.tablet_mode_form_factors
+tast.health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
 
 # b/409349162
-inputs.PhysicalKeyboardKoreanTyping@jacuzzi
+tast.inputs.PhysicalKeyboardKoreanTyping@jacuzzi
 
 # b/422132031
-inputs.VirtualKeyboardHandwriting.docked
-inputs.VirtualKeyboardHandwriting.floating
-inputs.VirtualKeyboardJapaneseInputMode
-inputs.VirtualKeyboardMultipaste
-inputs.VirtualKeyboardSpeech
+tast.inputs.VirtualKeyboardHandwriting.docked
+tast.inputs.VirtualKeyboardHandwriting.floating
+tast.inputs.VirtualKeyboardJapaneseInputMode
+tast.inputs.VirtualKeyboardMultipaste
+tast.inputs.VirtualKeyboardSpeech
 
 # b/424789710
-apps.LaunchGalleryFromNotifications.stable
+tast.apps.LaunchGalleryFromNotifications.stable
 
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
