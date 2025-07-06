@@ -145,7 +145,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="160275202205869636">Kui see on sees, saate andmeid oma Google'i kontol kasutada ja salvestada. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Eemalda 1 valitud üksus}other{Eemalda # valitud üksust}}</translation>
 <translation id="1639239467298939599">Laadimine</translation>
-<translation id="1641113438599504367">Ohutu sirvimine</translation>
+<translation id="1641113438599504367">Google'i ohutu sirvimine</translation>
 <translation id="164269334534774161">Vaatate selle lehe võrguühenduseta koopiat kuupäevast <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1645262572857218659">Logige sisse pakkujaga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
