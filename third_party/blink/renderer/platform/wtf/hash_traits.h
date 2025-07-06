@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -173,9 +174,9 @@ struct GenericHashTraitsBase {
   // The allocation pool for nodes is one big chunk that ASAN has no insight
   // into, so it can cloak errors. Make it as small as possible to force nodes
   // to be allocated individually where ASAN can see them.
-  static constexpr unsigned kMinimumTableSize = 1;
+  static constexpr wtf_size_t kMinimumTableSize = 1;
 #else
-  static constexpr unsigned kMinimumTableSize = 8;
+  static constexpr wtf_size_t kMinimumTableSize = 8;
 #endif
 
   // The NeedsToForbidGCOnMove flag is used to make the hash table move
@@ -519,7 +520,8 @@ struct OneFieldHashTraits : GenericHashTraits<T> {
     return IsHashTraitsDeletedValue<FieldTraits>(value.*field);
   }
 
-  static constexpr unsigned kMinimumTableSize = FieldTraits::kMinimumTableSize;
+  static constexpr wtf_size_t kMinimumTableSize =
+      FieldTraits::kMinimumTableSize;
 
   template <typename U = void>
   struct NeedsToForbidGCOnMove {

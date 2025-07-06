@@ -56,8 +56,8 @@ class HashCountedSet {
 
   void swap(HashCountedSet& other) { impl_.swap(other.impl_); }
 
-  unsigned size() const { return impl_.size(); }
-  unsigned Capacity() const { return impl_.capacity(); }
+  wtf_size_t size() const { return impl_.size(); }
+  wtf_size_t Capacity() const { return impl_.capacity(); }
   bool empty() const { return impl_.empty(); }
 
   // Iterators iterate over pairs of values (called key) and counts (called

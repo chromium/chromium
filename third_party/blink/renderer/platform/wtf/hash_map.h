@@ -144,7 +144,7 @@ class HashMap {
 
   wtf_size_t size() const;
   wtf_size_t Capacity() const;
-  void ReserveCapacityForSize(unsigned size) {
+  void ReserveCapacityForSize(wtf_size_t size) {
     impl_.ReserveCapacityForSize(size);
   }
 

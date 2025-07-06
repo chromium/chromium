@@ -88,11 +88,11 @@ class HashSet {
 
   void swap(HashSet& ref) { impl_.swap(ref.impl_); }
 
-  unsigned size() const;
-  unsigned Capacity() const;
+  wtf_size_t size() const;
+  wtf_size_t Capacity() const;
   bool empty() const;
 
-  void ReserveCapacityForSize(unsigned size) {
+  void ReserveCapacityForSize(wtf_size_t size) {
     impl_.ReserveCapacityForSize(size);
   }
 
@@ -267,12 +267,12 @@ inline bool operator!=(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
 }
 
 template <typename T, typename U, typename V>
-inline unsigned HashSet<T, U, V>::size() const {
+inline wtf_size_t HashSet<T, U, V>::size() const {
   return impl_.size();
 }
 
 template <typename T, typename U, typename V>
-inline unsigned HashSet<T, U, V>::Capacity() const {
+inline wtf_size_t HashSet<T, U, V>::Capacity() const {
   return impl_.Capacity();
 }
 

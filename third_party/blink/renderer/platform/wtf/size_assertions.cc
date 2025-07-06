@@ -48,17 +48,17 @@ struct SameSizeAsRefCounted {
   // Don't add anything here because this should stay small.
 };
 
-template <typename T, unsigned inlineCapacity = 0>
+template <typename T, wtf_size_t inlineCapacity = 0>
 struct SameSizeAsVectorWithInlineCapacity;
 
 template <typename T>
 struct SameSizeAsVectorWithInlineCapacity<T, 0> {
   void* buffer_pointer;
-  unsigned capacity;
-  unsigned size;
+  wtf_size_t capacity;
+  wtf_size_t size;
 };
 
-template <typename T, unsigned inlineCapacity>
+template <typename T, wtf_size_t inlineCapacity>
 struct SameSizeAsVectorWithInlineCapacity {
   SameSizeAsVectorWithInlineCapacity<T, 0> base_capacity;
 #if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)

@@ -205,7 +205,7 @@ class CORE_EXPORT QualifiedName {
   QualifiedNameImpl* Impl() const { return impl_.get(); }
 
   // Init routine for globals
-  static void InitAndReserveCapacityForSize(unsigned size);
+  static void InitAndReserveCapacityForSize(wtf_size_t size);
 
   static const QualifiedName& Null() { return g_null_name; }
 

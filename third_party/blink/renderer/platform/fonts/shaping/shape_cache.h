@@ -195,7 +195,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
     static bool IsEmptyValue(const SmallStringKey& key) {
       return key.IsHashTableEmptyValue();
     }
-    static const unsigned kMinimumTableSize = 16;
+    static const wtf_size_t kMinimumTableSize = 16;
   };
 
   friend bool operator==(const SmallStringKey&, const SmallStringKey&);
