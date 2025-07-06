@@ -92,6 +92,8 @@ void EnableBrowserContentFilters(PrefService& pref_service);
 void DisableBrowserContentFilters(PrefService& pref_service);
 void EnableSearchContentFilters(PrefService& pref_service);
 void DisableSearchContentFilters(PrefService& pref_service);
+void EnableIncognitoMode(PrefService& pref_service);
+void DisableIncognitoMode(PrefService& pref_service);
 
 }  // namespace supervised_user
 

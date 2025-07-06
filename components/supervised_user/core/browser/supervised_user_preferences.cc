@@ -239,6 +239,14 @@ void DisableSearchContentFilters(PrefService& pref_service) {
   // Reset the setting to default.
   pref_service.ClearPref(policy::policy_prefs::kForceGoogleSafeSearch);
 }
+void EnableIncognitoMode(PrefService& pref_service) {
+  pref_service.ClearPref(policy::policy_prefs::kIncognitoModeAvailability);
+}
+void DisableIncognitoMode(PrefService& pref_service) {
+  pref_service.SetInteger(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+}
 
 SupervisedControlsState::State SupervisedControlsState::GetCurrentState(
     const PrefService& service) {

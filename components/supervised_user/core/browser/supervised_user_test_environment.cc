@@ -308,18 +308,14 @@ FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
 
 void FakeContentFiltersObserverBridge::Init() {
   // Java class would call "onChange" in the constructor with the initial value.
-  OnChange(/*env=*/nullptr, enabled_);
+  OnChange(/*env=*/nullptr, IsEnabled());
 }
 void FakeContentFiltersObserverBridge::Shutdown() {
   // Do nothing, specifically do not destroy the java bridge from super.
 }
 
-bool FakeContentFiltersObserverBridge::IsEnabled() const {
-  return enabled_;
-}
-
 void FakeContentFiltersObserverBridge::SetEnabled(bool enabled) {
-  enabled_ = enabled;
+  ContentFiltersObserverBridge::SetEnabled(enabled);
   // This is fine: JNIEnv is not used, because OnChange notifies native code.
   OnChange(/*env=*/nullptr, enabled);
 }
@@ -335,16 +331,14 @@ MetricsServiceAccessorDelegateMock::MetricsServiceAccessorDelegateMock() =
 MetricsServiceAccessorDelegateMock::~MetricsServiceAccessorDelegateMock() =
     default;
 
-SupervisedUserTestEnvironment::TestSupervisedUserService::
-    TestSupervisedUserService(
-        signin::IdentityManager* identity_manager,
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        PrefService& user_prefs,
-        SupervisedUserSettingsService& settings_service,
-        syncer::SyncService* sync_service,
-        std::unique_ptr<SupervisedUserURLFilter> url_filter,
-        std::unique_ptr<SupervisedUserService::PlatformDelegate>
-            platform_delegate)
+TestSupervisedUserService::TestSupervisedUserService(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService& user_prefs,
+    SupervisedUserSettingsService& settings_service,
+    syncer::SyncService* sync_service,
+    std::unique_ptr<SupervisedUserURLFilter> url_filter,
+    std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate)
     : SupervisedUserService(
           identity_manager,
           url_loader_factory,
@@ -361,14 +355,14 @@ SupervisedUserTestEnvironment::TestSupervisedUserService::
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::WeakPtr<FakeContentFiltersObserverBridge> SupervisedUserTestEnvironment::
-    TestSupervisedUserService::browser_content_filters_observer_weak_ptr() {
+base::WeakPtr<FakeContentFiltersObserverBridge>
+TestSupervisedUserService::browser_content_filters_observer_weak_ptr() {
   return static_cast<FakeContentFiltersObserverBridge*>(
              browser_content_filters_observer())
       ->GetWeakPtr();
 }
-base::WeakPtr<FakeContentFiltersObserverBridge> SupervisedUserTestEnvironment::
-    TestSupervisedUserService::search_content_filters_observer_weak_ptr() {
+base::WeakPtr<FakeContentFiltersObserverBridge>
+TestSupervisedUserService::search_content_filters_observer_weak_ptr() {
   return static_cast<FakeContentFiltersObserverBridge*>(
              search_content_filters_observer())
       ->GetWeakPtr();

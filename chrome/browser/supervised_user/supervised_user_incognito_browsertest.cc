@@ -92,34 +92,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
   ASSERT_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
-                       BrowserContentFiltersCloseIncognito) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-
-  // Create a new incognito window (this is allowed as the user is not signed
-  // in).
-  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
-  CreateIncognitoBrowser();
-  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 1u);
-
-  AllIncognitoBrowsersClosedWaiter incognito_closed_waiter;
-
-  // This filtering is account-agnostic (Family Link users do not have
-  // entrypoint here).
-  EnableBrowserContentFilters(*browser()->profile()->GetPrefs());
-
-  // Check the incognito window remains open.
-  incognito_closed_waiter.Wait();
-  ASSERT_EQ(browser_list->GetIncognitoBrowserCount(), 0u);
-  // CreateIncognitoBrowser() would crash here.
-
-  // This filtering is account-agnostic (Family Link users do not have
-  // entrypoint here).
-  DisableBrowserContentFilters(*browser()->profile()->GetPrefs());
-  CreateIncognitoBrowser();
-  CHECK_EQ(browser_list->GetIncognitoBrowserCount(), 1u);
-}
-
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
