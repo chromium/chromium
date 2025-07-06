@@ -209,29 +209,38 @@ unsigned InlineItem::SetBidiLevel(InlineItems& items,
                                   unsigned index,
                                   unsigned end_offset,
                                   UBiDiLevel level) {
-  for (; items[index]->end_offset_ < end_offset; index++) {
-    items[index]->SetBidiLevel(level);
-  }
-  InlineItem* item = items[index];
-  item->SetBidiLevel(level);
-
-  if (item->end_offset_ == end_offset) {
-    // Let close items have the same bidi-level as the previous item.
-    while (index + 1 < items.size() &&
-           items[index + 1]->Type() == InlineItem::kCloseTag) {
-      items[++index]->SetBidiLevel(level);
+  InlineItem* item;
+  for (;; ++index) {
+    item = items[index];
+    item->SetBidiLevel(level);
+    if (item->end_offset_ >= end_offset) {
+      break;
     }
-  } else {
+  }
+
+  // If `end_offset` is in the middle of an `InlineItem`, split it.
+  if (item->end_offset_ > end_offset) {
     // If a reused item needs to split, |SetNeedsLayout| to ensure the line is
     // not reused.
     LayoutObject* layout_object = item->GetLayoutObject();
-    if (layout_object->EverHadLayout() && !layout_object->NeedsLayout())
+    if (layout_object->EverHadLayout() && !layout_object->NeedsLayout()) {
       layout_object->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+    }
 
     Split(items, index, end_offset);
+    return index + 1;
   }
+  DCHECK_EQ(end_offset, item->end_offset_);
 
-  return index + 1;
+  // Let close items have the same bidi-level as the previous item.
+  for (++index; index < items.size(); ++index) {
+    item = items[index];
+    if (item->Type() != InlineItem::kCloseTag) {
+      break;
+    }
+    item->SetBidiLevel(level);
+  }
+  return index;
 }
 
 const Font& InlineItem::FontWithSvgScaling() const {
