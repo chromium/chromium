@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">បើក PDF ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="1437543266176261764">កំពុងដំណើរការក្នុង <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">រៀបចំផលិតផលដែលអ្នកតាមដាននៅក្នុងចំណាំ</translation>
+<translation id="1455845192930279203">តើអ្នក​នៅតែចង់​ទាញយក "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ពី <ph name="DOWNLOAD_DOMAIN" /> ឬ?</translation>
 <translation id="1460751212339734034">សន្សំសំចៃ​ពេលវេលា វាយបញ្ចូល​កាន់តែតិច</translation>
 <translation id="1466383950273130737">ជ្រើសរើស​ភាសារបស់ Chrome</translation>
 <translation id="1477626028522505441">ការដោនឡូត <ph name="FILE_NAME" /> បានបរាជ័យដោយសារមានបញ្ហាផ្នែកម៉ាស៊ីនមេ។</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">ការពណ៌នាអំពីរូបភាព​នឹងបន្ត នៅពេលអ្នកភ្ជាប់ Wi-Fi</translation>
 <translation id="3254409185687681395">ចំណាំទំព័រនេះ</translation>
 <translation id="3265093782546847662">ទំព័រទាំងអស់នៃ <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">អូស​ឡើងលើ ដើម្បីមើលឃើញ​លទ្ធផល​ស្វែងរក</translation>
 <translation id="3269093882174072735">ដំណើរការរូបភាព</translation>
 <translation id="327204079441056603">យើង​បានប្ដូរ​របៀបរក្សាទុក​ពាក្យសម្ងាត់​នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="3280562213547448728">ស្វែងរក​តាម​សំឡេង</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ម៉ោងមុន}other{# ម៉ោងមុន}}</translation>
 <translation id="5810288467834065221">រក្សា​សិទ្ធិ <ph name="YEAR" /> Google LLC ។ រក្សាសិទ្ធិ​គ្រប់យ៉ាង។</translation>
 <translation id="5814749351757353073">តាមដានគេហទំព័រដែលអ្នកចូលចិត្ត</translation>
+<translation id="5823093032261493462">តើអ្នក​នៅតែចង់​ទាញយក "<ph name="FILE_NAME" />" ពី <ph name="DOWNLOAD_DOMAIN" /> ឬ?</translation>
 <translation id="5828921839638612740">អ្នកអាច​លុប​ទិន្នន័យ​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="5829586821381540080">បាន​រក្សាទុក​នៅក្នុង <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5833984609253377421">ចែក​រំលែក​តំណ</translation>
 <translation id="5839058148541733625">Chrome ដាយណូស័រ</translation>
+<translation id="5841444063256914865">តើអ្នក​នៅតែចង់​ទាញយក "<ph name="FILE_NAME" />" ឬ?</translation>
 <translation id="5842871376175639063">ផ្ទាំង និង​ក្រុមផ្ទាំង​ដែលអ្នក​មិនបានប្រើ​រយៈពេល <ph name="DAYS_INACTIVE" /> ថ្ងៃ ត្រូវបាន​ផ្លាស់ទី​មកទីនេះ<ph name="AUTODELETE_SECTION" />។ អ្នក​អាច​ផ្លាស់ប្ដូរ​លក្ខណៈនេះ​នៅពេលណាក៏បាននៅ​ក្នុង "<ph name="SETTINGS_TITLE" />"។</translation>
 <translation id="5848257610304005265">បើក PDF ដោយប្រើ <ph name="APP_NAME" /> ឬ?</translation>
 <translation id="5849288995120328556">ឈប់​ចែករំលែក​ឬ?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">ជាធម្មតា គេហទំព័រ​ដែលអ្នកចូលមើល​នឹងចងចាំអ្វីៗ​ដែលអ្នកចាប់អារម្មណ៍ ដើម្បីកំណត់​បទពិសោធន៍របស់​អ្នក​ឱ្យមាន​លក្ខណៈ​ផ្ទាល់ខ្លួន។ គេហទំព័រក៏អាច​រក្សាទុក​ព័ត៌មានជាមួយ Chrome អំពីចំណាប់អារម្មណ៍​របស់អ្នក​ផងដែរ។</translation>
 <translation id="6746338529702829275">ពិនិត្យមើល​ទិន្នន័យ​គណនី​របស់អ្នក</translation>
 <translation id="6751521182688001123">បើកផ្ទាំងថ្មីបានយ៉ាងរហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
+<translation id="6752130751133944215">ដើម្បីស្ដារ​វិនដូថ្មី សូម​កាត់បន្ថយ​ចំនួន​វិនដូ​សរុប​ដែលសកម្ម និង​អសកម្ម​មកត្រឹម <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ឬ​តិចជាងនេះ។ វិនដូ​អសកម្ម​ត្រូវបានលុប​ក្រោយ​ពេល 6 ខែ។</translation>
 <translation id="6754359471209693699">ចាប់ផ្ដើម​ការស្វែងរក​ថ្មី</translation>
 <translation id="6756507620369789050">ចែក​រំលែក​មតិ​កែលម្អ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />។</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">គេហទំព័រ និង​អ្នក​ផ្សាយ​ពាណិជ្ជកម្ម​អាច​ដឹងថាការ​ផ្សាយ​ពាណិជ្ជកម្មដំណើរការយ៉ាងម៉េចដែរ។ ការកំណត់​នេះត្រូវបាន​បិទ។</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{ផ្សេងទៀត, ឯកសារ 1 នៅក្នុង​បញ្ជី}other{ផ្សេងទៀត, ឯកសារ # នៅក្នុង​បញ្ជី}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">ដើម្បីបើក​វិនដូថ្មី សូម​កាត់បន្ថយ​ចំនួន​វិនដូ​សរុប​ដែលសកម្ម និង​អសកម្ម​មកត្រឹម <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ឬ​តិចជាងនេះ។</translation>
 <translation id="7403691278183511381">បទពិសោធន៍​ដំណើរការ​ដំបូងរបស់ Chrome</translation>
 <translation id="7411224099004328643">អ្នកប្រើប្រាស់គណនី Google</translation>
 <translation id="7419565702166471774">ប្រើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព​ជានិច្ច</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">រួមបញ្ចូលតំណ៖ <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">មិនអាចមើលខ្លឹមសាររបស់ផ្ទាំងមើលសាកល្បងបានទេ។</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
+<translation id="8824359129672223138">អ្នក​អាចមាន​វិនដូ​រហូតដល់ <ph name="MAX_WINDOW_COUNT" />។</translation>
 <translation id="8835786707922974220">សូមប្រាកដថា អ្នកអាចចូលប្រើ​ពាក្យសម្ងាត់ដែលបានរក្សាទុក​របស់អ្នក​បានជានិច្ច</translation>
 <translation id="883806473910249246">មាន​បញ្ហាកើត​ឡើង ខណៈពេល​កំពុង​ទាញយក​ខ្លឹមសារ។</translation>
 <translation id="8840953339110955557">ទំព័រ​នេះ​អាច​នឹង​ខុស​​ពី​កំណែ​លើ​អ៊ីនធឺណិត។</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">ផ្លាស់ទីរបារអាសយដ្ឋានទៅផ្នែកខាងក្រោម</translation>
 <translation id="9169507124922466868">ប្រវត្តិ​រុករក​ត្រូវបានបើក​ពាក់កណ្ដាល</translation>
 <translation id="918419812064856259">Chrome បេតា</translation>
+<translation id="9189607089796819144">តើអ្នក​នៅតែចង់​ទាញយក "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ឬ?</translation>
 <translation id="9190276265094487094">អ្នកនឹង​មានប្រវត្តិ​របស់អ្នក​នៅលើ​ឧបករណ៍​ដែលបានធ្វើ​សមកាលកម្ម​ទាំងអស់​របស់អ្នក ដើម្បីអាចឱ្យអ្នក​បន្ត​អ្វីដែល​អ្នកបានធ្វើ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{បាន​ពិនិត្យមើល​កាលពី 1 នាទីមុន}other{បាន​ពិនិត្យមើល​កាលពី # នាទីមុន}}</translation>
 <translation id="9204021776105550328">កំពុងលុប</translation>

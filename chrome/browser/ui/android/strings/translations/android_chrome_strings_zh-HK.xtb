@@ -186,7 +186,7 @@
 <translation id="1829244130665387512">喺網頁度搵</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
 <translation id="1845958458910716240">為保護你的資料，請允許 Chrome 移除從你最近未瀏覽的網站移除權限</translation>
-<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已停止接收這個網站的通知。你可以查看及管理。}other{Chrome 已停止接收這些網站的通知。你可以查看及管理。}}</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已停止接收此網站的通知。你可以查看及管理。}other{Chrome 已停止接收這些網站的通知。你可以查看及管理。}}</translation>
 <translation id="1871098866036088250">在 Chrome 瀏覽器中開啟</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1877073879466606884">你已登入受管設定檔。管理員可遠端變更你的設定檔設定、透過報告分析瀏覽器相關資料，以及執行其他必要工作。</translation>

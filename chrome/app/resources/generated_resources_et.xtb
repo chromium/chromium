@@ -950,7 +950,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1639239467298939599">Laadimine</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> Linuxi rakendustega veel ei tööta</translation>
 <translation id="1640283014264083726">PKCS 1 MD4 koos RSA krüpteerimisega</translation>
-<translation id="1641113438599504367">Ohutu sirvimine</translation>
+<translation id="1641113438599504367">Google'i ohutu sirvimine</translation>
 <translation id="1641496881756082050">Rohkem toiminguid: <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Veel 1 parooli ei imporditud, kuna see on valesti vormindatud}other{Veel {NUM_PASSWORDS} parooli ei imporditud, kuna need on valesti vormindatud}}</translation>
 <translation id="1642299742557467312">See fail võib teie seadet kahjustada</translation>
