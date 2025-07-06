@@ -252,39 +252,16 @@ ExtensionFunction::ResponseAction ReadServerUdsSendDataFunction::Run() {
   const base::Value& arg = args_list[0];
   EXTENSION_FUNCTION_VALIDATE(arg.is_string());
 
-  // Extract the message from the arguments
-  // const std::string& message = arg.GetString();
-  const std::string& message = "This message is being sent to the server!";
-  LOG(INFO) << "Sending message: " << message;
+  // Extract the message from the arguments and save it in this class variable
+  message_ = arg.GetString();
+  LOG(INFO) << "Sending message: " << message_;
 
   AddRef();  // Keep the function alive until the request is completed
 
-  // Create and send the POST request
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL("http://localhost:5000/data");
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("Content-Type", "application/json");
-
-  std::string json_data = "{\"message\": \"" + message + "\"}";
-  url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request),
-      net::DefineNetworkTrafficAnnotation("send_data_to_server", R"(
-        semantics {
-          sender: "Read Server API"
-          description: "Sends data to the server."
-          trigger: "User action in the extension."
-          data: "Message data is sent."
-          destination: LOCAL
-        }
-      )"));
-
-  url_loader_->AttachStringForUpload(json_data, "application/json");
-
-  content::StoragePartition* storage_partition =
-      browser_context()->GetDefaultStoragePartition();
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce(&ReadServerUdsSendDataFunction::OnDataSent,
+    // Post the Connect operation to IO thread
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReadServerUdsSendDataFunction::ConnectToUnixSocket,
                      weak_ptr_factory_.GetWeakPtr()));
 
   LOG(INFO)
@@ -292,22 +269,172 @@ ExtensionFunction::ResponseAction ReadServerUdsSendDataFunction::Run() {
   return RespondLater();
 }
 
-void ReadServerUdsSendDataFunction::OnDataSent(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
-    Respond(Error("Failed to send data to the server"));
-    Release();
+void ReadServerUdsSendDataFunction::ConnectToUnixSocket() {
+
+  base::FilePath socket_path("/tmp/shared-sockets/echo_socket");
+
+  LOG(INFO) << "Creating UnixDomainClientSocket to path: " << socket_path.value();
+
+  socket_ = std::make_unique<net::UnixDomainClientSocket>(
+      socket_path.value(), false /* use_abstract_namespace */);
+
+  // this is uds so connect will be synchronous
+  int result = socket_->Connect(
+  base::BindOnce(&ReadServerUdsSendDataFunction::OnConnected,
+                  weak_ptr_factory_.GetWeakPtr()));
+
+  LOG(INFO) << "Connect() returned: " << result;
+  if (result == net::OK) {
+    LOG(INFO) << "OnConnected() synchronously";
+    OnConnected(result);
+  } else if (result == net::ERR_IO_PENDING) {
+    LOG(INFO) << "Connection pending, waiting for callback";
+  } else {
+    LOG(ERROR) << "Connect failed: " << result;
+    RespondFromIOThread(Error("Connect failed"));
+  }
+}
+
+void ReadServerUdsSendDataFunction::OnConnected(int result) {
+  if (result != net::OK) {
+    LOG(ERROR) << "OnConnected: Socket connection failed: " << result;
+    RespondFromIOThread(Error("Socket connection failed"));
     return;
   }
 
-  Respond(WithArguments(response_body->c_str()));
+  LOG(INFO) << "Socket connected successfully";
+
+  LOG(INFO) << "Sending message: " << message_;
+
+  auto send_buffer = base::MakeRefCounted<net::StringIOBuffer>(message_);
+
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("read_server_uds_write", R"(
+      semantics {
+        sender: "Read Server UDS API"
+        description: "Sends a message to the UNIX domain socket server."
+        trigger: "User action in the extension."
+        data: "A command string."
+        destination: LOCAL
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "This request cannot be disabled by settings."
+      })");
+
+
+  // the no of byte written return by the write()
+  // describe at net/socket/socket.h:74
+  int write_result = socket_->Write(
+      send_buffer.get(), message_.size(),
+      base::BindOnce(&ReadServerUdsSendDataFunction::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr()),
+      traffic_annotation);
+  
+  if (write_result == static_cast<int>(message_.size())) { // synchronous call
+    LOG(INFO) << "OnDataWritten() Synchronous";
+    OnDataWritten(write_result);
+    LOG(INFO) << "Data written to socket immediately";
+  } else if (write_result == net::ERR_IO_PENDING) { // async 
+    LOG(INFO) << "Write to socket pending";
+  } else {
+    LOG(ERROR) << "Failed to write to socket: " << write_result;
+    RespondFromIOThread(Error("Failed to write to socket"));
+  }
+}
+
+void ReadServerUdsSendDataFunction::OnDataWritten(int result) {
+  if (result <= 0) {
+    LOG(ERROR) << "Failed to write data: " << result;
+    RespondFromIOThread(Error("Write failed"));
+    return;
+  }
+
+  LOG(INFO) << "Data written successfully, bytes: " << result;
+
+  read_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(4096);
+
+  // refere to the net/socket/socket.h:38
+  int read_result = socket_->Read(
+      read_buffer_.get(), 4096,
+      base::BindOnce(&ReadServerUdsSendDataFunction::OnDataRead,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  if (read_result != net::ERR_IO_PENDING && read_result <= 0) {
+    LOG(ERROR) << "Read failed: " << read_result;
+    RespondFromIOThread(Error("Read failed"));
+  } else { // 
+    LOG(INFO) << "Read started";
+  }
+}
+
+void ReadServerUdsSendDataFunction::OnDataRead(int result) {
+  if (result <= 0) {
+    LOG(ERROR) << "Failed to read from socket: " << result;
+    RespondFromIOThread(Error("Failed to read from socket"));
+    return;
+  }
+
+  std::string response(read_buffer_->data(), result);
+  LOG(INFO) << "Response data: " << response;
+
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+  LOG(INFO) << "Inside OnDataRead() on IO thread";
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+    FROM_HERE,
+    base::BindOnce(&ReadServerUdsSendDataFunction::RespondSuccessOnUI,
+                   base::Unretained(this), std::move(response)));
+}
+
+void ReadServerUdsSendDataFunction::RespondSuccessOnUI(std::string result) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  LOG(INFO) << "Inside RespondSuccessOnUI() on UI thread";
+
+  Respond(WithArguments(base::Value(result)));
   Release();
 }
 
-void ReadServerUdsSendDataFunction::OnResponded() {
-  url_loader_.reset();
+void ReadServerUdsSendDataFunction::RespondFromIOThread(ResponseValue result) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+  LOG(INFO) << "Inside RespondFromIOThread() on IO thread";
+  
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReadServerUdsSendDataFunction::Respond,
+                     base::Unretained(this), std::move(result)));
 }
 
+void ReadServerUdsSendDataFunction::RespondErrorOnUI(base::Value error_result) {
+  if (error_result.is_string()) {
+    Respond(Error(error_result.GetString()));
+  } else {
+    Respond(WithArguments(std::move(error_result)));
+  }
+  Release();
+}
+
+// clean up 
+// called by the extension automatcially when send response
+void ReadServerUdsSendDataFunction::OnResponded() {
+  LOG(INFO) << "Cleaning up socket";
+
+  // Post socket cleanup to the IO thread
+  if (socket_) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<net::UnixDomainClientSocket> socket) {
+              // Socket will be destructed here, safely on IO thread
+            },
+            std::move(socket_)));
+  }
+}
+
+
+//------------------------
+// Upload Training Data
+//------------------------
 ReadServerUdsUploadTrainingDataFunction::
     ReadServerUdsUploadTrainingDataFunction()
     : chunk_size_(1024 * 1024),  // 1 MB

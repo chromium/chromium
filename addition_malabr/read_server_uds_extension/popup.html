@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Read UDS Data</title>
+  <title>UDS Tool</title>
+  <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <h3>Read Data from UDS</h3>
-  <button id="readDataBtn">Read Data</button>
+
+  <div class="container">
+    <h1>UDS Tool</h1>
+
+    <div class="card fade-in">
+      <h2>Read from UDS</h2>
+      <button id="readDataBtn" class="gradient-btn">Read Data</button>
+      <p id="showReadDataResponse" class="response"></p>
+    </div>
+
+    <div class="card fade-in">
+      <h2>Send to UDS</h2>
+      <label for="sendDataIpt">Message</label>
+      <input type="text" id="sendDataIpt" placeholder="Enter text..." />
+      <p id="sendDataError" class="response error"></p>
+      <button id="sendDataBtn" class="gradient-btn">Send Data</button>
+      <p id="showsendDataResponse" class="response"></p>
+    </div>
+  </div>
 
   <script src="popup.js"></script>
 </body>

@@ -27,10 +27,11 @@ try:
                 print("No data received")
                 continue
 
-            print(f"Received: {data.decode().strip()}")
+            message = data.decode().strip()
+            print(f"Received: {message}")
 
             # if data.decode().strip() == "GET /data":
-            response_data = {"status": True, "key": "value", "message": "Hello from UNIX socket!"}
+            response_data = {"status": True, "key": "value", "message": message.upper()}
             response_json = json.dumps(response_data)
 
             conn.sendall(response_json.encode())

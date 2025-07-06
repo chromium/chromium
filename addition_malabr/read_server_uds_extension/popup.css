@@ -1,0 +1,134 @@
+:root {
+  --color-bg: #0f1115;
+  --color-surface: #1a1c22;
+  --color-surface-light: #2a2c34;
+
+  --color-text-primary: #d3d3d3;
+  --color-text-secondary: #888c94;
+  --color-placeholder: #777a80;
+
+  --color-accent-start: #8a7ccf;
+  --color-accent-end: #7f6bbf;
+  --color-accent-hover-start: #a89aff;
+  --color-accent-hover-end: #978cdb;
+
+  --color-success: #7ddac9;
+  --color-error: #ef9a9a;
+  --color-heading: #b4a4ff;
+
+  --shadow-card: 0 0 4px rgba(138, 124, 207, 0.05);
+  --shadow-button: 0 2px 8px rgba(168, 154, 255, 0.2);
+  --shadow-button-hover: 0 4px 10px rgba(168, 154, 255, 0.3);
+  --shadow-focus: 0 0 4px #a89aff60;
+  --shadow-heading: 0 0 3px #6b5cff80;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 12px;
+  width: 320px;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+h1 {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 6px;
+  color: var(--color-heading);
+  text-shadow: var(--shadow-heading);
+}
+
+.card {
+  background-color: var(--color-surface);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-card);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 6px;
+  font-size: 13px;
+  background-color: var(--color-surface-light);
+  color: var(--color-text-primary);
+  border: 1px solid #444;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+}
+
+input[type="text"]::placeholder {
+  color: var(--color-placeholder);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-accent-hover-start);
+  box-shadow: var(--shadow-focus);
+}
+
+.gradient-btn {
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+  background: linear-gradient(135deg, var(--color-accent-start), var(--color-accent-end));
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: var(--shadow-button);
+}
+
+.gradient-btn:hover {
+  background: linear-gradient(135deg, var(--color-accent-hover-start), var(--color-accent-hover-end));
+  transform: scale(1.01);
+  box-shadow: var(--shadow-button-hover);
+}
+
+.response {
+  font-size: 12px;
+  margin-top: 4px;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.response:not(.error) {
+  color: var(--color-success);
+}
+
+.response.error {
+  color: var(--color-error);
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
