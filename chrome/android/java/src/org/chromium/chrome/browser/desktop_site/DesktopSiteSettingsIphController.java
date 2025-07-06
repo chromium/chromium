@@ -15,6 +15,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -72,13 +73,15 @@ public class DesktopSiteSettingsIphController {
      * @param toolbarMenuButton The toolbar menu button to which the IPH will be anchored.
      * @param appMenuHandler The app menu handler.
      */
-    public static DesktopSiteSettingsIphController create(
+    public static @Nullable DesktopSiteSettingsIphController create(
             Activity activity,
             WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,
             Profile profile,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler) {
+        // Desktop site settings are default enabled on desktop. Do not show IPH.
+        if(DeviceInfo.isDesktop()) return null;
         return new DesktopSiteSettingsIphController(
                 windowAndroid,
                 activityTabProvider,

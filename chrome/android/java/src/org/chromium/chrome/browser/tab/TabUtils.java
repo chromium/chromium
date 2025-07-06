@@ -202,18 +202,6 @@ public class TabUtils {
      * @param profile The profile of the tab.
      *        Content settings have separate storage for incognito profiles.
      *        For site-specific exceptions the actual profile is needed.
-     * @return Whether the desktop site should be requested.
-     */
-    public static boolean isDesktopSiteGlobalEnabled(Profile profile) {
-        return WebsitePreferenceBridge.isCategoryEnabled(
-                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
-    }
-
-    /**
-     * Check if Request Desktop Site global setting is enabled.
-     * @param profile The profile of the tab.
-     *        Content settings have separate storage for incognito profiles.
-     *        For site-specific exceptions the actual profile is needed.
      * @param url The URL for the current web content.
      * @return Whether the desktop site should be requested.
      */
