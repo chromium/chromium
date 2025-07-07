@@ -68,16 +68,10 @@
             }).observe({type: 'soft-navigation', buffered: true});
           }),
           new Promise(resolve => {
-            const entries = [];
             new PerformanceObserver(list => {
-              entries.push(...list.getEntries());
-              // We need the second LCP entry, the first one is the one from
-              // the initial navigation, prior to the soft navigation.
-              if (entries.length == 2) {
-                resolve(entries[1].element.innerHTML);
-              }
+              resolve(list.getEntries()[0].element.innerHTML);
             }).observe({
-              type: 'largest-contentful-paint',
+              type: 'interaction-contentful-paint',
               includeSoftNavigationObservations: true,
               buffered: true
             });

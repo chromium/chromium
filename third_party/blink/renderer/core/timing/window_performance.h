@@ -169,8 +169,14 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       base::TimeTicks load_time,
       const AtomicString& id,
       const String& url,
-      Element*,
-      bool is_triggered_by_soft_navigation);
+      Element*);
+  void OnInteractionContentfulPaintUpdated(
+      std::optional<DOMPaintTimingInfo> paint_timing_info,
+      uint64_t paint_size,
+      base::TimeTicks load_time,
+      const AtomicString& id,
+      const String& url,
+      Element*);
 
   void Trace(Visitor*) const override;
 

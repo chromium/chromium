@@ -139,6 +139,9 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     return kLayoutShift;
   if (entry_type == performance_entry_names::kLargestContentfulPaint)
     return kLargestContentfulPaint;
+  if (entry_type == performance_entry_names::kInteractionContentfulPaint) {
+    return kInteractionContentfulPaint;
+  }
   if (entry_type == performance_entry_names::kVisibilityState)
     return kVisibilityState;
   if (entry_type == performance_entry_names::kBackForwardCacheRestoration)

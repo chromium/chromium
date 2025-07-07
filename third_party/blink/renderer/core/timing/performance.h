@@ -67,6 +67,7 @@ class EventCounts;
 class ExceptionState;
 class ExecutionContext;
 class LargestContentfulPaint;
+class InteractionContentfulPaint;
 class LayoutShift;
 class MemoryInfo;
 class MemoryMeasurement;
@@ -219,6 +220,7 @@ class CORE_EXPORT Performance : public EventTarget {
   void AddToLayoutShiftBuffer(LayoutShift&);
 
   void AddLargestContentfulPaint(LargestContentfulPaint*);
+  void AddInteractionContentfulPaint(InteractionContentfulPaint*);
 
   void AddSoftNavigationToPerformanceTimeline(SoftNavigationEntry*);
 
@@ -405,6 +407,7 @@ class CORE_EXPORT Performance : public EventTarget {
   unsigned element_timing_buffer_max_size_;
   PerformanceEntryVector layout_shift_buffer_;
   PerformanceEntryVector largest_contentful_paint_buffer_;
+  PerformanceEntryVector interaction_contentful_paint_buffer_;
   PerformanceEntryVector longtask_buffer_;
   PerformanceEntryVector visibility_state_buffer_;
   PerformanceEntryVector back_forward_cache_restoration_buffer_;

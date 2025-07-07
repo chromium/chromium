@@ -18,14 +18,9 @@
   </main>
   <script>
     testSoftNavigation({
-      addContent: () => {
-        addTextToDivOnMain();
-      },
-      link: document.body,
+      testName: "Keydown on body triggers SoftNavigationHeuristics",
+      registerInteractionEvent: (cb) => window.addEventListener('keydown', cb),
       interactionFunc: () => { window.eventSender.keyDownAsync('j'); },
-      eventType: "keydown",
-      test: "Keydown on body triggers SoftNavigationHeuristics"});
+    });
   </script>
 </html>
-
-

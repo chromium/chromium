@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
 [FAIL] Detect soft navigation and LCP after a click.
-  PerformanceObservers failed: ["1 entries of type soft-navigation with soft navigation observations never arrived", "2 entries of type largest-contentful-paint with soft navigation observations never arrived"]
+  PerformanceObservers failed: ["1 entries of type soft-navigation with soft navigation observations never arrived", "1 entries of type interaction-contentful-paint with soft navigation observations never arrived"]
 Harness: the test ran to completion.
-
