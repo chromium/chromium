@@ -153,7 +153,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_TRUE(request.contains("arch"));
     EXPECT_EQ("cr", CHECK_DEREF(request.FindString("dedup")));
     EXPECT_LT(0, request.FindByDottedPath("hw.physmemory")->GetInt());
-    EXPECT_TRUE(request.contains("nacl_arch"));
+    EXPECT_FALSE(request.contains("nacl_arch"));
     EXPECT_EQ("fake_channel_string",
               CHECK_DEREF(request.FindString("prodchannel")));
     EXPECT_EQ("30.0", CHECK_DEREF(request.FindString("prodversion")));

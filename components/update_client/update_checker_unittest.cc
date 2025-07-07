@@ -291,7 +291,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ("params", *request->FindString("extra"));
   ASSERT_TRUE(request->FindIntByDottedPath("hw.physmemory").has_value());
   EXPECT_LT(0, *request->FindIntByDottedPath("hw.physmemory"));
-  EXPECT_TRUE(request->contains("nacl_arch"));
+  EXPECT_FALSE(request->contains("nacl_arch"));
   ASSERT_TRUE(request->FindString("prodchannel"));
   EXPECT_EQ("fake_channel_string", *request->FindString("prodchannel"));
   ASSERT_TRUE(request->FindString("prodversion"));

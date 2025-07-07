@@ -131,7 +131,6 @@ protocol_request::Request MakeProtocolRequest(
   request.prodchannel = channel;
   request.operating_system = UpdateQueryParams::GetOS();
   request.arch = UpdateQueryParams::GetArch();
-  request.nacl_arch = UpdateQueryParams::GetNaclArch();
   request.dlpref = download_preference;
   request.domain_joined = domain_joined;
   request.additional_attributes = additional_attributes;

@@ -201,7 +201,6 @@ struct Request {
   std::string prodchannel;
   std::string operating_system;
   std::string arch;
-  std::string nacl_arch;
 
 #if BUILDFLAG(IS_WIN)
   bool is_wow64 = false;

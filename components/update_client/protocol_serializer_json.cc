@@ -37,7 +37,6 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("updaterversion", request.updaterversion);
   request_node.Set("@os", request.operating_system);
   request_node.Set("arch", request.arch);
-  request_node.Set("nacl_arch", request.nacl_arch);
 #if BUILDFLAG(IS_WIN)
   if (request.is_wow64) {
     request_node.Set("wow64", request.is_wow64);

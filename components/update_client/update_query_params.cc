@@ -85,9 +85,9 @@ UpdateQueryParamsDelegate* g_delegate = nullptr;
 // static
 std::string UpdateQueryParams::Get(ProdId prod) {
   return base::StringPrintf(
-      "os=%s&arch=%s&os_arch=%s&nacl_arch=%s&prod=%s%s&acceptformat=crx3,puff",
-      kOs, kArch, base::SysInfo().OperatingSystemArchitecture().c_str(),
-      GetNaclArch(), GetProdIdString(prod),
+      "os=%s&arch=%s&os_arch=%s&prod=%s%s&acceptformat=crx3,puff", kOs, kArch,
+      base::SysInfo().OperatingSystemArchitecture().c_str(),
+      GetProdIdString(prod),
       g_delegate ? g_delegate->GetExtraParams().c_str() : "");
 }
 
@@ -114,6 +114,7 @@ const char* UpdateQueryParams::GetArch() {
   return kArch;
 }
 
+// TODO(crbug.com/40511454): Remove me.
 // static
 const char* UpdateQueryParams::GetNaclArch() {
 #if defined(ARCH_CPU_X86_FAMILY)
