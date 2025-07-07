@@ -56,6 +56,10 @@ message RTLookupRequest {
   // Only populated for enterprise requests.
   optional string email = 13;
 
+  // The email of the currently active user in the content area. Only populated
+  // for Workspace sites (enterprise-only).
+  optional string content_area_account_email = 17;
+
   // |version| helps the Safe Browsing server understand what version of the
   // proto Chrome understands, and also what kinds of behaviours it supports.
   // It should be incremented when adding new fields and/or when making changes
