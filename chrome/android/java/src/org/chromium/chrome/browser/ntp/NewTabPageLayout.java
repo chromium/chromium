@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -159,6 +161,8 @@ public class NewTabPageLayout extends LinearLayout
     private Boolean mPreviousVoiceSearchButtonVisible;
     private Boolean mPreviousLensButtonVisible;
     private @Nullable ImageView mDseIconView;
+    private @Nullable SearchEngineUtils mSearchEngineUtils;
+    private @Nullable SearchEngineUtils.SearchEngineIconObserver mSearchEngineIconObserver;
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
     private final int mFakeSearchBoxStartPadding;
@@ -294,7 +298,7 @@ public class NewTabPageLayout extends LinearLayout
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
-        initializeDseIconView(searchProviderIsGoogle);
+        initializeDseIconView(shouldShowDseIcon());
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -364,9 +368,44 @@ public class NewTabPageLayout extends LinearLayout
         if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) return;
 
         mDseIconView = mFakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
+        if (mIsOmniboxMobileParityUpdateV2Enabled) {
+            // Configures icon rounding.
+            mDseIconView.setOutlineProvider(
+                    new RoundedCornerOutlineProvider(
+                            getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen
+                                                            .omnibox_search_engine_logo_composed_size)
+                                    / 2));
+            mDseIconView.setClipToOutline(true);
+            mDseIconView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+            // Registers to receive DSE's icon.
+            assert mSearchEngineIconObserver == null;
+            mSearchEngineIconObserver = newIcon -> onSearchEngineIconChanged(newIcon);
+            mSearchEngineUtils = SearchEngineUtils.getForProfile(mProfile);
+            mSearchEngineUtils.addIconObserver(mSearchEngineIconObserver);
+        }
         ImageViewCompat.setImageTintList(mDseIconView, null);
 
         setDseIconViewVisibility(shouldShowDesIconView);
+    }
+
+    private void onSearchEngineIconChanged(@Nullable StatusProperties.StatusIconResource newIcon) {
+        if (newIcon == null) {
+            mDseIconView.setImageResource(R.drawable.ic_search);
+            return;
+        }
+
+        // When DSE is Google, onSearchEngineIconChanged() is called before setSearchProviderInfo().
+        // Thus, we check the icon's resource id to change the icon to be
+        // R.drawable.ic_logo_googleg_24dp which doesn't have a padding.
+        if (newIcon.getIconRes() == R.drawable.ic_logo_googleg_20dp) {
+            mDseIconView.setImageResource(R.drawable.ic_logo_googleg_24dp);
+            return;
+        }
+
+        mDseIconView.setImageDrawable(newIcon.getDrawable(mContext, mContext.getResources()));
     }
 
     private void setDseIconViewVisibility(boolean isVisible) {
@@ -724,7 +763,7 @@ public class NewTabPageLayout extends LinearLayout
         // spacers. The visibility of Logo is handled by LogoCoordinator.
         mSearchBoxCoordinator.setVisibility(isInSingleUrlMode());
         if (mDseIconView != null) {
-            setDseIconViewVisibility(mSearchProviderIsGoogle);
+            setDseIconViewVisibility(shouldShowDseIcon());
         }
         if (mIsComposeplateEnabled) {
             updateActionButtonVisibility();
@@ -1110,6 +1149,12 @@ public class NewTabPageLayout extends LinearLayout
             mUiConfig.removeObserver(mDisplayStyleObserver);
             mDisplayStyleObserver = null;
         }
+
+        if (mSearchEngineUtils != null) {
+            mSearchEngineUtils.removeIconObserver(mSearchEngineIconObserver);
+            mSearchEngineIconObserver = null;
+            mSearchEngineUtils = null;
+        }
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
@@ -1233,5 +1278,9 @@ public class NewTabPageLayout extends LinearLayout
 
     private boolean isInSingleUrlMode() {
         return mSearchProviderHasLogo || mIsOmniboxMobileParityUpdateV2Enabled;
+    }
+
+    private boolean shouldShowDseIcon() {
+        return mSearchProviderIsGoogle || mIsOmniboxMobileParityUpdateV2Enabled;
     }
 }

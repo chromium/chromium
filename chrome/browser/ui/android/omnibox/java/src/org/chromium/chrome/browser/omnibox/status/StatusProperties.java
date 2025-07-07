@@ -84,7 +84,7 @@ public class StatusProperties {
          * @return The icon res.
          */
         @DrawableRes
-        int getIconResForTesting() {
+        public int getIconRes() {
             if (mIconRes == null) return 0;
             return mIconRes;
         }
@@ -105,7 +105,7 @@ public class StatusProperties {
         /**
          * @return The {@link Drawable} for this StatusIconResource.
          */
-        @Nullable Drawable getDrawable(Context context, Resources resources) {
+        public @Nullable Drawable getDrawable(Context context, Resources resources) {
             if (mBitmap != null) {
                 Drawable drawable = new BitmapDrawable(resources, mBitmap);
                 if (mTint != 0) {
@@ -187,7 +187,7 @@ public class StatusProperties {
 
         /** Returns a {@link Drawable} for this StatusIconResource. */
         @Override
-        @Nullable Drawable getDrawable(Context context, Resources resources) {
+        public @Nullable Drawable getDrawable(Context context, Resources resources) {
             Drawable icon = super.getDrawable(context, resources);
             if (icon == null) {
                 return null;

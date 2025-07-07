@@ -27,6 +27,8 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/search_box_engine_icon"
         style="@style/LocationBarActionButtonForFakeSearchBox"
+        android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
+        android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
         android:layout_marginEnd="@dimen/fake_search_box_start_padding_with_dse_logo"
         android:tint="@null"
         android:focusable="false"

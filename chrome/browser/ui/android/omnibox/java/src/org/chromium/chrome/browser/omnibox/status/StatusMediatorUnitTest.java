@@ -175,7 +175,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -292,7 +292,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlFocusChangePercent(1f);
         Assert.assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -305,7 +305,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateLocationBarIconForDefaultMatchCategory(false);
         Assert.assertEquals(
                 R.drawable.ic_globe_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -318,7 +318,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateLocationBarIconForDefaultMatchCategory(false);
         Assert.assertEquals(
                 R.drawable.ic_globe_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -331,7 +331,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateLocationBarIconForDefaultMatchCategory(true);
         Assert.assertNotEquals(
                 R.drawable.ic_globe_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -346,7 +346,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateLocationBarIconForDefaultMatchCategory(true);
         Assert.assertNotEquals(
                 R.drawable.ic_globe_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -381,7 +381,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertTrue(mMediator.maybeUpdateStatusIconForSearchEngineIcon());
         Assert.assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
@@ -481,13 +481,13 @@ public final class StatusMediatorUnitTest {
 
         Assert.assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
         Assert.assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
 
         mMediator.setUrlHasFocus(true);
         Assert.assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
         Assert.assertFalse(mModel.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
     }
 
