@@ -15,7 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 
 namespace web_app {
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest, ProxyMode) {
 }
 
 struct WebSocketTestParam {
-  net::SpawnedTestServer::Type type;
+  net::EmbeddedTestServer::Type type;
   std::string expected_result;
 };
 
@@ -284,9 +284,9 @@ class IsolatedWebAppWebSocketCspBrowserTest
       public testing::WithParamInterface<WebSocketTestParam> {};
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppWebSocketCspBrowserTest, CheckCsp) {
-  auto websocket_test_server = std::make_unique<net::SpawnedTestServer>(
-      GetParam().type, net::GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(websocket_test_server->Start());
+  net::EmbeddedTestServer websocket_test_server(GetParam().type);
+  net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server);
+  ASSERT_TRUE(websocket_test_server.Start());
 
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
@@ -296,7 +296,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppWebSocketCspBrowserTest, CheckCsp) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // The |websocket_url| will echo the message we send to it.
-  GURL websocket_url = websocket_test_server->GetURL("echo-with-no-extension");
+  GURL websocket_url = net::test_server::GetWebSocketURL(
+      websocket_test_server, "/echo-with-no-extension");
 
   EXPECT_EQ(GetParam().expected_result,
             EvalJs(app_frame, content::JsReplace(R"(
@@ -319,17 +320,17 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IsolatedWebAppWebSocketCspBrowserTest,
     ::testing::Values(
-        WebSocketTestParam{.type = net::SpawnedTestServer::TYPE_WS,
+        WebSocketTestParam{.type = net::EmbeddedTestServer::Type::TYPE_HTTP,
                            .expected_result = "violation"},
-        WebSocketTestParam{.type = net::SpawnedTestServer::TYPE_WSS,
+        WebSocketTestParam{.type = net::EmbeddedTestServer::Type::TYPE_HTTPS,
                            .expected_result = "allowed"}),
     [](const testing::TestParamInfo<
         IsolatedWebAppWebSocketCspBrowserTest::ParamType>& info)
         -> std::string {
       switch (info.param.type) {
-        case net::SpawnedTestServer::TYPE_WS:
+        case net::EmbeddedTestServer::Type::TYPE_HTTP:
           return "Ws";
-        case net::SpawnedTestServer::TYPE_WSS:
+        case net::EmbeddedTestServer::Type::TYPE_HTTPS:
           return "Wss";
         default:
           NOTREACHED();
