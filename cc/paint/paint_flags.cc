@@ -244,21 +244,14 @@ bool PaintFlags::HasDiscardableImages(
   return has_discardable_images;
 }
 
-float PaintFlags::DynamicRangeLimitMixture::ComputeHdrHeadroom(
+float PaintFlags::DynamicRangeLimitMixture::ComputeEffectiveHdrHeadroom(
     float target_hdr_headroom) const {
-  if (constrained_high_mix == 0.f && standard_mix == 0.f) {
-    return target_hdr_headroom;
-  }
+  // It would make more sense to store only `high_mix` and `constrained_mix`,
+  // since `standard_mix` is multiplied by zero.
   const float high_mix = 1.f - constrained_high_mix - standard_mix;
-
-  // Average the headrooms in log-space.
-  const float log2_high_headroom = std::log2(target_hdr_headroom);
-  const float log2_constrained_high_headroom =
-      std::min(1.f, log2_high_headroom);
-  const float log2_standard_headroom = 0.f;
-  return std::exp2(standard_mix * log2_standard_headroom +
-                   constrained_high_mix * log2_constrained_high_headroom +
-                   high_mix * log2_high_headroom);
+  constexpr float kConstrainedMax = 1.f;  // Constrained allows at most 1 stop
+  return constrained_high_mix * std::min(kConstrainedMax, target_hdr_headroom) +
+         high_mix * target_hdr_headroom;
 }
 
 }  // namespace cc

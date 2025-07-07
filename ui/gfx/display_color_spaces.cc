@@ -10,6 +10,7 @@
 #include "ui/gfx/display_color_spaces.h"
 
 #include <array>
+#include <cmath>
 
 #include "build/build_config.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -130,6 +131,10 @@ bool DisplayColorSpaces::SupportsHDR() const {
   return GetOutputColorSpace(ContentColorUsage::kHDR, false).IsHDR() ||
          GetOutputColorSpace(ContentColorUsage::kHDR, true).IsHDR() ||
          hdr_max_luminance_relative_ > 1.f;
+}
+
+float DisplayColorSpaces::GetHdrHeadroom() const {
+  return std::log2(hdr_max_luminance_relative_);
 }
 
 ColorSpace DisplayColorSpaces::GetScreenInfoColorSpace() const {

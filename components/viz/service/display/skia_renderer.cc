@@ -2773,11 +2773,12 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       hdr_metadata.ndwl = gfx::HdrMetadataNdwl(
           current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
     }
+    // TODO(https://crbug.com/428575083): Change this to use log2 based
+    // headroom.
     cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(
         paint, image, hdr_metadata,
-        quad->dynamic_range_limit.ComputeHdrHeadroom(
-            current_frame()
-                ->display_color_spaces.GetHDRMaxLuminanceRelative()));
+        std::exp2(quad->dynamic_range_limit.ComputeEffectiveHdrHeadroom(
+            current_frame()->display_color_spaces.GetHdrHeadroom())));
   }
 
   // From gl_renderer, the final src color will be

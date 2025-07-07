@@ -120,7 +120,10 @@ class CC_PAINT_EXPORT CorePaintFlags {
           constrained_high_mix(constrained_high_mix) {}
     friend bool operator==(const DynamicRangeLimitMixture&,
                            const DynamicRangeLimitMixture&) = default;
-    float ComputeHdrHeadroom(float target_hdr_headroom) const;
+    // Compute the effective HDR headroom when this limit is applied to
+    // `target_hdr_headroom`.
+    float ComputeEffectiveHdrHeadroom(float target_hdr_headroom) const;
+
     float standard_mix = 0.f;
     float constrained_high_mix = 0.f;
     // The weight for "high" is implicit and calculated as "one minus the

@@ -6,6 +6,7 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -1267,13 +1268,15 @@ void DrawDRRectOp::RasterWithFlags(const DrawDRRectOp* op,
   });
 }
 
-static float ComputeEffectiveHdrHeadroom(const PaintFlags* flags,
-                                         const PlaybackParams& params) {
-  if (!flags || params.destination_hdr_headroom == 1.f) {
+static float ComputeLinearEffectiveHdrHeadroom(const PaintFlags* flags,
+                                               const PlaybackParams& params) {
+  if (!flags) {
     return 1.f;
   }
-  return flags->getDynamicRangeLimit().ComputeHdrHeadroom(
-      params.destination_hdr_headroom);
+  // TODO(https://crbug.com/428575083): Change the callers of this to use log2
+  // based headroom.
+  return std::exp2(flags->getDynamicRangeLimit().ComputeEffectiveHdrHeadroom(
+      std::log2(params.destination_hdr_headroom)));
 }
 
 void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
@@ -1306,7 +1309,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
       skia::DrawGainmapImage(canvas, op->image.cached_sk_image_,
                              op->image.gainmap_sk_image_,
                              op->image.gainmap_info_.value(),
-                             ComputeEffectiveHdrHeadroom(flags, params),
+                             ComputeLinearEffectiveHdrHeadroom(flags, params),
                              op->left, op->top, op->sampling, paint);
       return;
     }
@@ -1316,7 +1319,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
                                             canvas->imageInfo().colorSpace())) {
       ToneMapUtil::AddGlobalToneMapFilterToPaint(
           paint, op->image.cached_sk_image_.get(), op->image.hdr_metadata_,
-          ComputeEffectiveHdrHeadroom(flags, params));
+          ComputeLinearEffectiveHdrHeadroom(flags, params));
     }
 
     SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
@@ -1445,11 +1448,11 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       // If the PaintImage uses a gainmap shader, then replace DrawImage with a
       // shader.
       if (ToneMapUtil::UseGainmapShader(op->image)) {
-        skia::DrawGainmapImageRect(c, op->image.cached_sk_image_,
-                                   op->image.gainmap_sk_image_,
-                                   op->image.gainmap_info_.value(),
-                                   ComputeEffectiveHdrHeadroom(flags, params),
-                                   adjusted_src, op->dst, sampling, p);
+        skia::DrawGainmapImageRect(
+            c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
+            op->image.gainmap_info_.value(),
+            ComputeLinearEffectiveHdrHeadroom(flags, params), adjusted_src,
+            op->dst, sampling, p);
         return;
       }
 
@@ -1461,7 +1464,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
         ToneMapUtil::AddGlobalToneMapFilterToPaint(
             tonemap_paint, op->image.cached_sk_image_.get(),
             op->image.hdr_metadata_,
-            ComputeEffectiveHdrHeadroom(flags, params));
+            ComputeLinearEffectiveHdrHeadroom(flags, params));
         DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
                       &tonemap_paint, op->constraint);
         return;
