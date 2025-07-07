@@ -154,9 +154,6 @@ void LocalMediaStreamAudioSource::ChangeSourceImpl(
   EnsureSourceIsStarted();
 }
 
-using EchoCancellationType =
-    blink::AudioProcessingProperties::EchoCancellationType;
-
 std::optional<blink::AudioProcessingProperties>
 LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
   return processing_layout_.properties();
