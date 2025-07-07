@@ -639,7 +639,7 @@ class CORE_EXPORT CSSSelector {
   // and these could happen concurrently. This trips up TSan,
   // even though the race is benign, so use an atomic read
   // instead of C++ bitfields.
-  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using BitField = ConcurrentlyReadBitField<uint32_t>;
   using RelationField =
       BitField::DefineFirstValue<uint32_t, 4>;  // RelationType
   using MatchField = RelationField::DefineNextValue<uint32_t, 4>;  // MatchType

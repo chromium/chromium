@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
-namespace WTF {
+namespace blink {
 
 enum class BitFieldValueConstness {
   kNonConst,
@@ -141,16 +141,17 @@ class WTF_EXPORT ConcurrentlyReadBitField
 
   template <typename Value>
   typename Value::Type get_concurrently() const {
-    return Value::decode(AsAtomicPtr(&bits_)->load(std::memory_order_relaxed));
+    return Value::decode(
+        WTF::AsAtomicPtr(&bits_)->load(std::memory_order_relaxed));
   }
 
   template <typename Value>
   void set(typename Value::Type value) {
-    AsAtomicPtr(&bits_)->store(Value::update(bits_, value),
-                               std::memory_order_relaxed);
+    WTF::AsAtomicPtr(&bits_)->store(Value::update(bits_, value),
+                                    std::memory_order_relaxed);
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BIT_FIELD_H_

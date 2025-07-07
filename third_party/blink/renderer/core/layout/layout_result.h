@@ -653,7 +653,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       kTableData,
     };
 
-    using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
+    using BitField = ConcurrentlyReadBitField<uint16_t>;
     using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
     using OutOfFlowPositionedOffsetIsSetFlag =
         LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;

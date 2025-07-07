@@ -66,7 +66,7 @@ class RenderingContextDescriptionCodec {
   const char* GetRenderingAPIName() const;
 
  private:
-  using Key = WTF::SingleThreadedBitField<uint32_t>;
+  using Key = blink::SingleThreadedBitField<uint32_t>;
   using IsOffscreenField = Key::DefineFirstValue<bool, 1>;
   using IsAcceleratedCanvas2DField = IsOffscreenField::DefineNextValue<bool, 1>;
   using RenderingAPIField =

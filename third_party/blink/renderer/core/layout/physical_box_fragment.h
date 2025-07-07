@@ -615,9 +615,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 #endif
 
  private:
-  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using BitField = ConcurrentlyReadBitField<uint32_t>;
   using ConstHasFragmentItemsFlag =
-      BitField::DefineFirstValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
+      BitField::DefineFirstValue<bool, 1, BitFieldValueConstness::kConst>;
   using IsInlineFormattingContextFlag =
       ConstHasFragmentItemsFlag::DefineNextValue<bool, 1>;
   using IncludeBorderTopFlag =

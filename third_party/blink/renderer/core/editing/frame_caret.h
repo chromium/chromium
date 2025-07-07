@@ -101,7 +101,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   friend class FrameSelectionTest;
   friend class CaretDisplayItemClientTest;
 
-  using BitField = WTF::SingleThreadedBitField<uint8_t>;
+  using BitField = SingleThreadedBitField<uint8_t>;
   using CaretEnabledFlag = BitField::DefineFirstValue<bool, 1>;
   using ShouldShowCaretFlag = CaretEnabledFlag::DefineNextValue<bool, 1>;
   using CaretBlinkingSuspendedFlag =

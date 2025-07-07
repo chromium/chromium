@@ -191,7 +191,7 @@ class CORE_EXPORT CSSPropertyValueSet
   // and these could happen concurrently. This trips up TSan,
   // even though the race is benign, so use an atomic read
   // instead of C++ bitfields.
-  using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
+  using BitField = ConcurrentlyReadBitField<uint32_t>;
   using ArraySizeField =
       BitField::DefineFirstValue<uint32_t, 25>;  // Only for immutable sets.
   using CSSParserModeField = ArraySizeField::DefineNextValue<uint32_t, 4>;

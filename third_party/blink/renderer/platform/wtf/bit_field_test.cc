@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 class BitFieldTest : public ::testing::Test {};
 
@@ -102,4 +102,4 @@ TEST_F(BitFieldTest, ConcurrentBitFieldSetValue) {
   EXPECT_EQ(0u, bit_field.get_concurrently<Value2>());
 }
 
-}  // namespace WTF
+}  // namespace blink
