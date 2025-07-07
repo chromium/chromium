@@ -125,7 +125,10 @@ source_set("tests") {
 if (enable_nocompile_tests) {
   nocompile_source_set("bindings_nocompile_tests") {
     sources = [ "binder_map_nocompile.nc" ]
-    deps = [ "//mojo/public/cpp/bindings" ]
+    deps = [
+      ":test_mojom",
+      "//mojo/public/cpp/bindings",
+    ]
   }
 }
 
