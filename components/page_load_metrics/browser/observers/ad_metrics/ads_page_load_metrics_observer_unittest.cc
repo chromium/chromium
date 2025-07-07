@@ -2625,6 +2625,36 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
       SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 0);
 }
 
+TEST_P(AdsPageLoadMetricsObserverTest,
+       ErrorPageNavigationReplaceNavigationEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
+
+  // Navigate the existing main frame.
+  ASSERT_EQ(controller().GetEntryCount(), 1);
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  ASSERT_EQ(controller().GetEntryCount(), 2);
+
+  // Create, then navigate the ad frame.
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+  int ad_frame_entry_count = WithFencedFrames() ? 1 : 2;
+  ASSERT_EQ(ad_frame->GetController().GetEntryCount(), ad_frame_entry_count);
+
+  // Add enough data to trigger the intervention.
+  ErrorPageWaiter waiter(web_contents());
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
+                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
+
+  EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
+  waiter.WaitForError();
+
+  EXPECT_EQ(controller().GetEntryCount(), 2);
+  // After heavy ads intervention is fired, the error page navigation should
+  // replace the navigation entries. So the count stays unchanged.
+  EXPECT_EQ(ad_frame->GetController().GetEntryCount(), ad_frame_entry_count);
+}
+
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureDisabled_NotFired) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

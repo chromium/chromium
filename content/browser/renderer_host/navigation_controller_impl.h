@@ -129,6 +129,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       RenderFrameHost* render_frame_host,
       const GURL& url,
       const std::string& error_page_html) override;
+  void NavigateFrameToErrorPage(RenderFrameHost* render_frame_host,
+                                const GURL& url,
+                                const std::string& error_page_html) override;
   bool CanGoBack() override;
   bool CanGoForward() override;
   bool CanGoToOffset(int offset) override;
@@ -322,22 +325,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // SetNeedsReload(), but takes in a |type| which specifies why the reload is
   // being requested.
   void SetNeedsReload(NeedsReloadType type);
-
-  // Navigates directly to an error page in response to an event on the last
-  // committed page, with |error_page_html| as the contents and |url| as the
-  // URL. Permanently replaces the current session history item for that frame
-  // with a new one reflecting the error page navigation. The error navigation
-  // is not "sticky", meaning that if the frame is reloaded, it will attempt to
-  // load |url| normally.
-  //
-  // You should almost always prefer this function to
-  // |LoadPostCommitErrorPage()|, which only temporarily replaces the
-  // NavigationEntry. See |NavigationController::LoadPostCommitErrorPage()| for
-  // more details on this temporary replacement.
-  virtual void NavigateFrameToErrorPage(
-      RenderFrameHostImpl* render_frame_host_impl,
-      const GURL& url,
-      const std::string& error_page_html);
 
   // For use by WebContentsImpl ------------------------------------------------
 

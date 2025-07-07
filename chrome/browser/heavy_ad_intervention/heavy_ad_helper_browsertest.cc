@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents);
 
   content::TestNavigationObserver error_observer(web_contents);
-  controller.LoadPostCommitErrorPage(
+  controller.NavigateFrameToErrorPage(
       child, url,
       heavy_ad_intervention::PrepareHeavyAdPage(
           g_browser_process->GetApplicationLocale()));
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   content::TestNavigationObserver error_observer(web_contents);
-  controller.LoadPostCommitErrorPage(
+  controller.NavigateFrameToErrorPage(
       child, url,
       heavy_ad_intervention::PrepareHeavyAdPage(
           g_browser_process->GetApplicationLocale()));

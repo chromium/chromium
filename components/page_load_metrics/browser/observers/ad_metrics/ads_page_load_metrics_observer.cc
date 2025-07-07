@@ -1526,7 +1526,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
                   kAnyVisibility, frame_data->resource_data().network_bytes());
   }
 
-  GetDelegate().GetWebContents()->GetController().LoadPostCommitErrorPage(
+  GetDelegate().GetWebContents()->GetController().NavigateFrameToErrorPage(
       render_frame_host, render_frame_host->GetLastCommittedURL(),
       heavy_ad_intervention::PrepareHeavyAdPage(
           application_locale_getter_.Run()));

@@ -487,11 +487,26 @@ class NavigationController {
   //
   // TODO(crbug.com/406729265) Restrict this function to only be usable with
   // main frame interstitial navigations. For loading an error page in any other
-  // scenario, prefer |NavigationControllerImpl::NavigateFrameToErrorPage()|.
+  // scenario, prefer |NavigationController::NavigateFrameToErrorPage()|.
   virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,
       const std::string& error_page_html) = 0;
+
+  // Navigates directly to an error page in response to an event on the last
+  // committed page, with |error_page_html| as the contents and |url| as the
+  // URL. Permanently replaces the current session history item for that frame
+  // with a new one reflecting the error page navigation. The error navigation
+  // is not "sticky", meaning that if the frame is reloaded, it will attempt to
+  // load |url| normally.
+  //
+  // You should almost always prefer this function to
+  // |LoadPostCommitErrorPage()|, which only temporarily replaces the
+  // NavigationEntry. See |NavigationController::LoadPostCommitErrorPage()| for
+  // more details on this temporary replacement.
+  virtual void NavigateFrameToErrorPage(RenderFrameHost* render_frame_host,
+                                        const GURL& url,
+                                        const std::string& error_page_html) = 0;
 
   // Renavigation --------------------------------------------------------------
 

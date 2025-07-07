@@ -4574,9 +4574,11 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
 }
 
 void NavigationControllerImpl::NavigateFrameToErrorPage(
-    RenderFrameHostImpl* render_frame_host_impl,
+    RenderFrameHost* render_frame_host,
     const GURL& url,
     const std::string& error_page_html) {
+  RenderFrameHostImpl* render_frame_host_impl =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
   std::unique_ptr<NavigationRequest> navigation_request =
       CreateNavigationRequestForErrorPage(render_frame_host_impl, url,
                                           error_page_html,
