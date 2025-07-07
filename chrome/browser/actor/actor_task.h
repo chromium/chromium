@@ -12,6 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/task_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace actor {
 
@@ -68,6 +70,14 @@ class ActorTask {
   base::CallbackListSubscription RegisterTaskStateChange(
       TaskStateChangeCallback callback);
 
+  // Ensures the given tab handle is added (or already exists) in the set of
+  // tabs this task operates over.
+  void AddToTabSet(tabs::TabHandle tab);
+
+  const absl::flat_hash_set<int32_t>& get_tab_handles_for_testing() const {
+    return tab_handles_;
+  }
+
  private:
   State state_ = State::kCreated;
 
@@ -79,6 +89,9 @@ class ActorTask {
   std::unique_ptr<ExecutionEngine> execution_engine_;
 
   TaskId id_;
+
+  // The set of all tabs this task has acted upon.
+  absl::flat_hash_set<int32_t> tab_handles_;
 
   using TaskStateChangeCallbackList =
       base::RepeatingCallbackList<void(TaskId, ActorTask::State)>;

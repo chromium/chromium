@@ -29,8 +29,7 @@ ToolRequest::CreateToolResult HistoryToolRequest::CreateTool(
   }
 
   CHECK(tab->GetContents());
-  return {std::make_unique<HistoryTool>(task_id, journal, *tab->GetContents(),
-                                        direction_),
+  return {std::make_unique<HistoryTool>(task_id, journal, *tab, direction_),
           MakeOkResult()};
 }
 

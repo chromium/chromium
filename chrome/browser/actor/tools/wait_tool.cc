@@ -49,6 +49,8 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer()
   return nullptr;
 }
 
+void WaitTool::UpdateTaskAfterInvoke(ActorTask& task) const {}
+
 void WaitTool::OnDelayFinished(InvokeCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.

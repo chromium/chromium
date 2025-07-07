@@ -28,8 +28,7 @@ ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<NavigateTool>(task_id, journal, *tab->GetContents(),
-                                         url_),
+  return {std::make_unique<NavigateTool>(task_id, journal, *tab, url_),
           MakeOkResult()};
 }
 

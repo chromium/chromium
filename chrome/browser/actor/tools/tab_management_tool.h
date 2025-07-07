@@ -47,6 +47,7 @@ class TabManagementTool : public Tool,
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
+  void UpdateTaskAfterInvoke(ActorTask& task) const override;
 
   // TabStripModelObserver
   void OnTabStripModelChanged(TabStripModel* tab_strip_model,
@@ -60,6 +61,9 @@ class TabManagementTool : public Tool,
   Action action_;
 
   InvokeCallback callback_;
+
+  // If a tab was created, this will store the handle.
+  std::optional<tabs::TabHandle> did_create_tab_handle_;
 
   // Used for activate or close action.
   std::optional<tabs::TabHandle> target_tab_;

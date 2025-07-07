@@ -109,4 +109,8 @@ base::CallbackListSubscription ActorTask::RegisterTaskStateChange(
   return task_state_change_callback_list_.Add(std::move(callback));
 }
 
+void ActorTask::AddToTabSet(tabs::TabHandle tab_handle) {
+  tab_handles_.insert(tab_handle.raw_value());
+}
+
 }  // namespace actor

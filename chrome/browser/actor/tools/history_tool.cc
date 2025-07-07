@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/history_tool.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor.mojom.h"
@@ -29,17 +30,17 @@ namespace actor {
 
 using ::content::NavigationController;
 using ::content::NavigationHandle;
-using ::content::WebContents;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
 HistoryTool::HistoryTool(TaskId task_id,
                          AggregatedJournal& journal,
-                         WebContents& web_contents,
+                         TabInterface& tab,
                          HistoryToolRequest::Direction direction)
     : Tool(task_id, journal),
-      WebContentsObserver(&web_contents),
-      direction_(direction) {}
+      WebContentsObserver(tab.GetContents()),
+      direction_(direction),
+      tab_handle_(tab.GetHandle()) {}
 
 HistoryTool::~HistoryTool() = default;
 
@@ -111,6 +112,10 @@ std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer()
     const {
   return std::make_unique<ObservationDelayController>(
       *web_contents()->GetPrimaryMainFrame());
+}
+
+void HistoryTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+  task.AddToTabSet(tab_handle_);
 }
 
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {

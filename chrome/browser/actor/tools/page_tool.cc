@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -375,6 +376,10 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
   CHECK(frame);
 
   return std::make_unique<ObservationDelayController>(*frame);
+}
+
+void PageTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+  task.AddToTabSet(request_->GetTabHandle());
 }
 
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {

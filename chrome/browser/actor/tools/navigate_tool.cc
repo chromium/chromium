@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/navigate_tool.h"
 
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -19,6 +20,7 @@
 
 using content::NavigationHandle;
 using content::WebContents;
+using tabs::TabInterface;
 
 namespace actor {
 
@@ -33,9 +35,12 @@ mojom::ActionResultPtr MayActOnUrlToResult(bool may_act) {
 
 NavigateTool::NavigateTool(TaskId task_id,
                            AggregatedJournal& journal,
-                           WebContents& web_contents,
+                           TabInterface& tab,
                            const GURL& url)
-    : Tool(task_id, journal), WebContentsObserver(&web_contents), url_(url) {}
+    : Tool(task_id, journal),
+      WebContentsObserver(tab.GetContents()),
+      url_(url),
+      tab_handle_(tab.GetHandle()) {}
 
 NavigateTool::~NavigateTool() = default;
 
@@ -82,6 +87,10 @@ std::unique_ptr<ObservationDelayController>
 NavigateTool::GetObservationDelayer() const {
   return std::make_unique<ObservationDelayController>(
       *web_contents()->GetPrimaryMainFrame());
+}
+
+void NavigateTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+  task.AddToTabSet(tab_handle_);
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,7 @@
 
 namespace actor {
 
+class ActorTask;
 class AggregatedJournal;
 class Tool;
 class ToolRequest;
@@ -31,7 +33,7 @@ class ToolRequest;
 class ToolController {
  public:
   using ResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  ToolController(TaskId task_id, AggregatedJournal& journal);
+  ToolController(ActorTask& actor_task, AggregatedJournal& journal);
   ~ToolController();
   ToolController(const ToolController&) = delete;
   ToolController& operator=(const ToolController&) = delete;
@@ -78,7 +80,8 @@ class ToolController {
   // completion_callback until the page is ready for observation.
   std::unique_ptr<ObservationDelayController> observation_delayer_;
 
-  TaskId task_id_;
+  // ActorTask indirectly owns `this`.
+  raw_ptr<ActorTask> task_;
 
   base::SafeRef<AggregatedJournal> journal_;
 

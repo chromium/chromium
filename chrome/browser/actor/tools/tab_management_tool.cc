@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/ui/browser.h"
@@ -104,12 +105,22 @@ TabManagementTool::GetObservationDelayer() const {
   return nullptr;
 }
 
+void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+  if (action_ == kCreate) {
+    if (did_create_tab_handle_) {
+      task.AddToTabSet(*did_create_tab_handle_);
+    }
+  }
+}
+
 void TabManagementTool::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     if (callback_) {
+      CHECK_GT(change.GetInsert()->contents.size(), 0ul);
+      did_create_tab_handle_ = change.GetInsert()->contents[0].tab->GetHandle();
       PostResponseTask(std::move(callback_), MakeOkResult());
     }
   }

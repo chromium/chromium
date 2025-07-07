@@ -223,7 +223,7 @@ ExecutionEngine::~ExecutionEngine() {
 
 void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
-  tool_controller_ = std::make_unique<ToolController>(task_->id(), *journal_);
+  tool_controller_ = std::make_unique<ToolController>(*task_, *journal_);
 }
 
 void ExecutionEngine::SetState(State state) {

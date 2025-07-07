@@ -21,7 +21,6 @@
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }  // namespace content
 
 namespace actor {
@@ -31,7 +30,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
  public:
   HistoryTool(TaskId task_id,
               AggregatedJournal& journal,
-              content::WebContents& web_contents,
+              tabs::TabInterface& tab,
               HistoryToolRequest::Direction direction);
   ~HistoryTool() override;
 
@@ -42,6 +41,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
+  void UpdateTaskAfterInvoke(ActorTask& task) const override;
 
   // content::WebContentsObserver
   void DidStartNavigation(
@@ -71,6 +71,8 @@ class HistoryTool : public Tool, content::WebContentsObserver {
 
   // Holds the callback to the Invoke method. Null before invoke is called.
   InvokeCallback invoke_callback_;
+
+  tabs::TabHandle tab_handle_;
 
   base::WeakPtrFactory<HistoryTool> weak_ptr_factory_{this};
 };

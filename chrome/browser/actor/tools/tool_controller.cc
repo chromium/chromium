@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -36,8 +37,8 @@ ToolController::ActiveState::ActiveState(
 }
 ToolController::ActiveState::~ActiveState() = default;
 
-ToolController::ToolController(TaskId task_id, AggregatedJournal& journal)
-    : task_id_(task_id), journal_(journal.GetSafeRef()) {
+ToolController::ToolController(ActorTask& task, AggregatedJournal& journal)
+    : task_(&task), journal_(journal.GetSafeRef()) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
 }
 
@@ -47,11 +48,11 @@ void ToolController::Invoke(const ToolRequest& request,
                             const AnnotatedPageContent* last_observation,
                             ResultCallback result_callback) {
   ToolRequest::CreateToolResult create_result =
-      request.CreateTool(task_id_, *journal_);
+      request.CreateTool(task_->id(), *journal_);
 
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
-    journal_->Log(request.GetURLForJournal(), task_id_,
+    journal_->Log(request.GetURLForJournal(), task_->id(),
                   "ToolController Invoke Failed",
                   create_result.result->message);
     PostResponseTask(std::move(result_callback),
@@ -63,7 +64,8 @@ void ToolController::Invoke(const ToolRequest& request,
   CHECK(tool);
 
   auto journal_event = journal_->CreatePendingAsyncEntry(
-      tool->JournalURL(), task_id_, tool->JournalEvent(), tool->DebugString());
+      tool->JournalURL(), task_->id(), tool->JournalEvent(),
+      tool->DebugString());
   active_state_.emplace(std::move(tool), std::move(result_callback),
                         std::move(journal_event), last_observation);
 
@@ -109,6 +111,9 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   CHECK(active_state_);
+
+  active_state_->tool->UpdateTaskAfterInvoke(*task_);
+
   observation_delayer_.reset();
   active_state_->journal_entry->EndEntry(ToDebugString(*result));
   PostResponseTask(std::move(active_state_->completion_callback),
