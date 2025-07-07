@@ -3401,6 +3401,7 @@ chromium-metrics-reviews@google.com.
     Recorded for each stream attempt upon destruction of the canceled attempt.
   </summary>
   <token key="Reason">
+    <variant name="AttemptManagerDraining"/>
     <variant name="ExistingQuicSession"/>
     <variant name="ExistingSpdySession"/>
     <variant name="NewQuicSession"/>

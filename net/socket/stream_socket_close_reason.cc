@@ -31,6 +31,8 @@ std::string_view StreamSocketCloseReasonToString(
       return "UsingExistingQuicSession";
     case StreamSocketCloseReason::kAbort:
       return "Abort";
+    case StreamSocketCloseReason::kAttemptManagerDraining:
+      return "AttemptManagerDraining";
   }
 }
 

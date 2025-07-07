@@ -2990,6 +2990,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Using existing SPDY session"/>
   <int value="8" label="Using existing QUIC session"/>
   <int value="9" label="Abort"/>
+  <int value="10" label="AttemptManagerDraining"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->

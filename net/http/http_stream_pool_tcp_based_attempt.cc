@@ -60,6 +60,8 @@ std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
       return "ExistingSpdySession";
     case StreamSocketCloseReason::kUsingExistingQuicSession:
       return "ExistingQuicSession";
+    case StreamSocketCloseReason::kAttemptManagerDraining:
+      return "AttemptManagerDraining";
     case StreamSocketCloseReason::kUnspecified:
     case StreamSocketCloseReason::kCloseAllConnections:
     case StreamSocketCloseReason::kIpAddressChanged:

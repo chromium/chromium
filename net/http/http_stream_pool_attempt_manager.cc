@@ -1691,7 +1691,7 @@ void HttpStreamPool::AttemptManager::MaybeStartDraining() {
   // slow. Currently we just cancel them for simplicity. If we want to keep
   // these attempts in the draining `this`, Group::ConnectingStreamSocketCount()
   // should check draining AttemptManagers.
-  CancelTcpBasedAttempts(StreamSocketCloseReason::kAbort);
+  CancelTcpBasedAttempts(StreamSocketCloseReason::kAttemptManagerDraining);
 
   if (quic_attempt_ && quic_attempt_->is_slow()) {
     CancelQuicAttempt(ERR_ABORTED);
