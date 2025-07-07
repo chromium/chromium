@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
@@ -74,6 +75,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
+
+using Step = ProfileManagementFlowController::Step;
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
@@ -205,21 +208,27 @@ const TestParam kTestParams[] = {
 
 }  // namespace
 
-class FirstRunInteractiveUiTestBase
+// Test suite with default params, and with Search Engine Choice and Default
+// Browser screens disabled.
+class FirstRunInteractiveUiTest
     : public InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
-  FirstRunInteractiveUiTestBase()
+  explicit FirstRunInteractiveUiTest(const TestParam& params = TestParam())
       : InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>(
             UseDefaultTrackerAllowingPromos(
-                {feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {
-  }
-  ~FirstRunInteractiveUiTestBase() override = default;
+                {feature_engagement::kIPHSupervisedUserProfileSigninFeature})),
+        params_(params) {}
+  ~FirstRunInteractiveUiTest() override = default;
 
  protected:
   const std::string kTestGivenName = "Joe";
   const std::string kTestEmail = "joe.consumer@gmail.com";
   const std::string kTestEnterpriseEmail = "joe.consumer@chromium.org";
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
 
   // FirstRunServiceBrowserTestBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -324,15 +333,230 @@ class FirstRunInteractiveUiTestBase
         PressJsButton(kWebContentsId, button));
   }
 
+  void SimulateSignIn(const std::string& account_email,
+                      const std::string& account_given_name) {
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+
+    // Kombucha note: This function waits on a `base::RunLoop`.
+    AccountInfo account_info = signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+            .WithCookie()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre)
+            .Build(account_email));
+
+    account_info =
+        signin::WithGeneratedUserInfo(account_info, account_given_name);
+
+    // Controls behavior of sync buttons and supervision.
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    if (account_email == kTestEnterpriseEmail) {
+      account_info.hosted_domain = "chromium.org";
+      mutator.set_is_subject_to_enterprise_policies(true);
+    }
+
+    if (params_.with_supervision.has_value()) {
+      mutator.set_is_subject_to_parental_controls(
+          params_.with_supervision.value_or(false));
+    }
+
+    switch (params_.sync_buttons_feature_config) {
+      case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
+        mutator
+            .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+                true);
+        break;
+      case SyncButtonsFeatureConfig::kAsyncEqualButtons:
+        mutator
+            .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+                false);
+        break;
+      case SyncButtonsFeatureConfig::kDeadlined:
+      case SyncButtonsFeatureConfig::kButtonsStillLoading:
+        // Screen configures itself without capabilities.
+        break;
+    }
+
+    ASSERT_TRUE(account_info.IsValid());
+
+    // Kombucha note: This function waits on a `base::RunLoop`.
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+    content::WebContents* picker_contents =
+        ProfilePicker::GetWebViewForTesting()->GetWebContents();
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(picker_contents);
+    CHECK(tab_helper);
+    EXPECT_EQ(tab_helper->signin_access_point(),
+              signin_metrics::AccessPoint::kForYouFre);
+    // Simulate the Dice "ENABLE_SYNC" header parameter.
+    {
+      auto process_dice_header_delegate_impl =
+          ProcessDiceHeaderDelegateImpl::Create(web_contents());
+      process_dice_header_delegate_impl->EnableSync(account_info);
+    }
+  }
+
+  void ExpectStepHistograms(Step step,
+                            bool shown,
+                            bool with_exit = false,
+                            size_t count = 1) {
+    SCOPED_TRACE("Checking Step #" + base::ToString(static_cast<int>(step)));
+
+    histogram_tester().ExpectBucketCount("ProfilePicker.FREFlow.StepStart",
+                                         step, count);
+    histogram_tester().ExpectBucketCount("ProfilePicker.FREFlow.StepEnd", step,
+                                         count);
+    if (shown) {
+      histogram_tester().ExpectBucketCount("ProfilePicker.FREFlow.StepShown",
+                                           step, count);
+    } else {
+      histogram_tester().ExpectBucketCount("ProfilePicker.FREFlow.StepSkipped",
+                                           step, count);
+    }
+
+    if (shown) {
+      histogram_tester().ExpectTotalCount(
+          base::StrCat({"ProfilePicker.FREFlow.StepShownDuration",
+                        GetStepHistogramSuffixForTesting(step)}),
+          count);
+    }
+    histogram_tester().ExpectTotalCount(
+        base::StrCat({"ProfilePicker.FREFlow.StepTotalDuration",
+                      GetStepHistogramSuffixForTesting(step)}),
+        count);
+
+    if (with_exit) {
+      histogram_tester().ExpectTotalCount(
+          "ProfilePicker.FREFlow.FlowTotalDuration", 1);
+      histogram_tester().ExpectBucketCount(
+          "ProfilePicker.FREFlow.FlowEndedAtStep", step, 1);
+    }
+  }
+
  private:
+  TestParam params_;
+
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
+  base::HistogramTester histogram_tester_;
 };
 
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SignIn DISABLED_SignIn
+#else
+#define MAYBE_SignIn SignIn
+#endif
+// Simplified version of the Signin flow in the FRE, without the Search Engine
+// Choice and Default Browser screen showing. For the full flow, check
+// `FirstRunParameterizedInteractiveUiTest_SignInAndSync` test below.
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_SignIn) {
+  ASSERT_TRUE(IsProfileNameDefault());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  GURL sync_page_url = AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+      /*is_sync_promo=*/true);
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Web Contents already instrumented in the previous sequence.
+      WaitForWebContentsNavigation(kWebContentsId, sync_page_url),
+      // Button is visible once capabilities are loaded or defaulted.
+      WaitForButtonVisible(kWebContentsId, kDontSyncButton),
+      EnsurePresent(kWebContentsId, kDontSyncButton),
+      PressJsButton(kWebContentsId, kDontSyncButton)
+          .SetMustRemainVisible(false));
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+  EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
+  EXPECT_FALSE(IsUsingDefaultProfileName());
+
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kForYouFre, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/true);
+  // The next two steps are skipped.
+  ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/false);
+  ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/false);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      4);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      6);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, ExitAtSignIn) {
+  ASSERT_TRUE(IsProfileNameDefault());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
+
+      // Send "Close window" keyboard shortcut and wait for view to close.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
+          .SetMustRemainVisible(false));
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+
+  histogram_tester().ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true,
+                       /*with_exit=*/true);
+}
+
 class FirstRunParameterizedInteractiveUiTest
-    : public FirstRunInteractiveUiTestBase,
+    : public FirstRunInteractiveUiTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  FirstRunParameterizedInteractiveUiTest() {
+  FirstRunParameterizedInteractiveUiTest()
+      : FirstRunInteractiveUiTest(GetParam()) {
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
     std::vector<base::test::FeatureRef> disabled_features;
     scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
@@ -363,9 +587,9 @@ class FirstRunParameterizedInteractiveUiTest
         enabled_features_and_params, disabled_features);
   }
 
-  // FirstRunInteractiveUiTestBase:
+  // FirstRunInteractiveUiTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    FirstRunInteractiveUiTestBase::SetUpCommandLine(command_line);
+    FirstRunInteractiveUiTest::SetUpCommandLine(command_line);
 
     // Change the country to belgium so that the search engine choice test works
     // as intended.
@@ -383,11 +607,11 @@ class FirstRunParameterizedInteractiveUiTest
     if (WithPrivacySandboxEnabled()) {
       ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     }
-    FirstRunInteractiveUiTestBase::SetUp();
+    FirstRunInteractiveUiTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    FirstRunInteractiveUiTestBase::SetUpOnMainThread();
+    FirstRunInteractiveUiTest::SetUpOnMainThread();
 
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
@@ -412,10 +636,6 @@ class FirstRunParameterizedInteractiveUiTest
 
   static bool WithSupervisedUser() {
     return GetParam().with_supervision.value_or(false);
-  }
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
   }
 
   auto CompleteSearchEngineChoiceStep() {
@@ -453,72 +673,7 @@ class FirstRunParameterizedInteractiveUiTest
         PressJsButton(kWebContentsId, kConfirmDefaultBrowserButton));
   }
 
- protected:
-  void SimulateSignIn(const std::string& account_email,
-                      const std::string& account_given_name) {
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
-
-    // Kombucha note: This function waits on a `base::RunLoop`.
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager,
-        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-            .WithCookie()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre)
-            .Build(account_email));
-
-    account_info =
-        signin::WithGeneratedUserInfo(account_info, account_given_name);
-
-    // Controls behavior of sync buttons and supervision.
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    if (account_email == kTestEnterpriseEmail) {
-      account_info.hosted_domain = "chromium.org";
-      mutator.set_is_subject_to_enterprise_policies(true);
-    }
-
-    if (GetParam().with_supervision.has_value()) {
-      mutator.set_is_subject_to_parental_controls(WithSupervisedUser());
-    }
-
-    switch (SyncButtonsFeatureConfig()) {
-      case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
-        mutator
-            .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-                true);
-        break;
-      case SyncButtonsFeatureConfig::kAsyncEqualButtons:
-        mutator
-            .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-                false);
-        break;
-      case SyncButtonsFeatureConfig::kDeadlined:
-      case SyncButtonsFeatureConfig::kButtonsStillLoading:
-        // Screen configures itself without capabilities.
-        break;
-    }
-
-    ASSERT_TRUE(account_info.IsValid());
-
-    // Kombucha note: This function waits on a `base::RunLoop`.
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-    content::WebContents* picker_contents =
-        ProfilePicker::GetWebViewForTesting()->GetWebContents();
-    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(picker_contents);
-    CHECK(tab_helper);
-    EXPECT_EQ(tab_helper->signin_access_point(),
-              signin_metrics::AccessPoint::kForYouFre);
-    // Simulate the Dice "ENABLE_SYNC" header parameter.
-    {
-      auto process_dice_header_delegate_impl =
-          ProcessDiceHeaderDelegateImpl::Create(web_contents());
-      process_dice_header_delegate_impl->EnableSync(account_info);
-    }
-  }
-
  private:
-  base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
@@ -558,6 +713,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      1);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -585,6 +746,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      1);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      1);
 }
 #endif
 
@@ -732,6 +899,17 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/true);
+  ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/true);
+  ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/true);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      6);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      6);
 
   RunTestSequence(
       If([]() { return WithSupervisedUser(); },
@@ -907,6 +1085,20 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/true);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      4);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      4);
+  // Those steps are not even attempted
+  ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/false,
+                       /*with_exit=*/false, /*count=*/0);
+  ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/false,
+                       /*with_exit=*/false, /*count=*/0);
 }
 
 // TODO(crbug.com/366119368): Re-enable this test
@@ -962,6 +1154,21 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  // Navigation back to the Intro page makes the step be shown twice.
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/false,
+                       /*count=*/2);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/true);
+  ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/true);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      6);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      6);
+  // Sign in was never completed - step is not even attempted.
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/false,
+                       /*with_exit=*/false, /*count=*/0);
 }
 
 // TODO(crbug.com/366119368): Re-enable this test
@@ -1049,4 +1256,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/true);
+  ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/true);
+  ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/true);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      6);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      6);
 }

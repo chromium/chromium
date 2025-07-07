@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
@@ -31,42 +32,48 @@ class ProfileManagementFlowController {
  public:
   // TODO(crbug.com/40237131): Split the steps more granularly across
   // logical steps instead of according to implementation details.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(Step)
   enum class Step {
-    kUnknown,
+    kUnknown = 0,
     // Renders the `chrome://profile-picker` app, covering the profile picker,
     // the profile type choice at the beginning of the profile creation
     // flow and the account selection.
-    kProfilePicker,
+    kProfilePicker = 1,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Renders the sign in screen on Dice platforms.
-    kAccountSelection,
+    kAccountSelection = 2,
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.
-    kFinishSamlSignin,
+    kFinishSamlSignin = 3,
     // Renders the reauth page.
-    kReauth,
+    kReauth = 4,
 #endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.
-    kPostSignInFlow,
+    kPostSignInFlow = 5,
 
     // Renders the beginning of the First Run Experience.
-    kIntro,
+    kIntro = 6,
 
     // Renders a default browser promo.
-    kDefaultBrowser,
+    kDefaultBrowser = 7,
 
     // Renders the search engine choice screen.
-    kSearchEngineChoice,
+    kSearchEngineChoice = 8,
 
-    kFinishFlow,
+    kFinishFlow = 9,
+
+    kMaxValue = kFinishFlow,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileManagementFlowStep)
 
   // Creates a flow controller that will start showing UI when `Init()`-ed.
   // `clear_host_callback` will be called if `host` needs to be closed.
-  explicit ProfileManagementFlowController(
-      ProfilePickerWebContentsHost* host,
-      ClearHostClosure clear_host_callback);
+  explicit ProfileManagementFlowController(ProfilePickerWebContentsHost* host,
+                                           ClearHostClosure clear_host_callback,
+                                           std::string_view flow_type_string);
   virtual ~ProfileManagementFlowController();
 
   // Starts the flow by registering and switching to the first step.
@@ -114,8 +121,9 @@ class ProfileManagementFlowController {
   base::OnceClosure CreateSwitchToStepPopCallback(Step step);
 
  protected:
-  void RegisterStep(Step step,
-                    std::unique_ptr<ProfileManagementStepController>);
+  void RegisterStep(
+      Step step,
+      std::unique_ptr<ProfileManagementStepController> step_controller);
 
   void UnregisterStep(Step step);
 
@@ -144,7 +152,7 @@ class ProfileManagementFlowController {
   // nothing and returns `false`.
   virtual bool PreFinishWithBrowser();
 
-  Step current_step() const { return current_step_; }
+  Step current_step() const;
 
   ProfilePickerWebContentsHost* host() { return host_; }
 
@@ -156,12 +164,42 @@ class ProfileManagementFlowController {
   content::WebContents* GetSignedOutFlowWebContents() const;
 
  private:
+  // Structure that takes care of logging metrics based on the flow type and the
+  // input step.
+  class FlowTracker {
+   public:
+    explicit FlowTracker(std::string_view flow_type_string);
+
+    Step tracked_step() const { return tracked_step_; }
+
+    // A new step was switched to; step started along with timer.
+    void EnteredNewStep(Step step);
+    // Step was either shown or skipped, if `success` is true, then the shown
+    // timer is also started.
+    void FinishedStepSwitch(Step step, bool success);
+    // Current step was exited; stop all step timers and record corresponding
+    // metrics.
+    void ExitedCurrentStep();
+
+    // Flow was exited during the current step.
+    void ExitedFlow();
+
+   private:
+    const std::string flow_type_string_;
+
+    // Step tracking.
+    Step tracked_step_ = Step::kUnknown;
+    std::optional<base::ElapsedTimer> step_start_elapsed_timer_;
+    std::optional<base::ElapsedTimer> step_shown_elapsed_timer_;
+
+    // Used to determine the total time spent in the flow.
+    base::ElapsedTimer flow_elapsed_timer_;
+  };
+
   // Called after a browser is open. Clears the host and then runs the callback.
   void CloseHostAndRunCallback(
       PostHostClearedCallback post_host_cleared_callback,
       Browser* browser);
-
-  Step current_step_ = Step::kUnknown;
 
   // The signed out flow web contents are used in some steps inside
   // `initialized_steps_`. They have to be destroyed after `initialized_steps_`.
@@ -169,11 +207,15 @@ class ProfileManagementFlowController {
 
   raw_ptr<ProfilePickerWebContentsHost> host_;
   ClearHostClosure clear_host_callback_;
+  FlowTracker flow_tracker_;
 
   base::flat_map<Step, std::unique_ptr<ProfileManagementStepController>>
       initialized_steps_;
 
   base::WeakPtrFactory<ProfileManagementFlowController> weak_factory_{this};
 };
+
+std::string_view GetStepHistogramSuffixForTesting(
+    ProfileManagementFlowController::Step step);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_H_

@@ -50,7 +50,9 @@ class TestProfileManagementFlowController
       Step step,
       ProfileManagementStepTestView::StepControllerFactory factory,
       base::OnceClosure initial_step_load_finished_closure)
-      : ProfileManagementFlowController(host, std::move(clear_host_callback)),
+      : ProfileManagementFlowController(host,
+                                        std::move(clear_host_callback),
+                                        /*flow_type_string==*/"TestFlow"),
         step_(step),
         step_controller_factory_(std::move(factory)),
         initial_step_load_finished_closure_(

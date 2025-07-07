@@ -476,7 +476,10 @@ ProfilePickerFlowController::ProfilePickerFlowController(
     ClearHostClosure clear_host_callback,
     ProfilePicker::EntryPoint entry_point,
     const GURL& selected_profile_target_url)
-    : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
+    : ProfileManagementFlowControllerImpl(
+          host,
+          std::move(clear_host_callback),
+          /*flow_type_string=*/"ProfilePickerFlow"),
       entry_point_(entry_point),
       selected_profile_target_url_(selected_profile_target_url) {}
 

@@ -481,7 +481,9 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
     ClearHostClosure clear_host_callback,
     Profile* profile,
     ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
-    : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
+    : ProfileManagementFlowControllerImpl(host,
+                                          std::move(clear_host_callback),
+                                          /*flow_type_string=*/"FREFlow"),
       profile_(profile),
       first_run_exited_callback_(std::move(first_run_exited_callback)) {
   DCHECK(profile_);

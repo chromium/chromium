@@ -30,7 +30,9 @@ ProfilePickerGlicFlowController::ProfilePickerGlicFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
     base::OnceCallback<void(Profile*)> picked_profile_callback)
-    : ProfileManagementFlowController(host, std::move(clear_host_callback)),
+    : ProfileManagementFlowController(host,
+                                      std::move(clear_host_callback),
+                                      /*flow_type_string=*/"GlicFlow"),
       picked_profile_callback_(std::move(picked_profile_callback)) {
   CHECK(picked_profile_callback_);
 }
