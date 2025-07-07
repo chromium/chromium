@@ -202,6 +202,8 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
 
   TestingPrefServiceSimple* local_state_pref() { return &local_state_pref_; }
 
+  base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -375,6 +377,8 @@ TEST_P(LobsterSystemStateProviderImplNetworkStatusTest,
             std::get<1>(GetParam()));
 }
 
+// This test only applies when we enforce IME restriction that only allows
+// Lobster to show when eligibile IMEs are active.
 class LobsterSystemStateProviderImplImeTest
     : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
@@ -382,7 +386,10 @@ class LobsterSystemStateProviderImplImeTest
           /*expected_lobster_status=*/ash::LobsterStatus>> {
  public:
   void SetUp() override {
-    SetUpEligibleHardware();
+    scoped_feature_list().InitWithFeatures(
+        /*enabled_features=*/{ash::features::kFeatureManagementLobster,
+                              ash::features::kLobsterDisabledByInvalidIME},
+        /*disabled_features=*/{});
     SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
     SetSettingsToggle(/*enabled=*/true);
     SetOnlineStatus(/*is_online=*/true);

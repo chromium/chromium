@@ -1806,7 +1806,7 @@ BASE_FEATURE(kLobsterFileNamingImprovement,
 // Enables lobster restriction based on the current active IME.
 BASE_FEATURE(kLobsterDisabledByInvalidIME,
              "LobsterDisabledByInvalidIME",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls lobster availability on managed accounts.
 BASE_FEATURE(kLobsterForManagedUsers,
