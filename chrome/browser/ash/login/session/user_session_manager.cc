@@ -2131,28 +2131,38 @@ void UserSessionManager::OnUserProfileLoaded(Profile* profile,
     observer->StartObserving();
   }
 
-  if (TokenHandlesEnabled() && user && user->HasGaiaAccount()) {
-    CreateTokenUtilIfMissing();
-    if (IsOnlineSignin(user_context_)) {
-      // If the user has gone through an online Gaia flow, then their LST is
-      // guaranteed to have changed/created. We need to update the token handle,
-      // regardless of the state of the previous token handle, if any.
-      if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
-        // New user.
-        token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
-            profile, token_handle_store_.get(), user_context_.GetAccountId());
-        token_handle_fetcher_->FillForNewUser(
-            user_context_.GetAccessToken(),
-            Sha1Digest(user_context_.GetRefreshToken()),
-            base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                           GetUserSessionManagerAsWeakPtr()));
-      } else {
-        // Existing user.
-        UpdateTokenHandle(profile, user->GetAccountId());
-      }
+  if (!TokenHandlesEnabled() || !user || !user->HasGaiaAccount()) {
+    VLOG(1) << "UserSessionManager::OnUserProfileLoaded:"
+            << " token handles disabled or user invalid, returning early";
+    return;
+  }
+
+  CreateTokenHandleStoreIfMissing();
+  FetchTokenHandleLegacy(profile, user);
+}
+
+void UserSessionManager::FetchTokenHandleLegacy(
+    Profile* profile,
+    const user_manager::User* user) {
+  if (IsOnlineSignin(user_context_)) {
+    // If the user has gone through an online Gaia flow, then their LST is
+    // guaranteed to have changed/created. We need to update the token handle,
+    // regardless of the state of the previous token handle, if any.
+    if (!token_handle_store_->HasToken(user_context_.GetAccountId())) {
+      // New user.
+      token_handle_fetcher_ = std::make_unique<LegacyTokenHandleFetcher>(
+          profile, token_handle_store_.get(), user_context_.GetAccountId());
+      token_handle_fetcher_->FillForNewUser(
+          user_context_.GetAccessToken(),
+          Sha1Digest(user_context_.GetRefreshToken()),
+          base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
+                         GetUserSessionManagerAsWeakPtr()));
     } else {
-      UpdateTokenHandleIfRequired(profile, user->GetAccountId());
+      // Existing user.
+      UpdateTokenHandle(profile, user->GetAccountId());
     }
+  } else {
+    UpdateTokenHandleIfRequired(profile, user->GetAccountId());
   }
 }
 
@@ -2634,7 +2644,7 @@ UserSessionManager::GetUserSessionManagerAsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void UserSessionManager::CreateTokenUtilIfMissing() {
+void UserSessionManager::CreateTokenHandleStoreIfMissing() {
   if (!token_handle_store_) {
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }

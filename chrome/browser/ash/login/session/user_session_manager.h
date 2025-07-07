@@ -478,7 +478,7 @@ class UserSessionManager
   // Returns `true` if token handles should be used on this device.
   bool TokenHandlesEnabled();
 
-  void CreateTokenUtilIfMissing();
+  void CreateTokenHandleStoreIfMissing();
 
   // Update token handle if the existing token handle is missing/invalid.
   void UpdateTokenHandleIfRequired(Profile* const profile,
@@ -516,6 +516,8 @@ class UserSessionManager
   // doesn't exist.
   HelpAppNotificationController* GetHelpAppNotificationController(
       Profile* profile);
+
+  void FetchTokenHandleLegacy(Profile* profile, const user_manager::User* user);
 
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
