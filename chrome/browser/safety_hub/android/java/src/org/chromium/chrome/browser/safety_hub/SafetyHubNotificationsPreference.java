@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
@@ -18,6 +16,7 @@ import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -118,15 +117,15 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
     private ListMenu getListMenu() {
         ModelList listItems = new ModelList();
         listItems.add(
-                buildMenuListItem(
-                        R.string.safety_hub_reset_notifications_menu_item,
-                        MENU_RESET_NOTIFICATIONS_ITEM_ID,
-                        0));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.safety_hub_reset_notifications_menu_item)
+                        .withMenuId(MENU_RESET_NOTIFICATIONS_ITEM_ID)
+                        .build());
         listItems.add(
-                buildMenuListItem(
-                        R.string.safety_hub_allow_notifications_menu_item,
-                        MENU_ALLOW_NOTIFICATIONS_ITEM_ID,
-                        0));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.safety_hub_allow_notifications_menu_item)
+                        .withMenuId(MENU_ALLOW_NOTIFICATIONS_ITEM_ID)
+                        .build());
         return BrowserUiListMenuUtils.getBasicListMenu(getContext(), listItems, this);
     }
 

@@ -6,10 +6,13 @@ package org.chromium.components.messages;
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -33,29 +36,43 @@ public class MessageSecondaryMenuItems {
 
     /**
      * Add an item to the list menu.
+     *
      * @param itemId The list menu item ID.
      * @param resourceId The start icon resource ID of the list menu item.
      * @param itemText The title of the list menu item.
      */
-    PropertyModel addMenuItem(int itemId, int resourceId, String itemText) {
+    PropertyModel addMenuItem(@IdRes int itemId, @DrawableRes int resourceId, String itemText) {
         final ListItem item =
-                BrowserUiListMenuUtils.buildMenuListItem(itemText, itemId, resourceId, true);
+                new ListItemBuilder()
+                        .withTitle(itemText)
+                        .withMenuId(itemId)
+                        .withStartIconRes(resourceId)
+                        .build();
         mMenuItems.add(item);
         return item.model;
     }
 
     /**
      * Add an item to the list menu.
+     *
      * @param itemId The list menu item ID.
      * @param resourceId The start icon resource ID of the list menu item.
      * @param itemText The title of the list menu item.
-     * @param itemDescription The a11y content description of menu item.
-     * Set empty string/NULL to unset content description.
+     * @param itemDescription The a11y content description of menu item. Set empty string/NULL to
+     *     unset content description.
      */
-    PropertyModel addMenuItem(int itemId, int resourceId, String itemText, String itemDescription) {
+    PropertyModel addMenuItem(
+            @IdRes int itemId,
+            @DrawableRes int resourceId,
+            String itemText,
+            String itemDescription) {
         final ListItem item =
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        itemText, itemId, resourceId, itemDescription, true);
+                new ListItemBuilder()
+                        .withTitle(itemText)
+                        .withMenuId(itemId)
+                        .withStartIconRes(resourceId)
+                        .withContentDescription(itemDescription)
+                        .build();
         mMenuItems.add(item);
         return item.model;
     }

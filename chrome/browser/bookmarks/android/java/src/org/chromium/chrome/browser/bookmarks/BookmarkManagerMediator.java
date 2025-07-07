@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -48,6 +48,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
@@ -1422,23 +1423,25 @@ class BookmarkManagerMediator
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             if (bookmarkItem != null) {
                 listItems.add(
-                        buildMenuListItem(
+                        buildSimpleMenuItem(
                                 bookmarkItem.isRead()
                                         ? R.string.reading_list_mark_as_unread
-                                        : R.string.reading_list_mark_as_read,
-                                0,
-                                0));
+                                        : R.string.reading_list_mark_as_read));
             }
         }
 
-        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
-        listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_select));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_edit));
+        listItems.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.bookmark_item_move)
+                        .withEnabled(canMove)
+                        .build());
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_delete));
 
         boolean canReorder = isReorderable(entry);
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-            listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
+            listItems.add(buildSimpleMenuItem(R.string.bookmark_show_in_folder));
         } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
                 && location != Location.SOLO
                 && canReorder) {
@@ -1447,11 +1450,17 @@ class BookmarkManagerMediator
             // Only add move up / move down buttons if there is more than 1 item.
             if (location != Location.TOP) {
                 listItems.add(
-                        buildMenuListItem(R.string.menu_item_move_up, 0, 0, manualSortActive));
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.menu_item_move_up)
+                                .withEnabled(manualSortActive)
+                                .build());
             }
             if (location != Location.BOTTOM) {
                 listItems.add(
-                        buildMenuListItem(R.string.menu_item_move_down, 0, 0, manualSortActive));
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.menu_item_move_down)
+                                .withEnabled(manualSortActive)
+                                .build());
             }
         }
 
@@ -1461,12 +1470,10 @@ class BookmarkManagerMediator
                     PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
             boolean isSubscribed = mShoppingService.isSubscribedFromCache(sub);
             listItems.add(
-                    buildMenuListItem(
+                    buildSimpleMenuItem(
                             isSubscribed
                                     ? R.string.disable_price_tracking_menu_item
-                                    : R.string.enable_price_tracking_menu_item,
-                            0,
-                            0));
+                                    : R.string.enable_price_tracking_menu_item));
         }
 
         return listItems;

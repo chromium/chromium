@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.widget.listmenu;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
+
 import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout.LayoutParams;
@@ -31,6 +33,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -84,32 +87,33 @@ public class BrowserUiListMenuRenderTest {
                 () -> {
                     ModelList data = new ModelList();
                     data.add(
-                            BrowserUiListMenuUtils.buildMenuListItem(
-                                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp));
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.test_primary_1)
+                                    .withStartIconRes(R.drawable.ic_check_googblue_24dp)
+                                    .build());
                     data.add(
-                            BrowserUiListMenuUtils.buildMenuListItem(
-                                    R.string.test_primary_1,
-                                    0,
-                                    R.drawable.ic_check_googblue_24dp,
-                                    false));
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.test_primary_1)
+                                    .withStartIconRes(R.drawable.ic_check_googblue_24dp)
+                                    .withEnabled(false)
+                                    .build());
                     data.add(
-                            BrowserUiListMenuUtils.buildMenuListItemWithEndIcon(
-                                    R.string.test_primary_1,
-                                    0,
-                                    R.drawable.ic_check_googblue_24dp,
-                                    true));
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.test_primary_1)
+                                    .withEndIconRes(R.drawable.ic_check_googblue_24dp)
+                                    .build());
                     data.add(
-                            BrowserUiListMenuUtils.buildMenuListItemWithEndIcon(
-                                    R.string.test_primary_1,
-                                    0,
-                                    R.drawable.ic_check_googblue_24dp,
-                                    false));
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.test_primary_1)
+                                    .withEndIconRes(R.drawable.ic_check_googblue_24dp)
+                                    .withEnabled(false)
+                                    .build());
+                    data.add(buildSimpleMenuItem(R.string.test_primary_1));
                     data.add(
-                            BrowserUiListMenuUtils.buildMenuListItem(
-                                    R.string.test_primary_1, 0, 0));
-                    data.add(
-                            BrowserUiListMenuUtils.buildMenuListItem(
-                                    R.string.test_primary_1, 0, 0, false));
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.test_primary_1)
+                                    .withEnabled(false)
+                                    .build());
                     data.add(BasicListMenu.buildMenuDivider(incognito));
 
                     ListMenu.Delegate delegate = item -> {};

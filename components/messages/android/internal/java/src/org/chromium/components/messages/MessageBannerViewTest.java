@@ -39,6 +39,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -286,8 +287,7 @@ public class MessageBannerViewTest {
                 () -> {
                     MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
                     menuItems.add(
-                            BrowserUiListMenuUtils.buildMenuListItem(
-                                    SECONDARY_BUTTON_MENU_TEXT, 0, 0, true));
+                            new ListItemBuilder().withTitle(SECONDARY_BUTTON_MENU_TEXT).build());
 
                     BasicListMenu listMenu =
                             BrowserUiListMenuUtils.getBasicListMenu(

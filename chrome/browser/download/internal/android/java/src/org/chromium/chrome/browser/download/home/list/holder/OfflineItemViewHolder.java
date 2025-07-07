@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.download.home.list.holder;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -184,15 +184,14 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     public ListMenu getListMenu() {
         ModelList listItems = new ModelList();
 
-        if (mCanShare) listItems.add(buildMenuListItem(R.string.share, 0, 0));
-        if (mCanRename) listItems.add(buildMenuListItem(R.string.rename, 0, 0));
+        if (mCanShare) listItems.add(buildSimpleMenuItem(R.string.share));
+        if (mCanRename) listItems.add(buildSimpleMenuItem(R.string.rename));
         if (mCanShowWarningBypassDialog) {
+            listItems.add(buildSimpleMenuItem(R.string.download_warning_heed_menu_action_delete));
             listItems.add(
-                    buildMenuListItem(R.string.download_warning_heed_menu_action_delete, 0, 0));
-            listItems.add(
-                    buildMenuListItem(R.string.download_warning_bypass_menu_action_download, 0, 0));
+                    buildSimpleMenuItem(R.string.download_warning_bypass_menu_action_download));
         } else {
-            listItems.add(buildMenuListItem(R.string.delete, 0, 0));
+            listItems.add(buildSimpleMenuItem(R.string.delete));
         }
         ListMenu.Delegate delegate =
                 (model) -> {

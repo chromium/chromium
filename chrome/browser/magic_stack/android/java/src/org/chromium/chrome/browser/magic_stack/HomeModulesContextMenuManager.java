@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItemWithEllipsizedAtEnd;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,6 +18,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -114,20 +114,20 @@ public class HomeModulesContextMenuManager {
 
             if (itemId != ContextMenuItemId.HIDE_MODULE) {
                 itemList.add(
-                        buildMenuListItemWithEllipsizedAtEnd(
-                                context.getString(getResourceIdForMenuItem(itemId, moduleProvider)),
-                                ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS,
-                                /* startIconId */ 0,
-                                /* enabled */ true,
-                                /* isTextEllipsizedAtEnd */ true));
+                        new ListItemBuilder()
+                                .withTitle(
+                                        context.getString(
+                                                getResourceIdForMenuItem(itemId, moduleProvider)))
+                                .withMenuId(ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS)
+                                .withIsTextEllipsizedAtEnd(true)
+                                .build());
             } else {
                 itemList.add(
-                        buildMenuListItemWithEllipsizedAtEnd(
-                                moduleProvider.getModuleContextMenuHideText(context),
-                                ContextMenuItemId.HIDE_MODULE,
-                                /* startIconId */ 0,
-                                /* enabled */ true,
-                                /* isTextEllipsizedAtEnd */ true));
+                        new ListItemBuilder()
+                                .withTitle(moduleProvider.getModuleContextMenuHideText(context))
+                                .withMenuId(ContextMenuItemId.HIDE_MODULE)
+                                .withIsTextEllipsizedAtEnd(true)
+                                .build());
             }
             hasItems = true;
         }

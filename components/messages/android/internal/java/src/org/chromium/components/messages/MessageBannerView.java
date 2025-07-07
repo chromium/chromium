@@ -34,6 +34,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -438,7 +439,7 @@ public class MessageBannerView extends RelativeLayout {
     private ListMenuDelegate buildDelegateForSingleMenuItem() {
         assumeNonNull(mSecondaryButtonMenuText);
         MVCListAdapter.ListItem listItem =
-                BrowserUiListMenuUtils.buildMenuListItem(mSecondaryButtonMenuText, 0, 0, true);
+                new ListItemBuilder().withTitle(mSecondaryButtonMenuText).build();
         MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
         menuItems.add(listItem);
 

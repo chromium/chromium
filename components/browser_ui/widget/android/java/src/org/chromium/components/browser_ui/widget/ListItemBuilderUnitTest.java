@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
+
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -100,6 +102,15 @@ public class ListItemBuilderUnitTest {
     @Test
     public void testBuild_titleIdOnly() {
         ListItem listItem = new ListItemBuilder().withTitleRes(FAKE_TITLE_ID).build();
+        PropertyModel model = listItem.model;
+
+        assertEquals(FAKE_TITLE_ID, model.get(ListMenuItemProperties.TITLE_ID));
+        assertNull(model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    public void testBuildSimpleMenuItem() {
+        ListItem listItem = buildSimpleMenuItem(FAKE_TITLE_ID);
         PropertyModel model = listItem.model;
 
         assertEquals(FAKE_TITLE_ID, model.get(ListMenuItemProperties.TITLE_ID));

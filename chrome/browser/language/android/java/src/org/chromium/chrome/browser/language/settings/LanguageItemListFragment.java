@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.language.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -78,7 +78,7 @@ public abstract class LanguageItemListFragment extends Fragment
             final LanguageItem currentLanguageItem = getItemByPosition(position);
 
             ModelList menuItems = new ModelList();
-            menuItems.add(buildMenuListItem(R.string.remove, 0, 0));
+            menuItems.add(buildSimpleMenuItem(R.string.remove));
 
             // ListMenu.Delegate handles return from three dot menu.
             ListMenu.Delegate delegate =

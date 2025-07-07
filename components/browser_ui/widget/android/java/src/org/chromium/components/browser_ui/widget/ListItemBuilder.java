@@ -188,4 +188,13 @@ public class ListItemBuilder {
 
         return new ListItem(MENU_ITEM, builder.build());
     }
+
+    /**
+     * Builds a {@link ListItem} with the provided title.
+     *
+     * @param titleRes The string resource for the menu item.
+     */
+    public static ListItem buildSimpleMenuItem(@StringRes int titleRes) {
+        return new ListItemBuilder().withTitleRes(titleRes).build();
+    }
 }
