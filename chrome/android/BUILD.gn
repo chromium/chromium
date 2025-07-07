@@ -1183,6 +1183,10 @@ if (_is_default_toolchain) {
       "//components/segmentation_platform/public:junit",
       "//components/translate/content/android:junit",
     ]
+
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/ui/android/extensions:junit" ]
+    }
   }
 
   # Files used by chrome integration and unit javatests.

@@ -161,7 +161,9 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        @ShowAction int showAction = mExtensionActionsBridge.runAction(actionId, webContents);
+        @ShowAction
+        int showAction =
+                mExtensionActionsBridge.runAction(actionId, mCurrentTab.getId(), webContents);
         switch (showAction) {
             case ShowAction.NONE:
                 break;

@@ -12,6 +12,8 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.Objects;
+
 /**
  * Represents the state of an extension action for a particular tab.
  *
@@ -37,5 +39,18 @@ public class ExtensionAction {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ExtensionAction other) {
+            return mId.equals(other.mId) && mTitle.equals(other.mTitle);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mTitle);
     }
 }

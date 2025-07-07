@@ -47,6 +47,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   ExtensionAction::ShowAction RunAction(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id,
+      int tab_id,
       content::WebContents* web_contents);
   bool ExtensionsEnabled(JNIEnv* env);
   jni_zero::ScopedJavaLocalRef<jobject> HandleKeyDownEvent(

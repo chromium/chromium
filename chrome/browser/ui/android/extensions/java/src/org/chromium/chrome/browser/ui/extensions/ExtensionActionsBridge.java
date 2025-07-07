@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 
+import java.util.Objects;
+
 /** A JNI bridge to interact with extension actions for the toolbar. */
 @NullMarked
 @JNINamespace("extensions")
@@ -47,10 +49,24 @@ public class ExtensionActionsBridge {
         /** The action to trigger, or empty if no action should be triggered. */
         public final String actionId;
 
+        @VisibleForTesting
         @CalledByNative("HandleKeyEventResult")
-        private HandleKeyEventResult(boolean handled, @JniType("std::string") String actionId) {
+        public HandleKeyEventResult(boolean handled, @JniType("std::string") String actionId) {
             this.handled = handled;
             this.actionId = actionId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof HandleKeyEventResult other) {
+                return handled == other.handled && actionId.equals(other.actionId);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(handled, actionId);
         }
     }
 
@@ -105,9 +121,16 @@ public class ExtensionActionsBridge {
      *
      * <p>It returns a {@link ShowAction} enum indicating what UI action the caller should perform.
      */
-    public @ShowAction int runAction(String actionId, WebContents webContents) {
+    public @ShowAction int runAction(String actionId, int tabId, WebContents webContents) {
+        // NOTE: The underlying JNI implementation does not use the tab ID because it can extract it
+        // from WebContents with SessionTabHelper::IdForTab(). However, doing similar is difficult
+        // in tests for two reasons: (1) there is no existing JNI method to call into IdForTab();
+        // (2) even if we introduce such a JNI method, the passed WebContents is often a mock and
+        // doesn't have an associated SessionTabHelper, so IdForTab() would not work. Fortunately it
+        // should be easy for callers of this method to find the tab ID, so we ask them to pass it
+        // as an argument, even though the value is not used in production.
         return ExtensionActionsBridgeJni.get()
-                .runAction(mNativeExtensionActionsBridge, actionId, webContents);
+                .runAction(mNativeExtensionActionsBridge, actionId, tabId, webContents);
     }
 
     /**
@@ -227,6 +250,7 @@ public class ExtensionActionsBridge {
         int runAction(
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
+                int tabId,
                 @JniType("content::WebContents*") WebContents webContents);
 
         boolean extensionsEnabled(long nativeExtensionActionsBridge);

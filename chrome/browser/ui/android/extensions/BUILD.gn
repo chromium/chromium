@@ -64,3 +64,37 @@ java_cpp_template("generate_buildflags") {
     defines = [ "_ENABLE_DESKTOP_ANDROID_EXTENSIONS" ]
   }
 }
+
+if (enable_extensions_core) {
+  android_library("test_support_java") {
+    testonly = true
+    sources = [
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridge.java",
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeRule.java",
+    ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//chrome/browser/profiles/android:java",
+      "//content/public/android:content_full_java",
+      "//extensions/browser:extension_action_enums",
+      "//third_party/junit",
+    ]
+  }
+
+  robolectric_library("junit") {
+    sources = [ "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeTest.java" ]
+
+    deps = [
+      ":java",
+      ":test_support_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//chrome/browser/profiles/android:java",
+      "//content/public/android:content_full_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+    ]
+  }
+}

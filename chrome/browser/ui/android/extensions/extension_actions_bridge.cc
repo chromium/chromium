@@ -122,7 +122,10 @@ ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetActionIcon(
 ExtensionAction::ShowAction ExtensionActionsBridge::RunAction(
     JNIEnv* env,
     const ToolbarActionsModel::ActionId& action_id,
+    int tab_id,
     content::WebContents* web_contents) {
+  // `tab_id` is unused, but it makes Java unit testing easier. See comments in
+  // ExtensionActionsBridge.java for details.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   DCHECK(registry);
   ExtensionActionManager* manager = ExtensionActionManager::Get(profile_);
