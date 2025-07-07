@@ -3436,6 +3436,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.PopupOpensInNewWindow" enum="Boolean"
+    expires_after="M148">
+  <owner>chominskib@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    Records the outcome of a |window.open()| JavaScript call that should open a
+    new popup window. Recorded only when the |window.open()| call is guaranteed
+    to be executed one way or another (i.e. does not record anything when popup
+    blocker drops the request). If the popup is not opened in a new window, it
+    is most likely opened as a new tab.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
     expires_after="2025-05-11">
   <owner>skavuluru@google.com</owner>
