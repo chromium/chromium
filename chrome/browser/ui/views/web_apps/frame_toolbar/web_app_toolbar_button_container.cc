@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -418,7 +419,9 @@ WebAppToolbarButtonContainer::GetContentSettingWebContents() {
 
 ContentSettingBubbleModelDelegate*
 WebAppToolbarButtonContainer::GetContentSettingBubbleModelDelegate() {
-  return browser_view_->browser()->content_setting_bubble_model_delegate();
+  return browser_view_->browser()
+      ->GetFeatures()
+      .content_setting_bubble_model_delegate();
 }
 
 // ImmersiveModeController::Observer:

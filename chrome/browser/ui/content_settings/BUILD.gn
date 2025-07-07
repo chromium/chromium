@@ -88,6 +88,7 @@ source_set("browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/subresource_filter/core/browser:browser",

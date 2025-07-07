@@ -21,6 +21,7 @@ class GlicIphController;
 
 class BookmarksSidePanelCoordinator;
 class Browser;
+class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
 class BrowserLocationBarModelDelegate;
 class BrowserSyncedWindowDelegate;
@@ -352,6 +353,11 @@ class BrowserWindowFeatures {
     return upgrade_notification_controller_.get();
   }
 
+  BrowserContentSettingBubbleModelDelegate*
+  content_setting_bubble_model_delegate() {
+    return content_setting_bubble_model_delegate_.get();
+  }
+
   static UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -492,6 +498,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<UpgradeNotificationController>
       upgrade_notification_controller_;
+
+  // Helper which implements the ContentSettingBubbleModel interface.
+  std::unique_ptr<BrowserContentSettingBubbleModelDelegate>
+      content_setting_bubble_model_delegate_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>

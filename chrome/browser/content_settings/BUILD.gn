@@ -203,6 +203,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/content_settings",
       "//chrome/test:test_support_ui",
       "//components/content_settings/browser",

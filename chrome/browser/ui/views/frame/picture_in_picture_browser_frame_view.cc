@@ -13,6 +13,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -1121,7 +1122,7 @@ ContentSettingBubbleModelDelegate*
 PictureInPictureBrowserFrameView::GetContentSettingBubbleModelDelegate() {
   // Use the opener browser delegate to open any new tab.
   Browser* browser = chrome::FindBrowserWithTab(GetWebContents());
-  return browser->content_setting_bubble_model_delegate();
+  return browser->GetFeatures().content_setting_bubble_model_delegate();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

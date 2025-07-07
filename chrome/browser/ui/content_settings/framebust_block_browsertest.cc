@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
@@ -179,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
 
   // Simulate clicking on the second blocked URL.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->content_setting_bubble_model_delegate(), GetWebContents());
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      GetWebContents());
 
   EXPECT_FALSE(clicked_index_.has_value());
   EXPECT_FALSE(clicked_url_.has_value());
@@ -220,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   // Create a content bubble and simulate clicking on the first radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->content_setting_bubble_model_delegate(), GetWebContents());
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      GetWebContents());
   std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
       framebust_block_bubble_model, kDisallowRadioButtonIndex);
 
@@ -250,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   // Create a content bubble and simulate clicking on the second radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->content_setting_bubble_model_delegate(), GetWebContents());
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      GetWebContents());
 
   std::unique_ptr<FakeOwner> owner =
       FakeOwner::Create(framebust_block_bubble_model, kAllowRadioButtonIndex);
@@ -285,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
   // Create a content bubble and simulate clicking on the second radio button
   // before closing it.
   ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
-      browser()->content_setting_bubble_model_delegate(), GetWebContents());
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      GetWebContents());
 
   content::TestNavigationObserver navigation_observer(nullptr);
   navigation_observer.StartWatchingNewWebContents();

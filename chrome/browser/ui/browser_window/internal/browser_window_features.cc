@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
@@ -240,6 +241,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   data_sharing_bubble_controller_ =
       std::make_unique<DataSharingBubbleController>(browser);
+
+  content_setting_bubble_model_delegate_ =
+      std::make_unique<BrowserContentSettingBubbleModelDelegate>(browser);
 
   tab_list_bridge_ = std::make_unique<TabListBridge>(
       *tab_strip_model_, browser->GetUnownedUserDataHost());

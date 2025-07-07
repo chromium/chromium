@@ -715,7 +715,7 @@ const LocationBarModel* ToolbarView::GetLocationBarModel() const {
 
 ContentSettingBubbleModelDelegate*
 ToolbarView::GetContentSettingBubbleModelDelegate() {
-  return browser_->content_setting_bubble_model_delegate();
+  return browser_->GetFeatures().content_setting_bubble_model_delegate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

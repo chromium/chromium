@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -663,8 +662,6 @@ Browser::Browser(const CreateParams& params)
           params.initial_visible_on_all_workspaces_state),
       creation_source_(params.creation_source),
       unload_controller_(this),
-      content_setting_bubble_model_delegate_(
-          new BrowserContentSettingBubbleModelDelegate(this)),
       live_tab_context_(new BrowserLiveTabContext(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
       bookmark_bar_state_(BookmarkBar::HIDDEN),

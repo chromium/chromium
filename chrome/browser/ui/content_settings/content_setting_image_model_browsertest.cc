@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -119,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest,
 
   auto model = ContentSettingImageModel::CreateForContentType(ImageType::ADS);
   std::unique_ptr<ContentSettingBubbleModel> bubble(model->CreateBubbleModel(
-      browser()->content_setting_bubble_model_delegate(), web_contents));
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      web_contents));
 
   content::TestNavigationObserver observer(nullptr);
   observer.StartWatchingNewWebContents();

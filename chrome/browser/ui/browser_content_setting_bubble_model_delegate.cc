@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/common/url_constants.h"
-#include "components/google/core/common/google_util.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
+namespace {
 // The URL for when the user clicks "Learn more" on the mixed scripting page
 // icon bubble.
 constexpr char kInsecureScriptHelpUrl[] =
@@ -22,10 +24,11 @@ constexpr char kInsecureScriptHelpUrl[] =
 // permission prompt.
 constexpr char kNotificationsHelpUrl[] =
     "https://support.google.com/chrome/answer/3220216";
+}  // namespace
 
 BrowserContentSettingBubbleModelDelegate::
-    BrowserContentSettingBubbleModelDelegate(Browser* browser)
-    : browser_(browser) {}
+    BrowserContentSettingBubbleModelDelegate(BrowserWindowInterface* browser)
+    : browser_(CHECK_DEREF(browser)) {}
 
 BrowserContentSettingBubbleModelDelegate::
     ~BrowserContentSettingBubbleModelDelegate() = default;
@@ -38,17 +41,19 @@ void BrowserContentSettingBubbleModelDelegate::ShowCollectedCookiesDialog(
 void BrowserContentSettingBubbleModelDelegate::ShowMediaSettingsPage() {
   // Microphone and camera settings appear in the content settings menu right
   // next to each other, the microphone section is first.
-  chrome::ShowContentSettings(browser_, ContentSettingsType::MEDIASTREAM_MIC);
+  chrome::ShowContentSettings(browser_->GetBrowserForMigrationOnly(),
+                              ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 void BrowserContentSettingBubbleModelDelegate::ShowContentSettingsPage(
     ContentSettingsType type) {
+  Browser* const browser = browser_->GetBrowserForMigrationOnly();
   if (type == ContentSettingsType::PROTOCOL_HANDLERS) {
-    chrome::ShowSettingsSubPage(browser_, chrome::kHandlerSettingsSubPage);
+    chrome::ShowSettingsSubPage(browser, chrome::kHandlerSettingsSubPage);
   } else if (type == ContentSettingsType::COOKIES) {
-    chrome::ShowSettingsSubPage(browser_, chrome::kCookieSettingsSubPage);
+    chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
   } else {
-    chrome::ShowContentSettingsExceptions(browser_, type);
+    chrome::ShowContentSettingsExceptions(browser, type);
   }
 }
 
@@ -68,7 +73,6 @@ void BrowserContentSettingBubbleModelDelegate::ShowLearnMorePage(
     default:
       return;
   }
-  DCHECK(!learn_more_url.is_empty());
-  chrome::AddSelectedTabWithURL(browser_, learn_more_url,
-                                ui::PAGE_TRANSITION_LINK);
+  chrome::AddSelectedTabWithURL(browser_->GetBrowserForMigrationOnly(),
+                                learn_more_url, ui::PAGE_TRANSITION_LINK);
 }
