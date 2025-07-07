@@ -25,12 +25,12 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 #define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_name) \
@@ -577,26 +577,26 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
   // In this case, we use the R_8 buffer with height == 1 to represent a data
   // container. As a result, we use plane.stride as size of the data here since
   // plane.size might be larger due to height alignment.
-  const gfx::Size output_gmb_buffer_size(
+  const gfx::Size native_pixmap_size(
       base::checked_cast<int32_t>(output_frame->layout().planes()[0].stride),
       1);
 
-  auto output_gmb_buffer =
-      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(output_gmb_handle),
-          output_gmb_buffer_size, gfx::BufferFormat::R_8,
-          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, base::DoNothing());
-  if (!output_gmb_buffer) {
-    VLOGF(1) << "Failed to import gmb buffer";
+  std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
+      client_native_pixmap_factory_->ImportFromHandle(
+          std::move(output_gmb_handle).native_pixmap_handle(),
+          native_pixmap_size, gfx::BufferFormat::R_8,
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
+  if (!native_pixmap) {
+    VLOGF(1) << "Failed to import native pixmap";
     return 0;
   }
 
-  bool isMapped = output_gmb_buffer->Map();
+  bool isMapped = native_pixmap->Map();
   if (!isMapped) {
-    VLOGF(1) << "Failed to map gmb buffer";
+    VLOGF(1) << "Failed to map native pixmap";
     return 0;
   }
-  uint8_t* dst_ptr = static_cast<uint8_t*>(output_gmb_buffer->memory(0));
+  uint8_t* dst_ptr = static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
 
   // Fill SOI and EXIF markers.
   static const uint8_t kJpegStart[] = {0xFF, JPEG_SOI};
@@ -654,7 +654,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
       NOTREACHED() << "Unsupported output pixel format";
   }
 
-  output_gmb_buffer->Unmap();
+  native_pixmap->Unmap();
 
   return idx;
 }
