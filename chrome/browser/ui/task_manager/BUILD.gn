@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("task_manager") {
+    sources = [
+      "task_manager_columns.cc",
+      "task_manager_columns.h",
+      "task_manager_table_model.cc",
+      "task_manager_table_model.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/task_manager",
+      "//ui/base",
+    ]
+
+    deps = [
+      "//base:i18n",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/task_manager/common",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//content/public/common",
+      "//content/public/common:result_codes",
+      "//third_party/icu:icui18n",
+      "//third_party/icu:icui18n_hidden_visibility",
+      "//third_party/icu:icuuc_public",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "task_manager_table_model_unittest.cc" ]
+    deps = [
+      ":task_manager",
+      "//testing/gtest",
+    ]
+  }
+}

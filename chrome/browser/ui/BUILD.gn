@@ -1201,10 +1201,6 @@ static_library("ui") {
       "tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h",
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.cc",
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.h",
-      "task_manager/task_manager_columns.cc",
-      "task_manager/task_manager_columns.h",
-      "task_manager/task_manager_table_model.cc",
-      "task_manager/task_manager_table_model.h",
       "thumbnails/background_thumbnail_capturer.h",
       "thumbnails/background_thumbnail_video_capturer.cc",
       "thumbnails/background_thumbnail_video_capturer.h",
@@ -1566,6 +1562,7 @@ static_library("ui") {
       "//chrome/browser/ui/shared_highlighting",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tab_sharing:impl",
+      "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 

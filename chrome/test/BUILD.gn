@@ -470,6 +470,9 @@ static_library("test_support") {
       "//google_apis/common:test_support",
       "//google_apis/drive",
     ]
+
+    # TODO(crbug.com/429171097): Remove this dependency when `task_manager_tester.h` gets modularized.
+    public_deps += [ "//chrome/browser/ui/task_manager" ]
   }
 
   # TODO(https://crbug.com/356905053): Continue pulling more common test
@@ -6586,7 +6589,6 @@ test("unit_tests") {
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
       "../browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
-      "../browser/ui/task_manager/task_manager_table_model_unittest.cc",
       "../browser/ui/user_education/recent_session_policy_unittest.cc",
       "../browser/ui/webui/profile_internals/profile_internals_handler_unittest.cc",
       "../browser/webapps/installable/installable_utils_unittest.cc",
@@ -8232,6 +8234,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/tabs:unit_tests",
+      "//chrome/browser/ui/task_manager:unit_tests",
       "//chrome/browser/ui/toolbar:unit_tests",
       "//chrome/browser/ui/toolbar/chrome_labs:unit_tests",
       "//chrome/browser/ui/user_education",
