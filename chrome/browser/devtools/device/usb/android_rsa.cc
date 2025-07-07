@@ -2,37 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
-#include <limits>
-#include <memory>
-#include <numeric>
+#include <array>
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
-#include "net/cert/asn1_util.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace {
 
-const size_t kRSANumWords = 64;
-const size_t kBigIntSize = 1024;
+// The Android RSA format is fixed-width and can only represent 2048-bit RSA.
+constexpr size_t kRSAModulusBytes = 2048 / 8;
+
+// The Android RSA format is 524 bytes in total:
+// - 4 bytes, little-endian: length of n in number of u32s, must be 64
+// - 4 bytes, little-endian: precomputed -1 / n[0] mod 2^32 (unused in modern
+//   Android)
+// - 256 bytes, little-endian: modulus
+// - 256 bytes, little-endian: precomputed R^2 (unused in modern Android)
+// - 4 bytes, little-endian: public exponent
+constexpr size_t kAndroidRSASize = 524;
 
 static const char kDummyRSAPublicKey[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6OSJ64q+ZLg7VV2ojEPh5TRbYjwbT"
@@ -41,14 +46,6 @@ static const char kDummyRSAPublicKey[] =
     "8haNAeyDiiCvqJcvevv2T52vqKtS3aWz+GjaTJJLVWydEpz9WdvWeLfFVhe2ZnqwwZNa30Qoj"
     "fsnvjaMwK2MU7uYfRBPuvLyK5QESWBpArNDd6ULl8Y+NU6kwNOVDc87OASCVEM1gw2IMi2mo2"
     "WO5ywp0UWRiGZCkK+wOFQIDAQAB";
-
-typedef struct RSAPublicKey {
-  int len;                    // Length of n[] in number of uint32_t
-  uint32_t n0inv;             // -1 / n[0] mod 2^32
-  std::array<uint32_t, kRSANumWords> n;   // modulus as little endian array
-  std::array<uint32_t, kRSANumWords> rr;  // R^2 as little endian array
-  int exponent;               // 3 or 65537
-} RSAPublicKey;
 
 // http://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
 // a * x + b * y = gcd(a, b) = d
@@ -77,125 +74,16 @@ void ExtendedEuclid(uint64_t a,
   *y = y2;
 }
 
-uint32_t ModInverse(uint64_t a, uint64_t m) {
+uint32_t ModInverse2_32(uint32_t a) {
+  CHECK_EQ(a & 1u, 1u);  // a must be odd
   uint64_t d, x, y;
-  ExtendedEuclid(a, m, &x, &y, &d);
-  if (d == 1)
-    return static_cast<uint32_t>(x);
-  return 0;
+  ExtendedEuclid(a, 0x100000000, &x, &y, &d);
+  CHECK_EQ(d, 1u);  // If a is odd, there is an inverse.
+  return static_cast<uint32_t>(x);
 }
 
-uint32_t* BnNew() {
-  uint32_t* result = new uint32_t[kBigIntSize];
-  memset(result, 0, kBigIntSize * sizeof(uint32_t));
-  return result;
-}
-
-void BnFree(uint32_t* a) {
-  delete[] a;
-}
-
-uint32_t* BnCopy(uint32_t* a) {
-  uint32_t* result = new uint32_t[kBigIntSize];
-  memcpy(result, a, kBigIntSize * sizeof(uint32_t));
-  return result;
-}
-
-uint32_t* BnMul(uint32_t* a, uint32_t b) {
-  uint32_t* result = BnNew();
-  uint64_t carry_over = 0;
-  for (size_t i = 0; i < kBigIntSize; ++i) {
-    carry_over += static_cast<uint64_t>(a[i]) * b;
-    result[i] = carry_over & std::numeric_limits<uint32_t>::max();
-    carry_over >>= 32;
-  }
-  return result;
-}
-
-void BnSub(uint32_t* a, uint32_t* b) {
-  int carry_over = 0;
-  for (size_t i = 0; i < kBigIntSize; ++i) {
-    int64_t sub = static_cast<int64_t>(a[i]) - b[i] - carry_over;
-    carry_over = 0;
-    if (sub < 0) {
-      carry_over = 1;
-      sub += 0x100000000LL;
-    }
-    a[i] = static_cast<uint32_t>(sub);
-  }
-}
-
-void BnLeftShift(uint32_t* a, int offset) {
-  for (int i = kBigIntSize - offset - 1; i >= 0; --i)
-    a[i + offset] = a[i];
-  for (int i = 0; i < offset; ++i)
-    a[i] = 0;
-}
-
-int BnCompare(uint32_t* a, uint32_t* b) {
-  for (int i = kBigIntSize - 1; i >= 0; --i) {
-    if (a[i] > b[i])
-      return 1;
-    if (a[i] < b[i])
-      return -1;
-  }
-  return 0;
-}
-
-uint64_t BnGuess(uint32_t* a, uint32_t* b, uint64_t from, uint64_t to) {
-  if (from + 1 >= to)
-    return from;
-
-  uint64_t guess = std::midpoint(from, to);
-  uint32_t* t = BnMul(b, static_cast<uint32_t>(guess));
-  int result = BnCompare(a, t);
-  BnFree(t);
-  if (result > 0)
-    return BnGuess(a, b, guess, to);
-  if (result < 0)
-    return BnGuess(a, b, from, guess);
-  return guess;
-}
-
-void BnDiv(uint32_t* a, uint32_t* b, uint32_t** pq, uint32_t** pr) {
-  if (BnCompare(a, b) < 0) {
-    if (pq)
-      *pq = BnNew();
-    if (pr)
-      *pr = BnCopy(a);
-    return;
-  }
-
-  int oa = kBigIntSize - 1;
-  int ob = kBigIntSize - 1;
-  for (; oa > 0 && !a[oa]; --oa) {}
-  for (; ob > 0 && !b[ob]; --ob) {}
-  uint32_t* q = BnNew();
-  uint32_t* ca = BnCopy(a);
-
-  int digit = a[oa] < b[ob] ? oa - ob - 1 : oa - ob;
-
-  for (; digit >= 0; --digit) {
-    uint32_t* shifted_b = BnCopy(b);
-    BnLeftShift(shifted_b, digit);
-    uint32_t value = static_cast<uint32_t>(BnGuess(
-        ca, shifted_b, 0,
-        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1));
-    q[digit] = value;
-    uint32_t* t = BnMul(shifted_b, value);
-    BnSub(ca, t);
-    BnFree(t);
-    BnFree(shifted_b);
-  }
-
-  if (pq)
-    *pq = q;
-  else
-    BnFree(q);
-  if (pr)
-    *pr = ca;
-  else
-    BnFree(ca);
+bool WriteLittleEndianBignum(const BIGNUM* bn, base::span<uint8_t> out) {
+  return BN_bn2le_padded(out.data(), out.size(), bn);
 }
 
 }  // namespace
@@ -224,55 +112,54 @@ std::unique_ptr<crypto::RSAPrivateKey> AndroidRSAPrivateKey(Profile* profile) {
 }
 
 std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
-  std::vector<uint8_t> public_key;
-  if (!key)
+  // Assemble Android's custom RSA format. This format dates to when Android was
+  // using a custom "minicrypt" RSA implementation and was just minicrypt's
+  // in-memory representation. The format assumes 2048-bit RSA (up to byte
+  // precision) and also includes precomputed information for Montgomery
+  // reduction with 32-bit words.
+  //
+  // This precomputed information no longer makes sense with modern 64-bit
+  // processors, and does not contain quite enough information for 64-bit
+  // Montgomery reduction. Starting Android O, it no longer looks at it at all.
+  // See https://r.android.com/212780 and https://r.android.com/212781.
+  //
+  // However, that information is still hashed into existing ADB key
+  // fingerprints, so continue computing them to keep the fingerprint stable.
+  RSA* rsa = EVP_PKEY_get0_RSA(key->key());
+  uint64_t e;
+  if (RSA_size(rsa) != kRSAModulusBytes ||  //
+      !BN_get_u64(RSA_get0_e(rsa), &e) ||
+      !base::IsValueInRangeForNumericType<uint32_t>(e)) {
+    // TODO(crbug.com/40283364): Fix the error-handling. Don't return a dummy
+    // value.
     return kDummyRSAPublicKey;
-
-  key->ExportPublicKey(&public_key);
-  std::string asn1(public_key.begin(), public_key.end());
-
-  std::string_view pk;
-  if (!net::asn1::ExtractSubjectPublicKeyFromSPKI(asn1, &pk))
-    return kDummyRSAPublicKey;
-
-  // Skip 10 byte asn1 prefix to the modulus.
-  std::vector<uint8_t> pk_data(pk.data() + 10, pk.data() + pk.length());
-  uint32_t* n = BnNew();
-  for (size_t i = 0; i < kRSANumWords; ++i) {
-    uint32_t t = pk_data[4 * i];
-    t = t << 8;
-    t += pk_data[4 * i + 1];
-    t = t << 8;
-    t += pk_data[4 * i + 2];
-    t = t << 8;
-    t += pk_data[4 * i + 3];
-    n[kRSANumWords - i - 1] = t;
-  }
-  uint64_t n0 = n[0];
-
-  RSAPublicKey pkey;
-  pkey.len = kRSANumWords;
-  pkey.exponent = 65537; // Fixed public exponent
-  pkey.n0inv = 0 - ModInverse(n0, 0x100000000LL);
-  if (pkey.n0inv == 0)
-    return kDummyRSAPublicKey;
-
-  uint32_t* r = BnNew();
-  r[kRSANumWords * 2] = 1;
-
-  uint32_t* rr;
-  BnDiv(r, n, nullptr, &rr);
-
-  for (size_t i = 0; i < kRSANumWords; ++i) {
-    pkey.n[i] = n[i];
-    pkey.rr[i] = rr[i];
   }
 
-  BnFree(n);
-  BnFree(r);
-  BnFree(rr);
+  std::array<uint8_t, kAndroidRSASize> out;
+  auto writer = base::SpanWriter(base::span(out));
+  writer.WriteU32LittleEndian(kRSAModulusBytes / 4);
+  // Reserve space for ninv. We'll compute it after we've written N.
+  auto ninv = *writer.Skip<4>();
+  auto n = *writer.Skip<kRSAModulusBytes>();
+  CHECK(WriteLittleEndianBignum(RSA_get0_n(rsa), n));
+  // Fill in RR, or 2^4096 mod N.
+  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
+  bssl::UniquePtr<BIGNUM> rr(BN_new());
+  CHECK(BN_set_bit(rr.get(), 4096));
+  CHECK(BN_mod(rr.get(), rr.get(), RSA_get0_n(rsa), ctx.get()));
+  CHECK(WriteLittleEndianBignum(rr.get(), *writer.Skip<kRSAModulusBytes>()));
+  writer.WriteU32LittleEndian(base::checked_cast<uint32_t>(e));
 
-  return base::Base64Encode(base::byte_span_from_ref(pkey));
+  // Compute ninv = -1 / n[0] mod 2^32. This value being 32-bit makes the
+  // pre-computed Montgomery values useless on a modern system. A 64-bit
+  // Montgomery reduction needs it mod 2^64. But we compute it anyway. The mod
+  // inverse cannot fail because BoringSSL will ensure N is odd.
+  uint32_t n0 = base::U32FromLittleEndian(n.first<4>());
+  ninv.copy_from(base::U32ToLittleEndian(0u - ModInverse2_32(n0)));
+
+  // Make sure we've written everything.
+  CHECK_EQ(writer.remaining(), 0u);
+  return base::Base64Encode(out);
 }
 
 std::string AndroidRSASign(crypto::RSAPrivateKey* key,
