@@ -1596,12 +1596,6 @@
               .empty();
 }
 
-// Update the state, to take into account that the account menu coordinator is
-// stopped.
-- (void)showAccountMenuDidFinish {
-  [self stopAccountMenuCoordinator];
-}
-
 // Update the state, to take into account that the signin coordinator
 // coordinator is stopped.
 - (void)showSigninCommandDidFinish {
