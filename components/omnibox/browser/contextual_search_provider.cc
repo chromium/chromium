@@ -292,7 +292,7 @@ void ContextualSearchProvider::Start(const AutocompleteInput& input,
                                               starter_pack_engine, client());
 
   if (eligibility.toolbelt) {
-    AddToolbeltMatch(input, eligibility.GetToolbeltActions());
+    AddToolbeltMatch(adjusted_input, eligibility.GetToolbeltActions());
   }
 
   if (eligibility.lens_entry_match) {
