@@ -220,6 +220,7 @@ source_set("session_restoration_service_impl") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",

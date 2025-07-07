@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -127,6 +128,19 @@ void SessionRestorationWebStateListObserver::WebStateListDestroyed(
   NOTREACHED();
 }
 
+#pragma mark - web::WebStateObserver
+
+void SessionRestorationWebStateListObserver::WebStateRealized(
+    web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
+  AttachObserver(web_state);
+}
+
+void SessionRestorationWebStateListObserver::WebStateDestroyed(
+    web::WebState* web_state) {
+  NOTREACHED();
+}
+
 #pragma mark - Private methods
 
 void SessionRestorationWebStateListObserver::DetachWebState(
@@ -156,19 +170,27 @@ void SessionRestorationWebStateListObserver::DetachWebState(
     closed_web_states_.insert(identifier);
   }
 
+  DetachObserver(detached_web_state);
+}
+
+void SessionRestorationWebStateListObserver::DetachObserver(
+    web::WebState* web_state) {
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.RemoveObservation(web_state);
+      return;
+    }
+  }
+
   // Stop observing the detached WebState. If it is inserted in another
   // Browser, its state will be observed there.
-  SessionRestorationWebStateObserver::RemoveFromWebState(detached_web_state);
+  SessionRestorationWebStateObserver::RemoveFromWebState(web_state);
 }
 
 void SessionRestorationWebStateListObserver::AttachWebState(
     web::WebState* attached_web_state) {
   // Start observing the attached WebState for change of its state.
-  SessionRestorationWebStateObserver::CreateForWebState(
-      attached_web_state,
-      base::BindRepeating(
-          &SessionRestorationWebStateListObserver::MarkWebStateDirty,
-          base::Unretained(this)));
+  AttachObserver(attached_web_state);
 
   // If the newly attached `WebState` can be serialized, then mark it as dirty
   // to force its serialization, otherwise adopt it (this will allow re-using
@@ -185,6 +207,21 @@ void SessionRestorationWebStateListObserver::AttachWebState(
       inserted_web_states_.insert(web_state_id);
     }
   }
+}
+
+void SessionRestorationWebStateListObserver::AttachObserver(
+    web::WebState* web_state) {
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.AddObservation(web_state);
+      return;
+    }
+  }
+
+  SessionRestorationWebStateObserver::CreateForWebState(
+      web_state, base::BindRepeating(
+                     &SessionRestorationWebStateListObserver::MarkWebStateDirty,
+                     base::Unretained(this)));
 }
 
 void SessionRestorationWebStateListObserver::MarkWebStateDirty(

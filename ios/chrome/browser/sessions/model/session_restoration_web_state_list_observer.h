@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 class WebStateList;
 
@@ -25,7 +27,8 @@ class WebStateID;
 // WebState, ...), or the content displayed in any of the contained WebStates
 // changed.
 class SessionRestorationWebStateListObserver final
-    : public WebStateListObserver {
+    : public WebStateListObserver,
+      public web::WebStateObserver {
  public:
   // Callback passed upon construction. Will be invoked when the state of
   // either the WebStateList or any of the stored WebState transition from
@@ -84,12 +87,22 @@ class SessionRestorationWebStateListObserver final
   void BatchOperationEnded(WebStateList* web_state_list) final;
   void WebStateListDestroyed(WebStateList* web_state_list) final;
 
+  // web::WebStateObserver implementation.
+  void WebStateRealized(web::WebState* web_state) final;
+  void WebStateDestroyed(web::WebState* web_state) final;
+
  private:
   // Helper method invoked when a WebState is detached from the WebStateList.
   void DetachWebState(web::WebState* detached_web_state, bool is_closing);
 
+  // Detach the SessionRestorationWebStateObserver from the WebState if needed.
+  void DetachObserver(web::WebState* web_state);
+
   // Helper method invoked when a WebState is inserted into the WebStateList.
   void AttachWebState(web::WebState* attached_web_state);
+
+  // Attach the SessionRestorationWebStateObserver to the WebState if needed.
+  void AttachObserver(web::WebState* web_state);
 
   // Helper method invoked by SessionRestorationWebStateObserver when any of
   // the WebState stored in the WebStateList become dirty. May invoke the
@@ -102,6 +115,10 @@ class SessionRestorationWebStateListObserver final
 
   const raw_ptr<WebStateList> web_state_list_;
   WebStateListDirtyCallback callback_;
+
+  // Observation of unrealized WebStates.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 
   bool is_web_state_list_dirty_ = false;
   std::set<web::WebState*> dirty_web_states_;
