@@ -929,12 +929,25 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
-  return grey_allOf(
-      grey_anyOf(grey_accessibilityLabel(buttonTitle),
-                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
-                 grey_descendant(grey_buttonTitle(buttonTitle)), nil),
-      grey_kindOfClassName(@"_UIButtonBarButton"),
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  if (@available(iOS 26, *)) {
+    return grey_allOf(
+        grey_anyOf(grey_accessibilityLabel(buttonTitle),
+                   grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                   grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+        grey_anyOf(grey_kindOfClassName(@"_UIButtonBarButton"),
+                   grey_kindOfClassName(
+                       @"_TtCC5UIKit29ButtonBarButtonVisualProviderP33_"
+                       @"A98CD29F4F6ECA17AFECE41BBB264E596Button"),
+                   nil),
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  } else {
+    return grey_allOf(
+        grey_anyOf(grey_accessibilityLabel(buttonTitle),
+                   grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                   grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+        grey_kindOfClassName(@"_UIButtonBarButton"),
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  }
 }
 
 + (id<GREYMatcher>)settingsMenuBackButton {
