@@ -630,28 +630,37 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     scoped_refptr<VideoFrame> frame,
     const EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool force_key_frame =
+      (input_since_keyframe_count_ + pending_input_queue_.size()) %
+          gop_length_ ==
+      0;
+  EncodeOptions effective_options(options);
+  effective_options.key_frame |= force_key_frame;
+
   // Avoid corruption triggered by consecutive key frames on Intel drivers.
   // See also https://crbug.com/40069818 and https://crbug.com/378681055.
-  if (codec_ == VideoCodec::kVP9 &&
-      last_frame_was_keyframe_request_ && options.key_frame) {
+  if (codec_ == VideoCodec::kVP9 && last_frame_was_keyframe_request_ &&
+      effective_options.key_frame) {
     // Force a fake frame in between two key frames that come in a row. The
     // MFVEA will discard the output of this frame, and the client will never
     // see any side effects, but it helps working around crbug.com/1473665.
     EncodeOptions discard_options(/*key_frame=*/false);
     EncodeInternal(frame, discard_options, /*discard_output=*/true);
-  }
 
-  bool force_key_frame =
-      (input_since_keyframe_count_ + pending_input_queue_.size()) %
-          gop_length_ ==
-      0;
+    // If the |force_key_frame| is true, it indicates that the above fake frame
+    // will also be a keyframe. In this case, we need to generate an additional
+    // fake frame to avoid consecutive keyframes.
+    if (force_key_frame) {
+      EncodeInternal(frame, discard_options, /*discard_output=*/true);
+    }
+  }
 
   bool discard_high_layer_frames =
       (((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
         vendor_ == DriverVendor::kIntel) ||
        (codec_ == VideoCodec::kH264 && (vendor_ == DriverVendor::kIntel ||
                                         vendor_ == DriverVendor::kNvidia))) &&
-      IsTemporalScalabilityCoding() && (options.key_frame || force_key_frame);
+      IsTemporalScalabilityCoding() && effective_options.key_frame;
 
   if (discard_high_layer_frames) {
     // Currently, Intel and NVIDIA drivers only allow apps to request keyframe
@@ -671,8 +680,8 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     }
   }
 
-  EncodeInternal(std::move(frame), options, /*discard_output=*/false);
-  last_frame_was_keyframe_request_ = options.key_frame;
+  EncodeInternal(std::move(frame), effective_options, /*discard_output=*/false);
+  last_frame_was_keyframe_request_ = effective_options.key_frame;
 }
 
 void MediaFoundationVideoEncodeAccelerator::QueueInput(
@@ -1722,11 +1731,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       return E_FAIL;
     }
   } else {
-    // Force key frame for the first frame in GOP.
-    bool force_key_frame = input_since_keyframe_count_ % gop_length_ == 0;
-
     // Reset the frame count when keyframe is requested.
-    if (input.options.key_frame || force_key_frame) {
+    if (input.options.key_frame) {
       input_since_keyframe_count_ = 0;
     }
 
@@ -1740,7 +1746,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     } else if (rate_ctrl_ && !input.discard_output) {
       VideoRateControlWrapper::FrameParams frame_params{};
       frame_params.frame_type =
-          input.options.key_frame || force_key_frame
+          input.options.key_frame
               ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
               : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
       // H.264 and H.265 SW BRC need timestamp information.
@@ -1783,7 +1789,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                                          var.ullVal);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
     }
-    if (input.options.key_frame || force_key_frame) {
+    if (input.options.key_frame) {
       VARIANT var;
       var.vt = VT_UI4;
       var.ulVal = 1;
