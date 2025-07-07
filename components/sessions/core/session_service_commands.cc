@@ -13,8 +13,8 @@
 #include <string.h>
 
 #include <map>
-#include <tuple>
 #include <set>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -27,7 +27,22 @@
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+
+namespace {
+
+std::string SplitTabLayoutToString(split_tabs::SplitTabLayout split_layout) {
+  switch (split_layout) {
+    case split_tabs::SplitTabLayout::kVertical:
+      return "Vertical";
+    case split_tabs::SplitTabLayout::kHorizontal:
+      return "Horizontal";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 namespace sessions {
 
@@ -82,6 +97,10 @@ static const SessionCommand::id_type kCommandSetWindowVisibleOnAllWorkspaces =
 static const SessionCommand::id_type kCommandAddTabExtraData = 33;
 static const SessionCommand::id_type kCommandAddWindowExtraData = 34;
 static const SessionCommand::id_type kCommandSetPlatformSessionId = 35;
+
+static const SessionCommand::id_type kCommandSetSplitTab = 36;
+static const SessionCommand::id_type kCommandSetSplitTabData = 37;
+
 // ID 255 is used by CommandStorageBackend.
 
 namespace {
@@ -147,6 +166,12 @@ struct TabGroupPayload {
   SessionID::id_type tab_id;
   SerializedToken maybe_group;
   bool has_group;
+};
+
+struct SplitTabPayload {
+  SessionID::id_type tab_id;
+  SerializedToken maybe_split;
+  bool has_split;
 };
 
 struct PinnedStatePayload {
@@ -1055,6 +1080,33 @@ std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
   }
 
   return std::make_unique<SessionCommand>(kCommandSetTabGroupMetadata2, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateSplitTabCommand(
+    SessionID tab_id,
+    std::optional<split_tabs::SplitTabId> split_id) {
+  SplitTabPayload payload = {0};
+  payload.tab_id = tab_id.id();
+  if (split_id.has_value()) {
+    DCHECK(!split_id.value().token().is_zero());
+    payload.maybe_split.id_high = split_id.value().token().high();
+    payload.maybe_split.id_low = split_id.value().token().low();
+    payload.has_split = true;
+  }
+  return CreateSessionCommandForPayload(kCommandSetSplitTab, payload);
+}
+
+std::unique_ptr<SessionCommand> CreateSplitTabDataUpdateCommand(
+    const split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData* split_tab_visual_data) {
+  base::Pickle pickle;
+  WriteTokenToPickle(&pickle, split_id.token());
+
+  pickle.WriteDouble(split_tab_visual_data->split_ratio());
+  pickle.WriteString(
+      SplitTabLayoutToString(split_tab_visual_data->split_layout()));
+
+  return std::make_unique<SessionCommand>(kCommandSetSplitTabData, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreatePinnedStateCommand(SessionID tab_id,

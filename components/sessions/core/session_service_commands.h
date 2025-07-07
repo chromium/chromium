@@ -54,6 +54,12 @@ CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
     const tab_groups::TabGroupVisualData* visual_data,
     const std::optional<std::string> saved_guid = std::nullopt);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSplitTabCommand(
+    SessionID tab_id,
+    std::optional<split_tabs::SplitTabId> split_id);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSplitTabDataUpdateCommand(
+    const split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData* split_tab_visual_data);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
     SessionID tab_id,
     bool is_pinned);
