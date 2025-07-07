@@ -37,7 +37,7 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
       const gfx::Size& size,
       gfx::BufferFormat format,
       bool premapped,
-      ClientSharedImage::MapCallbackControllerForTesting* controller);
+      const ClientSharedImage::AsyncMapInvokedCallback& callback);
 
   FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
   FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
@@ -61,8 +61,7 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
-  raw_ptr<ClientSharedImage::MapCallbackControllerForTesting>
-      map_callback_controller_ = nullptr;
+  ClientSharedImage::AsyncMapInvokedCallback async_map_invoked_callback_;
 };
 
 }  // namespace gpu

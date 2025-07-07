@@ -72,11 +72,11 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool premapped,
-    ClientSharedImage::MapCallbackControllerForTesting* controller)
+    const ClientSharedImage::AsyncMapInvokedCallback& callback)
     : size_(size),
       format_(format),
       premapped_(premapped),
-      map_callback_controller_(controller) {
+      async_map_invoked_callback_(callback) {
   int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
   size_t allocation_size = 0;
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
@@ -103,7 +103,7 @@ void FakeGpuMemoryBuffer::MapAsync(base::OnceCallback<void(bool)> result_cb) {
     std::move(result_cb).Run(true);
     return;
   }
-  map_callback_controller_->RegisterCallback(std::move(result_cb));
+  async_map_invoked_callback_.Run(std::move(result_cb));
 }
 
 bool FakeGpuMemoryBuffer::AsyncMappingIsNonBlocking() const {

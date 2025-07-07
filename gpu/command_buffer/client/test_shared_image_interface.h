@@ -123,11 +123,11 @@ class TestSharedImageInterface : public SharedImageInterface {
   // provided |controller|. The test manually triggers the mapping completion by
   // invoking the |controller| later, simulating a delayed (asynchronous)
   // mapping. This is required to test delayed mapping behavior.
-  scoped_refptr<ClientSharedImage> CreateSharedImageWithMapCallbackController(
+  scoped_refptr<ClientSharedImage> CreateSharedImageWithAsyncMapControl(
       const SharedImageInfo& si_info,
       gfx::BufferUsage buffer_usage,
       bool premapped,
-      ClientSharedImage::MapCallbackControllerForTesting* controller);
+      const ClientSharedImage::AsyncMapInvokedCallback& callback);
 
   void CreateSharedImagePool(
       const SharedImagePoolId& pool_id,
