@@ -495,6 +495,10 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     // [2] editing/inserting/return-with-object-element.html
     if (const InlineNodeData* inline_data = block_flow->GetInlineNodeData()) {
       if (inline_data->ItemsData(false).text_content.empty() &&
+          // Out-of-flow objects (floating and out-of-flow positioned) used to
+          // represent a U+FFFC Object Replacement Character. Keep the
+          // historical behavior.
+          !inline_data->HasFloatingOrOutOfFlowPositioned() &&
           block_flow->HasLineIfEmpty()) {
         return false;
       }

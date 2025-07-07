@@ -14,8 +14,9 @@ namespace blink {
 bool BidiParagraph::SetParagraph(const String& text,
                                  std::optional<TextDirection> base_direction) {
   DCHECK(!text.IsNull());
-  DCHECK(!ubidi_);
-  ubidi_ = UBidiPtr(ubidi_open());
+  if (!ubidi_) {
+    ubidi_ = UBidiPtr(ubidi_open());
+  }
 
   UBiDiLevel para_level;
   if (base_direction) {

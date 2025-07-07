@@ -8,6 +8,11 @@
 
 namespace blink {
 
+void InlineNodeData::DisableBidi() {
+  is_bidi_enabled_ = false;
+  SetBaseDirection(TextDirection::kLtr);
+}
+
 void InlineNodeData::Trace(Visitor* visitor) const {
   visitor->Trace(first_line_items_);
   visitor->Trace(svg_node_data_);

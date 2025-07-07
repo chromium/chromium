@@ -208,11 +208,17 @@ void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
 unsigned InlineItem::SetBidiLevel(InlineItems& items,
                                   unsigned index,
                                   unsigned end_offset,
-                                  UBiDiLevel level) {
+                                  UBiDiLevel level,
+                                  wtf_size_t num_out_of_flow) {
+  DCHECK(!num_out_of_flow ||
+         RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled());
   InlineItem* item;
   for (;; ++index) {
     item = items[index];
     item->SetBidiLevel(level);
+    if (num_out_of_flow && item->IsFloatingOrOutOfFlowPositioned()) {
+      --num_out_of_flow;
+    }
     if (item->end_offset_ >= end_offset) {
       break;
     }
@@ -232,14 +238,21 @@ unsigned InlineItem::SetBidiLevel(InlineItems& items,
   }
   DCHECK_EQ(end_offset, item->end_offset_);
 
-  // Let close items have the same bidi-level as the previous item.
+  // Let trailing items have the same bidi-level as the previous item.
   for (++index; index < items.size(); ++index) {
     item = items[index];
-    if (item->Type() != InlineItem::kCloseTag) {
+    const bool is_trailing =
+        !item->Length() &&
+        (item->Type() == InlineItem::kCloseTag || num_out_of_flow);
+    if (!is_trailing) {
       break;
     }
     item->SetBidiLevel(level);
+    if (num_out_of_flow && item->IsFloatingOrOutOfFlowPositioned()) {
+      --num_out_of_flow;
+    }
   }
+  DCHECK_EQ(num_out_of_flow, 0u);  // Check if `num_out_of_flow` is consumed.
   return index;
 }
 

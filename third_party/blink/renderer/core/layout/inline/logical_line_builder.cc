@@ -624,6 +624,7 @@ void LogicalLineBuilder::BidiReorder(
     }
     levels.push_back(item.bidi_level);
   }
+  DCHECK_EQ(line_box->size(), levels.size());
 
   // For opaque items, copy bidi levels from adjacent items.
   if (has_opaque_items) {

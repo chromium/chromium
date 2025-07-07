@@ -936,8 +936,13 @@ TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
 
   const OffsetMapping& remaining_text_result = *mapping1;
   ASSERT_EQ(1u, remaining_text_result.GetUnits().size());
-  TEST_UNIT(remaining_text_result.GetUnits()[0],
-            OffsetMappingUnitType::kIdentity, text_node, 1u, 3u, 1u, 3u);
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    TEST_UNIT(remaining_text_result.GetUnits()[0],
+              OffsetMappingUnitType::kIdentity, text_node, 1u, 3u, 0u, 2u);
+  } else {
+    TEST_UNIT(remaining_text_result.GetUnits()[0],
+              OffsetMappingUnitType::kIdentity, text_node, 1u, 3u, 1u, 3u);
+  }
   ASSERT_EQ(1u, remaining_text_result.GetRanges().size());
   TEST_RANGE(remaining_text_result.GetRanges(), text_node, 0u, 1u);
 
@@ -956,17 +961,34 @@ TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
 
   EXPECT_EQ(0u,
             *first_letter_result.GetTextContentOffset(Position(text_node, 0)));
-  EXPECT_EQ(
-      1u, *remaining_text_result.GetTextContentOffset(Position(text_node, 1)));
-  EXPECT_EQ(
-      2u, *remaining_text_result.GetTextContentOffset(Position(text_node, 2)));
-  EXPECT_EQ(
-      3u, *remaining_text_result.GetTextContentOffset(Position(text_node, 3)));
+
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    EXPECT_EQ(0u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 1)));
+    EXPECT_EQ(1u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 2)));
+    EXPECT_EQ(2u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 3)));
+  } else {
+    EXPECT_EQ(1u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 1)));
+    EXPECT_EQ(2u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 2)));
+    EXPECT_EQ(3u, *remaining_text_result.GetTextContentOffset(
+                      Position(text_node, 3)));
+  }
 
   EXPECT_EQ(Position(text_node, 1), first_letter_result.GetFirstPosition(1));
   EXPECT_EQ(Position(text_node, 1), first_letter_result.GetLastPosition(1));
-  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetFirstPosition(1));
-  EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetLastPosition(1));
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    EXPECT_EQ(Position(text_node, 1),
+              remaining_text_result.GetFirstPosition(0));
+    EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetLastPosition(0));
+  } else {
+    EXPECT_EQ(Position(text_node, 1),
+              remaining_text_result.GetFirstPosition(1));
+    EXPECT_EQ(Position(text_node, 1), remaining_text_result.GetLastPosition(1));
+  }
 }
 
 TEST_F(OffsetMappingTest, WhiteSpaceTextNodeWithoutLayoutText) {

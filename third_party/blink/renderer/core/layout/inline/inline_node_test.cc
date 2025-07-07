@@ -233,15 +233,25 @@ TEST_F(InlineNodeTest, CollectInlinesFloat) {
             "</div>");
   InlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ("abc\uFFFCghi\uFFFCmno", node.Text())
+  EXPECT_EQ(RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()
+                ? "abcghimno"
+                : "abc\uFFFCghi\uFFFCmno",
+            node.Text())
       << "floats are appeared as an object replacement character";
   InlineItems& items = node.Items();
   ASSERT_EQ(5u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 3u);
-  TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 4u);
-  TEST_ITEM_TYPE_OFFSET(items[2], kText, 4u, 7u);
-  TEST_ITEM_TYPE_OFFSET(items[3], kFloating, 7u, 8u);
-  TEST_ITEM_TYPE_OFFSET(items[4], kText, 8u, 11u);
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 3u);
+    TEST_ITEM_TYPE_OFFSET(items[2], kText, 3u, 6u);
+    TEST_ITEM_TYPE_OFFSET(items[3], kFloating, 6u, 6u);
+    TEST_ITEM_TYPE_OFFSET(items[4], kText, 6u, 9u);
+  } else {
+    TEST_ITEM_TYPE_OFFSET(items[1], kFloating, 3u, 4u);
+    TEST_ITEM_TYPE_OFFSET(items[2], kText, 4u, 7u);
+    TEST_ITEM_TYPE_OFFSET(items[3], kFloating, 7u, 8u);
+    TEST_ITEM_TYPE_OFFSET(items[4], kText, 8u, 11u);
+  }
 }
 
 TEST_F(InlineNodeTest, CollectInlinesInlineBlock) {
@@ -1476,7 +1486,11 @@ TEST_F(InlineNodeTest, ReusingWithCollapsed) {
             "</div>");
   GetElementById("remove")->remove();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(String(u"abc \uFFFCx"), GetText());
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    EXPECT_EQ(String(u"abc x"), GetText());
+  } else {
+    EXPECT_EQ(String(u"abc \uFFFCx"), GetText());
+  }
 }
 
 // https://crbug.com/109654
