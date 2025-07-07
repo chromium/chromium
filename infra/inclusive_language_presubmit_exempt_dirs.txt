@@ -248,9 +248,6 @@ net/socket
 net/tools/crash_cache
 net/tools/stress_cache
 net/tools/testserver/dist
-ppapi
-ppapi/c/documentation
-ppapi/cpp/documentation
 ppapi/generators
 sandbox/linux/suid/client
 sandbox/policy/linux
