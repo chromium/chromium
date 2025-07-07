@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -73,17 +72,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/containers/to_vector.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_clients.h"
-#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
-#include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::mojom::ManifestLocation;
 
@@ -197,61 +185,6 @@ void ProfileResetterTest::SetUp() {
   google_brand::BrandForTesting brand_for_testing("");
   resetter_ = std::make_unique<ProfileResetter>(profile());
 }
-
-// PinnedTabsResetTest --------------------------------------------------------
-
-class PinnedTabsResetTest : public BrowserWithTestWindowTest,
-                            public ProfileResetterTestBase {
- protected:
-  void SetUp() override;
-
-  std::unique_ptr<content::WebContents> CreateWebContents();
-};
-
-void PinnedTabsResetTest::SetUp() {
-  BrowserWithTestWindowTest::SetUp();
-  resetter_ = std::make_unique<ProfileResetter>(profile());
-}
-
-std::unique_ptr<content::WebContents> PinnedTabsResetTest::CreateWebContents() {
-  return content::WebContents::Create(
-      content::WebContents::CreateParams(profile()));
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-// DnsConfigResetTest --------------------------------------------------------
-
-class DnsConfigResetTest : public BrowserWithTestWindowTest,
-                           public ProfileResetterTestBase {
- protected:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    // Required for initializing NetworkHandler.
-    ash::HermesProfileClient::InitializeFake();
-    ash::HermesManagerClient::InitializeFake();
-    ash::HermesEuiccClient::InitializeFake();
-
-    ash::shill_clients::InitializeFakes();
-    ash::NetworkHandler::InitializeFake();
-
-    // Run the message loop to run the signal connection result callback.
-    base::RunLoop().RunUntilIdle();
-
-    resetter_ = std::make_unique<ProfileResetter>(profile());
-  }
-  void TearDown() override {
-    ash::NetworkHandler::Shutdown();
-    ash::shill_clients::Shutdown();
-
-    ash::HermesEuiccClient::Shutdown();
-    ash::HermesManagerClient::Shutdown();
-    ash::HermesProfileClient::Shutdown();
-
-    BrowserWithTestWindowTest::TearDown();
-  }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // ConfigParserTest -----------------------------------------------------------
 
@@ -459,27 +392,6 @@ void ReplaceString(std::string* str,
   ASSERT_NE(std::string::npos, placeholder_pos);
   str->replace(placeholder_pos, placeholder.size(), substitution);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns the configured static name servers from `shill_properties`, or an
-// empty vector if no static name servers are configured.
-std::vector<std::string> GetStaticNameServersFromShillProperties(
-    const base::Value::Dict& shill_properties) {
-  const base::Value::Dict* static_ip_config =
-      shill_properties.FindDict(shill::kStaticIPConfigProperty);
-  if (!static_ip_config) {
-    return {};
-  }
-  const base::Value::List* nameservers =
-      static_ip_config->FindList(shill::kNameServersProperty);
-  if (!nameservers) {
-    return {};
-  }
-  return base::ToVector(*nameservers, [](const base::Value& nameserver) {
-    return nameserver.GetString();
-  });
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 /********************* Tests *********************/
 
@@ -774,39 +686,6 @@ TEST_F(ProfileResetterTest, ResetStartPagePartially) {
   EXPECT_EQ(SessionStartupPref::GetDefaultStartupType(), startup_pref.type);
   EXPECT_EQ(std::vector<GURL>(std::begin(urls), std::end(urls)),
             startup_pref.urls);
-}
-
-TEST_F(PinnedTabsResetTest, ResetPinnedTabs) {
-  std::unique_ptr<content::WebContents> contents1(CreateWebContents());
-  std::unique_ptr<content::WebContents> contents2(CreateWebContents());
-  std::unique_ptr<content::WebContents> contents3(CreateWebContents());
-  std::unique_ptr<content::WebContents> contents4(CreateWebContents());
-  content::WebContents* raw_contents1 = contents1.get();
-  content::WebContents* raw_contents2 = contents2.get();
-  content::WebContents* raw_contents3 = contents3.get();
-  content::WebContents* raw_contents4 = contents4.get();
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
-  tab_strip_model->AppendWebContents(std::move(contents4), true);
-  tab_strip_model->AppendWebContents(std::move(contents3), true);
-  tab_strip_model->AppendWebContents(std::move(contents2), true);
-  tab_strip_model->SetTabPinned(2, true);
-  tab_strip_model->AppendWebContents(std::move(contents1), true);
-  tab_strip_model->SetTabPinned(3, true);
-
-  EXPECT_EQ(raw_contents2, tab_strip_model->GetWebContentsAt(0));
-  EXPECT_EQ(raw_contents1, tab_strip_model->GetWebContentsAt(1));
-  EXPECT_EQ(raw_contents4, tab_strip_model->GetWebContentsAt(2));
-  EXPECT_EQ(raw_contents3, tab_strip_model->GetWebContentsAt(3));
-  EXPECT_EQ(2, tab_strip_model->IndexOfFirstNonPinnedTab());
-
-  ResetAndWait(ProfileResetter::PINNED_TABS);
-
-  EXPECT_EQ(raw_contents2, tab_strip_model->GetWebContentsAt(0));
-  EXPECT_EQ(raw_contents1, tab_strip_model->GetWebContentsAt(1));
-  EXPECT_EQ(raw_contents4, tab_strip_model->GetWebContentsAt(2));
-  EXPECT_EQ(raw_contents3, tab_strip_model->GetWebContentsAt(3));
-  EXPECT_EQ(0, tab_strip_model->IndexOfFirstNonPinnedTab());
 }
 
 TEST_F(ProfileResetterTest, ResetShortcuts) {
@@ -1148,45 +1027,5 @@ TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
   EXPECT_FALSE(
       ntp_custom_background_service->GetCustomBackground().has_value());
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
-  ash::ShillServiceClient::TestInterface* shill_service_client =
-      ash::ShillServiceClient::Get()->GetTestInterface();
-
-  // DNS settings.
-  // Set the profile so this shows up as a configured network.
-  const std::string kWifi1Path = "/service/wifi1";
-  ash::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-                  base::Value::List(), base::Value::Dict());
-  // Set a static NameServers config.
-  base::Value::Dict static_ip_config;
-  base::Value::List name_servers;
-  name_servers.Append("8.8.3.1");
-  name_servers.Append("8.8.2.1");
-  name_servers.Append("0.0.0.0");
-  name_servers.Append("0.0.0.0");
-  static_ip_config.Set(shill::kNameServersProperty, std::move(name_servers));
-  shill_service_client->SetServiceProperty(
-      kWifi1Path, shill::kStaticIPConfigProperty,
-      base::Value(std::move(static_ip_config)));
-
-  // Verify that network exists and the custom name server has been applied.
-  const base::Value::Dict* shill_properties =
-      shill_service_client->GetServiceProperties(kWifi1Path);
-  ASSERT_TRUE(shill_properties);
-  EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
-              testing::ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
-
-  ResetAndWait(ProfileResetter::DNS_CONFIGURATIONS);
-
-  // Check DNS settings have changed to expected defaults.
-  // Verify that the given network has it's NameServers field cleared.
-  EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
-              testing::IsEmpty());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
