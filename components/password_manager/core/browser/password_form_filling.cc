@@ -63,6 +63,14 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
+bool ShouldNotifyAboutFillingOnPageload(
+    PasswordManagerClient* client,
+    const std::optional<PasswordForm>& preferred_match) {
+  return preferred_match && preferred_match->change_password_url.is_valid() &&
+         client->GetPasswordChangeService() &&
+         client->GetPasswordChangeService()->IsPasswordChangeAvailable();
+}
+
 void Autofill(PasswordManagerClient* client,
               PasswordManagerDriver* driver,
               const PasswordForm& form_for_autofill,
@@ -78,11 +86,8 @@ void Autofill(PasswordManagerClient* client,
     logger->LogMessage(Logger::STRING_PASSWORDMANAGER_AUTOFILL);
   }
 
-  // TODO(crbug.com/394297841): Check password change availability per website.
-  // Finch experiment should not be started without fixing it.
   bool notify_browser_of_successful_filling =
-      client->GetPasswordChangeService() &&
-      client->GetPasswordChangeService()->IsPasswordChangeAvailable();
+      ShouldNotifyAboutFillingOnPageload(client, preferred_match);
 
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
       form_for_autofill, best_matches, std::move(preferred_match),
