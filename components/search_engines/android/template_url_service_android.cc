@@ -480,6 +480,12 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
       continue;
     }
 
+    // Do not include starter pack engines (@aimode, @tabs, ...) as these are
+    // not actual search engines.
+    if (template_url->starter_pack_id() != 0) {
+      continue;
+    }
+
     base::android::ScopedJavaLocalRef<jobject> j_template_url =
         CreateTemplateUrlAndroid(env, template_url);
     Java_TemplateUrlService_addTemplateUrlToList(env, template_url_list_obj,
