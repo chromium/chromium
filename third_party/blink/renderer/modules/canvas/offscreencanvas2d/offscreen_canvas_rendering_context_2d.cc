@@ -172,8 +172,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     return nullptr;
   }
 
-  if (CanvasResourceProvider* provider =
-          host->GetResourceProviderForCanvas2D()) {
+  if (CanvasResourceProvider* provider = GetResourceProviderForCanvas2D()) {
     if (!provider->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
       // happens if the GPU process dies in the middle of a render task. The
@@ -251,17 +250,16 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
 
   host->SetResourceProviderForCanvas2D(std::move(provider));
 
-  if (host->GetResourceProviderForCanvas2D() &&
-      host->GetResourceProviderForCanvas2D()->IsValid()) {
+  if (GetResourceProviderForCanvas2D() &&
+      GetResourceProviderForCanvas2D()->IsValid()) {
     base::UmaHistogramBoolean(
         "Blink.Canvas.ResourceProviderIsAccelerated",
-        host->GetResourceProviderForCanvas2D()->IsAccelerated());
-    base::UmaHistogramEnumeration(
-        "Blink.Canvas.ResourceProviderType",
-        host->GetResourceProviderForCanvas2D()->GetType());
+        GetResourceProviderForCanvas2D()->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  GetResourceProviderForCanvas2D()->GetType());
     host->DidDraw();
   }
-  return host->GetResourceProviderForCanvas2D();
+  return GetResourceProviderForCanvas2D();
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -416,8 +414,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   } else {
     Host()->DidDraw(dirty_rect_for_commit_);
   }
-  if (CanvasResourceProvider* provider =
-          Host()->GetResourceProviderForCanvas2D();
+  if (CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
       layer_count_ == 0 && provider != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     provider->FlushIfRecordingLimitExceeded();
@@ -443,7 +440,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
 }
 
 bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
-  return Host()->GetResourceProviderForCanvas2D();
+  return GetResourceProviderForCanvas2D();
 }
 
 bool OffscreenCanvasRenderingContext2D::WritePixels(
@@ -457,12 +454,12 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
   GetResourceProviderForCanvas2D()->FlushCanvas(FlushReason::kWritePixels);
 
   // Short-circuit out if an error occurred while flushing the recording.
-  if (!Host()->GetResourceProviderForCanvas2D()->IsValid()) {
+  if (!GetResourceProviderForCanvas2D()->IsValid()) {
     return false;
   }
 
-  return Host()->GetResourceProviderForCanvas2D()->WritePixels(
-      orig_info, pixels, row_bytes, x, y);
+  return GetResourceProviderForCanvas2D()->WritePixels(orig_info, pixels,
+                                                       row_bytes, x, y);
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
