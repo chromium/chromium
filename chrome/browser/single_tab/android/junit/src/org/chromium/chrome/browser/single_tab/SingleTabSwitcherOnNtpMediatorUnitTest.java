@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -108,6 +109,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         doReturn(1).when(mNormalTabModel).getCount();
 
         doReturn(mUrl).when(mTab).getUrl();
+        doReturn(false).when(mTab).isIncognitoBranded();
+        doReturn(null).when(mTab).getTabGroupId();
         doReturn(mTabId).when(mTab).getId();
         doReturn(mTitle).when(mTab).getTitle();
         doReturn(mTitle2).when(mTab2).getTitle();
@@ -159,9 +162,12 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         .getDimensionPixelSize(R.dimen.single_tab_module_tab_thumbnail_size_big);
         int height = width;
         Size thumbnailSize = new Size(width, height);
+        TabFaviconMetadata metadata =
+                new TabFaviconMetadata(
+                        mTab, mUrl, /* isIncognito= */ false, /* isInTabGroup= */ false);
 
         verify(mTabListFaviconProvider)
-                .getFaviconDrawableForTabAsync(eq(mTab), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForTabAsync(eq(metadata), mFaviconCallbackCaptor.capture());
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
@@ -237,9 +243,12 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         assertFalse(mediator.getInitialized());
 
         mediator.setVisibility(true);
+        TabFaviconMetadata metadata =
+                new TabFaviconMetadata(
+                        mTab, mUrl, /* isIncognito= */ false, /* isInTabGroup= */ false);
 
         verify(mTabListFaviconProvider)
-                .getFaviconDrawableForTabAsync(eq(mTab), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForTabAsync(eq(metadata), mFaviconCallbackCaptor.capture());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
         assertTrue(mediator.getInitialized());
 

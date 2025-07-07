@@ -215,6 +215,41 @@ public class TabListFaviconProvider {
         }
     }
 
+    /**
+     * The metadata details for a tab that has its favicon requested. This object services both real
+     * {@link Tab}s and {@link SavedTabGroupTab}s. If the tab field is null, a SavedTabGroupTab is
+     * being referenced. The tab field is only used for live tabs when retrieving a thumbnail via
+     * the web contents state if possible.
+     */
+    public static class TabFaviconMetadata {
+        public final @Nullable Tab tab;
+        public final GURL url;
+        public final boolean isIncognito;
+        public final boolean isInTabGroup;
+
+        public TabFaviconMetadata(
+                @Nullable Tab tab, GURL url, boolean isIncognito, boolean isInTabGroup) {
+            this.tab = tab;
+            this.url = url;
+            this.isIncognito = isIncognito;
+            this.isInTabGroup = isInTabGroup;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.tab, this.url, this.isIncognito, this.isInTabGroup);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj instanceof TabFaviconMetadata other)
+                    && this.tab == other.tab
+                    && Objects.equals(this.url, other.url)
+                    && this.isIncognito == other.isIncognito
+                    && this.isInTabGroup == other.isInTabGroup;
+        }
+    }
+
     private static LazyTabFaviconResolver sRoundedGlobeFavicon;
     private static LazyTabFaviconResolver sRoundedGlobeFaviconForStrip;
     private static LazyTabFaviconResolver sRoundedGlobeFaviconIncognito;
@@ -348,7 +383,13 @@ public class TabListFaviconProvider {
         return new TabFaviconFetcher() {
             @Override
             public void fetch(Callback<TabFavicon> faviconCallback) {
-                getFaviconForTabAsync(tab, faviconCallback);
+                getFaviconForTabAsync(
+                        new TabFaviconMetadata(
+                                tab,
+                                tab.getUrl(),
+                                tab.isIncognitoBranded(),
+                                tab.getTabGroupId() != null),
+                        faviconCallback);
             }
         };
     }
@@ -356,12 +397,13 @@ public class TabListFaviconProvider {
     /**
      * Asynchronously get the processed favicon as a {@link Drawable}.
      *
-     * @param tab The tab to get a favicon for.
+     * @param metadata The {@link TabFaviconMetadata} of the tab to get a favicon for.
      * @param faviconCallback The callback to be serviced with the drawable when ready.
      */
-    public void getFaviconDrawableForTabAsync(Tab tab, Callback<Drawable> faviconCallback) {
+    public void getFaviconDrawableForTabAsync(
+            TabFaviconMetadata metadata, Callback<Drawable> faviconCallback) {
         getFaviconForTabAsync(
-                tab, tabFavicon -> faviconCallback.onResult(tabFavicon.getDefaultDrawable()));
+                metadata, tabFavicon -> faviconCallback.onResult(tabFavicon.getDefaultDrawable()));
     }
 
     /**
@@ -434,13 +476,14 @@ public class TabListFaviconProvider {
      *       been visited and will have a favicon in the local favicon database.
      * </ol>
      *
-     * @param tab The tab whose favicon is being requested.
+     * @param metadata The {@link TabFaviconMetadata} of the tab whose favicon is being requested.
      * @param faviconCallback The callback that requests for favicon.
      */
     @VisibleForTesting
-    public void getFaviconForTabAsync(Tab tab, Callback<TabFavicon> faviconCallback) {
-        boolean isIncognito = tab.isIncognitoBranded();
-        GURL tabUrl = tab.getUrl();
+    public void getFaviconForTabAsync(
+            TabFaviconMetadata metadata, Callback<TabFavicon> faviconCallback) {
+        boolean isIncognito = metadata.isIncognito;
+        GURL tabUrl = metadata.url;
 
         // Case 1: NTP specialization.
         if (UrlUtilities.isNtpUrl(tabUrl)) {
@@ -452,7 +495,8 @@ public class TabListFaviconProvider {
         }
 
         // Case 2: The Tab is live and its WebContent's already has a bitmap.
-        @Nullable Bitmap webContentsBitmap = getFaviconFromTabWebContents(tab);
+        @Nullable Bitmap webContentsBitmap =
+                metadata.tab == null ? null : getFaviconFromTabWebContents(metadata.tab);
         if (webContentsBitmap != null) {
             Drawable processedBitmap = processBitmap(webContentsBitmap, mIsTabStrip);
             faviconCallback.onResult(new UrlTabFavicon(processedBitmap, tabUrl));
@@ -482,7 +526,7 @@ public class TabListFaviconProvider {
                 };
 
         Profile profile = getProfile(isIncognito);
-        if (tab.getTabGroupId() != null
+        if (metadata.isInTabGroup
                 && !isIncognito
                 && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
             // Case 3: The tab is in a tab group and is not incognito.

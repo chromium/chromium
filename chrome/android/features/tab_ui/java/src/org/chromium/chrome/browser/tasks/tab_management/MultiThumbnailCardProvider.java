@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetadata;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
@@ -266,7 +267,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                                     drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
                                 } else {
                                     mTabListFaviconProvider.getFaviconDrawableForTabAsync(
-                                            tab,
+                                            new TabFaviconMetadata(
+                                                    tab,
+                                                    tab.getUrl(),
+                                                    tab.isIncognitoBranded(),
+                                                    tab.getTabGroupId() != null),
                                             (Drawable favicon) -> {
                                                 if (tab.isClosing() || tab.isDestroyed()) return;
 

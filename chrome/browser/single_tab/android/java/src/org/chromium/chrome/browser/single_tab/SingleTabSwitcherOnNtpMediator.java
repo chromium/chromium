@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetadata;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -234,7 +235,11 @@ public class SingleTabSwitcherOnNtpMediator {
     private void updateFavicon() {
         assert mTabListFaviconProvider.isInitialized();
         mTabListFaviconProvider.getFaviconDrawableForTabAsync(
-                assumeNonNull(mMostRecentTab),
+                new TabFaviconMetadata(
+                        assumeNonNull(mMostRecentTab),
+                        mMostRecentTab.getUrl(),
+                        mMostRecentTab.isIncognitoBranded(),
+                        mMostRecentTab.getTabGroupId() != null),
                 (Drawable favicon) -> {
                     mPropertyModel.set(FAVICON, favicon);
                 });
