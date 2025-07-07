@@ -156,7 +156,8 @@ class SessionRequester {
   base::TimeTicks dns_resolution_start_time_ = base::TimeTicks::Now();
   base::TimeTicks dns_resolution_end_time_ = base::TimeTicks::Now();
   std::set<std::string> dns_aliases_;
-  MultiplexedSessionCreationInitiator session_creation_initiator_;
+  MultiplexedSessionCreationInitiator session_creation_initiator_ =
+      MultiplexedSessionCreationInitiator::kUnknown;
   std::optional<ConnectionManagementConfig> connection_management_config_;
   NetLogWithSource net_log_;
 
