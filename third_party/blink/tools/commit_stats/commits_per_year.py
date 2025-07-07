@@ -36,7 +36,8 @@ botpatterns = [
     "chrome-metrics-team+robot@google.com", "chrome-release-bot@chromium.org",
     "gserviceaccount.com", "chrome-admin@google.com",
     "v8-autoroll@chromium.org", "deps-roller@chromium.org",
-    "autoroller@chromium.org"
+    "autoroller@chromium.org",
+    "mdb.chrome-pki-metadata-release-jobs@google.com"
 ]
 
 # Read org-list.txt and create a domain to org mapping
