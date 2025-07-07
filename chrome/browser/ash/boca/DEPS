@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/speech",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_commands.h",
