@@ -345,6 +345,7 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
   }
   if (!entity_) {
     // First time syncing or persisted data are corrupted; initialize metadata.
+    data_type_state_ = sync_pb::DataTypeState();
     data_type_state_.mutable_progress_marker()->set_data_type_id(
         sync_pb::EntitySpecifics::kNigoriFieldNumber);
   }

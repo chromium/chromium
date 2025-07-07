@@ -396,15 +396,21 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     return;
   }
 
-  // Restore data.
-  state_ = syncer::NigoriState::CreateFromLocalProto(
-      deserialized_data->nigori_model());
-
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;
   metadata_batch.data_type_state = deserialized_data->data_type_state();
   metadata_batch.entity_metadata = deserialized_data->entity_metadata();
   processor_->ModelReadyToSync(this, std::move(metadata_batch));
+
+  if (!processor_->IsTrackingMetadata()) {
+    // The processor dropped the metadata (e.g. due to validation failure), so
+    // don't restore the data.
+    return;
+  }
+
+  // Restore data.
+  state_ = syncer::NigoriState::CreateFromLocalProto(
+      deserialized_data->nigori_model());
 
   if (state_.passphrase_type == NigoriSpecifics::UNKNOWN) {
     // Commit with keystore initialization wasn't successfully completed before
