@@ -68,36 +68,36 @@ std::vector<DateAndFormat> GetMatchingCompleteDateAndFormats(
   return dafs;
 }
 
-// Finds the first field in |form_structure| with |field.value|=|value|.
-AutofillField* FindFirstFieldWithValue(const FormStructure& form_structure,
-                                       std::u16string_view value) {
-  for (const auto& field : form_structure) {
-    std::u16string trimmed_value;
-    base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL,
-                         &trimmed_value);
-    if (trimmed_value == value) {
-      return field.get();
+// Adds `CREDIT_CARD_VERIFICATION_CODE` to the possible types of fields whose
+// value is `last_unlocked_credit_card_cvc` or looks like a CVC.
+//
+// In the former case, `kKnownValue` is added to the property mask.
+// TODO(crbug.com/429655113): Do we need this? If not, remove.
+void FindAndSetPossibleCvcFieldTypes(
+    std::u16string_view last_unlocked_credit_card_cvc,
+    FormStructure& form_structure) {
+  if (!last_unlocked_credit_card_cvc.empty()) {
+    for (const auto& field : form_structure.fields()) {
+      std::u16string trimmed_value;
+      if (last_unlocked_credit_card_cvc ==
+          base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL)) {
+        FieldTypeSet types = field->possible_types();
+        types.insert(CREDIT_CARD_VERIFICATION_CODE);
+        field->set_possible_types(types);
+        field->set_properties_mask(field->properties_mask() |
+                                   FieldPropertiesFlags::kKnownValue);
+        return;
+      }
     }
   }
-  return nullptr;
-}
-
-// Heuristically identifies all possible credit card verification fields.
-AutofillField* HeuristicallyFindCVCFieldForUpload(
-    const FormStructure& form_structure) {
-  // Stores a pointer to the explicitly found expiration year.
-  bool found_explicit_expiration_year_field = false;
 
   // The first pass checks the existence of an explicitly marked field for the
   // credit card expiration year.
-  for (const auto& field : form_structure) {
-    const FieldTypeSet& type_set = field->possible_types();
-    if (type_set.find(CREDIT_CARD_EXP_2_DIGIT_YEAR) != type_set.end() ||
-        type_set.find(CREDIT_CARD_EXP_4_DIGIT_YEAR) != type_set.end()) {
-      found_explicit_expiration_year_field = true;
-      break;
-    }
-  }
+  const bool found_explicit_expiration_year_field =
+      std::ranges::any_of(form_structure.fields(), [](const auto& field) {
+        return field->possible_types().contains_any(
+            {CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_EXP_4_DIGIT_YEAR});
+      });
 
   // Keeps track if a credit card number field was found.
   bool credit_card_number_found = false;
@@ -110,20 +110,14 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
   //   already found;
   // * it is filled with a 3-4 digit number;
   for (const auto& field : form_structure) {
-    const FieldTypeSet& type_set = field->possible_types();
-
-    // Checks if the field is of |CREDIT_CARD_NUMBER| type.
-    if (type_set.find(CREDIT_CARD_NUMBER) != type_set.end()) {
+    if (field->possible_types().contains(CREDIT_CARD_NUMBER)) {
       credit_card_number_found = true;
       continue;
     }
-    // Skip the field if no credit card number was found yet.
     if (!credit_card_number_found) {
       continue;
     }
-
-    // Don't consider fields that already have any prediction.
-    if (!type_set.empty()) {
+    if (!field->possible_types().empty()) {
       continue;
     }
 
@@ -136,32 +130,14 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
         IsPlausible4DigitExpirationYear(trimmed_value)) {
       continue;
     }
-
-    // Skip the field if its value does not like a CVC value.
     if (!IsPlausibleCreditCardCVCNumber(trimmed_value)) {
       continue;
     }
 
-    return field.get();
+    FieldTypeSet types = field->possible_types();
+    types.insert(CREDIT_CARD_VERIFICATION_CODE);
+    field->set_possible_types(types);
   }
-  return nullptr;
-}
-
-// Iff the CVC of the credit card is known, find the first field with this
-// value (also set |properties_mask| to |kKnownValue|). Otherwise, heuristically
-// search for the CVC field if any.
-AutofillField* GetBestPossibleCVCFieldForUpload(
-    const FormStructure& form_structure,
-    std::u16string_view last_unlocked_credit_card_cvc) {
-  if (!last_unlocked_credit_card_cvc.empty()) {
-    AutofillField* result =
-        FindFirstFieldWithValue(form_structure, last_unlocked_credit_card_cvc);
-    if (result) {
-      result->set_properties_mask(FieldPropertiesFlags::kKnownValue);
-    }
-    return result;
-  }
-  return HeuristicallyFindCVCFieldForUpload(form_structure);
 }
 
 // Returns the FieldTypes for some given EntityInstance defines a non-empty
@@ -389,12 +365,7 @@ void DeterminePossibleFieldTypesForUpload(
                                    form);
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
-  if (AutofillField* cvc_field = GetBestPossibleCVCFieldForUpload(
-          form, last_unlocked_credit_card_cvc)) {
-    FieldTypeSet possible_types = cvc_field->possible_types();
-    possible_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-    cvc_field->set_possible_types(possible_types);
-  }
+  FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, form);
 
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     if (field->possible_types().empty()) {

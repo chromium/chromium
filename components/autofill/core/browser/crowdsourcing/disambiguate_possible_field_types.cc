@@ -13,11 +13,6 @@ namespace autofill {
 
 namespace {
 
-// Returns `true` if `field` contains multiple possible types.
-bool MayHaveAmbiguousPossibleTypes(const AutofillField& field) {
-  return field.possible_types().size() > 1;
-}
-
 // Returns whether the `field` is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
   return field.Type().group() == FieldTypeGroup::kName ||
@@ -35,13 +30,12 @@ void SelectProbableNameTypes(AutofillField& field,
                              bool select_credit_card_names) {
   FieldTypeSet types_to_keep;
   for (FieldType type : field.possible_types()) {
-    FieldTypeGroup group = GroupTypeOfFieldType(type);
-    if ((select_credit_card_names && group == FieldTypeGroup::kCreditCard) ||
-        (!select_credit_card_names && group == FieldTypeGroup::kName)) {
+    if (GroupTypeOfFieldType(type) == (select_credit_card_names
+                                           ? FieldTypeGroup::kCreditCard
+                                           : FieldTypeGroup::kName)) {
       types_to_keep.insert(type);
     }
   }
-
   field.set_possible_types(types_to_keep);
 }
 
@@ -130,11 +124,9 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
 
     // Otherwise, use the previous (if it was found) or next field group to
     // decide whether the field is a name or a credit card name.
-    if (has_found_previous_type) {
-      SelectProbableNameTypes(field, is_previous_credit_card);
-    } else {
-      SelectProbableNameTypes(field, is_next_credit_card);
-    }
+    SelectProbableNameTypes(field, has_found_previous_type
+                                       ? is_previous_credit_card
+                                       : is_next_credit_card);
   }
 }
 
@@ -143,7 +135,7 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
 void DisambiguatePossibleFieldTypes(FormStructure& form) {
   for (size_t i = 0; i < form.field_count(); ++i) {
     AutofillField& field = *form.field(i);
-    if (!MayHaveAmbiguousPossibleTypes(field)) {
+    if (field.possible_types().size() <= 1) {
       continue;
     }
     // Setting possible types to an autofilled value that was accepted by the
@@ -151,7 +143,7 @@ void DisambiguatePossibleFieldTypes(FormStructure& form) {
     // because it represents user intent the most.
     SetPossibleTypesToAutofilledTypeIfAvailable(field);
 
-    if (!MayHaveAmbiguousPossibleTypes(field)) {
+    if (field.possible_types().size() <= 1) {
       continue;
     }
     MaybeDisambiguateNameTypes(form, i);
