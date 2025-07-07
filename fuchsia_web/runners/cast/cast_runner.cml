@@ -18,8 +18,6 @@
     // Enable graceful teardown since the web_instance uses dynamic
     // capabilities via this Component.
     lifecycle: { stop_event: "notify" },
-    // Raise an exception if the runner tries to use a bad handle.
-    deny_bad_handles: "true",
   },
   capabilities: [
     {
