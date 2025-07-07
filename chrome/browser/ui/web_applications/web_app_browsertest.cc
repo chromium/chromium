@@ -1137,6 +1137,64 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   EXPECT_EQ(size, popup_browser->window()->GetContentsSize());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AboutBlankPWAPopup) {
+  const GURL app_url = GetSecureAppURL();
+  const webapps::AppId app_id = InstallPWA(app_url);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
+
+  const gfx::Size size(500, 500);
+  Browser* const popup_browser =
+      OpenPopupAndWait(app_browser, GURL("about:blank"), size);
+
+  // The navigation should have happened in a new window.
+  EXPECT_NE(popup_browser, app_browser);
+
+  // The popup browser should be a PWA.
+  EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
+
+  // The popup browser's BrowserWindowInterface::Type should be TYPE_APP_POPUP.
+  EXPECT_TRUE(popup_browser->is_type_app_popup());
+
+  // Toolbar should not be shown, as about:blank app popups are a special case.
+  EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+
+  // Navigate to out of scope URL.
+  const GURL offscope_url =
+      https_server()->GetURL("offscope.site.test", "/simple.html");
+  NavigateViaLinkClickToURLAndWait(popup_browser, offscope_url);
+
+  // Toolbar should be shown as the popup window has navigated to a URL that is
+  // out of scope relative to the start URL of the original app.
+  EXPECT_TRUE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+
+  // Navigate to in scope URL.
+  NavigateViaLinkClickToURLAndWait(popup_browser, app_url);
+
+  // Toolbar should not be shown.
+  EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWANavigatedToAboutBlank) {
+  const GURL app_url = GetSecureAppURL();
+  const webapps::AppId app_id = InstallPWA(app_url);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
+
+  // The app browser's BrowserWindowInterface::Type should be TYPE_APP.
+  EXPECT_TRUE(app_browser->is_type_app());
+
+  // Navigate to about:blank in the app.
+  const GURL about_blank_url("about:blank");
+  NavigateViaLinkClickToURLAndWait(app_browser, about_blank_url);
+
+  // Toolbar should be shown as app windows navigated to about:blank is not
+  // considered a special case.
+  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+}
+
 // Test navigating to an out of scope url on the same origin causes the url
 // to be shown to the user.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
