@@ -115,6 +115,9 @@ template("single_apple_toolchain") {
       host_toolchain = host_toolchain
     }
 
+    # bin_path is only used in some builds.
+    not_needed(invoker, [ "bin_path" ])
+
     # When the invoker has explicitly overridden cc_wrapper in the
     # toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
@@ -210,7 +213,7 @@ template("single_apple_toolchain") {
     linker_driver_args = "-Wcrl,driver,$ld"
 
     # Specify an explicit path for the strip binary.
-    _strippath = invoker.bin_path + "strip"
+    _strippath = "${prefix}llvm-strip"
     _installnametoolpath = "${prefix}llvm-install-name-tool"
     linker_driver_args += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
     _enable_dsyms = enable_dsyms
@@ -493,13 +496,8 @@ template("single_apple_toolchain") {
       # search path in /usr/bin are thin wrappers around xcrun, which requires a
       # full CommandLineTools or Xcode install, and still may not choose the
       # appropriate binary if there are multiple installs.
-      if (host_os == "mac") {
-        nm = invoker.bin_path + "nm"
-        otool = invoker.bin_path + "otool"
-      } else {
-        nm = "${prefix}llvm-nm"
-        otool = "${prefix}llvm-otool"
-      }
+      nm = "${prefix}llvm-nm"
+      otool = "${prefix}llvm-otool"
 
       link_command = "$linker_driver_env $linker_driver"
       link_command += " -Wcrl,otoolpath,$otool -Wcrl,nmpath,$nm"

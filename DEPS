@@ -907,6 +907,13 @@ deps = {
         'condition': 'host_os == "mac" and host_cpu == "x64" and checkout_clang_coverage_tools',
       },
       {
+        'object_name': 'Mac/llvmobjdump-llvmorg-21-init-16348-gbd809ffb-10.tar.xz',
+        'sha256sum': '70c13158ae0ef92e292fcf54b9ee8c63e7303344a3f3d673ba7b2ef4e3e5d4d7',
+        'size_bytes': 5486628,
+        'generation': 1751654817229264,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
         'object_name': 'Mac_arm64/clang-llvmorg-21-init-16348-gbd809ffb-10.tar.xz',
         'sha256sum': 'f9674ec55e33435b8aa6d8c68bf5fc594a830f4a8460cd268ab895ab937d8b63',
         'size_bytes': 44346100,
@@ -933,6 +940,13 @@ deps = {
         'size_bytes': 1989184,
         'generation': 1751654841126942,
         'condition': 'host_os == "mac" and host_cpu == "arm64" and checkout_clang_coverage_tools',
+      },
+      {
+        'object_name': 'Mac_arm64/llvmobjdump-llvmorg-21-init-16348-gbd809ffb-10.tar.xz',
+        'sha256sum': '7f946825a1363e475b831fd1bc635ee11714dcce88e61ef80c8fe28f5014dba2',
+        'size_bytes': 5316400,
+        'generation': 1751654840799785,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
       },
       {
         'object_name': 'Win/clang-llvmorg-21-init-16348-gbd809ffb-10.tar.xz',

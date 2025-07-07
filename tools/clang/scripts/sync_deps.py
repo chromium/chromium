@@ -34,12 +34,14 @@ CLANG_PLATFORM_TO_PACKAGE_FILES = {
         'clang-tidy',
         'clangd',
         'llvm-code-coverage',
+        'llvmobjdump',
     ],
     'Mac_arm64': [
         'clang',
         'clang-tidy',
         'clangd',
         'llvm-code-coverage',
+        'llvmobjdump',
     ],
     'Win': [
         'clang',
