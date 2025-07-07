@@ -990,7 +990,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kPortalDeprecated:
     case ax::mojom::Role::kRubyAnnotation:
-      NOTREACHED();
+      NOTREACHED() << "The following role should not be present: " << role;
   }
 }
 
@@ -1724,6 +1724,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   TRACE_EVENT1("accessibility",
                "AXPlatformNodeCocoa::accessibilityAttributeNames",
                "role=", ui::ToString([self internalRole]));
+
+  if (![self isAccessibilityElement]) {
+    return @[];
+  }
 
   // Exclude attributes available through the new accessibility API.
   NSMutableArray* attributes = [self internalAccessibilityAttributeNames];

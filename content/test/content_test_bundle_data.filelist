@@ -1979,6 +1979,7 @@ data/accessibility/crash/progress-meter-crash.html
 data/accessibility/crash/relation-points-to-invalid-nodes-crash.html
 data/accessibility/crash/reload-selection-crash.html
 data/accessibility/crash/reparent-crash.html
+data/accessibility/crash/rt-in-select-crash.html
 data/accessibility/crash/select-expand-many-options-crash.html
 data/accessibility/crash/slot-creation-crash.html
 data/accessibility/crash/xml-in-iframe-crash.html
