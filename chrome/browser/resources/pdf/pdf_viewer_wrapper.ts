@@ -49,6 +49,7 @@ export {ViewerPageSelectorElement} from './elements/viewer_page_selector.js';
 export {ViewerPasswordDialogElement} from './elements/viewer_password_dialog.js';
 export {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
 export {ViewerPropertiesDialogElement} from './elements/viewer_properties_dialog.js';
+export {ViewerSaveControlsMixin} from './elements/viewer_save_controls_mixin.js';
 // <if expr="enable_pdf_ink2">
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
 export {ViewerTextBottomToolbarElement} from './elements/viewer_text_bottom_toolbar.js';
