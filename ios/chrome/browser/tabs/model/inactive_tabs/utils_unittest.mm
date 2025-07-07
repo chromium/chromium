@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
