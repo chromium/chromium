@@ -170,20 +170,9 @@ TEST_F(DwaServiceEnvironmentTest, Flush) {
                                      /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
 
-  // Tests Flush() when there are no page load events.
+  // Tests Flush() when there are entries.
   RecordTestMetric();
   EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
-
-  EXPECT_EQ(GetPersistedLogCount(), 0);
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
-  EXPECT_EQ(GetPersistedLogCount(), 0);
-
-  // Tests Flush() when there are page load events.
-  RecordTestMetric();
-  EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  DwaRecorder::Get()->OnPageLoad();
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
 
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
@@ -196,21 +185,15 @@ TEST_F(DwaServiceEnvironmentTest, Purge) {
                                      /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
 
-  // Test that Purge() removes all metrics (entries and page load events).
+  // Test that Purge() removes all metrics.
   RecordTestMetric();
   EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  DwaRecorder::Get()->OnPageLoad();
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
-  RecordTestMetric();
   service.Purge();
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
 
   // Test that Purge() removes all logs.
   RecordTestMetric();
   EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  DwaRecorder::Get()->OnPageLoad();
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
 
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
@@ -218,7 +201,6 @@ TEST_F(DwaServiceEnvironmentTest, Purge) {
 
   service.Purge();
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_EQ(GetPersistedLogCount(), 0);
 }
 
@@ -241,14 +223,9 @@ TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
   RecordTestMetric();
   EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
-
-  // Save the above entry to memory as a page load event.
-  DwaRecorder::Get()->OnPageLoad();
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_EQ(GetPersistedLogCount(), 0);
-  EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
 
-  // DisableRecording() and persist the above page load event to disk.
+  // DisableRecording() and persist the above metric to disk.
   DwaRecorder::Get()->DisableRecording();
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
   EXPECT_EQ(GetPersistedLogCount(), 1);
@@ -272,7 +249,6 @@ TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
 
   // Logs are uploaded and there are no metrics in memory or on disk.
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
   EXPECT_EQ(GetPersistedLogCount(), 0);
 
@@ -294,19 +270,16 @@ TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
   service.EnableReporting();
 
   RecordTestMetric();
-  EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  DwaRecorder::Get()->OnPageLoad();
 
-  // Metrics are stored in memory as page load events in DwaRecorder, and there
+  // Metrics are stored in memory as entries in DwaRecorder, and there
   // are no unsent logs.
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
+  EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
 
   // Metrics are stored in memory as unsent logs, and DwaRecorder is empty.
   base::TimeDelta upload_interval = client_.GetUploadInterval();
   task_environment_.FastForwardBy(upload_interval);
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_TRUE(service.unsent_log_store()->has_unsent_logs());
   // PersistedLogCount is 0 because logs are stored in memory and not on disk.
   EXPECT_EQ(GetPersistedLogCount(), 0);
@@ -318,7 +291,6 @@ TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
 
   // Logs are uploaded and there are no metrics in memory or on disk.
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
   EXPECT_EQ(GetPersistedLogCount(), 0);
 
@@ -329,14 +301,10 @@ TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
   // logs.
   RecordTestMetric();
   EXPECT_TRUE(DwaRecorder::Get()->HasEntries());
-  DwaRecorder::Get()->OnPageLoad();
-
-  EXPECT_TRUE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
 
   task_environment_.FastForwardBy(upload_interval);
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_TRUE(service.unsent_log_store()->has_unsent_logs());
   EXPECT_EQ(GetPersistedLogCount(), 0);
   EXPECT_TRUE(client_.uploader()->is_uploading());
@@ -345,7 +313,6 @@ TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
   EXPECT_FALSE(client_.uploader()->is_uploading());
 
   EXPECT_FALSE(DwaRecorder::Get()->HasEntries());
-  EXPECT_FALSE(DwaRecorder::Get()->HasPageLoadEvents());
   EXPECT_FALSE(service.unsent_log_store()->has_unsent_logs());
   EXPECT_EQ(GetPersistedLogCount(), 0);
 }

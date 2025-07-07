@@ -148,7 +148,6 @@ void DwaRecorder::DisableRecording() {
 void DwaRecorder::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   entries_.clear();
-  page_load_events_.clear();
 }
 
 bool DwaRecorder::IsEnabled() {
@@ -176,45 +175,19 @@ bool DwaRecorder::HasEntries() {
   return !entries_.empty();
 }
 
-void DwaRecorder::OnPageLoad() {
+std::vector<::dwa::DeidentifiedWebAnalyticsEvent> DwaRecorder::TakeDwaEvents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!recorder_enabled_) {
-    return;
-  }
 
   // No entries, so there's nothing to do.
   if (entries_.empty()) {
-    return;
+    return std::vector<::dwa::DeidentifiedWebAnalyticsEvent>();
   }
 
   std::vector<::dwa::DeidentifiedWebAnalyticsEvent> dwa_events =
       BuildDwaEvents(entries_);
   entries_.clear();
 
-  if (dwa_events.empty()) {
-    return;
-  }
-
-  // Puts existing |dwa_events_| into a page load event.
-  ::dwa::PageLoadEvents page_load_event;
-  page_load_event.mutable_events()->Add(
-      std::make_move_iterator(dwa_events.begin()),
-      std::make_move_iterator(dwa_events.end()));
-
-  // Add the page load event to the list of page load events.
-  page_load_events_.push_back(std::move(page_load_event));
-}
-
-std::vector<::dwa::PageLoadEvents> DwaRecorder::TakePageLoadEvents() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<::dwa::PageLoadEvents> results = std::move(page_load_events_);
-  page_load_events_.clear();
-  return results;
-}
-
-bool DwaRecorder::HasPageLoadEvents() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !page_load_events_.empty();
+  return dwa_events;
 }
 
 const std::vector<metrics::dwa::mojom::DwaEntryPtr>&

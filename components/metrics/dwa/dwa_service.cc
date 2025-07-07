@@ -115,7 +115,7 @@ void DwaService::DisableReporting() {
 void DwaService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The log should not be built if there aren't any events to log.
-  if (!recorder_->HasPageLoadEvents()) {
+  if (!recorder_->HasEntries()) {
     return;
   }
 
@@ -241,8 +241,8 @@ void DwaService::RotateLog() {
 void DwaService::BuildAndStoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // There are no new page load events, so no new logs should be created.
-  if (!recorder_->HasPageLoadEvents()) {
+  // There are no new events, so no new logs should be created.
+  if (!recorder_->HasEntries()) {
     return;
   }
 
@@ -251,11 +251,10 @@ void DwaService::BuildAndStoreLog(
                                 report.mutable_coarse_system_info());
   report.set_dwa_ephemeral_id(GetEphemeralClientId(*pref_service_));
 
-  std::vector<::dwa::PageLoadEvents> page_load_events =
-      recorder_->TakePageLoadEvents();
-  report.mutable_page_load_events()->Add(
-      std::make_move_iterator(page_load_events.begin()),
-      std::make_move_iterator(page_load_events.end()));
+  std::vector<::dwa::DeidentifiedWebAnalyticsEvent> dwa_events =
+      recorder_->TakeDwaEvents();
+  report.mutable_dwa_events()->Add(std::make_move_iterator(dwa_events.begin()),
+                                   std::make_move_iterator(dwa_events.end()));
 
   report.set_timestamp(MetricsLog::GetCurrentTime());
 

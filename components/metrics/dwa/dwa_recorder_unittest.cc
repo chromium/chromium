@@ -20,6 +20,17 @@ namespace {
 // TODO(b/375239908): Increase the code readability of the following helper
 // conversion functions.
 
+// Converts `dwa_events` into vector of DWA event_hashes.
+std::vector<uint64_t> GetDwaEventHashesFromDwaEvents(
+    const std::vector<::dwa::DeidentifiedWebAnalyticsEvent>& dwa_events) {
+  std::vector<uint64_t> dwa_event_hashes;
+  dwa_event_hashes.reserve(dwa_events.size());
+  for (const auto& dwa_event : dwa_events) {
+    dwa_event_hashes.push_back(dwa_event.event_hash());
+  }
+  return dwa_event_hashes;
+}
+
 // Converts |repeated_ptr_field_metrics| into an unordered_map of metrics. Each
 // metric in metrics consists of a name_hash (key) and value (value).
 std::unordered_map<uint64_t, int64_t> RepeatedPtrFieldMetricToUnorderedMap(
@@ -53,18 +64,6 @@ RepeatedPtrFieldContentMetricToVector(
     contents.emplace_back(content.content_type(), content.content_hash());
   }
   return contents;
-}
-
-// Converts |repeated_ptr_field_dwa_event| into vector of DWA event_hash.
-std::vector<uint64_t> RepeatedPtrFieldDwaEventToVector(
-    const google::protobuf::RepeatedPtrField<
-        ::dwa::DeidentifiedWebAnalyticsEvent>& repeated_ptr_field_dwa_event) {
-  std::vector<uint64_t> dwa_events;
-  dwa_events.reserve(repeated_ptr_field_dwa_event.size());
-  for (const auto& dwa_event : repeated_ptr_field_dwa_event) {
-    dwa_events.push_back(dwa_event.event_hash());
-  }
-  return dwa_events;
 }
 
 // Converts |repeated_ptr_field_field_trials| into vector of field trial groups.
@@ -136,8 +135,7 @@ TEST_F(DwaRecorderEnabledTest, ValidateEntriesWhenRecordingIsDisabled) {
   EXPECT_FALSE(GetRecorder()->HasEntries());
 }
 
-TEST_F(DwaRecorderEnabledTest,
-       ValidateOnPageLoadCreatesPageLoadEventsWithVaryingMetrics) {
+TEST_F(DwaRecorderEnabledTest, ValidateRecorderRecordsForVaryingMetrics) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
   builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Length", 5);
@@ -151,58 +149,37 @@ TEST_F(DwaRecorderEnabledTest,
   builder_2.Record(GetRecorder());
 
   EXPECT_TRUE(GetRecorder()->HasEntries());
-  EXPECT_TRUE(GetRecorder()->TakePageLoadEvents().empty());
 
-  GetRecorder()->OnPageLoad();
-  EXPECT_FALSE(GetRecorder()->HasEntries());
+  auto dwa_events = GetRecorder()->TakeDwaEvents();
+  EXPECT_FALSE(dwa_events.empty());
+  ASSERT_EQ(dwa_events.size(), 1u);
 
-  auto page_load_events = GetRecorder()->TakePageLoadEvents();
-  EXPECT_FALSE(page_load_events.empty());
-
-  ASSERT_EQ(page_load_events.size(), 1u);
-  ASSERT_EQ(page_load_events[0].events().size(), 1);
-  EXPECT_EQ(page_load_events[0].events(0).event_hash(),
+  EXPECT_EQ(dwa_events[0].event_hash(),
             base::HashMetricName("Kangaroo.Jumped"));
-  ASSERT_EQ(page_load_events[0].events(0).content_metrics().size(), 1);
+  ASSERT_EQ(dwa_events[0].content_metrics().size(), 1);
   EXPECT_EQ(
-      page_load_events[0].events(0).content_metrics(0).content_type(),
+      dwa_events[0].content_metrics(0).content_type(),
       ::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::CONTENT_TYPE_URL);
-  EXPECT_EQ(page_load_events[0].events(0).content_metrics(0).content_hash(),
+  EXPECT_EQ(dwa_events[0].content_metrics(0).content_hash(),
             base::HashMetricName("adtech.com"));
-  ASSERT_EQ(page_load_events[0].events(0).content_metrics(0).metrics().size(),
-            2);
+  ASSERT_EQ(dwa_events[0].content_metrics(0).metrics().size(), 2);
 
-  EXPECT_EQ(page_load_events[0]
-                .events(0)
-                .content_metrics(0)
-                .metrics(0)
-                .metric()
-                .size(),
-            2);
-  EXPECT_THAT(
-      RepeatedPtrFieldMetricToUnorderedMap(
-          page_load_events[0].events(0).content_metrics(0).metrics(0).metric()),
-      testing::UnorderedElementsAre(
-          testing::Pair(base::HashMetricName("Length"), 5),
-          testing::Pair(base::HashMetricName("Width"), 10)));
+  EXPECT_EQ(dwa_events[0].content_metrics(0).metrics(0).metric().size(), 2);
+  EXPECT_THAT(RepeatedPtrFieldMetricToUnorderedMap(
+                  dwa_events[0].content_metrics(0).metrics(0).metric()),
+              testing::UnorderedElementsAre(
+                  testing::Pair(base::HashMetricName("Length"), 5),
+                  testing::Pair(base::HashMetricName("Width"), 10)));
 
-  EXPECT_EQ(page_load_events[0]
-                .events(0)
-                .content_metrics(0)
-                .metrics(1)
-                .metric()
-                .size(),
-            2);
-  EXPECT_THAT(
-      RepeatedPtrFieldMetricToUnorderedMap(
-          page_load_events[0].events(0).content_metrics(0).metrics(1).metric()),
-      testing::UnorderedElementsAre(
-          testing::Pair(base::HashMetricName("Length"), 3),
-          testing::Pair(base::HashMetricName("Width"), 12)));
+  EXPECT_EQ(dwa_events[0].content_metrics(0).metrics(1).metric().size(), 2);
+  EXPECT_THAT(RepeatedPtrFieldMetricToUnorderedMap(
+                  dwa_events[0].content_metrics(0).metrics(1).metric()),
+              testing::UnorderedElementsAre(
+                  testing::Pair(base::HashMetricName("Length"), 3),
+                  testing::Pair(base::HashMetricName("Width"), 12)));
 }
 
-TEST_F(DwaRecorderEnabledTest,
-       ValidateOnPageLoadCreatesPageLoadEventsWithVaryingContent) {
+TEST_F(DwaRecorderEnabledTest, ValidateRecorderRecordsForVaryingContent) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
   builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Latency", 10);
@@ -219,33 +196,27 @@ TEST_F(DwaRecorderEnabledTest,
   builder_3.Record(GetRecorder());
 
   EXPECT_TRUE(GetRecorder()->HasEntries());
-  EXPECT_TRUE(GetRecorder()->TakePageLoadEvents().empty());
 
-  GetRecorder()->OnPageLoad();
-  EXPECT_FALSE(GetRecorder()->HasEntries());
+  auto dwa_events = GetRecorder()->TakeDwaEvents();
+  EXPECT_FALSE(dwa_events.empty());
+  ASSERT_EQ(dwa_events.size(), 1u);
 
-  auto page_load_events = GetRecorder()->TakePageLoadEvents();
-  EXPECT_FALSE(page_load_events.empty());
-
-  ASSERT_EQ(page_load_events.size(), 1u);
-  ASSERT_EQ(page_load_events[0].events().size(), 1);
-  EXPECT_EQ(page_load_events[0].events(0).event_hash(),
+  EXPECT_EQ(dwa_events[0].event_hash(),
             base::HashMetricName("Kangaroo.Jumped"));
-  ASSERT_EQ(page_load_events[0].events(0).content_metrics().size(), 2);
+  ASSERT_EQ(dwa_events[0].content_metrics().size(), 2);
 
-  EXPECT_THAT(RepeatedPtrFieldContentMetricToVector(
-                  page_load_events[0].events(0).content_metrics()),
-              testing::UnorderedElementsAre(
-                  testing::Pair(::dwa::DeidentifiedWebAnalyticsEvent::
-                                    ContentMetric::CONTENT_TYPE_URL,
-                                base::HashMetricName("adtech.com")),
-                  testing::Pair(::dwa::DeidentifiedWebAnalyticsEvent::
-                                    ContentMetric::CONTENT_TYPE_URL,
-                                base::HashMetricName("adtech2.com"))));
+  EXPECT_THAT(
+      RepeatedPtrFieldContentMetricToVector(dwa_events[0].content_metrics()),
+      testing::UnorderedElementsAre(
+          testing::Pair(::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::
+                            CONTENT_TYPE_URL,
+                        base::HashMetricName("adtech.com")),
+          testing::Pair(::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::
+                            CONTENT_TYPE_URL,
+                        base::HashMetricName("adtech2.com"))));
 }
 
-TEST_F(DwaRecorderEnabledTest,
-       ValidateOnPageLoadCreatesPageLoadEventsWithVaryingEvents) {
+TEST_F(DwaRecorderEnabledTest, ValidateRecorderRecordsForVaryingEvents) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
   builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Latency", 10);
@@ -262,25 +233,18 @@ TEST_F(DwaRecorderEnabledTest,
   builder_3.Record(GetRecorder());
 
   EXPECT_TRUE(GetRecorder()->HasEntries());
-  EXPECT_TRUE(GetRecorder()->TakePageLoadEvents().empty());
 
-  GetRecorder()->OnPageLoad();
-  EXPECT_FALSE(GetRecorder()->HasEntries());
-
-  auto page_load_events = GetRecorder()->TakePageLoadEvents();
-  EXPECT_FALSE(page_load_events.empty());
-
-  ASSERT_EQ(page_load_events.size(), 1u);
-  ASSERT_EQ(page_load_events[0].events().size(), 2);
+  auto dwa_events = GetRecorder()->TakeDwaEvents();
+  EXPECT_FALSE(dwa_events.empty());
+  ASSERT_EQ(dwa_events.size(), 2u);
 
   EXPECT_THAT(
-      RepeatedPtrFieldDwaEventToVector(page_load_events[0].events()),
+      GetDwaEventHashesFromDwaEvents(dwa_events),
       testing::UnorderedElementsAre(base::HashMetricName("Kangaroo.Jumped"),
                                     base::HashMetricName("Frog.Leaped")));
 }
 
-TEST_F(DwaRecorderEnabledTest,
-       ValidateOnPageLoadCreatesPageLoadEventsWithFieldTrials) {
+TEST_F(DwaRecorderEnabledTest, ValidateRecorderRecordsEventsWithFieldTrials) {
   base::FieldTrialList::CreateFieldTrial("test_trial_1", "test_group_2")
       ->Activate();
   base::FieldTrialList::CreateFieldTrial("test_trial_2", "test_group_1")
@@ -295,43 +259,16 @@ TEST_F(DwaRecorderEnabledTest,
   builder_1.SetMetric("Latency", 10);
   builder_1.Record(GetRecorder());
 
-  GetRecorder()->OnPageLoad();
+  auto dwa_events = GetRecorder()->TakeDwaEvents();
+  EXPECT_FALSE(dwa_events.empty());
+  ASSERT_EQ(dwa_events.size(), 1u);
 
-  ::dwa::DwaEntryBuilder builder_2("Frog.Leaped");
-  builder_2.AddToStudiesOfInterest("test_trial_3");
-  builder_2.SetContent("https://adtech.com");
-  builder_2.SetMetric("Latency", 12);
-  builder_2.Record(GetRecorder());
-
-  GetRecorder()->OnPageLoad();
-
-  auto page_load_events = GetRecorder()->TakePageLoadEvents();
-  EXPECT_FALSE(page_load_events.empty());
-
-  ASSERT_EQ(page_load_events.size(), 2u);
-  ASSERT_EQ(page_load_events[0].events().size(), 1);
-  ASSERT_EQ(page_load_events[1].events().size(), 1);
-
-  EXPECT_THAT(RepeatedPtrFieldFieldTrialsToVector(
-                  page_load_events[0].events(0).field_trials()),
+  EXPECT_THAT(RepeatedPtrFieldFieldTrialsToVector(dwa_events[0].field_trials()),
               testing::UnorderedElementsAre(
                   testing::Pair(base::HashFieldTrialName("test_trial_1"),
                                 base::HashFieldTrialName("test_group_2")),
                   testing::Pair(base::HashFieldTrialName("test_trial_2"),
                                 base::HashFieldTrialName("test_group_1"))));
-
-  EXPECT_THAT(RepeatedPtrFieldFieldTrialsToVector(
-                  page_load_events[1].events(0).field_trials()),
-              testing::ElementsAre(
-                  testing::Pair(base::HashFieldTrialName("test_trial_3"),
-                                base::HashFieldTrialName("test_group_8"))));
-}
-
-TEST_F(DwaRecorderEnabledTest,
-       ValidateOnPageLoadDoesNotCreatePageLoadEventsWhenEntriesIsEmpty) {
-  EXPECT_FALSE(GetRecorder()->HasEntries());
-  GetRecorder()->OnPageLoad();
-  EXPECT_TRUE(GetRecorder()->TakePageLoadEvents().empty());
 }
 
 TEST_F(DwaRecorderDisabledTest, FeatureDisabled) {

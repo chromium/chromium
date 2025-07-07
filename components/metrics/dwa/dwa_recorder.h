@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
   void EnableRecording();
   void DisableRecording();
 
-  // Deletes all unsent entries and page load events.
+  // Deletes all unsent entries.
   void Purge();
 
   // Returns whether this DwaRecorder is enabled.
@@ -51,24 +51,15 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
   // dwa_builders.h.
   static DwaRecorder* Get();
 
-  // Saves all entries into a page load event on every page load. This method is
-  // called once per page load. The purpose this needs to be called once per
-  // page load is because the dwa proto collects aggregates events in terms of
-  // "page load events".
-  // TODO(b/369473036): Bind OnPageLoad method to call on every page load
-  void OnPageLoad();
-
   // Adds an entry to the DwaEntry list.
   void AddEntry(metrics::dwa::mojom::DwaEntryPtr entry);
 
   // Returns true if DwaEntry list contains entries.
   bool HasEntries();
 
-  // Takes all existing |page_load_events_| out from DwaRecorder and returns it.
-  std::vector<::dwa::PageLoadEvents> TakePageLoadEvents();
-
-  // Returns true if |page_load_events_| is non-empty.
-  bool HasPageLoadEvents();
+  // Takes all existing `entries_` out from DwaRecorder and builds a collection
+  // of DeidentifiedWebAnalyticsEvents.
+  std::vector<::dwa::DeidentifiedWebAnalyticsEvent> TakeDwaEvents();
 
   // Returns a vector to internal list of DwaEntryPtr for testing.
   const std::vector<metrics::dwa::mojom::DwaEntryPtr>& GetEntriesForTesting()
@@ -79,9 +70,6 @@ class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
 
   // Local storage for the list of entries.
   std::vector<::metrics::dwa::mojom::DwaEntryPtr> entries_;
-
-  // Local storage for the entries for page load events.
-  std::vector<::dwa::PageLoadEvents> page_load_events_;
 
   bool recorder_enabled_ = false;
 };

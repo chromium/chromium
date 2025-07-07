@@ -79,7 +79,6 @@
 #include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/ip_protection/common/ip_protection_status.h"
-#include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
@@ -251,9 +250,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     privacy_sandbox_incognito_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
             tab.GetContents());
-
-    dwa_web_contents_observer_ =
-        std::make_unique<metrics::DwaWebContentsObserver>(tab.GetContents());
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile)) {
@@ -436,12 +432,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_incognito_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
             new_contents);
-  }
-
-  if (dwa_web_contents_observer_) {
-    dwa_web_contents_observer_.reset();
-    dwa_web_contents_observer_ =
-        std::make_unique<metrics::DwaWebContentsObserver>(new_contents);
   }
 
   if (web_app::AreWebAppsEnabled(

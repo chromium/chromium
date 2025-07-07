@@ -258,19 +258,6 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("dwa_web_state_observer") {
-  sources = [
-    "dwa_web_state_observer.h",
-    "dwa_web_state_observer.mm",
-  ]
-  deps = [
-    "//components/metrics/dwa",
-    "//ios/web/public",
-    "//ios/web/public:web_state_observer",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("metrics_browser_agent") {
   sources = [
     "tab_usage_recorder_browser_agent.h",
@@ -339,12 +326,10 @@ source_set("tab_usage_recorder_metrics") {
 source_set("unit_tests_internal") {
   testonly = true
   sources = [
-    "dwa_web_state_observer_unittest.mm",
     "first_user_action_recorder_unittest.cc",
     "tab_usage_recorder_browser_agent_unittest.mm",
   ]
   deps = [
-    ":dwa_web_state_observer",
     ":metrics_browser_agent",
     ":metrics_internal",
     ":model",

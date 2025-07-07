@@ -84,10 +84,6 @@ class PrivacySandboxTabObserver;
 class PrivacySandboxIncognitoTabObserver;
 }  // namespace privacy_sandbox
 
-namespace metrics {
-class DwaWebContentsObserver;
-}  // namespace metrics
-
 namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
@@ -177,10 +173,6 @@ class TabFeatures {
   privacy_sandbox::PrivacySandboxIncognitoTabObserver*
   privacy_sandbox_incognito_tab_observer() {
     return privacy_sandbox_incognito_tab_observer_.get();
-  }
-
-  metrics::DwaWebContentsObserver* dwa_web_contents_observer() {
-    return dwa_web_contents_observer_.get();
   }
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
@@ -332,9 +324,6 @@ class TabFeatures {
 
   std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
       privacy_sandbox_incognito_tab_observer_;
-
-  std::unique_ptr<metrics::DwaWebContentsObserver>
-      dwa_web_contents_observer_;
 
   // The tab-scoped extension side-panel manager. There is a separate
   // window-scoped extension side-panel manager.

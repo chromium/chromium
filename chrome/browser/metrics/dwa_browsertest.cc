@@ -85,7 +85,6 @@ class DwaBrowserTest : public SyncTest {
 
   void AssertDwaRecorderHasMetrics() const {
     ASSERT_TRUE(metrics::dwa::DwaRecorder::Get()->HasEntries());
-    ASSERT_TRUE(metrics::dwa::DwaRecorder::Get()->HasPageLoadEvents());
   }
 
   void ExpectDwaIsDisabledAndDisallowed() const {
@@ -100,7 +99,6 @@ class DwaBrowserTest : public SyncTest {
 
   void ExpectDwaRecorderIsEmpty() const {
     EXPECT_FALSE(metrics::dwa::DwaRecorder::Get()->HasEntries());
-    EXPECT_FALSE(metrics::dwa::DwaRecorder::Get()->HasPageLoadEvents());
   }
 
   void RecordTestDwaEntryMetric() {
@@ -110,14 +108,8 @@ class DwaBrowserTest : public SyncTest {
     builder.Record(dwa::DwaRecorder::Get());
   }
 
-  void RecordTestDwaEntryMetricAndPageLoadEvent() {
-    RecordTestDwaEntryMetric();
-    metrics::dwa::DwaRecorder::Get()->OnPageLoad();
-    RecordTestDwaEntryMetric();
-  }
-
   void RecordTestMetricsAndAssertMetricsRecorded() {
-    RecordTestDwaEntryMetricAndPageLoadEvent();
+    RecordTestDwaEntryMetric();
     AssertDwaRecorderHasMetrics();
   }
 
@@ -246,12 +238,6 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
   // Records a DWA entry metric.
   RecordTestDwaEntryMetric();
   EXPECT_TRUE(dwa_recorder->HasEntries());
-  EXPECT_FALSE(dwa_recorder->HasPageLoadEvents());
-  EXPECT_FALSE(dwa_service->unsent_log_store()->has_unsent_logs());
-
-  dwa_recorder->OnPageLoad();
-  EXPECT_FALSE(dwa_recorder->HasEntries());
-  EXPECT_TRUE(dwa_recorder->HasPageLoadEvents());
   EXPECT_FALSE(dwa_service->unsent_log_store()->has_unsent_logs());
 
   GetDwaService()->Flush(
@@ -352,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -382,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Extensions) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -410,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Apps) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -438,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -472,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_MsbbAndApps) {
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -505,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 
@@ -538,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest,
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   EnableSyncForProfile(profile);
 
-  RecordTestDwaEntryMetricAndPageLoadEvent();
+  RecordTestDwaEntryMetric();
   AssertDwaIsEnabledAndAllowed();
   AssertDwaRecorderHasMetrics();
 

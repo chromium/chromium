@@ -146,13 +146,6 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey waitForMainTabCount:(tabCount + 1)];
 }
 
-// Records a test DWA entry metric and a pageload event.
-- (void)recordTestDWAEntryMetricAndPageLoadEvent {
-  [MetricsAppInterface recordTestDWAEntryMetric];
-  [MetricsAppInterface DWARecorderOnPageLoadCall];
-  [MetricsAppInterface recordTestDWAEntryMetric];
-}
-
 // Toggle "Make searches and browsing better" switch on.
 - (void)turnOnMsbbSwitch {
   // Wait for the Msbb switch to appear.
@@ -186,11 +179,8 @@ using chrome_test_util::SettingsDoneButton;
              @"allowed for all profiles.");
 }
 
-// Assertions to check that the DWA recorder has page load events and entries.
+// Assertions to check that the DWA recorder has entries.
 - (void)assertDwaRecorderHasMetrics {
-  GREYAssert([MetricsAppInterface DWARecorderHasPageLoadEvents:YES],
-             @"DWA Recorder should have "
-             @"pageload events.");
   GREYAssert([MetricsAppInterface DWARecorderHasEntries:YES],
              @"DWA Recorder should have "
              @"entries.");
@@ -206,32 +196,11 @@ using chrome_test_util::SettingsDoneButton;
              @"allowed for all profiles.");
 }
 
-// Assertions to check that the DWA recorder has no page load events or entries.
+// Assertions to check that the DWA recorder has no entries.
 - (void)assertDwaRecorderIsEmpty {
-  GREYAssert([MetricsAppInterface DWARecorderHasPageLoadEvents:NO],
-             @"DWA Recorder should not have any "
-             @"pageload events.");
   GREYAssert([MetricsAppInterface DWARecorderHasEntries:NO],
              @"DWA Recorder should not have any "
              @"entries.");
-}
-
-// Assertions to check that the DWA recorder has entries but no page load
-// events.
-- (void)assertDwaRecorderHasEntriesAndNoPageloadEvents {
-  GREYAssert([MetricsAppInterface DWARecorderHasEntries:YES],
-             @"DWA Recorder should have entries.");
-  GREYAssert([MetricsAppInterface DWARecorderHasPageLoadEvents:NO],
-             @"DWA Recorder should not have pageload events.");
-}
-
-// Assertions to check that the DWA recorder has page load events but no
-// entries.
-- (void)assertDwaRecorderHasPageLoadEventsAndNoEntries {
-  GREYAssert([MetricsAppInterface DWARecorderHasEntries:NO],
-             @"DWA Recorder should not have any entries.");
-  GREYAssert([MetricsAppInterface DWARecorderHasPageLoadEvents:YES],
-             @"DWA Recorder should have pageload events.");
 }
 
 #pragma mark - Tests
@@ -248,14 +217,6 @@ using chrome_test_util::SettingsDoneButton;
 
   // Records a DWA entry metric.
   [MetricsAppInterface recordTestDWAEntryMetric];
-  [self assertDwaRecorderHasEntriesAndNoPageloadEvents];
-  GREYAssert([MetricsAppInterface hasUnsentDWALogs:NO],
-             @"DWA Service should not have unsent logs.");
-
-  // opening a new regular tab automatically navigates to a new URL to simulate
-  // page load action.
-  [self openNewRegularTab];
-  [self assertDwaRecorderHasPageLoadEventsAndNoEntries];
   GREYAssert([MetricsAppInterface hasUnsentDWALogs:NO],
              @"DWA Service should not have unsent logs.");
 
@@ -385,7 +346,7 @@ using chrome_test_util::SettingsDoneButton;
 // LINT.IfChange(UkmMsbbConsentChangeCheck)
 - (void)testUkmMsbbConsentChangeCheck {
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
-  [self recordTestDWAEntryMetricAndPageLoadEvent];
+  [MetricsAppInterface recordTestDWAEntryMetric];
   [self assertDwaIsEnabledAndAllowed];
   [self assertDwaRecorderHasMetrics];
 
@@ -407,39 +368,13 @@ using chrome_test_util::SettingsDoneButton;
   [self assertDwaIsEnabledAndAllowed];
   [self assertDwaRecorderIsEmpty];
 
-  // Validate DWA entries and page load events are able to be recorded when all
-  // consents are enabled.
-  [self recordTestDWAEntryMetricAndPageLoadEvent];
+  // Validate DWA entries is able to be recorded when all consents are enabled.
+  [MetricsAppInterface recordTestDWAEntryMetric];
   [self assertDwaRecorderHasMetrics];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
 // LINT.ThenChange(/chrome/browser/metrics/dwa_browsertest.cc:UkmMsbbConsentChangeCheck)
-
-// Tests that reloading the page triggers a call to DWA pageload.
-- (void)testDwaRecorderPageLoadTriggeredWhenReloadingPage {
-  GREYAssert([MetricsAppInterface checkDWARecordingEnabled:YES],
-             @"Failed to assert that DWA "
-             @"was enabled.");
-  [MetricsAppInterface recordTestDWAEntryMetric];
-  [self assertDwaRecorderHasEntriesAndNoPageloadEvents];
-
-  [self openNewRegularTab];
-  [self assertDwaRecorderHasPageLoadEventsAndNoEntries];
-  [MetricsAppInterface clearDWARecorder];
-
-  [MetricsAppInterface recordTestDWAEntryMetric];
-  [self assertDwaRecorderHasEntriesAndNoPageloadEvents];
-
-  // Loads simple page on localhost
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/test_url.html")];
-  [self assertDwaRecorderHasPageLoadEventsAndNoEntries];
-  [MetricsAppInterface clearDWARecorder];
-
-  [MetricsAppInterface recordTestDWAEntryMetric];
-  [ChromeEarlGrey reload];
-  [self assertDwaRecorderHasPageLoadEventsAndNoEntries];
-}
 
 @end
