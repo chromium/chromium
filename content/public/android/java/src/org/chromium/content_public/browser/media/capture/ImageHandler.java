@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.view.Surface;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -51,15 +52,27 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * @param handler The handler on which to run callbacks.
      */
     ImageHandler(ScreenCapture.CaptureState captureState, Delegate delegate, Handler handler) {
-        mCaptureState = captureState;
-        mDelegate = delegate;
-        mHandler = handler;
-        mImageReader =
+        this(
+                captureState,
+                delegate,
+                handler,
                 ImageReader.newInstance(
                         captureState.width,
                         captureState.height,
                         captureState.format,
-                        /* maxImages= */ 2);
+                        /* maxImages= */ 2));
+    }
+
+    @VisibleForTesting
+    ImageHandler(
+            ScreenCapture.CaptureState captureState,
+            Delegate delegate,
+            Handler handler,
+            ImageReader imageReader) {
+        mCaptureState = captureState;
+        mDelegate = delegate;
+        mHandler = handler;
+        mImageReader = imageReader;
         mImageReader.setOnImageAvailableListener(this, mHandler);
     }
 
@@ -177,5 +190,15 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                 // TODO(crbug.com/352187279): Support YUV420.
                 throw new IllegalStateException("Unexpected image format: " + image.getFormat());
         }
+    }
+
+    /** Returns the current number of images acquired but not yet released. */
+    int getAcquiredImageCountForTesting() {
+        return mAcquiredImageCount;
+    }
+
+    /** Returns true if close() has been called but images are still pending release. */
+    boolean isClosingForTesting() {
+        return mClosing;
     }
 }
