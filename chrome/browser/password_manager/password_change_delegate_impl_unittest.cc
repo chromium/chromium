@@ -159,7 +159,8 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kChangePasswordFormNotFound, 1);
+      PasswordChangeDelegate::State::kChangePasswordFormNotFound,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
@@ -170,7 +171,8 @@ TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kOfferingPasswordChange, 1);
+      PasswordChangeDelegate::State::kOfferingPasswordChange,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -182,7 +184,8 @@ TEST_F(PasswordChangeDelegateImplTest,
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kWaitingForAgreement, 1);
+      PasswordChangeDelegate::State::kWaitingForAgreement,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -195,7 +198,8 @@ TEST_F(PasswordChangeDelegateImplTest,
   ResetDelegate();
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kWaitingForChangePasswordForm, 1);
+      PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -237,6 +241,8 @@ TEST_F(PasswordChangeDelegateImplTest, OtpDetectionIgnoredOnOriginalTab) {
 TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
+  base::HistogramTester histogram_tester;
+
   delegate()->StartPasswordChangeFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
@@ -245,4 +251,28 @@ TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
       static_cast<PasswordChangeDelegateImpl*>(delegate())->executor());
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kOtpDetected);
+
+  ResetDelegate();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kOtpDetected, /*expected_bucket_count=*/1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
+  SetOptimizationFeatureEnabled(true);
+  CreateDelegate();
+  base::HistogramTester histogram_tester;
+
+  delegate()->StartPasswordChangeFlow();
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  delegate()->CancelPasswordChangeFlow();
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kCanceled);
+
+  ResetDelegate();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kCanceled, /*expected_bucket_count=*/1);
 }

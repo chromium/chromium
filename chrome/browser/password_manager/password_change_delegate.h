@@ -17,6 +17,7 @@ class PasswordChangeDelegate {
   // Internal state of a password change flow. Corresponds to
   // `PasswordChangeFlowState` in enums.xml. These values are persisted to logs.
   // Entries should not be renumbered and numeric values should never be reused.
+  // LINT.IfChange(State)
   enum class State {
     // Password change is being offered to the user, waiting from the to accept
     // or reject it.
@@ -50,6 +51,7 @@ class PasswordChangeDelegate {
 
     kMaxValue = kCanceled,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowState)
 
   // An interface used to notify clients (observers) of delegate state. Register
   // the observer via `PasswordChangeDelegate::AddObserver`.

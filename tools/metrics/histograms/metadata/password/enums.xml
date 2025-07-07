@@ -767,6 +767,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_controller.h:PasswordChangeDialogAction) -->
 
+<!-- LINT.IfChange(PasswordChangeFlowState) -->
+
 <enum name="PasswordChangeFlowState">
   <int value="0" label="Offering password change"/>
   <int value="1" label="Waiting for privacy notice acceptance"/>
@@ -775,7 +777,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Changing password"/>
   <int value="5" label="Password successfully changed"/>
   <int value="6" label="Password change failed"/>
+  <int value="7" label="OTP detected"/>
+  <int value="8" label="Canceled by the user"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
 
 <!-- LINT.IfChange(PasswordChangeToastEvent) -->
 
