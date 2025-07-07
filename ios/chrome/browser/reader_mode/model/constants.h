@@ -59,19 +59,6 @@ enum class ReaderModeHeuristicClassification {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicClassification)
 
-// Recorded for IOS.ReaderMode.Distiller.Amp.
-// Compares the state between the distillation success and the
-// usage of AMP for the web page.
-// LINT.IfChange(ReaderModeAmpClassification)
-enum class ReaderModeAmpClassification {
-  kEmptyDistillNoAmp = 0,
-  kPopulatedDistillNoAmp = 1,
-  kEmptyDistillWithAmp = 2,
-  kPopulatedDistillWithAmp = 3,
-  kMaxValue = kPopulatedDistillWithAmp,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAmpClassification)
-
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.
@@ -89,10 +76,6 @@ extern const char kReaderModeHeuristicLatencyHistogram[];
 
 // Histogram name for Reader Mode distillation latency.
 extern const char kReaderModeDistillerLatencyHistogram[];
-
-// Histogram name for comparison between the AMP usage in the web state and
-// the distillation success.
-extern const char kReaderModeAmpClassificationHistogram[];
 
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();

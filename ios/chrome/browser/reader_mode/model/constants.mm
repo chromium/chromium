@@ -17,9 +17,6 @@ const char kReaderModeHeuristicLatencyHistogram[] =
 const char kReaderModeDistillerLatencyHistogram[] =
     "IOS.ReaderMode.Distiller.Latency";
 
-const char kReaderModeAmpClassificationHistogram[] =
-    "IOS.ReaderMode.Distiller.Amp";
-
 NSString* GetReaderModeSymbolName() {
   if (@available(iOS 18, *)) {
     return kReaderModeSymbolPostIOS18;

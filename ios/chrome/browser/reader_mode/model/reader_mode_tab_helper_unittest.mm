@@ -389,7 +389,6 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
   // The metrics for the navigation are recorded.
   FlushMetrics();
   histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 1u);
-  histogram_tester_.ExpectTotalCount(kReaderModeAmpClassificationHistogram, 1u);
   ExpectDistillerLatencyEntriesCount(1u);
   // The metrics for the navigation are recorded.
   ASSERT_EQ(1u, GetDistillerResultEntries().size());

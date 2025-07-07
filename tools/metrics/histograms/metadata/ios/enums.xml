@@ -1589,17 +1589,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationTargetProfileHandlingResult) -->
 
-<!-- LINT.IfChange(ReaderModeAmpClassification) -->
-
-<enum name="ReaderModeAmpClassification">
-  <int value="0" label="Empty distill with AMP"/>
-  <int value="1" label="Populated distill with AMP"/>
-  <int value="2" label="Empty distill no AMP"/>
-  <int value="3" label="Populated distill no AMP"/>
-</enum>
-
-<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeAmpClassification) -->
-
 <!-- LINT.IfChange(ReaderModeDistillerResult) -->
 
 <enum name="ReaderModeDistillerResult">
