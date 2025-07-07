@@ -15,7 +15,7 @@ TabsEventRouterAndroid::TabsEventRouterAndroid(Profile* profile)
     : profile_(profile) {
   CHECK(profile_);
   TabModelList::AddObserver(this);
-  for (TabModel* model : TabModelList::models()) {
+  for (TabModel* const model : TabModelList::models()) {
     OnTabModelAdded(model);
   }
 }
