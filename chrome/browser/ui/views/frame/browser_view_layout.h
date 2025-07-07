@@ -17,7 +17,6 @@
 class BookmarkBarView;
 class BrowserView;
 class BrowserViewLayoutDelegate;
-class ImmersiveModeController;
 class InfoBarContainerView;
 class MultiContentsView;
 class TabStrip;
@@ -64,7 +63,6 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
                     views::View* side_panel_rounded_corner,
-                    ImmersiveModeController* immersive_mode_controller,
                     views::View* contents_separator);
 
   BrowserViewLayout(const BrowserViewLayout&) = delete;
@@ -188,7 +186,6 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View> unified_side_panel_;
   const raw_ptr<views::View> right_aligned_side_panel_separator_;
   const raw_ptr<views::View> side_panel_rounded_corner_;
-  const raw_ptr<ImmersiveModeController> immersive_mode_controller_;
   const raw_ptr<views::View> contents_separator_;
 
   // These views are dynamically set.

@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
@@ -413,6 +414,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           browser_view->browser(),
           side_panel_coordinator_->GetWindowRegistry());
 
+  immersive_mode_controller_ =
+      chrome::CreateImmersiveModeController(browser_view);
+
   // Memory Saver mode is default off but is available to turn on.
   // The controller relies on performance manager which isn't initialized in
   // some unit tests without browser view.
@@ -526,6 +530,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (user_education_) {
     user_education_->TearDown();
   }
+
+  immersive_mode_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

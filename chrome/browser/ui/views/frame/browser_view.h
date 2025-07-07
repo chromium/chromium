@@ -390,9 +390,10 @@ class BrowserView : public BrowserWindow,
   views::Widget* GetWidgetForAnchoring();
 
   // See ImmersiveModeController for description.
-  ImmersiveModeController* immersive_mode_controller() const {
-    return immersive_mode_controller_.get();
-  }
+  // TODO(crbug.com/427826289): Eliminate this accessor and pass
+  // ImmersiveModeController to dependent features during construction.
+  ImmersiveModeController* immersive_mode_controller();
+  const ImmersiveModeController* immersive_mode_controller() const;
 
   // Returns true if the view has been initialized.
   bool initialized() const { return initialized_; }
@@ -1373,8 +1374,6 @@ class BrowserView : public BrowserWindow,
   // A single layout is needed right before sliding begins. (See
   // TopControlsSlideControllerChromeOS::OnBeginSliding()).
   bool did_first_layout_while_top_controls_are_sliding_ = false;
-
-  std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

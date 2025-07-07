@@ -40,6 +40,7 @@ class FindBarController;
 class HistoryClustersSidePanelCoordinator;
 class HistorySidePanelCoordinator;
 class IncognitoClearBrowsingDataDialogCoordinator;
+class ImmersiveModeController;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
 class ProfileMenuCoordinator;
@@ -350,6 +351,13 @@ class BrowserWindowFeatures {
     return history_clusters_side_panel_coordinator_.get();
   }
 
+  ImmersiveModeController* immersive_mode_controller() {
+    return immersive_mode_controller_.get();
+  }
+  const ImmersiveModeController* immersive_mode_controller() const {
+    return immersive_mode_controller_.get();
+  }
+
   UpgradeNotificationController* upgrade_notification_controller() {
     return upgrade_notification_controller_.get();
   }
@@ -381,6 +389,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
       product_specifications_entry_point_controller_;
+
+  std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
 

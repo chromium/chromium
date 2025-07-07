@@ -239,7 +239,6 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* unified_side_panel,
     views::View* right_aligned_side_panel_separator,
     views::View* side_panel_rounded_corner,
-    ImmersiveModeController* immersive_mode_controller,
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
       browser_view_(browser_view),
@@ -256,7 +255,6 @@ BrowserViewLayout::BrowserViewLayout(
       unified_side_panel_(unified_side_panel),
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
       side_panel_rounded_corner_(side_panel_rounded_corner),
-      immersive_mode_controller_(immersive_mode_controller),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
       dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
@@ -627,12 +625,14 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
   // In immersive fullscreen or when top-chrome is fully hidden due to the page
   // gesture scroll slide behavior, the infobar always starts near the top of
   // the screen.
-  if (immersive_mode_controller_->IsEnabled() ||
+  const ImmersiveModeController* immersive_mode_controller =
+      delegate_->GetImmersiveModeController();
+  if (immersive_mode_controller->IsEnabled() ||
       (delegate_->IsTopControlsSlideBehaviorEnabled() &&
        delegate_->GetTopControlsSlideBehaviorShownRatio() == 0.f)) {
     // Can be null in tests.
     top = (browser_view_ ? browser_view_->y() : 0) +
-          immersive_mode_controller_->GetMinimumContentOffset();
+          immersive_mode_controller->GetMinimumContentOffset();
   }
   // The content usually starts at the bottom of the infobar. When there is an
   // extra infobar offset the infobar is shifted down while the content stays.
@@ -855,7 +855,7 @@ void BrowserViewLayout::UpdateTopContainerBounds() {
     // If the immersive mode controller is animating the top container, it may
     // be partly offscreen.
     top_container_bounds.set_y(
-        immersive_mode_controller_->GetTopContainerVerticalOffset(
+        delegate_->GetImmersiveModeController()->GetTopContainerVerticalOffset(
             top_container_bounds.size()));
   }
   top_container_->SetBoundsRect(top_container_bounds);
@@ -905,7 +905,7 @@ void BrowserViewLayout::LayoutContentBorder() {
   // Immersive top container might overlap with the blue border in fullscreen
   // mode - see crbug.com/1392733. By insetting the bounds rectangle we ensure
   // that the blue border is always placed below the top container.
-  if (immersive_mode_controller_->IsRevealed()) {
+  if (delegate_->GetImmersiveModeController()->IsRevealed()) {
     int delta = top_container_->bounds().bottom() - rect.y();
     if (delta > 0) {
       rect.Inset(gfx::Insets().set_top(delta));

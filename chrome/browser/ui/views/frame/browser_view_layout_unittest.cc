@@ -31,7 +31,9 @@ constexpr int kBaseWidth = 800;
 
 class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
  public:
-  MockBrowserViewLayoutDelegate() = default;
+  explicit MockBrowserViewLayoutDelegate(
+      const ImmersiveModeController* immersive_mode_controller)
+      : immersive_mode_controller_(immersive_mode_controller) {}
 
   MockBrowserViewLayoutDelegate(const MockBrowserViewLayoutDelegate&) = delete;
   MockBrowserViewLayoutDelegate& operator=(
@@ -72,6 +74,9 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
     return content_separator_enabled_;
   }
   bool IsActiveTabSplit() const override { return false; }
+  const ImmersiveModeController* GetImmersiveModeController() const override {
+    return immersive_mode_controller_.get();
+  }
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return nullptr;
   }
@@ -109,6 +114,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool content_separator_enabled_ = true;
   bool top_controls_slide_enabled_ = false;
   float top_controls_shown_ratio_ = 1.f;
+  const raw_ptr<const ImmersiveModeController> immersive_mode_controller_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -233,7 +239,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
             /*contents_border_view=*/nullptr, /*watermark_view=*/nullptr,
             new_tab_footer_web_view_));
 
-    auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>();
+    auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>(
+        immersive_mode_controller_.get());
     delegate_ = delegate.get();
     auto layout = std::make_unique<BrowserViewLayout>(
         std::move(delegate),
@@ -245,8 +252,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*left_aligned_side_panel_separator=*/nullptr,
         /*unified_side_panel=*/nullptr,
         /*right_aligned_side_panel_separator=*/nullptr,
-        side_panel_rounded_corner_, immersive_mode_controller_.get(),
-        separator_);
+        side_panel_rounded_corner_, separator_);
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
     browser_view_->SetLayoutManager(std::move(layout));
