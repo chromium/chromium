@@ -234,28 +234,19 @@ void LayoutInputNode::GetOverrideIntrinsicSize(
     std::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
 
-  LayoutUnit override_inline_size = OverrideIntrinsicContentInlineSize();
+  const LayoutUnit override_inline_size = OverrideIntrinsicContentInlineSize();
   if (override_inline_size != kIndefiniteSize) {
     *computed_inline_size = override_inline_size;
-  } else {
-    LayoutUnit default_inline_size = DefaultIntrinsicContentInlineSize();
-    if (default_inline_size != kIndefiniteSize)
-      *computed_inline_size = default_inline_size;
+  } else if (ShouldApplyInlineSizeContainment()) {
+    *computed_inline_size = LayoutUnit();
   }
 
-  LayoutUnit override_block_size = OverrideIntrinsicContentBlockSize();
+  const LayoutUnit override_block_size = OverrideIntrinsicContentBlockSize();
   if (override_block_size != kIndefiniteSize) {
     *computed_block_size = override_block_size;
-  } else {
-    LayoutUnit default_block_size = DefaultIntrinsicContentBlockSize();
-    if (default_block_size != kIndefiniteSize)
-      *computed_block_size = default_block_size;
-  }
-
-  if (ShouldApplyInlineSizeContainment() && !*computed_inline_size)
-    *computed_inline_size = LayoutUnit();
-  if (ShouldApplyBlockSizeContainment() && !*computed_block_size)
+  } else if (ShouldApplyBlockSizeContainment()) {
     *computed_block_size = LayoutUnit();
+  }
 }
 
 }  // namespace blink

@@ -1924,8 +1924,9 @@ LayoutUnit ClampIntrinsicBlockSize(
   DCHECK(!node.IsTable());
 
   const LayoutUnit intrinsic_block_size =
-      CalculateIntrinsicBlockSizeIgnoringChildren(node,
-                                                  border_scrollbar_padding);
+      CalculateIntrinsicBlockSizeIgnoringChildren(
+          node, border_scrollbar_padding,
+          /*children_have_geometry=*/true);
   if (intrinsic_block_size != kIndefiniteSize) {
     return intrinsic_block_size;
   }
@@ -1984,7 +1985,8 @@ std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
 
 LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
     const BlockNode& node,
-    const BoxStrut& border_scrollbar_padding) {
+    const BoxStrut& border_scrollbar_padding,
+    bool children_have_geometry) {
   // Check if the intrinsic size was overridden.
   const LayoutUnit override_size = node.OverrideIntrinsicContentBlockSize();
   if (override_size != kIndefiniteSize) {
@@ -1992,7 +1994,8 @@ LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
   }
 
   // Check if we have a "default" size (a <textarea>).
-  const LayoutUnit default_block_size = node.DefaultIntrinsicContentBlockSize();
+  const LayoutUnit default_block_size =
+      node.DefaultIntrinsicContentBlockSize(children_have_geometry);
   if (default_block_size != kIndefiniteSize) {
     // <textarea>'s intrinsic size should ignore scrollbar existence.
     if (node.IsTextArea()) {

@@ -739,9 +739,13 @@ std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     const BlockNode&,
     const BoxStrut& border_scrollbar_padding);
 
+// NOTE: Ideally we wouldn't have the parameter `children_have_geometry` but
+// when determining the default block-size for a "<select multiple>" we read
+// its "<option>"s size.
 LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
     const BlockNode&,
-    const BoxStrut& border_scrollbar_padding);
+    const BoxStrut& border_scrollbar_padding,
+    bool children_have_geometry = false);
 
 // Determine which scrollbars to freeze in the next layout pass. Scrollbars that
 // appear will be frozen (while scrollbars that disappear will not). Input is
