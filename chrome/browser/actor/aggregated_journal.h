@@ -33,6 +33,7 @@ class AggregatedJournal {
   struct Entry {
     std::string url;
     std::optional<std::vector<uint8_t>> jpg_screenshot;
+    std::optional<std::vector<uint8_t>> annotated_page_content;
     mojom::JournalEntryPtr data;
 
     Entry(const std::string& location, mojom::JournalEntryPtr data);
@@ -99,6 +100,11 @@ class AggregatedJournal {
                      TaskId task_id,
                      std::string_view mime_type,
                      const std::vector<uint8_t>& data);
+
+  // Log Annotated Page Content.
+  void LogAnnotatedPageContent(const GURL& url,
+                               TaskId task_id,
+                               base::span<const uint8_t> data);
 
   void EnsureJournalBound(content::RenderFrameHost& rfh);
   void AppendJournalEntries(content::RenderFrameHost* rfh,

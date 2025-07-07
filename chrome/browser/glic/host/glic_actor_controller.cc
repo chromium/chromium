@@ -48,6 +48,8 @@ void PostTaskForActCallback(
 }
 
 void OnFetchPageContext(
+    const GURL& url,
+    mojo_base::ProtoWrapperBytes::PassKey proto_pass_key,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     base::WeakPtr<actor::ExecutionEngine> execution_engine,
@@ -64,6 +66,15 @@ void OnFetchPageContext(
       tab_context_result->get_tab_context()->annotated_page_data &&
       tab_context_result->get_tab_context()
           ->annotated_page_data->annotated_page_content.has_value()) {
+    auto byte_span =
+        tab_context_result->get_tab_context()
+            ->annotated_page_data->annotated_page_content->byte_span(
+                proto_pass_key);
+    if (byte_span.has_value()) {
+      journal_entry->GetJournal().LogAnnotatedPageContent(
+          url, journal_entry->GetTaskId(), byte_span.value());
+    }
+
     execution_engine->DidObserveContext(
         tab_context_result->get_tab_context()
             ->annotated_page_data->annotated_page_content.value());
@@ -71,7 +82,7 @@ void OnFetchPageContext(
 
   if (tab_context_result->get_tab_context()->viewport_screenshot) {
     journal_entry->GetJournal().LogScreenshot(
-        GURL::EmptyGURL(), journal_entry->GetTaskId(),
+        url, journal_entry->GetTaskId(),
         tab_context_result->get_tab_context()->viewport_screenshot->mime_type,
         tab_context_result->get_tab_context()->viewport_screenshot->data);
   }
@@ -275,17 +286,18 @@ void GlicActorController::OnActionFinished(
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
   if (tab) {
-    auto journal_entry = journal.CreatePendingAsyncEntry(
-        tab->GetContents()->GetLastCommittedURL(), task_id, "FetchPageContext",
-        "");
+    const GURL& url = tab->GetContents()->GetLastCommittedURL();
+    auto journal_entry =
+        journal.CreatePendingAsyncEntry(url, task_id, "FetchPageContext", "");
 
     FetchPageContext(
         tab, options, /*include_actionable_data=*/true,
-        base::BindOnce(OnFetchPageContext, std::move(journal_entry),
-                       std::move(callback),
+        base::BindOnce(OnFetchPageContext, url,
+                       mojo_base::ProtoWrapperBytes::GetPassKey(),
+                       std::move(journal_entry), std::move(callback),
                        GetExecutionEngine()->GetWeakPtr()));
   } else {
-    journal.Log(GURL(), task_id, "FetchPageContext", "Tab is gone");
+    journal.Log(GURL::EmptyGURL(), task_id, "FetchPageContext", "Tab is gone");
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
   }

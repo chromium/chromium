@@ -180,9 +180,9 @@ void AggregatedJournal::AddEndEvent(base::PassKey<AggregatedJournal> pass_key,
                                     std::string_view details) {
   AddEntry(std::make_unique<Entry>(
       std::string(),
-      mojom::JournalEntry::New(
-          mojom::JournalEntryType::kEnd, task_id.GetUnsafeValue(), trace_id,
-          base::Time::Now(), event_name, std::string(details))));
+      mojom::JournalEntry::New(mojom::JournalEntryType::kEnd, task_id.value(),
+                               trace_id, base::Time::Now(), event_name,
+                               std::string(details))));
 }
 
 void AggregatedJournal::LogScreenshot(const GURL& url,
@@ -192,10 +192,23 @@ void AggregatedJournal::LogScreenshot(const GURL& url,
   CHECK_EQ(mime_type, "image/jpeg");
   auto entry = std::make_unique<Entry>(
       url.possibly_invalid_spec(),
-      mojom::JournalEntry::New(
-          mojom::JournalEntryType::kInstant, task_id.GetUnsafeValue(), /*id=*/0,
-          base::Time::Now(), "Screenshot", /*details=*/std::string()));
+      mojom::JournalEntry::New(mojom::JournalEntryType::kInstant,
+                               task_id.value(), /*id=*/0, base::Time::Now(),
+                               "Screenshot", /*details=*/std::string()));
   entry->jpg_screenshot.emplace(data);
+  AddEntry(std::move(entry));
+}
+
+void AggregatedJournal::LogAnnotatedPageContent(
+    const GURL& url,
+    TaskId task_id,
+    base::span<const uint8_t> data) {
+  auto entry = std::make_unique<Entry>(
+      url.possibly_invalid_spec(),
+      mojom::JournalEntry::New(mojom::JournalEntryType::kInstant,
+                               task_id.value(), /*id=*/0, base::Time::Now(),
+                               "PageContext", /*details=*/std::string()));
+  entry->annotated_page_content.emplace(data.begin(), data.end());
   AddEntry(std::move(entry));
 }
 

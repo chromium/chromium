@@ -14,6 +14,10 @@ class PKIMetadataComponentInstallerService;
 class MaskedDomainListComponentInstallerTest;
 }  // namespace component_updater
 
+namespace glic {
+class GlicActorController;
+}  // namespace glic
+
 namespace paint_preview {
 FORWARD_DECLARE_TEST(PaintPreviewCompositorBeginCompositeTest, InvalidProto);
 }  // namespace paint_preview
@@ -39,6 +43,7 @@ class ProtoWrapperBytes {
   friend class component_updater::ReadMaskedDomainListProto;
   friend class component_updater::PKIMetadataComponentInstallerService;
   friend class component_updater::MaskedDomainListComponentInstallerTest;
+  friend class glic::GlicActorController;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

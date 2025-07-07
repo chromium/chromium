@@ -128,6 +128,16 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
     annotation->set_string_value(entry.data->details);
   }
 
+  // If we have an annontated page content we encde it into screenshot
+  // descriptor for now. TODO(dtapuska): annotation->set_proto_value
+  // wasn't working because it didn't know about the encoded protobuf
+  // type in the chrome_intelligence_proto_features.AnnotatedPageContent type.
+  if (entry.annotated_page_content.has_value()) {
+    auto* screenshot = track_event->set_screenshot();
+    screenshot->set_jpg_image(entry.annotated_page_content->data(),
+                              entry.annotated_page_content->size());
+  }
+
   if (entry.jpg_screenshot.has_value()) {
     auto* screenshot = track_event->set_screenshot();
     screenshot->set_jpg_image(entry.jpg_screenshot->data(),
