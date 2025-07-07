@@ -771,6 +771,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Close Tab"/>
 </enum>
 
+<!-- LINT.IfChange(IOSOmniboxAssistiveKey) -->
+
+<enum name="IOSOmniboxAssistiveKey">
+  <int value="0" label="Key :"/>
+  <int value="1" label="Key -"/>
+  <int value="2" label="Key /"/>
+  <int value="3" label="Key .com"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h:IOSOmniboxAssistiveKey) -->
+
 <!-- LINT.IfChange(IOSOmniboxCopyType) -->
 
 <enum name="IOSOmniboxCopyType">

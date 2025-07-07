@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_input_assistant_items.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ui/base/device_form_factor.h"
@@ -18,7 +19,11 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     TemplateURLService* templateURLService,
     id<HelpCommands> helpHandler) {
   DCHECK(dotComTLD);
-  NSArray<NSString*>* buttonTitles = @[ @":", @"-", @"/", dotComTLD ];
+  // These keys must be in sync with IOSOmniboxAssistiveKey enum for metrics
+  // reporting purposes.
+  // LINT.IfChange(buttonTitles)
+  NSArray<NSString*>* buttonTitles = AssistiveKeys();
+  // LINT.ThenChange(//ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h:IOSOmniboxAssistiveKey)
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     textField.inputAssistantItem.leadingBarButtonGroups =
