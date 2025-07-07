@@ -17,6 +17,10 @@ config("ios_enable_lockscreen_widget") {
   swiftflags = [ "-DIOS_ENABLE_LOCKSCREEN_WIDGET" ]
 }
 
+config("ios_enable_widgets_for_mim") {
+  swiftflags = [ "-DIOS_ENABLE_WIDGETS_FOR_MIM" ]
+}
+
 source_set("crash_helper") {
   sources = [
     "crash_helper.h",
@@ -62,6 +66,10 @@ swift_source_set("widget_kit_extension_swift") {
 
   if (ios_enable_lockscreen_widget) {
     configs += [ ":ios_enable_lockscreen_widget" ]
+  }
+
+  if (ios_enable_widgets_for_mim) {
+    configs += [ ":ios_enable_widgets_for_mim" ]
   }
 
   frameworks = [

@@ -79,6 +79,9 @@ declare_args() {
   # Enable background fetch mode for app refresh.
   ios_enable_background_mode = true
 
+  # Enable iOS 17 widgets improvements to support multi profile.
+  ios_enable_widgets_for_mim = false
+
   # Disable iOS 26 liquid glass until reasonably supported.
   ios_enable_liquid_glass = true
 
