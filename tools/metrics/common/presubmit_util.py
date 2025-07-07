@@ -42,6 +42,8 @@ def DoPresubmit(argv,
   presubmit = ('--presubmit' in argv)
   # diff: Print diff to stdout rather than modifying files.
   diff = ('--diff' in argv)
+  # cleanup: Remove the backup file after at the end, if created.
+  cleanup = ('--cleanup' in argv)
 
   if interactive:
     logging.basicConfig(level=logging.INFO)
@@ -98,13 +100,20 @@ def DoPresubmit(argv,
     return 0
 
   logging.info('Creating backup file: %s', backup_filename)
-  shutil.move(xml_path, os.path.join(xml_dir, backup_filename))
+  backup_path = os.path.join(xml_dir, backup_filename)
+  shutil.move(xml_path, backup_path)
 
   pretty = pretty.encode('utf-8')
   with open(xml_path, 'wb') as f:
     f.write(pretty)
   logging.info('Updated %s. Don\'t forget to add it to your changelist',
                xml_path)
+
+  # Remove backup file if created, if prompted by user.
+  if cleanup and backup_path:
+    logging.info('Cleaning up backup file: %s' % backup_filename)
+    os.remove(backup_path)
+
   return 0
 
 
