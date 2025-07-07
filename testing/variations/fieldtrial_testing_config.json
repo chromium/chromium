@@ -646,6 +646,23 @@
             ]
         }
     ],
+    "AndroidDeviceContentFilters": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowNonFamilyLinkUrlFilterMode",
+                        "PropagateDeviceContentFiltersToSupervisedUser",
+                        "SupervisedUserInterstitialWithoutApprovals"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDumpOnScrollWithoutResource": [
         {
             "platforms": [
