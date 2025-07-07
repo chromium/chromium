@@ -20,6 +20,7 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -644,7 +645,8 @@ void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
 
 void AuthenticationService::OnAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error) {
+    id<RefreshAccessTokenError> error,
+    const std::set<std::string>& scopes) {
   if (!identity) {
     DLOG(ERROR)
         << "Unexpected call of OnAccessTokenRefreshFailed with null identity";

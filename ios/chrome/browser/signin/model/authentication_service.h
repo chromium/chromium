@@ -239,7 +239,8 @@ class AuthenticationService : public KeyedService,
   void OnIdentitiesInProfileChanged() override;
   void OnRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                  id<RefreshAccessTokenError> error) override;
+                                  id<RefreshAccessTokenError> error,
+                                  const std::set<std::string>& scopes) override;
 
   // Fires `OnPrimaryAccountRestricted` on all observers.
   void FirePrimaryAccountRestricted();
