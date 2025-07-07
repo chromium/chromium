@@ -52,6 +52,7 @@ class HomeBackgroundImageService : public KeyedService,
  private:
   // Callback for when collection images info is received.
   void OnCollectionImageInfoReceived(
+      size_t index,
       const std::string& collection_name,
       const std::vector<CollectionImage>& collection_images,
       ErrorType error_type);

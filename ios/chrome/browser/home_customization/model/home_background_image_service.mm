@@ -62,11 +62,13 @@ void HomeBackgroundImageService::FetchCollectionsImagesInternal(
 }
 
 void HomeBackgroundImageService::OnCollectionImageInfoReceived(
+    size_t index,
     const std::string& collection_name,
     const std::vector<CollectionImage>& collection_images,
     ErrorType error_type) {
   if (error_type == ErrorType::NONE) {
-    collections_images_.emplace_back(collection_name, collection_images);
+    collections_images_[index] =
+        std::make_tuple(collection_name, collection_images);
   }
 
   // The `BarrierClosure` must be run regardless of the error type to ensure
@@ -83,6 +85,14 @@ void HomeBackgroundImageService::OnAllCollectionImagesReceived() {
     return;
   }
 
+  // Remove any collections that are empty. This can happen if one of the
+  // collection requests failed to fetch images due to network issues or
+  // server errors, leaving empty slots in the pre-allocated vector.
+  collections_images_.erase(
+      std::remove_if(collections_images_.begin(), collections_images_.end(),
+                     [](const auto& map) { return std::get<0>(map).empty(); }),
+      collections_images_.end());
+
   std::move(collections_images_callback_).Run(collections_images_);
 }
 
@@ -98,6 +108,10 @@ void HomeBackgroundImageService::OnCollectionInfoAvailable() {
   }
 
   const size_t collection_count = collection_infos.size();
+
+  // Pre-allocate the vector with the correct size to maintain order.
+  collections_images_.resize(collection_count);
+
   // Use a `BarrierClosure` to ensure all async tasks are completed before
   // executing the overall completion callback and returning the data. The
   // BarrierClosure will wait until the `OnAllCollectionImagesReceived` callback
@@ -107,12 +121,14 @@ void HomeBackgroundImageService::OnCollectionInfoAvailable() {
       base::BindOnce(&HomeBackgroundImageService::OnAllCollectionImagesReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  for (const CollectionInfo& collection_info : collection_infos) {
+  for (size_t i = 0; i < collection_infos.size(); ++i) {
+    const CollectionInfo& collection_info = collection_infos[i];
     ntp_background_service_->FetchCollectionImageInfo(
         collection_info.collection_id,
         base::BindOnce(
             &HomeBackgroundImageService::OnCollectionImageInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), collection_info.collection_name));
+            weak_ptr_factory_.GetWeakPtr(), /*index=*/i,
+            collection_info.collection_name));
   }
 }
 
