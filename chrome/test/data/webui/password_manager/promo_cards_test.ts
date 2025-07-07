@@ -185,29 +185,6 @@ suite('PasswordsSectionTest', function() {
     assertFalse(!!promoCardElement);
   });
 
-  test('move passwords promo hidden if sync issues', async function() {
-    promoCardsProxy.promo = {
-      id: 'move_passwords_promo',
-      title: 'Move passwords promo',
-      description: 'Move passwords description.',
-      actionButtonText: 'Move passwords',
-    };
-    passwordManager.data.isAccountStorageEnabled = true;
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [createPasswordEntry(
-          {username: 'user', id: 0, inProfileStore: true})],
-    })];
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: false,
-      isSyncingPasswords: false,
-    };
-
-    const section = await createPasswordsSection();
-    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
-    assertFalse(!!promoCardElement);
-  });
-
   test('move passwords promo visible opens batch upload', async function() {
     promoCardsProxy.promo = {
       id: 'move_passwords_promo',

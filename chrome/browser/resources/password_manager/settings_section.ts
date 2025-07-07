@@ -376,7 +376,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private changeAccountStorageEnabled_() {
-    if (this.isAccountStorageEnabled) {
+    if (this.isAccountStoreUser) {
       this.disableAccountStorage();
     } else {
       this.enableAccountStorage();
