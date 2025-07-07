@@ -2188,7 +2188,13 @@ class TabListMediator implements TabListNotificationHandler {
         int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
         TextResolver contentDescriptionResolver =
                 (context) -> {
-                    if (!isInTabGroup) return "";
+                    if (!isInTabGroup) {
+                        if (mComponentName.equals(ArchivedTabsDialogCoordinator.COMPONENT_NAME)) {
+                            return context.getString(
+                                    R.string.accessibility_restore_tab, tab.getTitle());
+                        }
+                        return "";
+                    }
                     String title = getLatestTitleForTab(tab, /* useDefault= */ false);
                     Resources res = context.getResources();
                     TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();

@@ -683,6 +683,9 @@
           other {Expand shared <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="TABS_COUNT_MANY">%2$d<ex>2</ex></ph> tabs, color <ph name="COLOR_NAME">%3$s<ex>Blue</ex></ph>, with label <ph name="CARD_LABEL">%4$s<ex>New Activity</ex></ph>.}
         }
       </message>
+      <message name="IDS_ACCESSIBILITY_RESTORE_TAB" desc="The accessibility text to read when a tab is clicked in the inactive tabs surface. TAB_TITLE is the title of the tab.s">
+        Restore and open <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
+      </message>
       <message name="IDS_ACCESSIBILITY_RESTORE_TAB_GROUP_WITH_COLOR" desc="The accessibility text to read when a card representing a tab group is clicked in the inactive tabs surface. NUMBER_OF_TABS is the number of tabs within this group. COLOR_NAME is the color of this group.">
         {NUMBER_OF_TABS, plural,
           =1 {Restore and open tab group with <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>.}
