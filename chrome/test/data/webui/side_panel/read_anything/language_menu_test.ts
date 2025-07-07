@@ -41,6 +41,11 @@ suite('LanguageMenu', () => {
         '.search-field')!;
   }
 
+  function getLanguageSearchClearButton() {
+    return languageMenu.$.languageMenu.querySelector<HTMLElement>(
+        '#clearLanguageSearch');
+  }
+
   function getNoResultsFoundMessage() {
     return languageMenu.$.languageMenu.querySelector<HTMLElement>(
         '#noResultsMessage');
@@ -191,6 +196,43 @@ suite('LanguageMenu', () => {
         assertLanguageLineWithTextAndSwitch(
             'English (United States)', getLanguageLineItems()[0]!);
         assertEquals(true, getNoResultsFoundMessage()!.hidden);
+      });
+
+      test('shows clear button when search field has contents', async () => {
+        getLanguageSearchField().value = 'eng';
+        await microtasksFinished();
+
+        assertEquals('eng', getLanguageSearchField().value);
+
+        const clearButton = getLanguageSearchClearButton();
+        assertTrue(!!clearButton);
+      });
+
+      test(
+          'does not show clear button when search field has no content',
+          async () => {
+            getLanguageSearchField().value = '';
+            await microtasksFinished();
+
+            assertEquals('', getLanguageSearchField().value);
+
+            const clearButton = getLanguageSearchClearButton();
+            assertFalse(!!clearButton);
+          });
+
+      test('clears search field when clear button is clicked', async () => {
+        getLanguageSearchField().value = 'xxx';
+        await microtasksFinished();
+
+        assertEquals('xxx', getLanguageSearchField().value);
+
+        const clearButton = getLanguageSearchClearButton();
+        assertTrue(!!clearButton);
+
+        clearButton.click();
+        await microtasksFinished();
+
+        assertEquals('', getLanguageSearchField().value);
       });
     });
 

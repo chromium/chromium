@@ -23,12 +23,13 @@ export function getHtml(this: LanguageMenuElement) {
         @value-changed="${this.onLanguageSearchValueChanged_}"
         .value="${this.languageSearchValue_}">
       <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
-      <cr-icon-button iron-icon="cr:clear"
-          ?hidden="${!this.languageSearchValue_}"
+      ${this.languageSearchValue_ ? html`
+        <cr-icon-button id="clearLanguageSearch"
+          iron-icon="cr:cancel"
           slot="inline-suffix"
           @click="${this.onClearSearchClick_}"
           title="$i18n{readingModeLanguageMenuSearchClear}">
-      </cr-icon-button>
+        </cr-icon-button>` : ''}
     </cr-input>
   </div>
   <div slot="body" class="language-menu-body">
