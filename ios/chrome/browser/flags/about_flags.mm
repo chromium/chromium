@@ -975,17 +975,6 @@ const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
          std::size(kSendTabIOSPushNotificationsWithTabReminders), nullptr},
 };
 
-const FeatureEntry::FeatureParam kSegmentedDefaultBrowserStatic[] = {
-    {kSegmentedDefaultBrowserExperimentType, "0"}};
-const FeatureEntry::FeatureParam kSegmentedDefaultBrowserAnimated[] = {
-    {kSegmentedDefaultBrowserExperimentType, "1"}};
-
-const FeatureEntry::FeatureVariation kSegmentedDefaultBrowserPromoVariations[] =
-    {{" - Static Default Browser Promo", kSegmentedDefaultBrowserStatic,
-      std::size(kSegmentedDefaultBrowserStatic), nullptr},
-     {" - Animated Default Browser Promo", kSegmentedDefaultBrowserAnimated,
-      std::size(kSegmentedDefaultBrowserAnimated), nullptr}};
-
 // Soft Lock
 const FeatureEntry::FeatureParam kIOSSoftLockNoDelay[] = {
     {kIOSSoftLockBackgroundThresholdParam, "0m"},
@@ -2151,13 +2140,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensWebPageLoadOptimizationEnabledName,
      flag_descriptions::kLensWebPageLoadOptimizationEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensWebPageLoadOptimizationEnabled)},
-    {"segmented-default-browser-promo",
-     flag_descriptions::kSegmentedDefaultBrowserPromoName,
-     flag_descriptions::kSegmentedDefaultBrowserPromoDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kSegmentedDefaultBrowserPromo,
-                                    kSegmentedDefaultBrowserPromoVariations,
-                                    "SegmentedDBP-Animation")},
     {"autofill-unmask-card-request-timeout",
      flag_descriptions::kAutofillUnmaskCardRequestTimeoutName,
      flag_descriptions::kAutofillUnmaskCardRequestTimeoutDescription,

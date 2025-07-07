@@ -144,8 +144,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
-    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
-    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser_tests",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

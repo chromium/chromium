@@ -22589,28 +22589,53 @@
             ]
         }
     ],
-    "SegmentedDefaultBrowserPromo": [
+    "SegmentationCompactionFix": [
         {
             "platforms": [
-                "ios"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithStaticPromo",
-                    "params": {
-                        "SegmentedDefaultBrowserExperimentType": "0"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "SegmentedDefaultBrowserPromo"
+                        "SegmentationCompactionFix"
                     ]
-                },
+                }
+            ]
+        }
+    ],
+    "SegmentationPlatformURLVisitResumptionRanker": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
                 {
-                    "name": "EnabledWithAnimatedPromo",
+                    "name": "Enabled",
                     "params": {
-                        "SegmentedDefaultBrowserExperimentType": "1"
+                        "use_random_score": "true"
                     },
                     "enable_features": [
-                        "SegmentedDefaultBrowserPromo"
+                        "SegmentationPlatformURLVisitResumptionRanker"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SegmentationPlatformUmaFromSqlDb": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformUmaFromSqlDb"
                     ]
                 }
             ]

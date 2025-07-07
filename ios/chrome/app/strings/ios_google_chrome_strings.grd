@@ -964,15 +964,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera in Split View mode
       </message>
-      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_SUBTITLE" desc="Subtitle for Default Browser promo shown on Set Up List item tap to users identified as Shopping feature users.">
-        Set Chrome as your default browser to easily track prices and get price insights for things you want to buy.
-      </message>
-      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_TITLE" desc="Title for Default Browser promo shown on Set Up List item tap to users identified as Shopping feature users.">
-        Get the power of Chrome Shopping
-      </message>
-      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_SHOPPER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Shoppers.">
-        Use Chrome by default to easily get price insights
-      </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved in your Google Account (<ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>).
       </message>

@@ -2567,24 +2567,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         More
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPad">
-        Get the best from the mobile browser you know and love on your iPad.
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
-        Get the best from the mobile browser you know and love on your iPhone.
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPad">
-        Get the best from the desktop browser you know and love on your iPad.
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE" desc="Subtitle for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
-        Get the best from the desktop browser you know and love on your iPhone.
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on IPad">
-        The browser you love now on iPad
-      </message>
-      <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
-        The browser you love now on iOS
-      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT" desc="This string is on a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Sign in to get your bookmarks, passwords, and more on all your devices.
       </message>
@@ -5725,9 +5707,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
       </message>
-      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Desktop Users or Android switchers.">
-        Get the best from the Browser you love
-      </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON" desc="Text for the Allow button for the Send Tab to Self promo Magic Stack module.">
         Allow Tabs Notifications…
       </message>
@@ -6086,12 +6065,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get notifications
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set Chrome as their default browser, shown to users identified as Desktop Users or Android Switchers by the Segmentation Platform.">
-        Get the best from the browser you love.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set Chrome as their default browser, shown to users identified as Shopping Users by the Segmentation Platform.">
-        Easily track prices and get price insights.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC" desc="Same as IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION but without mentioning sync.">
         Get your bookmarks, passwords, and more.

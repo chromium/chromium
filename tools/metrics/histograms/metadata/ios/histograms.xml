@@ -5160,16 +5160,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.SetUpList.DefaultBrowserPromo.Action"
-    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-10-12">
-  <owner>bmcclure@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    This histogram records which action a user takes on the Static and Animated
-    versions of the Set Up List Default Browser Promo.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SetUpList.Displayed" enum="Boolean"
     expires_after="2025-12-28">
   <owner>scottyoder@google.com</owner>

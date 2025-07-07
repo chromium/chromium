@@ -807,9 +807,6 @@ extern const char
 extern const char kSegmentationPlatformTipsEphemeralCardName[];
 extern const char kSegmentationPlatformTipsEphemeralCardDescription[];
 
-extern const char kSegmentedDefaultBrowserPromoName[];
-extern const char kSegmentedDefaultBrowserPromoDescription[];
-
 extern const char kSendTabToSelfIOSPushNotificationsName[];
 extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 

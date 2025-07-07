@@ -66,42 +66,6 @@ source_set("ukm_client") {
   ]
 }
 
-source_set("segmented_default_browser") {
-  sources = [
-    "segmented_default_browser_utils.h",
-    "segmented_default_browser_utils.mm",
-  ]
-  public_deps = [
-    "//base",
-    "//components/segmentation_platform/public",
-  ]
-  deps = [
-    "//components/segmentation_platform/embedder/default_model",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ui/base",
-  ]
-}
-
-source_set("segmented_default_browser_tests") {
-  testonly = true
-  sources = [
-    "segmented_default_browser_test_utils.h",
-    "segmented_default_browser_test_utils.mm",
-  ]
-  public_deps = [
-    "//components/segmentation_platform/public",
-    "//components/sync_device_info:test_support",
-    "//testing/gmock",
-  ]
-  deps = [
-    ":segmented_default_browser",
-    "//components/segmentation_platform/embedder/default_model",
-    "//components/segmentation_platform/public:test_support",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

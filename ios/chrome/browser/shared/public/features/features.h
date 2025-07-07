@@ -17,33 +17,6 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-// Feature flag to enable personalized messaging for Default Browser First Run,
-// Set Up List, and video promos.
-BASE_DECLARE_FEATURE(kSegmentedDefaultBrowserPromo);
-
-// Name of the parameter that controls the experiment type for the Segmented
-// Default Browser promo, determining whether or not the Default Browser promo
-// is animated.
-extern const char kSegmentedDefaultBrowserExperimentType[];
-
-// Defines the different experiment arms for the Segmented Default Browser
-// promo, which determine if the Default Browser promo is animated.
-enum class SegmentedDefaultBrowserExperimentType {
-  // The experiment arm that shows the static Default Browser promo.
-  kStaticPromo = 0,
-  // The experiment arm that show the animated Default Browser promo.
-  kAnimatedPromo = 1,
-};
-
-// Whether personalized messaging for Default Browser First Run, Set Up List,
-// and video promos is enabled.
-bool IsSegmentedDefaultBrowserPromoEnabled();
-
-// Returns the experiment type for the Segmented Default Browser promo, which
-// determines whether or not the promo is animated.
-SegmentedDefaultBrowserExperimentType
-SegmentedDefaultBrowserExperimentTypeEnabled();
-
 // Feature flag to enable the Keyboard Accessory Upgrade for iPads.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad);
 

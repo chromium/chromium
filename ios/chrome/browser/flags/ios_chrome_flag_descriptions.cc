@@ -1381,12 +1381,6 @@ const char kSegmentationPlatformTipsEphemeralCardName[] =
 const char kSegmentationPlatformTipsEphemeralCardDescription[] =
     "When enabled, the Tips module will be displayed in the Magic Stack.";
 
-const char kSegmentedDefaultBrowserPromoName[] =
-    "Enable Personalized Messaging in Default Browser Promos";
-const char kSegmentedDefaultBrowserPromoDescription[] =
-    "Enables Default Browser promos with personalized messaging (using "
-    "Segmentation Platform).";
-
 const char kSendTabToSelfIOSPushNotificationsName[] =
     "Send tab to self iOS push notifications";
 const char kSendTabToSelfIOSPushNotificationsDescription[] =
