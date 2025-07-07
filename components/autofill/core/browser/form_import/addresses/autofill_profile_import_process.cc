@@ -213,10 +213,16 @@ void ProfileImportProcess::DetermineProfileImportType() {
     bool silent_updates_present = !silently_updated_profiles_.empty();
 
     if (merge_candidate_.has_value()) {
-      import_type_ =
-          silent_updates_present
-              ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
-              : AutofillProfileImportType::kConfirmableMerge;
+      // TODO(crbug.com/429508491): Ensure that importing a superset of an
+      // existing Home & Work superset does not create a new profile.
+      if (import_candidate_->IsHomeAndWorkProfile()) {
+        import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
+      } else {
+        import_type_ =
+            silent_updates_present
+                ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
+                : AutofillProfileImportType::kConfirmableMerge;
+      }
     } else if (number_of_blocked_profile_updates > 0) {
       import_type_ =
           silent_updates_present
@@ -303,6 +309,11 @@ void ProfileImportProcess::ApplyImport() {
     address_data_manager_->MigrateProfileToAccount(confirmed_profile);
   } else if (is_confirmable_update()) {
     address_data_manager_->UpdateProfile(confirmed_profile);
+  } else if (import_type() == AutofillProfileImportType::kHomeAndWorkSuperset) {
+    // Home & Work profiles can't be added, so superset profiles need to have
+    // `kAccount` record type.
+    address_data_manager_->AddProfile(
+        confirmed_import_candidate_->ConvertToAccountProfile());
   } else {
     address_data_manager_->AddProfile(confirmed_profile);
   }

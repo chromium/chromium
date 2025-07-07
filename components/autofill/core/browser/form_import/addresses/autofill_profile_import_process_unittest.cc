@@ -1019,6 +1019,42 @@ TEST_F(AutofillProfileImportProcessTest,
             AutofillProfileImportType::kDuplicateImport);
 }
 
+// Tests that importing a superset of Home & Work profile results in an update
+// prompt which in fact adds a new profile with `kAccount` type.
+TEST_F(AutofillProfileImportProcessTest, ImportingHomeAndWorkProfileSuperset) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  test_api(mergeable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+
+  address_data_manager().AddProfile(mergeable_profile);
+
+  // Create the import process for the scenario that a profile that is mergeable
+  // with the observed profile already exists.
+  auto import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kHomeAndWorkSuperset);
+
+  // There should be a merge candidate that is the existing profile.
+  ASSERT_TRUE(import_data.merge_candidate().has_value());
+  EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
+
+  // Simulate that the user accepts this import without edits.
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  // Confirm two profiles exist post-import: the original home profile and a
+  // merged superset profile of type `kAccount`.
+  EXPECT_THAT(
+      ApplyImportAndGetProfiles(import_data),
+      testing::UnorderedPointwise(
+          CompareWithRecordType(),
+          {observed_profile.ConvertToAccountProfile(), mergeable_profile}));
+}
+
 }  // namespace
 
 }  // namespace autofill

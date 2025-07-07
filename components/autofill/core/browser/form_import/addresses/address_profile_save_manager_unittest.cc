@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -162,6 +163,11 @@ bool IsMigration(const ImportScenarioTestCase& test_scenario) {
              AutofillProfileImportType::kProfileMigration ||
          test_scenario.expected_import_type ==
              AutofillProfileImportType::kProfileMigrationAndSilentUpdate;
+}
+
+bool IsHomeAndWorkSuperset(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+         AutofillProfileImportType::kHomeAndWorkSuperset;
 }
 
 class AddressProfileSaveManagerTest
@@ -330,7 +336,8 @@ void AddressProfileSaveManagerTest::VerifyFinalProfiles(
   // During a profile migration, a new GUID is assigned to the migrated profile.
   // Since this GUID is randomly selected, the `expected_final_profiles` cannot
   // be set correctly. Thus, for migrations, don't compare the GUIDs.
-  if (!IsMigration(test_scenario)) {
+  // Same applies to Home & Work profiles.
+  if (!IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario)) {
     EXPECT_THAT(test_scenario.expected_final_profiles,
                 testing::UnorderedElementsAreArray(final_profiles));
   } else {
@@ -469,7 +476,9 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
           form_url().host());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
-  } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
+  } else if ((IsNewProfile(test_scenario) ||
+              IsHomeAndWorkSuperset(test_scenario)) &&
+             last_import.UserAccepted()) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, profile_save_strikes);
@@ -532,7 +541,10 @@ void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
       test_scenario.expected_import_type !=
           AutofillProfileImportType::kSuppressedConfirmableMerge &&
       test_scenario.expected_import_type !=
-          AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate;
+          AutofillProfileImportType::
+              kSuppressedConfirmableMergeAndSilentUpdate &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kHomeAndWorkSuperset;
 
   auto entries =
       ukm_recorder->GetEntriesByName(UkmAddressProfileImportType::kEntryName);
@@ -1366,6 +1378,122 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
       .import_candidate = {standard_profile},
       .expected_final_profiles = {standard_profile},
       .allow_only_silent_updates = false};
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when a profile which is a superset of an existing Home profile is
+// observed, it is offered as an update profile prompt but results in the
+// creation of a new profile.
+TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  test_api(mergeable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kHomeAndWorkSuperset,
+      .is_profile_change_expected = true,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
+                                  mergeable_profile},
+      .expected_affeceted_types_in_merge_for_metrics = {
+          SettingsVisibleFieldTypeForMetrics::kZip,
+          SettingsVisibleFieldTypeForMetrics::kCity}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when a profile which is a superset of an existing Work profile is
+// observed, it is offered as an update profile prompt but results in the
+// creation of a new profile.
+TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  test_api(mergeable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kHomeAndWorkSuperset,
+      .is_profile_change_expected = true,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
+                                  mergeable_profile},
+      .expected_affeceted_types_in_merge_for_metrics = {
+          SettingsVisibleFieldTypeForMetrics::kZip,
+          SettingsVisibleFieldTypeForMetrics::kCity}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that silent updates occur for a Home address in the same way they do
+// for standard addresses.
+TEST_P(AddressProfileSaveManagerTest,
+       HomeAndWorkSuperset_SilentUpdateHomeProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+  test_api(updateable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  test::CopyGUID(updateable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {updateable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
+      .expected_final_profiles = {final_profile}};
+  TestImportScenario(test_scenario);
+}
+
+// Tests that silent updates occur for a Work address in the same way they do
+// for standard addresses.
+TEST_P(AddressProfileSaveManagerTest,
+       HomeAndWorkSuperset_SilentUpdateWorkProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+  test_api(updateable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  test::CopyGUID(updateable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {updateable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = std::nullopt,
+      .expected_final_profiles = {final_profile}};
   TestImportScenario(test_scenario);
 }
 
