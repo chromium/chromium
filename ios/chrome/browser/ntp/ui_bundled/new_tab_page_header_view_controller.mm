@@ -127,6 +127,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   NSLayoutConstraint* _identityDiscTrailingConstraint;
   // Constraint for the identity disc button's capsule-style width.
   NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
+  // Whether MIA is allowed by policy.
+  BOOL _MIAAllowedByPolicy;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -314,6 +316,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
+    [self.headerView setMIAAllowedByPolicy:_MIAAllowedByPolicy];
     self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
@@ -872,6 +875,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     [self.headerView removeIdentityDiscErrorBadge];
   }
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+}
+
+- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
+  [_headerView setMIAAllowedByPolicy:policyAllowed];
+  _MIAAllowedByPolicy = policyAllowed;
 }
 
 #pragma mark - UserAccountImageUpdateDelegate

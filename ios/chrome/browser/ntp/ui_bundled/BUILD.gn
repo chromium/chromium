@@ -100,6 +100,7 @@ source_set("coordinator") {
     "//components/feature_engagement/public",
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/policy:policy_code_generate",
     "//components/pref_registry",
