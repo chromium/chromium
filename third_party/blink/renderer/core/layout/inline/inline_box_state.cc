@@ -118,13 +118,19 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
 
 void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
                                         const Font& fontref,
-                                        FontBaseline ifc_baseline) {
+                                        FontBaseline ifc_baseline,
+                                        float scale) {
   const auto baseline_type =
       styleref.CssDominantBaseline() == EDominantBaseline::kAuto
           ? ifc_baseline
           : styleref.GetFontBaseline();
   if (const SimpleFontData* font_data = fontref.PrimaryFont()) {
-    if (is_svg_text) {
+    if (scale != 1.0f) {
+      text_metrics =
+          font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
+      text_metrics.ascent *= scale;
+      text_metrics.descent *= scale;
+    } else if (is_svg_text) {
       text_metrics =
           font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
     } else {
@@ -138,8 +144,11 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
 
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, fontref);
-  FontHeight leading_space = CalculateLeadingSpace(
-      styleref.ComputedLineHeightAsFixed(fontref), text_metrics);
+  LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(fontref);
+  if (scale != 1.0f && !styleref.LineHeight().IsFixed()) {
+    line_height *= scale;
+  }
+  FontHeight leading_space = CalculateLeadingSpace(line_height, text_metrics);
   if (emphasis_marks_outsets.IsEmpty()) {
     text_metrics.AddLeading(leading_space);
   } else {
@@ -217,9 +226,10 @@ void InlineBoxState::ResetTextMetrics() {
 
 void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
                                        const Font& fontref,
-                                       FontBaseline ifc_baseline) {
+                                       FontBaseline ifc_baseline,
+                                       float scale) {
   if (text_metrics.IsEmpty())
-    ComputeTextMetrics(styleref, fontref, ifc_baseline);
+    ComputeTextMetrics(styleref, fontref, ifc_baseline, scale);
 }
 
 void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result,
@@ -268,8 +278,10 @@ void InlineLayoutStateStack::Trace(Visitor* visitor) const {
 InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     const InlineNode node,
     const ComputedStyle& line_style,
+    const InlineItemResults& line_items,
     FontBaseline baseline_type,
     bool line_height_quirk,
+    bool should_scale_line_height,
     LogicalLineItems* line_box) {
   has_block_in_inline_ = false;
   is_svg_text_ = node.IsSvgText();
@@ -313,8 +325,12 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
     if (!line_height_quirk) {
-      line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
-                                        baseline_type);
+      line_box_state.ComputeTextMetrics(
+          line_style, *line_box_state.font, baseline_type,
+          should_scale_line_height
+              ? FindTextScale(line_items, /* start_index */ 0,
+                              /* initial_nesting_level */ 0)
+              : 1.0f);
     }
   }
 
@@ -1356,30 +1372,33 @@ LogicalRubyColumn& InlineLayoutStateStack::CreateRubyColumn() {
 }
 
 #if DCHECK_IS_ON()
-void InlineLayoutStateStack::CheckSame(
-    const InlineLayoutStateStack& other) const {
+void InlineLayoutStateStack::CheckSame(const InlineLayoutStateStack& other,
+                                       bool allow_metrics_mismatch) const {
   // At the beginning of each line, box_data_list_ should be empty.
   DCHECK_EQ(box_data_list_.size(), 0u);
   DCHECK_EQ(other.box_data_list_.size(), 0u);
 
   DCHECK_EQ(stack_.size(), other.stack_.size());
   for (unsigned i = 0; i < stack_.size(); i++) {
-    stack_[i].CheckSame(other.stack_[i]);
+    stack_[i].CheckSame(other.stack_[i], allow_metrics_mismatch);
   }
 }
 
-void InlineBoxState::CheckSame(const InlineBoxState& other) const {
+void InlineBoxState::CheckSame(const InlineBoxState& other,
+                               bool allow_metrics_mismatch) const {
   DCHECK_EQ(fragment_start, other.fragment_start);
   DCHECK_EQ(item, other.item);
   DCHECK_EQ(style, other.style);
 
-  DCHECK_EQ(metrics, other.metrics);
-  DCHECK_EQ(text_metrics, other.text_metrics);
-  DCHECK_EQ(text_top, other.text_top);
-  DCHECK_EQ(text_height, other.text_height);
-  if (!text_metrics.IsEmpty()) {
-    // |include_used_fonts| will be computed when computing |text_metrics|.
-    DCHECK_EQ(include_used_fonts, other.include_used_fonts);
+  if (!allow_metrics_mismatch) {
+    DCHECK_EQ(metrics, other.metrics);
+    DCHECK_EQ(text_metrics, other.text_metrics);
+    DCHECK_EQ(text_top, other.text_top);
+    DCHECK_EQ(text_height, other.text_height);
+    if (!text_metrics.IsEmpty()) {
+      // |include_used_fonts| will be computed when computing |text_metrics|.
+      DCHECK_EQ(include_used_fonts, other.include_used_fonts);
+    }
   }
 
   DCHECK_EQ(needs_box_fragment, other.needs_box_fragment);

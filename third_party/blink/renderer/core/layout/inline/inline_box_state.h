@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
@@ -123,10 +124,12 @@ struct InlineBoxState {
   // The computed metrics is included into the line height of the current box.
   void ComputeTextMetrics(const ComputedStyle&,
                           const Font& fontref,
-                          FontBaseline ifc_baseline);
+                          FontBaseline ifc_baseline,
+                          float scale);
   void EnsureTextMetrics(const ComputedStyle&,
                          const Font& fontref,
-                         FontBaseline ifc_baseline);
+                         FontBaseline ifc_baseline,
+                         float scale);
   void ResetTextMetrics();
 
   void AccumulateUsedFonts(const ShapeResultView*, float scale = 1.0f);
@@ -148,7 +151,7 @@ struct InlineBoxState {
                           FontHeight& metrics);
 
 #if DCHECK_IS_ON()
-  void CheckSame(const InlineBoxState&) const;
+  void CheckSame(const InlineBoxState&, bool allow_metrics_mismatch) const;
 #endif
 };
 
@@ -170,8 +173,10 @@ class CORE_EXPORT InlineLayoutStateStack {
   // @return The initial box state for the line.
   InlineBoxState* OnBeginPlaceItems(const InlineNode node,
                                     const ComputedStyle&,
+                                    const InlineItemResults& line_items,
                                     FontBaseline,
                                     bool line_height_quirk,
+                                    bool should_scale_line_height,
                                     LogicalLineItems* line_box);
 
   // Push a box state stack.
@@ -254,7 +259,8 @@ class CORE_EXPORT InlineLayoutStateStack {
                           bool is_opaque);
 
 #if DCHECK_IS_ON()
-  void CheckSame(const InlineLayoutStateStack&) const;
+  void CheckSame(const InlineLayoutStateStack&,
+                 bool allow_metrics_mismatch) const;
 #endif
 
  private:

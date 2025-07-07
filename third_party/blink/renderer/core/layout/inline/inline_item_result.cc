@@ -112,4 +112,28 @@ String InlineItemResult::ToString(const String& ifc_text_content,
   return builder.ToString();
 }
 
+float FindTextScale(const InlineItemResults& line_items,
+                    wtf_size_t start_index,
+                    wtf_size_t initial_nesting_level) {
+  float text_scale = 1.0f;
+  wtf_size_t level = initial_nesting_level;
+  for (wtf_size_t i = start_index; i < line_items.size(); ++i) {
+    auto item_type = line_items[i].item->Type();
+    if (item_type == InlineItem::kOpenTag) {
+      ++level;
+    } else if (item_type == InlineItem::kCloseTag) {
+      if (level == 0) {
+        break;
+      }
+      --level;
+    } else if (item_type == InlineItem::kText) {
+      if (level == 0) {
+        text_scale = line_items[i].fit_text_scale.scale;
+        break;
+      }
+    }
+  }
+  return text_scale;
+}
+
 }  // namespace blink

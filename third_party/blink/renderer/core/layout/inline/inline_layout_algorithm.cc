@@ -407,10 +407,11 @@ void InlineLayoutAlgorithm::CheckBoxStates(
                      should_scale_line_height)
       .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
-                            quirks_mode_, &line_box);
+  rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), line_info.Results(),
+                            baseline_type_, quirks_mode_,
+                            should_scale_line_height, &line_box);
   DCHECK(box_states_);
-  box_states_->CheckSame(rebuilt);
+  box_states_->CheckSame(rebuilt, should_scale_line_height);
   context_->ReleaseTempLogicalLineItems(line_box);
 }
 #endif
@@ -469,9 +470,10 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // metrics, so that is has a height.
   if (line_info->HasLineEvenIfEmpty() || !box_states_->RubyColumnList().empty())
       [[unlikely]] {
+    constexpr float kFixedScale = 1.0f;  // No text in this case.
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font,
-        baseline_type_);
+        baseline_type_, kFixedScale);
   } else if (line_builder.InitialLetterItemResult() &&
              box_states_->LineBoxState().metrics.IsEmpty()) [[unlikely]] {
     box_states_->LineBoxState().metrics = FontHeight();

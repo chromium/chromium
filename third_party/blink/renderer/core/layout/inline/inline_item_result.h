@@ -206,6 +206,17 @@ struct CORE_EXPORT InlineItemResult {
 // Represents a set of InlineItemResult that form a line box.
 using InlineItemResults = HeapVector<InlineItemResult, 32>;
 
+// Find text scaling factor in `line_items`.
+// It is obtained from an InlineItemResult at line_items[start_index] or later,
+// and its tag nesting level is 0.
+//
+// For example, if the `line_items` content is "foo</span>bar</span>baz",
+// start_index==0, and initial_nesting_level==1, scaling factor of "bar" item
+// is returned.
+float FindTextScale(const InlineItemResults& line_items,
+                    wtf_size_t start_index,
+                    wtf_size_t initial_nesting_level);
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::InlineItemResult)

@@ -34,7 +34,10 @@ bool LineWidths::Set(const InlineNode& node,
   const Font* block_font = block_style.GetFont();
   const FontBaseline baseline_type = block_style.GetFontBaseline();
   InlineBoxState line_box;
-  line_box.ComputeTextMetrics(block_style, *block_font, baseline_type);
+  // No need to scale at this stage.
+  constexpr float kFixedScale = 1.0f;
+  line_box.ComputeTextMetrics(block_style, *block_font, baseline_type,
+                              kFixedScale);
 
   // Check if all lines have the same line heights.
   const SimpleFontData* primary_font = block_font->PrimaryFont();
@@ -65,7 +68,7 @@ bool LineWidths::Set(const InlineNode& node,
           const ComputedStyle& item_style = *item.Style();
           InlineBoxState text_box;
           text_box.ComputeTextMetrics(item_style, *item_style.GetFont(),
-                                      baseline_type);
+                                      baseline_type, kFixedScale);
           if (text_box.include_used_fonts) {
             text_box.style = &item_style;
             const ShapeResultView* shape_result_view =

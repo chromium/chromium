@@ -50,7 +50,8 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
   const ComputedStyle& line_style = line_info->LineStyle();
   box_states_->SetIsEmptyLine(line_info->IsEmptyLine());
   InlineBoxState* box = box_states_->OnBeginPlaceItems(
-      node_, line_style, baseline_type_, quirks_mode_, line_box);
+      node_, line_style, *line_items, baseline_type_, quirks_mode_,
+      should_scale_line_height_, line_box);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (main_line_helper) {
     main_line_helper->CheckBoxStates(*line_info, should_scale_line_height_);
@@ -62,7 +63,12 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
   // have been to make sure that there's always room for the list item marker,
   // but that doesn't explain why it's done for every line...
   if (quirks_mode_ && ComputedStyle::IsDisplayListItem(line_style.Display())) {
-    box->ComputeTextMetrics(line_style, *box->font, baseline_type_);
+    box->ComputeTextMetrics(
+        line_style, *box->font, baseline_type_,
+        should_scale_line_height_
+            ? FindTextScale(*line_items, /* start_index */ 0,
+                            /* initial_nesting_level */ 0)
+            : 1.0f);
   }
 
 #if DCHECK_IS_ON()
@@ -146,7 +152,8 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
                               ? 1.0f
                               : item_result.fit_text_scale.scale;
       if (quirks_mode_) [[unlikely]] {
-        box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
+        box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,
+                               block_scale);
       }
 
       // Take all used fonts into account if 'line-height: normal'.
@@ -277,7 +284,8 @@ InlineBoxState* LogicalLineBuilder::HandleOpenTag(
   // for the purpose of empty block calculation.
   // https://drafts.csswg.org/css2/visudet.html#line-height
   if (!quirks_mode_ || !item.IsEmptyItem()) {
-    box->ComputeTextMetrics(*item.Style(), *box->font, baseline_type_);
+    // TODO(crbug.com/417306102): Pass a correct scaling factor.
+    box->ComputeTextMetrics(*item.Style(), *box->font, baseline_type_, 1.0f);
   }
 
   if (item.Style()->HasMask()) {
@@ -296,7 +304,11 @@ InlineBoxState* LogicalLineBuilder::HandleCloseTag(
     LogicalLineItems* line_box,
     InlineBoxState* box) {
   if (quirks_mode_ && !item.IsEmptyItem()) [[unlikely]] {
-    box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
+    // The following EnsureTextMetrics is helpful only if this line doesn't
+    // have text in the tag. We don't need to scale this metrics.
+    constexpr float kFixedScale = 1.0f;
+    box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,
+                           kFixedScale);
   }
   box =
       box_states_->OnCloseTag(constraint_space_, line_box, box, baseline_type_);
@@ -341,7 +353,10 @@ void LogicalLineBuilder::PlaceControlItem(const InlineItem& item,
   }
 
   if (quirks_mode_ && !box->HasMetrics()) [[unlikely]] {
-    box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
+    // Control items are not scaled.
+    constexpr float kFixedScale = 1.0f;
+    box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,
+                           kFixedScale);
   }
 
   line_box->AddChild(item, std::move(item_result->shape_result),
@@ -388,7 +403,10 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
   } else {
     // The metrics should be as text instead of atomic inline box.
     const auto& style = layout_object->Parent()->StyleRef();
-    box->ComputeTextMetrics(style, *style.GetFont(), baseline_type_);
+    // TextCombine items are not scaled.
+    constexpr float kFixedScale = 1.0f;
+    box->ComputeTextMetrics(style, *style.GetFont(), baseline_type_,
+                            kFixedScale);
     // Note: |item_result->spacing_before| is non-zero if this |item_result|
     // is |LayoutTextCombine| and after CJK character.
     // See "text-combine-justify.html".
@@ -575,8 +593,10 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
 void LogicalLineBuilder::PlaceListMarker(const InlineItem& item,
                                          InlineItemResult* item_result) {
   if (quirks_mode_) [[unlikely]] {
+    // kListMarker items are not scaled.
+    constexpr float kFixedScale = 1.0f;
     box_states_->LineBoxState().EnsureTextMetrics(
-        *item.Style(), *item.Style()->GetFont(), baseline_type_);
+        *item.Style(), *item.Style()->GetFont(), baseline_type_, kFixedScale);
   }
 }
 
@@ -692,8 +712,9 @@ void LogicalLineBuilder::RebuildBoxStates(const LineInfo& line_info,
 
   // Create box states for tags that are not closed yet.
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  box_states_->OnBeginPlaceItems(node_, line_info.LineStyle(), baseline_type_,
-                                 quirks_mode_, &line_box);
+  box_states_->OnBeginPlaceItems(
+      node_, line_info.LineStyle(), line_info.Results(), baseline_type_,
+      quirks_mode_, should_scale_line_height_, &line_box);
   for (const InlineItem* item : open_items) {
     InlineItemResult item_result;
     LineBreaker::ComputeOpenTagResult(*item, constraint_space_,
