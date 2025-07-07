@@ -55,9 +55,21 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    auto execution_engine = InitializeExecutionEngine();
+    ExecutionEngine* raw_execution_engine = execution_engine.get();
+    auto task = std::make_unique<ActorTask>(std::move(execution_engine));
+    raw_execution_engine->SetOwner(task.get());
+    task_id_ = ActorKeyedService::Get(browser()->profile())
+                   ->AddActiveTask(std::move(task));
   }
 
  protected:
+  virtual std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() {
+    return std::make_unique<ExecutionEngine>(
+        browser()->profile(), browser()->GetActiveTabInterface());
+  }
+
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
@@ -67,10 +79,11 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   }
 
   ExecutionEngine& execution_engine() {
-    Profile* profile = chrome_test_utils::GetProfile(this);
-    auto* glic_service = glic::GlicKeyedService::Get(profile);
-    return glic_service->GetExecutionEngineForTesting(
-        browser()->GetActiveTabInterface());
+    return *actor_task().GetExecutionEngine();
+  }
+
+  ActorTask& actor_task() {
+    return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
   }
 
   void ClickTarget(std::string_view query_selector) {
@@ -84,6 +97,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  TaskId task_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -154,7 +168,25 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   EXPECT_EQ("green", EvalJs(web_contents(), "document.body.bgColor"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
+// ActorToolsTest but using the V2 ExecutionEngine API.
+// TODO(crbug.com/411462297): All tests should eventually use the V2 API and the
+// original test harness should be migrated to the new API. New tests should use
+// this harness.
+class ExecutionEngineBrowserTestV2 : public ExecutionEngineBrowserTest {
+ public:
+  ExecutionEngineBrowserTestV2() = default;
+  ~ExecutionEngineBrowserTestV2() override = default;
+  explicit ExecutionEngineBrowserTestV2(const ExecutionEngineBrowserTestV2&) =
+      delete;
+  ExecutionEngineBrowserTestV2& operator=(const ExecutionEngineBrowserTestV2&) =
+      delete;
+
+  std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() override {
+    return std::make_unique<ExecutionEngine>(browser()->profile());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -174,19 +206,6 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
   // The first tab should now be in the background.
   ASSERT_TRUE(!tab->IsVisible());
 
-  // Get the ActorKeyedService.
-  Profile* profile = chrome_test_utils::GetProfile(this);
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  ASSERT_TRUE(actor_service);
-
-  // Create an ActorTask and register it.
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile);
-  auto actor_task_owned =
-      std::make_unique<actor::ActorTask>(std::move(execution_engine));
-  auto* actor_task = actor_task_owned.get();
-  const auto task_id = actor_task->id();
-  actor_service->AddActiveTask(std::move(actor_task_owned));
-
   // Create a single Actions proto with two click actions on the background tab.
   std::optional<int> button1_id = content::GetDOMNodeId(
       *first_tab_contents->GetPrimaryMainFrame(), "#button1");
@@ -196,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
   ASSERT_TRUE(button2_id);
 
   optimization_guide::proto::Actions actions;
-  actions.set_task_id(task_id.GetUnsafeValue());
+  actions.set_task_id(actor_task().id().value());
   ClickAction* click1 = actions.add_actions()->mutable_click();
   click1->mutable_target()->set_content_node_id(button1_id.value());
   click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
@@ -218,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
 
   // Execute the actions.
   TestFuture<optimization_guide::proto::ActionsResult> result;
-  actor_task->GetExecutionEngine()->Act(actions, result.GetCallback());
+  actor_task().GetExecutionEngine()->Act(actions, result.GetCallback());
 
   // Check that the action succeeded.
   EXPECT_EQ(result.Get().action_result(),

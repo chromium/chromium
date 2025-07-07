@@ -67,20 +67,24 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TaskId task_id = next_task_id_.GenerateNextId();
+  last_created_task_id_ = task_id;
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   active_tasks_[task_id] = std::move(task);
   return task_id;
 }
 
-const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks() {
+const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks()
+    const {
   std::map<TaskId, const ActorTask*> active_tasks;
   for (const auto& [id, task] : active_tasks_) {
+    CHECK_NE(task->GetState(), actor::ActorTask::State::kFinished);
     active_tasks[id] = task.get();
   }
   return active_tasks;
 }
 
-const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks() {
+const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks()
+    const {
   std::map<TaskId, const ActorTask*> inactive_tasks;
   for (const auto& [id, task] : inactive_tasks_) {
     inactive_tasks[id] = task.get();
@@ -275,6 +279,10 @@ void ActorKeyedService::OnActionsFinished(
 }
 
 void ActorKeyedService::StopTask(TaskId task_id) {
+  if (task_id == last_created_task_id_) {
+    last_created_task_id_ = TaskId();
+  }
+
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     task.mapped()->Stop();
@@ -294,6 +302,10 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
   return nullptr;
 }
 
+ActorTask* ActorKeyedService::GetMostRecentTask() {
+  return GetTask(last_created_task_id_);
+}
+
 ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
 }
@@ -301,6 +313,18 @@ ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
 void ActorKeyedService::OnActorTaskStateChanged(TaskId task_id,
                                                 ActorTask::State task_state) {
   GetActorUiStateManager()->OnActorTaskStateChange(task_id, task_state);
+}
+
+bool ActorKeyedService::IsAnyTaskActingOnTab(
+    const tabs::TabInterface& tab) const {
+  tabs::TabHandle handle = tab.GetHandle();
+  for (auto task_pair : GetActiveTasks()) {
+    if (task_pair.second->HasActedOnTab(handle)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace actor

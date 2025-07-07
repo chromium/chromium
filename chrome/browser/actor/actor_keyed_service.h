@@ -55,8 +55,8 @@ class ActorKeyedService : public KeyedService {
   // Starts tracking an existing task. Returns the new task ID.
   TaskId AddActiveTask(std::unique_ptr<ActorTask> task);
 
-  const std::map<TaskId, const ActorTask*> GetActiveTasks();
-  const std::map<TaskId, const ActorTask*> GetInactiveTasks();
+  const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
+  const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
 
   // Starts a new task with an execution engine and returns the new task's id.
   TaskId CreateTask();
@@ -95,6 +95,11 @@ class ActorKeyedService : public KeyedService {
   // exist.
   ActorTask* GetTask(TaskId task_id);
 
+  // TODO(crbug.com/411462297): This is a temporary shim to allow removing
+  // GlicActorController's notion of "current task". Eventually all actions will
+  // supply a task id.
+  ActorTask* GetMostRecentTask();
+
   // The associated journal for the associated profile.
   AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
 
@@ -103,6 +108,8 @@ class ActorKeyedService : public KeyedService {
 
   // Called whenever an actor task state changes.
   void OnActorTaskStateChanged(TaskId task_id, ActorTask::State task_state);
+
+  bool IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
 
  private:
   // Start task is currently asynchronous.
@@ -147,6 +154,9 @@ class ActorKeyedService : public KeyedService {
   TaskId::Generator next_task_id_;
 
   AggregatedJournal journal_;
+
+  // TODO(crbug.com/411462297): Remove
+  TaskId last_created_task_id_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

@@ -417,6 +417,9 @@ void GlicKeyedService::ActInFocusedTab(
   actor_controller_->Act(action, options, std::move(callback));
 }
 
+// TODO(crbug.com/411462297): Stop/Pause/Resume task need to be routed to go
+// through the ActorKeyedService, rather than the deprecated ActorController
+// which ignores the task_id.
 void GlicKeyedService::StopActorTask(actor::TaskId task_id) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_controller_);
@@ -467,14 +470,17 @@ void GlicKeyedService::OnResponseStopped() {
 
 bool GlicKeyedService::IsExecutionEngineActingOnTab(
     const content::WebContents* tab) const {
-  return actor_controller_ &&
-         actor_controller_->IsExecutionEngineActingOnTab(tab);
-}
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    return false;
+  }
 
-actor::ExecutionEngine& GlicKeyedService::GetExecutionEngineForTesting(
-    tabs::TabInterface* tab) {
-  CHECK(actor_controller_);
-  return actor_controller_->GetExecutionEngineForTesting(tab);  // IN-TEST
+  auto* actor_service = actor::ActorKeyedService::Get(profile_);
+  CHECK(actor_service);
+
+  auto* tab_interface = tabs::TabInterface::GetFromContents(tab);
+  CHECK(tab_interface);
+
+  return actor_service->IsAnyTaskActingOnTab(*tab_interface);
 }
 
 void GlicKeyedService::CaptureScreenshot(

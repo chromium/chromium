@@ -113,4 +113,8 @@ void ActorTask::AddToTabSet(tabs::TabHandle tab_handle) {
   tab_handles_.insert(tab_handle.raw_value());
 }
 
+bool ActorTask::HasActedOnTab(tabs::TabHandle tab) const {
+  return tab_handles_.contains(tab.raw_value());
+}
+
 }  // namespace actor

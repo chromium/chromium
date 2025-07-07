@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -70,6 +72,14 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     // Add rule for resolving cross origin host names.
     InteractiveGlicTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  const actor::ActorTask* GetActorTask() {
+    auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
+    CHECK(!actor_service->GetActiveTasks().empty())
+        << "Tests should call StartActorTaskInNewTab to ensure a task is "
+           "created.";
+    return actor_service->GetMostRecentTask();
   }
 
   // Executes a BrowserAction and verifies it succeeds. Optionally takes an
@@ -191,6 +201,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   // Stops a running task by calling the glic StopActorTask API.
+  // TODO(crbug.com/411462297): This needs to use the correct task_id but the
+  // implementation of stopActorTask currently ignores the argument.
   auto StopActorTask() {
     return Steps(InAnyContext(WithElement(
                      kGlicContentsElementId,
@@ -376,13 +388,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // Check ExecutionEngine caches the last apc observation.
   auto CheckExecutionEngineHasAnnotatedPageContentCache() {
     return Steps(Do([&]() {
-      GlicKeyedService* glic_service =
-          GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
-      ASSERT_TRUE(glic_service);
-
       const AnnotatedPageContent& cached_apc =
-          *glic_service->GetExecutionEngineForTesting(/*tab=*/nullptr)
-               .GetLastObservedPageContent();
+          *GetActorTask()->GetExecutionEngine()->GetLastObservedPageContent();
       EXPECT_THAT(*annotated_page_content_, EqualsProto(cached_apc));
     }));
   }

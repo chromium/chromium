@@ -183,8 +183,6 @@ class GlicKeyedService : public KeyedService {
   // might interfere with the ExecutionEngine.
   bool IsExecutionEngineActingOnTab(const content::WebContents* tab) const;
 
-  actor::ExecutionEngine& GetExecutionEngineForTesting(tabs::TabInterface* tab);
-
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 

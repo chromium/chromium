@@ -31,7 +31,7 @@ class ActorTask {
 
   // Can only be called by ActorKeyedService
   void SetId(base::PassKey<ActorKeyedService>, TaskId id);
-  TaskId id() { return id_; }
+  TaskId id() const { return id_; }
 
   // Once state leaves kCreated it should never go back. One state enters
   // kFinished it should never change. We may want to add a kCancelled in the
@@ -73,6 +73,9 @@ class ActorTask {
   // Ensures the given tab handle is added (or already exists) in the set of
   // tabs this task operates over.
   void AddToTabSet(tabs::TabHandle tab);
+
+  // Returns true if the given tab is part of this task's acting set.
+  bool HasActedOnTab(tabs::TabHandle tab) const;
 
   const absl::flat_hash_set<int32_t>& get_tab_handles_for_testing() const {
     return tab_handles_;

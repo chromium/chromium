@@ -125,8 +125,7 @@ void GlicActorController::Act(
   }
 
   // Create a new task if one doesn't exist already.
-  if (!actor_task_ ||
-      actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+  if (!GetCurrentTask()) {
     starting_task_ = true;
     optimization_guide::proto::BrowserStartTask start_task;
     start_task.set_tab_id(action.tab_id());
@@ -156,9 +155,7 @@ void GlicActorController::OnTaskStartedForAct(
     return;
   }
 
-  actor_task_ = actor::ActorKeyedService::Get(profile_)->GetTask(
-      actor::TaskId(result.task_id()));
-  CHECK(actor_task_);
+  CHECK(GetCurrentTask());
 
   ActImpl(action, options, std::move(callback));
 }
@@ -166,33 +163,34 @@ void GlicActorController::OnTaskStartedForAct(
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
 // to stop a task.
 void GlicActorController::StopTask(actor::TaskId task_id) {
-  if (!GetExecutionEngine() ||
-      actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+  actor::ActorTask* task = GetCurrentTask();
+  if (!task) {
     return;
   }
-  actor_task_->Stop();
+  actor::ActorKeyedService::Get(profile_.get())->StopTask(task->id());
 }
 
 void GlicActorController::PauseTask(actor::TaskId task_id) {
-  if (!actor_task_) {
+  actor::ActorTask* task = GetCurrentTask();
+  if (!task) {
     return;
   }
-  actor_task_->Pause();
+  task->Pause();
 }
 
 void GlicActorController::ResumeTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  if (!actor_task_ ||
-      actor_task_->GetState() != actor::ActorTask::State::kPausedByClient) {
+  actor::ActorTask* task = GetCurrentTask();
+  if (!task || task->GetState() != actor::ActorTask::State::kPausedByClient) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
         std::string("task does not exist or was not paused")));
     return;
   }
-  actor_task_->Resume();
+  task->Resume();
   tabs::TabInterface* tab_of_resumed_task =
-      GetExecutionEngine()->GetTabOfCurrentTask();
+      task->GetExecutionEngine()->GetTabOfCurrentTask();
   if (!tab_of_resumed_task) {
     std::move(callback).Run(glic::mojom::GetContextResult::NewErrorReason(
         std::string("tab does not exist")));
@@ -235,32 +233,16 @@ void GlicActorController::OnResponseStopped() {
   current_request_.reset();
 }
 
-bool GlicActorController::IsExecutionEngineActingOnTab(
-    const content::WebContents* wc) const {
-  return GetExecutionEngine() && actor_task_ &&
-         actor_task_->GetState() != actor::ActorTask::State::kFinished &&
-         GetExecutionEngine()->GetTabOfCurrentTask()->GetContents() == wc;
-}
-
-actor::ExecutionEngine& GlicActorController::GetExecutionEngineForTesting(
-    tabs::TabInterface* tab) {
-  if (!actor_task_) {
-    auto task = std::make_unique<actor::ActorTask>(
-        std::make_unique<actor::ExecutionEngine>(profile_, tab));
-    actor_task_ = task.get();
-    actor::ActorKeyedService::Get(profile_.get())
-        ->AddActiveTask(std::move(task));
-  }
-  return *actor_task_->GetExecutionEngine();
-}
-
 void GlicActorController::ActImpl(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
-  actor::ExecutionEngine::ActionResultCallback action_callback = base::BindOnce(
-      &GlicActorController::OnActionFinished, GetWeakPtr(),
-      actor::TaskId(action.task_id()), options, std::move(callback));
+  actor::ActorTask* task = GetCurrentTask();
+  CHECK(task);
+
+  actor::ExecutionEngine::ActionResultCallback action_callback =
+      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
+                     task->id(), options, std::move(callback));
 
   GetExecutionEngine()->Act(action, std::move(action_callback));
 }
@@ -313,9 +295,15 @@ base::WeakPtr<GlicActorController> GlicActorController::GetWeakPtr() {
 }
 
 actor::ExecutionEngine* GlicActorController::GetExecutionEngine() const {
-  if (!actor_task_) {
+  actor::ActorTask* task = GetCurrentTask();
+  if (!task) {
     return nullptr;
   }
-  return actor_task_->GetExecutionEngine();
+  return task->GetExecutionEngine();
 }
+
+actor::ActorTask* GlicActorController::GetCurrentTask() const {
+  return actor::ActorKeyedService::Get(profile_)->GetMostRecentTask();
+}
+
 }  // namespace glic
