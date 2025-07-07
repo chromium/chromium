@@ -24,7 +24,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
                               ClearHostClosure clear_host_callback,
                               ProfilePicker::EntryPoint entry_point,
-                              const GURL& selected_profile_target_url);
+                              const GURL& selected_profile_target_url,
+                              const std::string& initial_email = std::string());
   ~ProfilePickerFlowController() override;
 
   void Init() override;
@@ -102,6 +103,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // Time when the user picked a profile to open, to measure browser startup
   // performance. Only set when the picker is shown on startup.
   base::TimeTicks profile_picked_time_on_startup_;
+
+  // Email to be prefilled in the profile creation flow.
+  std::string initial_email_;
 
   base::WeakPtrFactory<ProfilePickerFlowController> weak_ptr_factory_{this};
 };

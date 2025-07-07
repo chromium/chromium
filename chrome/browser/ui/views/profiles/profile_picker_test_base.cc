@@ -83,15 +83,16 @@ content::WebContents* WithProfilePickerTestHelpers::web_contents() {
   return web_view()->GetWebContents();
 }
 
-GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
+GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl(
+    const std::string& email) {
   signin::Flow signin_flow = signin_util::IsForceSigninEnabled()
                                  ? signin::Flow::EMBEDDED_PROMO
                                  : signin::Flow::PROMO;
 
-  return signin::GetChromeSyncURLForDice({
-      .request_dark_scheme = view()->ShouldUseDarkColors(),
-      .flow = signin_flow,
-  });
+  return signin::GetChromeSyncURLForDice(
+      {.email = email,
+       .request_dark_scheme = view()->ShouldUseDarkColors(),
+       .flow = signin_flow});
 }
 
 GURL WithProfilePickerTestHelpers::GetChromeReauthURL(

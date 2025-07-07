@@ -40275,6 +40275,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromUserManagerWithPrefilledEmail">
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded when showing sign in entry in the profile creation flow (as part of
+    the profile picker) with a prefilled email.
+  </description>
+</action>
+
 <action name="Signin_ImpressionWithAccount_FromAvatarBubbleSignin"
     not_user_triggered="true">
   <obsolete>Removed in M104.</obsolete>
@@ -41234,6 +41243,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kUserManager.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromUserManagerWithPrefilledEmail">
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kUserManagerWithPrefilledEmail.
   </description>
 </action>
 

@@ -100,7 +100,11 @@ class ProfilePicker {
     // Opens the Glic version of the Profile Picker
     kGlicManager = 16,
 
-    kMaxValue = kGlicManager,
+    // Opens the profile picker on startup, and creates a profile with an email
+    // address.
+    kOnStartupCreateProfileWithEmail = 17,
+
+    kMaxValue = kOnStartupCreateProfileWithEmail,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerEntryPoint)
 
@@ -119,6 +123,10 @@ class ProfilePicker {
     // are available (e.g. `ForBackgroundManager()`).
     static Params FromEntryPoint(EntryPoint entry_point);
 
+    // Builds parameter with the `kOnStartupCreateProfileWithEmail` entry point.
+    // Allows specifying the email address used to pre-fill the email field.
+    static Params FromStartupWithEmail(const std::string& email);
+
     // Builds parameter with the `kBackgroundModeManager` entry point. Allows
     // specifying extra parameters.
     static Params ForBackgroundManager(
@@ -133,6 +141,10 @@ class ProfilePicker {
     const GURL& on_select_profile_target_url() const {
       return on_select_profile_target_url_;
     }
+
+    // The email address to pre-fill the email field when creating a new
+    // signed in profile.
+    const std::string& initial_email() const { return initial_email_; }
 
     // Builds parameter with the `kFirstRun` (on Dice) entry point.
     //
@@ -175,6 +187,7 @@ class ProfilePicker {
     explicit Params(EntryPoint entry_point, const base::FilePath& profile_path);
 
     EntryPoint entry_point_ = EntryPoint::kOnStartup;
+    std::string initial_email_;
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
     FirstRunExitedCallback first_run_exited_callback_;

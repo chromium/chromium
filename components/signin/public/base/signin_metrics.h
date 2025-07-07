@@ -290,10 +290,12 @@ enum class AccessPoint : int {
   kNonModalSigninPasswordPromo = 83,
   // iOS only: Access point for the contextual non modal sign-in bookmark promo.
   kNonModalSigninBookmarkPromo = 84,
+  // Access point for the user manager with a prefilled email.
+  kUserManagerWithPrefilledEmail = 85,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kNonModalSigninBookmarkPromo,  // This must be last.
+  kMaxValue = kUserManagerWithPrefilledEmail,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

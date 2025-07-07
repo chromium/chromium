@@ -48,11 +48,13 @@ class ProfilePickerDiceSignInProvider
 
   // Creates a new provider that will render the Gaia sign-in flow in `host` for
   // a profile at `profile_path`.
+  // `initial_email` is used to pre-fill the email field in the sign-in screen.
   // If no `profile_path` is provided, a new profile (and associated directory)
   // will be created.
   explicit ProfilePickerDiceSignInProvider(
       ProfilePickerWebContentsHost* host,
       signin_metrics::AccessPoint signin_access_point,
+      const std::string& initial_email,
       base::FilePath profile_path = base::FilePath());
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
@@ -141,9 +143,13 @@ class ProfilePickerDiceSignInProvider
 
   const signin_metrics::AccessPoint signin_access_point_;
 
+  // The email to be prefilled in the profile creation flow.
+  const std::string initial_email_;
+
   // The path to the profile in which to perform the sign-in. If empty, a new
   // profile will be created.
   const base::FilePath profile_path_;
+
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 

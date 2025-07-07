@@ -72,9 +72,11 @@ bool IsExternalURL(const GURL& url) {
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     ProfilePickerWebContentsHost* host,
     signin_metrics::AccessPoint signin_access_point,
+    const std::string& initial_email,
     base::FilePath profile_path)
     : host_(host),
       signin_access_point_(signin_access_point),
+      initial_email_(initial_email),
       profile_path_(profile_path) {}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
@@ -336,6 +338,7 @@ GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
                                  : signin::Flow::PROMO;
 
   return signin::GetChromeSyncURLForDice({
+      .email = initial_email_,
       .request_dark_scheme = host_->ShouldUseDarkColors(),
       .flow = signin_flow,
   });

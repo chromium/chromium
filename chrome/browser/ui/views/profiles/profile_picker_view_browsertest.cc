@@ -703,6 +703,15 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       ShowChoiceWithInitialEmail) {
+  constexpr char kEmail[] = "test@gmail.com";
+  ProfilePicker::Show(ProfilePicker::Params::FromStartupWithEmail(kEmail));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  WaitForPickerWidgetCreated();
+  WaitForLoadStop(GetSigninChromeSyncDiceUrl(kEmail));
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
 
