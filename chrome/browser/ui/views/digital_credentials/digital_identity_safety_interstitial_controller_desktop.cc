@@ -26,6 +26,8 @@ using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using web_modal::WebContentsModalDialogManager;
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContinueButtonId);
+
 DigitalIdentitySafetyInterstitialControllerDesktop::CloseOnNavigationObserver::
     CloseOnNavigationObserver() = default;
 
@@ -123,6 +125,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
                          weak_ptr_factory_.GetWeakPtr(),
                          DigitalIdentityInterstitialClosedReason::kOkButton),
           DialogButton::Params()
+              .SetId(kContinueButtonId)
               .SetLabel(positive_button_label)
               .SetStyle(ui::ButtonStyle::kDefault)
               .SetEnabled(positive_button_enabled))
@@ -142,7 +145,8 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           DigitalIdentityInterstitialClosedReason::kOther))
       .SetTitle(l10n_util::GetStringUTF16(
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE))
-      .AddParagraph(ui::DialogModelLabel(body_text));
+      .AddParagraph(ui::DialogModelLabel(body_text))
+      .SetInitiallyFocusedField(kContinueButtonId);
 
   if (was_request_aborted) {
     dialog_model_builder.AddParagraph(
