@@ -33,8 +33,10 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shared_worker_options.h"
@@ -70,11 +72,13 @@ void RecordSharedWorkerUsage(LocalDOMWindow* window) {
 SharedWorker::SharedWorker(ExecutionContext* context)
     : AbstractWorker(context),
       ActiveScriptWrappable<SharedWorker>({}),
-      is_being_connected_(false),
-      feature_handle_for_scheduler_(context->GetScheduler()->RegisterFeature(
-          SchedulingPolicy::Feature::kSharedWorker,
-          {SchedulingPolicy::DisableBackForwardCache()})) {}
-
+      is_being_connected_(false) {
+  if (!base::FeatureList::IsEnabled(features::kBFCacheWithSharedWorker)) {
+    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
+        SchedulingPolicy::Feature::kSharedWorker,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
+}
 SharedWorker* SharedWorker::Create(
     ExecutionContext* context,
     const String& url,
@@ -127,6 +131,7 @@ SharedWorker* SharedWorker::CreateImpl(
   worker->port_ = channel->port1();
   MessagePortChannel remote_port = channel->port2()->Disentangle();
 
+  worker->port_->SetIsSharedWorkerPort(true);
   if (!window->GetSecurityOrigin()->CanAccessSharedWorkers()) {
     exception_state.ThrowSecurityError(
         "Access to shared workers is denied to origin '" +

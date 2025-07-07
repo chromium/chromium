@@ -30,9 +30,11 @@
 #include <optional>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -67,7 +69,13 @@ MessagePort::MessagePort(ExecutionContext& execution_context)
                                             : &execution_context),
       // Ports in a destroyed context start out in a closed state.
       closed_(execution_context.IsContextDestroyed()),
-      task_runner_(execution_context.GetTaskRunner(TaskType::kPostedMessage)),
+      accept_message_task_runner_(
+          base::FeatureList::IsEnabled(features::kBFCacheWithSharedWorker)
+              ? execution_context.GetTaskRunner(
+                    TaskType::kBackForwardCachePostedMessage)
+              : execution_context.GetTaskRunner(TaskType::kPostedMessage)),
+      dispatch_event_task_runner_(
+          execution_context.GetTaskRunner(TaskType::kPostedMessage)),
       post_message_task_container_(
           MakeGarbageCollected<PostMessageTaskContainer>()) {}
 
@@ -183,7 +191,7 @@ void MessagePort::start() {
     return;
 
   started_ = true;
-  connector_->StartReceiving(task_runner_);
+  connector_->StartReceiving(accept_message_task_runner_);
 }
 
 void MessagePort::close() {
@@ -345,11 +353,40 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   }
 
   ExecutionContext* context = GetExecutionContext();
+  if (base::FeatureList::IsEnabled(features::kBFCacheWithSharedWorker) &&
+      context->is_in_back_forward_cache()) {
+    if (IsSharedWorkerPort()) {
+      // Evict the page on a message to the default SharedWorker port. This
+      // handles both incoming messages and those queued right before caching.
+      // See crbug.com/426454597 for the task-ordering investigation.
+      auto* dom_window = DomWindow();
+      CHECK(dom_window);
+      dom_window->GetFrame()->EvictFromBackForwardCache(
+          mojom::blink::RendererEvictionReason::kSharedWorkerMessage,
+          /*source_location=*/nullptr);
+      // If the page is in back/forward cache, it should be evicted. So no need
+      // to dispatch the message.
+      return true;
+    }
+    // Re-post task as kPostedMessage.
+    // TODO(crbug.com/426454597): Investigate task-ordering impact of re-queuing
+    // BFCache tasks.
+    dispatch_event_task_runner_->PostTask(
+        FROM_HERE, WTF::BindOnce(&MessagePort::DispatchMessageEvent,
+                                 WrapPersistent(this), std::move(message)));
+  } else {
+    MessagePort::DispatchMessageEvent(std::move(message));
+  }
+  return true;
+}
+
+void MessagePort::DispatchMessageEvent(BlinkTransferableMessage message) {
+  ExecutionContext* context = GetExecutionContext();
   // WorkerGlobalScope::close() in Worker onmessage handler should prevent
   // the next message from dispatching.
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
     if (scope->IsClosing())
-      return true;
+      return;
   }
 
   Event* evt = CreateMessageEvent(message);
@@ -398,7 +435,6 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   DispatchEvent(*evt);
   if (debugger)
     debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
-  return true;
 }
 
 Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {

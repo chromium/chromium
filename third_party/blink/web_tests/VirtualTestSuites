@@ -4407,6 +4407,20 @@
     ]
   },
   {
+    "prefix": "enable-shared-worker-bfcache",
+    "owners": ["annasato@chromium.org"],
+    "platforms": ["Mac", "Win", "Linux"],
+    "bases": [
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-evict-on-message.window.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=BFCacheWithSharedWorker"
+    ],
+    "expires": "Jun 10, 2026"
+  },
+  {
     "prefix": "target-device-scale-factor-2",
     "owners": [
       "leimy@google.com"
