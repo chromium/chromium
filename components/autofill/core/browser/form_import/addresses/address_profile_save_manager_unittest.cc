@@ -138,7 +138,7 @@ struct ImportScenarioTestCase {
   std::vector<SettingsVisibleFieldTypeForMetrics>
       expected_edited_types_for_metrics;
   std::vector<SettingsVisibleFieldTypeForMetrics>
-      expected_affeceted_types_in_merge_for_metrics;
+      expected_affected_types_in_merge_for_metrics;
   bool new_profiles_suppresssed_for_domain;
   std::vector<std::string> blocked_guids_for_updates;
   std::optional<AutofillProfile> profile_to_be_added_while_waiting;
@@ -452,7 +452,7 @@ void AddressProfileSaveManagerTest::VerifyUpdateAffectedTypesHistogram(
       NOTREACHED() << "Decision not covered by test logic.";
   }
   for (auto changed_type :
-       test_scenario.expected_affeceted_types_in_merge_for_metrics) {
+       test_scenario.expected_affected_types_in_merge_for_metrics) {
     histogram_tester.ExpectBucketCount(
         base::StrCat(
             {kProfileUpdateAffectedTypesHistogram, changed_histogram_suffix}),
@@ -462,7 +462,7 @@ void AddressProfileSaveManagerTest::VerifyUpdateAffectedTypesHistogram(
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kProfileUpdateNumberOfAffectedTypesHistogram,
                     changed_histogram_suffix}),
-      test_scenario.expected_affeceted_types_in_merge_for_metrics.size(), 1);
+      test_scenario.expected_affected_types_in_merge_for_metrics.size(), 1);
 }
 
 void AddressProfileSaveManagerTest::VerifyStrikeCounts(
@@ -891,7 +891,7 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge) {
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
       .expected_final_profiles = {final_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -969,7 +969,7 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge_Declined) {
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
       .expected_final_profiles = {mergeable_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -996,7 +996,7 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMergeAndDuplicate) {
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, merged_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -1026,7 +1026,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, merged_profile},
-      .expected_affeceted_types_in_merge_for_metrics =
+      .expected_affected_types_in_merge_for_metrics =
           {SettingsVisibleFieldTypeForMetrics::kZip,
            SettingsVisibleFieldTypeForMetrics::kCity},
       .new_profiles_suppresssed_for_domain = true};
@@ -1065,7 +1065,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, updated_profile,
                                   merged_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -1135,7 +1135,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, updated_profile,
                                   mergeable_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -1405,7 +1405,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
       .import_candidate = final_profile,
       .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
                                   mergeable_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
@@ -1436,7 +1436,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
       .import_candidate = final_profile,
       .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
                                   mergeable_profile},
-      .expected_affeceted_types_in_merge_for_metrics = {
+      .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
 
