@@ -38,6 +38,12 @@ class TouchToFillView extends TouchToFillViewBase {
         }
 
         @Override
+        protected int selectBackgroundDrawable(
+                int position, boolean containsFillButton, int itemCount) {
+            return super.selectBackgroundDrawable(position, containsFillButton, itemCount);
+        }
+
+        @Override
         protected boolean shouldSkipItemType(@ItemType int type) {
             switch (type) {
                 case ItemType.HEADER: // Fallthrough.
