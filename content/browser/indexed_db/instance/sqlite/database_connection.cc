@@ -250,7 +250,6 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
       TRANSIENT_CHECK(statement.ColumnBlobAsString16(2, &encoded_key_path));
       store_metadata.key_path = DecodeKeyPath(encoded_key_path);
       store_metadata.auto_increment = statement.ColumnBool(3);
-      store_metadata.max_index_id = 0;
       max_object_store_id = std::max(max_object_store_id, store_metadata.id);
       metadata.object_stores[store_metadata.id] = std::move(store_metadata);
     }
@@ -874,14 +873,12 @@ Status DatabaseConnection::CreateObjectStore(
     bool auto_increment) {
   CHECK(HasActiveVersionChangeTransaction());
   if (metadata_.object_stores.contains(object_store_id) ||
-      !KeyPrefix::IsValidObjectStoreId(object_store_id) ||
       object_store_id <= metadata_.max_object_store_id) {
     return Status::InvalidArgument("Invalid object_store_id");
   }
 
   blink::IndexedDBObjectStoreMetadata metadata(
-      std::move(name), object_store_id, std::move(key_path), auto_increment,
-      /*max_index_id=*/0);
+      std::move(name), object_store_id, std::move(key_path), auto_increment);
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO object_stores "
@@ -964,7 +961,6 @@ Status DatabaseConnection::CreateIndex(
       metadata_.object_stores.at(object_store_id);
   int64_t index_id = index.id;
   if (object_store.indexes.contains(index_id) ||
-      !KeyPrefix::IsValidIndexId(index_id) ||
       index_id <= object_store.max_index_id) {
     return Status::InvalidArgument("Invalid index_id.");
   }

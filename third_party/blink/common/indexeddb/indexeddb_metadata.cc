@@ -43,13 +43,8 @@ IndexedDBObjectStoreMetadata::IndexedDBObjectStoreMetadata(
     const std::u16string& name,
     int64_t id,
     const IndexedDBKeyPath& key_path,
-    bool auto_increment,
-    int64_t max_index_id)
-    : name(name),
-      id(id),
-      key_path(key_path),
-      auto_increment(auto_increment),
-      max_index_id(max_index_id) {}
+    bool auto_increment)
+    : name(name), id(id), key_path(key_path), auto_increment(auto_increment) {}
 
 IndexedDBObjectStoreMetadata::IndexedDBObjectStoreMetadata() = default;
 

@@ -35,13 +35,8 @@ IDBObjectStoreMetadata::IDBObjectStoreMetadata() = default;
 IDBObjectStoreMetadata::IDBObjectStoreMetadata(const String& name,
                                                int64_t id,
                                                const IDBKeyPath& key_path,
-                                               bool auto_increment,
-                                               int64_t max_index_id)
-    : name(name),
-      id(id),
-      key_path(key_path),
-      auto_increment(auto_increment),
-      max_index_id(max_index_id) {}
+                                               bool auto_increment)
+    : name(name), id(id), key_path(key_path), auto_increment(auto_increment) {}
 
 // static
 scoped_refptr<IDBObjectStoreMetadata> IDBObjectStoreMetadata::Create() {
@@ -50,10 +45,9 @@ scoped_refptr<IDBObjectStoreMetadata> IDBObjectStoreMetadata::Create() {
 
 scoped_refptr<IDBObjectStoreMetadata> IDBObjectStoreMetadata::CreateCopy()
     const {
-  scoped_refptr<IDBObjectStoreMetadata> copy =
-      base::AdoptRef(new IDBObjectStoreMetadata(name, id, key_path,
-                                                auto_increment, max_index_id));
-
+  scoped_refptr<IDBObjectStoreMetadata> copy = base::AdoptRef(
+      new IDBObjectStoreMetadata(name, id, key_path, auto_increment));
+  copy->max_index_id = max_index_id;
   for (const auto& it : indexes) {
     IDBIndexMetadata* index = it.value.get();
     scoped_refptr<IDBIndexMetadata> index_copy = base::AdoptRef(

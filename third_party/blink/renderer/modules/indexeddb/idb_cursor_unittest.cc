@@ -130,7 +130,7 @@ class IDBCursorTest : public testing::Test {
     // Set up `store`.
     IDBKeyPath store_key_path("primaryKey");
     scoped_refptr<IDBObjectStoreMetadata> store_metadata = base::AdoptRef(
-        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true, 1));
+        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true));
     IDBObjectStore* store =
         MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction);
 

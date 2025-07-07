@@ -56,8 +56,6 @@ class CONTENT_EXPORT Database {
   // null.
   using ErrorCallback = base::RepeatingCallback<void(Status, const char*)>;
 
-  static const int64_t kMinimumIndexId = 30;
-
   Database(uint32_t id_for_locks,
            const std::u16string& name,
            BucketContext& bucket_context);

@@ -59,7 +59,7 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
     db1.version = 1;
     db1.max_object_store_id = 29;
     db1.object_stores[kOs1] = blink::IndexedDBObjectStoreMetadata(
-        u"os1", kOs1, blink::IndexedDBKeyPath(), false, 1000);
+        u"os1", kOs1, blink::IndexedDBKeyPath(), false);
     auto& os2 = db1.object_stores[kOs1];
     os2.indexes[kIndex1] = blink::IndexedDBIndexMetadata(
         u"index1", kIndex1, blink::IndexedDBKeyPath(), true, false);

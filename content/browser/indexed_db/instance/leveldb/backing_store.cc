@@ -1087,9 +1087,9 @@ Status ReadObjectStores(
       }
     }
 
-    blink::IndexedDBObjectStoreMetadata metadata(object_store_name,
-                                                 object_store_id, key_path,
-                                                 auto_increment, max_index_id);
+    blink::IndexedDBObjectStoreMetadata metadata(
+        object_store_name, object_store_id, key_path, auto_increment);
+    metadata.max_index_id = max_index_id;
     s = ReadIndexes(db, database_id, object_store_id, &metadata.indexes);
     if (!s.ok()) {
       break;
@@ -1892,7 +1892,7 @@ Status BackingStore::Transaction::CreateObjectStore(
   metadata.id = object_store_id;
   metadata.key_path = std::move(key_path);
   metadata.auto_increment = auto_increment;
-  metadata.max_index_id = blink::IndexedDBObjectStoreMetadata::kMinimumIndexId;
+  metadata.max_index_id = kMinimumIndexId;
   database_->metadata().object_stores[object_store_id] = std::move(metadata);
 
   DCHECK_LT(database_->metadata().max_object_store_id, object_store_id);

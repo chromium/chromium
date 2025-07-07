@@ -358,7 +358,7 @@ class IDBRequestTest : public testing::Test {
 
     IDBKeyPath store_key_path("primaryKey");
     scoped_refptr<IDBObjectStoreMetadata> store_metadata = base::AdoptRef(
-        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true, 1));
+        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true));
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 

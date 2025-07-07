@@ -92,10 +92,10 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
     db1.id = kDb1;
     db1.version = 1;
     db1.max_object_store_id = 29;
-    db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
-        u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
-    db1.object_stores[kOs2] = IndexedDBObjectStoreMetadata(
-        u"os2", kOs2, IndexedDBKeyPath(), false, 1000);
+    db1.object_stores[kOs1] =
+        IndexedDBObjectStoreMetadata(u"os1", kOs1, IndexedDBKeyPath(), false);
+    db1.object_stores[kOs2] =
+        IndexedDBObjectStoreMetadata(u"os2", kOs2, IndexedDBKeyPath(), false);
     auto& os2 = db1.object_stores[kOs2];
     os2.indexes[kIndex1] = IndexedDBIndexMetadata(
         u"index1", kIndex1, IndexedDBKeyPath(), true, false);
@@ -111,10 +111,10 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
     db2.id = kDb2;
     db2.version = 1;
     db2.max_object_store_id = 29;
-    db2.object_stores[kOs3] = IndexedDBObjectStoreMetadata(
-        u"os3", kOs3, IndexedDBKeyPath(), false, 1000);
-    db2.object_stores[kOs4] = IndexedDBObjectStoreMetadata(
-        u"os4", kOs4, IndexedDBKeyPath(), false, 1000);
+    db2.object_stores[kOs3] =
+        IndexedDBObjectStoreMetadata(u"os3", kOs3, IndexedDBKeyPath(), false);
+    db2.object_stores[kOs4] =
+        IndexedDBObjectStoreMetadata(u"os4", kOs4, IndexedDBKeyPath(), false);
     auto& os3 = db2.object_stores[kOs3];
     os3.indexes[kIndex3] = IndexedDBIndexMetadata(
         u"index3", kIndex3, IndexedDBKeyPath(), true, false);
@@ -130,8 +130,8 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
     db1.id = kDb1;
     db1.version = 1;
     db1.max_object_store_id = 29;
-    db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
-        u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
+    db1.object_stores[kOs1] =
+        IndexedDBObjectStoreMetadata(u"os1", kOs1, IndexedDBKeyPath(), false);
     auto& os2 = db1.object_stores[kOs1];
     os2.indexes[kIndex1] = IndexedDBIndexMetadata(
         u"index1", kIndex1, IndexedDBKeyPath(), true, false);

@@ -166,8 +166,6 @@ class MODULES_EXPORT IDBDatabase final
   static const char kTransactionReadOnlyErrorMessage[];
   static const char kDatabaseClosedErrorMessage[];
 
-  static const int64_t kMinimumIndexId = 30;
-
   void RenameObjectStore(int64_t transaction_id,
                          int64_t object_store_id,
                          const String& new_name) {
