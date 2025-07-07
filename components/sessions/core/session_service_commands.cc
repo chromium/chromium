@@ -28,6 +28,7 @@
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
@@ -40,6 +41,16 @@ std::string SplitTabLayoutToString(split_tabs::SplitTabLayout split_layout) {
       return "Horizontal";
   }
   NOTREACHED();
+}
+
+split_tabs::SplitTabLayout SplitTabLayoutFromString(
+    std::string split_tab_layout_string) {
+  if (split_tab_layout_string == "Horizontal") {
+    return split_tabs::SplitTabLayout::kHorizontal;
+  }
+
+  // By default make the split vertical if input is bad from the pickle.
+  return split_tabs::SplitTabLayout::kVertical;
 }
 
 }  // namespace
@@ -273,6 +284,8 @@ using IdToSessionTab = std::map<SessionID, std::unique_ptr<SessionTab>>;
 using IdToSessionWindow = std::map<SessionID, std::unique_ptr<SessionWindow>>;
 using GroupIdToSessionTabGroup =
     std::map<tab_groups::TabGroupId, std::unique_ptr<SessionTabGroup>>;
+using SplitIdToSessionSplitTab =
+    std::map<split_tabs::SplitTabId, std::unique_ptr<SessionSplitTab>>;
 
 // Returns the window in windows with the specified id. If a window does
 // not exist, one is created.
@@ -309,6 +322,18 @@ SessionTabGroup* GetTabGroup(tab_groups::TabGroupId group_id,
   GroupIdToSessionTabGroup::iterator it = result.first;
   if (result.second)
     it->second = std::make_unique<SessionTabGroup>(group_id);
+  return it->second.get();
+}
+
+SessionSplitTab* GetSplitTab(split_tabs::SplitTabId split_id,
+                             SplitIdToSessionSplitTab* splits) {
+  DCHECK(splits);
+  // For `split_id`, insert a corresponding split entry or get the existing one.
+  auto result = splits->emplace(split_id, nullptr);
+  SplitIdToSessionSplitTab::iterator it = result.first;
+  if (result.second) {
+    it->second = std::make_unique<SessionSplitTab>(split_id);
+  }
   return it->second.get();
 }
 
@@ -385,6 +410,7 @@ void SortTabsBasedOnVisualOrderAndClear(
 // ignores tabs with no navigations.
 void AddTabsToWindows(IdToSessionTab* tabs,
                       GroupIdToSessionTabGroup* tab_groups,
+                      SplitIdToSessionSplitTab* split_tabs,
                       IdToSessionWindow* windows) {
   DVLOG(1) << "AddTabsToWindows";
   DVLOG(1) << "Tabs " << tabs->size() << ", groups " << tab_groups->size()
@@ -415,15 +441,22 @@ void AddTabsToWindows(IdToSessionTab* tabs,
   // move, so clear it out.
   tabs->clear();
 
-  // For each window, collect all the tab groups present. We rely on the fact
-  // that tab groups can't be split between windows.
+  // For each window, collect all the tab groups and split tabs present.
+  // We rely on the fact that tab groups and split tabs can't be split
+  // between windows.
   for (auto& window_pair : *windows) {
     SessionWindow* window = window_pair.second.get();
 
     base::flat_set<tab_groups::TabGroupId> groups_in_current_window;
+    base::flat_set<split_tabs::SplitTabId> splits_in_current_window;
+
     for (const auto& tab : window->tabs) {
-      if (tab->group.has_value())
+      if (tab->group.has_value()) {
         groups_in_current_window.insert(tab->group.value());
+      }
+      if (tab->split_id.has_value()) {
+        splits_in_current_window.insert(tab->split_id.value());
+      }
     }
 
     // Move corresponding SessionTabGroup entries into SessionWindow.
@@ -437,12 +470,27 @@ void AddTabsToWindows(IdToSessionTab* tabs,
       window->tab_groups.push_back(std::move(it->second));
       tab_groups->erase(it);
     }
+
+    // Move corresponding SessionSplitTab entries into SessionWindow.
+    for (const split_tabs::SplitTabId& split_id : splits_in_current_window) {
+      auto it = split_tabs->find(split_id);
+      if (it == split_tabs->end()) {
+        window->split_tabs.push_back(
+            std::make_unique<SessionSplitTab>(split_id));
+        continue;
+      }
+      window->split_tabs.push_back(std::move(it->second));
+      split_tabs->erase(it);
+    }
   }
 
   // We may have extraneous tab group entries. Since we don't have explicit
   // commands for opening and closing tab groups, there may be dangling
   // SessionTabGroup entries after all tabs in a group are closed.
   tab_groups->clear();
+
+  // Clear any extra split entries.
+  split_tabs->clear();
 }
 
 void ProcessTabNavigationPathPrunedCommand(
@@ -481,6 +529,7 @@ void CreateTabsAndWindows(
     const std::vector<std::unique_ptr<SessionCommand>>& data,
     IdToSessionTab* tabs,
     GroupIdToSessionTabGroup* tab_groups,
+    SplitIdToSessionSplitTab* split_tabs,
     IdToSessionWindow* windows,
     SessionID* active_window_id,
     std::string* platform_session_id,
@@ -684,6 +733,23 @@ void CreateTabsAndWindows(
         break;
       }
 
+      case kCommandSetSplitTab: {
+        SplitTabPayload payload;
+        if (!command->GetPayload(&payload, sizeof(payload))) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return;
+        }
+        SessionTab* session_tab =
+            GetTab(SessionID::FromSerializedValue(payload.tab_id), tabs);
+        const base::Token token(payload.maybe_split.id_high,
+                                payload.maybe_split.id_low);
+        session_tab->split_id =
+            payload.has_split ? std::make_optional(
+                                    split_tabs::SplitTabId::FromRawToken(token))
+                              : std::nullopt;
+        break;
+      }
+
       case kCommandSetTabGroupMetadata2: {
         base::Pickle pickle = command->PayloadAsPickle();
         base::PickleIterator iter(pickle);
@@ -731,6 +797,33 @@ void CreateTabsAndWindows(
           group->saved_guid = std::nullopt;
         }
 
+        break;
+      }
+
+      case kCommandSetSplitTabData: {
+        base::Pickle pickle = command->PayloadAsPickle();
+        base::PickleIterator iter(pickle);
+        std::optional<base::Token> split_token = ReadTokenFromPickle(&iter);
+        if (!split_token.has_value()) {
+          return;
+        }
+
+        SessionSplitTab* split = GetSplitTab(
+            split_tabs::SplitTabId::FromRawToken(split_token.value()),
+            split_tabs);
+
+        double split_ratio;
+        if (!iter.ReadDouble(&split_ratio)) {
+          return;
+        }
+
+        std::string split_layout_str;
+        if (!iter.ReadString(&split_layout_str)) {
+          return;
+        }
+
+        split->split_visual_data_ = split_tabs::SplitTabVisualData(
+            SplitTabLayoutFromString(split_layout_str), split_ratio);
         break;
       }
 
@@ -1320,12 +1413,14 @@ void RestoreSessionFromCommands(
     std::set<SessionID>* discarded_window_ids) {
   IdToSessionTab tabs;
   GroupIdToSessionTabGroup tab_groups;
+  SplitIdToSessionSplitTab split_tabs;
   IdToSessionWindow windows;
 
   DVLOG(1) << "RestoreSessionFromCommands " << commands.size();
-  CreateTabsAndWindows(commands, &tabs, &tab_groups, &windows, active_window_id,
-                       platform_session_id, discarded_window_ids);
-  AddTabsToWindows(&tabs, &tab_groups, &windows);
+  CreateTabsAndWindows(commands, &tabs, &tab_groups, &split_tabs, &windows,
+                       active_window_id, platform_session_id,
+                       discarded_window_ids);
+  AddTabsToWindows(&tabs, &tab_groups, &split_tabs, &windows);
   SortTabsBasedOnVisualOrderAndClear(&windows, valid_windows,
                                      discarded_window_ids);
   UpdateSelectedTabIndex(valid_windows);
