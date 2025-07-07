@@ -16,6 +16,17 @@ namespace trusted_vault {
 namespace {
 const char kCryptAuthOAuth2Scope[] =
     "https://www.googleapis.com/auth/cryptauth";
+
+void FulfillPendingRequests(
+    std::vector<TrustedVaultAccessTokenFetcher::TokenCallback> pending_requests,
+    TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
+        access_token_or_error) {
+  for (TrustedVaultAccessTokenFetcher::TokenCallback& pending_request :
+       pending_requests) {
+    std::move(pending_request).Run(access_token_or_error);
+  }
+}
+
 }  // namespace
 
 TrustedVaultAccessTokenFetcherFrontend::TrustedVaultAccessTokenFetcherFrontend(
@@ -73,12 +84,13 @@ void TrustedVaultAccessTokenFetcherFrontend::UpdatePrimaryAccountIfNeeded() {
     return;
   }
 
-  // Fulfill |pending_requests_| since they belong to the previous
-  // |primary_account_|.
-  FulfillPendingRequests(base::unexpected(
-      TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount));
   ongoing_access_token_fetch_ = nullptr;
   primary_account_ = primary_account_info.account_id;
+
+  // Fulfill |pending_requests_| since they belong to the previous
+  // |primary_account_|.
+  FulfillPendingRequestsAndMaybeDestroySelf(base::unexpected(
+      TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount));
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::StartAccessTokenFetch() {
@@ -102,24 +114,29 @@ void TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted(
     signin::AccessTokenInfo access_token_info) {
   ongoing_access_token_fetch_ = nullptr;
   if (error.state() == GoogleServiceAuthError::NONE) {
-    FulfillPendingRequests(access_token_info);
+    FulfillPendingRequestsAndMaybeDestroySelf(access_token_info);
   } else if (error.IsPersistentError()) {
-    FulfillPendingRequests(base::unexpected(
+    FulfillPendingRequestsAndMaybeDestroySelf(base::unexpected(
         TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError));
   } else {
-    FulfillPendingRequests(base::unexpected(
+    FulfillPendingRequestsAndMaybeDestroySelf(base::unexpected(
         TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError));
   }
 }
 
-void TrustedVaultAccessTokenFetcherFrontend::FulfillPendingRequests(
-    TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
-        access_token_or_error) {
-  for (TrustedVaultAccessTokenFetcher::TokenCallback& pending_request :
-       pending_requests_) {
-    std::move(pending_request).Run(access_token_or_error);
-  }
+void TrustedVaultAccessTokenFetcherFrontend::
+    FulfillPendingRequestsAndMaybeDestroySelf(
+        TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
+            access_token_or_error) {
+  // Move the pending requests to a local variable to avoid UAF in case
+  // the callbacks synchronously destroy `this`.
+  // TODO(crbug.com/427316421): The cleaner fix would be to make sure that all
+  // callbacks run asynchronously (currently it is not the case with
+  // EnclaveManager if error happens while fetching access token).
+  std::vector<TrustedVaultAccessTokenFetcher::TokenCallback> pending_requests =
+      std::move(pending_requests_);
   pending_requests_.clear();
+  FulfillPendingRequests(std::move(pending_requests), access_token_or_error);
 }
 
 }  // namespace trusted_vault

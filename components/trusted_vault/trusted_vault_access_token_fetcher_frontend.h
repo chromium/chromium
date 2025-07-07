@@ -67,7 +67,7 @@ class TrustedVaultAccessTokenFetcherFrontend
                                    signin::AccessTokenInfo access_token_info);
 
   // Helper method to run and clear |pending_requests_|.
-  void FulfillPendingRequests(
+  void FulfillPendingRequestsAndMaybeDestroySelf(
       TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
           access_token_info_or_error);
 

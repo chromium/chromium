@@ -176,6 +176,33 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest, ShouldAllowMultipleFetches) {
       kAccountId, kAccessToken, base::Time::Now() + base::Hours(1));
 }
 
+// Regression test for crbug.com/427316421.
+TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
+       ShouldHandleDestructionWhenFullfillingPendingRequests) {
+  std::unique_ptr<TrustedVaultAccessTokenFetcherFrontend> frontend =
+      std::make_unique<TrustedVaultAccessTokenFetcherFrontend>(
+          identity_env()->identity_manager());
+
+  identity_env()->MakePrimaryAccountAvailable("test1@gmail.com",
+                                              signin::ConsentLevel::kSignin);
+  const CoreAccountId kSecondaryAccountId =
+      identity_env()->MakeAccountAvailable("test2@gmail.com").account_id;
+
+  base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
+      token_callback;
+  EXPECT_CALL(
+      token_callback,
+      Run(HasUnexpectedError(
+          TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount)))
+      .WillOnce(
+          [&frontend](TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError) {
+            // This is actually the main part of the test: there should be no
+            // crash/UAF when the frontend is destroyed inside the callback.
+            frontend.reset();
+          });
+  frontend->FetchAccessToken(kSecondaryAccountId, token_callback.Get());
+}
+
 }  // namespace
 
 }  // namespace trusted_vault
