@@ -6320,13 +6320,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSecurePaymentConfirmationDebugName,
      flag_descriptions::kSecurePaymentConfirmationDebugDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSecurePaymentConfirmationDebug)},
-    {"enable-network-and-issuer-icons-for-secure-payment-confirmation",
-     flag_descriptions::kSecurePaymentConfirmationNetworkAndIssuerIconsName,
-     flag_descriptions::
-         kSecurePaymentConfirmationNetworkAndIssuerIconsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)},
     {"enable-secure-payment-confirmation-browser-bound-key",
      flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysName,
      flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysDescription,

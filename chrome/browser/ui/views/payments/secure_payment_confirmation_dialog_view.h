@@ -46,7 +46,6 @@ class SecurePaymentConfirmationDialogView
     VIEW_ID_NONE = 0,
     HEADER_ICON,
     TITLE,
-    DESCRIPTION,
     MERCHANT_LABEL,
     MERCHANT_VALUE,
     INSTRUMENT_LABEL,

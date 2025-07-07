@@ -209,10 +209,6 @@ class SecurePaymentConfirmationDialogViewTest
     ExpectLabelText(model_.title(),
                     SecurePaymentConfirmationDialogView::DialogViewID::TITLE);
 
-    // Without the flag enabled, the description should not be shown.
-    EXPECT_FALSE(GetViewByID(
-        SecurePaymentConfirmationDialogView::DialogViewID::DESCRIPTION));
-
     ExpectLabelText(
         model_.merchant_label(),
         SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_LABEL);

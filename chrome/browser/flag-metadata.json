@@ -3883,11 +3883,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-network-and-issuer-icons-for-secure-payment-confirmation",
-    "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "enable-network-logging-to-file",
     "owners": [ "net-dev@chromium.org" ],
     // This flag is used to capture early-browser network logging on platforms

@@ -3917,12 +3917,6 @@ const char kSecurePaymentConfirmationFallbackDescription[] =
     "Enable the fallback experience in Secure Payment Confirmation, where a "
     "transaction dialog-like UX is shown even if no credentials match.";
 
-const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[] =
-    "Secure Payment Confirmation Network and Issuer Icons";
-const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
-    "Allow the passing in and display of card network and issuer icons for the "
-    "Secure Payment Confirmation Web API.";
-
 const char kSecurePaymentConfirmationUxRefreshName[] =
     "Secure Payment Confirmation UX Refresh";
 const char kSecurePaymentConfirmationUxRefreshDescription[] =

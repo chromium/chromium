@@ -103,16 +103,8 @@ void SecurePaymentConfirmationController::
   model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
   model_.set_progress_bar_visible(false);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
-    model_.set_title(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_TITLE));
-    model_.set_description(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION));
-  } else {
-    model_.set_title(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
-  }
+  model_.set_title(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
 
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));

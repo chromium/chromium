@@ -31,12 +31,6 @@ class SecurePaymentConfirmationModel {
   const std::u16string& title() const { return title_; }
   void set_title(const std::u16string& title) { title_ = title; }
 
-  // Descriptive text that goes under the title.
-  const std::u16string& description() const { return description_; }
-  void set_description(const std::u16string& description) {
-    description_ = description;
-  }
-
   // Label for the merchant row, e.g. "Store".
   const std::u16string& merchant_label() const { return merchant_label_; }
   void set_merchant_label(const std::u16string& merchant_label) {

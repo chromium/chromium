@@ -19,7 +19,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -187,33 +186,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
 
   run_loop.Run();
   EXPECT_TRUE(dialog_closed_);
-}
-
-class SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest
-    : public SecurePaymentConfirmationNoCredsDialogViewTest {
- public:
-  SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest() {
-    base::FieldTrialParams params;
-    params["spc_network_and_issuer_icons_option"] = "inline";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-        params);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that the cart icon is still shown even when the inline network/issuer
-// flag is set.
-IN_PROC_BROWSER_TEST_F(
-    SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest,
-    CartIconStillShows) {
-  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/false);
-
-  EXPECT_NE(nullptr, dialog_view_->GetViewByID(static_cast<int>(
-                         SecurePaymentConfirmationNoCredsDialogView::
-                             DialogViewID::HEADER_ICON)));
 }
 
 }  // namespace payments
