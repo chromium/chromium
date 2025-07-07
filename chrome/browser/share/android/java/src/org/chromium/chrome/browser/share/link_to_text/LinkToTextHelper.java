@@ -102,7 +102,7 @@ public class LinkToTextHelper {
      *
      * @param tab The tab to get all <link RenderFrameHost> in the current page.
      * @param callback The {@link Callback} to handle whether or not there is a highlight on the
-     *         current page.
+     *     current page.
      */
     public static void hasExistingSelectors(Tab tab, Callback<Boolean> callback) {
         List<RenderFrameHost> renderFrameHosts =

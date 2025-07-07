@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.link_to_text;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,7 +43,7 @@ public class LinkToTextIphController {
      * @param tabModelSelector The {@link TabModelSelector} to open a new tab.
      */
     public LinkToTextIphController(
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             TabModelSelector tabModelSelector,
             ObservableSupplier<Profile> profileSupplier) {
         mTabModelSelector = tabModelSelector;

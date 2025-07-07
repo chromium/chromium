@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.link_to_text;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -23,12 +24,13 @@ public class LinkToTextBridge {
         return LinkToTextBridgeJni.get().supportsLinkGenerationInIframe(url);
     }
 
-    public static void logFailureMetrics(WebContents webContents, @LinkGenerationError int error) {
-        LinkToTextBridgeJni.get().logFailureMetrics(webContents, error);
+    public static void logFailureMetrics(
+            @Nullable WebContents webContents, @LinkGenerationError int error) {
+        if (webContents != null) LinkToTextBridgeJni.get().logFailureMetrics(webContents, error);
     }
 
-    public static void logSuccessMetrics(WebContents webContents) {
-        LinkToTextBridgeJni.get().logSuccessMetrics(webContents);
+    public static void logSuccessMetrics(@Nullable WebContents webContents) {
+        if (webContents != null) LinkToTextBridgeJni.get().logSuccessMetrics(webContents);
     }
 
     public static void logLinkRequestedBeforeStatus(

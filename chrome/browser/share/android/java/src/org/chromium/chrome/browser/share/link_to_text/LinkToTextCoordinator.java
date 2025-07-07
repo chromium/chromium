@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -58,9 +59,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private long mShareStartTime;
 
     private String mShareUrl;
-    private TextFragmentReceiver mProducer;
+    private @Nullable TextFragmentReceiver mProducer;
     private String mSelectedText;
-    private ShareParams mShareLinkParams;
+    private @Nullable ShareParams mShareLinkParams;
     private ShareParams mShareTextParams;
     private boolean mIncludeOriginInTitle;
     public @RemoteRequestStatus int mRemoteRequestStatus;
