@@ -7,6 +7,7 @@ import sys
 import re
 import os
 
+import range_merger
 
 def apply_fixes(file_path, fixes):
   """Applies the collected fixes to the given file.
@@ -23,6 +24,9 @@ def apply_fixes(file_path, fixes):
   # Remove trailing newlines from lines to simplify string manipulation.
   # Newlines will be added back when writing the modified content.
   lines = [line.rstrip('\n') for line in lines]
+
+  # Combine adjacent and overlapping fixes
+  fixes = range_merger.merge_ranges(fixes)
 
   # Sort fixes in reverse order (from end of file to beginning).
   # This is crucial to prevent earlier insertions from invalidating
@@ -105,10 +109,8 @@ def main():
       source_range = (int(match.group(4)) - 1, int(match.group(5)) - 1,
                       int(match.group(6)) - 1, int(match.group(7)) - 1)
 
-      # May get duplicates if a template is repeatedly instantiated.
       entry = all_corrections.setdefault(abs_file_path, [])
-      if source_range not in entry:
-        entry.append(source_range)
+      entry.append(source_range)
 
   # After parsing all input from stdin, apply the collected fixes to the files
   for file_path, fixes_list in all_corrections.items():
