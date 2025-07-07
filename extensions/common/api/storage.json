@@ -14,7 +14,6 @@
         "enum": [
           {"name": "TRUSTED_CONTEXTS", "description": "Specifies contexts originating from the extension itself."},
           {"name": "TRUSTED_AND_UNTRUSTED_CONTEXTS", "description": "Specifies contexts originating from outside the extension."}
-         // 
          ],
         "description": "The storage area's access level."
       },
@@ -176,7 +175,7 @@
           }, {
             "name": "setAccessLevel",
             "type": "function",
-            "description": "Sets the desired access level for the storage area. The default will be only trusted contexts.",
+            "description": "Sets the desired access level for the storage area. By default, `session` storage is restricted to trusted contexts (extension pages and service workers), while `local` and `sync` storage allow access from both trusted and untrusted contexts.",
             "parameters": [
               {
                 "type": "object",
