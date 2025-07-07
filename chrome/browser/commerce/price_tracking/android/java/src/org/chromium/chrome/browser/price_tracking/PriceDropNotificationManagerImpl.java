@@ -27,6 +27,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -56,6 +57,7 @@ import org.chromium.components.commerce.core.SubscriptionType;
 import java.util.Locale;
 
 /** Manage price drop notifications. */
+@NullMarked
 public class PriceDropNotificationManagerImpl implements PriceDropNotificationManager {
     private static final String TAG = "PriceDropNotif";
     // The action ids should be the same as defined in the server, see {@link
@@ -102,6 +104,18 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             int notificationId = IntentUtils.safeGetIntExtra(intent, EXTRA_NOTIFICATION_ID, 0);
 
             dismissNotification(notificationId);
+
+            if (TextUtils.isEmpty(destinationUrl)) {
+                Log.e(TAG, "No destination URL could be obtained from the Intent");
+                finish();
+                return;
+            }
+
+            if (TextUtils.isEmpty(actionId)) {
+                Log.e(TAG, "No action ID could be obtained from the Intent");
+                finish();
+                return;
+            }
 
             if (TextUtils.isEmpty(offerId)) {
                 Log.e(TAG, "No offer id is provided when handling turn off alert action.");
@@ -351,7 +365,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     @Override
     @Deprecated
     public Intent getNotificationActionClickIntent(
-            String actionId, String url, String offerId, String clusterId) {
+            String actionId, String url, String offerId, @Nullable String clusterId) {
         return getNotificationActionClickIntent(actionId, url, offerId, clusterId, 0);
     }
 
@@ -362,10 +376,16 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             String offerId,
             @Nullable String clusterId,
             int notificationId) {
+        assert (actionId.equals(ACTION_ID_VISIT_SITE) || actionId.equals(ACTION_ID_TURN_OFF_ALERT))
+                : "Expected actionId to be "
+                        + ACTION_ID_VISIT_SITE
+                        + " or "
+                        + ACTION_ID_TURN_OFF_ALERT
+                        + ", but was "
+                        + actionId;
         if (ACTION_ID_VISIT_SITE.equals(actionId)) {
             return getNotificationClickIntent(url, notificationId);
-        }
-        if (ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
+        } else {
             Intent intent = new Intent(mContext, TrampolineActivity.class);
             intent.putExtra(EXTRA_DESTINATION_URL, url);
             intent.putExtra(EXTRA_ACTION_ID, actionId);
@@ -375,7 +395,6 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             IntentUtils.addTrustedIntentExtras(intent);
             return intent;
         }
-        return null;
     }
 
     @Override

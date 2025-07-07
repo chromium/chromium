@@ -74,12 +74,12 @@ public interface PriceDropNotificationManager {
      * @param offerId the id of the offer associated with this notification.
      * @param clusterId The id of the cluster associated with the product notification.
      * @param recordMetrics Whether to record metrics using {@link NotificationUmaTracker}. Only
-     *         Chime notification code path should set this to true.
+     *     Chime notification code path should set this to true.
      */
     void onNotificationActionClicked(
             String actionId,
             String url,
-            @Nullable String offerId,
+            String offerId,
             @Nullable String clusterId,
             boolean recordMetrics);
 
@@ -112,7 +112,11 @@ public interface PriceDropNotificationManager {
      * @param notificationId the notification id.
      */
     Intent getNotificationActionClickIntent(
-            String actionId, String url, String offerId, String clusterId, int notificationId);
+            String actionId,
+            String url,
+            String offerId,
+            @Nullable String clusterId,
+            int notificationId);
 
     /**
      * @return Whether app notifications are enabled.

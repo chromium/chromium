@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -37,6 +38,7 @@ import java.util.List;
  * Used to display price drop notification with {@link NotificationWrapperBuilder} and {@link
  * ImageFetcher} without cache.
  */
+@NullMarked
 public class PriceDropNotifier {
     private static final String TAG = "PriceTrackNotif";
     public static final String NOTIFICATION_TAG = "price_drop";
@@ -138,7 +140,7 @@ public class PriceDropNotifier {
     }
 
     private void maybeFetchIcon(
-            final NotificationData notificationData, Callback<Bitmap> callback) {
+            final NotificationData notificationData, Callback<@Nullable Bitmap> callback) {
         if (notificationData.iconUrl == null) {
             callback.onResult(null);
             return;

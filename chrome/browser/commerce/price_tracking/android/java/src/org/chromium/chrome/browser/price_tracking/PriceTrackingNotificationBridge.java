@@ -18,6 +18,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceUtils;
@@ -40,6 +41,7 @@ import java.util.List;
  * Class to show a price tracking notification. The Java object is owned by the native side
  * PriceTrackingNotificationBridge object through JNI bridge.
  */
+@NullMarked
 public class PriceTrackingNotificationBridge {
     private static final String TAG = "PriceTrackNotif";
     private final PriceDropNotifier mNotifier;

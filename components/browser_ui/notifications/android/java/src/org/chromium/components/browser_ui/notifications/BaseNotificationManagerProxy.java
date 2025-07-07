@@ -106,7 +106,7 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()">
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()</a>
      */
-    void getNotificationChannel(String channelId, Callback<@Nullable NotificationChannel> callback);
+    void getNotificationChannel(String channelId, Callback<NotificationChannel> callback);
 
     /**
      * A proxy for Android's StatusBarNotification.

@@ -121,8 +121,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public void getNotificationChannel(
-            String channelId, Callback<@Nullable NotificationChannel> callback) {
+    public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
         runCallableAndReply(
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannel"),
                 () -> mNotificationManager.getNotificationChannel(channelId),

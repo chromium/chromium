@@ -18,6 +18,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -45,6 +47,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -78,6 +81,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link PriceDropNotificationManager}. */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(
         ChromeFeatureList.PRICE_ANNOTATIONS + ":user_managed_notification_max_number/2")
@@ -286,10 +290,6 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testOnNotificationActionClicked_TurnOffAlert() {
         String offerId = "offer_id";
-
-        mPriceDropNotificationManager.onNotificationActionClicked(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL, null, null, false);
-        verify(mMockShoppingService, times(0)).unsubscribe(any(), any(Callback.class));
 
         mPriceDropNotificationManager.onNotificationActionClicked(
                 ACTION_ID_TURN_OFF_ALERT, TEST_URL, offerId, null, false);
