@@ -216,7 +216,8 @@ class PrefRegistrySyncable;
                                      accessPoint:(signin_metrics::AccessPoint)
                                                      accessPoint
                                      promoAction:(signin_metrics::PromoAction)
-                                                     promoAction;
+                                                     promoAction
+                                    showSnackbar:(BOOL)showSnackbar;
 
 // ChromeCoordinator.
 - (void)start NS_REQUIRES_SUPER;

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -22,6 +23,25 @@
 
 @implementation HistorySyncSigninCoordinator {
   HistorySyncPopupCoordinator* _syncPopupCoordinator;
+  // Whether to show the snackbar once the coordinator is stopped with an
+  // identity.
+  BOOL _showSnackbar;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+                              showSnackbar:(BOOL)showSnackbar {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                              contextStyle:contextStyle
+                               accessPoint:accessPoint];
+  if (self) {
+    _showSnackbar = showSnackbar;
+  }
+  return self;
 }
 
 - (void)start {
@@ -80,6 +100,11 @@
       signinResult = SigninCoordinatorResultInterrupted;
       CHECK(!primaryIdentity, base::NotFatalUntil::M145);
       break;
+  }
+  if (primaryIdentity && _showSnackbar) {
+    // If `_showSnackbar` is YES, the snackbar must be displayed independently
+    // of whether the history sync was displayed and/or accepted.
+    TriggerAccountSwitchSnackbarWithIdentity(primaryIdentity, self.browser);
   }
   [self runCompletionWithSigninResult:signinResult
                    completionIdentity:primaryIdentity];

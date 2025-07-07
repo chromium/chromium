@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/bubble/model/utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
@@ -56,6 +57,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/utils.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -122,7 +124,8 @@ void HandleSignoutForSnackbar(
 void MaybeShowHistorySyncScreenAfterProfileSwitch(
     Browser* browser,
     signin_metrics::AccessPoint access_point,
-    ProceduralBlock completion) {
+    id<SystemIdentity> identity,
+    BOOL showSnackbar) {
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
@@ -130,18 +133,11 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
   if (history_sync::GetSkipReason(syncService, authenticationService,
                                   profile->GetPrefs(), /*isOptional=*/NO) !=
       history_sync::HistorySyncSkipReason::kNone) {
-    if (completion) {
-      completion();
+    if (showSnackbar) {
+      TriggerAccountSwitchSnackbarWithIdentity(identity, browser);
     }
     return;
   }
-
-  SigninCoordinatorCompletionCallback historySyncCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        if (identity && completion) {
-          completion();
-        }
-      };
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kHistorySync
@@ -149,7 +145,8 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
             accessPoint:access_point
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:historySyncCompletion];
+             completion:nil];
+  command.showSnackbar = showSnackbar;
   command.optionalHistorySync = YES;
 
   UIViewController* view_controller =
@@ -160,29 +157,6 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
 
   [browser->GetSceneState().controller showSignin:command
                                baseViewController:view_controller];
-}
-
-// Displays the identity confirmation snackbar with `identity`.
-void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
-                                              Browser* browser) {
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
-  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
-                        ->GetIdentityAvatarWithIdentity(
-                            identity, IdentityAvatarSize::Regular);
-  ManagementState management_state =
-      GetManagementState(IdentityManagerFactory::GetForProfile(profile),
-                         AuthenticationServiceFactory::GetForProfile(profile),
-                         profile->GetPrefs());
-  MDCSnackbarMessage* snackbar_title =
-      [[IdentitySnackbarMessage alloc] initWithName:identity.userGivenName
-                                              email:identity.userEmail
-                                             avatar:avatar
-                                    managementState:management_state];
-  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbar_commands_handler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler
-      showSnackbarMessageOverBrowserToolbar:snackbar_title];
 }
 
 void CompletePostSignInActionsContinuationImpl(
@@ -238,15 +212,10 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 
   if (post_signin_actions.Has(
           PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
-    ProceduralBlock showSnackbar;
-    if (post_signin_actions.Has(
-            PostSignInAction::kShowIdentityConfirmationSnackbar)) {
-      showSnackbar = ^{
-        TriggerAccountSwitchSnackbarWithIdentity(identity, browser);
-      };
-    }
+    BOOL showSnackbar = post_signin_actions.Has(
+        PostSignInAction::kShowIdentityConfirmationSnackbar);
     MaybeShowHistorySyncScreenAfterProfileSwitch(browser, access_point,
-                                                 showSnackbar);
+                                                 identity, showSnackbar);
     return;
   }
 

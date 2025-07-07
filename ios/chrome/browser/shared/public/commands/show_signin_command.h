@@ -149,6 +149,10 @@ enum class AuthenticationOperation {
 @property(nonatomic, readonly)
     const ChangeProfileContinuationProvider& changeProfileContinuationProvider;
 
+// Whether the identity snackbar must be displayed after a successful
+// HistorySyncSigninCoordinator. Default value: false.
+@property(nonatomic, assign) BOOL showSnackbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SHOW_SIGNIN_COMMAND_H_
