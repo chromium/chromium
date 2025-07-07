@@ -31,7 +31,7 @@ targets without `chromium_code = false`.
     * Some additional types are modeled via [`ChromeNullAwayLibraryModel`].
 * Android's `onCreate()` (and similar) methods are implicitly marked `@Initializer`.
 
-[Chromium's NullAway configuration]: https://source.chromium.org/search?q=%22XepOpt:NullAway%22%20f:compile_java%20-f:third_party&sq=&ss=chromium
+[Chromium's NullAway configuration]: https://source.chromium.org/search?q=%22XepOpt:NullAway%22%20-f:third_party&sq=&ss=chromium
 [JSpecify mode]: https://github.com/uber/NullAway/wiki/JSpecify-Support
 [supported annotations]: https://github.com/uber/NullAway/wiki/Supported-Annotations
 [`ChromeNullAwayLibraryModel`]: https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/ChromeNullAwayLibraryModel.java
