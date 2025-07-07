@@ -58,7 +58,7 @@ class SandboxedPumpkinTagger {
   }
 
   private sendToBackground_(command: PumpkinConstants.FromPumpkinTagger): void {
-    postMessage(command);
+    window.parent.postMessage(command, '*');
   }
 
   private tagAndGetNBestHypotheses_(text: string, numResults: number): void {
@@ -198,4 +198,7 @@ class SandboxedPumpkinTagger {
   }
 }
 
-new SandboxedPumpkinTagger();
+declare global {
+  var pumpkinTagger: SandboxedPumpkinTagger;
+}
+globalThis.pumpkinTagger = new SandboxedPumpkinTagger();

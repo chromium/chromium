@@ -10,7 +10,11 @@
     "type": "module"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; child-src 'self';"
+  },
+  "sandbox": {
+     "pages": ["accessibility_common/mv3/sandboxed_pumpkin_tagger.html"]
   },
 {% else %}
   "manifest_version": 2,

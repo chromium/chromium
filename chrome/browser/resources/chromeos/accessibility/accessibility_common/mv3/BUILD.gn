@@ -38,6 +38,7 @@ misc_sources = [
   "dictation/earcons/audio_initiate.wav",
   "dictation/earcons/null_selection.wav",
   "offscreen.html",
+  "sandboxed_pumpkin_tagger.html",
 ]
 
 # TS files to build.

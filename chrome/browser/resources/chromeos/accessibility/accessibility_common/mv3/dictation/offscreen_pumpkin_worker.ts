@@ -7,14 +7,12 @@ import {OffscreenCommandType} from '../offscreen_command_type.js';
 
 import * as PumpkinConstants from './parse/pumpkin/pumpkin_constants.js';
 
-const SANDBOXED_PUMPKIN_TAGGER_JS_FILE =
-    'dictation/parse/sandboxed_pumpkin_tagger.js';
 
 /**
- * Offscreen way to communicate to pumpkin via worker.
+ * Offscreen way to communicate to pumpkin via a sandboxed iframe.
  */
 class OffscreenPumpkinWorker {
-  private worker_: Worker|null = null;
+  private sandbox_: HTMLIFrameElement;
 
   constructor() {
     Messenger.registerHandler(
@@ -23,27 +21,20 @@ class OffscreenPumpkinWorker {
     Messenger.registerHandler(
         OffscreenCommandType.DICTATION_PUMPKIN_SEND,
         (message: any|undefined) =>
-            this.sendToSandboxedPumpkinTagger_(message['toPumpkinTagger']));
+            this.sendToSandboxedPumpkinTagger_(message.toPumpkinTagger));
+
+    window.addEventListener(
+        'message', (event) => this.onSandboxMessage_(event));
+    this.sandbox_ = document.getElementById('sandboxed-pumpkin-tagger') as
+        HTMLIFrameElement;
   }
 
-  private createSandboxedPumpkinTagger_() {
-    this.worker_ =
-        new Worker(SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
-    this.worker_.onmessage = (message) =>
-        chrome.runtime.sendMessage(undefined, {
-          command: OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE,
-          fromPumpkinTagger: message.data
-        });
+  private async createSandboxedPumpkinTagger_() {
+    this.sandbox_.src = 'sandboxed_pumpkin_tagger.html';
   }
 
-  private sendToSandboxedPumpkinTagger_(
-      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): void {
-    if (!this.worker_) {
-      throw new Error(
-          `Worker not ready, cannot send command to SandboxedPumpkinTagger: ${
-              toPumpkinTagger.type}`);
-    }
-
+  private async sendToSandboxedPumpkinTagger_(
+      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger) {
     // Deseriazlie ArrayBuffer fields in pumpkinData before sending it to
     // tagger worker.
     // 1. Traverse the `pumpkinData` object and convert each value (an array
@@ -58,7 +49,21 @@ class OffscreenPumpkinWorker {
             PumpkinConstants.PumpkinData :
         null;
 
-    this.worker_.postMessage(toPumpkinTagger);
+    this.sandbox_.contentWindow!.postMessage(toPumpkinTagger, '*');
+  }
+
+  /**
+   * Handle of messages from the sandboxed tagger.
+   */
+  private onSandboxMessage_(event: MessageEvent) {
+    if (event.source !== this.sandbox_.contentWindow) {
+      console.error(`Reject sandbox message: bad event source`);
+      return;
+    }
+
+    Messenger.send(
+        OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE,
+        {fromPumpkinTagger: event.data});
   }
 }
 
