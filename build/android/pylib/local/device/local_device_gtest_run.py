@@ -766,7 +766,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   #override
   def _GroupTests(self, tests):
     pre_tests, other_tests = _GroupPreTests(tests)
-    all_tests = pre_tests + other_tests
+
+    all_tests = other_tests
+    if self._test_instance.run_pre_tests:
+      all_tests = pre_tests + other_tests
+
     return self._SortTests(all_tests)
 
   def _UploadTestArtifacts(self, device, test_artifacts_device_dir):
