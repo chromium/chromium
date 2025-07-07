@@ -309,6 +309,28 @@ void PageSchedulerImpl::SetPageBackForwardCached(
         base::BindRepeating(&PageSchedulerImpl::SetUpIPCTaskDetection,
                             GetWeakPtr()),
         GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
+    // If the page is already frozen, the subsequent call to SetPageFrozen() is
+    // a no-op and won't trigger a policy update. The update must be triggered
+    // here to ensure policies are correctly updated for the BFCache state.
+    // TODO(crbug.com/406420935): This policy update is needed for BFCache
+    // eviction-triggering messages. The flag allows us to measure the
+    // performance cost of introducing the update here.
+    if (base::FeatureList::IsEnabled(features::kBFCacheWithSharedWorker) &&
+        is_frozen_) {
+      const bool has_bfcache_runnable_queue = std::ranges::any_of(
+          frame_schedulers_, [](const FrameSchedulerImpl* frame_scheduler) {
+            return std::ranges::any_of(
+                frame_scheduler->frame_task_queue_controller_
+                    ->GetAllTaskQueuesAndVoters(),
+                [](const auto& task_queue_and_voter) {
+                  return task_queue_and_voter.first->CanRunInBFCache();
+                });
+          });
+      if (has_bfcache_runnable_queue) {
+        PolicyUpdater policy_updater;
+        policy_updater.UpdatePagePolicy(this);
+      }
+    }
   }
 }
 

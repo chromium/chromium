@@ -617,6 +617,7 @@ void WorkerThread::InitializeOnWorkerThread(
   // We only capture task types that are actually used. When you want to use a
   // new task type, add it here.
   static constexpr TaskType kAvailableTaskTypes[] = {
+      TaskType::kBackForwardCachePostedMessage,
       TaskType::kBackgroundFetch,
       TaskType::kCanvasBlobSerialization,
       TaskType::kDatabaseAccess,
