@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -15,7 +16,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, async event => {
     var uiSourceCode = event.data;
-    var content = await uiSourceCode.requestContent();
+    var content = await uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
     TestRunner.addResult('Added: ' + uiSourceCode.url());
     TestRunner.addResult('With content: ' + content.content);
     TestRunner.completeTest();

@@ -4,6 +4,7 @@
 
 import {ApplicationTestRunner} from 'application_test_runner';
 import * as HAR from 'devtools/models/har/har.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import {NetworkTestRunner} from 'network_test_runner';
 import {TestRunner} from 'test_runner';
 
@@ -368,7 +369,7 @@ const harJson = {
       transferSize: request.transferSize,
       cached: request.cached(),
       cachedInMemory: request.cachedInMemory(),
-      contentData: await (request.requestContent()),
+      contentData: await (request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent)),
       remoteAddress: request.remoteAddress(),
       resourceType: request.resourceType(),
       priority: request.priority(),

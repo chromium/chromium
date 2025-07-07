@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -34,7 +35,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
           'UISourceCode is content script: ' +
           (uiSourceCode.project().type() ===
            Workspace.Workspace.projectTypes.ContentScripts));
-    uiSourceCode.requestContent().then(didRequestContent);
+    uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(didRequestContent);
 
     function didRequestContent({ content, error, isEncoded }) {
       TestRunner.addResult('Highlighter type: ' + uiSourceCode.mimeType());

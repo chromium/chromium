@@ -16,7 +16,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   await TestRunner.navigatePromise('../bindings/resources/inline-style.html');
   const source = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.Workspace.projectTypes.Network);
-  const { content } = await source.requestContent();
+  const { content } = await source.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
   TestRunner.addResult(`Content:\n${content}`);
   const sourceText = new TextUtils.Text.Text(content);
 

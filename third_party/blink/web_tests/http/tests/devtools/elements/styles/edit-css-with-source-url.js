@@ -24,7 +24,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   TestRunner.markStep('testEditingRulesInElementsPanelDoesNotAddSourceURLToOriginalFile');
 
   var uiSourceCode = await TestRunner.waitForUISourceCode('foo.css');
-  await uiSourceCode.requestContent();
+  await uiSourceCode.requestContentData();
   TestRunner.addResult('Dumping uiSourceCode content:');
   TestRunner.addResult(uiSourceCode.workingCopy());
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', nodeSelected);

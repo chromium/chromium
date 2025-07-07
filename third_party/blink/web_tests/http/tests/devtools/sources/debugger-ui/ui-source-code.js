@@ -45,7 +45,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
       TestRunner.assertEquals('var x = 0;', text);
 
       if (callNumber === 3) {
-        // Check that sourceCodeProvider.requestContent won't be called anymore.
+        // Check that sourceCodeProvider.requestContentData won't be called anymore.
         uiSourceCode.requestContentData().then(function({ text }) {
           TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());
           TestRunner.assertEquals('var x = 0;', text);

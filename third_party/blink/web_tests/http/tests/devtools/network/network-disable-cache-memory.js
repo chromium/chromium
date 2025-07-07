@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(`Tests disabling cache from inspector.\n`);
   await TestRunner.showPanel('network');
@@ -22,7 +24,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
     function scriptLoaded() {
       var request = NetworkTestRunner.networkRequests().pop();
-      request.requestContent().then(callback);
+      request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(callback);
     }
   }
 

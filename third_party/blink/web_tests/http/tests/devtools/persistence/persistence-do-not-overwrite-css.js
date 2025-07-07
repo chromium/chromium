@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
 (async function() {
@@ -26,7 +27,8 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
   TestRunner.runTestSuite([
     function initializeTestFileSystem(next) {
       TestRunner.waitForUISourceCode('simple.css')
-          .then(uiSourceCode => uiSourceCode.requestContent())
+          .then(uiSourceCode => uiSourceCode.requestContentData())
+          .then(TextUtils.ContentData.ContentData.asDeferredContent)
           .then(onCSSContent);
 
       function onCSSContent({ content, error, isEncoded }) {
@@ -44,7 +46,9 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
 
       function onBinding(binding) {
         fsUISourceCode = binding.fileSystem;
-        fsUISourceCode.requestContent().then(onContent);
+        fsUISourceCode.requestContentData()
+            .then(TextUtils.ContentData.ContentData.asDeferredContent)
+            .then(onContent);
       }
 
       function onContent({ content, error, isEncoded }) {

@@ -98,8 +98,8 @@ div {}
       return;
     }
     var contents = [
-      header.originalContentProvider().requestContent(),
-      header.requestContent(),
+      header.originalContentProvider().requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent),
+      header.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent),
     ];
     return Promise.all(contents).then(onContents);
   }

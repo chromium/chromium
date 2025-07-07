@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that after disabling network domain, content saved on backend is removed. https://bugs.webkit.org/show_bug.cgi?id=67995`);
@@ -16,7 +18,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   async function step2() {
     await TestRunner.NetworkAgent.disable();
     var request1 = NetworkTestRunner.networkRequests().pop();
-    request1.requestContent().then(step4);
+    request1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(step4);
   }
 
   function step4({ content, error, isEncoded }) {

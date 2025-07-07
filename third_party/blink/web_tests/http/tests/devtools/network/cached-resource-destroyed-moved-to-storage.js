@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(
     `Tests content is moved from cached resource to resource agent's data storage when cached resource is destroyed.\n`
@@ -42,7 +44,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   function step2() {
     imageRequest = NetworkTestRunner.networkRequests().pop();
-    imageRequest.requestContent().then(step3);
+    imageRequest.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(step3);
   }
 
   var originalContentLength;
@@ -68,7 +70,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   function step6() {
     delete imageRequest.contentData;
-    imageRequest.requestContent().then(step7);
+    imageRequest.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(step7);
   }
 
   function step7({ content, error, isEncoded }) {

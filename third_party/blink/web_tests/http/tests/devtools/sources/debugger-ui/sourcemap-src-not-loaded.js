@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that an error loading a source-map-referred file will display an error message in the source panel.\n`);
@@ -15,8 +17,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
   const jsSource = await TestRunner.waitForUISourceCode('sourcemap-src-not-loaded.js');
   const tsSource = await TestRunner.waitForUISourceCode('sourcemap-src-not-loaded.ts');
   const [jsContent, tsContent] = await Promise.all([
-    jsSource.requestContent(),
-    tsSource.requestContent(),
+    jsSource.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent),
+    tsSource.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent),
   ]);
 
   TestRunner.addResult('JavaScript source file:');

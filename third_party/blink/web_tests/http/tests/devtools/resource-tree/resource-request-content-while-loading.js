@@ -6,10 +6,11 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
 (async function() {
   TestRunner.addResult(
-      `Tests resource content is correctly loaded if Resource.requestContent was called before network request was finished. https://bugs.webkit.org/show_bug.cgi?id=90153\n`);
+      `Tests resource content is correctly loaded if Resource.requestContentData was called before network request was finished. https://bugs.webkit.org/show_bug.cgi?id=90153\n`);
   await TestRunner.showPanel('resources');
 
   TestRunner.addSniffer(SDK.ResourceTreeModel.ResourceTreeFrame.prototype, 'addRequest', requestAdded, true);
@@ -33,7 +34,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.addResult('Cannot find resource');
       TestRunner.completeTest();
     }
-    resource.requestContent().then(contentLoaded);
+    resource.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(contentLoaded);
     contentWasRequested = true;
   }
 
