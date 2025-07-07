@@ -251,14 +251,6 @@ class WebAXObjectProxy : public gin::DeprecatedWrappable<WebAXObjectProxy> {
   v8::Global<v8::Function> notification_callback_;
 };
 
-class RootWebAXObjectProxy : public WebAXObjectProxy {
- public:
-  RootWebAXObjectProxy(const blink::WebAXObject&, Factory*);
-
-  v8::Local<v8::Object> GetChildAtIndex(unsigned index) override;
-  bool IsRoot() const override;
-};
-
 class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
  public:
   explicit WebAXObjectProxyList(v8::Isolate* isolate, blink::WebAXContext&);

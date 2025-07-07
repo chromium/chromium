@@ -2036,21 +2036,6 @@ bool WebAXObjectProxy::HasNonIdentityTransform() {
   return !transform.IsIdentity();
 }
 
-RootWebAXObjectProxy::RootWebAXObjectProxy(const blink::WebAXObject& object,
-                                           Factory* factory)
-    : WebAXObjectProxy(object, factory) {}
-
-v8::Local<v8::Object> RootWebAXObjectProxy::GetChildAtIndex(unsigned index) {
-  if (index)
-    return v8::Local<v8::Object>();
-
-  return factory()->GetOrCreate(accessibility_object());
-}
-
-bool RootWebAXObjectProxy::IsRoot() const {
-  return true;
-}
-
 WebAXObjectProxyList::WebAXObjectProxyList(v8::Isolate* isolate,
                                            blink::WebAXContext& ax_context)
     : isolate_(isolate), ax_context_(&ax_context) {}
