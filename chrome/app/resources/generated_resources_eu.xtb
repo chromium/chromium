@@ -4208,7 +4208,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="389901847090970821">Hautatu teklatua</translation>
 <translation id="3899457911440165602">Errore bat gertatu da ziurtagiria ezabatzean</translation>
 <translation id="3900966090527141178">Esportatu pasahitzak</translation>
-<translation id="390187954523570172">Azken erabiltze-ordua: <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Teklatu integratua</translation>
 <translation id="3903696968689283281">WiFi Direct-en jabeen informazioa:</translation>
 <translation id="3904326018476041253">Kokapen-zerbitzuak</translation>
@@ -7354,7 +7353,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6181431612547969857">Deskarga blokeatu da</translation>
 <translation id="6183369864942961155">Gai argi/ilun automatikoa</translation>
 <translation id="6184099524311454384">Bilatu fitxak</translation>
-<translation id="6184419109506034456">Webgune honetan erabili zen azkena</translation>
 <translation id="6184868291074982484">Chrome-k automatikoki mugatzen ditu hirugarrenen cookieak.</translation>
 <translation id="6185132558746749656">Gailuaren kokapena</translation>
 <translation id="6185151644843671709">Gorde da sarbide-gakoa, eta sortu da PINa</translation>

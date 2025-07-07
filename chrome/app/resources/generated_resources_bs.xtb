@@ -4222,7 +4222,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3899457911440165602">Došlo je do greške prilikom brisanja certifikata</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
-<translation id="390187954523570172">korišteno je <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
 <translation id="3903696968689283281">Informacije o vlasnicima WiFi Directa:</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
@@ -7373,7 +7372,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6181431612547969857">Preuzimanje je blokirano</translation>
 <translation id="6183369864942961155">Automatska svijetla/tamna tema</translation>
 <translation id="6184099524311454384">Pretražite kartice</translation>
-<translation id="6184419109506034456">posljednji put je korišteno na ovoj web lokaciji</translation>
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
 <translation id="6185132558746749656">Lokacija uređaja</translation>
 <translation id="6185151644843671709">Pristupni ključ je sačuvan, a PIN kreiran</translation>

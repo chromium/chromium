@@ -4212,7 +4212,6 @@
 <translation id="389901847090970821">Выберите раскладку клавиатуры</translation>
 <translation id="3899457911440165602">Ошибка при удалении сертификата</translation>
 <translation id="3900966090527141178">Экспорт паролей</translation>
-<translation id="390187954523570172">(аккаунт использовался <ph name="TIME_AGO" />)</translation>
 <translation id="3903187154317825986">Встроенная клавиатура</translation>
 <translation id="3903696968689283281">Информация о владельцах Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Сервисы геолокации</translation>
@@ -7362,7 +7361,6 @@
 <translation id="6181431612547969857">Скачивание запрещено</translation>
 <translation id="6183369864942961155">Автоматическое включение светлой/тёмной темы</translation>
 <translation id="6184099524311454384">Поиск по вкладкам</translation>
-<translation id="6184419109506034456">(аккаунт последний раз использовался на этом сайте)</translation>
 <translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
 <translation id="6185132558746749656">Местоположение устройства</translation>
 <translation id="6185151644843671709">Ключ доступа сохранен, PIN-код создан</translation>

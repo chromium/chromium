@@ -4210,7 +4210,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="389901847090970821">Vybrat klávesnici</translation>
 <translation id="3899457911440165602">Chyba při mazání certifikátu</translation>
 <translation id="3900966090527141178">Export hesel</translation>
-<translation id="390187954523570172">použito <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Vestavěná klávesnice</translation>
 <translation id="3903696968689283281">Informace o vlastnících WiFi Direct:</translation>
 <translation id="3904326018476041253">Služby určování polohy</translation>
@@ -7355,7 +7354,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6181431612547969857">Stahování zablokováno</translation>
 <translation id="6183369864942961155">Automatické přepínání mezi světlým a tmavým motivem</translation>
 <translation id="6184099524311454384">Hledat karty</translation>
-<translation id="6184419109506034456">naposledy použito na tomto webu</translation>
 <translation id="6184868291074982484">Chrome automaticky omezuje soubory cookie třetích stran</translation>
 <translation id="6185132558746749656">Poloha zařízení</translation>
 <translation id="6185151644843671709">Přístupový klíč byl uložen a byl vytvořen PIN</translation>

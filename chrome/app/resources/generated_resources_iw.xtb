@@ -4222,7 +4222,6 @@
 <translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3899457911440165602">אירעה שגיאה במחיקת האישור</translation>
 <translation id="3900966090527141178">ייצוא סיסמאות</translation>
-<translation id="390187954523570172">היה בשימוש <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">מקלדת מובנית</translation>
 <translation id="3903696968689283281">‏פרטי הבעלים של Wi-Fi ישיר:</translation>
 <translation id="3904326018476041253">שירותי מיקום</translation>
@@ -7374,7 +7373,6 @@
 <translation id="6181431612547969857">ההורדה נחסמה</translation>
 <translation id="6183369864942961155">הפעלה אוטומטית של עיצוב בהיר או כהה</translation>
 <translation id="6184099524311454384">חיפוש כרטיסיות</translation>
-<translation id="6184419109506034456">החשבון האחרון שהיה בשימוש באתר הזה</translation>
 <translation id="6184868291074982484">‏Chrome מגביל באופן אוטומטי קובצי cookie של צד שלישי</translation>
 <translation id="6185132558746749656">מיקום מכשיר</translation>
 <translation id="6185151644843671709">מפתח הגישה נשמר והקוד הסודי נוצר</translation>
@@ -8704,7 +8702,7 @@
 <translation id="713122686776214250">הוספת &amp;דף...</translation>
 <translation id="7131431455372521159">‏כל נקודות TrackPoint נותקו</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, בהמתנה</translation>
-<translation id="7132886488919643383">‏רוצה להשתמש ב-AI מבית Google כדי לקבל עזרה בקריאה, בכתיבה וביצירה?</translation>
+<translation id="7132886488919643383">‏רוצה להשתמש ב-Google AI כדי לקבל עזרה בקריאה, בכתיבה וביצירה?</translation>
 <translation id="7134098520442464001">הקטנת טקסט</translation>
 <translation id="7134653428559514680">לא מומלץ לשתף תוכן מהאתר הזה</translation>
 <translation id="7134951043985383439">בוצעה הורדה של קובץ מסוכן</translation>

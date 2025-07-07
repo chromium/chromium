@@ -4208,7 +4208,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="389901847090970821">Selecciona el teclat</translation>
 <translation id="3899457911440165602">Error en suprimir el certificat</translation>
 <translation id="3900966090527141178">Exporta les contrasenyes</translation>
-<translation id="390187954523570172">s'ha utilitzat fa <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Teclat integrat</translation>
 <translation id="3903696968689283281">Informació dels propietaris directes de la Wi-Fi:</translation>
 <translation id="3904326018476041253">Serveis d'ubicació</translation>
@@ -7355,7 +7354,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6181431612547969857">S'ha bloquejat la baixada</translation>
 <translation id="6183369864942961155">Tema clar/fosc automàtic</translation>
 <translation id="6184099524311454384">Cerca pestanyes</translation>
-<translation id="6184419109506034456">s'ha utilitzat per darrera vegada en aquest lloc web</translation>
 <translation id="6184868291074982484">Chrome limita automàticament les galetes de tercers</translation>
 <translation id="6185132558746749656">Ubicació del dispositiu</translation>
 <translation id="6185151644843671709">S'ha desat la clau d'accés i s'ha creat el PIN</translation>

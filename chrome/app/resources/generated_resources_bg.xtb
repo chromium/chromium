@@ -1950,6 +1950,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2328561734797404498">Рестартирайте устройството си, за да използвате <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Когато сте в режим „инкогнито“, сайтовете могат да ползват „бисквитки“, за да следят активността ви при сърфиране само в собствените си уеб страници. „Бисквитките“ ще се изтриват в края на сесията в режим „инкогнито“.</translation>
 <translation id="2329597144923131178">Влезте в профила си и получете своите отметки, история, пароли и др. настройки на всички у-ва.</translation>
+<translation id="2330182457402792918">Изберете файлове, които този сайт може да чете</translation>
 <translation id="2331334586452217517">Съдържанието от този сайт се изпраща до Google и може да бъде видяно от проверяващи лица. Всичко за <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Устройствата, запазени в(ъв) <ph name="PRIMARY_EMAIL" />, не могат да се заредят. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="2332131598580221120">Преглед в магазина</translation>
@@ -4220,7 +4221,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3899457911440165602">Грешка при изтриването на сертификата</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
-<translation id="390187954523570172">използвано <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Вградена клавиатура</translation>
 <translation id="3903696968689283281">Информация за собствениците в Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Услуги за местоположение</translation>
@@ -7372,7 +7372,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6181431612547969857">Изтеглянето е блокирано</translation>
 <translation id="6183369864942961155">Автоматична светла/тъмна тема</translation>
 <translation id="6184099524311454384">Търсене на раздели</translation>
-<translation id="6184419109506034456">последно използвано на този сайт</translation>
 <translation id="6184868291074982484">Chrome автоматично ограничава „бисквитките“ на трети страни</translation>
 <translation id="6185132558746749656">Местоположение на устройството</translation>
 <translation id="6185151644843671709">Ключът за достъп е запазен, а ПИН кодът е създаден</translation>
@@ -8811,6 +8810,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7222232353993864120">Имейл адрес</translation>
 <translation id="7222335051802562841">Актуализиране</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Изберете файл, който този сайт може да чете</translation>
 <translation id="7223952304612664117">Това дава възможност на системните услуги да определят къде се намирате посредством настройката „Точност на местоположението“. Тя използва информация за безжични сигнали и данни от сензорите, за да определя местоположението на устройството.</translation>
 <translation id="7225082563376899794">Използване на Windows Hello при попълването на пароли</translation>
 <translation id="7225179976675429563">Липсва типът мрежа</translation>
@@ -9948,6 +9948,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8000020256436988724">Лента с инструменти</translation>
 <translation id="800117767980299235">Открояване на четеното на глас</translation>
 <translation id="8002274832045662704">Разширена конфигурация на принтер</translation>
+<translation id="8002597610026749658">Chrome може да създава надписи на езиците, показани тук</translation>
 <translation id="8002670234429879764">Вече няма достъп до <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ако паролите ви бъдат компрометирани, ще ви уведомим.</translation>
 <translation id="8004507136466386272">Думи</translation>

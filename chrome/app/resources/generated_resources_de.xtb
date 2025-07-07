@@ -4205,7 +4205,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="389901847090970821">Tastatur auswählen</translation>
 <translation id="3899457911440165602">Fehler beim Löschen des Zertifikats</translation>
 <translation id="3900966090527141178">Passwörter exportieren</translation>
-<translation id="390187954523570172"><ph name="TIME_AGO" /> verwendet</translation>
 <translation id="3903187154317825986">Integrierte Tastatur</translation>
 <translation id="3903696968689283281">Informationen für Wi-Fi Direct-Inhaber:</translation>
 <translation id="3904326018476041253">Standortdienste</translation>
@@ -7351,7 +7350,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6181431612547969857">Download blockiert</translation>
 <translation id="6183369864942961155">Automatisches helles/dunkles Design</translation>
 <translation id="6184099524311454384">Tabs suchen</translation>
-<translation id="6184419109506034456">zuletzt auf dieser Website verwendet</translation>
 <translation id="6184868291074982484">Chrome schränkt Drittanbieter-Cookies automatisch ein</translation>
 <translation id="6185132558746749656">Gerätestandort</translation>
 <translation id="6185151644843671709">Passkey gespeichert und PIN erstellt</translation>
