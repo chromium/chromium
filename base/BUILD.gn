@@ -2209,10 +2209,16 @@ component("base") {
         ]
       }
 
-      # We include launch_mac on simulator builds so unittests can fork. But,
-      # platforms like tvOS continue to use launch_ios since they do not support
-      # multi-processes.
-      if (target_environment == "simulator" && target_platform == "iphoneos") {
+      # We include launch_mac on simulator builds so unit and browser tests can
+      # fork.
+      # iOS-based platforms like tvOS need special treatment in launch_mac.cc
+      # due to some symbols being marked unavailable despite being present,
+      # which is why this condition is restricted to specific `target_platform`
+      # values.
+      # In all cases, this is restricted to simulator builds because App Store
+      # restrictions forbid the use of multiple processes in applications.
+      if (target_environment == "simulator" &&
+          (target_platform == "iphoneos" || target_platform == "tvos")) {
         sources += [
           "process/kill_mac.cc",
           "process/launch_mac.cc",
