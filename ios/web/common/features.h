@@ -67,7 +67,7 @@ BASE_DECLARE_FEATURE(kFullscreenScrollThreshold);
 extern const char kFullscreenScrollThresholdAmount[];
 
 // Returns true if SmoothScrollingDefault is disabled and
-// FullScreenScrollThreshold is enabled.
+// FullscreenScrollThreshold is enabled.
 bool IsFullscreenScrollThresholdEnabled();
 
 // Feature flag that force the use of the synthesized native WKWebView

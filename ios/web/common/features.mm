@@ -68,7 +68,7 @@ BASE_FEATURE(kSmoothScrollingDefault,
 );
 
 BASE_FEATURE(kFullscreenScrollThreshold,
-             "FullScreenScrollThreshold",
+             "FullscreenScrollThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kFullscreenScrollThresholdAmount[] =

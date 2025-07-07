@@ -12548,6 +12548,24 @@
             ]
         }
     ],
+    "IOSFullscreenScrollThreshold": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled10",
+                    "params": {
+                        "fullscreen_scroll_threshold_amount": "10"
+                    },
+                    "enable_features": [
+                        "FullscreenScrollThreshold"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFullscreenTransition": [
         {
             "platforms": [
