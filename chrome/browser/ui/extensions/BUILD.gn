@@ -149,6 +149,7 @@ source_set("impl") {
       "//components/signin/public/base:signin_switches",
     ]
   }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("test_support") {
