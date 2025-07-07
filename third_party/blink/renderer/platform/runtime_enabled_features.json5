@@ -3972,10 +3972,6 @@
       base_feature: "none",
     },
     {
-      name: "RestrictGetBoundingClientRectForHiddenSVGElements",
-      status: "stable",
-    },
-    {
       name: "RestrictOwnAudio",
       status: {
         "Win": "experimental",
