@@ -131,10 +131,12 @@ public class TabGroupDialogFacility<
 
     /** Input a new group name. */
     public TabGroupDialogFacility<HostStationT> inputName(String newTabGroupName) {
-        return mHostStation.swapFacilitySync(
-                this,
-                new TabGroupDialogFacility<>(mTabIdsInGroup, newTabGroupName, mSelectedColor),
-                titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
+        return titleInputElement
+                .performViewActionTo(replaceText(newTabGroupName))
+                .exitFacilityAnd()
+                .enterFacility(
+                        new TabGroupDialogFacility<>(
+                                mTabIdsInGroup, newTabGroupName, mSelectedColor));
     }
 
     /** Create a new tab and transition to the associated RegularNewTabPageStation. */

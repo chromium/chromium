@@ -36,21 +36,22 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
 
     /** Enter text into the omnibox. */
     public OmniboxEnteredTextFacility typeText(String textToType, String textToExpect) {
-        return mHostStation.swapFacilitySync(
-                this,
-                new OmniboxEnteredTextFacility(mOmniboxFacility, textToExpect),
-                urlBarElement.getTypeTextTrigger(textToType));
+        return urlBarElement
+                .typeTextTo(textToType)
+                .exitFacilityAnd()
+                .enterFacility(new OmniboxEnteredTextFacility(mOmniboxFacility, textToExpect));
     }
 
     /** Simulate autocomplete suggestion received from the server. */
     public OmniboxEnteredTextFacility simulateAutocomplete(String autocompleted) {
-        return mHostStation.swapFacilitySync(
-                this,
-                new OmniboxEnteredTextFacility(mOmniboxFacility, mText + autocompleted),
-                () ->
-                        mOmniboxFacility
-                                .getFakeSuggestions()
-                                .simulateAutocompleteSuggestion(mText, autocompleted));
+        return runTo(
+                        () ->
+                                mOmniboxFacility
+                                        .getFakeSuggestions()
+                                        .simulateAutocompleteSuggestion(mText, autocompleted))
+                .exitFacilityAnd()
+                .enterFacility(
+                        new OmniboxEnteredTextFacility(mOmniboxFacility, mText + autocompleted));
     }
 
     /** Click the delete button to erase the text entered. */

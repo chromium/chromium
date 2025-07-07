@@ -115,11 +115,12 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> dialog =
                 new NewTabGroupDialogFacility<>(mListEditor.getAllTabIdsSelected(), softKeyboard);
-        mHostStation.swapFacilitiesSync(
-                List.of(this, mListEditor, itemOnScreen),
-                List.of(dialog, softKeyboard),
-                itemOnScreen.viewElement.getClickTrigger());
-        return dialog;
+        return itemOnScreen
+                .viewElement
+                .clickTo()
+                .exitFacilitiesAnd(this, mListEditor, itemOnScreen)
+                .enterFacilityAnd(softKeyboard)
+                .enterFacility(dialog);
     }
 
     /**
@@ -151,10 +152,11 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         var card = new TabSwitcherGroupCardFacility(/* cardIndex= */ null, tabIdsSelected, title);
         UndoSnackbarFacility<HostStationT> undoSnackbar =
                 new UndoSnackbarFacility<>(snackbarMessage);
-        mHostStation.swapFacilitiesSync(
-                List.of(this, mListEditor, itemOnScreen),
-                List.of(card, undoSnackbar),
-                itemOnScreen.viewElement.getClickTrigger());
+        itemOnScreen
+                .viewElement
+                .clickTo()
+                .exitFacilitiesAnd(this, mListEditor, itemOnScreen)
+                .enterFacilities(card, undoSnackbar);
         return Pair.create(card, undoSnackbar);
     }
 

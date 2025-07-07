@@ -8,8 +8,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 
-import java.util.List;
-
 /** Facility for the Undo Snackbar displayed when a Most Visited Tiles tile is removed. */
 public class MvtRemovedSnackbarFacility extends SnackbarFacility<RegularNewTabPageStation> {
     private final MvtsFacility mMvtsBeforeRemoval;
@@ -25,16 +23,15 @@ public class MvtRemovedSnackbarFacility extends SnackbarFacility<RegularNewTabPa
     /** Click Undo to undo the tile removal. */
     public MvtsFacility undo(FakeMostVisitedSites fakeMostVisitedSites) {
         var mvtsAfterUndo = new MvtsFacility(mMvtsBeforeRemoval.getSiteSuggestions());
-        mHostStation.swapFacilitiesSync(
-                List.of(mMvtsAfterRemoval, this),
-                List.of(mvtsAfterUndo),
-                () -> {
-                    buttonElement.getClickTrigger().triggerTransition();
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () ->
-                                    fakeMostVisitedSites.setTileSuggestions(
-                                            mMvtsBeforeRemoval.getSiteSuggestions()));
-                });
-        return mvtsAfterUndo;
+        return runTo(
+                        () -> {
+                            buttonElement.getClickTrigger().triggerTransition();
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            fakeMostVisitedSites.setTileSuggestions(
+                                                    mMvtsBeforeRemoval.getSiteSuggestions()));
+                        })
+                .exitFacilitiesAnd(mMvtsAfterRemoval, this)
+                .enterFacility(mvtsAfterUndo);
     }
 }

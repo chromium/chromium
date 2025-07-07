@@ -57,19 +57,19 @@ public class MvtsTileFacility extends Facility<RegularNewTabPageStation> {
             FakeMostVisitedSites fakeMostVisitedSites) {
         var mvtsAfterRemoval = new MvtsFacility(siteSuggestionsAfterRemoval);
         var snackbar = new MvtRemovedSnackbarFacility(mMvtsFacility, mvtsAfterRemoval);
-        mHostStation.swapFacilitiesSync(
-                List.of(mMvtsFacility, this),
-                List.of(mvtsAfterRemoval, snackbar),
-                () -> {
-                    // TODO(crbug.com/420700079): Replace this with ListMenuFacility
-                    ListMenuTestUtils.longClickAndWaitForListMenu(tileElement.get());
-                    ListMenuTestUtils.invokeMenuItem("Remove");
+        runTo(
+                        () -> {
+                            // TODO(crbug.com/420700079): Replace this with ListMenuFacility
+                            ListMenuTestUtils.longClickAndWaitForListMenu(tileElement.get());
+                            ListMenuTestUtils.invokeMenuItem("Remove");
 
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () ->
-                                    fakeMostVisitedSites.setTileSuggestions(
-                                            siteSuggestionsAfterRemoval));
-                });
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            fakeMostVisitedSites.setTileSuggestions(
+                                                    siteSuggestionsAfterRemoval));
+                        })
+                .exitFacilitiesAnd(mMvtsFacility, this)
+                .enterFacilities(mvtsAfterRemoval, snackbar);
         return Pair.create(mvtsAfterRemoval, snackbar);
     }
 }

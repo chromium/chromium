@@ -60,7 +60,10 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
     private TabGroupUiFacility<WebPageStation> createTabInBackgroundInGroup(
             ItemOnScreenFacility<TabGroupUiFacility<WebPageStation>> itemOnScreen) {
         assert mHostStation != null;
-        return mHostStation.swapFacilitySync(
-                this, new TabGroupUiFacility<>(), itemOnScreen.viewElement.getClickTrigger());
+        return itemOnScreen
+                .viewElement
+                .clickTo()
+                .exitFacilityAnd()
+                .enterFacility(new TabGroupUiFacility<>());
     }
 }

@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.UiThreadCondition;
@@ -94,12 +93,9 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
                 TimePeriodUtils.getTimePeriodSpinnerOptions(mHostStation.getActivity());
         final int positionToSet = getSpinnerPositionForTimePeriod(timePeriod, options);
 
-        return mHostStation.swapFacilitySync(
-                this,
-                new QuickDeleteDialogFacility(timePeriod),
-                () ->
-                        ThreadUtils.runOnUiThread(
-                                () -> spinnerElement.get().setSelection(positionToSet)));
+        return runOnUiThreadTo(() -> spinnerElement.get().setSelection(positionToSet))
+                .exitFacilityAnd()
+                .enterFacility(new QuickDeleteDialogFacility(timePeriod));
     }
 
     private static int getSpinnerPositionForTimePeriod(

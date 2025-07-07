@@ -84,10 +84,10 @@ public class TabGroupListBottomSheetFacility<
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> newTabGroupDialog =
                 new NewTabGroupDialogFacility<>(softKeyboard);
-        mHostStation.swapFacilitiesSync(
-                List.of(this),
-                List.of(newTabGroupDialog, softKeyboard),
-                newTabGroupRow.getClickTrigger());
-        return newTabGroupDialog;
+        return newTabGroupRow
+                .clickTo()
+                .exitFacilityAnd()
+                .enterFacilityAnd(softKeyboard)
+                .enterFacility(newTabGroupDialog);
     }
 }

@@ -415,10 +415,11 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         }
 
         assumeNonNull(itemOnScreenFacility.viewElement);
-        return mHostStation.swapFacilitySync(
-                List.of(this, itemOnScreenFacility),
-                destination,
-                itemOnScreenFacility.viewElement.getClickTrigger());
+        return itemOnScreenFacility
+                .viewElement
+                .clickTo()
+                .exitFacilitiesAnd(this, itemOnScreenFacility)
+                .enterFacility(destination);
     }
 
     private <DestinationStationT extends Station<?>> DestinationStationT travelToStation(
