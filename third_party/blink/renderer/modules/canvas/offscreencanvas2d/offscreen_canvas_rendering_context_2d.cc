@@ -264,6 +264,13 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   return host->GetResourceProviderForCanvas2D();
 }
 
+std::unique_ptr<CanvasResourceProvider>
+OffscreenCanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
+    std::unique_ptr<CanvasResourceProvider> provider) {
+  return HostAsOffscreenCanvas()->ReplaceResourceProviderForCanvas2D(
+      std::move(provider));
+}
+
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetCanvasResourceProvider() const {
   return Host()->GetResourceProviderForCanvas2D();

@@ -1134,4 +1134,10 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   return element->GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 
+std::unique_ptr<CanvasResourceProvider>
+CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
+    std::unique_ptr<CanvasResourceProvider> provider) {
+  return canvas()->ReplaceResourceProviderForCanvas2D(std::move(provider));
+}
+
 }  // namespace blink

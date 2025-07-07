@@ -128,7 +128,7 @@ class CORE_EXPORT OffscreenCanvas final
     transfer_to_gpu_texture_was_invoked_ = true;
   }
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider>) override;
+      std::unique_ptr<CanvasResourceProvider>);
   void DiscardResources() override;
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
     CHECK(IsRenderingContext2D());

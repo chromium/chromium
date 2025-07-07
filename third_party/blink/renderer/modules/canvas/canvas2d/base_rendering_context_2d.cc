@@ -1556,7 +1556,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // It also gives us a mechanism to detect post-transfer-out draws, which is
   // used in `transferBackFromWebGPU` to raise an exception.
   resource_provider_from_webgpu_access_ =
-      host->ReplaceResourceProviderForCanvas2D(nullptr);
+      ReplaceResourceProviderForCanvas2D(nullptr);
 
   // The user isn't obligated to ever transfer back, which means this resource
   // provider might stick around for while. Jettison any unnecessary resources.
@@ -1615,7 +1615,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // surrendering our temporary ownership of the provider.
   CanvasResourceProvider* resource_provider =
       resource_provider_from_webgpu_access_.get();
-  host->ReplaceResourceProviderForCanvas2D(
+  ReplaceResourceProviderForCanvas2D(
       std::move(resource_provider_from_webgpu_access_));
   resource_provider->SetDelegate(host);
 

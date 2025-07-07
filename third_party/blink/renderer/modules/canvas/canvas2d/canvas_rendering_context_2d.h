@@ -29,6 +29,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 
 #include "base/check.h"
@@ -318,6 +319,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ColorSchemeMayHaveChanged() override;
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider>) override;
 
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;

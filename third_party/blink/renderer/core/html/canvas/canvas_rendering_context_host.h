@@ -153,10 +153,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
-  virtual std::unique_ptr<CanvasResourceProvider>
-      ReplaceResourceProviderForCanvas2D(
-          std::unique_ptr<CanvasResourceProvider>) = 0;
-
   virtual void DiscardResources() = 0;
 
   void FlushRecordingForCanvas2D(FlushReason reason);

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 
+#include <memory>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
@@ -163,6 +165,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider>) override;
 
   SkIRect dirty_rect_for_commit_;
 
