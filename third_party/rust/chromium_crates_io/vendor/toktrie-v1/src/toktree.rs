@@ -324,11 +324,11 @@ impl TokTrie {
             .join("‧");
 
         if quote {
-            format!("⟦{}{}⟧", limited, joined)
+            format!("⟦{limited}{joined}⟧")
         } else if limited.is_empty() {
             joined
         } else {
-            format!("{}{}", limited, joined)
+            format!("{limited}{joined}")
         }
     }
 
@@ -340,7 +340,7 @@ impl TokTrie {
         if idx == self.info.tok_eos {
             "≺EOS≻".to_string()
         } else if idx as usize >= self.vocab_size() {
-            format!("≺OOB[{}]≻", idx)
+            format!("≺OOB[{idx}]≻")
         } else {
             // format!("{:?}[{}]", self.token_str(idx), idx)
             let bytes = self.token(idx);
@@ -349,13 +349,13 @@ impl TokTrie {
             } else {
                 let s = String::from_utf8_lossy(bytes);
                 if s.is_empty() {
-                    format!("≺EMPTY[{}]≻", idx)
+                    format!("≺EMPTY[{idx}]≻")
                 } else if !s.contains('\u{fffd}') {
-                    let mut s = format!("{:?}", s).replace("\\\"", "\"");
+                    let mut s = format!("{s:?}").replace("\\\"", "\"");
                     s.remove(0);
                     s.pop();
                     if quote {
-                        format!("⟨{}⟩", s)
+                        format!("⟨{s}⟩")
                     } else {
                         s
                     }
@@ -407,7 +407,7 @@ impl TokTrie {
             let t = self.token(tok);
             if t.is_empty() {
                 if include_special {
-                    res.extend_from_slice(format!("<[{}]>", tok).as_bytes());
+                    res.extend_from_slice(format!("<[{tok}]>").as_bytes());
                 }
             } else if t[0] == TokTrie::SPECIAL_TOKEN_MARKER {
                 if include_special {
@@ -423,7 +423,7 @@ impl TokTrie {
     pub fn decode_as_special(&self, tok: TokenId) -> Vec<u8> {
         let mut res = Vec::with_capacity(9);
         res.push(TokTrie::SPECIAL_TOKEN_MARKER);
-        res.extend_from_slice(format!("[{}]", tok).as_bytes());
+        res.extend_from_slice(format!("[{tok}]").as_bytes());
         res
     }
 
@@ -433,7 +433,7 @@ impl TokTrie {
             let t = self.token(tok);
             if t.is_empty() || t[0] == TokTrie::SPECIAL_TOKEN_MARKER {
                 res.push(TokTrie::SPECIAL_TOKEN_MARKER);
-                res.extend_from_slice(format!("[{}]", tok).as_bytes());
+                res.extend_from_slice(format!("[{tok}]").as_bytes());
             } else {
                 res.extend_from_slice(t);
             }
@@ -988,7 +988,7 @@ impl TokTrie {
                     if !histogram.is_empty() {
                         histogram.push_str(", ");
                     }
-                    histogram.push_str(&format!("{}:{}", idx, num));
+                    histogram.push_str(&format!("{idx}:{num}"));
                 }
             }
         }
@@ -1008,14 +1008,13 @@ impl TokTrie {
             for depth in 0..30 {
                 let (count, num_tokens) = self.count_until_depth(depth);
                 histogram.push_str(&format!(
-                    "\ndepth {}: {} nodes {} tokens",
-                    depth, count, num_tokens
+                    "\ndepth {depth}: {count} nodes {num_tokens} tokens"
                 ));
             }
         }
 
         if !histogram.is_empty() {
-            histogram = format!("\n{}", histogram);
+            histogram = format!("\n{histogram}");
         }
 
         format!(

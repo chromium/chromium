@@ -39,7 +39,7 @@ pub fn limit_bytes(s: &[u8], max_len: usize) -> String {
 pub fn to_hex_string(bytes: &[u8]) -> String {
     bytes
         .iter()
-        .map(|b| format!("{:02x}", b))
+        .map(|b| format!("{b:02x}"))
         .collect::<Vec<_>>()
         .join("")
 }
@@ -51,7 +51,7 @@ pub fn from_hex_string(s: &str) -> Result<Vec<u8>> {
         let c2 = iter
             .next()
             .ok_or_else(|| anyhow!("expecting even number of chars"))?;
-        let byte = u8::from_str_radix(&format!("{}{}", c1, c2), 16)?;
+        let byte = u8::from_str_radix(&format!("{c1}{c2}"), 16)?;
         result.push(byte);
     }
     Ok(result)
@@ -85,7 +85,7 @@ pub fn limit_display(obj: impl Display, max_len: usize) -> String {
     let mut buffer = Vec::new();
     let mut writer = LimitedWriter::new(&mut buffer, max_len);
 
-    let r = write!(writer, "{}", obj);
+    let r = write!(writer, "{obj}");
     let mut exceeded = r.is_err();
     let mut valid_str = match String::from_utf8(buffer) {
         Ok(s) => s,
