@@ -4876,6 +4876,13 @@ domain Emulation
       # Image types to disable.
       array of DisabledImageType imageTypes
 
+
+  # Override the value of navigator.connection.saveData
+  experimental command setDataSaverOverride
+    parameters
+      # Override value. Omitting the parameter disables the override.
+      optional boolean dataSaverEnabled
+
   experimental command setHardwareConcurrencyOverride
     parameters
       # Hardware concurrency to report

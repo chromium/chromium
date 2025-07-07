@@ -1,0 +1,6 @@
+Tests that overriding saveData changes the navigator property
+Enabled Value: true
+Enabled Value after navigation: true
+Disabled Value: false
+Enabled Again Value: true
+

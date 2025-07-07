@@ -38,6 +38,14 @@
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
+namespace {
+enum DataSaverOverride {
+  Unset,
+  Enabled,
+  Disabled,
+};
+}
+
 namespace blink {
 
 namespace {
@@ -101,6 +109,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
       hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
+      data_saver_override_(&agent_state_,
+                           /*default_value=*/DataSaverOverride::Unset),
       user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
       serialized_ua_metadata_override_(
           &agent_state_,
@@ -737,6 +747,18 @@ protocol::Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
   return AssertPage();
 }
 
+protocol::Response InspectorEmulationAgent::setDataSaverOverride(
+    std::optional<bool> data_saver) {
+  InnerEnable();
+  if (!data_saver.has_value()) {
+    data_saver_override_.Set(DataSaverOverride::Unset);
+  } else {
+    data_saver_override_.Set(*data_saver ? DataSaverOverride::Enabled
+                                         : DataSaverOverride::Disabled);
+  }
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
     int hardware_concurrency) {
   if (hardware_concurrency <= 0) {
@@ -931,6 +953,15 @@ void InspectorEmulationAgent::WillCreateDocumentParser(
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().empty())
     *accept_lang = accept_language_override_.Get();
+}
+
+void InspectorEmulationAgent::ApplyDataSaverOverride(bool& data_saver) {
+  const int value = data_saver_override_.Get();
+  if (value == DataSaverOverride::Enabled) {
+    data_saver = true;
+  } else if (value == DataSaverOverride::Disabled) {
+    data_saver = false;
+  }
 }
 
 void InspectorEmulationAgent::ApplyHardwareConcurrencyOverride(
