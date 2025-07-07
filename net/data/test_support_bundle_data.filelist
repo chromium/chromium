@@ -165,7 +165,7 @@ data/ssl/certificates/rsa-2048-3.key
 data/ssl/certificates/rsa-768-1.key
 data/ssl/certificates/rsa-768-2.key
 data/ssl/certificates/rsa-768-3.key
-data/ssl/certificates/rsa-8200-1.key
+data/ssl/certificates/rsa-8000-1.key
 data/ssl/certificates/salesforce_com_test.pem
 data/ssl/certificates/self-signed-invalid-name.pem
 data/ssl/certificates/self-signed-invalid-sig.pem

@@ -1392,7 +1392,7 @@ const struct PublicKeyInfoTestData {
     {"rsa-768", 768, X509Certificate::kPublicKeyTypeRSA},
     {"rsa-1024", 1024, X509Certificate::kPublicKeyTypeRSA},
     {"rsa-2048", 2048, X509Certificate::kPublicKeyTypeRSA},
-    {"rsa-8200", 8200, X509Certificate::kPublicKeyTypeRSA},
+    {"rsa-8000", 8000, X509Certificate::kPublicKeyTypeRSA},
     {"ec-prime256v1", 256, X509Certificate::kPublicKeyTypeECDSA},
 };
 

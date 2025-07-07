@@ -32,7 +32,7 @@ do
   done
 done
 
-genpkey rsa rsa_keygen_bits 8200 1
+genpkey rsa rsa_keygen_bits 8000 1
 
 
 for curve in prime256v1
