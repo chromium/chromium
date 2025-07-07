@@ -5190,10 +5190,13 @@
     // have no access to commandline flags.
     "expiry_milestone": -1
   },
+  // We need to continue to support until page colors is supported in Chrome [1].
+  //
+  // [1] https://issues.chromium.org/issues/40779801
   {
     "name": "forced-colors",
     "owners": [ "almaher@microsoft.com" ],
-    "expiry_milestone": 137
+    "expiry_milestone": 145
   },
   {
     "name": "fractional-scroll-offsets",
