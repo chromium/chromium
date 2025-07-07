@@ -984,19 +984,6 @@ public class ReadAloudControllerUnitTest {
   }
 
   @Test
-  public void testSendPositiveFeedback() {
-    requestAndStartPlayback();
-
-    mController.onPositiveFeedback();
-
-    verify(mPlayback)
-        .sendFeedback(
-            eq(FeedbackType.POSITIVE),
-            eq(NegativeFeedbackReason.OTHER),
-            Mockito.any(ReadAloudPlaybackHooks.SendFeedbackCallback.class));
-  }
-
-  @Test
   public void testSendNegativeFeedback() {
     requestAndStartPlayback();
 
