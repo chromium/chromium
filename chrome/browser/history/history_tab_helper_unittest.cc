@@ -171,6 +171,49 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+class HistoryTabHelperVisitedFilteringTest
+    : public HistoryTabHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HistoryTabHelperVisitedFilteringTest() {
+    bool are_error_navigations_recorded_in_history = GetParam();
+    if (are_error_navigations_recorded_in_history) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kVisitedLinksOnErrorNavigation);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kVisitedLinksOnErrorNavigation);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
+  bool are_error_navigations_recorded_in_history = base::FeatureList::IsEnabled(
+      blink::features::kVisitedLinksOnErrorNavigation);
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  std::string raw_response_headers = "HTTP/1.1 404 Not Found\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  navigation_handle.set_response_headers(response_headers);
+
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // If error navigations are recorded in history, we should filter them out
+  // when determining NTP most visited.
+  EXPECT_EQ(args.consider_for_ntp_most_visited,
+            !are_error_navigations_recorded_in_history);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HistoryTabHelperVisitedFilteringTest,
+                         ::testing::Bool());
+
 TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {
   web_contents_tester()->NavigateAndCommit(page_url_);
 
