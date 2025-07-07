@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.Drawing
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
 
@@ -312,7 +313,11 @@ public class TopToolbarCoordinator implements Toolbar {
 
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.
-        if (DeviceClassManager.enableFullscreen()) {
+        // TOOD: Without the overlay, the toolbar will somehow have a 1 pixel transparent border
+        // which will become a visible artifact when the web contents background has a big
+        // difference with the toolbar background color defined by system color theme. So we still
+        // enable the overlay on XR devices. See https://crbug.com/377982076.
+        if (DeviceClassManager.enableFullscreen() || XrUtils.isXrDevice()) {
             mOverlayCoordinator =
                     new TopToolbarOverlayCoordinator(
                             mToolbarLayout.getContext(),
