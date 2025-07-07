@@ -126,6 +126,11 @@ bool ShouldTypeExpireActively(ContentSettingsType type);
 PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
                                            const base::Value& value);
 
+// Convert a permission setting to a base::Value for a permission represented by
+// |info|. Expects that the setting is valid.
+base::Value PermissionSettingToValue(const PermissionSettingsInfo* info,
+                                     const PermissionSetting& setting);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UTILS_H_

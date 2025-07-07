@@ -309,4 +309,11 @@ PermissionSetting ValueToPermissionSetting(const PermissionSettingsInfo* info,
   return setting.value_or(info->GetInitialDefaultSetting());
 }
 
+base::Value PermissionSettingToValue(const PermissionSettingsInfo* info,
+                                     const PermissionSetting& setting) {
+  DCHECK(info->delegate().IsValid(setting));
+  auto value = info->delegate().ToValue(setting);
+  return value;
+}
+
 }  // namespace content_settings

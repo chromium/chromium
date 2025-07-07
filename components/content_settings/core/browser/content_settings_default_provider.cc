@@ -12,12 +12,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/single_value_wildcard_rule_iterator.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -72,14 +75,14 @@ constexpr char kBug364820109AlreadyWorkedAroundPref[] =
     "profile.did_work_around_bug_364820109_default";
 #endif  // !BUILDFLAG(IS_IOS)
 
-ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
+base::Value GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
   if (initial_default.is_none())
-    return CONTENT_SETTING_DEFAULT;
-  return static_cast<ContentSetting>(initial_default.GetInt());
+    return base::Value(CONTENT_SETTING_DEFAULT);
+  return initial_default.Clone();
 }
 
-ContentSetting GetDefaultValue(ContentSettingsType type) {
+base::Value GetDefaultValue(ContentSettingsType type) {
   return GetDefaultValue(WebsiteSettingsRegistry::GetInstance()->Get(type));
 }
 
@@ -98,9 +101,16 @@ void DefaultProvider::RegisterProfilePrefs(
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
-    registry->RegisterIntegerPref(info->default_value_pref_name(),
-                                  GetDefaultValue(info),
-                                  info->GetPrefRegistrationFlags());
+    if (info->initial_default_value().is_dict()) {
+      registry->RegisterDictionaryPref(
+          info->default_value_pref_name(),
+          info->initial_default_value().GetDict().Clone(),
+          info->GetPrefRegistrationFlags());
+    } else {
+      registry->RegisterIntegerPref(info->default_value_pref_name(),
+                                    GetDefaultValue(info->type()).GetInt(),
+                                    info->GetPrefRegistrationFlags());
+    }
   }
 
   // Obsolete prefs -------------------------------------------------------
@@ -275,8 +285,7 @@ void DefaultProvider::ReadDefaultSettings() {
 
 bool DefaultProvider::IsValueEmptyOrDefault(ContentSettingsType content_type,
                                             const base::Value& value) {
-  return value.is_none() ||
-         ValueToContentSetting(value) == GetDefaultValue(content_type);
+  return value.is_none() || value == GetDefaultValue(content_type);
 }
 
 void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
@@ -284,10 +293,15 @@ void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
   const ContentSettingsInfo* info =
       ContentSettingsRegistry::GetInstance()->Get(content_type);
   DCHECK(!info || value.is_none() ||
-         info->IsDefaultSettingValid(ValueToContentSetting(value)));
-  default_settings_[content_type] =
-      value.is_none() ? ContentSettingToValue(GetDefaultValue(content_type))
-                      : std::move(value);
+         info->IsDefaultSettingValid(ValueToContentSetting(value)))
+      << "type: " << content_type << " value: " << value.DebugString();
+  if (value.is_none()) {
+    value = GetDefaultValue(content_type);
+    if (value == CONTENT_SETTING_DEFAULT) {
+      value = base::Value();
+    }
+  }
+  default_settings_[content_type] = std::move(value);
 }
 
 void DefaultProvider::WriteToPref(ContentSettingsType content_type,
@@ -297,7 +311,7 @@ void DefaultProvider::WriteToPref(ContentSettingsType content_type,
     return;
   }
 
-  prefs_->SetInteger(GetPrefName(content_type), value.GetInt());
+  prefs_->Set(GetPrefName(content_type), value);
 }
 
 void DefaultProvider::OnPreferenceChanged(const std::string& name) {
@@ -341,8 +355,20 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
 }
 
 base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {
-  int int_value = prefs_->GetInteger(GetPrefName(content_type));
-  return ContentSettingToValue(IntToContentSetting(int_value));
+  const base::Value& value = prefs_->GetValue(GetPrefName(content_type));
+  // Validate settings.
+  if (value.is_int()) {
+    return ContentSettingToValue(IntToContentSetting(value.GetInt()));
+  }
+  if (auto* info =
+          PermissionSettingsRegistry::GetInstance()->Get(content_type)) {
+    if (info->delegate().FromValue(value)) {
+      return value.Clone();
+    }
+  }
+  LOG(ERROR) << "invalid default setting: " << content_type << " "
+             << value.DebugString();
+  return base::Value();
 }
 
 void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
