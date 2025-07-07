@@ -131,18 +131,26 @@ CGFloat const kChromeLogoHeight = 22;
 }
 
 - (void)showConfirmationState {
+  BOOL wasLoadingShown = self.isLoading;
   self.isLoading = NO;
   self.isConfirmed = YES;
   self.primaryActionButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME);
-  // Accessibility announcement needs to posted here since VoiceOver wouldn't
-  // announce button's accessibility label as button's state does not change.
-  // For confirmation state, the button's state is already disabled from
-  // previously showing loading state.
-  UIAccessibilityPostNotification(
-      UIAccessibilityAnnouncementNotification,
-      l10n_util::GetNSString(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
+
+  if (wasLoadingShown) {
+    // When transitioning from loading state to confirmation state an
+    // accessibility announcement needs to be posted since the
+    // primaryActionButton would already be in a disabled state during the
+    // loading state. As only its label changes in confirmation state, it would
+    // not be announced by VoiceOver. However, when transitioning from normal
+    // state directly to confirmation state, posting an accessibility
+    // announcement must be avoided to not interfere with the announcement from
+    // the primaryActionButton.
+    UIAccessibilityPostNotification(
+        UIAccessibilityAnnouncementNotification,
+        l10n_util::GetNSString(
+            IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
+  }
 }
 
 #pragma mark - UITableViewDataSource
