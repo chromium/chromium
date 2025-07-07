@@ -2410,7 +2410,9 @@ _KNOWN_ROBOTS = set() | set('%s@appspot.gserviceaccount.com' % s for s in (
                     'chops-security-borg',
                     'chops-security-cronjobs-cpesuggest')) | set(
                         '%s@chromeos-release-bot.iam.gserviceaccount.com' % s
-                        for s in ('chromeos-ci-release', ))
+                        for s in ('chromeos-ci-release', )) | set(
+                        '%s@chromeos-bot.iam.gserviceaccount.com' % s
+                        for s in ('chromeos-ci-prod', ))
 
 _INVALID_GRD_FILE_LINE = [(r'<file lang=.* path=.*',
                            'Path should come before lang in GRD files.')]
