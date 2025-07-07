@@ -22,7 +22,7 @@
           let target1 = document.getElementById('target1');
           let captureButton = document.getElementById('button');
           let targets = [target0, target1, captureButton];
-          const LOG_EVENT_TYPES = ['pointerover', 'pointerenter', 'pointerdown', 'pointermove', 'pointerout', 'pointerleave', 'gotpointercapture', 'lostpointercapture'];
+          const LOG_EVENT_TYPES = ['pointerover', 'pointerenter', 'pointerdown', 'pointerup', 'pointerout', 'pointerleave', 'gotpointercapture', 'lostpointercapture'];
 
           promise_test(async (test) => {
             captureButton.focus();
@@ -54,19 +54,18 @@
 
             // Inject mouse inputs.
             //
-            // TODO(crbug.com/40942362): While the test does not expect the second pointer-capture
-            // (see the assert_unreached above), it needs to wait for the dispatch of another event
-            // E afterwards to guarantee that the pending capture for the second capture is actualy
-            // cleared without a gotpointercapture event.  This event E would ideally be the first
-            // pointerup event but Blink wrongly dispatches the first pointerup event to target1!
-            // We are adding an extra pair of down/up actions here and removed pointerup logging to
-            // maintain Blink's test coverage without violating this test's goal.
-            new test_driver.Actions()
+            // TODO(crbug.com/40942362): Ideally the action sequence below needs to dispatch a
+            // pointer move between the pointerdown/up pair.  Because of a complicated bug in
+            // Blink, we have replaced the move with a pair of chorded down/up event pair
+            // (which dispatches a pair of moves w/o a chance of coalescing them) and removed
+            // pointermove logging to maintain Blink's test coverage without violating this
+            // test's goal.
+            const actions = new test_driver.Actions();
+            actions
                 .pointerMove(0, 0, {origin: captureButton})
                 .pointerDown()
-                .pointerMove(10, 0, {origin: captureButton})
-                .pointerUp()
-                .pointerDown()
+                .pointerDown({button: actions.ButtonType.MIDDLE})
+                .pointerUp({button: actions.ButtonType.MIDDLE})
                 .pointerUp()
                 .send();
 
@@ -74,13 +73,13 @@
 
             assert_equals(events.join(", "), [
                 // Pointer down on button
-                "pointerover@button", "pointerenter@button", "pointermove@button", "pointerdown@button",
+                "pointerover@button", "pointerenter@button", "pointerdown@button",
                 // Captured by target0
-                "pointerout@button", "pointerleave@button", "pointerover@target0", "pointerenter@target0", "gotpointercapture@target0", "pointermove@target0",
+                "pointerout@button", "pointerleave@button", "pointerover@target0", "pointerenter@target0", "gotpointercapture@target0",
                 // Captured by target1, losing capture on target0 which removes target1.
                 "lostpointercapture@target0", "pointerout@target0", "pointerleave@target0",
                 // Uncaptured pointer re-enters button and is lifted.
-                "pointerover@button", "pointerenter@button", "pointerdown@button"
+                "pointerover@button", "pointerenter@button", "pointerup@button"
             ].join(", "));
           }, "setPointerCapture target removed by lostpointercapture");
         </script>
