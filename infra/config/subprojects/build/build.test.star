@@ -18,7 +18,7 @@ luci.gitiles_poller(
 )
 
 ci.defaults.set(
-    bucket = "ci",
+    bucket = "build",
     triggered_by = ["chrome-build-gitiles-trigger"],
     builder_group = "chromium.build.test",
     pool = ci.DEFAULT_POOL,

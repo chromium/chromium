@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/win-rbe-trusted-test/gn-args.json"
+        "infra/config/generated/builders/build/win-rbe-untrusted-test/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
-              "bucket": "ci",
-              "builder": "win-rbe-trusted-test",
+              "bucket": "build",
+              "builder": "win-rbe-untrusted-test",
               "project": "chromium"
             },
             "builder_spec": {
@@ -34,12 +34,15 @@
       },
       "builder_ids": [
         {
-          "bucket": "ci",
-          "builder": "win-rbe-trusted-test",
+          "bucket": "build",
+          "builder": "win-rbe-untrusted-test",
           "project": "chromium"
         }
       ]
     }
+  },
+  "$build/code_coverage": {
+    "use_clang_coverage": true
   },
   "$build/siso": {
     "configs": [
@@ -53,8 +56,8 @@
       "no-fallback"
     ],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted-test",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted-test",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

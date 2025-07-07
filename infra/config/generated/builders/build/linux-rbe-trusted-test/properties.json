@@ -2,13 +2,13 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-rbe-trusted-test/gn-args.json"
+        "infra/config/generated/builders/build/linux-rbe-trusted-test/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
-              "bucket": "ci",
+              "bucket": "build",
               "builder": "linux-rbe-trusted-test",
               "project": "chromium"
             },
@@ -34,7 +34,7 @@
       },
       "builder_ids": [
         {
-          "bucket": "ci",
+          "bucket": "build",
           "builder": "linux-rbe-trusted-test",
           "project": "chromium"
         }
