@@ -202,11 +202,13 @@ void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
     return;
   }
 
-  // Inject branding information into the form (e.g. the Play Store name and
-  // icon URL). We expect to always find a matching facet URI in the results.
   auto facet = std::ranges::find(results, facet_uri, &Facet::uri);
-
-  CHECK(facet != results.end());
+  if (facet == results.end()) {
+    std::move(barrier_closure).Run();
+    return;
+  }
+  // Inject branding information into the form (e.g. the Play Store name and
+  // icon URL).
   form->app_display_name = facet->branding_info.name;
   form->app_icon_url = facet->branding_info.icon_url;
 
