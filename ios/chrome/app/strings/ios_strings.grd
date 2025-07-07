@@ -1044,62 +1044,71 @@
       <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
           Your page content is shared for more relevant answers
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
-        When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings anytime.
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_LINK">
+          Your privacy &amp; Gemini.
       </message>
-      <message name="IDS_IOS_BWG_CONSENT_MANAGED_FOOTNOTE" desc="Footnote text for the Gemini Consent page for non managed accounts.">
-        Your organization's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. Your privacy &amp; Gemini
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_TEXT" desc="Footnote text for the Gemini Consent page for managed accounts.">
+          Your organization's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. <ph name="YOUR_PRIVACY_GEMINI">$1<ex>Your privacy &amp; Gemini</ex></ph>
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_1" desc="Text for the first link in the BWG consent footnote.">
+          Google Terms
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_2" desc="Text for the second link in the BWG consent footnote.">
+          Gemini Apps Privacy Notice
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_TEXT" desc="Format string for the BWG consent footnote for non-managed accounts.">
+          <ph name="GOOGLE_TERMS">$1<ex>Google Terms</ex></ph> and the <ph name="GEMINI_APPS_PRIVACY">$2<ex>Gemini Apps Privacy Notice</ex></ph> apply. Gemini can make mistakes, so double-check it.
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
+          When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for managed accounts.">
-        Chats are reviewed and used to improve Google AI. Learn about your choices. Info about your location is also stored with your activity.
+          Neither your conversations with Gemini nor your Google Workspace data will be reviewed by human reviewers or used to improve generative AI models.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for managed accounts.">
-        Your organisation's data is private and secure
+          Your organisation's data is private and secure
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for non managed accounts.">
-        When you use this feature, page content and URLs are sent to Google. You can turn this off in settings anytime.
-      </message>
-      <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_FOOTNOTE" desc="Footnote text for the Gemini Consent page for non managed accounts.">
-        Google Terms and the Gemini Apps Privacy Notice apply. Gemini can make mistakes, so double-check it.
+          When you use this feature, page content and URLs are sent to Google. You can turn this off in settings anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for non managed accounts.">
-        Neither your conversations with Gemini nor your Google Workspace data will be reviewed by human reviewers or used to improve generative AI models.
+          Chats are reviewed and used to improve Google AI. Learn about your choices. Info about your location is also stored with your activity.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Consent page for non managed accounts.">
-        Your activity improves Google AI
+          Your activity improves Google AI
       </message>
       <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Primary button text for the Gemini Consent page.">
-        Yes, I'm in
+          Yes, I'm in
       </message>
       <message name="IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON" desc="Secondary button text for the Gemini Consent page.">
-        No thanks
+          No thanks
       </message>
       <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
-        You can open Gemini here
+          You can open Gemini here
       </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
-        Get relevant answers based on the content of the page you're on
+          Get relevant answers based on the content of the page you're on
       </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE" desc="First box title text for the Gemini Promo page.">
-        Ask about any page
+          Ask about any page
       </message>
       <message name="IDS_IOS_BWG_PROMO_GRADIENT_TEXT" desc="Text for the BWG Promo that will have a gradient color.">
-        Gemini
+          Gemini
       </message>
       <message name="IDS_IOS_BWG_PROMO_MAIN_TITLE" desc="Main title text for the Gemini Promo page.">
-        Get answers faster with Gemini in Chrome
+          Get answers faster with Gemini in Chrome
       </message>
       <message name="IDS_IOS_BWG_PROMO_PRIMARY_BUTTON" desc="Primary button text for the Gemini Promo page.">
-        Get started
+          Get started
       </message>
       <message name="IDS_IOS_BWG_PROMO_SECONDARY_BUTTON" desc="Secondary button text for the Gemini Promo page.">
-        Cancel
+          Cancel
       </message>
       <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_BODY" desc="Second box body text for the Gemini Promo page.">
-        Get key takeaways and insights that help you understand any topic
+          Get key takeaways and insights that help you understand any topic
       </message>
       <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Promo page.">
-        Summarize
+          Summarize
       </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call
