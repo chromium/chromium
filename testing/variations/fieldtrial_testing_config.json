@@ -21008,7 +21008,7 @@
                         "SafetyCheckAllowSafeBrowsingNotifications": "true",
                         "SafetyCheckAllowUpdateChromeNotifications": "true",
                         "SafetyCheckNotificationsExperimentType": "1",
-                        "SafetyCheckNotificationsImpressionLimit": "3",
+                        "SafetyCheckNotificationsImpressionLimit": "0",
                         "SafetyCheckNotificationsImpressionTrigger": "1",
                         "SafetyCheckNotificationsProvisionalEnabled": "true"
                     },
