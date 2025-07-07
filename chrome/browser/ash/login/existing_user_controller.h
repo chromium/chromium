@@ -331,6 +331,9 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Whether the user has empty password.
   std::optional<bool> user_has_empty_password_;
 
+  // Whether the user uses challenge-response keys (e.g. a smartcard).
+  std::optional<bool> user_has_challenge_response_keys_;
+
   // Whether user signin is completed.
   bool is_signin_completed_ = false;
 
