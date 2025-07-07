@@ -3602,7 +3602,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
         selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                      IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE))]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
         performAction:grey_tap()];
 
     // Check for the Settings page after Password Manager is gone.
@@ -3645,7 +3646,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
         selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                      IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE))]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
         performAction:grey_tap()];
 
     // Check for the Settings page after Password Manager is gone.

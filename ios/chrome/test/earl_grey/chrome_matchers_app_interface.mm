@@ -770,7 +770,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsDoneButton {
-  return grey_accessibilityID(kSettingsDoneButtonId);
+  return grey_allOf(
+      grey_ancestor([ChromeMatchersAppInterface settingsNavigationBar]),
+      grey_accessibilityID(kSettingsDoneButtonId), grey_sufficientlyVisible(),
+      nil);
 }
 
 + (id<GREYMatcher>)autofillCreditCardEditTableView {
