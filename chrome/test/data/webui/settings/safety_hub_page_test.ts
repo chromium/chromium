@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CardInfo, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {CardState, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import { CardState, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType } from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -46,6 +46,7 @@ suite('SafetyHubPage', function() {
     origin: 'www.example.com',
     permissions: [ContentSettingsTypes.CAMERA],
     expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
+    revocationType: PermissionsRevocationType.UNUSED_PERMISSIONS,
   }];
 
   const passwordCardMockData: CardInfo = {

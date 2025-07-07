@@ -264,6 +264,9 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This sublabel is for the toggle that allows users to switch off/on this functionality.">
     To protect your data, let Chromium remove permissions from sites you haven't visited recently. Doesn't stop notifications.
   </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_AND_NOTIFICATIONS_SETTING_SUBLABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This sublabel is for the toggle that allows users to switch off/on this functionality.">
+    To protect your data, let Chromium remove permissions from sites you haven't visited recently.
+  </message>
 
   <!-- Safe Browsing -->
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_TWO" desc="Bullet point under the safe browsing enhanced protection mode">

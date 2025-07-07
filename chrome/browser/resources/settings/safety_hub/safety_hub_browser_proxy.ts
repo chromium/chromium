@@ -33,11 +33,22 @@ export interface NotificationPermission {
   notificationInfoString: string;
 }
 
+// LINT.IfChange(PermissionsRevocationType)
+export enum PermissionsRevocationType {
+  UNUSED_PERMISSIONS,
+  ABUSIVE_NOTIFICATION_PERMISSIONS,
+  DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+  UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS,
+  UNUSED_PERMISSIONS_AND_DISRUPTIVE_NOTIFICATIONS
+}
+// LINT.ThenChange(//chrome/browser/ui/safety_hub/revoked_permissions_result.h:PermissionsRevocationType)
+
 // The unused site permission information passed from safety_hub_handler.cc.
 export interface UnusedSitePermissions {
   origin: string;
   permissions: ContentSettingsTypes[];
   expiration: string;
+  revocationType: PermissionsRevocationType;
 }
 
 // The information for top cards in Safety Hub page.
