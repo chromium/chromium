@@ -406,6 +406,7 @@ enum WebDXFeature {
   kScripting = 344,
   kAlignContentBlock = 345,
   kSizesAuto = 346,
+  kWasmSimd = 347,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
