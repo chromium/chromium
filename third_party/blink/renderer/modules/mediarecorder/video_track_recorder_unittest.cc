@@ -1245,7 +1245,7 @@ TEST_F(VideoTrackRecorderTestNoParam, ReleasesFrame) {
       media::VideoFrame::CreateBlackFrame(frame_size);
 
   base::RunLoop run_loop;
-  video_frame->AddDestructionObserver(base::BindOnce(run_loop.QuitClosure()));
+  video_frame->AddDestructionObserver(run_loop.QuitClosure());
   Encode(std::move(video_frame), base::TimeTicks::Now());
   run_loop.Run();
 

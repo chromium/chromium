@@ -135,9 +135,9 @@ class MediaRecorderEncoderWrapperTest
     CreateEncoder();
     return std::make_unique<MockVideoEncoderWrapper>(
         &mock_encoder_,
-        base::BindOnce(
+        WTF::BindOnce(
             &MediaRecorderEncoderWrapperTest::MockVideoEncoderWrapperDtor,
-            base::Unretained(this)));
+            WTF::Unretained(this)));
   }
 
   void CreateEncoderWrapper(bool is_screencast) {
