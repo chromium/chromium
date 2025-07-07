@@ -1423,11 +1423,6 @@ targets.legacy_basic_suite(
                 "--use-xvfb",
             ],
         ),
-        "optimization_guide_browser_tests": targets.legacy_test_config(
-            linux_args = [
-                "--use-xvfb",
-            ],
-        ),
         "optimization_guide_unittests": targets.legacy_test_config(
             linux_args = [
                 "--use-xvfb",

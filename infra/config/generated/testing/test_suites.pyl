@@ -2189,17 +2189,6 @@
           '--use-xvfb',
         ],
       },
-      'optimization_guide_browser_tests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
-          ],
-        },
-        'test': 'browser_tests',
-        'linux_args': [
-          '--use-xvfb',
-        ],
-      },
       'optimization_guide_unittests': {
         'linux_args': [
           '--use-xvfb',
