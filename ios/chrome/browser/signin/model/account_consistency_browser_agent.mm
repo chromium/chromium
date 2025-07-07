@@ -34,7 +34,6 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     UIViewController* base_view_controller)
     : BrowserUserData(browser), base_view_controller_(base_view_controller) {
   StartObserving(browser->GetWebStateList());
-  browser_->AddObserver(this);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   settings_handler_ =
@@ -148,10 +147,6 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
       inBackground:NO
           appendTo:OpenPosition::kLastTab];
   [application_handler_ openURLInNewTab:command];
-}
-
-void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser_->RemoveObserver(this);
 }
 
 bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {

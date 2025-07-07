@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
@@ -27,8 +26,7 @@ class Browser;
 class AccountConsistencyBrowserAgent
     : public BrowserUserData<AccountConsistencyBrowserAgent>,
       public TabsDependencyInstaller,
-      public ManageAccountsDelegate,
-      public BrowserObserver {
+      public ManageAccountsDelegate {
  public:
   ~AccountConsistencyBrowserAgent() override;
 
@@ -54,9 +52,6 @@ class AccountConsistencyBrowserAgent
   // from.
   AccountConsistencyBrowserAgent(Browser* browser,
                                  UIViewController* base_view_controller);
-
-  // BrowserObserver
-  void BrowserDestroyed(Browser* browser) override;
 
   // Returns whether it makes sense to show the browser's account menu instead
   // of starting an "add account" flow or showing the "manage accounts" screen.
