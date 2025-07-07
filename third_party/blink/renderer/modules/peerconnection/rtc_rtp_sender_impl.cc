@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<webrtc::RtpParameters>
@@ -34,10 +34,6 @@ struct CrossThreadCopier<webrtc::RTCError>
     : public CrossThreadCopierPassThrough<webrtc::RTCError> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

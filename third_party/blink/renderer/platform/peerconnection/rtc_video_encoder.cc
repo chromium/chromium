@@ -346,7 +346,7 @@ bool IsValidTemporalSVC(
 
 }  // namespace
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<webrtc::VideoEncoder::RateControlParameters>
@@ -382,9 +382,6 @@ struct CrossThreadCopier<SignaledValue> {
     return sv;  // this is a move in fact.
   }
 };
-}  // namespace WTF
-
-namespace blink {
 
 namespace features {
 

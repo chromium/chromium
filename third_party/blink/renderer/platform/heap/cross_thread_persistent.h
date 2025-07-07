@@ -58,6 +58,18 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
   return CrossThreadWeakPersistent<T>(value, loc);
 }
 
+template <typename T>
+struct CrossThreadCopier<CrossThreadPersistent<T>>
+    : public CrossThreadCopierPassThrough<CrossThreadPersistent<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <typename T>
+struct CrossThreadCopier<CrossThreadWeakPersistent<T>>
+    : public CrossThreadCopierPassThrough<CrossThreadWeakPersistent<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -69,18 +81,6 @@ struct HashTraits<blink::CrossThreadPersistent<T>>
 template <typename T>
 struct HashTraits<blink::CrossThreadWeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
-
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadWeakPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 }  // namespace WTF
 

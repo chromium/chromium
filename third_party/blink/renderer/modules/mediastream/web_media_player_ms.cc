@@ -62,17 +62,13 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<viz::SurfaceId>
     : public CrossThreadCopierPassThrough<viz::SurfaceId> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

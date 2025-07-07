@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
-namespace WTF {
+namespace blink {
 
 // Test CrossThreadCopier using static_assert.
 
@@ -77,4 +77,4 @@ static_assert(
                   CrossThreadCopier<std::unique_ptr<float>>::Type>::value),
     "std::unique_ptr test");
 
-}  // namespace WTF
+}  // namespace blink

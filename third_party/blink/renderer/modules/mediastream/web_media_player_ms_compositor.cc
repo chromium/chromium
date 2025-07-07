@@ -41,17 +41,13 @@
 #include "third_party/libyuv/include/libyuv/video_common.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct CrossThreadCopier<std::optional<T>>
     : public CrossThreadCopierPassThrough<std::optional<T>> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

@@ -493,19 +493,13 @@ INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadPriorityTestGroup,
                          AudioWorkletThreadPriorityTest,
                          testing::ValuesIn(kThreadPriorityTestParams));
 
-}  // namespace blink
-
 #if BUILDFLAG(IS_APPLE)
 
-namespace WTF {
 template <>
 struct CrossThreadCopier<base::TimeDelta>
     : public CrossThreadCopierPassThrough<base::TimeDelta> {
   STATIC_ONLY(CrossThreadCopier);
 };
-}  // namespace WTF
-
-namespace blink {
 
 class AudioWorkletRealtimePeriodTestMac : public AudioWorkletThreadTest {
  public:
@@ -579,6 +573,6 @@ TEST_F(AudioWorkletRealtimePeriodTestMac, CheckRealtimePeriod) {
   }
 }
 
-}  // namespace blink
-
 #endif  // BUILDFLAG(IS_APPLE)
+
+}  // namespace blink

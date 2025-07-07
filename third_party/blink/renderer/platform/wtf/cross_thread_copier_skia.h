@@ -38,7 +38,7 @@ class SkRefCnt;
 template <typename T>
 class sk_sp;
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct CrossThreadCopier<sk_sp<T>>
@@ -54,6 +54,6 @@ struct CrossThreadCopier<SkISize>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_SKIA_H_

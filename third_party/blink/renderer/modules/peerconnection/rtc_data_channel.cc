@@ -65,7 +65,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/priority.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::DataChannelInterface>>
@@ -73,10 +73,6 @@ struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::DataChannelInterface>>
           webrtc::scoped_refptr<webrtc::DataChannelInterface>> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

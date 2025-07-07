@@ -6,7 +6,7 @@
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -133,4 +133,4 @@ CrossThreadCopier<std::unique_ptr<blink::GlobalScopeCreationParams>>::Copy(
   return pointer;
 }
 
-}  // namespace WTF
+}  // namespace blink

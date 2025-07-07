@@ -37,7 +37,7 @@ namespace gpu {
 struct SyncToken;
 }
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<gpu::SyncToken>
@@ -45,6 +45,6 @@ struct CrossThreadCopier<gpu::SyncToken>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_GPU_H_

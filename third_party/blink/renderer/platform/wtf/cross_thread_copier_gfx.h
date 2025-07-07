@@ -39,7 +39,7 @@ class Rect;
 class Size;
 }  // namespace gfx
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<gfx::Size>
@@ -59,6 +59,6 @@ struct CrossThreadCopier<gfx::ColorSpace>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_GFX_H_

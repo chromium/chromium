@@ -37,7 +37,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace WTF {
+namespace blink {
 
 // nullptr_t can be passed through without any changes.
 template <>
@@ -81,6 +81,6 @@ struct CrossThreadCopier<std::basic_string<CharT, Traits, Allocator>> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_STD_H_

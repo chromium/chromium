@@ -16,12 +16,12 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
-struct CrossThreadCopier<blink::ScriptDecoder::Result> {
+struct CrossThreadCopier<ScriptDecoder::Result> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::ScriptDecoder::Result;
+  using Type = ScriptDecoder::Result;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -31,10 +31,6 @@ struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle> {
   using Type = mojo::ScopedDataPipeConsumerHandle;
   static Type Copy(Type&& value) { return std::move(value); }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 void AppendDataImpl(Digestor* digestor,

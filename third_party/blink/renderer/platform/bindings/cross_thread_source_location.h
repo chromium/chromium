@@ -10,8 +10,9 @@
 namespace blink {
 
 class PLATFORM_EXPORT CrossThreadSourceLocation {
- friend struct WTF::CrossThreadCopier<CrossThreadSourceLocation>;
-  public:
+  friend struct CrossThreadCopier<CrossThreadSourceLocation>;
+
+ public:
   CrossThreadSourceLocation(
       const String& url,
       const String& function,

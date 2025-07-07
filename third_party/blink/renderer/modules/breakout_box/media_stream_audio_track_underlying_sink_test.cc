@@ -38,17 +38,14 @@
 using testing::_;
 using testing::StrictMock;
 
-namespace WTF {
+namespace blink {
+
 template <>
-struct CrossThreadCopier<
-    std::unique_ptr<blink::WritableStreamTransferringOptimizer>> {
+struct CrossThreadCopier<std::unique_ptr<WritableStreamTransferringOptimizer>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = std::unique_ptr<blink::WritableStreamTransferringOptimizer>;
+  using Type = std::unique_ptr<WritableStreamTransferringOptimizer>;
   static Type Copy(Type pointer) { return pointer; }
 };
-}  // namespace WTF
-
-namespace blink {
 
 class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:

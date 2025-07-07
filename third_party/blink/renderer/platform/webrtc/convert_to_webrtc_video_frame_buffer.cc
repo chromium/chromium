@@ -25,7 +25,7 @@
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
-namespace WTF {
+namespace blink {
 
 // Template specializations of [1], needed to be able to pass WTF callbacks
 // that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
@@ -38,7 +38,7 @@ struct CrossThreadCopier<scoped_refptr<webrtc::VideoFrameBuffer>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace {
 

@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
@@ -17,6 +17,6 @@ struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
   static Type Copy(Type pointer) { return pointer; }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_SCOPED_REFPTR_CROSS_THREAD_COPIER_H_

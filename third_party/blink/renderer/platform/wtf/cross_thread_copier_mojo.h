@@ -51,7 +51,7 @@ class DataPipeConsumerHandle;
 typedef ScopedHandleBase<DataPipeConsumerHandle> ScopedDataPipeConsumerHandle;
 }  // namespace mojo
 
-namespace WTF {
+namespace blink {
 
 template <typename Interface>
 struct CrossThreadCopier<mojo::PendingReceiver<Interface>>
@@ -95,6 +95,6 @@ struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MOJO_H_

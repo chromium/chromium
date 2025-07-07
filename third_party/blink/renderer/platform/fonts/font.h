@@ -276,16 +276,11 @@ inline float Font::TabWidth(const SimpleFontData* font_data,
   return base_tab_width ? base_tab_width : GetFontDescription().LetterSpacing();
 }
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct CrossThreadCopier<blink::Font>
-    : public CrossThreadCopierPassThrough<blink::Font> {
+struct CrossThreadCopier<Font> : public CrossThreadCopierPassThrough<Font> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_H_

@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<
@@ -28,9 +28,6 @@ struct CrossThreadCopier<
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
-
-namespace blink {
 namespace {
 
 class CrossThreadHandleTest : public TestSupportingGC {};

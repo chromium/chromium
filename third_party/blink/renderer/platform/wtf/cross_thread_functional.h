@@ -88,7 +88,7 @@ auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
   return internal::MakeCrossThreadFunction(
       base::BindRepeating(internal::CoerceFunctorForCrossThreadBind(
                               std::forward<FunctionType>(function)),
-                          WTF::CrossThreadCopier<std::decay_t<Ps>>::Copy(
+                          CrossThreadCopier<std::decay_t<Ps>>::Copy(
                               std::forward<Ps>(parameters))...));
 }
 
@@ -101,7 +101,7 @@ auto CrossThreadBindOnce(FunctionType&& function, Ps&&... parameters) {
   return internal::MakeCrossThreadOnceFunction(
       base::BindOnce(internal::CoerceFunctorForCrossThreadBind(
                          std::forward<FunctionType>(function)),
-                     WTF::CrossThreadCopier<std::decay_t<Ps>>::Copy(
+                     CrossThreadCopier<std::decay_t<Ps>>::Copy(
                          std::forward<Ps>(parameters))...));
 }
 

@@ -53,17 +53,13 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<media::VideoDecoderConfig>
     : public CrossThreadCopierPassThrough<media::VideoDecoderConfig> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

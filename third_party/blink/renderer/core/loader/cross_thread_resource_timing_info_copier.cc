@@ -6,27 +6,26 @@
 
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
-Vector<blink::mojom::blink::ServerTimingInfoPtr> CloneServerTimingInfoArray(
-    const Vector<blink::mojom::blink::ServerTimingInfoPtr>& server_timing) {
-  Vector<blink::mojom::blink::ServerTimingInfoPtr> result;
+Vector<mojom::blink::ServerTimingInfoPtr> CloneServerTimingInfoArray(
+    const Vector<mojom::blink::ServerTimingInfoPtr>& server_timing) {
+  Vector<mojom::blink::ServerTimingInfoPtr> result;
   for (const auto& entry : server_timing) {
     result.emplace_back(
-        CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Copy(
-            entry));
+        CrossThreadCopier<mojom::blink::ServerTimingInfoPtr>::Copy(entry));
   }
   return result;
 }
 
 }  // namespace
 
-CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Type
-CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
-    const blink::mojom::blink::ResourceTimingInfoPtr& info) {
-  return blink::mojom::blink::ResourceTimingInfo::New(
+CrossThreadCopier<mojom::blink::ResourceTimingInfoPtr>::Type
+CrossThreadCopier<mojom::blink::ResourceTimingInfoPtr>::Copy(
+    const mojom::blink::ResourceTimingInfoPtr& info) {
+  return mojom::blink::ResourceTimingInfo::New(
       info->name, info->start_time, info->alpn_negotiated_protocol,
       info->connection_info, info->timing ? info->timing->Clone() : nullptr,
       info->last_redirect_end_time, info->response_end, info->cache_state,
@@ -42,11 +41,11 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
       info->service_worker_response_source);
 }
 
-CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Type
-CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Copy(
-    const blink::mojom::blink::ServerTimingInfoPtr& info) {
-  return blink::mojom::blink::ServerTimingInfo::New(info->name, info->duration,
-                                                    info->description);
+CrossThreadCopier<mojom::blink::ServerTimingInfoPtr>::Type
+CrossThreadCopier<mojom::blink::ServerTimingInfoPtr>::Copy(
+    const mojom::blink::ServerTimingInfoPtr& info) {
+  return mojom::blink::ServerTimingInfo::New(info->name, info->duration,
+                                             info->description);
 }
 
-}  // namespace WTF
+}  // namespace blink

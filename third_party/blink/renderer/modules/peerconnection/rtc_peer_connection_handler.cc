@@ -83,7 +83,7 @@ using webrtc::PeerConnectionObserver;
 using webrtc::StatsReport;
 using webrtc::StatsReports;
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<scoped_refptr<DataChannelInterface>>
@@ -105,9 +105,6 @@ struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::StatsObserver>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace WTF
-
-namespace blink {
 namespace {
 
 // Used to back histogram value of "WebRTC.PeerConnection.RtcpMux",

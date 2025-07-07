@@ -12,11 +12,15 @@
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<viz::ResourceId>
     : public CrossThreadCopierPassThrough<viz::ResourceId> {};
+
+}  // namespace blink
+
+namespace WTF {
 
 template <>
 struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {

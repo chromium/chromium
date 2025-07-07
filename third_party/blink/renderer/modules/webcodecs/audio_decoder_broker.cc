@@ -34,7 +34,7 @@
 
 using DecoderDetails = blink::AudioDecoderBroker::DecoderDetails;
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<media::AudioDecoderConfig>
@@ -53,10 +53,6 @@ struct CrossThreadCopier<std::optional<DecoderDetails>>
     : public CrossThreadCopierPassThrough<std::optional<DecoderDetails>> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // Wrapper class for state and API calls that must be made from the
 // |media_task_runner_|. Construction must happen on blink main thread to safely

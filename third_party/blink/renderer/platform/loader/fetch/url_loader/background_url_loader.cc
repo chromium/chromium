@@ -58,7 +58,7 @@ using BodyVariant = blink::BackgroundResponseProcessor::BodyVariant;
 
 }  // namespace
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<FollowRedirectCallback> {
@@ -102,10 +102,9 @@ struct CrossThreadCopier<std::vector<std::string>> {
 };
 
 template <>
-struct CrossThreadCopier<
-    std::vector<std::unique_ptr<blink::URLLoaderThrottle>>> {
+struct CrossThreadCopier<std::vector<std::unique_ptr<URLLoaderThrottle>>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = std::vector<std::unique_ptr<blink::URLLoaderThrottle>>;
+  using Type = std::vector<std::unique_ptr<URLLoaderThrottle>>;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -136,10 +135,6 @@ struct CrossThreadCopier<std::optional<network::URLLoaderCompletionStatus>> {
   using Type = std::optional<network::URLLoaderCompletionStatus>;
   static Type Copy(Type&& value) { return std::move(value); }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

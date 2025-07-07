@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<
@@ -26,6 +26,6 @@ struct CrossThreadCopier<std::unique_ptr<blink::GlobalScopeCreationParams>> {
   static Type Copy(Type);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_CROSS_THREAD_GLOBAL_SCOPE_CREATION_PARAMS_COPIER_H_

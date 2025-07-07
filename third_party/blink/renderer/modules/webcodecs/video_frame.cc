@@ -69,17 +69,13 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
-struct CrossThreadCopier<blink::VideoFrameLayout>
-    : public CrossThreadCopierPassThrough<blink::VideoFrameLayout> {
+struct CrossThreadCopier<VideoFrameLayout>
+    : public CrossThreadCopierPassThrough<VideoFrameLayout> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

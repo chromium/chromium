@@ -59,7 +59,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<network::mojom::URLResponseHeadPtr> {
@@ -75,9 +75,6 @@ struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
-}  // namespace WTF
-
-namespace blink {
 namespace {
 
 constexpr char kTestURL[] = "http://example.com/";

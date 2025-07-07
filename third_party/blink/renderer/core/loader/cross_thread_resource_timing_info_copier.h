@@ -8,22 +8,22 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
-struct CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr> {
+struct CrossThreadCopier<mojom::blink::ServerTimingInfoPtr> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::mojom::blink::ServerTimingInfoPtr;
+  using Type = mojom::blink::ServerTimingInfoPtr;
   static Type Copy(const Type&);
 };
 
 template <>
-struct CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr> {
+struct CrossThreadCopier<mojom::blink::ResourceTimingInfoPtr> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::mojom::blink::ResourceTimingInfoPtr;
+  using Type = mojom::blink::ResourceTimingInfoPtr;
   static Type Copy(const Type&);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_CROSS_THREAD_RESOURCE_TIMING_INFO_COPIER_H_

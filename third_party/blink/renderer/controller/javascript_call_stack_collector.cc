@@ -24,16 +24,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
-struct CrossThreadCopier<std::optional<blink::LocalFrameToken>>
-    : public CrossThreadCopierPassThrough<
-          std::optional<blink::LocalFrameToken>> {};
-
-}  // namespace WTF
-
-namespace blink {
+struct CrossThreadCopier<std::optional<LocalFrameToken>>
+    : public CrossThreadCopierPassThrough<std::optional<LocalFrameToken>> {};
 
 namespace {
 

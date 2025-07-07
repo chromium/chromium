@@ -135,10 +135,6 @@ PLATFORM_EXPORT sk_sp<SkData> TryAllocateSkData(size_t size);
 //     sk_sp<SkShader> shader = SkShader::MakeFoo(...);
 //     paint.setShader(shader);
 
-}  // namespace blink
-
-namespace WTF {
-
 // We define CrossThreadCopier<SKBitMap> here because we cannot include skia
 // headers in platform/wtf.
 template <>
@@ -158,6 +154,6 @@ struct CrossThreadCopier<SkBitmap> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SKIA_UTILS_H_

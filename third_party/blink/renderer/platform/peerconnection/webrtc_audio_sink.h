@@ -170,7 +170,7 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
   };
 
   template <typename>
-  friend struct WTF::CrossThreadCopier;
+  friend struct CrossThreadCopier;
 
   // WebMediaStreamAudioSink implementation.
   void OnData(const media::AudioBus& audio_bus,

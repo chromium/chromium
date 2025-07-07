@@ -33,25 +33,19 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
-namespace WTF {
+namespace blink {
+
 // Template specialization of [1], needed to be able to pass callbacks
 // that have ScopedPromiseResolver parameters across threads.
 //
 // [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
 template <typename T>
-struct CrossThreadCopier<blink::ScopedPromiseResolver<T>>
-    : public CrossThreadCopierPassThrough<blink::ScopedPromiseResolver<T>> {
+struct CrossThreadCopier<ScopedPromiseResolver<T>>
+    : public CrossThreadCopierPassThrough<ScopedPromiseResolver<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::ScopedPromiseResolver<T>;
-  static blink::ScopedPromiseResolver<T> Copy(
-      blink::ScopedPromiseResolver<T> value) {
-    return value;
-  }
+  using Type = ScopedPromiseResolver<T>;
+  static Type Copy(Type value) { return value; }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // Ref-counted class to receive a single VideoFrame on IO thread, convert it and
 // send it to |task_runner|, where this class is created and destroyed.

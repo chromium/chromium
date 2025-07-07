@@ -359,6 +359,11 @@ PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const StringView&);
 // anything other than two hex-digits.
 PLATFORM_EXPORT bool HasInvalidURLEscapeSequences(const String&);
 
+template <>
+struct CrossThreadCopier<KURL> : public CrossThreadCopierPassThrough<KURL> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -366,12 +371,6 @@ namespace WTF {
 // Defined in kurl_hash.h.
 template <>
 struct HashTraits<blink::KURL>;
-
-template <>
-struct CrossThreadCopier<blink::KURL>
-    : public CrossThreadCopierPassThrough<blink::KURL> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 }  // namespace WTF
 

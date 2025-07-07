@@ -73,14 +73,10 @@ class CORE_EXPORT CSSSyntaxDefinition {
   Vector<CSSSyntaxComponent> syntax_components_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <wtf_size_t inlineCapacity, typename Allocator>
 struct CrossThreadCopier<
-    Vector<blink::CSSSyntaxDefinition, inlineCapacity, Allocator>> {
-  using Type = Vector<blink::CSSSyntaxDefinition, inlineCapacity, Allocator>;
+    Vector<CSSSyntaxDefinition, inlineCapacity, Allocator>> {
+  using Type = Vector<CSSSyntaxDefinition, inlineCapacity, Allocator>;
   static Type Copy(const Type& value) {
     Type result;
     result.ReserveInitialCapacity(value.size());
@@ -91,6 +87,6 @@ struct CrossThreadCopier<
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_DEFINITION_H_

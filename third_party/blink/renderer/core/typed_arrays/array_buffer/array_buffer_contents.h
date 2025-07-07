@@ -168,19 +168,15 @@ class CORE_EXPORT ArrayBufferContents {
   std::shared_ptr<v8::BackingStore> backing_store_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct CrossThreadCopier<blink::ArrayBufferContents> {
+struct CrossThreadCopier<ArrayBufferContents> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::ArrayBufferContents;
+  using Type = ArrayBufferContents;
   static Type Copy(Type handle) {
     return handle;  // This is in fact a move.
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_

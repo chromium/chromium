@@ -49,12 +49,12 @@ class Time;
 class UnguessableToken;
 }  // namespace base
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct CrossThreadCopier<scoped_refptr<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
+  static_assert(WTF::IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
                 "scoped_refptr<T> can be passed across threads only if T is "
                 "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
   using Type = scoped_refptr<T>;
@@ -124,6 +124,6 @@ struct CrossThreadCopier<
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_BASE_H_

@@ -38,28 +38,22 @@ using performance_manager::mojom::blink::V8ContextDescription;
 using performance_manager::mojom::blink::V8ContextDescriptionPtr;
 using performance_manager::mojom::blink::V8ContextWorldType;
 
-namespace WTF {
+namespace blink {
 
 // Copies the data by move.
 template <>
 struct CrossThreadCopier<V8ContextDescriptionPtr>
-    : public WTF::CrossThreadCopierByValuePassThrough<V8ContextDescriptionPtr> {
-};
+    : public CrossThreadCopierByValuePassThrough<V8ContextDescriptionPtr> {};
 
 // Copies the data by move.
 template <>
 struct CrossThreadCopier<IframeAttributionDataPtr>
-    : public WTF::CrossThreadCopierByValuePassThrough<
-          IframeAttributionDataPtr> {};
+    : public CrossThreadCopierByValuePassThrough<IframeAttributionDataPtr> {};
 
 // Copies the data using the copy constructor.
 template <>
-struct CrossThreadCopier<blink::V8ContextToken>
-    : public WTF::CrossThreadCopierPassThrough<blink::V8ContextToken> {};
-
-}  // namespace WTF
-
-namespace blink {
+struct CrossThreadCopier<V8ContextToken>
+    : public CrossThreadCopierPassThrough<V8ContextToken> {};
 
 namespace {
 

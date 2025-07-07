@@ -34,18 +34,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
-using StatePtr = mojo::StructPtr<blink::mojom::blink::DevToolsSessionState>;
+using StatePtr = mojo::StructPtr<mojom::blink::DevToolsSessionState>;
 template <>
 struct CrossThreadCopier<StatePtr>
     : public CrossThreadCopierByValuePassThrough<StatePtr> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 

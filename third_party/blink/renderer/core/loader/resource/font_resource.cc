@@ -68,7 +68,7 @@
 using ResultOrError =
     base::expected<blink::FontResource::DecodedResult, blink::String>;
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<ResultOrError> {
@@ -76,10 +76,6 @@ struct CrossThreadCopier<ResultOrError> {
   using Type = ResultOrError;
   static Type Copy(Type&& value) { return std::move(value); }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 // Durations of font-display periods.

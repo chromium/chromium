@@ -52,15 +52,13 @@ using webrtc::StatsReport;
 using webrtc::StatsReports;
 
 namespace blink {
-class InternalStandardStatsObserver;
-}
 
-namespace WTF {
+class InternalStandardStatsObserver;
 
 template <>
-struct CrossThreadCopier<scoped_refptr<blink::InternalStandardStatsObserver>>
+struct CrossThreadCopier<scoped_refptr<InternalStandardStatsObserver>>
     : public CrossThreadCopierPassThrough<
-          scoped_refptr<blink::InternalStandardStatsObserver>> {
+          scoped_refptr<InternalStandardStatsObserver>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -76,10 +74,6 @@ struct CrossThreadCopier<base::Value::List>
     : public CrossThreadCopierByValuePassThrough<base::Value::List> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // TODO(hta): This module should be redesigned to reduce string copies.
 

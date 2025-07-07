@@ -106,17 +106,13 @@
 #include "media/video/vpx_video_encoder.h"
 #endif
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct CrossThreadCopier<media::EncoderStatus>
     : public CrossThreadCopierPassThrough<media::EncoderStatus> {
   STATIC_ONLY(CrossThreadCopier);
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 using EncoderType = media::VideoEncodeAccelerator::Config::EncoderType;
 
