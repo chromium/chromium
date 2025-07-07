@@ -20,7 +20,6 @@ import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
-import '../controls/settings_idle_load.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
@@ -40,7 +39,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format off
 // <if expr="chromeos_ash">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -49,7 +48,6 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 
 
-import type {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="not chromeos_ash">
 import type {LanguagesModel} from '../languages_page/languages_types.js';
@@ -64,7 +62,7 @@ import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from '
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
-import {combineSearchResults, getSearchManager} from '../search_settings.js';
+import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 
@@ -216,15 +214,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
-    if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
-      // Render the advanced page now (don't wait for idle).
-      // In Polymer3, async() does not wait long enough for layout to complete.
-      // beforeNextRender() must be used instead.
-      beforeNextRender(this, () => {
-        this.getIdleLoad_();
-      });
-    }
-
     super.currentRouteChanged(newRoute, oldRoute);
     if (newRoute === routes.PRIVACY) {
       this.updatePrivacyGuidePromoVisibility_();
@@ -239,13 +228,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   private showPage_(visibility?: boolean): boolean {
     return visibility !== false;
-  }
-
-  private getIdleLoad_(): Promise<Element> {
-    const idleLoad = this.shadowRoot!.querySelector<SettingsIdleLoadElement>(
-        '#advancedPageTemplate');
-    assert(idleLoad);
-    return idleLoad.get();
   }
 
   private updatePrivacyGuidePromoVisibility_() {
@@ -279,19 +261,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   async searchContents(query: string) {
     const basicPage = this.shadowRoot!.querySelector<HTMLElement>('#basicPage');
     assert(basicPage);
-    const whenSearchDone = [
-      getSearchManager().search(query, basicPage),
-    ];
-
-    if (this.pageVisibility_.advancedSettings !== false) {
-      whenSearchDone.push(this.getIdleLoad_().then(function(advancedPage) {
-        return getSearchManager().search(query, advancedPage);
-      }));
-    }
-
-    const requests = await Promise.all(whenSearchDone);
-    // Combine the SearchRequest objects to a single SearchResult object.
-    return combineSearchResults(requests.map(r => r.getSearchResult()));
+    const request = await getSearchManager().search(query, basicPage);
+    return request.getSearchResult();
   }
 
   // <if expr="chromeos_ash">
@@ -314,6 +285,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
    * @return Whether to show #basicPage. This is an optimization to lazy render
    *     #basicPage only when a section/subpage within it is being shown, or
    *     when in search mode.
+   * TODO(crbug.com/424223101): Move <settings-reset-profile-banner> to
+   * settings-main, and make <settincgs-basic-page> as a whole lazy rendered,
+   * then remove showBasicPage_()
    */
   private showBasicPage_(): boolean {
     if (this.currentRoute_ === undefined) {
@@ -321,10 +295,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     }
 
     return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
-  }
-
-  private showAdvancedSettings_(visibility?: boolean): boolean {
-    return this.showPage_(visibility);
   }
 
   private showAiPage_(visibility?: boolean): boolean {

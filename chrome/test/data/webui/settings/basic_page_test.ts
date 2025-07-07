@@ -12,7 +12,7 @@ import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
+import type {SettingsBasicPageElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -57,8 +57,6 @@ suite('BasicPage', () => {
 
     // Ensure that all settings-section instances are rendered.
     flush();
-    await page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
     const sections = page.shadowRoot!.querySelectorAll('settings-section');
     assertTrue(sections.length > 1);
 
@@ -295,8 +293,6 @@ suite('PrivacyGuidePromo', () => {
 
     // Ensure that all settings-section instances are rendered.
     flush();
-    await page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
     const sections = page.shadowRoot!.querySelectorAll('settings-section');
     assertTrue(sections.length > 1);
 
@@ -429,15 +425,13 @@ suite('Performance', () => {
     return page.shadowRoot!.querySelector('#speedSettingsSection');
   }
 
-  async function createNewBasicPage() {
+  function createNewBasicPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
     flush();
-    await page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
     const sections = page.shadowRoot!.querySelectorAll('settings-section');
     assertTrue(sections.length > 1);
   }
@@ -446,8 +440,8 @@ suite('Performance', () => {
     resetPageVisibilityForTesting();
   });
 
-  test('performanceSectionTitlesVisible', async function() {
-    await createNewBasicPage();
+  test('performanceSectionTitlesVisible', function() {
+    createNewBasicPage();
     flush();
 
     assertEquals(
@@ -467,8 +461,8 @@ suite('Performance', () => {
         loadTimeData.getString('speedPageTitle'));
   });
 
-  test('performanceVisibilityTestFeaturesAvailable', async function() {
-    await createNewBasicPage();
+  test('performanceVisibilityTestFeaturesAvailable', function() {
+    createNewBasicPage();
     flush();
 
     assertTrue(
@@ -486,7 +480,7 @@ suite('Performance', () => {
 
     // Set the visibility of the pages under test to "false".
     resetPageVisibilityForTesting({performance: false});
-    await createNewBasicPage();
+    createNewBasicPage();
     flush();
 
     assertFalse(
@@ -504,7 +498,7 @@ suite('Performance', () => {
   });
 
   test('performanceVisibilityTestDeviceHasBattery', async function() {
-    await createNewBasicPage();
+    createNewBasicPage();
     flush();
 
     await performanceBrowserProxy.whenCalled('getDeviceHasBattery');

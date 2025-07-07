@@ -143,6 +143,23 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.metricsBrowserProxy_.recordAction(
         'SettingsMenu_AiPageEntryPointClicked');
   }
+
+  private hideBottomMenuSeparator_(): boolean {
+    if (!this.pageVisibility_) {
+      return false;
+    }
+
+    const visibilities = [
+      this.pageVisibility_.languages,
+      this.pageVisibility_.downloads,
+      this.pageVisibility_.a11y,
+      // <if expr="not is_chromeos">
+      this.pageVisibility_.system,
+      // </if>
+      this.pageVisibility_.reset,
+    ];
+    return visibilities.every(visibility => visibility === false);
+  }
 }
 
 declare global {

@@ -266,9 +266,10 @@ function createRoutes(): SettingsRoutes {
   }
 
   // Advanced Routes
-  if (visibility.advancedSettings !== false) {
-    r.ADVANCED = new Route('/advanced');
+  r.ADVANCED = new Route('/advanced');
+  r.ADVANCED.hasMigratedToPlugin = true;
 
+  if (visibility.languages !== false) {
     r.LANGUAGES = r.ADVANCED.createSection(
         '/languages', 'languages',
         loadTimeData.getString('languagesPageTitle'));
@@ -279,14 +280,16 @@ function createRoutes(): SettingsRoutes {
     r.EDIT_DICTIONARY = r.SPELL_CHECK.createChild('/editDictionary');
     r.EDIT_DICTIONARY.hasMigratedToPlugin = true;
     // </if>
+  }
 
-    if (visibility.downloads !== false) {
-      r.DOWNLOADS = r.ADVANCED.createSection(
-          '/downloads', 'downloads',
-          loadTimeData.getString('downloadsPageTitle'));
-      r.DOWNLOADS.hasMigratedToPlugin = true;
-    }
+  if (visibility.downloads !== false) {
+    r.DOWNLOADS = r.ADVANCED.createSection(
+        '/downloads', 'downloads',
+        loadTimeData.getString('downloadsPageTitle'));
+    r.DOWNLOADS.hasMigratedToPlugin = true;
+  }
 
+  if (visibility.a11y !== false) {
     r.ACCESSIBILITY = r.ADVANCED.createSection(
         '/accessibility', 'a11y', loadTimeData.getString('a11yPageTitle'));
     r.ACCESSIBILITY.hasMigratedToPlugin = true;
@@ -295,32 +298,35 @@ function createRoutes(): SettingsRoutes {
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
     r.CAPTIONS.hasMigratedToPlugin = true;
     // </if>
+  }
 
-    // <if expr="not chromeos_ash">
+  // <if expr="not chromeos_ash">
+  if (visibility.system !== false) {
     r.SYSTEM = r.ADVANCED.createSection(
         '/system', 'system', loadTimeData.getString('systemPageTitle'));
     r.SYSTEM.hasMigratedToPlugin = true;
-    // </if>
-
-    if (visibility.reset !== false) {
-      r.RESET = r.ADVANCED.createSection(
-          '/reset', 'reset', loadTimeData.getString('resetPageTitle'));
-      r.RESET.hasMigratedToPlugin = true;
-      r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
-      r.RESET_DIALOG.hasMigratedToPlugin = true;
-      r.RESET_DIALOG.isNavigableDialog = true;
-      r.TRIGGERED_RESET_DIALOG =
-          r.RESET.createChild('/triggeredResetProfileSettings');
-      r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
-      r.TRIGGERED_RESET_DIALOG.hasMigratedToPlugin = true;
-    }
-
-    if (visibility.performance !== false) {
-      r.PERFORMANCE = r.BASIC.createSection(
-          '/performance', 'performance',
-          loadTimeData.getString('performancePageTitle'));
-    }
   }
+  // </if>
+
+  if (visibility.reset !== false) {
+    r.RESET = r.ADVANCED.createSection(
+        '/reset', 'reset', loadTimeData.getString('resetPageTitle'));
+    r.RESET.hasMigratedToPlugin = true;
+    r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
+    r.RESET_DIALOG.hasMigratedToPlugin = true;
+    r.RESET_DIALOG.isNavigableDialog = true;
+    r.TRIGGERED_RESET_DIALOG =
+        r.RESET.createChild('/triggeredResetProfileSettings');
+    r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
+    r.TRIGGERED_RESET_DIALOG.hasMigratedToPlugin = true;
+  }
+
+  if (visibility.performance !== false) {
+    r.PERFORMANCE = r.BASIC.createSection(
+        '/performance', 'performance',
+        loadTimeData.getString('performancePageTitle'));
+  }
+
   return r as unknown as SettingsRoutes;
 }
 

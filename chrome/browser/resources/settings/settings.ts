@@ -56,7 +56,6 @@ export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage, Passwor
 export {BaseMixin} from './base_mixin.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
 export {SettingsCheckboxListEntryElement} from './controls/settings_checkbox_list_entry.js';
-export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';

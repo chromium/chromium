@@ -18,6 +18,7 @@ import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_
 import {assert} from 'chrome://resources/js/assert.js';
 import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="not chromeos_ash">
 import type {LanguagesModel} from '../languages_page/languages_types.js';
@@ -129,6 +130,13 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private languages_?: LanguagesModel;
   // </if>
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Request loading of the lazy loaded module within an idle callback.
+    requestIdleCallback(() => ensureLazyLoaded());
+  }
+
   private beforeNextRenderPromise_(): Promise<void> {
     return new Promise(res => {
       beforeNextRender(this, res);
@@ -136,6 +144,12 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   override async currentRouteChanged(route: Route) {
+    if (routes.ADVANCED && routes.ADVANCED.contains(route)) {
+      // Load the lazy module immediately, don't wait for requestIdleCallback()
+      // to fire. No-op if it has already fired.
+      ensureLazyLoaded();
+    }
+
     const effectiveRoute =
         route === routes.BASIC ? TOP_LEVEL_EQUIVALENT_ROUTE : route;
 

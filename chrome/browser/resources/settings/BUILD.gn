@@ -275,7 +275,6 @@ build_webui("build") {
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_signin_util.ts",
-    "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
     "focus_config.ts",

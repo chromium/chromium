@@ -140,7 +140,6 @@ suite('SettingsMenu', function() {
     // Set the visibility of the pages under test to "false".
     resetPageVisibilityForTesting({
       a11y: false,
-      advancedSettings: false,
       appearance: false,
       defaultBrowser: false,
       downloads: false,

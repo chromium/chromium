@@ -160,13 +160,3 @@
         </template>
       </div>
     </template>
-    <template is="dom-if"
-        if="[[showAdvancedSettings_(pageVisibility_.advancedSettings)]]">
-      <!-- TODO(crbug.com/424223101): Remove settings-idle-load and move the
-          lazy-loading logic in settings-main. -->
-      <settings-idle-load id="advancedPageTemplate">
-        <template>
-          <div id="advancedPage"></div>
-        </template>
-      </settings-idle-load>
-    </template>

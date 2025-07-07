@@ -53,7 +53,6 @@ build_webui_tests("build") {
     "fingerprint_progress_arc_test.ts",
     "geolocation_page_test.ts",
     "help_page_test.ts",
-    "idle_load_test.ts",
     "incognito_tracking_protections_page_test.ts",
     "memory_page_test.ts",
     "notifications_page_test.ts",
