@@ -360,6 +360,7 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scroll-target-group
     scroll-timeline-axis
     scroll-timeline-name
     scrollbar-color

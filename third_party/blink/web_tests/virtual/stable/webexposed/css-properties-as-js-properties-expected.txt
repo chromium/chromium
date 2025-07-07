@@ -427,6 +427,7 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollTargetGroup
 scrollTimeline
 scrollTimelineAxis
 scrollTimelineName
