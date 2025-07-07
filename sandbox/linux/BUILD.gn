@@ -98,6 +98,7 @@ source_set("sandbox_linux_unittests_sources") {
     ":sandbox_services_headers",
     "//base",
     "//base/test:test_support",
+    "//crypto",
     "//testing/gtest",
   ]
 
