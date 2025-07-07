@@ -54,7 +54,9 @@ void PowerBookmarkSyncBridge::Init() {
     initialized_ = true;
     change_processor()->ModelReadyToSync(std::move(batch));
   } else {
-    change_processor()->ReportError({FROM_HERE, "Failed to load metadata"});
+    change_processor()->ReportError(
+        {FROM_HERE,
+         syncer::ModelError::Type::kPowerBookmarkFailedToLoadMetadata});
   }
 }
 
@@ -143,7 +145,8 @@ std::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
   std::unique_ptr<Transaction> transaction = delegate_->BeginTransaction();
   if (!transaction) {
     return syncer::ModelError(
-        FROM_HERE, "Failed to begin transaction for PowerBookmarks.");
+        FROM_HERE,
+        syncer::ModelError::Type::kPowerBookmarkFailedToBeginTransaction);
   }
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -153,7 +156,8 @@ std::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
         if (!delegate_->CreateOrMergePowerFromSync(*std::make_unique<Power>(
                 change->data().specifics.power_bookmark()))) {
           return syncer::ModelError(
-              FROM_HERE, "Failed to merge local powers for PowerBookmarks.");
+              FROM_HERE,
+              syncer::ModelError::Type::kPowerBookmarkFailedToMergeLocalPowers);
         }
         if (is_initial_merge) {
           synced_entries.insert(change->storage_key());
@@ -162,7 +166,8 @@ std::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
       case syncer::EntityChange::ACTION_DELETE:
         if (!delegate_->DeletePowerFromSync(change->storage_key())) {
           return syncer::ModelError(
-              FROM_HERE, "Failed to delete local powers for PowerBookmarks.");
+              FROM_HERE, syncer::ModelError::Type::
+                             kPowerBookmarkFailedToDeleteLocalPowers);
         }
         break;
     }
@@ -184,7 +189,8 @@ std::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
 
   if (!transaction->Commit()) {
     return syncer::ModelError(
-        FROM_HERE, "Failed to commit transaction for PowerBookmarks.");
+        FROM_HERE,
+        syncer::ModelError::Type::kPowerBookmarkFailedToCommitTransaction);
   }
 
   delegate_->NotifyPowersChanged();

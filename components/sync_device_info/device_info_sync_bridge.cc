@@ -666,7 +666,8 @@ std::optional<ModelError> DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
   for (const Record& r : *record_list) {
     DeviceInfoSpecifics specifics;
     if (!specifics.ParseFromString(r.value)) {
-      return ModelError(FROM_HERE, "Failed to deserialize specifics.");
+      return ModelError(
+          FROM_HERE, ModelError::Type::kDeviceInfoDeserializeSpecificsFailed);
     }
 
     std::string cache_guid = specifics.cache_guid();
@@ -714,7 +715,8 @@ void DeviceInfoSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<DataTypeStore> store) {
   if (error) {
-    change_processor()->ReportError(*error);
+    change_processor()->ReportError(
+        {FROM_HERE, ModelError::Type::kDeviceInfoStoreCreationFailed});
     return;
   }
 

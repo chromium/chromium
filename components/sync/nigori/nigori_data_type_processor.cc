@@ -508,7 +508,7 @@ void NigoriDataTypeProcessor::ClearMetadataIfStopped() {
 void NigoriDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!model_error_.has_value());
-  ReportError(ModelError(FROM_HERE, "Reported error for test"));
+  ReportError({FROM_HERE, ModelError::Type::kNigoriInvalidSpecifics});
 }
 
 }  // namespace syncer

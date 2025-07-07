@@ -436,8 +436,9 @@ DeleteDirectiveHandler::ProcessLocalDeleteDirective(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!sync_processor_) {
-    return syncer::ModelError(FROM_HERE,
-                              "Cannot send local delete directive to sync");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kHistoryDeleteDirectiveSyncDisabledOnLocalCreation);
   }
 #if !defined(NDEBUG)
   CheckDeleteDirectiveValid(delete_directive);
@@ -500,7 +501,9 @@ std::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!sync_processor_) {
-    return syncer::ModelError(FROM_HERE, "Sync is disabled.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kHistoryDeleteDirectiveSyncDisabledOnRemoteChange);
   }
 
   syncer::SyncDataList delete_directives;

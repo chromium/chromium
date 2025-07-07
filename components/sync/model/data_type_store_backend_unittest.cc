@@ -211,7 +211,8 @@ TEST_F(DataTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
       backend->MigrateForTest(DataTypeStoreBackend::kLatestSchemaVersion + 1,
                               DataTypeStoreBackend::kLatestSchemaVersion);
   ASSERT_TRUE(error);
-  EXPECT_EQ("Schema version too high", error->message());
+  EXPECT_EQ(ModelError::Type::kDataTypeStoreBackendSchemaVersionTooHigh,
+            error->type());
 }
 
 TEST_F(DataTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {

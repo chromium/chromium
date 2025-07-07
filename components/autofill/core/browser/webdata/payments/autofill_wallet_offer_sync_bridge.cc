@@ -161,7 +161,8 @@ AutofillWalletOfferSyncBridge::GetAllDataImpl() {
   std::vector<std::unique_ptr<AutofillOfferData>> offers;
   if (!GetAutofillTable()->GetAutofillOffers(&offers)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load offer data from table."});
+        {FROM_HERE,
+         syncer::ModelError::Type::kAutofillWalletOfferFailedToLoadFromTable});
     return nullptr;
   }
 
@@ -245,7 +246,8 @@ void AutofillWalletOfferSyncBridge::LoadAutofillOfferMetadata() {
   if (!web_data_backend_->GetDatabase() || !GetAutofillTable() ||
       !GetSyncMetadataStore()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load Autofill table."});
+        {FROM_HERE,
+         syncer::ModelError::Type::kAutofillWalletOfferFailedToLoadTable});
     return;
   }
 
@@ -254,7 +256,7 @@ void AutofillWalletOfferSyncBridge::LoadAutofillOfferMetadata() {
                                                   batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE,
-         "Failed reading autofill offer metadata from WebDatabase."});
+         syncer::ModelError::Type::kAutofillWalletOfferFailedToReadMetadata});
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));

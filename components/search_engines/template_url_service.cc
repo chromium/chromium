@@ -1870,7 +1870,8 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!models_associated_) {
-    return syncer::ModelError(FROM_HERE, "Models not yet associated.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::kSearchEngineModelsNotAssociated);
   }
   DCHECK(loaded_);
 
@@ -1908,8 +1909,10 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
           (base::FeatureList::IsEnabled(
                syncer::kSeparateLocalAndAccountSearchEngines) &&
            !existing_turl->GetAccountData())) {
-        // Can't DELETE a non-existent engine.
-        error = syncer::ModelError(FROM_HERE, error_msg);
+        // Can't DELETE a non-existent engine at the account level.
+        error = syncer::ModelError(
+            FROM_HERE, syncer::ModelError::Type::
+                           kSearchEngineDeleteNonExistentAtAccountLevel);
         continue;
       }
 
@@ -1991,7 +1994,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
   // Disable sync if we failed to load.
   if (load_failed_) {
-    return syncer::ModelError(FROM_HERE, "Local database load failed.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::kSearchEngineLocalDbLoadFailed);
   }
 
   sync_processor_ = std::move(sync_processor);

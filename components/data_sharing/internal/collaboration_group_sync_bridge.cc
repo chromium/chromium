@@ -230,8 +230,7 @@ void CollaborationGroupSyncBridge::OnReadAllData(
   for (const auto& record : *record_list) {
     sync_pb::CollaborationGroupSpecifics specifics;
     if (!specifics.ParseFromString(record.value)) {
-      change_processor()->ReportError(
-          {FROM_HERE, "Failed to deserialize database record as specifics."});
+      change_processor()->ReportError(*error);
       return;
     }
     ids_to_specifics_[specifics.collaboration_id()] = std::move(specifics);

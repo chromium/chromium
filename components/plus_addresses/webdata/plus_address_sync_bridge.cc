@@ -38,7 +38,7 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
   // Initializing the database from disk can fail.
   if (!db_backend_->database()) {
     DataTypeSyncBridge::change_processor()->ReportError(
-        {FROM_HERE, "Failed to initialize database."});
+        {FROM_HERE, syncer::ModelError::Type::kPlusAddressDatabaseInitFailed});
     return;
   }
   CHECK(GetPlusAddressTable());
@@ -47,7 +47,7 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
   if (!GetPlusAddressTable()->GetAllSyncMetadata(syncer::PLUS_ADDRESS,
                                                  *metadata)) {
     DataTypeSyncBridge::change_processor()->ReportError(
-        {FROM_HERE, "Failed to read PLUS_ADDRESS metadata."});
+        {FROM_HERE, syncer::ModelError::Type::kPlusAddressMetadataReadFailed});
     return;
   }
   DataTypeSyncBridge::change_processor()->ModelReadyToSync(std::move(metadata));
@@ -75,7 +75,9 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   sql::Transaction transaction(db_backend_->database()->GetSQLConnection());
   if (!transaction.Begin()) {
-    return syncer::ModelError(FROM_HERE, "Failed to begin transaction.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kPlusAddressTransactionBeginFailedOnIncrementalSync);
   }
 
   std::vector<PlusAddressDataChange> profile_changes;
@@ -88,7 +90,8 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
         PlusProfile profile = PlusProfileFromEntityData(change->data());
         if (!GetPlusAddressTable()->AddOrUpdatePlusProfile(profile)) {
           return syncer::ModelError(
-              FROM_HERE, "Failed to add/update profile in database.");
+              FROM_HERE,
+              syncer::ModelError::Type::kPlusAddressAddOrUpdateProfileFailed);
         }
         // When a plus address entry is updated, `profile_changes` will contain
         // both a REMOVE and ADD change for the old and new profiles
@@ -105,8 +108,9 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
         std::optional<PlusProfile> profile =
             GetPlusAddressTable()->GetPlusProfileForId(change->storage_key());
         if (!GetPlusAddressTable()->RemovePlusProfile(change->storage_key())) {
-          return syncer::ModelError(FROM_HERE,
-                                    "Failed to remove profile in database.");
+          return syncer::ModelError(
+              FROM_HERE,
+              syncer::ModelError::Type::kPlusAddressRemoveProfileFailed);
         }
         if (profile) {
           profile_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
@@ -122,7 +126,9 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
   }
 
   if (!transaction.Commit()) {
-    return syncer::ModelError(FROM_HERE, "Failed to commit transaction.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kPlusAddressTransactionCommitFailedOnIncrementalSync);
   }
   notify_data_changed_by_sync_.Run(std::move(profile_changes));
   return std::nullopt;
@@ -133,7 +139,8 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
   sql::Transaction transaction(db_backend_->database()->GetSQLConnection());
   if (!transaction.Begin()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to begin transaction."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kPlusAddressTransactionBeginFailedOnDisableSync});
   }
 
   std::vector<PlusAddressDataChange> profile_changes;
@@ -144,7 +151,7 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
 
   if (!GetPlusAddressTable()->ClearPlusProfiles()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to remove profiles from database."});
+        {FROM_HERE, syncer::ModelError::Type::kPlusAddressClearProfilesFailed});
     return;
   }
   // `TransferMetadataChanges()` returns an optional<ModelError>.
@@ -155,7 +162,8 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
 
   if (!transaction.Commit()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to commit transaction."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kPlusAddressTransactionCommitFailedOnDisableSync});
     return;
   }
   notify_data_changed_by_sync_.Run(std::move(profile_changes));

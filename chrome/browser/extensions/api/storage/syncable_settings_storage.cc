@@ -172,8 +172,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
   ReadResult maybe_settings = delegate_->Get();
   if (!maybe_settings.status().ok()) {
     return syncer::ModelError(
-        FROM_HERE, base::StringPrintf("Failed to get settings: %s",
-                                      maybe_settings.status().message.c_str()));
+        FROM_HERE, syncer::ModelError::Type::kSettingsFailedToGetLocalSettings);
   }
 
   base::Value::Dict current_settings = maybe_settings.PassSettings();
@@ -254,8 +253,8 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   DCHECK(!sync_changes->empty()) << "No sync changes for " << extension_id_;
 
   if (!sync_processor_.get()) {
-    return syncer::ModelError(
-        FROM_HERE, std::string("Sync is inactive for ") + extension_id_);
+    return syncer::ModelError(FROM_HERE,
+                              syncer::ModelError::Type::kSettingsSyncInactive);
   }
 
   std::vector<syncer::ModelError> errors;
@@ -346,9 +345,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncAdd(
       HandleResult(delegate_->Set(IGNORE_QUOTA, key, new_value));
   if (!result.status().ok()) {
     return syncer::ModelError(
-        FROM_HERE,
-        base::StringPrintf("Error pushing sync add to local settings: %s",
-                           result.status().message.c_str()));
+        FROM_HERE, syncer::ModelError::Type::kSettingsFailedToApplySyncAdd);
   }
   changes->push_back(
       value_store::ValueStoreChange(key, std::nullopt, std::move(new_value)));
@@ -364,9 +361,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncUpdate(
       HandleResult(delegate_->Set(IGNORE_QUOTA, key, new_value));
   if (!result.status().ok()) {
     return syncer::ModelError(
-        FROM_HERE,
-        base::StringPrintf("Error pushing sync update to local settings: %s",
-                           result.status().message.c_str()));
+        FROM_HERE, syncer::ModelError::Type::kSettingsFailedToApplySyncUpdate);
   }
   changes->push_back(value_store::ValueStoreChange(key, std::move(old_value),
                                                    std::move(new_value)));
@@ -380,9 +375,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncDelete(
   WriteResult result = HandleResult(delegate_->Remove(key));
   if (!result.status().ok()) {
     return syncer::ModelError(
-        FROM_HERE,
-        base::StringPrintf("Error pushing sync remove to local settings: %s",
-                           result.status().message.c_str()));
+        FROM_HERE, syncer::ModelError::Type::kSettingsFailedToApplySyncDelete);
   }
   changes->push_back(
       value_store::ValueStoreChange(key, std::move(old_value), std::nullopt));

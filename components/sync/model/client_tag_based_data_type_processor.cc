@@ -1010,10 +1010,11 @@ bool ClientTagBasedDataTypeProcessor::ValidateUpdate(
 
   if (HasClearAllDirective(gc_directive) &&
       bridge_->SupportsIncrementalUpdates()) {
-    ReportErrorImpl(ModelError(FROM_HERE,
-                               "Received an update with version watermark for "
-                               "bridge that supports incremental updates"),
-                    ErrorSite::kSupportsIncrementalUpdatesMismatch);
+    ReportErrorImpl(
+        ModelError(
+            FROM_HERE,
+            ModelError::Type::kProcessorVersionWatermarkWithIncrementalUpdates),
+        ErrorSite::kSupportsIncrementalUpdatesMismatch);
 
     return false;
   } else if (!HasClearAllDirective(gc_directive) &&
@@ -1024,11 +1025,11 @@ bool ClientTagBasedDataTypeProcessor::ValidateUpdate(
     // (If the last condition does not hold true and the list of updates is
     // empty, we still need to pass the empty update to the bridge because the
     // progress marker might have changed.)
-    ReportErrorImpl(ModelError(FROM_HERE,
-                               "Received a non-empty update without version "
-                               "watermark for bridge that does not support "
-                               "incremental updates"),
-                    ErrorSite::kSupportsIncrementalUpdatesMismatch);
+    ReportErrorImpl(
+        ModelError(
+            FROM_HERE,
+            ModelError::Type::kProcessorNonEmptyUpdateWithoutVersionWatermark),
+        ErrorSite::kSupportsIncrementalUpdatesMismatch);
     return false;
   }
   return true;
@@ -1702,7 +1703,8 @@ void ClientTagBasedDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!model_error_.has_value());
-  ReportError(ModelError(FROM_HERE, "Reported error from test"));
+  ReportError({FROM_HERE,
+               ModelError::Type::kSyncMetadataStoreClearDataTypeStateFailed});
 }
 
 sync_pb::UniquePosition

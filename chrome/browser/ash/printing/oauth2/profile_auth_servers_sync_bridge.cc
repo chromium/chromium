@@ -147,7 +147,8 @@ void ProfileAuthServersSyncBridge::OnReadAllData(
     sync_pb::PrintersAuthorizationServerSpecifics specifics;
     if (!specifics.ParseFromString(r.value)) {
       change_processor()->ReportError(
-          {FROM_HERE, "Failed to deserialize all specifics."});
+          {FROM_HERE, syncer::ModelError::Type::
+                          kProfileAuthServersFailedToDeserializeSpecifics});
       return;
     }
     servers_uris_.insert(specifics.uri());

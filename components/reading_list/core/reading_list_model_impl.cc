@@ -685,7 +685,7 @@ void ReadingListModelImpl::StoreLoaded(
 
   if (!result_or_error.has_value()) {
     sync_bridge_.ReportError(
-        syncer::ModelError(FROM_HERE, result_or_error.error()));
+        {FROM_HERE, syncer::ModelError::Type::kReadingListStorageLoadFailed});
     return;
   }
 

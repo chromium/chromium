@@ -729,8 +729,8 @@ TEST_F(ThemeSyncableServiceTest, StopSync) {
   std::optional<syncer::ModelError> process_error =
       theme_sync_service_->ProcessSyncChanges(FROM_HERE, changes);
   EXPECT_TRUE(process_error.has_value());
-  EXPECT_EQ("Theme syncable service is not started.",
-            process_error.value().message());
+  EXPECT_EQ(syncer::ModelError::Type::kThemeSyncableServiceNotStarted,
+            process_error.value().type());
 }
 
 TEST_F(ThemeSyncableServiceTest, RestoreSystemThemeBitWhenChangeToCustomTheme) {

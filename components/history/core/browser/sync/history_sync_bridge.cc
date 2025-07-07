@@ -26,6 +26,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/history_specifics.pb.h"
@@ -722,7 +723,7 @@ std::unique_ptr<syncer::DataBatch> HistorySyncBridge::GetAllDataForDebugging() {
     RecordDatabaseError(SyncHistoryDatabaseError::kGetAllDataReadMetadata);
     change_processor()->ReportError(
         {FROM_HERE,
-         "Failed reading metadata from HistorySyncMetadataDatabase."});
+         syncer::ModelError::Type::kHistoryFailedToLoadMetadataForDebugging});
   }
   StorageKeyList storage_keys;
   for (const auto& [storage_key, metadata] : metadata_batch->GetAllMetadata()) {
@@ -885,7 +886,7 @@ void HistorySyncBridge::OnDatabaseError() {
   sync_metadata_database_ = nullptr;
   RecordDatabaseError(SyncHistoryDatabaseError::kOnDatabaseError);
   change_processor()->ReportError(
-      {FROM_HERE, "HistoryDatabase encountered error"});
+      {FROM_HERE, syncer::ModelError::Type::kHistoryDatabaseError});
 }
 
 void HistorySyncBridge::LoadMetadata() {
@@ -897,8 +898,7 @@ void HistorySyncBridge::LoadMetadata() {
   if (!sync_metadata_database_->GetAllSyncMetadata(batch.get())) {
     RecordDatabaseError(SyncHistoryDatabaseError::kLoadMetadata);
     change_processor()->ReportError(
-        {FROM_HERE,
-         "Failed reading metadata from HistorySyncMetadataDatabase."});
+        {FROM_HERE, syncer::ModelError::Type::kHistoryFailedToLoadMetadata});
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));

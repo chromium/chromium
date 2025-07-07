@@ -86,7 +86,9 @@ void ConstructDataTypeStoreOnFrontendSequence(
                                             backend_task_runner));
   } else {
     std::move(callback).Run(
-        ModelError(FROM_HERE, "DataTypeStore backend initialization failed"),
+        ModelError(
+            FROM_HERE,
+            ModelError::Type::kDataTypeStoreServiceBackendInitializationFailed),
         /*store=*/nullptr);
   }
 }

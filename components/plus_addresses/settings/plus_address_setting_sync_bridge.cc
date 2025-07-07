@@ -222,7 +222,9 @@ void PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata(
   for (const syncer::DataTypeStore::Record& record : *data) {
     sync_pb::PlusAddressSettingSpecifics specifics;
     if (!specifics.ParseFromString(record.value)) {
-      change_processor()->ReportError({FROM_HERE, "Couldn't parse specifics"});
+      change_processor()->ReportError(
+          {FROM_HERE, syncer::ModelError::Type::
+                          kPlusAddressSettingFailedToParseSpecifics});
       return;
     }
     processed_entries.emplace_back(record.id, std::move(specifics));

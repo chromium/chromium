@@ -40,7 +40,9 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
       GetStorageKeyFromAutofillProfile(remote);
 
   if (!GetLocalOnlyEntries()) {
-    return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kAutofillProfileFailedToReadLocalDataForRemoteUpdate);
   }
 
   optional<AutofillProfile> local_with_same_storage_key =
@@ -149,17 +151,23 @@ optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
     base::OnceClosure autofill_changes_callback) {
   for (const std::string& storage_key : delete_from_local_) {
     if (!table_->RemoveAutofillProfile(storage_key)) {
-      return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kAutofillProfileFailedToDeleteProfileForSync);
     }
   }
   for (const AutofillProfile& entry : add_to_local_) {
     if (!table_->AddAutofillProfile(entry)) {
-      return ModelError(FROM_HERE, "Failed updating WebDatabase");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kAutofillProfileFailedToAddProfileForSync);
     }
   }
   for (const AutofillProfile& entry : update_to_local_) {
     if (!table_->UpdateAutofillProfile(entry)) {
-      return ModelError(FROM_HERE, "Failed updating WebDatabase");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kAutofillProfileFailedToUpdateProfileForSync);
     }
   }
   if (!delete_from_local_.empty() || !add_to_local_.empty() ||
@@ -194,7 +202,9 @@ optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
 optional<ModelError> AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
     const std::string& storage_key) {
   if (!GetLocalOnlyEntries()) {
-    return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kAutofillProfileFailedToReadLocalDataForDeletion);
   }
   delete_from_local_.insert(storage_key);
   GetLocalOnlyEntries()->erase(storage_key);
@@ -253,7 +263,9 @@ optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
 
   // For initial sync, we additionally need to upload all local only entries.
   if (!GetLocalOnlyEntries()) {
-    return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kAutofillProfileFailedToReadLocalDataForInitialSync);
   }
   for (auto& [storage_key, data] : *GetLocalOnlyEntries()) {
     // No deletions coming from remote are allowed for initial sync.
@@ -267,7 +279,10 @@ optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     const std::string& app_locale) {
   if (!GetLocalOnlyEntries()) {
-    return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::
+            kAutofillProfileFailedToReadLocalDataForInitialSyncMerge);
   }
 
   // This merge cannot happen on the fly during IncorporateRemoteSpecifics().

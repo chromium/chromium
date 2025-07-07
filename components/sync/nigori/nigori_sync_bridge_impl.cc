@@ -665,9 +665,8 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
     std::optional<EntityData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!data) {
-    return ModelError(FROM_HERE,
-                      "Received empty EntityData during initial "
-                      "sync of Nigori.");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kNigoriEmptyEntityDataDuringInitialSync);
   }
   DCHECK(data->specifics.has_nigori());
 
@@ -689,8 +688,9 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
     // to throttling. It seems easier after complete deprecation of
     // IMPLICIT_PASSPHRASE, where not initialized state will be well
     // distinguished.
-    return ModelError(FROM_HERE,
-                      "Keystore keys are not set during first time sync.");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kNigoriMissingKeystoreKeysDuringInitialSync);
   }
   // We received uninitialized Nigori and need to initialize it as default
   // keystore Nigori.
@@ -729,7 +729,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
 std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     const NigoriSpecifics& specifics) {
   if (!IsValidNigoriSpecifics(specifics)) {
-    return ModelError(FROM_HERE, "NigoriSpecifics is not valid.");
+    return ModelError(FROM_HERE, ModelError::Type::kNigoriInvalidSpecifics);
   }
 
   const sync_pb::NigoriSpecifics::PassphraseType new_passphrase_type =
@@ -739,10 +739,12 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   if (!IsValidPassphraseTransition(
           /*old_passphrase_type=*/state_.passphrase_type,
           new_passphrase_type)) {
-    return ModelError(FROM_HERE, "Invalid passphrase type transition.");
+    return ModelError(FROM_HERE,
+                      ModelError::Type::kNigoriInvalidPassphraseTransition);
   }
   if (!IsValidEncryptedTypesTransition(state_.encrypt_everything, specifics)) {
-    return ModelError(FROM_HERE, "Invalid encrypted types transition.");
+    return ModelError(FROM_HERE,
+                      ModelError::Type::kNigoriInvalidEncryptedTypesTransition);
   }
 
   const bool had_pending_keys_before_update = state_.pending_keys.has_value();
@@ -895,14 +897,14 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   if (!new_key_bag.HasKey(new_default_key_name)) {
     // Protocol violation.
     return ModelError(FROM_HERE,
-                      "Received keybag is missing the new default key.");
+                      ModelError::Type::kNigoriMissingNewDefaultKeyInKeybag);
   }
 
   if (state_.last_default_trusted_vault_key_name.has_value() &&
       !new_key_bag.HasKey(*state_.last_default_trusted_vault_key_name)) {
     // Protocol violation.
-    return ModelError(FROM_HERE,
-                      "Received keybag is missing the last trusted vault key.");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kNigoriMissingLastTrustedVaultKeyInKeybag);
   }
 
   CrossUserSharingKeys new_cross_user_sharing_keys =

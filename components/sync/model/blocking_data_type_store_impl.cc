@@ -238,7 +238,9 @@ std::optional<ModelError> BlockingDataTypeStoreImpl::ReadAllMetadata(
   } else {
     sync_pb::DataTypeState state;
     if (!state.ParseFromString(global_metadata_records[0].value)) {
-      return ModelError(FROM_HERE, "Failed to deserialize data type state.");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kDataTypeStoreFailedToDeserializeDataTypeState);
     }
     metadata_batch->SetDataTypeState(state);
   }
@@ -254,7 +256,9 @@ std::optional<ModelError> BlockingDataTypeStoreImpl::ReadAllMetadata(
   for (const Record& r : metadata_records) {
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(r.value)) {
-      return ModelError(FROM_HERE, "Failed to deserialize entity metadata.");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kDataTypeStoreFailedToDeserializeEntityMetadata);
     }
     metadata_batch->AddMetadata(r.id, std::move(entity_metadata));
   }

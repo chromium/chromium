@@ -349,10 +349,8 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   sync_processor_ = std::move(sync_processor);
 
   if (initial_sync_data.size() > 1) {
-    return syncer::ModelError(
-        FROM_HERE,
-        base::StringPrintf("Received %d theme specifics.",
-                           static_cast<int>(initial_sync_data.size())));
+    return syncer::ModelError(FROM_HERE,
+                              syncer::ModelError::Type::kThemeTooManySpecifics);
   }
 
   if (!IsCurrentThemeSyncable()) {
@@ -459,8 +457,8 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!sync_processor_.get()) {
-    return syncer::ModelError(FROM_HERE,
-                              "Theme syncable service is not started.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::kThemeSyncableServiceNotStarted);
   }
 
   // TODO(akalin): Normally, we should only have a single change and
@@ -469,18 +467,14 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   // we can remove the extra logic below.  See:
   // http://code.google.com/p/chromium/issues/detail?id=41696 .
   if (change_list.size() != 1) {
-    string err_msg = base::StringPrintf("Received %d theme changes: ",
-                                        static_cast<int>(change_list.size()));
-    for (const auto& i : change_list) {
-      base::StringAppendF(&err_msg, "[%s] ", i.ToString().c_str());
-    }
-    return syncer::ModelError(FROM_HERE, err_msg);
+    return syncer::ModelError(FROM_HERE,
+                              syncer::ModelError::Type::kThemeTooManyChanges);
   }
   const syncer::SyncChange& theme_change = change_list[0];
   if (theme_change.change_type() != syncer::SyncChange::ACTION_ADD &&
       theme_change.change_type() != syncer::SyncChange::ACTION_UPDATE) {
     return syncer::ModelError(
-        FROM_HERE, "Invalid theme change: " + theme_change.ToString());
+        FROM_HERE, syncer::ModelError::Type::kThemeInvalidChangeType);
   }
 
   if (!IsCurrentThemeSyncable()) {
@@ -495,7 +489,8 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     return std::nullopt;
   }
 
-  return syncer::ModelError(FROM_HERE, "Didn't find valid theme specifics");
+  return syncer::ModelError(FROM_HERE,
+                            syncer::ModelError::Type::kThemeMissingSpecifics);
 }
 
 base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {

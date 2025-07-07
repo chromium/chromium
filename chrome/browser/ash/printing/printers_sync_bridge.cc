@@ -143,7 +143,8 @@ class PrintersSyncBridge::StoreProxy {
 
     if (parse_error) {
       owner_->change_processor()->ReportError(
-          {FROM_HERE, "Failed to deserialize all specifics."});
+          {FROM_HERE,
+           syncer::ModelError::Type::kPrintersFailedToDeserializeSpecifics});
       return;
     }
 

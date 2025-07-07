@@ -401,8 +401,7 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
       case syncer::SyncChange::ACTION_UPDATE:
         return syncer::ModelError(
             FROM_HERE,
-            "Processing sync changes failed on change type " +
-                syncer::SyncChange::ChangeTypeToString(change.change_type()));
+            syncer::ModelError::Type::kSpellcheckCustomDictionaryUpdateFailed);
     }
   }
 

@@ -1137,6 +1137,173 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kPasswordMergeAddFailed"/>
   <int value="11" label="kPasswordCleanupDecryptionFailed"/>
   <int value="12" label="kPasswordIncrementalUpdateFailed"/>
+  <int value="13" label="kAppListSyncableServiceNotStarted"/>
+  <int value="14" label="kArcPackageSyncableServiceNotStarted"/>
+  <int value="15" label="kAutocompleteFailedToClearMetadataForExpiredEntry"/>
+  <int value="16" label="kContactInfoFailedToAddProfileToTable"/>
+  <int value="17" label="kContactInfoFailedToDeleteIncompleteHwProfile"/>
+  <int value="18" label="kContactInfoFailedToDeleteProfileForRemoteDelete"/>
+  <int value="19" label="kContactInfoFailedToDeleteProfileFromTable"/>
+  <int value="20" label="kContactInfoFailedToReadMetadataFromWebDatabase"/>
+  <int value="21" label="kContactInfoFailedToUpdateProfileInTable"/>
+  <int value="22" label="kAutofillProfileFailedToAddToDatabase"/>
+  <int value="23" label="kAutofillProfileFailedToAddProfileForSync"/>
+  <int value="24" label="kAutofillProfileFailedToDeleteFromDatabase"/>
+  <int value="25" label="kAutofillProfileFailedToDeleteProfileForSync"/>
+  <int value="26" label="kAutofillProfileFailedToLoadDatabase"/>
+  <int value="27" label="kAutofillProfileFailedToLoadEntriesForCommit"/>
+  <int value="28" label="kAutofillProfileFailedToLoadEntriesForDebugging"/>
+  <int value="29" label="kAutofillProfileFailedToLoadMetadata"/>
+  <int value="30" label="kAutofillProfileFailedToReadDatabase"/>
+  <int value="31" label="kAutofillProfileFailedToReadLocalDataForDeletion"/>
+  <int value="32" label="kAutofillProfileFailedToReadLocalDataForInitialSync"/>
+  <int value="33"
+      label="kAutofillProfileFailedToReadLocalDataForInitialSyncMerge"/>
+  <int value="34" label="kAutofillProfileFailedToReadLocalDataForRemoteUpdate"/>
+  <int value="35" label="kAutofillProfileFailedToUpdateDatabase"/>
+  <int value="36" label="kAutofillProfileFailedToUpdateProfileForSync"/>
+  <int value="37" label="kAutofillValuableFailedToLoadDatabase"/>
+  <int value="38" label="kAutofillValuableFailedToLoadMetadata"/>
+  <int value="39" label="kAutofillValuableFailedToReadMetadata"/>
+  <int value="40" label="kAutofillValuableFailedToSetLoyaltyCards"/>
+  <int value="41" label="kAutofillValuableUnsupportedActionType"/>
+  <int value="42" label="kAutofillWalletFailedToLoadBenefitsFromTable"/>
+  <int value="43" label="kAutofillWalletFailedToLoadDatabase"/>
+  <int value="44" label="kAutofillWalletFailedToLoadEntriesFromTable"/>
+  <int value="45" label="kAutofillWalletFailedToReadMetadata"/>
+  <int value="46" label="kWalletCredentialFailedToAddDatabase"/>
+  <int value="47" label="kWalletCredentialFailedToDeleteFromDatabase"/>
+  <int value="48" label="kWalletCredentialFailedToDeleteOnDisable"/>
+  <int value="49" label="kWalletCredentialFailedToLoadDatabase"/>
+  <int value="50" label="kWalletCredentialFailedToReadMetadata"/>
+  <int value="51" label="kWalletCredentialFailedToUpdateDatabase"/>
+  <int value="52" label="kWalletMetadataFailedToLoadDatabase"/>
+  <int value="53" label="kWalletMetadataFailedToReadData"/>
+  <int value="54" label="kWalletMetadataFailedToReadMetadata"/>
+  <int value="55" label="kAutofillWalletOfferFailedToLoadFromTable"/>
+  <int value="56" label="kAutofillWalletOfferFailedToLoadTable"/>
+  <int value="57" label="kAutofillWalletOfferFailedToReadMetadata"/>
+  <int value="58"
+      label="kAutofillWalletUsageFailedToAddOrUpdateVirtualCardUsageData"/>
+  <int value="59"
+      label="kAutofillWalletUsageFailedToDeleteAllVirtualCardUsageData"/>
+  <int value="60"
+      label="kAutofillWalletUsageFailedToDeleteVirtualCardUsageData"/>
+  <int value="61" label="kAutofillWalletUsageFailedToLoadAutofillTable"/>
+  <int value="62" label="kAutofillWalletUsageFailedToLoadData"/>
+  <int value="63" label="kAutofillWalletUsageFailedToReadMetadata"/>
+  <int value="64" label="kBookmarksInitialMergePermanentEntitiesMissing"/>
+  <int value="65" label="kBookmarksLocalCountExceededLimitNudgeForCommit"/>
+  <int value="66" label="kBookmarksPermanentEntitiesMissing"/>
+  <int value="67" label="kBookmarksRemoteCountExceededLimitInitialMerge"/>
+  <int value="68" label="kBookmarksRemoteCountExceededLimitLastInitialMerge"/>
+  <int value="69" label="kBookmarksTestError"/>
+  <int value="70" label="kCollaborationGroupCommitFailed"/>
+  <int value="71" label="kCollaborationGroupDeserializeDataFailed"/>
+  <int value="72" label="kCollaborationGroupReadAllDataFailed"/>
+  <int value="73" label="kCollaborationGroupReadAllMetadataFailed"/>
+  <int value="74" label="kCollaborationGroupStoreCreationFailed"/>
+  <int value="75" label="kDataTypeStoreBackendDbIterationFailed"/>
+  <int value="76" label="kDataTypeStoreBackendDbOpenFailed"/>
+  <int value="77" label="kDataTypeStoreBackendDbReadFailed"/>
+  <int value="78" label="kDataTypeStoreBackendDbWriteFailed"/>
+  <int value="79" label="kDataTypeStoreBackendDeletePrefixFailed"/>
+  <int value="80" label="kDataTypeStoreBackendInvalidSchemaDescriptor"/>
+  <int value="81" label="kDataTypeStoreBackendSchemaUpgradeFailed"/>
+  <int value="82" label="kDataTypeStoreBackendSchemaVersionTooHigh"/>
+  <int value="83" label="kDataTypeStoreBackendWriteModificationsFailed"/>
+  <int value="84" label="kDataTypeStoreFailedToDeserializeDataTypeState"/>
+  <int value="85" label="kDataTypeStoreFailedToDeserializeEntityMetadata"/>
+  <int value="86" label="kDataTypeStoreServiceBackendInitializationFailed"/>
+  <int value="87" label="kProcessorNonEmptyUpdateWithoutVersionWatermark"/>
+  <int value="88" label="kProcessorTestError"/>
+  <int value="89" label="kProcessorVersionWatermarkWithIncrementalUpdates"/>
+  <int value="90" label="kDeviceInfoCommitFailed"/>
+  <int value="91" label="kDeviceInfoDeserializeSpecificsFailed"/>
+  <int value="92" label="kDeviceInfoReadDataFailed"/>
+  <int value="93" label="kDeviceInfoReadMetadataFailed"/>
+  <int value="94" label="kDeviceInfoStoreCreationFailed"/>
+  <int value="95" label="kHistoryDatabaseError"/>
+  <int value="96" label="kHistoryFailedToLoadMetadata"/>
+  <int value="97" label="kHistoryFailedToLoadMetadataForDebugging"/>
+  <int value="98" label="kHistoryDeleteDirectiveSyncDisabled"/>
+  <int value="99" label="kHistoryDeleteDirectiveSyncDisabledOnLocalCreation"/>
+  <int value="100" label="kHistoryDeleteDirectiveSyncDisabledOnRemoteChange"/>
+  <int value="101" label="kModelLoadManagerDataTypeInFailedState"/>
+  <int value="102" label="kNigoriEmptyEntityDataDuringInitialSync"/>
+  <int value="103" label="kNigoriInvalidEncryptedTypesTransition"/>
+  <int value="104" label="kNigoriInvalidPassphraseTransition"/>
+  <int value="105" label="kNigoriInvalidSpecifics"/>
+  <int value="106" label="kNigoriMissingKeystoreKeysDuringInitialSync"/>
+  <int value="107" label="kNigoriMissingLastTrustedVaultKeyInKeybag"/>
+  <int value="108" label="kNigoriMissingNewDefaultKeyInKeybag"/>
+  <int value="121" label="kPlusAddressAddOrUpdateProfileFailed"/>
+  <int value="122" label="kPlusAddressClearProfilesFailed"/>
+  <int value="123" label="kPlusAddressDatabaseInitFailed"/>
+  <int value="124" label="kPlusAddressMetadataReadFailed"/>
+  <int value="125" label="kPlusAddressRemoveProfileFailed"/>
+  <int value="126" label="kPlusAddressSettingFailedToParseSpecifics"/>
+  <int value="127" label="kPlusAddressTransactionBeginFailedOnDisableSync"/>
+  <int value="128" label="kPlusAddressTransactionBeginFailedOnIncrementalSync"/>
+  <int value="129" label="kPlusAddressTransactionCommitFailedOnDisableSync"/>
+  <int value="130"
+      label="kPlusAddressTransactionCommitFailedOnIncrementalSync"/>
+  <int value="131" label="kPowerBookmarkDatabaseCommitFailed"/>
+  <int value="132" label="kPowerBookmarkDatabaseInitFailed"/>
+  <int value="133" label="kPowerBookmarkFailedToBeginTransaction"/>
+  <int value="134" label="kPowerBookmarkFailedToCommitTransaction"/>
+  <int value="135" label="kPowerBookmarkFailedToDeleteLocalPowers"/>
+  <int value="136" label="kPowerBookmarkFailedToLoadMetadata"/>
+  <int value="137" label="kPowerBookmarkFailedToMergeLocalPowers"/>
+  <int value="138" label="kPrefFailedToDeserializeValue"/>
+  <int value="139" label="kPrefModelsNotAssociated"/>
+  <int value="140" label="kPrintersFailedToDeserializeSpecifics"/>
+  <int value="141" label="kProfileAuthServersFailedToDeserializeSpecifics"/>
+  <int value="142" label="kReadingListStorageLoadFailed"/>
+  <int value="143" label="kSavedTabGroupFailedToReadMetadata"/>
+  <int value="144" label="kSavedTabGroupFailedToSaveMetadata"/>
+  <int value="145" label="kSharedTabGroupDataDatabaseSaveFailed"/>
+  <int value="146" label="kSharedTabGroupDuplicateTabGuid"/>
+  <int value="147" label="kSharedTabGroupUnexpectedCollaborationIdForGroup"/>
+  <int value="148" label="kSharedTabGroupUnexpectedCollaborationIdForTab"/>
+  <int value="149" label="kSearchEngineDeleteNonExistent"/>
+  <int value="150" label="kSearchEngineLocalDbLoadFailed"/>
+  <int value="151" label="kSearchEngineModelsNotAssociated"/>
+  <int value="152" label="kSendTabToSelfFailedToDeserializeSpecifics"/>
+  <int value="153" label="kSettingsFailedToApplySyncDelete"/>
+  <int value="154" label="kSettingsFailedToApplySyncUpdate"/>
+  <int value="155" label="kSettingsFailedToGetLocalSettingForKey"/>
+  <int value="156" label="kSettingsFailedToGetLocalSettings"/>
+  <int value="157" label="kSettingsFailedToApplySyncAdd"/>
+  <int value="158" label="kSettingsSyncInactive"/>
+  <int value="159" label="kSpellcheckCustomDictionaryUpdateFailed"/>
+  <int value="160" label="kSyncableServiceBasedBridgeFailedToDeserializeData"/>
+  <int value="161" label="kSyncMetadataStoreChangeListInvalidStore"/>
+  <int value="162" label="kSyncMetadataStoreClearDataTypeStateFailed"/>
+  <int value="163" label="kSyncMetadataStoreClearEntityMetadataFailed"/>
+  <int value="164" label="kSyncMetadataStoreUpdateDataTypeStateFailed"/>
+  <int value="165" label="kSyncMetadataStoreUpdateEntityMetadataFailed"/>
+  <int value="166" label="kThemeInvalidChangeType"/>
+  <int value="167" label="kThemeMissingSpecifics"/>
+  <int value="168" label="kThemeSyncableServiceNotStarted"/>
+  <int value="169" label="kThemeTooManyChanges"/>
+  <int value="170" label="kThemeTooManySpecifics"/>
+  <int value="171" label="kWorkspaceDeskFailedToDeserializeSpecifics"/>
+  <int value="172" label="kWorkspaceDeskFailedToParseUuid"/>
+  <int value="173" label="kBookmarksLocalCountExceededLimitOnSyncStart"/>
+  <int value="174" label="kBookmarksLocalCountExceededLimitOnUpdateReceived"/>
+  <int value="175" label="kAutocompleteFailedToDeleteEntriesFromDatabase"/>
+  <int value="176" label="kAutocompleteFailedToLoadAutofillWebDatabase"/>
+  <int value="177" label="kAutocompleteFailedToLoadEntriesFromDatabase"/>
+  <int value="178" label="kAutocompleteFailedToParseStorageKey"/>
+  <int value="179" label="kAutocompleteFailedToReadEntryFromDatabase"/>
+  <int value="180" label="kAutocompleteFailedToReadFromDatabase"/>
+  <int value="181" label="kAutocompleteFailedToReadMetadataFromWebDatabase"/>
+  <int value="182" label="kAutocompleteFailedToUpdateEntriesInDatabase"/>
+  <int value="183" label="kContactInfoFailedToDeleteProfilesFromTable"/>
+  <int value="184" label="kContactInfoFailedToDeleteProfilesOnDisableSync"/>
+  <int value="185" label="kContactInfoFailedToLoadAutofillWebDatabase"/>
+  <int value="186" label="kContactInfoFailedToLoadProfilesFromTable"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->

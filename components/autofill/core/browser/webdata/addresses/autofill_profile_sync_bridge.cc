@@ -173,7 +173,8 @@ std::unique_ptr<syncer::DataBatch> AutofillProfileSyncBridge::GetDataForCommit(
   if (!GetAutofillTable()->GetAutofillProfiles(
           {AutofillProfile::RecordType::kLocalOrSyncable}, entries)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load entries from table."});
+        {FROM_HERE,
+         ModelError::Type::kAutofillProfileFailedToLoadEntriesForCommit});
     return nullptr;
   }
 
@@ -197,7 +198,8 @@ AutofillProfileSyncBridge::GetAllDataForDebugging() {
   if (!GetAutofillTable()->GetAutofillProfiles(
           {AutofillProfile::RecordType::kLocalOrSyncable}, entries)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load entries from table."});
+        {FROM_HERE,
+         ModelError::Type::kAutofillProfileFailedToLoadEntriesForDebugging});
     return nullptr;
   }
 
@@ -274,7 +276,7 @@ void AutofillProfileSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
       !GetAutofillTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load AutofillWebDatabase."});
+        {FROM_HERE, ModelError::Type::kAutofillProfileFailedToLoadDatabase});
     return;
   }
 
@@ -282,7 +284,7 @@ void AutofillProfileSyncBridge::LoadMetadata() {
   if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_PROFILE,
                                                   batch.get())) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
+        {FROM_HERE, ModelError::Type::kAutofillProfileFailedToLoadMetadata});
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));

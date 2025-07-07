@@ -108,13 +108,16 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
   }
   LogDbStatusByCallingSiteIfNeeded("Init", status);
   if (!status.ok()) {
-    DCHECK(db_ == nullptr);
-    return ModelError(FROM_HERE, status.ToString());
+    DCHECK(!db_);
+    return ModelError(FROM_HERE,
+                      ModelError::Type::kDataTypeStoreBackendDbOpenFailed);
   }
 
   int64_t current_version = GetStoreVersion();
   if (current_version == kInvalidSchemaVersion) {
-    return ModelError(FROM_HERE, "Invalid schema descriptor");
+    return ModelError(
+        FROM_HERE,
+        ModelError::Type::kDataTypeStoreBackendInvalidSchemaDescriptor);
   }
 
   if (current_version != kLatestSchemaVersion) {
@@ -200,7 +203,8 @@ std::optional<ModelError> DataTypeStoreBackend::ReadRecordsWithPrefix(
     } else if (status.IsNotFound()) {
       missing_id_list->push_back(id);
     } else {
-      return ModelError(FROM_HERE, status.ToString());
+      return ModelError(FROM_HERE,
+                        ModelError::Type::kDataTypeStoreBackendDbReadFailed);
     }
   }
   return std::nullopt;
@@ -225,9 +229,11 @@ std::optional<ModelError> DataTypeStoreBackend::ReadAllRecordsWithPrefix(
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
   LogDbStatusByCallingSiteIfNeeded("ReadAllRecords", iter->status());
-  return iter->status().ok() ? std::nullopt
-                             : std::optional<ModelError>(
-                                   {FROM_HERE, iter->status().ToString()});
+  return iter->status().ok()
+             ? std::nullopt
+             : std::optional<ModelError>(
+                   {FROM_HERE,
+                    ModelError::Type::kDataTypeStoreBackendDbIterationFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::WriteModifications(
@@ -237,9 +243,11 @@ std::optional<ModelError> DataTypeStoreBackend::WriteModifications(
   leveldb::Status status =
       db_->Write(leveldb::WriteOptions(), write_batch.get());
   LogDbStatusByCallingSiteIfNeeded("WriteModifications", status);
-  return status.ok()
-             ? std::nullopt
-             : std::optional<ModelError>({FROM_HERE, status.ToString()});
+  return status.ok() ? std::nullopt
+                     : std::optional<ModelError>(
+                           {FROM_HERE,
+                            ModelError::Type::
+                                kDataTypeStoreBackendWriteModificationsFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
@@ -262,7 +270,9 @@ std::optional<ModelError> DataTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   LogDbStatusByCallingSiteIfNeeded("DeleteData", status);
   return status.ok()
              ? std::nullopt
-             : std::optional<ModelError>({FROM_HERE, status.ToString()});
+             : std::optional<ModelError>(
+                   {FROM_HERE,
+                    ModelError::Type::kDataTypeStoreBackendDeletePrefixFailed});
 }
 
 std::optional<ModelError> DataTypeStoreBackend::MigrateForTest(
@@ -305,9 +315,11 @@ std::optional<ModelError> DataTypeStoreBackend::Migrate(
   if (current_version == desired_version) {
     return std::nullopt;
   } else if (current_version > desired_version) {
-    return ModelError(FROM_HERE, "Schema version too high");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kDataTypeStoreBackendSchemaVersionTooHigh);
   } else {
-    return ModelError(FROM_HERE, "Schema upgrade failed");
+    return ModelError(
+        FROM_HERE, ModelError::Type::kDataTypeStoreBackendSchemaUpgradeFailed);
   }
 }
 

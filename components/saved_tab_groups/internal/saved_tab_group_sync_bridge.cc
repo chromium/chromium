@@ -1073,7 +1073,7 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
   if (error) {
     stats::RecordMigrationResult(
         stats::MigrationResult::kReadAllMetadataFailed);
-    change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
+    change_processor()->ReportError(*error);
     return;
   }
 
@@ -1106,7 +1106,7 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
 void SavedTabGroupSyncBridge::OnDatabaseSave(
     const std::optional<syncer::ModelError>& error) {
   if (error) {
-    change_processor()->ReportError({FROM_HERE, "Failed to save metadata."});
+    change_processor()->ReportError(*error);
     return;
   }
 

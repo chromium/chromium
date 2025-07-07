@@ -64,7 +64,8 @@ ContactInfoSyncBridge::ContactInfoSyncBridge(
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
       !GetAutofillTable()) {
     DataTypeSyncBridge::change_processor()->ReportError(
-        {FROM_HERE, "Failed to load AutofillWebDatabase."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kContactInfoFailedToLoadAutofillWebDatabase});
     return;
   }
   scoped_observation_.Observe(web_data_backend_.get());
@@ -127,8 +128,9 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
         if (!GetAutofillTable()->RemoveAutofillProfile(change->storage_key())) {
-          return syncer::ModelError(FROM_HERE,
-                                    "Failed to delete profile from table.");
+          return syncer::ModelError(
+              FROM_HERE, syncer::ModelError::Type::
+                             kContactInfoFailedToDeleteProfileForRemoteDelete);
         }
         break;
       case syncer::EntityChange::ACTION_ADD:
@@ -143,8 +145,9 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
           // This change doesn't need to be synced back, since H/W is read-only.
           metadata_change_list->ClearMetadata(remote.guid());
           if (!GetAutofillTable()->RemoveAutofillProfile(remote.guid())) {
-            return syncer::ModelError(FROM_HERE,
-                                      "Failed to delete profile from table.");
+            return syncer::ModelError(
+                FROM_HERE, syncer::ModelError::Type::
+                               kContactInfoFailedToDeleteIncompleteHwProfile);
           }
           continue;
         }
@@ -154,13 +157,15 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // to AutofillTable's API.
         if (GetAutofillTable()->GetAutofillProfile(remote.guid())) {
           if (!GetAutofillTable()->UpdateAutofillProfile(remote)) {
-            return syncer::ModelError(FROM_HERE,
-                                      "Failed to update profile in table.");
+            return syncer::ModelError(
+                FROM_HERE, syncer::ModelError::Type::
+                               kContactInfoFailedToUpdateProfileInTable);
           }
         } else {
           if (!GetAutofillTable()->AddAutofillProfile(remote)) {
-            return syncer::ModelError(FROM_HERE,
-                                      "Failed to add profile to table.");
+            return syncer::ModelError(
+                FROM_HERE, syncer::ModelError::Type::
+                               kContactInfoFailedToAddProfileToTable);
           }
         }
         break;
@@ -284,7 +289,8 @@ void ContactInfoSyncBridge::ApplyDisableSyncChanges(
 
   if (!GetAutofillTable()->RemoveAllAutofillProfiles(kAccountRecordTypes)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to delete profiles from table."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kContactInfoFailedToDeleteProfilesOnDisableSync});
   }
 
   // Commits changes through CommitChanges(...) or through the scoped
@@ -367,7 +373,8 @@ ContactInfoSyncBridge::GetDataAndFilter(
   std::vector<AutofillProfile> profiles;
   if (!GetAutofillTable()->GetAutofillProfiles(kAccountRecordTypes, profiles)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load profiles from table."});
+        {FROM_HERE,
+         syncer::ModelError::Type::kContactInfoFailedToLoadProfilesFromTable});
     return nullptr;
   }
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -389,7 +396,8 @@ void ContactInfoSyncBridge::LoadMetadata() {
   if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::CONTACT_INFO,
                                                   batch.get())) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed reading CONTACT_INFO metadata from WebDatabase."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kContactInfoFailedToReadMetadataFromWebDatabase});
     return;
   } else if (SyncMetadataCacheContainsSupportedFields(
                  batch->GetAllMetadata())) {

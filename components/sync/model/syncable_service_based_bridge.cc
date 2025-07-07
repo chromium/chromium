@@ -95,7 +95,9 @@ std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
   for (const DataTypeStore::Record& record : *record_list) {
     sync_pb::PersistedEntityData persisted_entity;
     if (!persisted_entity.ParseFromString(record.value)) {
-      return ModelError(FROM_HERE, "Failed deserializing data.");
+      return ModelError(
+          FROM_HERE,
+          ModelError::Type::kSyncableServiceBasedBridgeFailedToDeserializeData);
     }
 
     in_memory_store->emplace(record.id, std::move(persisted_entity));

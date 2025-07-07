@@ -54,7 +54,8 @@ void PowerBookmarkBackend::Init(bool use_database) {
       bridge_->Init();
     } else {
       bridge_->ReportError(
-          syncer::ModelError(FROM_HERE, "Database failed initialization."));
+          {FROM_HERE,
+           syncer::ModelError::Type::kPowerBookmarkDatabaseInitFailed});
     }
   } else {
     db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
@@ -222,8 +223,9 @@ bool PowerBookmarkBackend::CommitAndNotify(Transaction& transaction) {
     return true;
   } else {
     if (bridge_ && bridge_->initialized()) {
-      bridge_->change_processor()->ReportError(syncer::ModelError(
-          FROM_HERE, "PowerBookmark database fails to persist data."));
+      bridge_->change_processor()->ReportError(
+          {FROM_HERE,
+           syncer::ModelError::Type::kPowerBookmarkDatabaseCommitFailed});
     }
     return false;
   }

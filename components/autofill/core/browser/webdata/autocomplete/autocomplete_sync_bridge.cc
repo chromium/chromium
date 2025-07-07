@@ -147,7 +147,9 @@ class SyncDifferenceTracker {
 
     std::optional<AutocompleteEntry> local;
     if (!ReadEntry(remote.key(), &local))
-      return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+      return ModelError(
+          FROM_HERE,
+          syncer::ModelError::Type::kAutocompleteFailedToReadEntryFromDatabase);
 
     if (!local) {
       save_to_local_.push_back(remote);
@@ -173,7 +175,9 @@ class SyncDifferenceTracker {
       const std::string& storage_key) {
     AutocompleteKey key;
     if (!ParseStorageKey(storage_key, &key)) {
-      return ModelError(FROM_HERE, "Failed parsing storage key.");
+      return ModelError(
+          FROM_HERE,
+          syncer::ModelError::Type::kAutocompleteFailedToParseStorageKey);
     }
     delete_from_local_.insert(key);
     return std::nullopt;
@@ -183,11 +187,15 @@ class SyncDifferenceTracker {
       AutofillWebDataBackend* web_data_backend) {
     for (const AutocompleteKey& key : delete_from_local_) {
       if (!table_->RemoveFormElement(key.name(), key.value())) {
-        return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
+        return ModelError(FROM_HERE,
+                          syncer::ModelError::Type::
+                              kAutocompleteFailedToDeleteEntriesFromDatabase);
       }
     }
     if (!table_->UpdateAutocompleteEntries(save_to_local_)) {
-      return ModelError(FROM_HERE, "Failed updating WebDatabase");
+      return ModelError(FROM_HERE,
+                        syncer::ModelError::Type::
+                            kAutocompleteFailedToUpdateEntriesInDatabase);
     }
 
     // We do not need to NotifyOnAutofillChangedBySync() because
@@ -208,7 +216,9 @@ class SyncDifferenceTracker {
     }
     if (include_local_only) {
       if (!InitializeIfNeeded()) {
-        return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+        return ModelError(
+            FROM_HERE,
+            syncer::ModelError::Type::kAutocompleteFailedToReadFromDatabase);
       }
       for (const AutocompleteEntry& entry : unique_to_local_) {
         // This should never be true because only ApplyIncrementalSyncChanges
@@ -404,7 +414,8 @@ AutocompleteSyncBridge::AutocompleteSyncBridge::GetDataForCommit(
   std::vector<AutocompleteEntry> entries;
   if (!GetAutocompleteTable()->GetAllAutocompleteEntries(&entries)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load entries from table."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutocompleteFailedToLoadEntriesFromDatabase});
     return nullptr;
   }
 
@@ -427,7 +438,8 @@ AutocompleteSyncBridge::GetAllDataForDebugging() {
   std::vector<AutocompleteEntry> entries;
   if (!GetAutocompleteTable()->GetAllAutocompleteEntries(&entries)) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load entries from table."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutocompleteFailedToLoadEntriesFromDatabase});
     return nullptr;
   }
 
@@ -456,7 +468,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
                                                          change.key().value());
         if (!entry) {
           change_processor()->ReportError(
-              {FROM_HERE, "Failed reading autofill entry from WebDatabase."});
+              {FROM_HERE, syncer::ModelError::Type::
+                              kAutocompleteFailedToReadEntryFromDatabase});
           return;
         }
         change_processor()->Put(storage_key, CreateEntityData(*entry),
@@ -477,8 +490,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
         if (!success) {
           change_processor()->ReportError(
               {FROM_HERE,
-               "Failed to clear sync metadata for an expired autofill entry "
-               "from WebDatabase."});
+               syncer::ModelError::Type::
+                   kAutocompleteFailedToClearMetadataForExpiredEntry});
           return;
         }
 
@@ -497,7 +510,8 @@ void AutocompleteSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
       !GetAutocompleteTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed to load AutofillWebDatabase."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutocompleteFailedToLoadAutofillWebDatabase});
     return;
   }
 
@@ -505,7 +519,8 @@ void AutocompleteSyncBridge::LoadMetadata() {
   if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL,
                                                   batch.get())) {
     change_processor()->ReportError(
-        {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutocompleteFailedToReadMetadataFromWebDatabase});
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));

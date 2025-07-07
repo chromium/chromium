@@ -667,8 +667,7 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
       // Hence, duplicate GUIDs must have different collaboration IDs which
       // should never happen.
       return syncer::ModelError(
-          FROM_HERE,
-          "Received duplicate tab GUID with different collaboration IDs.");
+          FROM_HERE, syncer::ModelError::Type::kSharedTabGroupDuplicateTabGuid);
     }
   }
 
@@ -1199,7 +1198,9 @@ void SharedTabGroupDataSyncBridge::
 void SharedTabGroupDataSyncBridge::OnDatabaseSave(
     const std::optional<syncer::ModelError>& error) {
   if (error) {
-    change_processor()->ReportError({FROM_HERE, "Failed to store data."});
+    change_processor()->ReportError(
+        {FROM_HERE,
+         syncer::ModelError::Type::kSharedTabGroupDataDatabaseSaveFailed});
   }
 }
 
@@ -1250,7 +1251,8 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
       collaboration_metadata.collaboration_id()) {
     // Shared tab groups should never change collaboration IDs.
     return syncer::ModelError(
-        FROM_HERE, "Unexpected collaboration ID for a remote group.");
+        FROM_HERE, syncer::ModelError::Type::
+                       kSharedTabGroupUnexpectedCollaborationIdForGroup);
   }
 
   // Create new specifics in case some fields were merged.
@@ -1298,8 +1300,9 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
   if (existing_group->collaboration_id() !=
       CollaborationId(collaboration_metadata.collaboration_id())) {
     // Shared tabs must have the same collaboration ID as their group.
-    return syncer::ModelError(FROM_HERE,
-                              "Unexpected collaboration ID for a remote tab.");
+    return syncer::ModelError(
+        FROM_HERE, syncer::ModelError::Type::
+                       kSharedTabGroupUnexpectedCollaborationIdForTab);
   }
 
   if (existing_group->ContainsTab(tab_guid)) {

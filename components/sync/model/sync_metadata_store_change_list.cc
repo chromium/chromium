@@ -18,7 +18,8 @@ SyncMetadataStoreChangeList::SyncMetadataStoreChangeList(
     ErrorCallback error_callback)
     : store_(store), type_(type), error_callback_(std::move(error_callback)) {
   if (!store_) {
-    SetError(ModelError(FROM_HERE, "Invalid SyncMetadataStore"));
+    SetError(ModelError(
+        FROM_HERE, ModelError::Type::kSyncMetadataStoreChangeListInvalidStore));
   }
 }
 
@@ -31,7 +32,9 @@ void SyncMetadataStoreChangeList::UpdateDataTypeState(
   }
 
   if (!store_->UpdateDataTypeState(type_, data_type_state)) {
-    SetError(ModelError(FROM_HERE, "Failed to update DataTypeState."));
+    SetError(ModelError(
+        FROM_HERE,
+        ModelError::Type::kSyncMetadataStoreUpdateDataTypeStateFailed));
   }
 }
 
@@ -41,7 +44,9 @@ void SyncMetadataStoreChangeList::ClearDataTypeState() {
   }
 
   if (!store_->ClearDataTypeState(type_)) {
-    SetError(ModelError(FROM_HERE, "Failed to clear DataTypeState."));
+    SetError(ModelError(
+        FROM_HERE,
+        ModelError::Type::kSyncMetadataStoreClearDataTypeStateFailed));
   }
 }
 
@@ -53,7 +58,9 @@ void SyncMetadataStoreChangeList::UpdateMetadata(
   }
 
   if (!store_->UpdateEntityMetadata(type_, storage_key, metadata)) {
-    SetError(ModelError(FROM_HERE, "Failed to update entity metadata."));
+    SetError(ModelError(
+        FROM_HERE,
+        ModelError::Type::kSyncMetadataStoreUpdateEntityMetadataFailed));
   }
 }
 
@@ -64,7 +71,9 @@ void SyncMetadataStoreChangeList::ClearMetadata(
   }
 
   if (!store_->ClearEntityMetadata(type_, storage_key)) {
-    SetError(ModelError(FROM_HERE, "Failed to clear entity metadata."));
+    SetError(ModelError(
+        FROM_HERE,
+        ModelError::Type::kSyncMetadataStoreClearEntityMetadataFailed));
   }
 }
 
