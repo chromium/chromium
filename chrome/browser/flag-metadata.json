@@ -5997,6 +5997,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "ios-trusted-vault-notification",
+    "owners": [ "ylahodiuk@google.com", "rgod@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "ios-welcome-back-screen",
     "owners": ["bmcclure@google.com", "hiramahmood@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 141

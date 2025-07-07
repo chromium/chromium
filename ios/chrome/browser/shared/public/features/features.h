@@ -1086,4 +1086,10 @@ bool IsFeedbackIncludeGWSVariationsEnabled();
 // Whether the `kDefaultBrowserPromoPropensityModel` feature is enabled.
 bool IsDefaultBrowserPromoPropensityModelEnabled();
 
+// Feature flag to enable the trusted vault provisional notification.
+BASE_DECLARE_FEATURE(kIOSTrustedVaultNotification);
+
+// Returns whether `kIOSTrustedVaultNotification` is enabled.
+bool IsIOSTrustedVaultNotificationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
