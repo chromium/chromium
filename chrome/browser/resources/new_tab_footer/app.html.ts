@@ -14,7 +14,7 @@ Container for housing the items in the center of the footer that are
 separated from each other by a divider.
 -->
 <div id="container" @contextmenu="${this.onContextMenu_}">
-  ${this.showCustomizeButtons_ ? html`<div id="spacer"></div>` : ''}
+  <div id="spacer"></div>
   <div id="infoContainer">
   ${this.managementNotice_ ?
       html`<div id="managementNoticeContainer" class="notice-item"
@@ -58,6 +58,7 @@ separated from each other by a divider.
         </div>`}`
       : ''}
   </div>
+  ${!this.showCustomizeButtons_ ? html`<div id="spacer"></div>` : ''}
   ${this.showCustomizeButtons_ ? html`
     <ntp-customize-buttons id="customizeButtons"
         ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
