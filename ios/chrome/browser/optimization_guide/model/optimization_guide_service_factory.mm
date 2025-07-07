@@ -49,7 +49,7 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       proto_db_provider, profile_path, profile->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(), hint_store,
       profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      GetApplicationContext()->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
 
   service->DoFinalInit(

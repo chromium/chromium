@@ -62,6 +62,9 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the IOSChromeIOThread.
   void SetIOSChromeIOThread(IOSChromeIOThread* ios_chrome_io_thread);
 
+  void SetSharedURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
@@ -126,7 +129,7 @@ class TestingApplicationContext : public ApplicationContext {
   raw_ptr<AccountProfileMapper> custom_account_profile_mapper_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;
-  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<SafeBrowsingService> fake_safe_browsing_service_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;

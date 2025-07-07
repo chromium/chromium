@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

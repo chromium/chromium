@@ -27,11 +27,14 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -140,7 +143,13 @@ class PredictionManagerTestBase : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        OptimizationGuideServiceFactory::GetDefaultFactory());
+        base::BindRepeating(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              TestingApplicationContext::GetGlobal()->SetSharedURLLoaderFactory(
+                  context->GetSharedURLLoaderFactory());
+              return OptimizationGuideServiceFactory::GetDefaultFactory().Run(
+                  context);
+            }));
     builder.SetPrefService(std::move(testing_prefs));
     profile_ = std::move(builder).Build();
   }
@@ -273,6 +282,7 @@ class PredictionManagerTestBase : public PlatformTest {
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
   PredictionModelsFetcherRemoteResponseType response_type_ =
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
+  network::TestURLLoaderFactory test_loader_factory_;
 };
 
 class PredictionManagerTest : public PredictionManagerTestBase {
