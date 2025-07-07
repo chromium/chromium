@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Calling navigator.credentials.get() without a digital member same origin.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] navigator.credentials.get() API rejects if there are no credential request.
   assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] navigator.credentials.get() API rejects if there are no credential request for same-origin iframe.
@@ -7,5 +9,7 @@ This is a testharness.js-based test.
   assert_equals: expected "TypeError" but got "DOMException"
 [FAIL] Mediation is required to get a DigitalCredential.
   assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Throws TypeError when request data is not JSON stringifiable.
+  promise_rejects_js: Should throw for: [object Object] function "function() { throw e; }" threw object "NotAllowedError: Only one navigator.credentials.get request may be outstanding at one time." ("NotAllowedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 Harness: the test ran to completion.
 

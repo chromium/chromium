@@ -85,6 +85,8 @@ const frameLoadedPromise = new Promise(resolve => {
   window.onload = runTests();
 
   async function runTests() {
+    // Prevent opening contextmenu.
+    addEventListener("contextmenu", e => e.preventDefault());
 
     const queryStringFragments = location.search.substring(1).split('-');
     const pointerType = queryStringFragments[0];
@@ -102,7 +104,6 @@ const frameLoadedPromise = new Promise(resolve => {
     ];
 
     function injectScrubGesture(element) {
-      const doneButton = document.getElementById('done');
       const actions = new test_driver.Actions();
 
       let buttonArguments =
@@ -131,7 +132,7 @@ const frameLoadedPromise = new Promise(resolve => {
     }
 
     // Processing a click or tap on the done button is used to signal that all
-    // other events should have beem handled. This is used to catch unhandled
+    // other events should have been handled. This is used to catch unhandled
     // events that would otherwise result in a timeout.
     function clickOrTapDone() {
       const doneButton = document.getElementById('done');

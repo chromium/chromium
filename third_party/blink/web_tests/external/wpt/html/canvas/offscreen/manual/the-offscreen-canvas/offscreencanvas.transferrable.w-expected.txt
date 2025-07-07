@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test that transfer an OffscreenCanvas twice throws exception in a worker.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

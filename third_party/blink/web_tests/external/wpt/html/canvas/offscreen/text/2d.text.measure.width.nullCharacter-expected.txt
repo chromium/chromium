@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Null character does not take up space
+  assert_equals: ctx.measureText('\\u0000').width === 0 (got 50[number], expected 0[number]) expected 0 but got 50
+Harness: the test ran to completion.
+
