@@ -436,23 +436,32 @@ void AndroidUsbDevice::HandleIncoming(std::unique_ptr<AdbMessage> message) {
 
   switch (message->command) {
     case AdbMessage::kCommandAUTH: {
-      DCHECK_EQ(message->arg0, static_cast<uint32_t>(AdbMessage::kAuthToken));
+      if (message->arg0 != static_cast<uint32_t>(AdbMessage::kAuthToken)) {
+        TransferError(UsbTransferStatus::TRANSFER_ERROR);
+        return;
+      }
       if (signature_sent_) {
+        std::optional<std::string> pub = AndroidRSAPublicKey(rsa_key_.get());
+        if (!pub) {
+          TransferError(UsbTransferStatus::TRANSFER_ERROR);
+          return;
+        }
         Queue(std::make_unique<AdbMessage>(
-            AdbMessage::kCommandAUTH, AdbMessage::kAuthRSAPublicKey, 0,
-            AndroidRSAPublicKey(rsa_key_.get())));
+            AdbMessage::kCommandAUTH, AdbMessage::kAuthRSAPublicKey, 0, *pub));
       } else {
         signature_sent_ = true;
         std::string signature = AndroidRSASign(rsa_key_.get(), message->body);
-        if (!signature.empty()) {
-          Queue(std::make_unique<AdbMessage>(AdbMessage::kCommandAUTH,
-                                             AdbMessage::kAuthSignature, 0,
-                                             signature));
-        } else {
-          Queue(std::make_unique<AdbMessage>(
-              AdbMessage::kCommandAUTH, AdbMessage::kAuthRSAPublicKey, 0,
-              AndroidRSAPublicKey(rsa_key_.get())));
+        if (signature.empty()) {
+          // This may fail if the device requests to sign a token that is not
+          // the same size as a SHA-1 hash. ADB does not use a standard
+          // signature scheme and instead treats an arbitrary peer-supplied
+          // token as the SHA-1 hash.
+          TransferError(UsbTransferStatus::TRANSFER_ERROR);
+          return;
         }
+        Queue(std::make_unique<AdbMessage>(AdbMessage::kCommandAUTH,
+                                           AdbMessage::kAuthSignature, 0,
+                                           signature));
       }
     } break;
     case AdbMessage::kCommandCNXN:

@@ -39,14 +39,6 @@ constexpr size_t kRSAModulusBytes = 2048 / 8;
 // - 4 bytes, little-endian: public exponent
 constexpr size_t kAndroidRSASize = 524;
 
-static const char kDummyRSAPublicKey[] =
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6OSJ64q+ZLg7VV2ojEPh5TRbYjwbT"
-    "TifSPeFIV45CHnbTWYiiIn41wrozpYizNsMWZUBjdah1N78WVhbyDrnr0bDgFp+gXjfVppa3I"
-    "gjiohEcemK3omXi3GDMK8ERhriLUKfQS842SXtQ8I+KoZtpCkGM//0h7+P+Rhm0WwdipIRMhR"
-    "8haNAeyDiiCvqJcvevv2T52vqKtS3aWz+GjaTJJLVWydEpz9WdvWeLfFVhe2ZnqwwZNa30Qoj"
-    "fsnvjaMwK2MU7uYfRBPuvLyK5QESWBpArNDd6ULl8Y+NU6kwNOVDc87OASCVEM1gw2IMi2mo2"
-    "WO5ywp0UWRiGZCkK+wOFQIDAQAB";
-
 // http://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
 // a * x + b * y = gcd(a, b) = d
 void ExtendedEuclid(uint64_t a,
@@ -111,7 +103,7 @@ std::unique_ptr<crypto::RSAPrivateKey> AndroidRSAPrivateKey(Profile* profile) {
   return key;
 }
 
-std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
+std::optional<std::string> AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   // Assemble Android's custom RSA format. This format dates to when Android was
   // using a custom "minicrypt" RSA implementation and was just minicrypt's
   // in-memory representation. The format assumes 2048-bit RSA (up to byte
@@ -130,9 +122,7 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   if (RSA_size(rsa) != kRSAModulusBytes ||  //
       !BN_get_u64(RSA_get0_e(rsa), &e) ||
       !base::IsValueInRangeForNumericType<uint32_t>(e)) {
-    // TODO(crbug.com/40283364): Fix the error-handling. Don't return a dummy
-    // value.
-    return kDummyRSAPublicKey;
+    return std::nullopt;
   }
 
   std::array<uint8_t, kAndroidRSASize> out;

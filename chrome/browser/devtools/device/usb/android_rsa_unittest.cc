@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 
 #include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -90,26 +91,16 @@ TEST(AndroidRSATest, EncodePublicKeyTooSmall) {
        0x28, 0xec, 0x81, 0x1d, 0x15, 0xbc, 0xa6, 0x8c, 0x9d, 0x67});
   auto rsa = crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(kTestRSA1024Key);
   ASSERT_TRUE(rsa);
-  // TODO(crbug.com/40283364): RSA-1024 is too small to be used with Android's
-  // format. AndroidRSAPublicKey checks this, but it currently returns a
-  // placeholder value instead of returning an error. The placeholder value
-  // isn't even in the format that Android needs. (This is a base64-encoded
-  // SubjectPublicKeyInfo.) For now, check for the placeholder, just to confirm
-  // the function does not crash.
-  EXPECT_TRUE(AndroidRSAPublicKey(rsa.get()).starts_with("MIIBI"));
+  // RSA-1024 is too small to be used with Android's format.
+  EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), std::nullopt);
 }
 
 TEST(AndroidRSATest, EncodePublicKeyTooLarge) {
   auto key = crypto::test::FixedRsa4096PrivateKeyForTesting();
   auto rsa = crypto::RSAPrivateKey::CreateFromKey(key.key());
   ASSERT_TRUE(rsa);
-  // TODO(crbug.com/40283364): RSA-4096 is too large to be used with Android's
-  // format. AndroidRSAPublicKey checks this, but it currently returns a
-  // placeholder value instead of returning an error. The placeholder value
-  // isn't even in the format that Android needs. (This is a base64-encoded
-  // SubjectPublicKeyInfo.) For now, check for the placeholder, just to confirm
-  // the function does not crash.
-  EXPECT_TRUE(AndroidRSAPublicKey(rsa.get()).starts_with("MIIBI"));
+  // RSA-4096 is too large to be used with Android's format.
+  EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), std::nullopt);
 }
 
 }  // namespace
