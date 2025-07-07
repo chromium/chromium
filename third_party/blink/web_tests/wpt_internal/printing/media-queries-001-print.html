@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Match size media query when print is scaled</title>
+<link rel="match" href="media-queries-001-print-ref.html">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingScaleFactor(0.5);
+  }
+</script>
+<style>
+  :root {
+    print-color-adjust: exact;
+    font-size: 2em;
+  }
+  #target {
+    width: 200px;
+    height: 200px;
+    background: red;
+  }
+
+  /* The default page size is 5x3 inches. All margins are 0.5 inches. That
+     leaves a page area size of 4x2 inches, or 384x192 pixels. If the output is
+     scaled by 0.5, it means that twice as much content will fit. 384*2=768. */
+  @media (width:768px) {
+    #target {
+      background: green;
+    }
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="target"></div>

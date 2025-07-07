@@ -944,7 +944,7 @@ gfx::SizeF LocalFrameView::ViewportSizeForMediaQueries() const {
   }
   if (frame_->ShouldUsePaginatedLayout()) {
     if (const LayoutView* layout_view = GetLayoutView()) {
-      return layout_view->DefaultPageAreaSize();
+      return layout_view->PaginationViewportSizeForMediaQueries();
     }
   }
   gfx::SizeF viewport_size(layout_size_);

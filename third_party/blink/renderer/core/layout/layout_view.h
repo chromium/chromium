@@ -268,10 +268,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
   gfx::SizeF DynamicViewportSizeForViewportUnits() const;
 
-  // Get the default page area size, as provided by the system and print
-  // settings (i.e. unaffected by CSS). This is used for matching width / height
-  // media queries when printing.
-  gfx::SizeF DefaultPageAreaSize() const;
+  // Get the size to evaluate width and height media queries against when
+  // paginating / printing.
+  gfx::SizeF PaginationViewportSizeForMediaQueries() const;
 
   // Invalidates paint for the entire view, including composited descendants,
   // but not including child frames.
