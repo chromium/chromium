@@ -94,73 +94,108 @@ bool StructInUnion::Validate(
 BasicUnionPtr
 BasicUnion::NewNumericValue(
     int32_t value) {
-  auto result = BasicUnionPtr(std::in_place);
-  result->set_numeric_value(std::move(value));
-  return result;
+  return BasicUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kNumericValue)>,
+      std::move(value));
 }
 
 BasicUnionPtr
 BasicUnion::NewEnumValue(
     EnumInUnion value) {
-  auto result = BasicUnionPtr(std::in_place);
-  result->set_enum_value(std::move(value));
-  return result;
+  return BasicUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kEnumValue)>,
+      std::move(value));
 }
 
 BasicUnionPtr
 BasicUnion::NewStructValue(
     StructInUnionPtr value) {
-  auto result = BasicUnionPtr(std::in_place);
-  result->set_struct_value(std::move(value));
-  return result;
+  return BasicUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kStructValue)>,
+      std::move(value));
 }
 
-BasicUnion::BasicUnion() : tag_(Tag::kNumericValue) {
-  data_.numeric_value = int32_t();
-}
+BasicUnion::BasicUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+    int32_t value)
+    : tag_(Tag::kNumericValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kNumericValue)>,
+            std::move(value)) {}
 
+BasicUnion::BasicUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+    EnumInUnion value)
+    : tag_(Tag::kEnumValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kEnumValue)>,
+            std::move(value)) {}
+
+BasicUnion::BasicUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
+    StructInUnionPtr value)
+    : tag_(Tag::kStructValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kStructValue)>,
+            std::move(value)) {}
 BasicUnion::~BasicUnion() {
   DestroyActive();
 }
 
-void BasicUnion::set_numeric_value(
-    int32_t numeric_value) {
+void BasicUnion::set_numeric_value(int32_t numeric_value) {
   if (tag_ != Tag::kNumericValue) {
     DestroyActive();
     tag_ = Tag::kNumericValue;
   }
   data_.numeric_value = numeric_value;
-}void BasicUnion::set_enum_value(
-    EnumInUnion enum_value) {
+}
+
+void BasicUnion::set_enum_value(EnumInUnion enum_value) {
   if (tag_ != Tag::kEnumValue) {
     DestroyActive();
     tag_ = Tag::kEnumValue;
   }
   data_.enum_value = enum_value;
-}void BasicUnion::set_struct_value(
-    StructInUnionPtr struct_value) {
+}
+
+void BasicUnion::set_struct_value(StructInUnionPtr struct_value) {
   if (tag_ == Tag::kStructValue) {
-    *(data_.struct_value) = std::move(struct_value);
+    data_.struct_value = std::move(struct_value);
   } else {
     DestroyActive();
     tag_ = Tag::kStructValue;
-    data_.struct_value = new StructInUnionPtr(
+    new (&data_.struct_value) StructInUnionPtr(
         std::move(struct_value));
   }
 }
+
+
+BasicUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+    int32_t value)
+    : numeric_value(std::move(value)) {}
+
+BasicUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+    EnumInUnion value)
+    : enum_value(std::move(value)) {}
+
+BasicUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
+    StructInUnionPtr value)
+    : struct_value(std::move(value)) {}
 
 void BasicUnion::DestroyActive() {
   switch (tag_) {
 
     case Tag::kNumericValue:
-
+      std::destroy_at(&data_.numeric_value);
       break;
     case Tag::kEnumValue:
-
+      std::destroy_at(&data_.enum_value);
       break;
     case Tag::kStructValue:
-
-      delete data_.struct_value;
+      std::destroy_at(&data_.struct_value);
       break;
   }
 }
@@ -173,7 +208,7 @@ size_t BasicUnion::Hash(size_t seed) const {
     case Tag::kEnumValue:
       return mojo::internal::Hash(seed, data_.enum_value);
     case Tag::kStructValue:
-      return mojo::internal::Hash(seed, *data_.struct_value);
+      return mojo::internal::Hash(seed, data_.struct_value);
     default:
       NOTREACHED();
   }

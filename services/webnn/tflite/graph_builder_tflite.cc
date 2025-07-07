@@ -1259,7 +1259,7 @@ bool GraphBuilderTflite::RequiresFloat32Precision(const mojom::Operation& op) {
     // other operations in float16.
     // Ignore no-op `identity` operation.
     case mojom::Operation::Tag::kElementWiseUnary: {
-      mojom::ElementWiseUnaryPtr& operation = op.get_element_wise_unary();
+      const mojom::ElementWiseUnaryPtr& operation = op.get_element_wise_unary();
       if (operation->kind == mojom::ElementWiseUnary::Kind::kIdentity ||
           operation->kind == mojom::ElementWiseUnary::Kind::kCast) {
         return false;

@@ -1,39 +1,36 @@
-{% for field in union.fields %}
+{%  for field in union.fields %}
 {{union.name}}Ptr
 {{union.name}}::New{{field.name|under_to_camel}}(
     {{field.kind|cpp_wrapper_param_type_new}} value) {
-  auto result = {{union.name}}Ptr(std::in_place);
-  result->set_{{field.name}}(std::move(value));
-  return result;
+  return {{union.name}}Ptr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::k{{field.name|under_to_camel}})>,
+      std::move(value));
 }
-{% endfor -%}
+{%  endfor -%}
 
-{%- set default_field = union.fields.0 %}
-{{union.name}}::{{union.name}}() : tag_(Tag::k{{default_field.name|under_to_camel}}) {
-{%- if default_field.kind|is_object_kind or
-         default_field.kind|is_any_handle_or_interface_kind %}
-  data_.{{default_field.name}} = new {{default_field.kind|cpp_wrapper_type}}(
-      {{-default_field|default_value-}});
-{%- else %}
-  data_.{{default_field.name}} = {{default_field.kind|cpp_wrapper_type}}();
-{%- endif %}
-}
+{%  for field in union.fields %}
+{{union.name}}::{{union.name}}(
+    std::in_place_index_t<static_cast<size_t>(Tag::k{{field.name|under_to_camel}})>,
+    {{field.kind|cpp_wrapper_param_type_new}} value)
+    : tag_(Tag::k{{field.name|under_to_camel}}),
+      data_(std::in_place_index<static_cast<size_t>(Tag::k{{field.name|under_to_camel}})>,
+            std::move(value)) {}
+{%  endfor -%}
 
 {{union.name}}::~{{union.name}}() {
   DestroyActive();
 }
-
-{%  for field in union.fields -%}
-void {{union.name}}::set_{{field.name}}(
-    {{field.kind|cpp_wrapper_param_type_new}} {{field.name}}) {
+{%  for field in union.fields %}
+void {{union.name}}::set_{{field.name}}({{field.kind|cpp_wrapper_param_type_new}} {{field.name}}) {
 {%-   if field.kind|is_object_kind or
            field.kind|is_any_handle_or_interface_kind %}
   if (tag_ == Tag::k{{field.name|under_to_camel}}) {
-    *(data_.{{field.name}}) = std::move({{field.name}});
+    data_.{{field.name}} = std::move({{field.name}});
   } else {
     DestroyActive();
     tag_ = Tag::k{{field.name|under_to_camel}};
-    data_.{{field.name}} = new {{field.kind|cpp_wrapper_type}}(
+    new (&data_.{{field.name}}) {{field.kind|cpp_wrapper_type}}(
         std::move({{field.name}}));
   }
 {%-   else %}
@@ -44,16 +41,18 @@ void {{union.name}}::set_{{field.name}}(
   data_.{{field.name}} = {{field.name}};
 {%-   endif %}
 }
-{%- endfor %}
-
+{%  endfor %}
+{%  for field in union.fields %}
+{{union.name}}::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::k{{field.name|under_to_camel}})>,
+    {{field.kind|cpp_wrapper_param_type_new}} value)
+    : {{field.name}}(std::move(value)) {}
+{%  endfor %}
 void {{union.name}}::DestroyActive() {
   switch (tag_) {
 {%  for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}:
-{%    if field.kind|is_object_kind or
-         field.kind|is_any_handle_or_interface_kind %}
-      delete data_.{{field.name}};
-{%-   endif %}
+      std::destroy_at(&data_.{{field.name}});
       break;
 {%- endfor %}
   }
@@ -66,19 +65,9 @@ size_t {{union.name}}::Hash(size_t seed) const {
 {%  for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}:
 {%-   if for_blink %}
-{%-   if field.kind|is_object_kind or
-         field.kind|is_any_handle_or_interface_kind %}
-      return mojo::internal::WTFHash(seed, *data_.{{field.name}});
-{%-   else %}
       return mojo::internal::WTFHash(seed, data_.{{field.name}});
-{%-   endif %}
-{%-   else %}
-{%-   if field.kind|is_object_kind or
-         field.kind|is_any_handle_or_interface_kind %}
-      return mojo::internal::Hash(seed, *data_.{{field.name}});
 {%-   else %}
       return mojo::internal::Hash(seed, data_.{{field.name}});
-{%-   endif %}
 {%-   endif %}
 {%- endfor %}
     default:

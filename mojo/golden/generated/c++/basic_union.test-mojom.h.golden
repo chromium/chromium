@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 
-#include "build/build_config.h"
-
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #include "basic_union.test-mojom-features.h"  // IWYU pragma: export
@@ -209,6 +207,7 @@ class  BasicUnion {
         "definition.");
     return nullptr;
   }
+
   // Construct an instance holding |numeric_value|.
   static BasicUnionPtr NewNumericValue(
       int32_t value);
@@ -228,9 +227,8 @@ class  BasicUnion {
   U To() const {
     return mojo::TypeConverter<U, BasicUnion>::Convert(*this);
   }
-
-  BasicUnion();
   ~BasicUnion();
+
   // Delete the copy constructor and copy assignment operators because `data_`
   // contains raw pointers that must not be copied.
   BasicUnion(const BasicUnion& other) = delete;
@@ -260,43 +258,30 @@ class  BasicUnion {
     return tag_;
   }
 
-
-  
   bool is_numeric_value() const { return tag_ == Tag::kNumericValue; }
-
-  
   int32_t get_numeric_value() const {
     CHECK(tag_ == Tag::kNumericValue);
     return data_.numeric_value;
   }
+  void set_numeric_value(int32_t numeric_value);
 
-  
-  void set_numeric_value(
-      int32_t numeric_value);
-  
   bool is_enum_value() const { return tag_ == Tag::kEnumValue; }
-
-  
   EnumInUnion get_enum_value() const {
     CHECK(tag_ == Tag::kEnumValue);
     return data_.enum_value;
   }
+  void set_enum_value(EnumInUnion enum_value);
 
-  
-  void set_enum_value(
-      EnumInUnion enum_value);
-  
   bool is_struct_value() const { return tag_ == Tag::kStructValue; }
-
-  
-  StructInUnionPtr& get_struct_value() const {
+  const StructInUnionPtr& get_struct_value() const {
     CHECK(tag_ == Tag::kStructValue);
-    return *(data_.struct_value);
+    return data_.struct_value;
   }
-
-  
-  void set_struct_value(
-      StructInUnionPtr struct_value);
+  StructInUnionPtr& get_struct_value() {
+    CHECK(tag_ == Tag::kStructValue);
+    return data_.struct_value;
+  }
+  void set_struct_value(StructInUnionPtr struct_value);
 
   template <typename UserType>
   static mojo::Message SerializeAsMessage(UserType* input) {
@@ -312,13 +297,38 @@ class  BasicUnion {
   }
 
  private:
+  template <typename T>
+  friend class ::mojo::InlinedStructPtr;
+  template <typename T>
+  friend class ::mojo::StructPtr;
+
   union Union_ {
-    Union_() = default;
-    ~Union_() = default;
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+        int32_t value);
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+        EnumInUnion value);
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
+        StructInUnionPtr value);
+    // The contents of the union are explicitly destroyed by `DestroyActive()`.
+    ~Union_() {}
+
     int32_t numeric_value;
     EnumInUnion enum_value;
-    StructInUnionPtr* struct_value;
+    StructInUnionPtr struct_value;
   };
+
+  BasicUnion(
+      std::in_place_index_t<static_cast<size_t>(Tag::kNumericValue)>,
+      int32_t value);
+  BasicUnion(
+      std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
+      EnumInUnion value);
+  BasicUnion(
+      std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
+      StructInUnionPtr value);
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
@@ -340,7 +350,7 @@ BasicUnionPtr BasicUnion::Clone() const {
           mojo::Clone(data_.enum_value));
     case Tag::kStructValue:
       return NewStructValue(
-          mojo::Clone(*data_.struct_value));
+          mojo::Clone(data_.struct_value));
   }
   return nullptr;
 }
@@ -358,7 +368,7 @@ bool BasicUnion::Equals(const T& other) const {
     case Tag::kEnumValue:
       return mojo::Equals(data_.enum_value, other.data_.enum_value);
     case Tag::kStructValue:
-      return mojo::Equals(*(data_.struct_value), *(other.data_.struct_value));
+      return mojo::Equals(data_.struct_value, other.data_.struct_value);
   }
 
   return false;

@@ -99,9 +99,6 @@ bool Typemapped::Validate(
   return Data_::Validate(data, validation_context);
 }
 // The declaration includes the definition on other builds.
-#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
-const char IFaceWithTypemap::Name_[] = "golden.IFaceWithTypemap";
-#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 
 IFaceWithTypemap::IPCStableHashFunction IFaceWithTypemap::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)

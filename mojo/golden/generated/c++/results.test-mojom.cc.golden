@@ -66,55 +66,76 @@ bool ResultTestError::Validate(
 ResultInterface_Method_ResponseParam_ResultPtr
 ResultInterface_Method_ResponseParam_Result::NewSuccess(
     bool value) {
-  auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
-  result->set_success(std::move(value));
-  return result;
+  return ResultInterface_Method_ResponseParam_ResultPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kSuccess)>,
+      std::move(value));
 }
 
 ResultInterface_Method_ResponseParam_ResultPtr
 ResultInterface_Method_ResponseParam_Result::NewFailure(
     ResultTestErrorPtr value) {
-  auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
-  result->set_failure(std::move(value));
-  return result;
+  return ResultInterface_Method_ResponseParam_ResultPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
+      std::move(value));
 }
 
-ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponseParam_Result() : tag_(Tag::kSuccess) {
-  data_.success = bool();
-}
+ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponseParam_Result(
+    std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+    bool value)
+    : tag_(Tag::kSuccess),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kSuccess)>,
+            std::move(value)) {}
 
+ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponseParam_Result(
+    std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+    ResultTestErrorPtr value)
+    : tag_(Tag::kFailure),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
+            std::move(value)) {}
 ResultInterface_Method_ResponseParam_Result::~ResultInterface_Method_ResponseParam_Result() {
   DestroyActive();
 }
 
-void ResultInterface_Method_ResponseParam_Result::set_success(
-    bool success) {
+void ResultInterface_Method_ResponseParam_Result::set_success(bool success) {
   if (tag_ != Tag::kSuccess) {
     DestroyActive();
     tag_ = Tag::kSuccess;
   }
   data_.success = success;
-}void ResultInterface_Method_ResponseParam_Result::set_failure(
-    ResultTestErrorPtr failure) {
+}
+
+void ResultInterface_Method_ResponseParam_Result::set_failure(ResultTestErrorPtr failure) {
   if (tag_ == Tag::kFailure) {
-    *(data_.failure) = std::move(failure);
+    data_.failure = std::move(failure);
   } else {
     DestroyActive();
     tag_ = Tag::kFailure;
-    data_.failure = new ResultTestErrorPtr(
+    new (&data_.failure) ResultTestErrorPtr(
         std::move(failure));
   }
 }
+
+
+ResultInterface_Method_ResponseParam_Result::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+    bool value)
+    : success(std::move(value)) {}
+
+ResultInterface_Method_ResponseParam_Result::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+    ResultTestErrorPtr value)
+    : failure(std::move(value)) {}
 
 void ResultInterface_Method_ResponseParam_Result::DestroyActive() {
   switch (tag_) {
 
     case Tag::kSuccess:
-
+      std::destroy_at(&data_.success);
       break;
     case Tag::kFailure:
-
-      delete data_.failure;
+      std::destroy_at(&data_.failure);
       break;
   }
 }
@@ -125,7 +146,7 @@ size_t ResultInterface_Method_ResponseParam_Result::Hash(size_t seed) const {
     case Tag::kSuccess:
       return mojo::internal::Hash(seed, data_.success);
     case Tag::kFailure:
-      return mojo::internal::Hash(seed, *data_.failure);
+      return mojo::internal::Hash(seed, data_.failure);
     default:
       NOTREACHED();
   }
@@ -139,55 +160,76 @@ bool ResultInterface_Method_ResponseParam_Result::Validate(
 ResultInterface_SyncMethod_ResponseParam_ResultPtr
 ResultInterface_SyncMethod_ResponseParam_Result::NewSuccess(
     bool value) {
-  auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
-  result->set_success(std::move(value));
-  return result;
+  return ResultInterface_SyncMethod_ResponseParam_ResultPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kSuccess)>,
+      std::move(value));
 }
 
 ResultInterface_SyncMethod_ResponseParam_ResultPtr
 ResultInterface_SyncMethod_ResponseParam_Result::NewFailure(
     ResultTestErrorPtr value) {
-  auto result = ResultInterface_SyncMethod_ResponseParam_ResultPtr(std::in_place);
-  result->set_failure(std::move(value));
-  return result;
+  return ResultInterface_SyncMethod_ResponseParam_ResultPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
+      std::move(value));
 }
 
-ResultInterface_SyncMethod_ResponseParam_Result::ResultInterface_SyncMethod_ResponseParam_Result() : tag_(Tag::kSuccess) {
-  data_.success = bool();
-}
+ResultInterface_SyncMethod_ResponseParam_Result::ResultInterface_SyncMethod_ResponseParam_Result(
+    std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+    bool value)
+    : tag_(Tag::kSuccess),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kSuccess)>,
+            std::move(value)) {}
 
+ResultInterface_SyncMethod_ResponseParam_Result::ResultInterface_SyncMethod_ResponseParam_Result(
+    std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+    ResultTestErrorPtr value)
+    : tag_(Tag::kFailure),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kFailure)>,
+            std::move(value)) {}
 ResultInterface_SyncMethod_ResponseParam_Result::~ResultInterface_SyncMethod_ResponseParam_Result() {
   DestroyActive();
 }
 
-void ResultInterface_SyncMethod_ResponseParam_Result::set_success(
-    bool success) {
+void ResultInterface_SyncMethod_ResponseParam_Result::set_success(bool success) {
   if (tag_ != Tag::kSuccess) {
     DestroyActive();
     tag_ = Tag::kSuccess;
   }
   data_.success = success;
-}void ResultInterface_SyncMethod_ResponseParam_Result::set_failure(
-    ResultTestErrorPtr failure) {
+}
+
+void ResultInterface_SyncMethod_ResponseParam_Result::set_failure(ResultTestErrorPtr failure) {
   if (tag_ == Tag::kFailure) {
-    *(data_.failure) = std::move(failure);
+    data_.failure = std::move(failure);
   } else {
     DestroyActive();
     tag_ = Tag::kFailure;
-    data_.failure = new ResultTestErrorPtr(
+    new (&data_.failure) ResultTestErrorPtr(
         std::move(failure));
   }
 }
+
+
+ResultInterface_SyncMethod_ResponseParam_Result::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+    bool value)
+    : success(std::move(value)) {}
+
+ResultInterface_SyncMethod_ResponseParam_Result::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+    ResultTestErrorPtr value)
+    : failure(std::move(value)) {}
 
 void ResultInterface_SyncMethod_ResponseParam_Result::DestroyActive() {
   switch (tag_) {
 
     case Tag::kSuccess:
-
+      std::destroy_at(&data_.success);
       break;
     case Tag::kFailure:
-
-      delete data_.failure;
+      std::destroy_at(&data_.failure);
       break;
   }
 }
@@ -198,7 +240,7 @@ size_t ResultInterface_SyncMethod_ResponseParam_Result::Hash(size_t seed) const 
     case Tag::kSuccess:
       return mojo::internal::Hash(seed, data_.success);
     case Tag::kFailure:
-      return mojo::internal::Hash(seed, *data_.failure);
+      return mojo::internal::Hash(seed, data_.failure);
     default:
       NOTREACHED();
   }
@@ -210,9 +252,6 @@ bool ResultInterface_SyncMethod_ResponseParam_Result::Validate(
   return Data_::Validate(data, validation_context, false);
 }
 // The declaration includes the definition on other builds.
-#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
-const char ResultInterface::Name_[] = "golden.ResultInterface";
-#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
 
 ResultInterface::IPCStableHashFunction ResultInterface::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)

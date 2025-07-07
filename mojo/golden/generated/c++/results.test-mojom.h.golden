@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 
-#include "build/build_config.h"
-
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #include "results.test-mojom-features.h"  // IWYU pragma: export
@@ -54,14 +52,7 @@ class ResultInterface
     : public ResultInterfaceInterfaceBase {
  public:
   using IPCStableHashFunction = uint32_t(*)();
-
-// The different declaration based on architecture results in
-// binary size savings. There is not a functional difference.
-#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
-  static const char Name_[];
-#else
   static constexpr const char* Name_ = "golden.ResultInterface";
-#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
   static IPCStableHashFunction MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
   static constexpr uint32_t Version_ = 0;
@@ -358,6 +349,7 @@ class  ResultInterface_Method_ResponseParam_Result {
         "definition.");
     return nullptr;
   }
+
   // Construct an instance holding |success|.
   static ResultInterface_Method_ResponseParam_ResultPtr NewSuccess(
       bool value);
@@ -374,9 +366,8 @@ class  ResultInterface_Method_ResponseParam_Result {
   U To() const {
     return mojo::TypeConverter<U, ResultInterface_Method_ResponseParam_Result>::Convert(*this);
   }
-
-  ResultInterface_Method_ResponseParam_Result();
   ~ResultInterface_Method_ResponseParam_Result();
+
   // Delete the copy constructor and copy assignment operators because `data_`
   // contains raw pointers that must not be copied.
   ResultInterface_Method_ResponseParam_Result(const ResultInterface_Method_ResponseParam_Result& other) = delete;
@@ -406,31 +397,23 @@ class  ResultInterface_Method_ResponseParam_Result {
     return tag_;
   }
 
-
-  
   bool is_success() const { return tag_ == Tag::kSuccess; }
-
-  
   bool get_success() const {
     CHECK(tag_ == Tag::kSuccess);
     return data_.success;
   }
+  void set_success(bool success);
 
-  
-  void set_success(
-      bool success);
-  
   bool is_failure() const { return tag_ == Tag::kFailure; }
-
-  
-  ResultTestErrorPtr& get_failure() const {
+  const ResultTestErrorPtr& get_failure() const {
     CHECK(tag_ == Tag::kFailure);
-    return *(data_.failure);
+    return data_.failure;
   }
-
-  
-  void set_failure(
-      ResultTestErrorPtr failure);
+  ResultTestErrorPtr& get_failure() {
+    CHECK(tag_ == Tag::kFailure);
+    return data_.failure;
+  }
+  void set_failure(ResultTestErrorPtr failure);
 
   template <typename UserType>
   static mojo::Message SerializeAsMessage(UserType* input) {
@@ -446,12 +429,31 @@ class  ResultInterface_Method_ResponseParam_Result {
   }
 
  private:
+  template <typename T>
+  friend class ::mojo::InlinedStructPtr;
+  template <typename T>
+  friend class ::mojo::StructPtr;
+
   union Union_ {
-    Union_() = default;
-    ~Union_() = default;
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+        bool value);
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+        ResultTestErrorPtr value);
+    // The contents of the union are explicitly destroyed by `DestroyActive()`.
+    ~Union_() {}
+
     bool success;
-    ResultTestErrorPtr* failure;
+    ResultTestErrorPtr failure;
   };
+
+  ResultInterface_Method_ResponseParam_Result(
+      std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+      bool value);
+  ResultInterface_Method_ResponseParam_Result(
+      std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+      ResultTestErrorPtr value);
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
@@ -479,6 +481,7 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
         "definition.");
     return nullptr;
   }
+
   // Construct an instance holding |success|.
   static ResultInterface_SyncMethod_ResponseParam_ResultPtr NewSuccess(
       bool value);
@@ -495,9 +498,8 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
   U To() const {
     return mojo::TypeConverter<U, ResultInterface_SyncMethod_ResponseParam_Result>::Convert(*this);
   }
-
-  ResultInterface_SyncMethod_ResponseParam_Result();
   ~ResultInterface_SyncMethod_ResponseParam_Result();
+
   // Delete the copy constructor and copy assignment operators because `data_`
   // contains raw pointers that must not be copied.
   ResultInterface_SyncMethod_ResponseParam_Result(const ResultInterface_SyncMethod_ResponseParam_Result& other) = delete;
@@ -527,31 +529,23 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
     return tag_;
   }
 
-
-  
   bool is_success() const { return tag_ == Tag::kSuccess; }
-
-  
   bool get_success() const {
     CHECK(tag_ == Tag::kSuccess);
     return data_.success;
   }
+  void set_success(bool success);
 
-  
-  void set_success(
-      bool success);
-  
   bool is_failure() const { return tag_ == Tag::kFailure; }
-
-  
-  ResultTestErrorPtr& get_failure() const {
+  const ResultTestErrorPtr& get_failure() const {
     CHECK(tag_ == Tag::kFailure);
-    return *(data_.failure);
+    return data_.failure;
   }
-
-  
-  void set_failure(
-      ResultTestErrorPtr failure);
+  ResultTestErrorPtr& get_failure() {
+    CHECK(tag_ == Tag::kFailure);
+    return data_.failure;
+  }
+  void set_failure(ResultTestErrorPtr failure);
 
   template <typename UserType>
   static mojo::Message SerializeAsMessage(UserType* input) {
@@ -567,12 +561,31 @@ class  ResultInterface_SyncMethod_ResponseParam_Result {
   }
 
  private:
+  template <typename T>
+  friend class ::mojo::InlinedStructPtr;
+  template <typename T>
+  friend class ::mojo::StructPtr;
+
   union Union_ {
-    Union_() = default;
-    ~Union_() = default;
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+        bool value);
+    Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+        ResultTestErrorPtr value);
+    // The contents of the union are explicitly destroyed by `DestroyActive()`.
+    ~Union_() {}
+
     bool success;
-    ResultTestErrorPtr* failure;
+    ResultTestErrorPtr failure;
   };
+
+  ResultInterface_SyncMethod_ResponseParam_Result(
+      std::in_place_index_t<static_cast<size_t>(Tag::kSuccess)>,
+      bool value);
+  ResultInterface_SyncMethod_ResponseParam_Result(
+      std::in_place_index_t<static_cast<size_t>(Tag::kFailure)>,
+      ResultTestErrorPtr value);
 
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
@@ -591,7 +604,7 @@ ResultInterface_Method_ResponseParam_ResultPtr ResultInterface_Method_ResponsePa
           mojo::Clone(data_.success));
     case Tag::kFailure:
       return NewFailure(
-          mojo::Clone(*data_.failure));
+          mojo::Clone(data_.failure));
   }
   return nullptr;
 }
@@ -607,7 +620,7 @@ bool ResultInterface_Method_ResponseParam_Result::Equals(const T& other) const {
     case Tag::kSuccess:
       return mojo::Equals(data_.success, other.data_.success);
     case Tag::kFailure:
-      return mojo::Equals(*(data_.failure), *(other.data_.failure));
+      return mojo::Equals(data_.failure, other.data_.failure);
   }
 
   return false;
@@ -620,7 +633,7 @@ ResultInterface_SyncMethod_ResponseParam_ResultPtr ResultInterface_SyncMethod_Re
           mojo::Clone(data_.success));
     case Tag::kFailure:
       return NewFailure(
-          mojo::Clone(*data_.failure));
+          mojo::Clone(data_.failure));
   }
   return nullptr;
 }
@@ -636,7 +649,7 @@ bool ResultInterface_SyncMethod_ResponseParam_Result::Equals(const T& other) con
     case Tag::kSuccess:
       return mojo::Equals(data_.success, other.data_.success);
     case Tag::kFailure:
-      return mojo::Equals(*(data_.failure), *(other.data_.failure));
+      return mojo::Equals(data_.failure, other.data_.failure);
   }
 
   return false;

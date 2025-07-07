@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 
-#include "build/build_config.h"
-
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #include "interface.test-mojom-features.h"  // IWYU pragma: export
@@ -53,14 +51,7 @@ class IFace
     : public IFaceInterfaceBase {
  public:
   using IPCStableHashFunction = uint32_t(*)();
-
-// The different declaration based on architecture results in
-// binary size savings. There is not a functional difference.
-#if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
-  static const char Name_[];
-#else
   static constexpr const char* Name_ = "golden.IFace";
-#endif // defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_ANDROID)
   static IPCStableHashFunction MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
   static constexpr uint32_t Version_ = 0;
