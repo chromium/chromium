@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** A factory class to create a {@link PriceDropNotificationManager}. */
+@NullMarked
 public class PriceDropNotificationManagerFactory {
-    private static PriceDropNotificationManager sTestingInstance;
+    private static @Nullable PriceDropNotificationManager sTestingInstance;
 
     public static void setInstanceForTesting(PriceDropNotificationManager testInstance) {
         sTestingInstance = testInstance;

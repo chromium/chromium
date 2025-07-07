@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionType;
@@ -45,10 +45,10 @@ public class PriceDropNotifier {
         public NotificationData(
                 CharSequence title,
                 CharSequence text,
-                String iconUrl,
+                @Nullable String iconUrl,
                 String destinationUrl,
                 String offerId,
-                String productClusterId,
+                @Nullable String productClusterId,
                 List<ActionData> actions) {
             this.title = title;
             this.text = text;
@@ -69,7 +69,7 @@ public class PriceDropNotifier {
          * The URL of a representative image for the product, hosted on Google server. Used as both
          * large icon and the image in the expanded view.
          */
-        public final String iconUrl;
+        public final @Nullable String iconUrl;
 
         /** The URL that leads to the shopping item. */
         public final String destinationUrl;
@@ -78,7 +78,7 @@ public class PriceDropNotifier {
         public final String offerId;
 
         /** Associated cluster ID. */
-        public final String productClusterId;
+        public final @Nullable String productClusterId;
 
         /** A list of button actions. */
         public final List<ActionData> actions;
@@ -95,7 +95,7 @@ public class PriceDropNotifier {
     }
 
     private final Profile mProfile;
-    private ImageFetcher mImageFetcher;
+    private @Nullable ImageFetcher mImageFetcher;
     private PriceDropNotificationManager mPriceDropNotificationManager;
 
     /**
@@ -223,7 +223,11 @@ public class PriceDropNotifier {
     }
 
     private PendingIntentProvider createClickIntent(
-            String actionId, String url, String offerId, String clusterId, int notificationId) {
+            String actionId,
+            String url,
+            String offerId,
+            @Nullable String clusterId,
+            int notificationId) {
         Intent intent =
                 mPriceDropNotificationManager.getNotificationActionClickIntent(
                         actionId, url, offerId, clusterId, notificationId);

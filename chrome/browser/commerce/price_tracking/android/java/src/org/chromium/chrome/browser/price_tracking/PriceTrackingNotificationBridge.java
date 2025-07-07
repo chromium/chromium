@@ -8,7 +8,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.primitives.UnsignedLongs;
@@ -19,6 +18,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
@@ -145,7 +145,7 @@ public class PriceTrackingNotificationBridge {
         mNotifier.showNotification(notificationData);
     }
 
-    private static ChromeNotification parseAndValidateChromeNotification(byte[] payload) {
+    private static @Nullable ChromeNotification parseAndValidateChromeNotification(byte[] payload) {
         ChromeNotification chromeNotification;
         try {
             chromeNotification = ChromeNotification.parseFrom(payload);
@@ -169,8 +169,9 @@ public class PriceTrackingNotificationBridge {
         return chromeNotification;
     }
 
-    private static PriceDropNotificationPayload parseAndValidatePriceDropNotificationPayload(
-            ByteString payload) {
+    private static @Nullable
+            PriceDropNotificationPayload parseAndValidatePriceDropNotificationPayload(
+                    ByteString payload) {
         // notification_data field is an any.proto.
         Any any = null;
         try {
@@ -245,7 +246,8 @@ public class PriceTrackingNotificationBridge {
         return null;
     }
 
-    private static String getPriceDropAmount(PriceDropNotificationPayload priceDropPayload) {
+    private static @Nullable String getPriceDropAmount(
+            PriceDropNotificationPayload priceDropPayload) {
         long dropAmount =
                 priceDropPayload.getPreviousPrice().getAmountMicros()
                         - priceDropPayload.getCurrentPrice().getAmountMicros();
@@ -257,7 +259,7 @@ public class PriceTrackingNotificationBridge {
                         .build());
     }
 
-    private static String buildDisplayPrice(ProductPrice productPrice) {
+    private static @Nullable String buildDisplayPrice(ProductPrice productPrice) {
         return PriceUtils.formatPrice(
                 productPrice.getCurrencyCode(), productPrice.getAmountMicros());
     }

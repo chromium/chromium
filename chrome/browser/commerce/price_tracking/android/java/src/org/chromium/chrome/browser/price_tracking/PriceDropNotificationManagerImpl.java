@@ -16,7 +16,6 @@ import android.provider.Browser;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
@@ -28,6 +27,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -357,7 +357,11 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public Intent getNotificationActionClickIntent(
-            String actionId, String url, String offerId, String clusterId, int notificationId) {
+            String actionId,
+            String url,
+            String offerId,
+            @Nullable String clusterId,
+            int notificationId) {
         if (ACTION_ID_VISIT_SITE.equals(actionId)) {
             return getNotificationClickIntent(url, notificationId);
         }
@@ -507,7 +511,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         }
     }
 
-    private String notificationTypeToManagementType(@SystemNotificationType int type) {
+    private @Nullable String notificationTypeToManagementType(@SystemNotificationType int type) {
         if (type == SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED) {
             return "ChromeManaged";
         } else if (type == SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED) {
