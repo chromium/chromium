@@ -23,7 +23,6 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -31,6 +30,7 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/parsers/jpeg_parser.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -289,7 +289,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     return;
   }
 
-  // Create gmb buffer from output VideoFrame. Since the JPEG VideoFrame's coded
+  // Create GMB handle from output VideoFrame. Since the JPEG VideoFrame's coded
   // size is the 2D image size, we should use (buffer_size, 1) as the R8 gmb's
   // size, where buffer_size can be obtained from the first plane's size.
   auto output_gmb_handle = CreateGpuMemoryBufferHandle(output_frame.get());
@@ -298,35 +298,36 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   // In this case, we use the R_8 buffer with height == 1 to represent a data
   // container. As a result, we use plane.stride as size of the data here since
   // plane.size might be larger due to height alignment.
-  const gfx::Size output_gmb_buffer_size(
+  const gfx::Size native_pixmap_size(
       base::checked_cast<int32_t>(output_frame->layout().planes()[0].stride),
       1);
-  auto output_gmb_buffer =
-      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(output_gmb_handle),
-          output_gmb_buffer_size, gfx::BufferFormat::R_8,
-          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, base::DoNothing());
-  if (output_gmb_buffer == nullptr) {
-    VLOGF(1) << "Failed to create GpuMemoryBufferImpl from handle";
+  std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
+      client_native_pixmap_factory_->ImportFromHandle(
+          std::move(output_gmb_handle).native_pixmap_handle(),
+          native_pixmap_size, gfx::BufferFormat::R_8,
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
+  if (native_pixmap == nullptr) {
+    VLOGF(1) << "Failed to create NativePixmap from handle";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
 
-  const bool is_mapped = output_gmb_buffer->Map();
+  const bool is_mapped = native_pixmap->Map();
   if (!is_mapped) {
-    VLOGF(1) << "Map the output gmb buffer failed";
+    VLOGF(1) << "Map the native pixmap failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  absl::Cleanup output_gmb_buffer_unmapper = [&output_gmb_buffer] {
-    output_gmb_buffer->Unmap();
+  absl::Cleanup native_pixmap_unmapper = [&native_pixmap] {
+    native_pixmap->Unmap();
   };
 
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
-  uint8_t* output_memory = static_cast<uint8_t*>(output_gmb_buffer->memory(0));
+  uint8_t* output_memory =
+      static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
   size_t encoded_size = 0;
-  // Since the format of |output_gmb_buffer| is gfx::BufferFormat::R_8, we can
+  // Since the format of |native_pixmap| is gfx::BufferFormat::R_8, we can
   // use its area as the maximum bytes we need to download to avoid buffer
   // overflow.
   // Since we didn't supply EXIF data to the JPEG encoder, it creates a default
@@ -349,7 +350,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   const size_t output_offset =
       exif_buffer_size > 0 ? exif_buffer_size - kApp0DataSize : 0;
   const size_t output_size =
-      base::checked_cast<size_t>(output_gmb_buffer->GetSize().GetArea());
+      base::checked_cast<size_t>(native_pixmap_size.GetArea());
   if (output_offset >= output_size) {
     VLOGF(1) << "Output buffer size (" << output_size << ") is too small";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
