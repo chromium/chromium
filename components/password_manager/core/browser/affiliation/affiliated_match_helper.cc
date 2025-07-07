@@ -20,41 +20,39 @@ namespace password_manager {
 
 namespace {
 
-using AffiliatedRealms =
-    base::StrongAlias<class AffiliatedRealmsTag, std::vector<std::string>>;
-using GroupedRealms =
-    base::StrongAlias<class GroupedRealmsTag, std::vector<std::string>>;
 using affiliations::Facet;
 using affiliations::FacetURI;
+using AffiliatedRealms =
+    base::StrongAlias<class AffiliatedRealmsTag, std::vector<Facet>>;
+using GroupedRealms =
+    base::StrongAlias<class GroupedRealmsTag, std::vector<Facet>>;
 
 bool IsValidAndroidCredential(const PasswordForm& form) {
   return form.scheme == PasswordForm::Scheme::kHtml &&
          affiliations::IsValidAndroidFacetURI(form.signon_realm);
 }
 
-std::vector<std::string> GetRealmsFromFacets(const FacetURI& original_facet_uri,
-                                             const std::vector<Facet>& facets) {
-  std::vector<std::string> realms;
-  realms.reserve(facets.size());
+std::vector<Facet> GetFacets(const FacetURI& original_facet_uri,
+                             const std::vector<Facet>& facets) {
+  std::vector<Facet> result;
+  result.reserve(facets.size());
   for (const Facet& affiliated_facet : facets) {
     if (affiliated_facet.uri == original_facet_uri) {
       continue;
     }
     if (affiliated_facet.uri.IsValidAndroidFacetURI()) {
-      // Facet URIs have no trailing slash, whereas realms do.
-      realms.push_back(affiliated_facet.uri.canonical_spec() + "/");
+      result.push_back(affiliated_facet);
     }
 
 #if !BUILDFLAG(IS_ANDROID)
     // All platforms except Android supports filling across affiliated websites.
     if (affiliated_facet.uri.IsValidWebFacetURI()) {
       CHECK(!base::EndsWith(affiliated_facet.uri.canonical_spec(), "/"));
-      // Facet URIs have no trailing slash, whereas realms do.
-      realms.push_back(affiliated_facet.uri.canonical_spec() + "/");
+      result.push_back(affiliated_facet);
     }
 #endif
   }
-  return realms;
+  return result;
 }
 
 AffiliatedRealms ProcessAffiliatedFacets(
@@ -64,7 +62,7 @@ AffiliatedRealms ProcessAffiliatedFacets(
   if (!success) {
     return {};
   }
-  return AffiliatedRealms(GetRealmsFromFacets(original_facet_uri, results));
+  return AffiliatedRealms(GetFacets(original_facet_uri, results));
 }
 
 GroupedRealms ProcessGroupedFacets(
@@ -75,8 +73,7 @@ GroupedRealms ProcessGroupedFacets(
   // includes requested realm itself). Therefore, resulting number of groups
   // not bigger than 1 and not smaller than 1.
   CHECK_EQ(1U, results.size());
-  return GroupedRealms(
-      GetRealmsFromFacets(original_facet_uri, results[0].facets));
+  return GroupedRealms(GetFacets(original_facet_uri, results[0].facets));
 }
 
 void ProcessAffiliationAndGroupResponse(

@@ -136,8 +136,8 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   void HandleAffiliationsAndGroupsReceived(
       base::RepeatingCallback<void(LoginsResultOrError)>
           forms_received_callback,
-      std::vector<std::string> affiliated_realms,
-      std::vector<std::string> grouped_realms);
+      std::vector<affiliations::Facet> affiliated_facets,
+      std::vector<affiliations::Facet> grouped_facets);
 
   // Method which is called after exact, PSL, affiliated and grouped matches
   // are received.
@@ -150,6 +150,8 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
 
   // The group realms for 'requested_digest_'.
   base::flat_set<std::string> group_;
+
+  GURL change_password_url_;
 
   base::WeakPtr<PasswordStoreBackend> backend_;
 };
@@ -202,18 +204,26 @@ void GetLoginsHelper::OnPSLExtensionsReceived(
 
 void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
     base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
-    std::vector<std::string> affiliated_realms,
-    std::vector<std::string> grouped_realms) {
+    std::vector<affiliations::Facet> affiliated_facets,
+    std::vector<affiliations::Facet> grouped_facets) {
   if (!backend_) {
     return;
   }
 
-  affiliations_ = base::flat_set<std::string>(
-      std::make_move_iterator(affiliated_realms.begin()),
-      std::make_move_iterator(affiliated_realms.end()));
-  group_ = base::flat_set<std::string>(
-      std::make_move_iterator(grouped_realms.begin()),
-      std::make_move_iterator(grouped_realms.end()));
+  for (const auto& facet : grouped_facets) {
+    if (facet.change_password_url.is_valid()) {
+      change_password_url_ = facet.change_password_url;
+    }
+  }
+
+  auto facet_to_string = [](const affiliations::Facet& facet) {
+    // Facet URIs have no trailing slash, whereas realms do.
+    return facet.uri.canonical_spec() + "/";
+  };
+
+  affiliations_ =
+      base::MakeFlatSet<std::string>(affiliated_facets, {}, facet_to_string);
+  group_ = base::MakeFlatSet<std::string>(grouped_facets, {}, facet_to_string);
 
   std::vector<PasswordFormDigest> digests_to_request;
   for (const auto& realm : affiliations_) {
@@ -251,6 +261,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
 
   // PSL matches can also be affiliation/grouped matches.
   for (auto& form : final_result) {
+    form.change_password_url = change_password_url_;
     switch (GetMatchResult(form, requested_digest_)) {
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:

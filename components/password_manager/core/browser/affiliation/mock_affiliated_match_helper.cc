@@ -45,9 +45,18 @@ void MockAffiliatedMatchHelper::ExpectCallToGetAffiliatedAndGrouped(
 void MockAffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
     const PasswordFormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
-  std::vector<std::string> affiliated_realms =
-      OnGetAffiliatedAndroidRealmsCalled(observed_form);
-  std::vector<std::string> grouped_realms = OnGetGroup(observed_form);
+  std::vector<affiliations::Facet> affiliated_realms;
+  for (const std::string& realm :
+       OnGetAffiliatedAndroidRealmsCalled(observed_form)) {
+    affiliated_realms.emplace_back(
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(realm));
+  }
+  std::vector<affiliations::Facet> grouped_realms;
+  for (const std::string& realm : OnGetGroup(observed_form)) {
+    grouped_realms.emplace_back(
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(realm));
+  }
+
   std::move(result_callback)
       .Run(std::move(affiliated_realms), std::move(grouped_realms));
 }

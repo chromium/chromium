@@ -35,6 +35,7 @@ using ::base::test::RunOnceCallback;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::VariantWith;
 
@@ -418,6 +419,58 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
 
   EXPECT_CALL(result_callback,
               Run(VariantWith<LoginsResult>(ElementsAre(expected_form))));
+  RunUntilIdle();
+}
+
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ChangePasswordURLIsSet) {
+  PasswordForm exact_form = CreateForm(kTestWebURL, u"username1", u"password");
+  PasswordForm affiliated_form =
+      CreateForm(kAffiliatedAndroidApp, u"username2", u"password");
+  PasswordForm grouped_form =
+      CreateForm(kGroupWebURL, u"username3", u"password");
+
+  backend()->AddLoginAsync(exact_form, base::DoNothing());
+  backend()->AddLoginAsync(affiliated_form, base::DoNothing());
+  backend()->AddLoginAsync(grouped_form, base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  std::vector<Facet> facets;
+  facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  facets.emplace_back(
+      FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(facets, true));
+
+  GURL change_password_url("https://example.com/.well-known/change-password/");
+  GroupedFacets group;
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
+  group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kGroupWebURL),
+                            affiliations::FacetBrandingInfo(),
+                            change_password_url);
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(RunOnceCallback<1>(std::vector<GroupedFacets>{group}));
+
+  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  GetLoginsWithAffiliationsRequestHandler(
+      observed_form, backend(), &match_helper(), result_callback.Get());
+
+  exact_form.match_type = PasswordForm::MatchType::kExact;
+  exact_form.change_password_url = change_password_url;
+
+  affiliated_form.match_type = PasswordForm::MatchType::kAffiliated;
+  affiliated_form.affiliated_web_realm = kTestWebURL;
+  affiliated_form.change_password_url = change_password_url;
+
+  grouped_form.match_type = PasswordForm::MatchType::kGrouped;
+  grouped_form.change_password_url = change_password_url;
+
+  EXPECT_CALL(result_callback,
+              Run(VariantWith<LoginsResult>(UnorderedElementsAre(
+                  exact_form, affiliated_form, grouped_form))));
   RunUntilIdle();
 }
 

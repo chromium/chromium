@@ -284,6 +284,12 @@ struct PasswordForm {
   // no prior call to this method, the URL is empty.
   GURL app_icon_url;
 
+  // The change password URL for a website on which this password is saved. The
+  // field is filled out when the PasswordStore injects affiliation and branding
+  // information, i.e. in InjectAffiliationAndBrandingInformation. If there was
+  // no prior call to this method, the URL is empty.
+  GURL change_password_url;
+
   // The name of the submit button used. Optional; only used in scoring
   // of PasswordForm results from the database to make matches as tight as
   // possible.
