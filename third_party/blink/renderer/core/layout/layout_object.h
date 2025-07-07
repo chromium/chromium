@@ -1342,21 +1342,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsAnonymousBlockFlow() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutIsAnonymousBlockFixEnabled()) {
-      return IsAnonymous() && IsLayoutBlockFlow() &&
-             StyleRef().Display() == EDisplay::kBlock &&
-             !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
-    }
-    // This function is kept in sync with anonymous block creation conditions in
-    // LayoutBlock::createAnonymousBlock(). This includes creating an anonymous
-    // LayoutBlock having a BLOCK or BOX display. Other classes such as
-    // LayoutTextFragment are not LayoutBlocks and will return false.
-    // See https://bugs.webkit.org/show_bug.cgi?id=56709.
-    return IsAnonymous() &&
-           (StyleRef().Display() == EDisplay::kBlock ||
-            StyleRef().Display() == EDisplay::kWebkitBox) &&
-           StyleRef().StyleType() == kPseudoIdNone && IsLayoutBlock() &&
-           !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
+    return IsAnonymous() && IsLayoutBlockFlow() &&
+           StyleRef().Display() == EDisplay::kBlock && !IsLayoutFlowThread() &&
+           !IsLayoutMultiColumnSet();
   }
 
   bool IsFloating() const {
