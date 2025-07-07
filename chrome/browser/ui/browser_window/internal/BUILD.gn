@@ -41,6 +41,7 @@ source_set("internal") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
+      "//components/breadcrumbs/core:status",
       "//components/collaboration/public:public",
       "//components/commerce/core:feature_list",
       "//components/data_sharing/public:public",

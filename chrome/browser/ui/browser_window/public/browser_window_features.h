@@ -20,6 +20,7 @@ class GlicIphController;
 #endif
 
 class BookmarksSidePanelCoordinator;
+class BreadcrumbManagerBrowserAgent;
 class Browser;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
@@ -507,6 +508,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
 #endif
+
+  // Listens for browser-related breadcrumb events to be added to crash reports.
+  std::unique_ptr<BreadcrumbManagerBrowserAgent>
+      breadcrumb_manager_browser_agent_;
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;

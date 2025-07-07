@@ -6,10 +6,10 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 
 namespace {
@@ -24,19 +24,19 @@ int GetTabId(const content::WebContents* const web_contents) {
 
 }  // namespace
 
-BreadcrumbManagerBrowserAgent::BreadcrumbManagerBrowserAgent(Browser* browser)
-    : browser_(browser) {
-  browser_->tab_strip_model()->AddObserver(this);
+BreadcrumbManagerBrowserAgent::BreadcrumbManagerBrowserAgent(
+    TabStripModel* tab_strip_model,
+    content::BrowserContext* browser_context)
+    : breadcrumb_manager_(CHECK_DEREF(
+          BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+              browser_context))) {
+  tab_strip_model->AddObserver(this);
 }
 
-BreadcrumbManagerBrowserAgent::~BreadcrumbManagerBrowserAgent() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-}
+BreadcrumbManagerBrowserAgent::~BreadcrumbManagerBrowserAgent() = default;
 
 void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-      browser_->profile())
-      ->AddEvent(event);
+  breadcrumb_manager_->AddEvent(event);
 }
 
 void BreadcrumbManagerBrowserAgent::OnTabStripModelChanged(

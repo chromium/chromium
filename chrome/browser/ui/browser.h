@@ -63,7 +63,6 @@
 #endif
 
 class BackgroundContents;
-class BreadcrumbManagerBrowserAgent;
 class BrowserActions;
 class BrowserLiveTabContext;
 class BrowserView;
@@ -1415,10 +1414,6 @@ class Browser : public TabStripModelObserver,
   bool window_has_shown_;
 
   std::string user_title_;
-
-  // Listens for browser-related breadcrumb events to be added to crash reports.
-  std::unique_ptr<BreadcrumbManagerBrowserAgent>
-      breadcrumb_manager_browser_agent_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 

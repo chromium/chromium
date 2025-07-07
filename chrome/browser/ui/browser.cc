@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -165,7 +164,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -668,11 +666,7 @@ Browser::Browser(const CreateParams& params)
       browser_actions_(new BrowserActions(*this)),
       command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
-      user_title_(params.user_title),
-      breadcrumb_manager_browser_agent_(
-          breadcrumbs::IsEnabled(g_browser_process->local_state())
-              ? std::make_unique<BreadcrumbManagerBrowserAgent>(this)
-              : nullptr) {
+      user_title_(params.user_title) {
   browser_actions_->InitializeBrowserActions();
 
   if (!profile_->IsOffTheRecord()) {

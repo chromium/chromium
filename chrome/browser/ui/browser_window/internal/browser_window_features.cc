@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -83,6 +85,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
@@ -90,6 +93,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
+#include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
@@ -254,6 +258,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser->GetBrowserForMigrationOnly()->command_controller(),
           browser->GetTabStripModel(), browser->GetProfile());
 #endif
+
+  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
+    breadcrumb_manager_browser_agent_ =
+        std::make_unique<BreadcrumbManagerBrowserAgent>(
+            browser->GetTabStripModel(), browser->GetProfile());
+  }
 
 #if defined(USE_AURA)
   overscroll_pref_manager_ = std::make_unique<OverscrollPrefManager>(
