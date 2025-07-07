@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
+#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
@@ -76,13 +77,15 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(
       format_(format),
       premapped_(premapped),
       map_callback_controller_(controller) {
-  std::optional<media::VideoPixelFormat> video_pixel_format =
-      media::GfxBufferFormatToVideoPixelFormat(format);
-  CHECK(video_pixel_format);
-  video_pixel_format_ = *video_pixel_format;
+  int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
+  size_t allocation_size = 0;
+  for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+    size_t height_in_pixels;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        GetSize().height(), GetFormat(), plane_index, &height_in_pixels));
+    allocation_size += stride(plane_index) * height_in_pixels;
+  }
 
-  const size_t allocation_size =
-      media::VideoFrame::AllocationSize(video_pixel_format_, size_);
   data_ = std::vector<uint8_t>(allocation_size);
 
   handle_.type = gfx::SHARED_MEMORY_BUFFER;
@@ -108,12 +111,9 @@ bool FakeGpuMemoryBuffer::AsyncMappingIsNonBlocking() const {
 }
 
 void* FakeGpuMemoryBuffer::memory(size_t plane) {
-  DCHECK_LT(plane, media::VideoFrame::NumPlanes(video_pixel_format_));
+  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   auto* data_ptr = data_.data();
-  for (size_t i = 1; i <= plane; i++) {
-    data_ptr += media::VideoFrame::PlaneSize(video_pixel_format_, i - 1, size_)
-                    .GetArea();
-  }
+  data_ptr += gfx::BufferOffsetForBufferFormat(GetSize(), GetFormat(), plane);
   return data_ptr;
 }
 
@@ -128,9 +128,8 @@ gfx::BufferFormat FakeGpuMemoryBuffer::GetFormat() const {
 }
 
 int FakeGpuMemoryBuffer::stride(size_t plane) const {
-  DCHECK_LT(plane, media::VideoFrame::NumPlanes(video_pixel_format_));
-  return media::VideoFrame::PlaneSize(video_pixel_format_, plane, size_)
-      .width();
+  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
+  return gfx::RowSizeForBufferFormat(GetSize().width(), GetFormat(), plane);
 }
 
 gfx::GpuMemoryBufferType FakeGpuMemoryBuffer::GetType() const {

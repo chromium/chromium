@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
@@ -59,7 +58,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  private:
   gfx::Size size_;
   gfx::BufferFormat format_;
-  media::VideoPixelFormat video_pixel_format_ = media::PIXEL_FORMAT_UNKNOWN;
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
