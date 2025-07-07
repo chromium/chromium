@@ -62,10 +62,11 @@ struct LabeledTextfieldWithErrorMessage {
   raw_ptr<views::Textfield> input = nullptr;
   raw_ptr<views::Label> error_label = nullptr;
   raw_ptr<views::View> error_label_placeholder = nullptr;
+  bool is_valid_input = false;
 
   views::Textfield& GetInputTextField() const;
 
-  void SetErrorState(bool is_valid_input,
+  void SetErrorState(bool is_valid,
                      std::optional<std::u16string> error_message);
 };
 
