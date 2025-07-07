@@ -145,7 +145,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
 }
 
 void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {
-  AnnounceTextForA11y(text);
+  AutofillAccessibilityHelper::GetInstance()->AnnounceTextForA11y(text);
 }
 
 void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(

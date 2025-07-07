@@ -78,6 +78,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_checkout_accessibility_service_impl_unittest.cc",
     "fast_checkout_capabilities_fetcher_impl_unittest.cc",
     "fast_checkout_client_impl_unittest.cc",
     "fast_checkout_delegate_impl_unittest.cc",
@@ -87,6 +88,7 @@ source_set("unit_tests") {
 
   deps = [
     ":fast_checkout",
+    ":impl",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/autofill",
@@ -96,6 +98,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/unified_consent:unified_consent",
     "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

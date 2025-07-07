@@ -9,7 +9,18 @@
 
 namespace autofill {
 
-void AnnounceTextForA11y(const std::u16string& message);
+// Helper class for autofill accessibility functionality on Android.
+class AutofillAccessibilityHelper {
+ public:
+  AutofillAccessibilityHelper() = default;
+  virtual ~AutofillAccessibilityHelper() = default;
+  virtual void AnnounceTextForA11y(const std::u16string& message);
+  static AutofillAccessibilityHelper* GetInstance();
+  static void SetInstanceForTesting(AutofillAccessibilityHelper* instance);
+
+ private:
+  static AutofillAccessibilityHelper* default_instance_;
+};
 
 }  // namespace autofill
 
