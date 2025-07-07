@@ -4060,6 +4060,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.IsRunningOnManagedProfileDuration" units="ms"
+    expires_after="2025-11-01">
+  <owner>nafisabedin@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time it takes to calculate whether there is a profile owner or
+    device owner app on the device. Android only.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.Mac.IsCurrentUserDomainUser" enum="Boolean"
     expires_after="2025-12-01">
   <owner>pastarmovj@chromium.org</owner>
@@ -4098,6 +4108,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The rough Windows suite we are running on. This check is performed once at
     start-up on Windows. The histogram was removed in 108 and reinstated in 111.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.SystemCallCount" units="count"
+    expires_after="2025-11-01">
+  <owner>nafisabedin@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the number of system calls made when trying to determine whether
+    there is a profile owner or device owner app on the device. Android only.
   </summary>
 </histogram>
 
