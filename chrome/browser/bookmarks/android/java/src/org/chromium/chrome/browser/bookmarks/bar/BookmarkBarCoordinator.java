@@ -194,7 +194,7 @@ public class BookmarkBarCoordinator implements TopControlLayer, BookmarkBarVisib
 
     @Override
     public void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TOP_CONTROLS_REFACTOR)
+        assert ChromeFeatureList.sTopControlsRefactor.isEnabled()
                 : "onTopControlLayerHeightChanged should not be called unless refactor is enabled";
 
         // Here we are subtracting the height of the TopControl, |mView|, to bottom align the

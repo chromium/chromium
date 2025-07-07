@@ -97,7 +97,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         // No-op by default until refactor work is enabled.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOP_CONTROLS_REFACTOR)) return;
+        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
 
         // Inform any controls that there was a change to the top controls height.
         for (TopControlLayer topControlLayer : mControls.values()) {
