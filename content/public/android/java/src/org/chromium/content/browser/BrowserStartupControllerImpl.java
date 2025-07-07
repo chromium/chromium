@@ -194,7 +194,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             boolean singleProcess,
             boolean scheduleFlushStartupTasks,
             final StartupCallback callback) {
-        assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting();
+        assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting()
+                : "Tried to start the browser process, likely in a unit test. Tests that start the"
+                        + " browser process need are restricted to instrumentation test apks.";
         assertProcessTypeSupported(libraryProcessType);
         assert ThreadUtils.runningOnUiThread() : "Tried to start the browser on the wrong thread.";
         ServicificationStartupUma.getInstance()
