@@ -139,8 +139,10 @@ class BackForwardCacheMetrics
   // Notifies that an associated entry has committed a navigation.
   // |back_forward_cache_allowed| indicates whether back-forward cache is
   // allowed for the URL of |navigation_request|.
-  void DidCommitNavigation(NavigationRequest* navigation_request,
-                           bool back_forward_cache_allowed);
+  // TODO(https://crbug.com/427426299): Remove these annotations.
+  NOINLINE NOT_TAIL_CALLED void DidCommitNavigation(
+      NavigationRequest* navigation_request,
+      bool back_forward_cache_allowed);
 
   // Records when another navigation commits away from the most recent entry
   // associated with |this|.  This is the point in time that the previous
