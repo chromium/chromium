@@ -1725,6 +1725,17 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                "AXPlatformNodeCocoa::accessibilityAttributeNames",
                "role=", ui::ToString([self internalRole]));
 
+  if (![self instanceActive]) {
+    DUMP_WILL_BE_NOTREACHED() << "Stale object in tree, no AXPlatformNode.";
+    return @[];
+  }
+
+  if (!_node->GetDelegate()) {
+    DUMP_WILL_BE_NOTREACHED() << "Stale object in tree, no delegate.";
+    return @[];
+  }
+
+  // No need to compute attribute names for ignored nodes.
   if (![self isAccessibilityElement]) {
     return @[];
   }

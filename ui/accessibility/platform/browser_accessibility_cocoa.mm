@@ -676,18 +676,32 @@ bool ui::IsNSRange(id value) {
       [_children addObject:cocoa_child];
     }
   } else {
-#if DCHECK_IS_ON()
     // Loop through the cached _children and check that they are still active
     // instances. If not, it's likely that a childrenChanged() call is missing.
-    for (BrowserAccessibilityCocoa* child in _children) {
-      DCHECK([child instanceActive])
-          << "Cached child is no longer active, parent = "
-          << _owner->ToString();
-      DCHECK([child nodeDelegate])
-          << "Cached child is missing a delegate, parent = "
-          << _owner->ToString();
+    // For now, remove the item and log an issue.
+    // TODO(accessibility): debug all of the root causes of this and ensure
+    // childrenChanged() is called.
+    for (NSInteger child_index = [_children count] - 1; child_index >= 0;
+         --child_index) {
+      BrowserAccessibilityCocoa* child = _children[child_index];
+      bool invalid = false;
+
+      if (![child instanceActive]) {
+        invalid = true;
+        DUMP_WILL_BE_NOTREACHED()
+            << "Cached child is no longer active, parent = "
+            << _owner->ToString();
+      } else if (![child nodeDelegate]) {
+        DUMP_WILL_BE_NOTREACHED()
+            << "Cached child is missing a delegate, parent = "
+            << _owner->ToString();
+        invalid = true;
+      }
+
+      if (invalid) {
+        [_children removeObjectAtIndex:child_index];
+      }
     }
-#endif
   }
   return NSAccessibilityUnignoredChildren(_children);
 }
