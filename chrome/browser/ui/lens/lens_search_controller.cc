@@ -666,7 +666,7 @@ void LensSearchController::HandleThumbnailCreated(
 }
 
 void LensSearchController::TabForegrounded(tabs::TabInterface* tab) {
-  // Ignore the event if the overlay is not backgrounded.
+  // Ignore the event if the search controller is not backgrounded.
   if (state_ != State::kBackground) {
     return;
   }
