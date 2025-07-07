@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -29,7 +30,9 @@ using ::testing::ElementsAre;
 
 class ContentSettingsRegistryTest : public testing::Test {
  protected:
-  ContentSettingsRegistryTest() : registry_(&website_settings_registry_) {}
+  ContentSettingsRegistryTest()
+      : registry_(&permission_settings_registry_, &website_settings_registry_) {
+  }
 
   ContentSettingsRegistry* registry() { return &registry_; }
   WebsiteSettingsRegistry* website_settings_registry() {
@@ -38,6 +41,7 @@ class ContentSettingsRegistryTest : public testing::Test {
 
  private:
   WebsiteSettingsRegistry website_settings_registry_;
+  PermissionSettingsRegistry permission_settings_registry_;
   ContentSettingsRegistry registry_;
 };
 

@@ -48,7 +48,7 @@ class PermissionSettingsRegistry {
   const_iterator end() const;
 
  private:
-  friend class PermissionSettingsRegistryTest;
+  friend class ContentSettingsRegistryTest;
   friend struct base::LazyInstanceTraitsBase<PermissionSettingsRegistry>;
 
   PermissionSettingsRegistry();

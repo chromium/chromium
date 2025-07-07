@@ -25,6 +25,8 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_partition_key.h"
@@ -51,7 +53,7 @@ const char kDecidedByRelatedWebsiteSets[] = "decided_by_related_website_sets";
 const base::TimeDelta kLastUsedPermissionExpiration = base::Hours(24);
 
 bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
-  const content_settings::ContentSettingsInfo* info =
+  auto* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
   if (info) {
     if (!value.is_int())
@@ -59,6 +61,12 @@ bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
     if (value.GetInt() == CONTENT_SETTING_DEFAULT)
       return false;
     return info->IsSettingValid(IntToContentSetting(value.GetInt()));
+  }
+
+  auto* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+  if (permission_info) {
+    return permission_info->delegate().FromValue(value).has_value();
   }
 
   // TODO(raymes): We should permit different types of base::Value for
@@ -197,7 +205,8 @@ void ContentSettingsPref::SetWebsiteSetting(
     base::Value value,
     RuleMetaData metadata,
     const PartitionKey& partition_key) {
-  DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_));
+  DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_))
+      << value << " " << content_type_;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
   DCHECK(primary_pattern != ContentSettingsPattern::Wildcard() ||

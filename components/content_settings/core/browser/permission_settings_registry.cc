@@ -45,8 +45,8 @@ PermissionSettingsRegistry::PermissionSettingsRegistry(
 }
 
 void PermissionSettingsRegistry::ResetForTesting() {
-  website_settings_registry_->ResetForTest();  // IN-TEST
   permission_settings_info_.clear();
+  website_settings_registry_->ResetForTest();  // IN-TEST
   Init();
 }
 

@@ -13,6 +13,7 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
@@ -32,19 +33,22 @@ ContentSettingsRegistry* ContentSettingsRegistry::GetInstance() {
 }
 
 ContentSettingsRegistry::ContentSettingsRegistry()
-    : ContentSettingsRegistry(WebsiteSettingsRegistry::GetInstance()) {}
+    : ContentSettingsRegistry(PermissionSettingsRegistry::GetInstance(),
+                              WebsiteSettingsRegistry::GetInstance()) {}
 
 ContentSettingsRegistry::ContentSettingsRegistry(
+    PermissionSettingsRegistry* permission_settings_registry,
     WebsiteSettingsRegistry* website_settings_registry)
     // This object depends on WebsiteSettingsRegistry, so get it first so that
     // they will be destroyed in reverse order.
-    : website_settings_registry_(website_settings_registry) {
+    : permission_settings_registry_(permission_settings_registry),
+      website_settings_registry_(website_settings_registry) {
   Init();
 }
 
 void ContentSettingsRegistry::ResetForTest() {
-  website_settings_registry_->ResetForTest();
   content_settings_info_.clear();
+  permission_settings_registry_->ResetForTesting();  // IN-TEST
   Init();
 }
 

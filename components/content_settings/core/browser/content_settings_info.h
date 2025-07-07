@@ -85,7 +85,7 @@ class ContentSettingsInfo {
   OriginRestriction origin_restriction() const { return origin_restriction_; }
 
  private:
-  raw_ptr<const WebsiteSettingsInfo, DanglingUntriaged> website_settings_info_;
+  raw_ptr<const WebsiteSettingsInfo> website_settings_info_;
   const std::vector<std::string> allowlisted_primary_schemes_;
   std::vector<std::string> third_party_cookie_allowed_secondary_schemes_;
   const std::set<ContentSetting> valid_settings_;

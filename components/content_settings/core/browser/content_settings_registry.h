@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -52,7 +53,9 @@ class ContentSettingsRegistry {
   friend struct base::LazyInstanceTraitsBase<ContentSettingsRegistry>;
 
   ContentSettingsRegistry();
-  ContentSettingsRegistry(WebsiteSettingsRegistry* website_settings_registry);
+  ContentSettingsRegistry(
+      PermissionSettingsRegistry* permission_settings_registry,
+      WebsiteSettingsRegistry* website_settings_registry);
   ~ContentSettingsRegistry();
 
   void Init();
@@ -73,6 +76,7 @@ class ContentSettingsRegistry {
                 ContentSettingsInfo::OriginRestriction origin_restriction);
 
   Map content_settings_info_;
+  raw_ptr<PermissionSettingsRegistry> permission_settings_registry_;
   raw_ptr<WebsiteSettingsRegistry> website_settings_registry_;
 };
 
