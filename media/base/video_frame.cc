@@ -789,6 +789,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
   return frame;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
@@ -824,6 +825,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   }
   return frame;
 }
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static

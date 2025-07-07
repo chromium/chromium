@@ -363,6 +363,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::span<const uint8_t> uv_data,
       base::TimeDelta timestamp);
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Wraps |gpu_memory_buffer|. This will transfer ownership of
   // |gpu_memory_buffer| to the returned VideoFrame.
   // For use in contexts where the GPUMemoryBuffer has no SharedImage
@@ -386,6 +387,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       base::TimeDelta timestamp);
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Wraps provided dmabufs
