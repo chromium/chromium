@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<script>
+const kAnimatedImageUsedMoreThanOnce = 5605;
+
+async_test(function(t) {
+  internals.clearUseCounter(document, kAnimatedImageUsedMoreThanOnce);
+
+  let apng1 = document.createElement("img");
+  apng1.src = "resources/animated.png";
+  document.body.appendChild(apng1);
+  let apng2 = document.createElement("img");
+  apng2.src = "resources/animated.png";
+  document.body.appendChild(apng2);
+
+  onload = t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      requestAnimationFrame(t.step_func_done(() => {
+        assert_true(internals.isUseCounted(document, kAnimatedImageUsedMoreThanOnce));
+      }));
+    }));
+  });
+}, 'Check that kAnimatedImageUsedMoreThanOnce is counted with a duplicated animated image (APNG)');
+</script>
+</body>

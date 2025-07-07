@@ -206,6 +206,9 @@ class CORE_EXPORT ImageResourceContent final
   bool HasObservers() const {
     return !observers_.empty() || !finished_observers_.empty();
   }
+  wtf_size_t NumberOfObservers() const {
+    return observers_.size() + finished_observers_.size();
+  }
   bool CanBeSpeculativelyDecoded() const;
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
 
