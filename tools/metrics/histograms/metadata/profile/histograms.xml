@@ -379,9 +379,11 @@ chromium-metrics-reviews@google.com.
   <owner>droger@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
-    Counts the number of profiles on a user's machine every 24 hours while
-    Chrome is running. This is intended to count only profiles that have been
-    used in the last 28 days. As such, it differs Profile.NumberOfProfiles.
+    Counts the number of profiles used in the last 28 days on a user's machine.
+    Only emitted for users with at least one profile (of any type). This
+    histogram can be compared with Profile.NumberOfProfiles, which counts all
+    profiles regardless of activity and also is emitted on clients with no
+    profiles of any type.
 
     However, as of Feb 2024 intention is not reality. Chrome on Android assumes
     the (sole) profile is active, even if it is not. Before M129, Chrome on iOS
@@ -393,6 +395,20 @@ chromium-metrics-reviews@google.com.
     may have multiple users. Users are an entirely different concept than
     profiles. ChromeOS may allow a user to have and use multiple profiles
     someday. As of Feb 2024, it does not.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
   </summary>
 </histogram>
 
@@ -401,10 +417,27 @@ chromium-metrics-reviews@google.com.
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Counts the number of locally managed profiles on a user's machine every 24
-    hours while Chrome is running, among cases with at least one profile.
+    Counts the number of locally managed profiles on a user's machine. Only
+    emitted for users with at least one profile (of any type).
 
-    This counts only profiles that have been used in the last 28 days.
+    This is intended to count only profiles that have been used in the last 28
+    days. However, active usage detection does not work correctly on all
+    platforms and for all Chrome versions. See details in the description of
+    Profile.NumberOfActiveProfiles.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
 
     Might have incomplete data between 2021-03-12 and 2021-05-26.
   </summary>
@@ -415,8 +448,26 @@ chromium-metrics-reviews@google.com.
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Counts the number of profiles on a user's machine every 24 hours while
-    Chrome is running.
+    Counts the number of profiles on a user's machine.
+
+    Note: ChromeOS has a notion of &quot;users&quot;. A ChromeOS device may have
+    multiple users. Users are an entirely different concept than profiles.
+    ChromeOS may allow a user to have and use multiple profiles someday. As of
+    Feb 2024, it does not.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
 
     This counts the total number of profiles on the user's device, regardless of
     whether they've been used recently.
@@ -454,10 +505,27 @@ chromium-metrics-reviews@google.com.
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Counts the number of signed-in (syncing) profiles on a user's machine every
-    24 hours while Chrome is running.
+    Counts the number of signed-in (syncing) profiles on a user's machine. Only
+    emitted for users with at least one profile (of any type).
 
-    This counts only profiles that have been used in the last 28 days.
+    This is intended to count only profiles that have been used in the last 28
+    days. However, active usage detection does not work correctly on all
+    platforms and for all Chrome versions. See details in the description of
+    Profile.NumberOfActiveProfiles.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
   </summary>
 </histogram>
 
@@ -466,8 +534,28 @@ chromium-metrics-reviews@google.com.
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
-    Counts the number of profiles unused within the past 28 days on a user's
-    machine. This is recorded every 24 hours while Chrome is running.
+    Counts the number of profiles that have not been used within the past 28
+    days on a user's machine. Only emitted for users with at least one profile
+    (of any type).
+
+    This is intended to count only profiles that have not been used in the last
+    28 days. However, active usage detection does not work correctly on all
+    platforms and for all Chrome versions. See details in the description of
+    Profile.NumberOfActiveProfiles.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
   </summary>
 </histogram>
 
@@ -476,8 +564,27 @@ chromium-metrics-reviews@google.com.
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Tracks the percentage (0-100) of profiles that are locally managed, recorded
-    when Chrome starts up.
+    Tracks the percentage (0-100) of profiles that are locally managed. Only
+    emitted for users with at least one profile (of any type).
+
+    This is intended to count only profiles in the numerator that have been used
+    in the last 28 days. However, active usage detection does not work correctly
+    on all platforms and for all Chrome versions. See details in the description
+    of Profile.NumberOfActiveProfiles.
+
+    On non-iOS platforms, this histogram is emitted on startup if it has been
+    more than 24 hours since the last time the histogram was emitted. It is also
+    emitted while Chrome is running when Chrome realizes that it has been 24
+    hours since the last time the histogram was emitted. (This normally happens
+    24 hours after the last emit, but may be longer if the device was asleep /
+    suspended at the time. If so, it will be emitted when the device wakes up.)
+    One consequence of this 24 hour timer is that a user may use Chrome in a day
+    and not emit this histogram. For example, if a user used Chrome the previous
+    day at 5pm and a histogram was emitted then, then used Chrome on this day at
+    10am, then closed Chrome, this histogram will not be emitted on this day.
+
+    On iOS, this histogram is always emitted on profile open and not emitted any
+    other time.
   </summary>
 </histogram>
 
