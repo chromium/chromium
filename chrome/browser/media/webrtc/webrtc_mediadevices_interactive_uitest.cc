@@ -229,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
 }
 
 // Flakes on Linux TSan Tests; crbug.com/1396123.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// Flakes on Mac. crbug.com/430093040.
+#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetUserMediaTabRegainsFocus DISABLED_GetUserMediaTabRegainsFocus
 #else
 #define MAYBE_GetUserMediaTabRegainsFocus GetUserMediaTabRegainsFocus
