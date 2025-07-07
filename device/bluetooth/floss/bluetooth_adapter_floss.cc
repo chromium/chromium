@@ -1490,9 +1490,11 @@ void BluetoothAdapterFloss::SetSimpleSecurePairingEnabled(
     bool enabled,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  // TODO(b/428178579) - Implement DBUS changes and wire them up the bluetooth
-  // stack.
-  std::move(error_callback).Run();
+  FlossDBusManager::Get()->GetAdminClient()->SetSimpleSecurePairingEnabled(
+      base::BindOnce(&BluetoothAdapterFloss::OnMethodResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      enabled);
 }
 
 std::unique_ptr<device::BluetoothLowEnergyScanSession>
