@@ -70,7 +70,9 @@ export class Messenger {
     });
     if (existingContexts.length > 0) {
       // Offscreen document is created in previous service worker runs.
-      this.offscreenDocumentPromise_ = Promise.resolve();
+      if (!this.offscreenDocumentPromise_) {
+        this.offscreenDocumentPromise_ = Promise.resolve();
+      }
     } else if (!this.offscreenDocumentCreating_) {
       // Otherwise, create one if there is no pending creation.
       this.offscreenDocumentCreating_ = true;

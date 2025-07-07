@@ -21,6 +21,7 @@ import {SmartReplacePhraseMacro} from '/common/action_fulfillment/macros/smart_r
 import {SmartSelectBetweenMacro} from '/common/action_fulfillment/macros/smart_select_between_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 
+import {Messenger} from '../../messenger.js';
 import {OffscreenCommandType} from '../../offscreen_command_type.js';
 import {LocaleInfo} from '../locale_info.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
@@ -43,7 +44,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
   private locale_: PumpkinConstants.PumpkinLocale|null = null;
   private requestedPumpkinInstall_ = false;
   private onPumpkinTaggerReadyChangedForTesting_: VoidFunction|null = null;
-  private offscreenMessageListenerRegistered_ = false;
 
   private async init_(): Promise<void> {
     this.refreshLocale_();
@@ -82,24 +82,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // Register the offscreen document's message listener when
     // pumpkin data is available and we are ready to communicate with
     // the tagger worker via the offscreen document.
-    if (!this.offscreenMessageListenerRegistered_) {
-      chrome.runtime.onMessage.addListener(
-          (message: any|undefined, _sender: chrome.runtime.MessageSender,
-           _sendResponse: (value: any) => void) =>
-              this.handleMessageFromOffscreen_(message));
-      this.offscreenMessageListenerRegistered_ = true;
-    }
+    Messenger.registerHandler(
+        OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE,
+        (message: any|undefined) => this.onMessage_(message.fromPumpkinTagger));
 
     this.sendToOffscreen_(OffscreenCommandType.DICTATION_PUMPKIN_INSTALL);
-  }
-
-  private handleMessageFromOffscreen_(message: any|undefined) {
-    switch (message['command']) {
-      case OffscreenCommandType.DICTATION_PUMPKIN_RECEIVE:
-        this.onMessage_(message['fromPumpkinTagger']);
-        break;
-    }
-    return false;
   }
 
   /**
@@ -384,6 +371,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
   }
 
   private sendToOffscreen_(command: OffscreenCommandType, data = {}): void {
-    chrome.runtime.sendMessage(undefined, Object.assign({command}, data));
+    Messenger.send(command, data);
   }
 }

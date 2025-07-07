@@ -7,6 +7,7 @@ import type {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {Messenger} from '../messenger.js';
 import {OffscreenCommandType} from '../offscreen_command_type.js';
 
 import {FocusHandler} from './focus_handler.js';
@@ -531,7 +532,7 @@ export class Dictation {
   }
 
   private sendToOffscreen_(command: OffscreenCommandType): void {
-    chrome.runtime.sendMessage(undefined, {command});
+    Messenger.send(command);
   }
 
   /** Disables Pumpkin for tests that use regex-based command parsing. */
