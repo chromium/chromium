@@ -25,6 +25,8 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/quic/quic_session_attempt_manager.h"
+#include "net/quic/quic_session_attempt_request.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -62,30 +64,8 @@ HttpStreamPool::QuicAttempt::QuicAttempt(AttemptManager* manager,
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_BOUND,
       net_log_.source());
 
-  SSLConfig ssl_config;
-  ssl_config.disable_cert_verification_network_fetches =
-      stream_key().disable_cert_network_fetches();
-  int cert_verify_flags = ssl_config.GetCertVerifyFlags();
-
-  base::TimeTicks dns_resolution_start_time =
-      manager_->dns_resolution_start_time();
-  // The DNS resolution end time could be null when the resolution is still
-  // ongoing. In that case, use the current time to make sure the connect
-  // start time is already greater than the DNS resolution end time.
-  base::TimeTicks dns_resolution_end_time =
-      manager_->dns_resolution_end_time().is_null()
-          ? base::TimeTicks::Now()
-          : manager_->dns_resolution_end_time();
-
-  std::set<std::string> dns_aliases =
-      manager_->service_endpoint_request()->GetDnsAliasResults();
-
-  session_attempt_ = GetQuicSessionPool()->CreateSessionAttempt(
-      this, GetKey().session_key(), quic_endpoint_, cert_verify_flags,
-      dns_resolution_start_time, dns_resolution_end_time,
-      /*use_dns_aliases=*/true, std::move(dns_aliases),
-      manager_->CalculateMultiplexedSessionCreationInitiator(),
-      /*connection_management_config=*/std::nullopt);
+  request_ =
+      GetQuicSessionPool()->session_attempt_manager()->CreateRequest(GetKey());
 }
 
 HttpStreamPool::QuicAttempt::~QuicAttempt() {
@@ -103,8 +83,31 @@ void HttpStreamPool::QuicAttempt::Start() {
     manager_->MaybeRunTcpBasedAttemptDelayTimer();
   }
 
-  int rv = session_attempt_->Start(base::BindOnce(
-      &QuicAttempt::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));
+  SSLConfig ssl_config;
+  ssl_config.disable_cert_verification_network_fetches =
+      stream_key().disable_cert_network_fetches();
+  int cert_verify_flags = ssl_config.GetCertVerifyFlags();
+
+  base::TimeTicks dns_resolution_start_time =
+      manager_->dns_resolution_start_time();
+  // The DNS resolution end time could be null when the resolution is still
+  // ongoing. In that case, use the current time to make sure the connect
+  // start time is already greater than the DNS resolution end time.
+  base::TimeTicks dns_resolution_end_time =
+      manager_->dns_resolution_end_time().is_null()
+          ? base::TimeTicks::Now()
+          : manager_->dns_resolution_end_time();
+
+  std::set<std::string> dns_aliases =
+      manager_->service_endpoint_request()->GetDnsAliasResults();
+  int rv = request_->RequestSession(
+      quic_endpoint_, cert_verify_flags, dns_resolution_start_time,
+      dns_resolution_end_time, /*use_dns_aliases=*/true, std::move(dns_aliases),
+      manager_->CalculateMultiplexedSessionCreationInitiator(),
+      /*connection_management_config=*/std::nullopt, net_log_,
+      base::BindOnce(&QuicAttempt::OnSessionAttemptComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   if (rv == ERR_IO_PENDING) {
     slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
                       base::BindOnce(&QuicAttempt::OnSessionAttemptSlow,
@@ -165,11 +168,11 @@ void HttpStreamPool::QuicAttempt::OnSessionAttemptComplete(int rv) {
 
   result_ = rv;
   QuicAttemptOutcome outcome(rv);
-  if (session_attempt_) {
-    outcome.session = session_attempt_->session();
-    session_attempt_->PopulateNetErrorDetails(&outcome.error_details);
+  if (request_) {
+    outcome.session = request_->session();
+    outcome.error_details = request_->error_details();
   }
-  session_attempt_.reset();
+  request_.reset();
   manager_->OnQuicAttemptComplete(std::move(outcome));
   // `this` is deleted.
 }

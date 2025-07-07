@@ -5165,7 +5165,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, H3OriginFrameWhileAttemptingQuic) {
   ASSERT_EQ(quic_session1, quic_session2);
 }
 
-// Regression test for crbug.com/421877252.
+// Regression test for crbug.com/421877252. Ensure that a late-arriving QUIC
+// is used by subsequent requests after the first request completes with a
+// TLS session.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        QuicExistingSessionAfterAttemptComplete) {
   base::test::ScopedFeatureList feature_list;
@@ -5192,11 +5194,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   EXPECT_NE(requester1.negotiated_protocol(), NextProto::kProtoQUIC);
 
-  MockConnectCompleter quic_completer2;
-  AddQuicData(/*host=*/kDefaultDestination, &quic_completer2,
-              quic::QUIC_CONNECTION_IP_POOLED,
-              "An active session exists for the given IP.");
-
   SequencedSocketData tcp_data2;
   tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
   socket_factory()->AddSocketDataProvider(&tcp_data2);
@@ -5207,7 +5204,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       .RequestStream(pool());
 
   quic_completer1.Complete(OK);
-  quic_completer2.Complete(OK);
 
   requester2.WaitForResult();
   EXPECT_THAT(requester2.result(), Optional(IsOk()));

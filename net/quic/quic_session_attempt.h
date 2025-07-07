@@ -102,6 +102,12 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   bool session_creation_finished() const { return session_creation_finished_; }
 
+  const quic::ParsedQuicVersion& quic_version() const { return quic_version_; }
+
+  const IPEndPoint& ip_endpoint() const { return ip_endpoint_; }
+
+  const ConnectionEndpointMetadata& metadata() const { return metadata_; }
+
   QuicChromiumClientSession* session() const { return session_.get(); }
 
   void PopulateNetErrorDetails(NetErrorDetails* details) const;

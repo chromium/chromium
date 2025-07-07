@@ -97,6 +97,7 @@ class QuicChromiumConnectionHelper;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
 class QuicSessionPool;
+class QuicSessionAttemptManager;
 class QuicContext;
 class SCTAuditingDelegate;
 class SocketPerformanceWatcherFactory;
@@ -540,6 +541,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     return host_resolver_->IsHappyEyeballsV3Enabled();
   }
 
+  QuicSessionAttemptManager* session_attempt_manager() {
+    return session_attempt_manager_.get();
+  }
+
   struct QuicCryptoClientConfigKey;
 
  private:
@@ -918,6 +923,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};
+
+  std::unique_ptr<QuicSessionAttemptManager> session_attempt_manager_;
 
   std::optional<base::TimeDelta> time_delay_for_waiting_job_for_testing_;
 
