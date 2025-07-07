@@ -254,11 +254,13 @@ std::string ConstructAvailableAutocompletion(
   return result.str();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns whether this match is provided by an extension in unscoped mode.
 bool IsUnscopedExtensionMatch(const AutocompleteMatch& match) {
   return match.provider && match.provider->type() ==
                                AutocompleteProvider::TYPE_UNSCOPED_EXTENSION;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns which rich autocompletion type, if any, had (or would have had for
 // counterfactual variations) an impact; i.e. whether the top scoring rich
@@ -1812,6 +1814,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
 void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
+  // No need to update the description on Android since description for plain
+  // text match is not allowed.
+#if !BUILDFLAG(IS_ANDROID)
   // The Lens searchbox does not require the search engine name description
   // label since all suggestions will be from a single source.
   // TODO(crbug.com/338094774): Remove this Lens-specific change and implement a
@@ -1851,9 +1856,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
           i->description_class.push_back(
               ACMatchClassification(0, ACMatchClassification::DIM));
         }
-#if BUILDFLAG(IS_ANDROID)
-        i->UpdateJavaDescription();
-#endif
 
         last_keyword = i->keyword;
         last_contextual = is_contextual;
@@ -1862,6 +1864,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       last_keyword.clear();
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {

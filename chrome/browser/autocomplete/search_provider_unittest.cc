@@ -1126,10 +1126,15 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   EXPECT_EQ(u"k", result.match_at(0).keyword);
   EXPECT_EQ(u"k", result.match_at(1).keyword);
 
-  // The top result will always have a description. Whether the second result
-  // has one doesn't matter much.  (If it was missing, people would infer that
-  // it's the same search provider as the one above it.)
+#if !BUILDFLAG(IS_ANDROID)
+  // On non-android, the top result will always have a description. Whether the
+  // second result has one doesn't matter much.  (If it was missing, people
+  // would infer that it's the same search provider as the one above it.)
   EXPECT_FALSE(result.match_at(0).description.empty());
+#else
+  // On Android, the top result should not have a description.
+  EXPECT_TRUE(result.match_at(0).description.empty());
+#endif
 }
 
 TEST_F(SearchProviderTest, KeywordVerbatim) {
