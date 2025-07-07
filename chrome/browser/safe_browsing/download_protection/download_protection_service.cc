@@ -528,7 +528,6 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
             metadata.sha256, metadata.mime_type,
             extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             metadata.scan_response.request_token(), "",
-            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
             referrer_chain, result, metadata.size,
             /*user_justification=*/std::nullopt);
 

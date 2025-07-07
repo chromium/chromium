@@ -37,10 +37,6 @@ class EventRouter;
 
 class GURL;
 
-namespace enterprise_connectors {
-enum class DeepScanAccessPoint;
-}
-
 namespace extensions {
 
 // An event router that observes Safe Browsing events and notifies listeners.
@@ -152,7 +148,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& scan_id,
       const std::string& content_transfer_method,
       const std::string& source_email,
-      enterprise_connectors::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       const safe_browsing::ReferrerChain& referrer_chain,
@@ -170,7 +165,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& trigger,
       const std::string& scan_id,
       const std::string& content_transfer_method,
-      enterprise_connectors::DeepScanAccessPoint access_point,
       const safe_browsing::ReferrerChain& referrer_chain,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
@@ -186,7 +180,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& download_digest_sha256,
       const std::string& mime_type,
       const std::string& trigger,
-      enterprise_connectors::DeepScanAccessPoint access_point,
       const std::string& reason,
       const std::string& content_transfer_method,
       const int64_t content_size,

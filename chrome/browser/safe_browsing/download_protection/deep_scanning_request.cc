@@ -672,7 +672,6 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
-        enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
         file_metadata.size, referrers, result, file_metadata.scan_response));
 
     metadata_->AddScanResultMetadata(file_metadata);

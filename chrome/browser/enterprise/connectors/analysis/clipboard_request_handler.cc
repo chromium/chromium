@@ -97,7 +97,7 @@ void ClipboardRequestHandler::ReportWarningBypass(
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      content_transfer_method_, access_point_, content_size_,
+      content_transfer_method_, content_size_,
       content_analysis_info_->referrer_chain(), response_, user_justification);
 }
 
@@ -173,9 +173,8 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       content_transfer_method_,
-      content_analysis_info_->GetContentAreaAccountEmail(), access_point_,
-      content_size_, content_analysis_info_->referrer_chain(), result,
-      response_,
+      content_analysis_info_->GetContentAreaAccountEmail(), content_size_,
+      content_analysis_info_->referrer_chain(), result, response_,
       CalculateEventResult(content_analysis_info_->settings(),
                            request_handler_result.complies, should_warn));
 
