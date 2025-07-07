@@ -351,7 +351,13 @@ void DataProtectionNavigationObserver::OnLookupComplete(
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_from_cache_);
+  base::ScopedClosureRunner done(
+      base::BindOnce(&DataProtectionNavigationObserver::MaybeCleanup,
+                     weak_factory_.GetWeakPtr()));
   is_verdict_received_ = true;
+  if (!web_contents()) {
+    return;
+  }
   if (is_navigation_finished_) {
     OnDoLookupComplete(web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_,
@@ -359,8 +365,6 @@ void DataProtectionNavigationObserver::OnLookupComplete(
   } else {
     rt_lookup_response_ = std::move(rt_lookup_response);
   }
-
-  MaybeCleanup();
 }
 
 bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
