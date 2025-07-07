@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -33,6 +34,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class VersioningModalDialog {
+    @Nullable static Runnable sExitRunnable;
+
     /**
      * Shows a dialog prompting the user to update Chrome both negative and positive buttons.
      *
@@ -41,6 +44,24 @@ public class VersioningModalDialog {
      */
     public static void show(Context context, ModalDialogManager modalDialogManager) {
         new VersioningModalDialog(context, modalDialogManager).show();
+    }
+
+    /**
+     * Shows a dialog prompting the user to update Chrome both negative and positive buttons.
+     *
+     * @param context Used to load resources and launch intents.
+     * @param modalDialogManager Used to show as a dialog.
+     * @param message Custom dialog message to show.
+     * @param exitRunnable The runnable to run when exiting the modal dialog.
+     * @return The property model of the dialog shown.
+     */
+    public static PropertyModel showWithCustomMessage(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            String message,
+            Runnable exitRunnable) {
+        sExitRunnable = exitRunnable;
+        return new VersioningModalDialog(context, modalDialogManager).show(message);
     }
 
     private final Context mContext;
@@ -52,10 +73,16 @@ public class VersioningModalDialog {
     }
 
     private void show() {
-        mModalDialogManager.showDialog(buildModel(), ModalDialogType.APP);
+        mModalDialogManager.showDialog(getModelBuilder().build(), ModalDialogType.APP);
     }
 
-    private PropertyModel buildModel() {
+    private PropertyModel show(String message) {
+        PropertyModel model = getModelBuilder().with(MESSAGE_PARAGRAPH_1, message).build();
+        mModalDialogManager.showDialog(model, ModalDialogType.APP);
+        return model;
+    }
+
+    private PropertyModel.Builder getModelBuilder() {
         Controller controller =
                 new SimpleModalDialogController(mModalDialogManager, this::onDismiss);
         String title =
@@ -78,17 +105,22 @@ public class VersioningModalDialog {
                         .with(NEGATIVE_BUTTON_TEXT, negativeButton)
                         .with(CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(BUTTON_STYLES, ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        return builder.build();
+        return builder;
     }
 
     private void onDismiss(@DialogDismissalCause Integer dismissalCause) {
         assert dismissalCause != null;
-        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) return;
+        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+            String chromeAppId = mContext.getPackageName();
+            String uriString = ContentUrlConstants.PLAY_STORE_URL_PREFIX + chromeAppId;
+            Uri uri = Uri.parse(uriString);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            mContext.startActivity(intent);
+        }
 
-        String chromeAppId = mContext.getPackageName();
-        String uriString = ContentUrlConstants.PLAY_STORE_URL_PREFIX + chromeAppId;
-        Uri uri = Uri.parse(uriString);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        mContext.startActivity(intent);
+        if (sExitRunnable != null) {
+            sExitRunnable.run();
+            sExitRunnable = null;
+        }
     }
 }

@@ -47,6 +47,7 @@ import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
+import org.chromium.components.collaboration.error_info.Type;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -473,7 +474,8 @@ public class CollaborationControllerDelegateImplUnitTest {
         String title = "title";
         String message = "message";
 
-        mCollaborationControllerDelegateImpl.showError(title, message, resultCallback);
+        mCollaborationControllerDelegateImpl.showError(
+                Type.UNKNOWN, title, message, resultCallback);
         verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
 
         ArgumentCaptor<PropertyModel> propertyModelCaptor =
