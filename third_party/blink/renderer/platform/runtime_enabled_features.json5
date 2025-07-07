@@ -854,11 +854,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      // https://www.w3.org/TR/cssom-view-1/#dom-document-caretpositionfrompoint
-      name: "CaretPositionFromPoint",
-      status: "stable",
-    },
-    {
       // Changes the caret's affinity to upstream, preventing spaces
       // from appearing in the previous line when typing at the start
       // of a wrapped line. See https://crbug.com/40677155
