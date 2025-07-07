@@ -26,7 +26,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
-import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
+import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ShouldShowAccountStorageToggleChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
@@ -155,6 +155,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Number,
         value: 0,
       },
+
+      shouldShowAccountStorageSettingToggle_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -186,11 +191,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
   declare private localPasswordCount_: number;
+  declare private shouldShowAccountStorageSettingToggle_: boolean;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
+  private shouldShowAccountStorageSettingToggleListener_:
+      ShouldShowAccountStorageToggleChangedListener|null = null;
 
   override ready() {
     super.ready();
@@ -235,6 +243,16 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
 
+    this.shouldShowAccountStorageSettingToggleListener_ = show => {
+      this.shouldShowAccountStorageSettingToggle_ = show;
+    };
+    PasswordManagerImpl.getInstance()
+        .shouldShowAccountStorageSettingToggle()
+        .then(this.shouldShowAccountStorageSettingToggleListener_);
+    PasswordManagerImpl.getInstance()
+        .addShouldShowAccountStorageSettingToggleListener(
+            this.shouldShowAccountStorageSettingToggleListener_);
+
     const trustedVaultStateChanged = (state: TrustedVaultBannerState) => {
       this.trustedVaultBannerState_ = state;
     };
@@ -273,6 +291,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
     this.setCredentialsChangedListener_ = null;
+
+    assert(this.shouldShowAccountStorageSettingToggleListener_);
+    PasswordManagerImpl.getInstance()
+        .removeShouldShowAccountStorageSettingToggleListener(
+            this.shouldShowAccountStorageSettingToggleListener_);
+    this.shouldShowAccountStorageSettingToggleListener_ = null;
+
     this.$.toast.hide();
   }
 

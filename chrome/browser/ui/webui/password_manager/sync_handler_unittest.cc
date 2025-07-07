@@ -207,8 +207,6 @@ TEST_F(SyncHandlerTest, GetSyncInfo) {
   auto& data = *web_ui()->call_data().back();
   ASSERT_TRUE(CallbackReturnedSuccessfully(data));
   ASSERT_TRUE(data.arg3()->is_dict());
-  // A syncing user should not be eligible for account storage.
-  EXPECT_FALSE(*data.arg3()->GetDict().FindBool("isEligibleForAccountStorage"));
 }
 
 TEST_F(SyncHandlerTest, GetSyncInfoOnSyncStateChange) {
@@ -220,9 +218,6 @@ TEST_F(SyncHandlerTest, GetSyncInfoOnSyncStateChange) {
 
   ASSERT_EQ(1U, state_update_args.size());
   ASSERT_TRUE(state_update_args[0]->is_dict());
-  // A syncing user should not be eligible for account storage.
-  EXPECT_FALSE(
-      *state_update_args[0]->GetDict().FindBool("isEligibleForAccountStorage"));
 }
 
 TEST_F(SyncHandlerTest, AccountInfo) {
@@ -267,7 +262,6 @@ TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {
   auto& data = *web_ui()->call_data().back();
   ASSERT_TRUE(CallbackReturnedSuccessfully(data));
   ASSERT_TRUE(data.arg3()->is_dict());
-  EXPECT_FALSE(*data.arg3()->GetDict().FindBool("isEligibleForAccountStorage"));
 }
 
 TEST_F(SyncHandlerTest, GetLocalPasswordCount) {

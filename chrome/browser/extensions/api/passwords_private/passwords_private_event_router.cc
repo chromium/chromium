@@ -97,6 +97,18 @@ void PasswordsPrivateEventRouter::OnAccountStorageEnabledStateChanged(
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
+void PasswordsPrivateEventRouter::
+    OnShouldShowAccountStorageSettingToggleChanged(bool enabled) {
+  auto extension_event = std::make_unique<Event>(
+      events::
+          PASSWORDS_PRIVATE_ON_SHOULD_SHOW_ACCOUNT_STORAGE_SETTING_TOGGLE_CHANGED,
+      api::passwords_private::OnShouldShowAccountStorageSettingToggleChanged::
+          kEventName,
+      api::passwords_private::OnShouldShowAccountStorageSettingToggleChanged::
+          Create(enabled));
+  event_router_->BroadcastEvent(std::move(extension_event));
+}
+
 void PasswordsPrivateEventRouter::OnInsecureCredentialsChanged(
     std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials) {
   auto extension_event = std::make_unique<Event>(

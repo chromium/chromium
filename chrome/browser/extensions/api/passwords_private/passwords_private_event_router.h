@@ -59,6 +59,10 @@ class PasswordsPrivateEventRouter : public KeyedService {
   // account-scoped password storage.
   void OnAccountStorageEnabledStateChanged(bool enabled);
 
+  // Notifies listeners about a (possible) change to the visibility state of the
+  // account storage toggle in settings.
+  void OnShouldShowAccountStorageSettingToggleChanged(bool show);
+
   // Notifies listeners about a change to the information about insecure
   // credentials.
   void OnInsecureCredentialsChanged(

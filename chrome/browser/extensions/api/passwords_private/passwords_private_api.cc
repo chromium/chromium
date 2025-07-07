@@ -428,6 +428,17 @@ ResponseAction PasswordsPrivateSetAccountStorageEnabledFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateShouldShowAccountStorageSettingToggleFunction
+ResponseAction
+PasswordsPrivateShouldShowAccountStorageSettingToggleFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  return RespondNow(WithArguments(
+      GetDelegate(browser_context())->ShouldShowAccountStorageSettingToggle()));
+}
+
 // PasswordsPrivateGetInsecureCredentialsFunction:
 PasswordsPrivateGetInsecureCredentialsFunction::
     ~PasswordsPrivateGetInsecureCredentialsFunction() = default;

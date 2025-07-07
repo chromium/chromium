@@ -32,7 +32,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       email: 'testemail@gmail.com',
     };
     this.syncInfo = {
-      isEligibleForAccountStorage: false,
       isSyncingPasswords: false,
     };
     this.localPasswordCount = 0;

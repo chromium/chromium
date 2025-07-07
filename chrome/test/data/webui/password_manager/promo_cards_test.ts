@@ -153,7 +153,6 @@ suite('PasswordsSectionTest', function() {
       })],
     })];
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 
@@ -176,7 +175,6 @@ suite('PasswordsSectionTest', function() {
           {username: 'user', id: 0, inProfileStore: true})],
     })];
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 
@@ -207,7 +205,6 @@ suite('PasswordsSectionTest', function() {
       credentials: [password],
     })];
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 

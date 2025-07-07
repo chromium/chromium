@@ -24,13 +24,6 @@ export const UserUtilMixin = dedupingMixin(
       (superClass) implements UserUtilMixinInterface {
         static get properties() {
           return {
-            /* Account storage eligibility. */
-            isEligibleForAccountStorage: {
-              type: Boolean,
-              value: false,
-              computed: 'computeIsEligibleForAccountStorage_(syncInfo_)',
-            },
-
             /**
              * If true, the edit dialog and removal notification show
              * information about which location(s) a password is stored.
@@ -65,7 +58,6 @@ export const UserUtilMixin = dedupingMixin(
           };
         }
 
-        declare isEligibleForAccountStorage: boolean;
         declare isAccountStoreUser: boolean;
         declare isSyncingPasswords: boolean;
         declare accountEmail: string;
@@ -121,10 +113,6 @@ export const UserUtilMixin = dedupingMixin(
           PasswordManagerImpl.getInstance().setAccountStorageEnabled(false);
         }
 
-        private computeIsEligibleForAccountStorage_(): boolean {
-          return !!(this.syncInfo_?.isEligibleForAccountStorage);
-        }
-
         private computeIsSyncingPasswords_(): boolean {
           return !!(this.syncInfo_?.isSyncingPasswords);
         }
@@ -143,7 +131,6 @@ export const UserUtilMixin = dedupingMixin(
 
 
 export interface UserUtilMixinInterface {
-  isEligibleForAccountStorage: boolean;
   isAccountStoreUser: boolean;
   isSyncingPasswords: boolean;
   accountEmail: string;

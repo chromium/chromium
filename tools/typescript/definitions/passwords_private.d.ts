@@ -216,6 +216,7 @@ declare global {
           Promise<ExportProgressStatus>;
       export function isAccountStorageEnabled(): Promise<boolean>;
       export function setAccountStorageEnabled(enabled: boolean): void;
+      export function shouldShowAccountStorageSettingToggle(): Promise<boolean>;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
       export function getCredentialsWithReusedPassword():
           Promise<PasswordUiEntryList[]>;
@@ -246,6 +247,8 @@ declare global {
           ChromeEvent<(progress: PasswordExportProgress) => void>;
       export const onAccountStorageEnabledStateChanged:
           ChromeEvent<(enabledState: boolean) => void>;
+      export const onShouldShowAccountStorageSettingToggleChanged:
+          ChromeEvent<(show: boolean) => void>;
       export const onInsecureCredentialsChanged:
           ChromeEvent<(credentials: PasswordUiEntry[]) => void>;
       export const onPasswordCheckStatusChanged:

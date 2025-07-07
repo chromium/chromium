@@ -85,7 +85,7 @@
     </template>
   </if>
     <pref-toggle-button id="accountStorageToggle" class="hr"
-        hidden="[[!isEligibleForAccountStorage]]"
+        hidden="[[!shouldShowAccountStorageSettingToggle_]]"
         label="$i18n{accountStorageToggleLabel}"
         sub-label="[[getAccountStorageSubLabel_(accountEmail)]]"
         checked="[[isAccountStoreUser]]"

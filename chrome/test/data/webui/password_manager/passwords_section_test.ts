@@ -568,7 +568,6 @@ suite('PasswordsSectionTest', function() {
   test('Should show local credentials icon', async function() {
     passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 

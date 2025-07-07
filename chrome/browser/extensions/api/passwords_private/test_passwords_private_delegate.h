@@ -72,6 +72,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool IsAccountStorageEnabled() override;
   void SetAccountStorageEnabled(bool enabled,
                                 content::WebContents* web_contents) override;
+  bool ShouldShowAccountStorageSettingToggle() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
   std::vector<api::passwords_private::PasswordUiEntryList>
@@ -193,6 +194,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   bool is_account_storage_enabled_ = false;
+
+  bool should_show_account_storage_setting_toggle_ = false;
 
   // Flags for detecting whether password sharing operations have been invoked.
   bool fetch_family_members_triggered_ = false;

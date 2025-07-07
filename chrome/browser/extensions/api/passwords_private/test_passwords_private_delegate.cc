@@ -266,6 +266,10 @@ void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(
   is_account_storage_enabled_ = enabled;
 }
 
+bool TestPasswordsPrivateDelegate::ShouldShowAccountStorageSettingToggle() {
+  return should_show_account_storage_setting_toggle_;
+}
+
 std::vector<api::passwords_private::PasswordUiEntry>
 TestPasswordsPrivateDelegate::GetInsecureCredentials() {
   api::passwords_private::PasswordUiEntry leaked_credential;

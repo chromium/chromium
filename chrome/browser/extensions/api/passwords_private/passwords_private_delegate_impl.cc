@@ -856,6 +856,11 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
       ->SetSelectedType(syncer::UserSelectableType::kPasswords, enabled);
 }
 
+bool PasswordsPrivateDelegateImpl::ShouldShowAccountStorageSettingToggle() {
+  return password_manager::features_util::ShouldShowAccountStorageSettingToggle(
+      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
+}
+
 std::vector<api::passwords_private::PasswordUiEntry>
 PasswordsPrivateDelegateImpl::GetInsecureCredentials() {
   return password_check_delegate_.GetInsecureCredentials();
@@ -1179,6 +1184,8 @@ void PasswordsPrivateDelegateImpl::OnStateChanged(
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
     router->OnAccountStorageEnabledStateChanged(IsAccountStorageEnabled());
+    router->OnShouldShowAccountStorageSettingToggleChanged(
+        ShouldShowAccountStorageSettingToggle());
   }
 }
 

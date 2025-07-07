@@ -11,6 +11,8 @@ export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
 export type AccountStorageEnabledStateChangedListener =
     (enabledState: boolean) => void;
+export type ShouldShowAccountStorageToggleChangedListener = (show: boolean) =>
+    void;
 export type CredentialsChangedListener =
     (credentials: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
@@ -352,6 +354,19 @@ export interface PasswordManagerProxy {
       listener: AccountStorageEnabledStateChangedListener): void;
 
   /**
+   * Add an observer to the account storage toggle visibility state.
+   */
+  addShouldShowAccountStorageSettingToggleListener(
+      listener: ShouldShowAccountStorageToggleChangedListener): void;
+
+
+  /**
+   * Remove an observer to the account storage toggle visibility state.
+   */
+  removeShouldShowAccountStorageSettingToggleListener(
+      listener: ShouldShowAccountStorageToggleChangedListener): void;
+
+  /**
    * Requests the account-storage enabled state of the current user.
    * @return A promise that resolves to the enabled state.
    */
@@ -362,6 +377,13 @@ export interface PasswordManagerProxy {
    * @param enabled Whether the user wants to enable or disable.
    */
   setAccountStorageEnabled(enabled: boolean): void;
+
+  /**
+   * Requests whether the account storage toggle should be shown.
+   * @return A promise that resolves to whether the toggle should be shown.
+   */
+  shouldShowAccountStorageSettingToggle(): Promise<boolean>;
+
 
   /**
    * Moves a list of passwords from the device to the account
@@ -603,12 +625,28 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         listener);
   }
 
+  addShouldShowAccountStorageSettingToggleListener(
+      listener: ShouldShowAccountStorageToggleChangedListener) {
+    chrome.passwordsPrivate.onShouldShowAccountStorageSettingToggleChanged
+        .addListener(listener);
+  }
+
+  removeShouldShowAccountStorageSettingToggleListener(
+      listener: ShouldShowAccountStorageToggleChangedListener) {
+    chrome.passwordsPrivate.onShouldShowAccountStorageSettingToggleChanged
+        .removeListener(listener);
+  }
+
   isAccountStorageEnabled() {
     return chrome.passwordsPrivate.isAccountStorageEnabled();
   }
 
   setAccountStorageEnabled(enabled: boolean) {
     chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
+  }
+
+  shouldShowAccountStorageSettingToggle() {
+    return chrome.passwordsPrivate.shouldShowAccountStorageSettingToggle();
   }
 
   movePasswordsToAccount(ids: number[]) {

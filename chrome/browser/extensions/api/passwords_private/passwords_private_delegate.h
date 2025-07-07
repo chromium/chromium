@@ -199,6 +199,9 @@ class PasswordsPrivateDelegate
   virtual void SetAccountStorageEnabled(bool enabled,
                                         content::WebContents* web_contents) = 0;
 
+  // Whether the account-storage in settings should be shown.
+  virtual bool ShouldShowAccountStorageSettingToggle() = 0;
+
   // Obtains information about insecure credentials. This includes the last
   // time a check was run, as well as all insecure credentials that are present
   // in the password store. Credential is considered insecure if it is

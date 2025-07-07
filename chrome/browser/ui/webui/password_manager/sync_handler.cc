@@ -52,8 +52,6 @@ BatchUploadService::EntryPoint ToBatchUploadEntryPoint(
 }  // namespace
 #endif
 
-using password_manager::features_util::ShouldShowAccountStorageSettingToggle;
-
 SyncHandler::SyncHandler(Profile* profile) : profile_(profile) {}
 
 SyncHandler::~SyncHandler() = default;
@@ -135,14 +133,9 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
     return dict;
   }
 
-  PrefService* pref_service = profile_->GetPrefs();
   syncer::UserSelectableTypeSet types =
       sync_service->GetUserSettings()->GetSelectedTypes();
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  dict.Set("isEligibleForAccountStorage",
-           (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-            ShouldShowAccountStorageSettingToggle(pref_service, sync_service)));
   dict.Set("isSyncingPasswords",
            (sync_service->IsSyncFeatureEnabled() &&
             types.Has(syncer::UserSelectableType::kPasswords)));

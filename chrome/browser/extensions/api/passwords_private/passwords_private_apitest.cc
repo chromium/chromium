@@ -137,6 +137,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     test_delegate_->SetAccountStorageEnabled(enabled, nullptr);
   }
 
+  bool ShouldShowAccountStorageSettingToggle() {
+    return test_delegate_->ShouldShowAccountStorageSettingToggle();
+  }
+
   void ResetPlaintextPassword() { test_delegate_->ResetPlaintextPassword(); }
 
   void AddCompromisedCredential(int id) {

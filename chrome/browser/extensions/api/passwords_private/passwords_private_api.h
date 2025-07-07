@@ -293,6 +293,21 @@ class PasswordsPrivateSetAccountStorageEnabledFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateShouldShowAccountStorageSettingToggleFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "passwordsPrivate.shouldShowAccountStorageSettingToggle",
+      PASSWORDSPRIVATE_SHOULDSHOWACCOUNTSTORAGESETTINGTOGGLE)
+
+ protected:
+  ~PasswordsPrivateShouldShowAccountStorageSettingToggleFunction() override =
+      default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateGetInsecureCredentialsFunction
     : public ExtensionFunction {
  public:

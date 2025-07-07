@@ -113,6 +113,7 @@ class PasswordsPrivateDelegateImpl
   // TODO(crbug.com/40138722): Mimic the signature in PasswordFeatureManager.
   void SetAccountStorageEnabled(bool enabled,
                                 content::WebContents* web_contents) override;
+  bool ShouldShowAccountStorageSettingToggle() override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
   std::vector<api::passwords_private::PasswordUiEntryList>
