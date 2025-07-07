@@ -25,6 +25,8 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
@@ -80,6 +82,8 @@ export class SettingsOtherGoogleDataDialogElement extends
       ClearBrowsingDataBrowserProxyImpl.getInstance();
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -117,16 +121,25 @@ export class SettingsOtherGoogleDataDialogElement extends
   private onPasswordManagerClick_() {
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
+
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.PasswordManagerLinkClick');
   }
 
   private onMyActivityLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'));
+
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.MyActivityLinkClick');
   }
 
   private onGoogleSearchHistoryLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'));
+
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick');
   }
 
   private shouldShowMyActivityLink_() {

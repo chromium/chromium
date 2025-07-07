@@ -36230,6 +36230,77 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.DeleteBrowsingData.CheckboxesShowMoreClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Show more&quot; button in the Clear Browsing Data
+    dialog to reveal more options.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.CookiesSignOutLinkClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Sign out&quot; link within the sub-label of the
+    &quot;Cookies and other site data&quot; checkbox in the Clear Browsing Data
+    dialog.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Search History&quot; link in the &quot;Other Google
+    data&quot; dialog.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.MyActivityLinkClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;My Activity&quot; link in the &quot;Other Google
+    data&quot; dialog.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.OtherDataEntryPointClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Manage other Google data&quot; or &quot;Manage
+    other data&quot; link row in the Clear Browsing Data dialog.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.PasswordManagerLinkClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Password Manager&quot; link in the &quot;Other
+    Google data&quot; dialog.
+  </description>
+</action>
+
+<action name="Settings.DeleteBrowsingData.TimePickerMoreClick">
+  <owner>hkamila@google.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;More&quot; button in the time period picker of the
+    Clear Browsing Data dialog to reveal more time range options.
+  </description>
+</action>
+
 <action name="Settings.DownloadsSettings">
   <owner>qpubert@google.com.org</owner>
   <owner>olivierrobin@chromium.org</owner>

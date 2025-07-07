@@ -20,6 +20,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import {TimePeriod} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_time_picker.html.js';
@@ -240,6 +241,9 @@ export class SettingsClearBrowsingDataTimePicker extends
       anchorAlignmentX: AnchorAlignment.BEFORE_END,
       top: target.getBoundingClientRect().bottom + MENU_VERTICAL_OFFSET_PX,
     });
+
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        'Settings.DeleteBrowsingData.TimePickerMoreClick');
   }
 
   private onMoreOptionsMenuClose_(e: Event) {
