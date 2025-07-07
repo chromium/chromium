@@ -34,8 +34,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class VersioningModalDialog {
-    @Nullable static Runnable sExitRunnable;
-
     /**
      * Shows a dialog prompting the user to update Chrome both negative and positive buttons.
      *
@@ -43,7 +41,7 @@ public class VersioningModalDialog {
      * @param modalDialogManager Used to show as a dialog.
      */
     public static void show(Context context, ModalDialogManager modalDialogManager) {
-        new VersioningModalDialog(context, modalDialogManager).show();
+        new VersioningModalDialog(context, modalDialogManager, /* exitRunnable= */ null).show();
     }
 
     /**
@@ -60,16 +58,20 @@ public class VersioningModalDialog {
             ModalDialogManager modalDialogManager,
             String message,
             Runnable exitRunnable) {
-        sExitRunnable = exitRunnable;
-        return new VersioningModalDialog(context, modalDialogManager).show(message);
+        return new VersioningModalDialog(context, modalDialogManager, exitRunnable).show(message);
     }
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final @Nullable Runnable mExitRunnable;
 
-    private VersioningModalDialog(Context context, ModalDialogManager modalDialogManager) {
+    private VersioningModalDialog(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            @Nullable Runnable exitRunnable) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mExitRunnable = exitRunnable;
     }
 
     private void show() {
@@ -96,16 +98,14 @@ public class VersioningModalDialog {
         String negativeButton =
                 mContext.getString(
                         R.string.collaboration_chrome_out_of_date_error_dialog_not_now_button);
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ALL_KEYS)
-                        .with(CONTROLLER, controller)
-                        .with(TITLE, title)
-                        .with(MESSAGE_PARAGRAPH_1, message)
-                        .with(POSITIVE_BUTTON_TEXT, positiveButton)
-                        .with(NEGATIVE_BUTTON_TEXT, negativeButton)
-                        .with(CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(BUTTON_STYLES, ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        return builder;
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(CONTROLLER, controller)
+                .with(TITLE, title)
+                .with(MESSAGE_PARAGRAPH_1, message)
+                .with(POSITIVE_BUTTON_TEXT, positiveButton)
+                .with(NEGATIVE_BUTTON_TEXT, negativeButton)
+                .with(CANCEL_ON_TOUCH_OUTSIDE, true)
+                .with(BUTTON_STYLES, ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
     }
 
     private void onDismiss(@DialogDismissalCause Integer dismissalCause) {
@@ -118,9 +118,8 @@ public class VersioningModalDialog {
             mContext.startActivity(intent);
         }
 
-        if (sExitRunnable != null) {
-            sExitRunnable.run();
-            sExitRunnable = null;
+        if (mExitRunnable != null) {
+            mExitRunnable.run();
         }
     }
 }
