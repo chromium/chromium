@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -89,13 +90,11 @@ class ManifestUpdateCheckCommand
                             blink::mojom::ManifestPtr opt_manifest,
                             bool valid_manifest_for_web_app,
                             webapps::InstallableStatusCode installable_status);
-  void DownloadNewIconBitmaps(
-      WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback);
-  void StashNewIconBitmaps(base::OnceClosure next_step_callback,
-                           IconsDownloadedResult result,
-                           IconsMap icons_map,
-                           DownloadedIconsHttpResults icons_http_results);
-
+  void ParseManifestAndCreateWebAppInfo(
+      WebAppInstallInfoCreationCallback creation_callback);
+  void ValidateAndStashWebAppInfo(
+      base::OnceClosure next_step_callback,
+      std::unique_ptr<WebAppInstallInfo> install_info);
   void ValidateNewScopeExtensions(
       OnDidGetWebAppOriginAssociations next_step_callback);
   void StashValidatedScopeExtensions(
@@ -154,10 +153,12 @@ class ManifestUpdateCheckCommand
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
+  blink::mojom::ManifestPtr opt_manifest_;
   IconBitmaps existing_app_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   ManifestDataChanges manifest_data_changes_;

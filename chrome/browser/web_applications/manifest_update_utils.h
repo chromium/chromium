@@ -80,9 +80,6 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult result);
 ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
     ManifestUpdateCheckResult check_result);
 
-void RecordIconDownloadMetrics(IconsDownloadedResult result,
-                               DownloadedIconsHttpResults icons_http_results);
-
 bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app);
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
                                              const WebApp& web_app);

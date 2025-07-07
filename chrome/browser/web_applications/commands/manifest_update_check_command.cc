@@ -127,10 +127,11 @@ void ManifestUpdateCheckCommand::DownloadNewManifestData(
       base::BindOnce(&ManifestUpdateCheckCommand::StashNewManifestJson,
                      GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommand::DownloadNewIconBitmaps,
-                     GetWeakPtr()),
+      base::BindOnce(
+          &ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo,
+          GetWeakPtr()),
 
-      base::BindOnce(&ManifestUpdateCheckCommand::StashNewIconBitmaps,
+      base::BindOnce(&ManifestUpdateCheckCommand::ValidateAndStashWebAppInfo,
                      GetWeakPtr()),
 
       base::BindOnce(&ManifestUpdateCheckCommand::ValidateNewScopeExtensions,
@@ -176,24 +177,20 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
     return;
   }
-  DCHECK(opt_manifest);
-  CHECK(!new_install_info_);
+  CHECK(opt_manifest);
 
-  new_install_info_ = std::make_unique<WebAppInstallInfo>(
-      CreateWebAppInfoFromManifest(*opt_manifest));
-
-  if (app_id_ !=
-      GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
+  if (app_id_ != GenerateAppIdFromManifestId(opt_manifest->id)) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
     return;
   }
 
+  opt_manifest_ = std::move(opt_manifest);
   std::move(next_step_callback).Run();
 }
 
-void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
-    WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+void ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo(
+    WebAppInstallInfoCreationCallback creation_callback) {
+  CHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
@@ -201,34 +198,34 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
     return;
   }
 
-  CHECK(new_install_info_);
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*new_install_info_);
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.skip_page_favicons = true;
+  construct_options.fail_all_if_any_fail = true;
+  construct_options.record_icon_results_on_update = true;
 
-  IconDownloaderOptions options = {.skip_page_favicons = true,
-                                   .fail_all_if_any_fail = true};
-  icon_downloader_->Start(web_contents_.get(), icon_urls,
-                          std::move(next_step_callback), options);
+  // The `background_installation` and `install_source` fields here don't matter
+  // because this is not logged anywhere.
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest_, *data_retriever_.get(),
+          /*background_installation=*/false,
+          webapps::WebappInstallSource::MENU_BROWSER_TAB, web_contents_,
+          [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
+          std::move(creation_callback), construct_options);
 }
 
-void ManifestUpdateCheckCommand::StashNewIconBitmaps(
+void ManifestUpdateCheckCommand::ValidateAndStashWebAppInfo(
     base::OnceClosure next_step_callback,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults icons_http_results) {
-  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
+  CHECK(!new_install_info_);
+  new_install_info_ = std::move(install_info);
 
-  GetMutableDebugValue().Set("icon_download_result", base::ToString(result));
-
-  RecordIconDownloadMetrics(result, icons_http_results);
-
-  if (result != IconsDownloadedResult::kCompleted) {
+  if (new_install_info_->is_generated_icon) {
     CompleteCommandAndSelfDestruct(
         ManifestUpdateCheckResult::kIconDownloadFailed);
     return;
   }
-
-  PopulateOtherIcons(new_install_info_.get(), icons_map);
-  PopulateProductIcons(new_install_info_.get(), &icons_map);
 
   std::move(next_step_callback).Run();
 }

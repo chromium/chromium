@@ -43,6 +43,9 @@ struct WebAppInstallInfoConstructOptions {
   bool skip_page_favicons = true;
   // If the download should end early if any failures occur.
   bool fail_all_if_any_fail = false;
+  // Record results of icon downloading on manifest update, should only be
+  // triggered from manifest updates.
+  bool record_icon_results_on_update = false;
 };
 
 // The role of this job is to take a `blink::mojom::Manifest`, parse it,

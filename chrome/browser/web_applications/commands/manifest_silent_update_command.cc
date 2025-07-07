@@ -7,6 +7,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -101,6 +102,7 @@ bool AreNonSecuritySensitiveDataChangesNeeded(
     return true;
   }
   // TODO(crbug.com/424246884): Check more manifest fields.
+
   return false;
 }
 
@@ -172,11 +174,7 @@ void ManifestSilentUpdateCommand::StartWithLock(
   lock_ = std::move(lock);
 
   if (IsWebContentsDestroyed()) {
-    base::UmaHistogramEnumeration(
-        "Webapp.Update.ManifestSilentUpdateCheckResult",
-        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
-    CompleteCommandAndSelfDestruct(
-        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+    AbortCommandOnWebContentsDestruction();
     return;
   }
   Observe(web_contents_.get());
@@ -200,6 +198,11 @@ void ManifestSilentUpdateCommand::StashNewManifestJson(
     webapps::InstallableStatusCode installable_status) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
 
+  if (IsWebContentsDestroyed()) {
+    AbortCommandOnWebContentsDestruction();
+    return;
+  }
+
   GetMutableDebugValue().Set(
       "manifest_url", opt_manifest ? opt_manifest->manifest_url.spec() : "");
   GetMutableDebugValue().Set("manifest_installable_result",
@@ -213,11 +216,40 @@ void ManifestSilentUpdateCommand::StashNewManifestJson(
         ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall);
     return;
   }
+
   CHECK(opt_manifest);
+
+  // TODO(msiem): Change icon downloading options if needed while implementing
+  // other parts of the command.
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.skip_page_favicons = true;
+  construct_options.fail_all_if_any_fail = true;
+
+  // The `background_installation` and `install_source` fields here don't matter
+  // because this is not logged anywhere.
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest, *data_retriever_.get(),
+          /*background_installation=*/false,
+          webapps::WebappInstallSource::MENU_BROWSER_TAB, web_contents_,
+          [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
+          base::BindOnce(
+              &ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest,
+              GetWeakPtr()),
+          construct_options);
+}
+
+void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
   CHECK(!new_install_info_);
 
-  new_install_info_ = std::make_unique<WebAppInstallInfo>(
-      CreateWebAppInfoFromManifest(*opt_manifest));
+  if (IsWebContentsDestroyed()) {
+    AbortCommandOnWebContentsDestruction();
+    return;
+  }
+
+  new_install_info_ = std::move(install_info);
   app_id_ = GenerateAppIdFromManifestId(new_install_info_->manifest_id());
 
   // Start validating scope extensions.
@@ -235,11 +267,7 @@ void ManifestSilentUpdateCommand::StashValidatedScopeExtensions(
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
 
   if (IsWebContentsDestroyed()) {
-    base::UmaHistogramEnumeration(
-        "Webapp.Update.ManifestSilentUpdateCheckResult",
-        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
-    CompleteCommandAndSelfDestruct(
-        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+    AbortCommandOnWebContentsDestruction();
     return;
   }
 
@@ -357,8 +385,15 @@ void ManifestSilentUpdateCommand::NonSecuritySensitiveFieldsApplied(
   CHECK(existing_web_app);
   // Ensure that non security sensitive data changes are no longer needed post
   // application.
+  // `existing_shortcuts_menu_icon_bitmaps` has to be nullptr, otherwise this
+  // CHECK will fail. This is because `existing_shortcuts_menu_icon_bitmaps` is
+  // cached from before the manifest changes are applied, and once they are
+  // applied, the value of `existing_shortcuts_menu_icon_bitmaps` will need to
+  // be updated. It is expensive to read the icons by calling the
+  // `WebAppIconManager` again, so the simpler solution is to pass in `nullptr`
+  // to bypass this CHECK.
   CHECK(!AreNonSecuritySensitiveDataChangesNeeded(
-      *existing_web_app, &existing_shortcuts_menu_icon_bitmaps_,
+      *existing_web_app, /*existing_shortcuts_menu_icon_bitmaps=*/nullptr,
       *new_install_info_));
   CHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
@@ -396,6 +431,14 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
 
 bool ManifestSilentUpdateCommand::IsWebContentsDestroyed() {
   return !web_contents_ || web_contents_->IsBeingDestroyed();
+}
+
+void ManifestSilentUpdateCommand::AbortCommandOnWebContentsDestruction() {
+  base::UmaHistogramEnumeration(
+      "Webapp.Update.ManifestSilentUpdateCheckResult",
+      ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+  CompleteCommandAndSelfDestruct(
+      ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
 }
 
 }  // namespace web_app

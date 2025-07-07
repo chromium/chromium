@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
@@ -85,9 +86,17 @@ class ManifestSilentUpdateCommand
   void StashNewManifestJson(blink::mojom::ManifestPtr opt_manifest,
                             bool valid_manifest_for_web_app,
                             webapps::InstallableStatusCode installable_status);
-  void ValidateNewScopeExtensions();
+
+  // The `install_info` will have icons populated if they were found in the
+  // manifest.
+  void OnWebAppInfoCreatedFromManifest(
+      std::unique_ptr<WebAppInstallInfo> install_info);
   void StashValidatedScopeExtensions(
       ScopeExtensions validated_scope_extensions);
+
+  // Updates NoopLock to an AppLock after retrieving the new manifest data and
+  // storing it.
+  void OnAppLockRetrieved();
 
   // Stage: Loading existing manifest data from disk.
   // (ManifestSilentUpdateCommandStage::kLoadingExistingManifestData)
@@ -111,8 +120,7 @@ class ManifestSilentUpdateCommand
       ManifestSilentUpdateCheckResult check_result);
 
   bool IsWebContentsDestroyed();
-  // Updates NoopLock to an AppLock after retrieving the new manifest data.
-  void OnAppLockRetrieved();
+  void AbortCommandOnWebContentsDestruction();
 
   base::WeakPtr<ManifestSilentUpdateCommand> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -128,6 +136,7 @@ class ManifestSilentUpdateCommand
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.

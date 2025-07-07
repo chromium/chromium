@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -396,6 +397,17 @@ void MergeFallbackInstallInfoIntoNewInfo(const WebAppInstallInfo& from_info,
   }
 }
 
+void RecordIconUpdateMetrics(IconsDownloadedResult result,
+                             DownloadedIconsHttpResults icons_http_results) {
+  // TODO(crbug.com/40193545): Report `result` and `icons_http_results` in
+  // internals.
+  base::UmaHistogramEnumeration("WebApp.Icon.DownloadedResultOnUpdate", result);
+  RecordDownloadedIconHttpStatusCodes(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate", icons_http_results);
+  RecordDownloadedIconsHttpResultsCodeClass(
+      "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
+}
+
 }  // namespace
 
 ManifestToWebAppInstallInfoJob::~ManifestToWebAppInstallInfoJob() = default;
@@ -637,6 +649,13 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     for (const SkBitmap& bitmap : bitmap_vector) {
       sizes->Append(bitmap.width());
     }
+  }
+  debug_data_->Set("icon_download_result", base::ToString(result));
+
+  // TODO(crbug.com/429929887): Return results via callback using a result
+  // struct/class.
+  if (options_.record_icon_results_on_update) {
+    RecordIconUpdateMetrics(result, icons_http_results);
   }
 
   PopulateProductIcons(install_info_.get(), &icons_map);

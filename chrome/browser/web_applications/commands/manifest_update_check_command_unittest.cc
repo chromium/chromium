@@ -35,6 +35,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace web_app {
 
@@ -397,11 +398,13 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     return test::InstallWebApp(profile(), std::move(info));
   }
 
-  void SetupPageState(const WebAppInstallInfo& info) {
+  void SetupPageState(const WebAppInstallInfo& info,
+                      bool mimic_icon_downloads_fail = false) {
     auto& page_state = web_contents_manager().GetOrCreatePageState(app_url());
 
     page_state.has_service_worker = true;
-    page_state.manifest_before_default_processing = GetManifestFromInfo(info);
+    page_state.manifest_before_default_processing =
+        GetManifestFromInfo(info, mimic_icon_downloads_fail);
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   }
@@ -416,7 +419,9 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
   GURL app_url() { return app_url_; }
 
  private:
-  blink::mojom::ManifestPtr GetManifestFromInfo(const WebAppInstallInfo& info) {
+  blink::mojom::ManifestPtr GetManifestFromInfo(
+      const WebAppInstallInfo& info,
+      bool mimic_icon_downloads_fail) {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = info.start_url();
     manifest->id = GenerateManifestIdFromStartUrlOnly(info.start_url());
@@ -427,11 +432,27 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     if (manifest->has_theme_color) {
       manifest->theme_color = info.theme_color.value();
     }
+
+    // Set up icons in the manifest, which is necessary to verify that icon
+    // downloads have indeed succeeded.
+    if (!mimic_icon_downloads_fail) {
+      blink::Manifest::ImageResource icon;
+      icon.src = app_icon_url_;
+      icon.sizes = {{icon_size_, icon_size_}};
+      icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+      manifest->icons = {icon};
+
+      web_contents_manager().GetOrCreateIconState(app_icon_url_).bitmaps = {
+          gfx::test::CreateBitmap(icon_size_, SK_ColorBLUE)};
+    }
+
     return manifest;
   }
 
   const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
   base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
+  const GURL app_icon_url_{"http://www.foo.bar/icon.png"};
+  const int icon_size_ = 256;
 };
 
 TEST_F(ManifestUpdateCheckCommandTest, Verify) {
@@ -642,6 +663,27 @@ TEST_F(ManifestUpdateCheckCommandTest, IconReadFromDiskFailed) {
 
   EXPECT_EQ(result.check_result,
             ManifestUpdateCheckResult::kIconReadFromDiskFailed);
+  EXPECT_FALSE(result.new_install_info);
+}
+
+TEST_F(ManifestUpdateCheckCommandTest, VerifyIconDownloadsFail) {
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
+  install_info->scope = app_url().GetWithoutFilename();
+  install_info->display_mode = DisplayMode::kStandalone;
+  install_info->title = u"Foo App";
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
+
+  auto new_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
+  new_info->scope = app_url().GetWithoutFilename();
+  new_info->display_mode = DisplayMode::kMinimalUi;
+  new_info->title = u"Foo App 2";
+
+  SetupPageState(*new_info, /*mimic_icon_downloads_fail=*/true);
+  RunResult result = RunCommandAndGetResult(app_url(), app_id);
+
+  EXPECT_EQ(result.check_result,
+            ManifestUpdateCheckResult::kIconDownloadFailed);
   EXPECT_FALSE(result.new_install_info);
 }
 

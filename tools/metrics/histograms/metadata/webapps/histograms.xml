@@ -906,7 +906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnUpdate"
-    enum="HttpResponseCode" expires_after="2024-01-01">
+    enum="HttpResponseCode" expires_after="2026-07-04">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -914,7 +914,8 @@ chromium-metrics-reviews@google.com.
     The HTTP status code returned for a list of icons when updating single
     WebApp. Recorded when ManifestUpdateDataFetchCommand finishes downloading
     icons for update. Icon download attempts with identical codes produce only
-    one event for this histogram.
+    one event for this histogram. Warning: this histogram was expired from
+    2024-01-01 to 2025-07-03; data may be missing.
   </summary>
 </histogram>
 
@@ -941,13 +942,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.DownloadedResultOnUpdate"
-    enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
+    enum="WebAppIconsDownloadedResult" expires_after="2026-07-04">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     The overall result returned by WebAppIconDownloader. Recorded when
-    ManifestUpdateDataFetchCommand finishes downloading icons.
+    ManifestUpdateDataFetchCommand finishes downloading icons. Warning: this
+    histogram was expired from 2024-01-01 to 2025-07-03; data may be missing.
   </summary>
 </histogram>
 
@@ -974,13 +976,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnUpdate"
-    enum="HttpStatusCodeClass" expires_after="2024-01-01">
+    enum="HttpStatusCodeClass" expires_after="2026-07-04">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when updating a
     WebApp. Recorded when ManifestUpdateDataFetchCommand finishes downloading
-    icons.
+    icons. Warning: this histogram was expired from 2024-01-01 to 2025-07-03;
+    data may be missing.
   </summary>
 </histogram>
 
