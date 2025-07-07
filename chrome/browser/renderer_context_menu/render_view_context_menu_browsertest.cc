@@ -2638,7 +2638,9 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
  protected:
   void SetUp() override {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({lens::features::kLensOverlay}, {});
+    feature_list.InitWithFeatures(
+        {lens::features::kLensOverlay},
+        {lens::features::kLensOverlayKeyboardSelection});
 
     // This does not use LensBrowserBaseTest::SetUp because that
     // function does its own conflicting initialization of a FeatureList.
