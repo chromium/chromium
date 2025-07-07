@@ -532,6 +532,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
 
   immersive_mode_controller_.reset();
+
+  exclusive_access_manager_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
