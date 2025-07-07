@@ -137,7 +137,7 @@ public class DownloadUtils {
      *
      * @param url The full URL.
      * @param limit Character limit.
-     * @return The text to display, or null if the input was invalid.
+     * @return The text to display, or null if the input was invalid or cannot be shortened enough.
      */
     public static @Nullable String formatUrlForDisplayInNotification(
             @Nullable GURL url, int limit) {
@@ -145,11 +145,23 @@ public class DownloadUtils {
 
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        if (formattedUrl.length() <= limit) return formattedUrl;
+        if (!TextUtils.isEmpty(formattedUrl) && formattedUrl.length() <= limit) {
+            return formattedUrl;
+        }
 
-        // The origin is too long. Strip down to eTLD+1.
-        return UrlUtilities.getDomainAndRegistry(
-                url.getSpec(), /* includePrivateRegistries= */ false);
+        // The formatted URL is unsuitable. One possible fallback is eTLD+1, but we should be
+        // careful to only parse for eTLD+1 if the origin has a host portion (some URL schemes
+        // don't).
+        GURL origin = url.getOrigin();
+        String fallback =
+                !GURL.isEmptyOrInvalid(origin) && !origin.getHost().isEmpty()
+                        ? UrlUtilities.getDomainAndRegistry(
+                                origin.getSpec(), /* includePrivateRegistries= */ true)
+                        : origin.getPossiblyInvalidSpec();
+        if (!TextUtils.isEmpty(fallback) && fallback.length() <= limit) {
+            return fallback;
+        }
+        return null;
     }
 
     /**

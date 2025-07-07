@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 
@@ -147,15 +148,20 @@ public final class UiUtils {
         String displayUrl =
                 DownloadUtils.formatUrlForDisplayInNotification(
                         item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
+        boolean hasDisplayUrl = !TextUtils.isEmpty(displayUrl);
 
         if (item.totalSizeBytes == 0) {
-            return context.getString(
-                    R.string.download_manager_list_item_description_no_size, displayUrl);
+            return hasDisplayUrl
+                    ? context.getString(
+                            R.string.download_manager_list_item_description_no_size, displayUrl)
+                    : "";
         }
 
         String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
-        return context.getString(
-                R.string.download_manager_list_item_description, displaySize, displayUrl);
+        return hasDisplayUrl
+                ? context.getString(
+                        R.string.download_manager_list_item_description, displaySize, displayUrl)
+                : displaySize;
     }
 
     /**

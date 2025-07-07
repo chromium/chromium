@@ -797,6 +797,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 String bytesString =
                         org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
                                 getContext(), itemToShow.totalSizeBytes);
+                // Try to display the download domain/origin if possible. Otherwise, omit it.
                 String displayUrl =
                         DownloadUtils.formatUrlForDisplayInNotification(
                                 itemToShow.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_NOTIFICATION);
@@ -805,7 +806,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                                 .getString(
                                         R.string.download_message_download_complete_description,
                                         bytesString,
-                                        displayUrl);
+                                        displayUrl != null ? displayUrl : "");
                 info.id = itemToShow.id;
                 info.link = getContext().getString(R.string.open_downloaded_label);
                 info.icon = R.drawable.infobar_download_complete_animation;
