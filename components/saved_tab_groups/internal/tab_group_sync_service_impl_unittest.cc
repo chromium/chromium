@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 
 #include <iterator>
 #include <memory>
@@ -29,11 +29,11 @@
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h"
-#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -169,9 +169,9 @@ MATCHER_P(UuidEq, uuid, "") {
 
 }  // namespace
 
-class TabGroupSyncServiceTest : public testing::Test {
+class TabGroupSyncServiceImplTest : public testing::Test {
  public:
-  TabGroupSyncServiceTest()
+  TabGroupSyncServiceImplTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -189,7 +189,7 @@ class TabGroupSyncServiceTest : public testing::Test {
         local_group_id_1_(test::GenerateRandomTabGroupID()),
         local_tab_id_1_(test::GenerateRandomTabID()) {}
 
-  ~TabGroupSyncServiceTest() override = default;
+  ~TabGroupSyncServiceImplTest() override = default;
 
   void SetUp() override {
     auto model = std::make_unique<SavedTabGroupModel>();
@@ -413,12 +413,12 @@ class TabGroupSyncServiceTest : public testing::Test {
   LocalTabID local_tab_id_1_;
 };
 
-TEST_F(TabGroupSyncServiceTest, ServiceConstruction) {
+TEST_F(TabGroupSyncServiceImplTest, ServiceConstruction) {
   EXPECT_TRUE(tab_group_sync_service_->GetSavedTabGroupControllerDelegate());
   EXPECT_TRUE(tab_group_sync_service_->GetVersioningMessageController());
 }
 
-TEST_F(TabGroupSyncServiceTest, GetAllGroups) {
+TEST_F(TabGroupSyncServiceImplTest, GetAllGroups) {
   auto all_groups = tab_group_sync_service_->GetAllGroups();
   EXPECT_EQ(all_groups.size(), 3u);
   EXPECT_EQ(all_groups[0].saved_guid(), group_1_.saved_guid());
@@ -435,7 +435,7 @@ TEST_F(TabGroupSyncServiceTest, GetAllGroups) {
   EXPECT_EQ(all_groups.size(), 3u);
 }
 
-TEST_F(TabGroupSyncServiceTest, GetGroup) {
+TEST_F(TabGroupSyncServiceImplTest, GetGroup) {
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());
 
@@ -445,7 +445,7 @@ TEST_F(TabGroupSyncServiceTest, GetGroup) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, GetGroupEitherId) {
+TEST_F(TabGroupSyncServiceImplTest, GetGroupEitherId) {
   EitherGroupID either_id;
 
   // When holding a sync group id.
@@ -467,7 +467,7 @@ TEST_F(TabGroupSyncServiceTest, GetGroupEitherId) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
+TEST_F(TabGroupSyncServiceImplTest, GetDeletedGroupIdsUsingPrefs) {
   // Delete a group from sync. It should add the deleted ID to the pref.
   model_->RemovedFromSync(group_1_.saved_guid());
   WaitForPostedTasks();
@@ -485,7 +485,8 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
   EXPECT_EQ(0u, deleted_ids.size());
 }
 
-TEST_F(TabGroupSyncServiceTest, GetTitleForPreviouslyExistingSharedTabGroup) {
+TEST_F(TabGroupSyncServiceImplTest,
+       GetTitleForPreviouslyExistingSharedTabGroup) {
   syncer::CollaborationId collaboration_id("collaboration_id");
 
   // First ensure our test group is shared.
@@ -508,7 +509,7 @@ TEST_F(TabGroupSyncServiceTest, GetTitleForPreviouslyExistingSharedTabGroup) {
   EXPECT_EQ(group_1_.title(), title);
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        GetDeletedGroupIdsUsingPrefsWhileRemovedFromLocal) {
   // Delete a group from local. It should not add the entry to the prefs.
   model_->RemovedLocally(group_1_.saved_guid());
@@ -518,7 +519,7 @@ TEST_F(TabGroupSyncServiceTest,
   EXPECT_EQ(0u, deleted_ids.size());
 }
 
-TEST_F(TabGroupSyncServiceTest, AddGroup) {
+TEST_F(TabGroupSyncServiceImplTest, AddGroup) {
   base::HistogramTester histogram_tester;
   // Add a new group.
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
@@ -547,7 +548,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroup) {
       "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin", 1u);
 }
 
-TEST_F(TabGroupSyncServiceTest, AddGroup_BeforeInit) {
+TEST_F(TabGroupSyncServiceImplTest, AddGroup_BeforeInit) {
   // Add a new group.
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
@@ -569,7 +570,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroup_BeforeInit) {
   EXPECT_EQ(model_->Count(), 4);
 }
 
-TEST_F(TabGroupSyncServiceTest, AddGroupWhenSignedOut) {
+TEST_F(TabGroupSyncServiceImplTest, AddGroupWhenSignedOut) {
   // Add a new group while signed out.
   ON_CALL(saved_processor_, IsTrackingMetadata())
       .WillByDefault(testing::Return(false));
@@ -586,7 +587,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroupWhenSignedOut) {
   EXPECT_TRUE(group->created_before_syncing_tab_groups());
 }
 
-TEST_F(TabGroupSyncServiceTest, RemoveGroupByLocalId) {
+TEST_F(TabGroupSyncServiceImplTest, RemoveGroupByLocalId) {
   base::HistogramTester histogram_tester;
   // Add a group.
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
@@ -608,7 +609,7 @@ TEST_F(TabGroupSyncServiceTest, RemoveGroupByLocalId) {
       "TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin", 1u);
 }
 
-TEST_F(TabGroupSyncServiceTest, RemoveGroupBySyncId) {
+TEST_F(TabGroupSyncServiceImplTest, RemoveGroupBySyncId) {
   // Remove the group and verify.
   tab_group_sync_service_->RemoveGroup(group_1_.saved_guid());
   EXPECT_EQ(tab_group_sync_service_->GetGroup(group_1_.saved_guid()),
@@ -619,7 +620,7 @@ TEST_F(TabGroupSyncServiceTest, RemoveGroupBySyncId) {
   EXPECT_EQ(model_->Count(), 2);
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
+TEST_F(TabGroupSyncServiceImplTest, UpdateVisualData) {
   base::HistogramTester histogram_tester;
   tab_groups::TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   tab_group_sync_service_->UpdateVisualData(local_group_id_1_, &visual_data);
@@ -636,7 +637,8 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
       "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin", 1u);
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateSharedAttributionsOnUpdateVisualData) {
+TEST_F(TabGroupSyncServiceImplTest,
+       UpdateSharedAttributionsOnUpdateVisualData) {
   MakeTabGroupShared(local_group_id_1_,
                      syncer::CollaborationId("collaboration"));
 
@@ -651,7 +653,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateSharedAttributionsOnUpdateVisualData) {
   EXPECT_THAT(*group, HasSharedAttribution(kDefaultGaiaId, "new_gaia_id"));
 }
 
-TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
+TEST_F(TabGroupSyncServiceImplTest, OpenTabGroup) {
   EXPECT_CALL(*coordinator_,
               HandleOpenTabGroupRequest(group_2_.saved_guid(), testing::_))
       .Times(1);
@@ -659,7 +661,7 @@ TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
       group_2_.saved_guid(), std::make_unique<TabGroupActionContext>());
 }
 
-TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
+TEST_F(TabGroupSyncServiceImplTest, ConnectLocalTabGroup) {
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   EXPECT_CALL(*coordinator_,
               ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
@@ -668,7 +670,7 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
       group_2_.saved_guid(), local_id, OpeningSource::kOpenedFromRevisitUi);
 }
 
-TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
+TEST_F(TabGroupSyncServiceImplTest, ConnectLocalTabGroup_BeforeInit) {
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   tab_group_sync_service_->SetIsInitializedForTesting(false);
 
@@ -685,7 +687,7 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
+TEST_F(TabGroupSyncServiceImplTest, UpdateLocalTabGroupMapping_BeforeInit) {
   tab_group_sync_service_->SetIsInitializedForTesting(false);
   LocalTabGroupID local_id_4 = test::GenerateRandomTabGroupID();
   ASSERT_FALSE(group_4_.local_group_id().has_value());
@@ -710,7 +712,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
                                  group_4_.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_AfterInit) {
+TEST_F(TabGroupSyncServiceImplTest, UpdateLocalTabGroupMapping_AfterInit) {
   LocalTabGroupID local_id_2 = test::GenerateRandomTabGroupID();
   tab_group_sync_service_->UpdateLocalTabGroupMapping(
       group_1_.saved_guid(), local_id_2, OpeningSource::kUnknown);
@@ -727,7 +729,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_AfterInit) {
                                  group_1_.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, RemoveLocalTabGroupMapping) {
+TEST_F(TabGroupSyncServiceImplTest, RemoveLocalTabGroupMapping) {
   auto retrieved_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_TRUE(retrieved_group.has_value());
   tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_,
@@ -738,7 +740,7 @@ TEST_F(TabGroupSyncServiceTest, RemoveLocalTabGroupMapping) {
   // TODO
 }
 
-TEST_F(TabGroupSyncServiceTest, AddTab) {
+TEST_F(TabGroupSyncServiceImplTest, AddTab) {
   base::HistogramTester histogram_tester;
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   auto local_tab_id_2 = test::GenerateRandomTabID();
@@ -760,7 +762,7 @@ TEST_F(TabGroupSyncServiceTest, AddTab) {
 }
 
 // Tests that adding a tab to a shared group.
-TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
+TEST_F(TabGroupSyncServiceImplTest, AddTabToSharedGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(group->saved_tabs().size(), 1u);
@@ -795,7 +797,7 @@ TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
               HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId));
 }
 
-TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
+TEST_F(TabGroupSyncServiceImplTest, AddUpdateRemoveTabWithUnknownGroupId) {
   base::HistogramTester histogram_tester;
   auto unknown_group_id = test::GenerateRandomTabGroupID();
   auto local_tab_id = test::GenerateRandomTabID();
@@ -825,7 +827,7 @@ TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
       "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin", 0u);
 }
 
-TEST_F(TabGroupSyncServiceTest, RemoveTab) {
+TEST_F(TabGroupSyncServiceImplTest, RemoveTab) {
   base::HistogramTester histogram_tester;
   // Add a new tab.
   auto local_tab_id_2 = test::GenerateRandomTabID();
@@ -854,7 +856,7 @@ TEST_F(TabGroupSyncServiceTest, RemoveTab) {
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
+TEST_F(TabGroupSyncServiceImplTest, ForceRemoveClosedTabGroupsOnStartup) {
   feature_list_.InitWithFeatures(
       {tab_groups::kForceRemoveClosedTabGroupsOnStartup}, {});
 
@@ -880,7 +882,7 @@ TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
 }
 #endif
 
-TEST_F(TabGroupSyncServiceTest, CleanUpHiddenSavedTabGroupsOnStartup) {
+TEST_F(TabGroupSyncServiceImplTest, CleanUpHiddenSavedTabGroupsOnStartup) {
   SavedTabGroup saved_tab_group_1(test::CreateTestSavedTabGroup());
   saved_tab_group_1.SetIsHidden(true);
 
@@ -910,7 +912,7 @@ TEST_F(TabGroupSyncServiceTest, CleanUpHiddenSavedTabGroupsOnStartup) {
   ASSERT_TRUE(model_->Contains(shared_group.saved_guid()));
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        RestoreHiddenOriginatingSavedGroupOnRemoteSharingFailure) {
   // Simulate a remote transition of `group_1_` to a shared tab group.
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(),
@@ -937,7 +939,7 @@ TEST_F(TabGroupSyncServiceTest,
               Contains(HasGuid(group_1_.saved_guid())));
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTab) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
@@ -995,7 +997,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTab) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabIgnoresSameUrl) {
   auto local_tab_id_2 = test::GenerateRandomTabID();
   std::u16string new_title = u"tab title 2";
   GURL new_url = GURL("https://www.example.com");
@@ -1019,7 +1021,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabWithEmptyUrlRestriction) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   optimization_guide::OptimizationMetadata metadata;
@@ -1057,7 +1059,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
                    kTestCacheGuid);
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabNotBlockedByUrlRestriction) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   optimization_guide::OptimizationMetadata metadata;
@@ -1120,7 +1122,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
   EXPECT_EQ(url_2, tab->url());
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameFragment) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabBlockedDueToSameFragment) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   optimization_guide::OptimizationMetadata metadata;
@@ -1183,7 +1185,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameFragment) {
   EXPECT_EQ(url_1, tab->url());
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
+TEST_F(TabGroupSyncServiceImplTest,
+       NavigateTabUpdatesAttributionForSharedGroup) {
   MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
 
   LocalTabID local_tab_id = test::GenerateRandomTabID();
@@ -1207,7 +1210,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
               Pointee(HasSharedAttribution(kDefaultGaiaId, "other_gaia_id")));
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSamePath) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabBlockedDueToSamePath) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   optimization_guide::OptimizationMetadata metadata;
@@ -1270,7 +1273,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSamePath) {
   EXPECT_EQ(url_1, tab->url());
 }
 
-TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameDomain) {
+TEST_F(TabGroupSyncServiceImplTest, NavigateTabBlockedDueToSameDomain) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   optimization_guide::OptimizationMetadata metadata;
@@ -1333,7 +1336,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameDomain) {
   EXPECT_EQ(url_1, tab->url());
 }
 
-TEST_F(TabGroupSyncServiceTest, MoveTab) {
+TEST_F(TabGroupSyncServiceImplTest, MoveTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
@@ -1360,7 +1363,7 @@ TEST_F(TabGroupSyncServiceTest, MoveTab) {
       "TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin", 1u);
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabSelected) {
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
   base::HistogramTester histogram_tester;
 
@@ -1404,7 +1407,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        TabGroupUpdateFromSyncWillUpdateLastSeenTimestampOfFocusedTab) {
   // Initialize a shared tab group with one tab. The tab doesn't have last seen
   // timestamp set.
@@ -1431,7 +1434,7 @@ TEST_F(TabGroupSyncServiceTest,
   EXPECT_TRUE(tab->last_seen_time().has_value());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabSelectedForNonExistingTab) {
   auto local_tab_group_id_2 = test::GenerateRandomTabGroupID();
   auto local_tab_id_2 = test::GenerateRandomTabID();
   auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -1453,7 +1456,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
                                          tab_title_2);
 }
 
-TEST_F(TabGroupSyncServiceTest, RecordTabGroupEvent) {
+TEST_F(TabGroupSyncServiceImplTest, RecordTabGroupEvent) {
   base::HistogramTester histogram_tester;
   EventDetails event_details(TabGroupEvent::kTabGroupOpened);
   event_details.local_tab_group_id = local_group_id_1_;
@@ -1463,7 +1466,7 @@ TEST_F(TabGroupSyncServiceTest, RecordTabGroupEvent) {
                                     1u);
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateArchivalStatus) {
+TEST_F(TabGroupSyncServiceImplTest, UpdateArchivalStatus) {
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());
 
@@ -1488,7 +1491,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateArchivalStatus) {
   EXPECT_FALSE(group->archival_time().has_value());
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
+TEST_F(TabGroupSyncServiceImplTest, UpdateLocalTabId) {
   auto tab_guid = group_1_.saved_tabs()[0].saved_tab_guid();
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->UpdateLocalTabId(local_group_id_1_, tab_guid,
@@ -1503,13 +1506,13 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
   EXPECT_EQ(local_tab_id_2, updated_tab->local_tab_id().value());
 }
 
-TEST_F(TabGroupSyncServiceTest, AddObserverBeforeInitialize) {
+TEST_F(TabGroupSyncServiceImplTest, AddObserverBeforeInitialize) {
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
+TEST_F(TabGroupSyncServiceImplTest, AddObserverAfterInitialize) {
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
   WaitForPostedTasks();
@@ -1520,7 +1523,7 @@ TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
   tab_group_sync_service_->AddObserver(observer_.get());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupAddedFromRemoteSource) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::REMOTE)))
@@ -1534,7 +1537,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupAddedFromLocalSource) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::LOCAL)))
@@ -1548,7 +1551,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
+TEST_F(TabGroupSyncServiceImplTest,
+       SharedTabGroupAddedWillWaitForCollaboration) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
   // Create shared tab group 4 for which collaboration ID isn't yet available.
@@ -1603,7 +1607,7 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 5u);
 }
 
-TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
+TEST_F(TabGroupSyncServiceImplTest, EmptyGroupAddedFromLocalSource) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
   SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
@@ -1636,7 +1640,7 @@ TEST_F(TabGroupSyncServiceTest, EmptyGroupAddedFromLocalSource) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 4u);
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupUpdatedFromRemoteSource) {
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
@@ -1658,7 +1662,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupUpdatedFromLocalSource) {
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
@@ -1675,7 +1679,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
+TEST_F(TabGroupSyncServiceImplTest,
+       OnTabGroupUpdatedOnTabGroupIdMappingChange) {
   // Close a group.
   EXPECT_CALL(*observer_, OnTabGroupLocalIdChanged(Eq(group_1_.saved_guid()),
                                                    Eq(std::nullopt)))
@@ -1690,7 +1695,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
   model_->OnGroupOpenedInTabStrip(group_2_.saved_guid(), local_id_2);
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupsReordered) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupsReordered) {
   EXPECT_CALL(*observer_, OnTabGroupsReordered(Eq(TriggerSource::LOCAL)))
       .Times(1);
   model_->ReorderGroupLocally(group_1_.saved_guid(), 1);
@@ -1712,7 +1717,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupsReordered) {
   EXPECT_EQ(1, group->position());
 }
 
-TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {
+TEST_F(TabGroupSyncServiceImplTest, TabIDMappingIsCleardOnGroupClose) {
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group->local_group_id().has_value());
   EXPECT_TRUE(group->saved_tabs()[0].local_tab_id().has_value());
@@ -1726,7 +1731,7 @@ TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {
   EXPECT_FALSE(group->saved_tabs()[0].local_tab_id().has_value());
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        EmptyGroupsAreExcludedFromGetCallAndObserverMethods) {
   auto all_groups = tab_group_sync_service_->GetAllGroups();
   EXPECT_EQ(all_groups.size(), 3u);
@@ -1778,7 +1783,7 @@ TEST_F(TabGroupSyncServiceTest,
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupRemovedFromRemoteSource) {
   // Removig group having local ID.
   EXPECT_CALL(*observer_,
               OnTabGroupRemoved(
@@ -1809,7 +1814,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupRemovedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
                                                 group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
@@ -1817,7 +1822,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
   model_->RemovedLocally(group_1_.local_group_id().value());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnSyncBridgeUpdateTypeChanged) {
+TEST_F(TabGroupSyncServiceImplTest, OnSyncBridgeUpdateTypeChanged) {
   EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged).Times(0);
   model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDisableSync);
   testing::Mock::VerifyAndClearExpectations(observer_.get());
@@ -1829,7 +1834,8 @@ TEST_F(TabGroupSyncServiceTest, OnSyncBridgeUpdateTypeChanged) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, TasksArePostedInTheSameSequenceAsOriginated) {
+TEST_F(TabGroupSyncServiceImplTest,
+       TasksArePostedInTheSameSequenceAsOriginated) {
   Sequence s;
   EXPECT_CALL(*observer_, OnSyncBridgeUpdateTypeChanged(
                               Eq(SyncBridgeUpdateType::kInitialMerge)))
@@ -1852,7 +1858,7 @@ TEST_F(TabGroupSyncServiceTest, TasksArePostedInTheSameSequenceAsOriginated) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
+TEST_F(TabGroupSyncServiceImplTest, GetURLRestrictionFailed) {
   GURL test_url("http://test.com/");
   optimization_guide::OptimizationMetadata metadata;
 
@@ -1940,7 +1946,8 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
   }
 }
 
-TEST_F(TabGroupSyncServiceTest, SharedTabGroupTabTitleSanitizedWhenNavigate) {
+TEST_F(TabGroupSyncServiceImplTest,
+       SharedTabGroupTabTitleSanitizedWhenNavigate) {
   MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
 
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
@@ -1955,7 +1962,7 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupTabTitleSanitizedWhenNavigate) {
   EXPECT_EQ(tab.title(), u"foo.com");
 }
 
-TEST_F(TabGroupSyncServiceTest, TabTitleSanitizedAfterMakeTabGroupShared) {
+TEST_F(TabGroupSyncServiceImplTest, TabTitleSanitizedAfterMakeTabGroupShared) {
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title");
   MakeTabGroupShared(local_group_id_1_, syncer::CollaborationId("collab"));
@@ -1968,7 +1975,7 @@ TEST_F(TabGroupSyncServiceTest, TabTitleSanitizedAfterMakeTabGroupShared) {
   EXPECT_EQ(tab.title(), u"foo.com");
 }
 
-TEST_F(TabGroupSyncServiceTest, GetTabTitleFromOptGuide) {
+TEST_F(TabGroupSyncServiceImplTest, GetTabTitleFromOptGuide) {
   feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
                                  {});
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
@@ -2001,7 +2008,7 @@ TEST_F(TabGroupSyncServiceTest, GetTabTitleFromOptGuide) {
   EXPECT_EQ(tab.title(), u"alt2");
 }
 
-TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
+TEST_F(TabGroupSyncServiceImplTest, MakeTabGroupShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2126,7 +2133,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
       GetOriginatingSavedGroupCleanUpTimeInterval());
 }
 
-TEST_F(TabGroupSyncServiceTest, ShouldRunCallbackOnMakeTabGroupShared) {
+TEST_F(TabGroupSyncServiceImplTest, ShouldRunCallbackOnMakeTabGroupShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2148,7 +2155,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldRunCallbackOnMakeTabGroupShared) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        MakeTabGroupShared_ShouldWaitForInitialMergeCompletion) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
@@ -2183,7 +2190,8 @@ TEST_F(TabGroupSyncServiceTest,
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, ShouldIgnoreUpdatesWhileTransitioningToShared) {
+TEST_F(TabGroupSyncServiceImplTest,
+       ShouldIgnoreUpdatesWhileTransitioningToShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2218,7 +2226,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldIgnoreUpdatesWhileTransitioningToShared) {
   WaitForPostedTasks();
 }
 
-TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
+TEST_F(TabGroupSyncServiceImplTest, ShouldTimeoutOnMakeTabGroupShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2249,7 +2257,8 @@ TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
             tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_guid());
 }
 
-TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared_FinishMigrationOnStartup) {
+TEST_F(TabGroupSyncServiceImplTest,
+       MakeTabGroupShared_FinishMigrationOnStartup) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
 
@@ -2279,7 +2288,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared_FinishMigrationOnStartup) {
   EXPECT_FALSE(shared_tab_group->is_hidden());
 }
 
-TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
+TEST_F(TabGroupSyncServiceImplTest, AboutToUnShareTabGroup) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
@@ -2296,7 +2305,7 @@ TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
   ASSERT_TRUE(shared_group->is_transitioning_to_saved());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareFailed) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupUnShareFailed) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
@@ -2315,7 +2324,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareFailed) {
   ASSERT_TRUE(shared_group->is_transitioning_to_saved());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
+TEST_F(TabGroupSyncServiceImplTest, OnTabGroupUnShareSucceeded) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
@@ -2405,7 +2414,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
   }
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        UnShareTabGroupWhenTransitioningGroupRemovedFromSync) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -2495,7 +2504,8 @@ TEST_F(TabGroupSyncServiceTest,
   }
 }
 
-TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
+TEST_F(TabGroupSyncServiceImplTest,
+       ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
   // Simulate remote transition to shared tab group from `group_1_`.
   SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
   shared_group.SetCollaborationId(CollaborationId("collaboration"));
@@ -2528,7 +2538,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
               Contains(HasGuid(shared_group.saved_guid())));
 }
 
-TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
+TEST_F(TabGroupSyncServiceImplTest, OnCollaborationRemoved) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
@@ -2588,7 +2598,7 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
   EXPECT_FALSE(model_->Contains(shared_group->saved_guid()));
 }
 
-TEST_F(TabGroupSyncServiceTest, OnLastSharedTabClosed) {
+TEST_F(TabGroupSyncServiceImplTest, OnLastSharedTabClosed) {
   syncer::CollaborationId collaboration_id("collaboration_id");
   MakeTabGroupShared(local_group_id_1_, collaboration_id);
 
@@ -2613,16 +2623,16 @@ TEST_F(TabGroupSyncServiceTest, OnLastSharedTabClosed) {
   EXPECT_NE(tab.saved_tab_guid(), group->saved_tabs()[0].saved_tab_guid());
 }
 
-class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
+class PinningTabGroupSyncServiceImplTest : public TabGroupSyncServiceImplTest {
  public:
-  PinningTabGroupSyncServiceTest() = default;
-  PinningTabGroupSyncServiceTest(const PinningTabGroupSyncServiceTest&) =
-      delete;
-  PinningTabGroupSyncServiceTest& operator=(
-      const PinningTabGroupSyncServiceTest&) = delete;
+  PinningTabGroupSyncServiceImplTest() = default;
+  PinningTabGroupSyncServiceImplTest(
+      const PinningTabGroupSyncServiceImplTest&) = delete;
+  PinningTabGroupSyncServiceImplTest& operator=(
+      const PinningTabGroupSyncServiceImplTest&) = delete;
 };
 
-TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionPinnedState) {
+TEST_F(PinningTabGroupSyncServiceImplTest, UpdateGroupPositionPinnedState) {
   auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_TRUE(group.has_value());
 
@@ -2638,7 +2648,7 @@ TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionPinnedState) {
   EXPECT_EQ(group->is_pinned(), pinned_state);
 }
 
-TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
+TEST_F(PinningTabGroupSyncServiceImplTest, UpdateGroupPositionIndex) {
   auto get_index = [&](const LocalTabGroupID& local_id) -> int {
     std::vector<SavedTabGroup> groups = tab_group_sync_service_->GetAllGroups();
     auto it = std::ranges::find_if(groups, [&](const SavedTabGroup& group) {
@@ -2698,7 +2708,7 @@ TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
   EXPECT_EQ(2, get_index(group_id_2));
 }
 
-TEST_F(TabGroupSyncServiceTest, MetricsOnSignin) {
+TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
   base::HistogramTester histograms;
 
   identity_test_environment_.MakePrimaryAccountAvailable(
@@ -2719,7 +2729,7 @@ TEST_F(TabGroupSyncServiceTest, MetricsOnSignin) {
               IsEmpty());
 }
 
-TEST_F(TabGroupSyncServiceTest, MetricsOnSync) {
+TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
   base::HistogramTester histograms;
 
   identity_test_environment_.MakePrimaryAccountAvailable(
@@ -2750,7 +2760,7 @@ TEST_F(TabGroupSyncServiceTest, MetricsOnSync) {
 
 // Tests that after transitioning from a saved tab group to a shared tab group,
 // the shared tab group is the only tab group returned by GetAllGroups().
-TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
+TEST_F(TabGroupSyncServiceImplTest, ShouldReturnSharedTabGroupOnly) {
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   ASSERT_THAT(model_->saved_tab_groups(), SizeIs(3));
 
@@ -2778,7 +2788,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(3));
 }
 
-TEST_F(TabGroupSyncServiceTest,
+TEST_F(TabGroupSyncServiceImplTest,
        RemoteAddSharedGroupWhenOriginatingGroupIsClosed) {
   // Simulate remote transition to shared tab group from `group_1_`.
   SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
@@ -2817,7 +2827,7 @@ TEST_F(TabGroupSyncServiceTest,
 
 // Tests that saved tab group is returned if tab group migration didn't
 // complete.
-TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupDuringTransition) {
+TEST_F(TabGroupSyncServiceImplTest, ShouldReturnSavedTabGroupDuringTransition) {
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   ASSERT_THAT(model_->saved_tab_groups(), SizeIs(3));
 
@@ -2852,7 +2862,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupDuringTransition) {
 
 // Tests that after transitioning from a shared tab group to a saved tab group,
 // the saved tab group is the only tab group returned by GetAllGroups().
-TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
+TEST_F(TabGroupSyncServiceImplTest, ShouldReturnSavedTabGroupOnly) {
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
@@ -2883,12 +2893,12 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
   EXPECT_THAT(all_groups, Not(Contains(HasGuid(shared_group->saved_guid()))));
 }
 
-class EmptyTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
+class EmptyTabGroupSyncServiceImplTest : public TabGroupSyncServiceImplTest {
  public:
   void MaybeInitializeTestGroups() override {}
 };
 
-TEST_F(EmptyTabGroupSyncServiceTest,
+TEST_F(EmptyTabGroupSyncServiceImplTest,
        TestModelLoadAndExtractionOfSharedTabGroupsForMessaging) {
   ASSERT_EQ(model_->Count(), 0);
 
@@ -2958,7 +2968,7 @@ TEST_F(EmptyTabGroupSyncServiceTest,
       << "Not all GUIDs were found: " << base::JoinString(guid_strings, ", ");
 }
 
-TEST_F(EmptyTabGroupSyncServiceTest,
+TEST_F(EmptyTabGroupSyncServiceImplTest,
        TestHadSharedTabGroupsOnStartup_OpenGroups) {
   SavedTabGroup shared_group_1(test::CreateTestSavedTabGroup());
   shared_group_1.SetCollaborationId(CollaborationId("collaboration"));
@@ -2975,7 +2985,7 @@ TEST_F(EmptyTabGroupSyncServiceTest,
       /*open_shared_tab_groups=*/true));
 }
 
-TEST_F(EmptyTabGroupSyncServiceTest,
+TEST_F(EmptyTabGroupSyncServiceImplTest,
        TestHadSharedTabGroupsOnStartup_NoOpenGroups) {
   SavedTabGroup shared_group_1(test::CreateTestSavedTabGroup());
   shared_group_1.SetCollaborationId(CollaborationId("collaboration"));
@@ -2991,7 +3001,8 @@ TEST_F(EmptyTabGroupSyncServiceTest,
       /*open_shared_tab_groups=*/true));
 }
 
-TEST_F(EmptyTabGroupSyncServiceTest, TestHadSharedTabGroupsOnStartup_NoGroups) {
+TEST_F(EmptyTabGroupSyncServiceImplTest,
+       TestHadSharedTabGroupsOnStartup_NoGroups) {
   model_->LoadStoredEntries(
       /*groups=*/{},
       /*tabs=*/{});
