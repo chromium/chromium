@@ -7,6 +7,7 @@
 #include "cc/paint/paint_recorder.h"
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
@@ -207,11 +208,25 @@ bool IsClipPathNone(const CSSValue* computed_value) {
   return false;
 }
 
+BasicShape* GetAnimatedShapeFromCSSValue(const CSSValue* computed_value,
+                                         const Element* element) {
+  StyleResolverState state(element->GetDocument(),
+                           *const_cast<Element*>(element));
+
+  // TODO(pdr): Support <geometry-box> (alone, or with a shape).
+  if (CanExtractShapeOrPath(computed_value)) {
+    return BasicShapeForValue(state,
+                              DynamicTo<CSSValueList>(computed_value)->First());
+  } else {
+    DCHECK(IsClipPathNone(computed_value));
+    return nullptr;
+  }
+}
+
 // Returns the basic shape of a keyframe, or null if the keyframe has no path
 BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
                                          const KeyframeEffectModelBase* model,
                                          const Element* element) {
-  BasicShape* basic_shape;
   if (model->IsStringKeyframeEffectModel()) {
     DCHECK(frame->IsCSSPropertySpecificKeyframe());
     const CSSValue* value =
@@ -220,37 +235,34 @@ BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
         CSSPropertyName(CSSPropertyID::kClipPath);
     const CSSValue* computed_value = StyleResolver::ComputeValue(
         const_cast<Element*>(element), property_name, *value);
-    StyleResolverState state(element->GetDocument(),
-                             *const_cast<Element*>(element));
 
-    // TODO(pdr): Support <geometry-box> (alone, or with a shape).
-    if (CanExtractShapeOrPath(computed_value)) {
-      basic_shape = BasicShapeForValue(
-          state, DynamicTo<CSSValueList>(computed_value)->First());
-    } else {
-      DCHECK(IsClipPathNone(computed_value));
-      return nullptr;
-    }
+    return GetAnimatedShapeFromCSSValue(computed_value, element);
   } else {
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     const NonInterpolableValue* non_interpolable_value =
         keyframe->GetValue()->Value().non_interpolable_value.Get();
-    BasicShape::ShapeType type =
-        PathInterpolationFunctions::IsPathNonInterpolableValue(
-            *non_interpolable_value)
-            ? BasicShape::kStylePathType
-            // This can be any shape but kStylePathType. This is needed to
-            // distinguish between Path shape and other shapes in
-            // CreateBasicShape function.
-            : BasicShape::kBasicShapeCircleType;
-    basic_shape = CreateBasicShape(
-        type, *keyframe->GetValue()->Value().interpolable_value.Get(),
-        *non_interpolable_value);
+
+    if (IsA<CSSDefaultNonInterpolableValue>(non_interpolable_value)) {
+      return GetAnimatedShapeFromCSSValue(
+          To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
+              ->CssValue(),
+          element);
+    } else {
+      BasicShape::ShapeType type =
+          PathInterpolationFunctions::IsPathNonInterpolableValue(
+              *non_interpolable_value)
+              ? BasicShape::kStylePathType
+              // This can be any shape but kStylePathType. This is needed to
+              // distinguish between Path shape and other shapes in
+              // CreateBasicShape function.
+              : BasicShape::kBasicShapeCircleType;
+      return CreateBasicShape(
+          type, *keyframe->GetValue()->Value().interpolable_value.Get(),
+          *non_interpolable_value);
+    }
   }
-  CHECK(basic_shape);
-  return basic_shape;
 }
 
 bool ValidateClipPathValue(const Element* element,
