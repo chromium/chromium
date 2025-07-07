@@ -10,10 +10,12 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
@@ -38,7 +40,6 @@ import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
-import org.chromium.ui.test.util.WindowInsetsTestUtils.SpyWindowInsetsBuilder;
 
 import java.io.IOException;
 
@@ -59,7 +60,7 @@ public class EdgeToEdgeLayoutViewTest {
             new RenderTestRule.Builder()
                     .setCorpus(RenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE)
-                    .setRevision(0)
+                    .setRevision(1)
                     .build();
 
     private static final int STATUS_BAR_SIZE = 100;
@@ -164,7 +165,7 @@ public class EdgeToEdgeLayoutViewTest {
     @Feature({"RenderTest"})
     public void renderDisplayCutoutOverlapSystemBars() throws IOException {
         WindowInsetsCompat topBottomSysBarsWithLeftCutoutInsets =
-                new SpyWindowInsetsBuilder()
+                new WindowInsetsCompat.Builder()
                         .setInsets(
                                 WindowInsetsCompat.Type.statusBars(),
                                 Insets.of(0, STATUS_BAR_SIZE, 0, 0))
@@ -174,6 +175,9 @@ public class EdgeToEdgeLayoutViewTest {
                         .setInsets(
                                 WindowInsetsCompat.Type.displayCutout(),
                                 Insets.of(DISPLAY_CUTOUT_SIZE, 0, 0, 0))
+                        .setDisplayCutout(
+                                new DisplayCutoutCompat(
+                                        new Rect(DISPLAY_CUTOUT_SIZE, 0, 0, 0), null))
                         .build();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -190,7 +194,7 @@ public class EdgeToEdgeLayoutViewTest {
     @Feature({"RenderTest"})
     public void renderDisplayCutoutOverlapStatusBarOnly() throws IOException {
         WindowInsetsCompat topLeftSysBarsRightCutoutInsets =
-                new SpyWindowInsetsBuilder()
+                new WindowInsetsCompat.Builder()
                         .setInsets(
                                 WindowInsetsCompat.Type.statusBars(),
                                 Insets.of(0, STATUS_BAR_SIZE, 0, 0))
@@ -200,6 +204,9 @@ public class EdgeToEdgeLayoutViewTest {
                         .setInsets(
                                 WindowInsetsCompat.Type.displayCutout(),
                                 Insets.of(0, 0, DISPLAY_CUTOUT_SIZE, 0))
+                        .setDisplayCutout(
+                                new DisplayCutoutCompat(
+                                        new Rect(0, 0, DISPLAY_CUTOUT_SIZE, 0), null))
                         .build();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -216,7 +223,7 @@ public class EdgeToEdgeLayoutViewTest {
     @Feature({"RenderTest"})
     public void renderImeInsets() throws IOException {
         WindowInsetsCompat topLeftSysBarsRightCutoutInsets =
-                new SpyWindowInsetsBuilder()
+                new WindowInsetsCompat.Builder()
                         .setInsets(
                                 WindowInsetsCompat.Type.statusBars(),
                                 Insets.of(0, STATUS_BAR_SIZE, 0, 0))
