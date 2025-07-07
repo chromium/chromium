@@ -397,7 +397,12 @@ void DiceWebSigninInterceptionBubbleView::OnInterceptionResult(
     SigninInterceptionResult result) {
   accepted_ = result == SigninInterceptionResult::kAccepted;
 
-  if (IsChromeSignin()) {
+  // `chrome_signin_bubble_shown_time_` is set asynchronously (triggered by the
+  // WebUI side). If the bubble is dismissed before it is fully initialized,
+  // don't record the interception result. This is a rare case, but can happen
+  // due to subtle race conditions, e.g. when the account is removed before
+  // the bubble is fully initialized.
+  if (IsChromeSignin() && !chrome_signin_bubble_shown_time_.is_null()) {
     RecordChromeSigninInterceptResult(chrome_signin_bubble_shown_time_, result);
   }
 
