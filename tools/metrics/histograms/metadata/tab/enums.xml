@@ -35,6 +35,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_strip_combo_button.cc:AccidentalClickType) -->
 
+<!-- LINT.IfChange(AttemptFastKillForDiscardResult) -->
+
+<enum name="AttemptFastKillForDiscardResult">
+  <int value="0" label="Killed"/>
+  <int value="1" label="Skipped"/>
+  <int value="2" label="Killed without unload handlers"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/tab_lifecycle_unit.cc:AttemptFastKillForDiscardResult) -->
+
 <enum name="BooleanFocusedTab">
   <int value="0" label="Not Focused"/>
   <int value="1" label="Focused"/>

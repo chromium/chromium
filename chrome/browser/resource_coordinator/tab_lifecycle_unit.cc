@@ -53,6 +53,18 @@ namespace resource_coordinator {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AttemptFastKillForDiscardResult)
+enum class AttemptFastKillForDiscardResult {
+  kKilled = 0,
+  kSkipped = 1,
+  kKilledWithoutUnloadHandlers = 2,
+  kMaxValue = kKilledWithoutUnloadHandlers,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AttemptFastKillForDiscardResult)
+
 using StateChangeReason = LifecycleUnitStateChangeReason;
 
 StateChangeReason DiscardReasonToStateChangeReason(
@@ -455,21 +467,26 @@ void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
   CHECK(render_process_host);
 
   // First try to fast-kill the process, if it's just running a single tab.
+  bool succeed = render_process_host->FastShutdownIfPossible(1u, false);
+  AttemptFastKillForDiscardResult result =
+      succeed ? AttemptFastKillForDiscardResult::kKilled
+              : AttemptFastKillForDiscardResult::kSkipped;
+
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!render_process_host->FastShutdownIfPossible(1u, false) &&
-      discard_reason == LifecycleUnitDiscardReason::URGENT) {
+  if (!succeed && discard_reason == LifecycleUnitDiscardReason::URGENT) {
     // We avoid fast shutdown on tabs with beforeunload handlers on the main
     // frame, as that is often an indication of unsaved user state.
     if (!main_frame->GetSuddenTerminationDisablerState(
             blink::mojom::SuddenTerminationDisablerType::
-                kBeforeUnloadHandler)) {
-      render_process_host->FastShutdownIfPossible(
-          1u, /*skip_unload_handlers=*/true);
+                kBeforeUnloadHandler) &&
+        render_process_host->FastShutdownIfPossible(
+            1u, /*skip_unload_handlers=*/true)) {
+      result = AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
     }
   }
-#else
-  render_process_host->FastShutdownIfPossible(1u, false);
 #endif
+  base::UmaHistogramEnumeration("Discarding.AttemptFastKillForDiscardResult",
+                                result);
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(

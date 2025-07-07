@@ -81,6 +81,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".ThreeDotMenu" summary="the three dot menu option"/>
 </variants>
 
+<histogram name="Discarding.AttemptFastKillForDiscardResult"
+    enum="AttemptFastKillForDiscardResult" expires_after="2025-12-14">
+  <owner>kawasin@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the result of AttemptFastKillForDiscard. Emitted immediately after
+    the fast shutdown for the main frame renderer process attempt.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
     expires_after="2025-11-16">
   <owner>vovoy@chromium.org</owner>
