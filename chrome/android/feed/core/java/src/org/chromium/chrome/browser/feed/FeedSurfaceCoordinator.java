@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -116,6 +119,7 @@ public class FeedSurfaceCoordinator
     private final ObserverList<SurfaceCoordinator.Observer> mObservers = new ObserverList<>();
     private final FeedActionDelegate mActionDelegate;
     private final boolean mUseStaggeredLayout;
+    private final int mDefaultBackgroundColor;
 
     // FeedReliabilityLogger params.
     private final long mEmbeddingSurfaceCreatedTimeNs;
@@ -172,6 +176,8 @@ public class FeedSurfaceCoordinator
     private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;
     private final boolean mIsNewTabPageCustomizationEnabled;
     private @Nullable ImageButton mNtpCustomizationButton;
+    private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    private @Nullable NtpCustomizationConfigManager.HomepageStateListener mHomepageStateListener;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -455,6 +461,8 @@ public class FeedSurfaceCoordinator
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
+        mDefaultBackgroundColor =
+                ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
@@ -511,6 +519,19 @@ public class FeedSurfaceCoordinator
                     });
             mRootView.addView(mNtpCustomizationButton);
         }
+
+        Drawable currentBackgroundDrawable = null;
+        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+            mHomepageStateListener =
+                    backgroundDrawable -> {
+                        setBackground(backgroundDrawable);
+                    };
+
+            mNtpCustomizationConfigManager.addListener(mHomepageStateListener);
+            currentBackgroundDrawable = mNtpCustomizationConfigManager.getBackgroundImageDrawable();
+        }
+        setBackground(currentBackgroundDrawable);
 
         mHandler = new Handler(Looper.getMainLooper());
 
@@ -602,6 +623,22 @@ public class FeedSurfaceCoordinator
 
         // Creates streams, initiates content changes.
         mMediator.updateContent();
+    }
+
+    // Sets the background image for the embedder NTP.
+    private void setBackground(@Nullable Drawable backgroundDrawable) {
+        if (backgroundDrawable == null) {
+            mRecyclerView.setBackgroundColor(mDefaultBackgroundColor);
+            if (mNtpHeader != null) {
+                mNtpHeader.setBackgroundColor(mDefaultBackgroundColor);
+            }
+            return;
+        }
+
+        mRecyclerView.setBackground(backgroundDrawable);
+        if (mNtpHeader != null) {
+            mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
     void updateNtpHeaderMargins() {
@@ -729,6 +766,11 @@ public class FeedSurfaceCoordinator
         mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
         if (mEdgePadAdjuster != null) {
             mEdgePadAdjuster.destroy();
+        }
+
+        if (mNtpCustomizationConfigManager != null) {
+            mNtpCustomizationConfigManager.removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
         }
     }
 
@@ -957,9 +999,6 @@ public class FeedSurfaceCoordinator
                                 gutterPadding));
             }
 
-            view.setBackgroundColor(
-                    ContextCompat.getColor(mActivity, R.color.home_surface_background_color));
-
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.
             view.setDefaultFocusHighlightEnabled(false);
@@ -1073,9 +1112,7 @@ public class FeedSurfaceCoordinator
             } else if (header == mHeaderView) {
                 lateralPaddingsPx = 0;
                 if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-                    mHeaderView.setBackgroundColor(
-                            ContextCompat.getColor(
-                                    mActivity, R.color.home_surface_background_color));
+                    mHeaderView.setBackgroundColor(mDefaultBackgroundColor);
                 }
             } else if (header == mSigninPromoView) {
                 hasSigninPromoView = true;

@@ -11,9 +11,12 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.view.LayoutInflater;
 
+import androidx.activity.ComponentActivity;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -73,9 +76,20 @@ public class NtpThemeCoordinator {
                 mNtpThemeBottomSheetView,
                 NtpThemeViewBinder::bindThemeBottomSheet);
 
+        var activityResultRegistry =
+                context instanceof ComponentActivity
+                        ? ((ComponentActivity) context).getActivityResultRegistry()
+                        : null;
+
         mMediator =
                 new NtpThemeMediator(
-                        bottomSheetPropertyModel, themePropertyModel, delegate, profile);
+                        context,
+                        bottomSheetPropertyModel,
+                        themePropertyModel,
+                        delegate,
+                        profile,
+                        NtpCustomizationConfigManager.getInstance(),
+                        activityResultRegistry);
     }
 
     public void destroy() {

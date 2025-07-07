@@ -80,6 +80,7 @@ include_rules = [
   "+components/browser_ui/photo_picker",
   "+components/browser_ui/settings",
   "+components/browser_ui/util",
+  "+components/browser_ui/share/android",
   "+components/browser_ui/widget",
   "+components/browser_ui/site_settings",
   "+components/browser_ui/strings",

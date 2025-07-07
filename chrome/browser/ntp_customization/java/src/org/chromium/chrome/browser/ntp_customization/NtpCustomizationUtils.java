@@ -14,12 +14,14 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Utility class of the NTP customization. */
 @NullMarked
@@ -120,5 +122,16 @@ public class NtpCustomizationUtils {
         fakeIntent.setComponent(fakeComponentName);
         int mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
         return PendingIntent.getActivity(context, 0, fakeIntent, mutabililtyFlag);
+    }
+
+    /**
+     * Saves the background image if it isn't null, otherwise removes the file.
+     *
+     * @param context The current context.
+     * @param backgroundImageBitmap The bitmap of the background image.
+     */
+    public static void updateBackgroundImageFile(
+            Context context, @Nullable Bitmap backgroundImageBitmap) {
+        // TODO(https://crbug.com/423579377) Implement here.
     }
 }

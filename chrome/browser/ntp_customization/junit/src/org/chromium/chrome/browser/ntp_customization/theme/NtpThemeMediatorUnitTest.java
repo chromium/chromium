@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +35,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -47,6 +49,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private Profile mProfile;
     @Mock private View mView;
+    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -115,6 +118,14 @@ public class NtpThemeMediatorUnitTest {
     }
 
     @Test
+    public void testOnClickListeners_DefaultSectionClick() {
+        createMediator(/* shouldShowAlone= */ true);
+
+        mMediator.handleChromeDefaultSectionClick(mView);
+        verify(mNtpCustomizationConfigManager).onBackgroundChanged(eq(mActivity), eq(null));
+    }
+
+    @Test
     public void testSetLeadingIconForThemeCollectionsSection() {
         createMediator(/* shouldShowAlone= */ true);
 
@@ -127,9 +138,12 @@ public class NtpThemeMediatorUnitTest {
         when(mBottomSheetDelegate.shouldShowAlone()).thenReturn(shouldShowAlone);
         mMediator =
                 new NtpThemeMediator(
+                        mActivity,
                         mBottomSheetPropertyModel,
                         mThemePropertyModel,
                         mBottomSheetDelegate,
-                        mProfile);
+                        mProfile,
+                        mNtpCustomizationConfigManager,
+                        null);
     }
 }
