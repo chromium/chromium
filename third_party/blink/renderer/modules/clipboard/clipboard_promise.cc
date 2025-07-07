@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -466,6 +468,8 @@ void ClipboardPromise::OnPlatformPermissionResultForReadText(
   }
 
   if (state == mojom::blink::PlatformClipboardPermissionState::kDeny) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kClipboardPlatformPermissionDenied);
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Permission denied by system.");
     return;
@@ -484,6 +488,8 @@ void ClipboardPromise::OnPlatformPermissionResultForRead(
   }
 
   if (state == mojom::blink::PlatformClipboardPermissionState::kDeny) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kClipboardPlatformPermissionDenied);
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Permission denied by system.");
     return;

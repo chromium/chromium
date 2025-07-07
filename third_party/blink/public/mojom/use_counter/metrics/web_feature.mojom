@@ -4913,6 +4913,7 @@ enum WebFeature {
   kHTMLCanvasElementLowLatency_WebGL_Preserve = 5603,
   kHTMLCanvasElementLowLatency_WebGL_Discard = 5604,
   kAnimatedImageUsedMoreThanOnce = 5605,
+  kClipboardPlatformPermissionDenied = 5606,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
