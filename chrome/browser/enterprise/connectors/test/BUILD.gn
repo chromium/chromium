@@ -22,6 +22,7 @@ source_set("test_support") {
 
   if (enterprise_cloud_content_analysis) {
     public += [
+      "active_user_test_mixin.h",
       "deep_scanning_browsertest_base.h",
       "deep_scanning_test_utils.h",
       "fake_clipboard_request_handler.h",
@@ -31,6 +32,7 @@ source_set("test_support") {
     ]
 
     sources += [
+      "active_user_test_mixin.cc",
       "deep_scanning_browsertest_base.cc",
       "deep_scanning_test_utils.cc",
       "fake_clipboard_request_handler.cc",
