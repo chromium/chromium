@@ -25,14 +25,16 @@ dependencies {
     // Use testCompile to have requires_robolectric = true set on targets.
     testCompileLatest "org.robolectric:robolectric:+"
 
-    compileLatest 'com.google.protobuf:protobuf-javalite:+'
-
     compileLatest "com.google.guava:guava:+"
     buildCompileLatest "com.google.guava:guava:+"
 
+    // Libraries from Google:
+    compileLatest 'com.google.protobuf:protobuf-javalite:+'
     compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
     compileLatest 'com.google.android.material:material:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
+    compileLatest 'com.google.code.gson:gson:+'
+    compileLatest 'io.grpc:grpc-android:+'
 
     // Play services libraries
     compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
@@ -53,6 +55,7 @@ dependencies {
     compileLatest "com.google.android.gms:play-services-vision-common:+"
     compileLatest "com.google.android.gms:play-services-vision:+"
 
+    // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
 }
 
