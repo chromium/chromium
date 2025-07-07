@@ -1127,13 +1127,6 @@
     "owners": [ "jingyliang@chromium.org", "chromeos-tango@google.com" ],
     "expiry_milestone": 145
   },
-  {
-    "name": "block-tpcs-incognito",
-    "owners": [
-      "fmacintosh@google.com"
-    ],
-    "expiry_milestone": 137
-  },
   {  "name": "blue-dot-on-tools-menu-button",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
      "expiry_milestone": 135

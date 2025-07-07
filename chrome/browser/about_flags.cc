@@ -8839,10 +8839,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"block-tpcs-incognito", flag_descriptions::kBlockTpcsIncognitoName,
-     flag_descriptions::kBlockTpcsIncognitoDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kAlwaysBlock3pcsIncognito)},
-
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
      kOsDesktop | kOsAndroid,
