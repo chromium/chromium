@@ -5055,6 +5055,7 @@ if (!is_android) {
         sources += [
           "../browser/enterprise/signin/managed_profile_creation_controller_browsertest.cc",
           "../browser/enterprise/signin/managed_profile_required_navigation_throttle_browsertest.cc",
+          "../browser/enterprise/signin/profile_management_disclaimer_service_browsertest.cc",
           "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
           "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
         ]

@@ -292,10 +292,15 @@ enum class AccessPoint : int {
   kNonModalSigninBookmarkPromo = 84,
   // Access point for the user manager with a prefilled email.
   kUserManagerWithPrefilledEmail = 85,
+  // Access point for the enterprise management disclaimer at startup.
+  kEnterpriseManagementDisclaimerAtStartup = 86,
+  // Access point for the enterprise management disclaimer after browser focus.
+  kEnterpriseManagementDisclaimerAfterBrowserFocus = 87,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kUserManagerWithPrefilledEmail,  // This must be last.
+  kMaxValue =
+      kEnterpriseManagementDisclaimerAfterBrowserFocus,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

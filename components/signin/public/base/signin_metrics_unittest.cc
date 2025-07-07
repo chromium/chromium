@@ -243,6 +243,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "NonModalSigninBookmarkPromo";
       case AccessPoint::kUserManagerWithPrefilledEmail:
         return "UserManagerWithPrefilledEmail";
+      case AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+        return "EnterpriseManagementDisclaimerAtStartup";
+      case AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus:
+        return "EnterpriseManagementDisclaimerAfterBrowserFocus";
     }
   }
 };

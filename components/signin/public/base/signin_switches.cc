@@ -265,6 +265,15 @@ BASE_FEATURE(kChromeIdentitySurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Enables the management disclaimer for managed signed profiles. All signed in
+// profiles that never saw the management disclaimer will be shown the
+// management disclaimer when they open Chrome.
+BASE_FEATURE(kEnforceManagementDisclaimerAtStartup,
+             "EnforceManagementDisclaimerAtStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS)

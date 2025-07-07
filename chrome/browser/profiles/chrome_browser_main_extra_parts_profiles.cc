@@ -73,6 +73,7 @@
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
 #include "chrome/browser/enterprise/signin/enterprise_identity_service_factory.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -1049,6 +1050,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   net::ServerCertificateDatabaseServiceFactory::GetInstance();
 #endif
   PreloadingModelKeyedServiceFactory::GetInstance();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  ProfileManagementDisclaimerServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   NearbySharingServiceFactory::GetInstance();
   if (base::FeatureList::IsEnabled(ash::features::kNearbyPresence)) {

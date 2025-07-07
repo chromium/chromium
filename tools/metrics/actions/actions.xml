@@ -40842,6 +40842,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Signin_Signin_FromEnterpriseManagementDisclaimerAfterBrowserFocus">
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromEnterpriseManagementDisclaimerAtStartup">
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromEnterpriseSignoutSheet">
   <owner>ewannpv@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

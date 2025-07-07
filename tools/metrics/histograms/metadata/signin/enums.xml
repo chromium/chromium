@@ -830,6 +830,8 @@ chromium-metrics-reviews@google.com.
   <int value="84"
       label="Contextual non modal sign-in bookmark promo (iOS only)"/>
   <int value="85" label="Profile picker with prefilled email"/>
+  <int value="86" label="Enterprise management disclaimer at startup"/>
+  <int value="87" label="Enterprise management disclaimer after browser focus"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
