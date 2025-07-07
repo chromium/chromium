@@ -8319,6 +8319,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="345" label="AlignContentBlock"/>
   <int value="346" label="SizesAuto"/>
   <int value="347" label="WasmSimd"/>
+  <int value="348" label="Observable"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

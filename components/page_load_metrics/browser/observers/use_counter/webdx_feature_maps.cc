@@ -424,6 +424,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kAlignContentBlock},
           {WebFeature::kAutoSizesLazy, WebDXFeature::kSizesAuto},
           {WebFeature::kV8WasmSimdOpcodes, WebDXFeature::kWasmSimd},
+          {WebFeature::kObservableConstructor, WebDXFeature::kObservable},
+          {WebFeature::kEventTargetOnObservable, WebDXFeature::kObservable},
           // Add new features above this line.
       }};
 
