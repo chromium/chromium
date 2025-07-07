@@ -20995,7 +20995,7 @@
             ]
         }
     ],
-    "SafetyCheckNotifications": [
+    "SafetyCheckNotificationsWithInterstitial": [
         {
             "platforms": [
                 "ios"
