@@ -977,6 +977,16 @@ TEST(BrowserControlsOffsetManagerTest,
   // Top controls should stay at the same visible height.
   EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
   EXPECT_FLOAT_EQ(120.f, manager->ContentTopOffset());
+
+  // Repeat the above for bottom controls.
+  client.SetBrowserControlsParams({0, 0, 20, 20, false, false});
+  client.SetBrowserControlsParams({0, 0, 100, 0, false, false});
+
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(100.f, manager->BottomControlsHeight());
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsMinHeight());
+  // Bottom controls should stay at the same visible height.
+  EXPECT_FLOAT_EQ(100.f, manager->ContentBottomOffset());
 }
 
 TEST(BrowserControlsOffsetManagerTest, ControlsAdjustToNewHeight) {
