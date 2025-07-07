@@ -20,7 +20,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -154,11 +153,25 @@ std::optional<std::string> AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
 
 std::string AndroidRSASign(crypto::RSAPrivateKey* key,
                            const std::string& body) {
-  std::vector<uint8_t> digest(body.begin(), body.end());
-  std::vector<uint8_t> result;
-  if (!crypto::SignatureCreator::Sign(key, crypto::SignatureCreator::SHA1,
-                                      digest.data(), digest.size(), &result)) {
+  RSA* rsa = EVP_PKEY_get0_RSA(key->key());
+  if (!rsa) {
     return std::string();
   }
-  return std::string(result.begin(), result.end());
+
+  std::string result(RSA_size(rsa), 0);
+  unsigned int len = 0;
+
+  auto body_bytes = base::as_byte_span(body);
+  auto result_bytes = base::as_writable_byte_span(result);
+
+  // The ADB protocol requires us to sign a 20-byte challenge, and assumes the
+  // challenge is a pre-hashed SHA-1 digest, although there is no guarantee that
+  // that is true, and signs it without further hashing. In general this is not
+  // a secure signature scheme and should not be used elsewhere.
+  if (!RSA_sign(NID_sha1, body_bytes.data(), body_bytes.size(),
+                result_bytes.data(), &len, rsa)) {
+    return std::string();
+  }
+  result.resize(len);
+  return result;
 }

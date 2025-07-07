@@ -9,8 +9,11 @@
 #include <string>
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/rsa_private_key.h"
+#include "crypto/sign.h"
 #include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,6 +104,28 @@ TEST(AndroidRSATest, EncodePublicKeyTooLarge) {
   ASSERT_TRUE(rsa);
   // RSA-4096 is too large to be used with Android's format.
   EXPECT_EQ(AndroidRSAPublicKey(rsa.get()), std::nullopt);
+}
+
+TEST(AndroidRSATest, ValidPrehashedSignature) {
+  auto privkey = crypto::test::FixedRsa2048PrivateKeyForTesting();
+  auto pubkey = crypto::test::FixedRsa2048PublicKeyForTesting();
+  auto wrapped_privkey = crypto::RSAPrivateKey::CreateFromKey(privkey.key());
+
+  constexpr auto kTestInput = std::to_array<uint8_t>({
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0xff, 0xfe, 0xfd,
+      0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+      0x0e, 0x0f, 0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0,
+  });
+
+  // AndroidRSASign is supposed to compute a prehashed RSASSA-PKCS1-v1_5-SHA1
+  // signature, so do that here, then check that the signature validates.
+  const auto hash = crypto::hash::Sha1(kTestInput);
+  std::string sig = AndroidRSASign(wrapped_privkey.get(),
+                                   std::string(base::as_string_view(hash)));
+
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::SignatureKind::RSA_PKCS1_SHA1,
+                                   pubkey, kTestInput,
+                                   base::as_byte_span(sig)));
 }
 
 }  // namespace
