@@ -437,6 +437,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)navigationBarCancelButton {
+  if (@available(iOS 26, *)) {
+    return grey_allOf(
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+        [ChromeMatchersAppInterface buttonWithAccessibilityLabel:@"Close"],
+        grey_userInteractionEnabled(), nil);
+  }
   return grey_allOf(
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
       [self cancelButton],
