@@ -84,6 +84,8 @@ class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
               (override));
 };
 
+// TODO: Update tests to use the `FakeWebContentsManager` and set manifest/icons
+// directly on it instead of using `SetDataRetrieverForTesting()`.
 class ExternalAppResolutionCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
@@ -1141,13 +1143,14 @@ TEST_F(ExternalAppResolutionCommandTest,
           url_and_bitmap.first)] = net::HttpStatusCode::HTTP_OK;
     }
 
-    // Set up data retriever and load everything.
+    // Set up the data retriever, and make it as if no icons have been loaded
+    // from the manifest.
     auto new_data_retriever = std::make_unique<FakeDataRetriever>();
     new_data_retriever->SetIconsDownloadedResult(
         IconsDownloadedResult::kAbortedDueToFailure);
     new_data_retriever->SetDownloadedIconsHttpResults(
         std::move(new_http_results));
-    new_data_retriever->SetIcons(std::move(new_icons_map));
+    new_data_retriever->SetIcons(IconsMap{});
     new_data_retriever->SetManifest(
         std::move(new_manifest),
         webapps::InstallableStatusCode::NO_ERROR_DETECTED);

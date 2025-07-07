@@ -372,7 +372,8 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
 // It is the duty of the callsites to perform the necessary checks to ensure
 // that `from_info` and `to_info` is valid.
 void MergeFallbackInstallInfoIntoNewInfo(const WebAppInstallInfo& from_info,
-                                         WebAppInstallInfo* to_info) {
+                                         WebAppInstallInfo* to_info,
+                                         bool force_override_name) {
   // Merge fields from `from_info` onto `to_info` if required.
   // `from` is generated from the `WebAppDataRetriever` and populates
   // the following fields:
@@ -385,7 +386,8 @@ void MergeFallbackInstallInfoIntoNewInfo(const WebAppInstallInfo& from_info,
   // Out of these, only `title`, `description`, `manifest_icons` and
   // `mobile_capable` needs to be moved over to `to_info`. `start_url` and
   // `manifest_id` has to be valid for the job to run.
-  if (to_info->title.empty()) {
+  if ((force_override_name && !from_info.title.empty()) ||
+      to_info->title.empty()) {
     to_info->title = from_info.title;
   }
   if (to_info->description.empty()) {
@@ -495,7 +497,8 @@ void ManifestToWebAppInstallInfoJob::Start(
   if (fallback_info_) {
     CHECK(install_info_);
     MergeFallbackInstallInfoIntoNewInfo(fallback_info_.value(),
-                                        install_info_.get());
+                                        install_info_.get(),
+                                        options_.force_override_name);
   }
 
   // Second, fetch icons, and populate them inside the `install_info_`. Exit
