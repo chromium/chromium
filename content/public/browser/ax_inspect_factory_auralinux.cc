@@ -53,7 +53,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   switch (type) {
     case ui::AXApiType::kLinux:
       return std::make_unique<ui::AXEventRecorderAuraLinux>(
-          manager->GetWeakPtr(), pid, selector);
+          manager ? manager->GetWeakPtr() : nullptr, pid, selector);
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
