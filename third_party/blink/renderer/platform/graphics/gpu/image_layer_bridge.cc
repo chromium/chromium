@@ -175,12 +175,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
     }
 
-    const gfx::Size size(image_for_compositor->width(),
-                         image_for_compositor->height());
-
     viz::TransferableResource::MetadataOverride overrides = {
-        .format = image_for_compositor->GetSharedImageFormat(),
-        .size = size,
         .color_space = gfx::ColorSpace(),
         .alpha_type = kPremul_SkAlphaType,
     };
