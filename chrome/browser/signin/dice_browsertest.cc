@@ -1903,10 +1903,21 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
                        ClearManagedProfileOnStartup) {
-  // Initial profile should have been deleted as sign-in and sign out were no
-  // longer allowed.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
+
+  // Initial profile should have been deleted as sign-in and sign out were no
+  // longer allowed. If the profile has not yet been deleted, wait for the pref
+  // to be updated.
+  if (local_state->GetList(prefs::kProfilesDeleted).empty()) {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    // Quit the run loop when the 'kProfilesDeleted' pref changes.
+    pref_registrar.Add(prefs::kProfilesDeleted, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   const base::Value::List& deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_EQ(1U, deleted_profiles.size());
