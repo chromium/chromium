@@ -1024,7 +1024,7 @@ public class WebViewChromiumAwInit {
     public void startUpWebView(
             @NonNull WebViewStartUpCallback callback,
             boolean shouldRunUiThreadStartUpTasks,
-            Set<String> profilesToLoad) {
+            @Nullable Set<String> profilesToLoad) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException(
                     "startUpWebView should not be called on the Android main looper");

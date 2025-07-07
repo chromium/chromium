@@ -5,7 +5,9 @@
 package org.chromium.support_lib_boundary;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 /** Boundary interface for WebViewStartUpConfig. */
@@ -13,8 +15,16 @@ import java.util.concurrent.Executor;
 public interface WebViewStartUpConfigBoundaryInterface {
     Executor getBackgroundExecutor();
 
-    /**
-     * Whether to run only parts of startup that doesn't block the UI thread.
-     */
+    /** Whether to run only parts of startup that doesn't block the UI thread. */
     boolean shouldRunUiThreadStartUpTasks();
+
+    /**
+     * Returns the set of profile names to load during startup.
+     *
+     * @return A set of profile names, which may include the default profile.
+     */
+    @Nullable
+    default Set<String> getProfileNamesToLoad() {
+        return null;
+    }
 }
