@@ -141,7 +141,8 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
 
   // Ignore focus loss while the reloading view is visible. The reloading view
   // will automatically close when the page has loaded.
-  if (GetReloadingView()->GetVisible()) {
+  if (GetReloadingView()->GetVisible() ||
+      GetContentView()->GetTrackingProtectionsButton()->GetSpinnerVisible()) {
     return close_reason != views::Widget::ClosedReason::kLostFocus;
   }
 

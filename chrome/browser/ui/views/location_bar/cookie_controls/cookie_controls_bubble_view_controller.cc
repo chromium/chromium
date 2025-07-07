@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -336,19 +337,36 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();
   // TODO(crbug.com/388294499): Verify a11y readout for the button.
-  bubble_view_->GetContentView()->SetTrackingProtectionsButtonReloadingState();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
-          weak_factory_.GetWeakPtr()),
-      base::Milliseconds(kReloadUiDisplayDelay));
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kActUserBypassSpinnerShownAfterReload)) {
+    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+    bubble_view_->GetContentView()
+        ->SetTrackingProtectionsButtonReloadingState();
+    bubble_view_->GetReloadingView()->RequestFocus();
+    // Set a timeout for how long the reloading UI is shown for.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CookieControlsBubbleViewController::OnReloadingUiTimeout,
+            weak_factory_.GetWeakPtr()),
+        content_settings::features::kUserBypassUIReloadBubbleTimeout.Get());
+  } else {
+    bubble_view_->GetContentView()
+        ->SetTrackingProtectionsButtonReloadingState();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
+            weak_factory_.GetWeakPtr()),
+        base::Milliseconds(kReloadUiDisplayDelay));
+  }
 }
 
 void CookieControlsBubbleViewController::CloseBubbleAndReloadPage() {
-  CHECK(web_contents_);
   CloseBubble();
-  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+  if (web_contents_) {
+    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+  }
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
