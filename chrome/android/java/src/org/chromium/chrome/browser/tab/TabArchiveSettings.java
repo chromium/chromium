@@ -164,8 +164,7 @@ public class TabArchiveSettings {
     public boolean isArchiveDuplicateTabsEnabled() {
         return getArchiveEnabled()
                 && mPrefsManager.readBoolean(
-                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
-                        ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled());
+                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED, true);
     }
 
     /** Sets whether archiving duplicate tabs is enabled in settings. */

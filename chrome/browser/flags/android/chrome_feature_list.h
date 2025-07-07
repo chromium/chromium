@@ -45,7 +45,6 @@ BASE_DECLARE_FEATURE(kAndroidTabHighlighting);
 BASE_DECLARE_FEATURE(kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch);
 BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab);
-BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveDuplicateTabs);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveTabGroups);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterAutoDelete);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterAutoDeleteKillSwitch);

@@ -196,8 +196,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
-    public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS =
-            "AndroidTabDeclutterArchiveDuplicateTabs";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS =
             "AndroidTabDeclutterArchiveTabGroups";
     public static final String ANDROID_TAB_DECLUTTER_AUTO_DELETE = "AndroidTabDeclutterAutoDelete";
@@ -1214,8 +1212,6 @@ public abstract class ChromeFeatureList {
                             ANDROID_SHOW_RESTORE_TABS_PROMO_ON_FRE_BYPASSED_KILL_SWITCH, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE, false);
-    public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveDuplicateTabs =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveTabGroups =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterAutoDelete =

@@ -2825,9 +2825,6 @@ extern const char kAndroidTabDeclutterAutoDeleteKillSwitchDescription[];
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabName[];
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
 
-extern const char kAndroidTabDeclutterArchiveDuplicateTabsName[];
-extern const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[];
-
 extern const char kAndroidTabDeclutterArchiveTabGroupsName[];
 extern const char kAndroidTabDeclutterArchiveTabGroupsDescription[];
 

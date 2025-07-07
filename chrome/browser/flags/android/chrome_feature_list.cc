@@ -221,7 +221,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch,
     &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
-    &kAndroidTabDeclutterArchiveDuplicateTabs,
     &kAndroidTabDeclutterArchiveTabGroups,
     &kAndroidTabDeclutterAutoDelete,
     &kAndroidTabDeclutterAutoDeleteKillSwitch,
@@ -630,10 +629,6 @@ BASE_FEATURE(kAndroidSurfaceColorUpdate,
 BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
              "AndroidTabDeclutterArchiveAllButActiveTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidTabDeclutterArchiveDuplicateTabs,
-             "AndroidTabDeclutterArchiveDuplicateTabs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveTabGroups,
              "AndroidTabDeclutterArchiveTabGroups",

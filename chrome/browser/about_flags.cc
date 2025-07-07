@@ -10831,13 +10831,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidTabDeclutterArchiveAllButActiveTab)},
 
-    {"android-tab-declutter-archive-duplicate-tabs",
-     flag_descriptions::kAndroidTabDeclutterArchiveDuplicateTabsName,
-     flag_descriptions::kAndroidTabDeclutterArchiveDuplicateTabsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidTabDeclutterArchiveDuplicateTabs)},
-
     {"android-tab-declutter-archive-tab-groups",
      flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsName,
      flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsDescription,

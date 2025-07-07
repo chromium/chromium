@@ -309,11 +309,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "android-tab-declutter-archive-duplicate-tabs",
-    "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "android-tab-declutter-archive-tab-groups",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 143
