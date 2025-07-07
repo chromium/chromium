@@ -14,14 +14,13 @@
 #include <algorithm>
 #include <array>
 #include <bit>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/cert/ct_log_verifier_util.h"
 #include "net/cert/merkle_audit_proof.h"
@@ -583,16 +582,14 @@ namespace rfc6962 {
 // Calculates the hash of a leaf in a Merkle tree, given its content.
 // See RFC6962, section 2.1.
 std::string HashLeaf(const std::string& leaf) {
-  const char kLeafPrefix[] = {'\x00'};
+  static constexpr std::array<uint8_t, 1> kTag = {0x00};
 
-  SHA256HashValue sha256 = {0};
+  crypto::hash::Hasher hash(crypto::hash::kSha256);
+  hash.Update(kTag);
+  hash.Update(leaf);
 
-  std::unique_ptr<crypto::SecureHash> hash(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hash->Update(kLeafPrefix, 1);
-  hash->Update(leaf.data(), leaf.size());
-  hash->Finish(sha256);
-
+  std::array<uint8_t, crypto::hash::kSha256Size> sha256;
+  hash.Finish(sha256);
   return std::string(base::as_string_view(sha256));
 }
 
