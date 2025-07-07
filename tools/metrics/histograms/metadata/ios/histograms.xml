@@ -4442,6 +4442,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.State" enum="ReaderModeState"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the user's state in the Reading Mode journey from the background
+    triggering of the heuristic on the page to showing and interacting with
+    Reading Mode UI on iOS.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
     expires_after="2026-06-01">
   <owner>nicolasmacbeth@google.com</owner>

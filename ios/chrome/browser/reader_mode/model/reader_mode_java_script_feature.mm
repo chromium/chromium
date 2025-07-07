@@ -19,22 +19,6 @@ namespace {
 const char kScriptName[] = "reader_mode";
 const char kScriptHandlerName[] = "ReaderModeMessageHandler";
 
-// Tab helper method to record the latency of the heuristic JavaScript
-// execution.
-void RecordHeuristicLatencyIfAvailable(web::WebState* web_state,
-                                       const base::Value::Dict& body) {
-  std::optional<double> opt_latency = body.FindDouble("time");
-  if (!opt_latency.has_value()) {
-    return;
-  }
-  ReaderModeTabHelper* tab_helper =
-      ReaderModeTabHelper::FromWebState(web_state);
-  if (tab_helper) {
-    tab_helper->RecordReaderModeHeuristicLatency(
-        base::Milliseconds(opt_latency.value()));
-  }
-}
-
 // Tab helper method to process the result of the DOM distiller heuristic.
 void ReaderModeHeuristicResultAvailable(web::WebState* web_state,
                                         const GURL& original_url,
@@ -87,8 +71,6 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
         web_state, url.value(), ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
-
-  RecordHeuristicLatencyIfAvailable(web_state, message.body()->GetDict());
 
   std::optional<std::vector<double>> result =
       TransformToDerivedFeatures(message.body()->GetDict(), url.value());

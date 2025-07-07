@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -89,10 +90,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   void HandleReaderModeHeuristicResult(const GURL& url,
                                        ReaderModeHeuristicResult result);
 
-  // Records the Reader Mode heuristic latency from when the JavaScript is
-  // executed to when all scores are computed for the heuristic result.
-  void RecordReaderModeHeuristicLatency(const base::TimeDelta& latency);
-
   // web::WebStateObserver overrides:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
@@ -154,7 +151,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // WebState used to render the Reader mode content.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;
-  base::TimeDelta heuristic_latency_;
   base::OneShotTimer trigger_reader_mode_timer_;
 
   // Last committed URL, ignoring ref.
@@ -174,6 +170,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
 
+  // Records metrics for the Reader mode with `web_state_`.
+  ReaderModeMetricsHelper metrics_helper_;
   base::ObserverList<Observer, true> observers_;
 
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};

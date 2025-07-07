@@ -21,6 +21,10 @@ class ReaderModeTest : public PlatformTest {
   ReaderModeTest();
   ~ReaderModeTest() override;
 
+  // Returns the human-readable label for the ReaderModeHeuristicResult.
+  static std::string TestParametersReaderModeHeuristicResultToString(
+      testing::TestParamInfo<ReaderModeHeuristicResult> info);
+
  protected:
   void SetUp() override;
 

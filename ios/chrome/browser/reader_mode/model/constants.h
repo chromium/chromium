@@ -9,6 +9,19 @@
 
 #import "base/time/time.h"
 
+// Recorded for IOS.ReaderMode.State. Entries should not be renumbered and
+// numeric values should never be reused.
+// TODO(crbug.com/429174292): Add states to capture distillation and display
+// of the Reading Mode UI.
+// LINT.IfChange(ReaderModeState)
+enum class ReaderModeState {
+  kHeuristicCanceled = 0,
+  kHeuristicStarted = 1,
+  kHeuristicCompleted = 2,
+  kMaxValue = kHeuristicCompleted,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeState)
+
 // Recorded for IOS.ReaderMode.Distiller.Result. Entries should not
 // be renumbered and numeric values should never be reused.
 // LINT.IfChange(ReaderModeDistillerResult)
@@ -64,6 +77,9 @@ enum class ReaderModeAmpClassification {
 // interference with the JavaScript execution.
 inline constexpr base::TimeDelta kReaderModeDistillerPageLoadDelay =
     base::Seconds(1);
+
+// Histogram name for Reader Mode state.
+extern const char kReaderModeStateHistogram[];
 
 // Histogram name for Reader Mode heuristic result.
 extern const char kReaderModeHeuristicResultHistogram[];

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -100,13 +101,9 @@ void RecordReaderModeForAmpDistill(bool is_distillable_page,
 }
 
 // Helper function to generate the snackbar message.
-NSString* GenerateSnackbarMessage(base::TimeDelta heuristic_latency,
-                                  bool is_distillable_page,
+NSString* GenerateSnackbarMessage(bool is_distillable_page,
                                   base::TimeDelta distillation_latency) {
-  std::string message =
-      "Heuristic Latency: " +
-      base::NumberToString(heuristic_latency.InMilliseconds()) + "ms";
-  message += "\nDistillation Result: ";
+  std::string message = "\nDistillation Result: ";
   message += (is_distillable_page ? "Distillable" : "Not Distillable");
   message += "\nDistillation Latency: " +
              base::NumberToString(distillation_latency.InMilliseconds()) + "ms";
@@ -141,7 +138,9 @@ ReaderModeHeuristicResult GetReaderModeHeuristicResult(
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
                                          DistillerService* distiller_service)
-    : web_state_(web_state), distiller_service_(distiller_service) {
+    : web_state_(web_state),
+      distiller_service_(distiller_service),
+      metrics_helper_(web_state) {
   CHECK(web_state_);
   web_state_observation_.Observe(web_state_);
 }
@@ -270,7 +269,9 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
   // Ensure that only one asynchronous eligibility check is running at a time.
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
+    metrics_helper_.CancelReaderHeuristicRecording();
   }
+
   // Do not reset URL eligibility for same-page navigations.
   if (!reader_mode_eligible_url_.EqualsIgnoringRef(url)) {
     reader_mode_eligible_url_ = GURL();
@@ -316,15 +317,7 @@ void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     const GURL& url,
     ReaderModeHeuristicResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram, result);
-
-  const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebStateDocument(web_state_);
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::IOS_ReaderMode_Heuristic_Result(source_id)
-        .SetResult(static_cast<int64_t>(result))
-        .Record(ukm::UkmRecorder::Get());
-  }
+  metrics_helper_.RecordReaderHeuristicCompleted(result);
 
   if (url != web_state_->GetLastCommittedURL()) {
     // There has been a change in the committed URL since the last heuristic
@@ -338,19 +331,6 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
           reader_mode_eligible_url_)) {
     last_committed_url_eligibility_ready_ = true;
     CallLastCommittedUrlEligibilityCallbacks(CurrentPageSupportsReaderMode());
-  }
-}
-
-void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
-    const base::TimeDelta& delta) {
-  heuristic_latency_ = delta;
-  UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram, delta);
-  const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebStateDocument(web_state_);
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::IOS_ReaderMode_Heuristic_Latency(source_id)
-        .SetLatency(delta.InMilliseconds())
-        .Record(ukm::UkmRecorder::Get());
   }
 }
 
@@ -377,6 +357,7 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
     return;
   }
 
+  metrics_helper_.RecordReaderHeuristicTriggered();
   if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
     main_frame->ExecuteJavaScript(
         base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
@@ -414,8 +395,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     // Show a snackbar with the heuristic result, latency and page distillation
     // result and latency.
     MDCSnackbarMessage* message = [MDCSnackbarMessage
-        messageWithText:GenerateSnackbarMessage(heuristic_latency_,
-                                                is_distillable_page,
+        messageWithText:GenerateSnackbarMessage(is_distillable_page,
                                                 distillation_latency)];
     message.duration = MDCSnackbarMessageDurationMax;
     [snackbar_handler_ showSnackbarMessage:message];

@@ -17,6 +17,8 @@ source_set("model") {
     "reader_mode_distiller_viewer.mm",
     "reader_mode_java_script_feature.h",
     "reader_mode_java_script_feature.mm",
+    "reader_mode_metrics_helper.h",
+    "reader_mode_metrics_helper.mm",
     "reader_mode_model.h",
     "reader_mode_model.mm",
     "reader_mode_model_factory.h",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "reader_mode_content_tab_helper_unittest.mm",
     "reader_mode_distiller_page_unittest.mm",
     "reader_mode_java_script_feature_unittest.mm",
+    "reader_mode_metrics_helper_unittest.mm",
     "reader_mode_model_unittest.mm",
     "reader_mode_tab_helper_unittest.mm",
   ]

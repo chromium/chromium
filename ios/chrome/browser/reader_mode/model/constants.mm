@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
+const char kReaderModeStateHistogram[] = "IOS.ReaderMode.State";
+
 const char kReaderModeHeuristicResultHistogram[] =
     "IOS.ReaderMode.Heuristic.Result";
 
