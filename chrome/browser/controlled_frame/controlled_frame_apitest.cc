@@ -42,7 +42,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -728,23 +728,22 @@ class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
  public:
   void SetUpOnMainThread() override {
     ControlledFrameApiTest::SetUpOnMainThread();
-    websocket_test_server_ = std::make_unique<net::SpawnedTestServer>(
-        net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
-    ASSERT_TRUE(websocket_test_server_->Start());
+    websocket_test_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server_);
+    ASSERT_TRUE(websocket_test_server_.Start());
   }
 
-  net::SpawnedTestServer* websocket_test_server() {
-    return websocket_test_server_.get();
+  net::EmbeddedTestServer& websocket_test_server() {
+    return websocket_test_server_;
   }
 
-  GURL GetWebSocketUrl(const std::string& path) {
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr("ws");
-    return websocket_test_server_->GetURL(path).ReplaceComponents(replacements);
+  GURL GetWebSocketUrl(const std::string& path) const {
+    return net::test_server::GetWebSocketURL(websocket_test_server_, path);
   }
 
  private:
-  std::unique_ptr<net::SpawnedTestServer> websocket_test_server_;
+  net::EmbeddedTestServer websocket_test_server_{
+      net::EmbeddedTestServer ::Type::TYPE_HTTP};
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
@@ -767,9 +766,9 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
   content::WebContents* guest_web_contents = web_view_guest->web_contents();
   GURL::Replacements http_scheme_replacement;
   http_scheme_replacement.SetSchemeStr("http");
-  const GURL& kWebSocketConnectCheckUrl =
+  const GURL kWebSocketConnectCheckUrl =
       websocket_test_server()
-          ->GetURL("/connect_check.html")
+          .GetURL("/websocket/connect_check.html")
           .ReplaceComponents(http_scheme_replacement);
   {
     content::TitleWatcher title_watcher(guest_web_contents, u"PASS");

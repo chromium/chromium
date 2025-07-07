@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test ws connection</title>
+<script type="text/javascript">
+
+var pageConnection = new Promise((resolve, reject) => {
+  var protocol = location.protocol.replace('http', 'ws');
+  var url = protocol + '//' + location.host + '/echo-with-no-extension';
+  var ws = new WebSocket(url);
+
+  ws.onopen = resolve;
+  ws.onclose = reject;
+});
+
+var workerConnection = new Promise((resolve, reject) => {
+  let worker = new Worker('./connect_check_worker.js');
+  worker.onmessage = event => {
+    if (event.data === 'PASS') {
+      resolve();
+    } else if (event.data === 'FAIL') {
+      reject();
+    }
+  };
+  worker.onerror = reject;
+
+  // Start the worker.
+  worker.postMessage('');
+});
+
+Promise.all([pageConnection, workerConnection]).then(() => {
+  // Set document title to 'PASS'. The test observer catches this title changes
+  // to know the result.
+  document.title = 'PASS';
+}, () => {
+  // Set document title to 'FAIL'.
+  document.title = 'FAIL';
+});
+
+</script>
+</head>
+</html>
