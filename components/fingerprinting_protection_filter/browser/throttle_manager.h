@@ -158,6 +158,8 @@ class ThrottleManager : public base::SupportsUserData::Data,
   FRIEND_TEST_ALL_PREFIXES(
       ThrottleManagerEnabledTest,
       ThrottleManagerLifetime_DidFinishInFrameNavigationSucceeds);
+  FRIEND_TEST_ALL_PREFIXES(ThrottleManagerEnabledTest,
+                           NotifyBlockedSubresourceBeforePageCommitSucceeds);
 
   // These look like WebContentsObserver overrides but they are not, they're
   // called explicitly from the WebContentsHelper, which is a

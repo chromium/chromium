@@ -855,6 +855,32 @@ TEST_P(ThrottleManagerEnabledTest, SameSiteNavigationStopsActivation) {
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
+// Since subresource blocking happens on the Renderer process, it is possible
+// for the `ThrottleManager` to receive a notification of a blocked subresource
+// before it has gotten access to a `Page` object. In this case it should still
+// record a bit so that sending the corresponding notification to User Bypass
+// can be attempted once the page is available and becomes primary.
+TEST_P(ThrottleManagerEnabledTest,
+       NotifyBlockedSubresourceBeforePageCommitSucceeds) {
+  CreateTestNavigation(GURL(kTestURLWithActivation), main_rfh());
+  navigation_simulator()->Start();
+
+  auto* throttle_manager = ThrottleManager::FromNavigationHandle(
+      *navigation_simulator()->GetNavigationHandle());
+  auto* web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          navigation_simulator()->GetNavigationHandle()->GetWebContents());
+  // Simulate getting notified of a blocked resource from the Renderer.
+  throttle_manager->MaybeNotifyOnBlockedResource(/*frame_host=*/nullptr);
+  // Check that the `ThrottleManager` records that a resource has been blocked.
+  EXPECT_TRUE(
+      throttle_manager->current_committed_load_has_notified_disallowed_load_);
+  // We should not notify further to avoid affecting UI while the
+  // `ThrottleManager` is not attached to a primary page.
+  EXPECT_FALSE(
+      web_contents_helper->subresource_blocked_in_current_primary_page());
+}
+
 // Basic test of throttle manager lifetime and getter methods. Ensure a new
 // page creating navigation creates a new throttle manager and it's reachable
 // using FromNavigationHandle until commit time. Once committed that same

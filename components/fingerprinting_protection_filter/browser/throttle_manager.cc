@@ -387,29 +387,27 @@ void ThrottleManager::LogActivationDecisionUkm(
 
 void ThrottleManager::MaybeNotifyOnBlockedResource(
     content::RenderFrameHost* frame_host) {
-  CHECK(page_);
-  CHECK_EQ(&GetSubresourceFilterRootPage(frame_host), page_);
-
   if (current_committed_load_has_notified_disallowed_load_) {
     return;
   }
+  current_committed_load_has_notified_disallowed_load_ = true;
 
-  FilterHandle* filter_handle =
-      FilterHandle::GetForCurrentDocument(&page_->GetMainDocument());
-  if (!filter_handle ||
-      filter_handle->filter()->activation_state().activation_level ==
-          subresource_filter::mojom::ActivationLevel::kDisabled) {
+  // A subresource has been blocked on the renderer before the ThrottleManager
+  // moved from its NavigationHandle to a Page. When the page is created and
+  // becomes primary we'll check
+  // |current_committed_load_has_notified_disallowed_load_| and try again.
+  if (!page_) {
     return;
   }
 
-  current_committed_load_has_notified_disallowed_load_ = true;
+  CHECK_EQ(&GetSubresourceFilterRootPage(frame_host), page_);
 
   // Non-primary pages shouldn't affect UI. When the page becomes primary we'll
   // check |current_committed_load_has_notified_disallowed_load_| and try
   // again.
   if (page_->IsPrimary()) {
     web_contents_helper_->NotifyOnBlockedSubresource(
-        filter_handle->filter()->activation_state().activation_level);
+        page_activation_state_.activation_level);
   }
 }
 
