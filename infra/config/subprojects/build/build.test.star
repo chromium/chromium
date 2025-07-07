@@ -176,4 +176,6 @@ ci_build_perf_builder(
         category = "trusted",
         short_name = "win",
     ),
+    # Disable remote-link.
+    siso_configs = ["builder"],
 )
