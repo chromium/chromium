@@ -55,7 +55,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
           url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
-      scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info);
+      scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
+      bool allow_reuse);
 
   ~PrerenderAttributes();
 
@@ -143,6 +144,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // Information of preload pipeline that this prerender belongs to.
   scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info;
+
+  // Whether the created prerender host can be reused for future navigations.
+  bool allow_reuse = false;
 
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;

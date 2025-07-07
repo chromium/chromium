@@ -1585,7 +1585,8 @@ jint AwContents::StartPrerendering(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrerender),
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+          /*prerender_navigation_handle_callback=*/{},
+          /*allow_reuse=*/false);
 
   int32_t handle_id = -1;
   if (prerender_handle) {

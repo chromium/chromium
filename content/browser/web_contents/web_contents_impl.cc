@@ -11973,7 +11973,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
                                  const std::optional<UrlMatchType>&)>
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
-        prerender_navigation_handle_callback) {
+        prerender_navigation_handle_callback,
+    bool allow_reuse) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*speculation_rules_params=*/std::nullopt, content::Referrer(),
@@ -11983,7 +11984,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
       base::WrapRefCounted(
-          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get())));
+          static_cast<PreloadPipelineInfoImpl*>(preload_pipeline_info.get())),
+      allow_reuse);
 #if BUILDFLAG(IS_ANDROID)
   attributes.additional_headers = std::move(additional_headers);
 #else

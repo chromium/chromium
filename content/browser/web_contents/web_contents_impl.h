@@ -1010,7 +1010,8 @@ class CONTENT_EXPORT WebContentsImpl
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>,
-      base::RepeatingCallback<void(NavigationHandle&)>) override;
+      base::RepeatingCallback<void(NavigationHandle&)>,
+      bool allow_reuse) override;
   void CancelAllPrerendering() override;
   bool IsAllowedToStartPrerendering() override;
   void BackNavigationLikely(PreloadingPredictor predictor,

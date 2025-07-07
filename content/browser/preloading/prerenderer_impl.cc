@@ -372,7 +372,8 @@ bool PrerendererImpl::MaybePrerender(
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       PreloadPipelineInfoImpl::Create(
-          /*planned_max_preloading_type=*/PreloadingType::kPrerender));
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+      /*allow_reuse=*/false);
 
   PreloadingTriggerType trigger_type =
       PreloadingTriggerTypeFromSpeculationInjectionType(

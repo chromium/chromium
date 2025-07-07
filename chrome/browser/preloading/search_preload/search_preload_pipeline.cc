@@ -153,7 +153,8 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrerender(
       /*should_prepare_paint_tree=*/true,
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_, attempt,
       std::move(url_match_predicate),
-      /*prerender_navigation_handle_callback=*/{});
+      /*prerender_navigation_handle_callback=*/{},
+      /*allow_reuse=*/false);
   return SearchPreloadSignalResult::kPrerenderTriggered;
 }
 

@@ -512,7 +512,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
             /*planned_max_preloading_type=*/PreloadingType::kPrerender),
         preloading_attempt,
         /*url_match_predicate=*/{},
-        /*prerender_navigation_handle_callback=*/{});
+        /*prerender_navigation_handle_callback=*/{},
+        /*allow_reuse=*/false);
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
@@ -12388,7 +12389,8 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/PreloadingType::kPrerender),
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+          /*prerender_navigation_handle_callback=*/{},
+          /*allow_reuse=*/false);
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(web_contents,
                                                             prerendering_url);

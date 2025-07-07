@@ -211,7 +211,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(
-                /*planned_max_preloading_type=*/PreloadingType::kPrerender));
+                /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+            /*allow_reuse=*/false);
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
@@ -225,7 +226,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(
-                /*planned_max_preloading_type=*/PreloadingType::kPrerender));
+                /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+            /*allow_reuse=*/false);
     }
   }
 

@@ -101,6 +101,7 @@ bool BookmarkBarPreloadPipeline::StartPrerender(
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_,
       preloading_attempt,
       /*url_match_predicate=*/{},
-      std::move(prerender_navigation_handle_callback));
+      std::move(prerender_navigation_handle_callback),
+      /*allow_reuse=*/false);
   return prerender_handle_ != nullptr;
 }

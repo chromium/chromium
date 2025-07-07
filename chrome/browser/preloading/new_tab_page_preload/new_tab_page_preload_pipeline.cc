@@ -89,7 +89,8 @@ bool NewTabPagePreloadPipeline::StartPrerender(
       preloading_attempt,
       /*url_match_predicate=*/{},
       base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
-                              AttachNewTabPageNavigationHandleUserData));
+                              AttachNewTabPageNavigationHandleUserData),
+      /*allow_reuse=*/false);
 
   return prerender_handle_ != nullptr;
 }
