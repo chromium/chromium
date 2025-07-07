@@ -331,4 +331,9 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
   NotifyDone(/*request_completed=*/true);
 }
 
+void TokenHandleUtil::SetTokenHandleStale(const AccountId& account_id) {
+  NOTREACHED() << "This is a new interface method not defined for the legacy"
+               << "implementation and should not be accessed";
+}
+
 }  // namespace ash

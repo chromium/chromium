@@ -62,6 +62,9 @@ class TokenHandleStore {
       const std::string& access_token,
       const std::string& refresh_token_hash) = 0;
 
+  // Sets the token handle to stale.
+  virtual void SetTokenHandleStale(const AccountId& account_id) = 0;
+
   // Testing methods:
   virtual void SetInvalidTokenForTesting(const char* token) = 0;
 

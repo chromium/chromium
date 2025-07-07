@@ -79,6 +79,7 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
+#include "chrome/browser/ash/login/signin/token_handle_service_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
@@ -258,6 +259,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   tether::TetherServiceFactory::GetInstance();
   LegacyTokenHandleFetcher::EnsureFactoryBuilt();
   TtsEngineExtensionObserverChromeOSFactory::GetInstance();
+  TokenHandleServiceFactory::GetInstance();
 }
 
 }  // namespace ash

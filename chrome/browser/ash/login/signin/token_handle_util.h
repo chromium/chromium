@@ -68,6 +68,7 @@ class TokenHandleUtil : public TokenHandleStore {
       const AccountId& account_id,
       const std::string& access_token,
       const std::string& refresh_token_hash) override;
+  void SetTokenHandleStale(const AccountId& account_id) override;
 
   void SetInvalidTokenForTesting(const char* token) override;
 

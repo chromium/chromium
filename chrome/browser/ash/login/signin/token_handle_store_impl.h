@@ -51,6 +51,7 @@ class TokenHandleStoreImpl : public TokenHandleStore {
       TokenValidationCallback callback) override;
   void StoreTokenHandle(const AccountId& account_id,
                         const std::string& handle) override;
+  void SetTokenHandleStale(const AccountId& account_id) override;
   void SetInvalidTokenForTesting(const char* token) override;
   void SetLastCheckedPrefForTesting(const AccountId& account_id,
                                     base::Time time) override;

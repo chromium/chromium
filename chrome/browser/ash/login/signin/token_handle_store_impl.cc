@@ -134,6 +134,11 @@ void TokenHandleStoreImpl::StoreTokenHandle(const AccountId& account_id,
                        base::TimeToValue(base::Time::Now()));
 }
 
+void TokenHandleStoreImpl::SetTokenHandleStale(const AccountId& account_id) {
+  known_user_->SetStringPref(account_id, kTokenHandleStatusPref,
+                             kTokenHandleStatusStale);
+}
+
 void TokenHandleStoreImpl::MaybeFetchTokenHandle(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const AccountId& account_id,
