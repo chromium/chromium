@@ -17,7 +17,7 @@ struct HandoffButtonState {
   };
   // Whether or not the component is active.
   bool is_active;
-  ControlOwnership controller;
+  ControlOwnership controller = ControlOwnership::kClient;
 
   bool operator==(const HandoffButtonState& other) const = default;
 };

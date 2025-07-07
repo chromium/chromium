@@ -24,7 +24,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
  private:
   // Owns this class via TabModel.
   const raw_ref<tabs::TabInterface> tab_;
-  UiTabState current_ui_tab_state_;
+  UiTabState current_ui_tab_state_ = {
+      .agent_overlay = AgentOverlayState(),
+      .handoff_button = HandoffButtonState(),
+  };
 };
 
 }  // namespace actor::ui
