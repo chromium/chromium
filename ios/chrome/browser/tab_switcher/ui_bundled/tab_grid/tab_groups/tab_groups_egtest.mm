@@ -257,7 +257,9 @@ UIViewController* TopPresentedViewController() {
 // Taps the edit button in the tab grid and close the keyboard if it apprears on
 // iOS 26.
 void TapTabGridEditButton() {
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridEditButton(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   if (@available(iOS 19, *)) {
@@ -1509,7 +1511,9 @@ void TapTabGridEditButton() {
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridEditButton(),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_notVisible()];

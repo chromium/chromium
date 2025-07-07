@@ -530,8 +530,10 @@ id<GREYMatcher> SearchIconButton() {
 
   // The search bar should not be visible when the illustrated empty state is
   // shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityTrait(
-                                          UIAccessibilityTraitSearchField)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityTrait(
+                                              UIAccessibilityTraitSearchField),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 }
 

@@ -30,7 +30,6 @@
 
 // These components are publicly available to allow the user to set their
 // contents, visibility and actions.
-@property(nonatomic, strong, readonly) UIBarButtonItem* anchorItem;
 @property(nonatomic, strong, readonly) TabGridPageControl* pageControl;
 // This property together with `mode` control the items shown in toolbar.
 @property(nonatomic, assign) TabGridPage page;
@@ -51,20 +50,18 @@
 - (void)setSelectAllButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Sets `enabled` on the close all button.
-- (void)setCloseAllButtonEnabled:(BOOL)enabled;
-// Uses undo or closeAll text on the close all button based on `useUndo` value.
-- (void)useUndoCloseAll:(BOOL)useUndo;
+// Sets `enabled` on the undo button.
+- (void)setUndoButtonEnabled:(BOOL)enabled;
+// Uses undo text on the close all button based on `useUndo` value.
+- (void)useUndo:(BOOL)useUndo;
 
 // Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu;
 // Sets `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
 
-// Sets the title of the Select All button to "Deselect All".
-- (void)configureDeselectAllButtonTitle;
-// Sets the title of the Select All button to "Select All".
-- (void)configureSelectAllButtonTitle;
+// Sets the title of the (De)Select All button.
+- (void)configureSelectionButtonTitleSelectAll:(BOOL)selectAll;
 
 // Highlights (put a blue background) `page` of the page control.
 - (void)highlightPageControlItem:(TabGridPage)page;

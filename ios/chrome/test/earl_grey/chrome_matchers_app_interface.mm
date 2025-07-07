@@ -1667,7 +1667,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 #pragma mark - Tab Grid Selection Mode
 
 + (id<GREYMatcher>)tabGridEditButton {
-  return grey_accessibilityID(kTabGridEditButtonIdentifier);
+  return grey_allOf(grey_accessibilityID(kTabGridEditButtonIdentifier), nil);
 }
 
 + (id<GREYMatcher>)tabGridEditMenuCloseAllButton {

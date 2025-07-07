@@ -32,6 +32,14 @@ using chrome_test_util::SearchIconButton;
 using chrome_test_util::SwipeToShowDeleteButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
+namespace {
+
+id<GREYMatcher> SearchBar() {
+  return grey_accessibilityID(kBookmarksHomeSearchBarIdentifier);
+}
+
+}  // namespace
+
 // Bookmark search integration tests for Chrome.
 @interface BookmarksSearchTestCase : WebHttpServerChromeTestCase
 @end
@@ -488,7 +496,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       assertWithMatcher:grey_userInteractionEnabled()];
 
   // Change to edit mode
@@ -498,14 +506,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Verify search bar is disabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
   // Cancel edito mode.
   [BookmarkEarlGreyUI closeContextBarEditMode];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       assertWithMatcher:grey_userInteractionEnabled()];
 }
 

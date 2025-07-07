@@ -23,7 +23,6 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarEditButton;
-using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TableViewSwitchCell;
 using chrome_test_util::TurnTableViewSwitchOn;
 

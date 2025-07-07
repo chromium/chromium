@@ -80,11 +80,8 @@
   self.topToolbarConsumer.selectedTabsCount = _configuration.selectedItemsCount;
   self.bottomToolbarConsumer.selectedTabsCount =
       _configuration.selectedItemsCount;
-  if (_configuration.selectAllButton) {
-    [self.topToolbarConsumer configureSelectAllButtonTitle];
-  } else {
-    [self.topToolbarConsumer configureDeselectAllButtonTitle];
-  }
+  [self.topToolbarConsumer
+      configureSelectionButtonTitleSelectAll:_configuration.selectAllButton];
 
   [self configureEditOrUndoButton];
 
@@ -231,13 +228,12 @@
 // TODO(crbug.com/40273478): Send buttons configuration directly to the correct
 // consumer instead of send information to object when it is not necessary.
 - (void)configureEditOrUndoButton {
-  [self.topToolbarConsumer useUndoCloseAll:_configuration.undoButton];
+  [self.topToolbarConsumer useUndo:_configuration.undoButton];
   [self.bottomToolbarConsumer useUndoCloseAll:_configuration.undoButton];
 
   // TODO(crbug.com/40273478): Separate "Close All" and "Undo".
-  [self.topToolbarConsumer
-      setCloseAllButtonEnabled:_configuration.closeAllButton ||
-                               _configuration.undoButton];
+  [self.topToolbarConsumer setUndoButtonEnabled:_configuration.closeAllButton ||
+                                                _configuration.undoButton];
   [self.bottomToolbarConsumer
       setCloseAllButtonEnabled:_configuration.closeAllButton ||
                                _configuration.undoButton];
