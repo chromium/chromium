@@ -168,14 +168,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal);
 // specified in the --load-extension commandline switch in telemetry reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 
-// Enables the telemetry service to collect signals and generate reports to send
-// for enterprise.
-BASE_DECLARE_FEATURE(kExtensionTelemetryForEnterprise);
-
-// Specifies the reporting interval for enterprise telemetry reports.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryEnterpriseReportingIntervalSeconds;
-
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 

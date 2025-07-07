@@ -144,6 +144,12 @@ base::TimeDelta kOffstoreFileDataCollectionStartupDelaySeconds =
 base::TimeDelta kOffstoreFileDataCollectionDurationLimitSeconds =
     base::Seconds(60);
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+// Interval for generating and send extension telemetry for enterprise
+base::TimeDelta kExtensionTelemetryEnterpriseReportingIntervalSeconds =
+    base::Seconds(300);
+#endif
+
 void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.ExtensionTelemetry.FilePersistedAtWriteInterval",
@@ -468,7 +474,6 @@ ExtensionTelemetryService::ExtensionTelemetryService(
   SetEnabledForESB(IsEnhancedProtectionEnabled(*pref_service_));
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  if (base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise)) {
     // Register for enterprise policy changes.
     auto* connector_service =
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -480,7 +485,6 @@ ExtensionTelemetryService::ExtensionTelemetryService(
     // Set initial enable/disable state for enterprise.
     SetEnabledForEnterprise(
         GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
-  }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
@@ -609,10 +613,8 @@ void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
     SetUpOffstoreFileDataCollection();
 
     enterprise_timer_.Start(
-        FROM_HERE,
-        base::Seconds(
-            kExtensionTelemetryEnterpriseReportingIntervalSeconds.Get()),
-        this, &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
+        FROM_HERE, kExtensionTelemetryEnterpriseReportingIntervalSeconds, this,
+        &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
   } else {
     // Stop enterprise timer for periodic telemetry reports.
     enterprise_timer_.Stop();

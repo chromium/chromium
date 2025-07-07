@@ -271,11 +271,6 @@ ExtensionTelemetryEventRouter::ExtensionTelemetryEventRouter(
 ExtensionTelemetryEventRouter::~ExtensionTelemetryEventRouter() = default;
 
 bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryForEnterprise)) {
-    return false;
-  }
-
   auto* reporting_client =
       RealtimeReportingClientFactory::GetForProfile(context_);
   if (!reporting_client) {

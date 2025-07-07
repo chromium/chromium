@@ -73,8 +73,7 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {kExtensionTelemetryForEnterprise,
-         kExtensionTelemetryDeclarativeNetRequestActionSignal,
+        {kExtensionTelemetryDeclarativeNetRequestActionSignal,
          extensions_features::kIncludeJSCallStackInExtensionApiRequest},
         /*disabled_features=*/{});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));

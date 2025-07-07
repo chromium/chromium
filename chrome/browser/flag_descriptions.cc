@@ -2129,12 +2129,6 @@ const char kExtensionDisableUnsupportedDeveloperName[] =
 const char kExtensionDisableUnsupportedDeveloperDescription[] =
     "When enabled, disable unpacked extensions if developer mode is off.";
 
-const char kExtensionTelemetryForEnterpriseName[] =
-    "Extension Telemetry for Enterprise";
-const char kExtensionTelemetryForEnterpriseDescription[] =
-    "When enabled, the extension telemetry service collects signals and "
-    "generates reports to send for enterprise.";
-
 const char kExtensionsToolbarZeroStateName[] = "Extensions Toolbar Zero State";
 const char kExtensionsToolbarZeroStateDescription[] =
     "When enabled, show an IPH to prompt users with zero extensions installed "

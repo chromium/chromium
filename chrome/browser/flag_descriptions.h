@@ -1219,9 +1219,6 @@ extern const char kCWSInfoFastCheckDescription[];
 extern const char kExtensionDisableUnsupportedDeveloperName[];
 extern const char kExtensionDisableUnsupportedDeveloperDescription[];
 
-extern const char kExtensionTelemetryForEnterpriseName[];
-extern const char kExtensionTelemetryForEnterpriseDescription[];
-
 #endif  // ENABLE_EXTENSIONS
 
 extern const char kExtensionsOnChromeUrlsName[];

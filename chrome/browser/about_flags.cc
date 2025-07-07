@@ -4148,32 +4148,6 @@ const FeatureEntry::FeatureVariation kAutofillImprovedLabelsVariations[] = {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-const FeatureEntry::FeatureParam
-    kExtensionTelemetryEnterpriseReportingIntervalSeconds_20Seconds[] = {
-        {"EnterpriseReportingIntervalSeconds", "20"}};
-const FeatureEntry::FeatureParam
-    kExtensionTelemetryEnterpriseReportingIntervalSeconds_60Seconds[] = {
-        {"EnterpriseReportingIntervalSeconds", "60"}};
-const FeatureEntry::FeatureParam
-    kExtensionTelemetryEnterpriseReportingIntervalSeconds_300Seconds[] = {
-        {"EnterpriseReportingIntervalSeconds", "300"}};
-const FeatureEntry::FeatureVariation
-    kExtensionTelemetryEnterpriseReportingIntervalSecondsVariations[] = {
-        {"20 seconds",
-         kExtensionTelemetryEnterpriseReportingIntervalSeconds_20Seconds,
-         std::size(
-             kExtensionTelemetryEnterpriseReportingIntervalSeconds_20Seconds),
-         nullptr},
-        {"60 seconds",
-         kExtensionTelemetryEnterpriseReportingIntervalSeconds_60Seconds,
-         std::size(
-             kExtensionTelemetryEnterpriseReportingIntervalSeconds_60Seconds),
-         nullptr},
-        {"300 seconds",
-         kExtensionTelemetryEnterpriseReportingIntervalSeconds_300Seconds,
-         std::size(
-             kExtensionTelemetryEnterpriseReportingIntervalSeconds_300Seconds),
-         nullptr}};
 constexpr char kExtensionAiDataInternalName[] =
     "enable-extension-ai-data-collection";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -10385,14 +10359,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          extensions_features::kExtensionDisableUnsupportedDeveloper)},
-
-    {"extension-telemetry-for-enterprise",
-     flag_descriptions::kExtensionTelemetryForEnterpriseName,
-     flag_descriptions::kExtensionTelemetryForEnterpriseDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         safe_browsing::kExtensionTelemetryForEnterprise,
-         kExtensionTelemetryEnterpriseReportingIntervalSecondsVariations,
-         "EnterpriseReportingIntervalSeconds")},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
     {"autofill-enable-cvc-storage-and-filling",

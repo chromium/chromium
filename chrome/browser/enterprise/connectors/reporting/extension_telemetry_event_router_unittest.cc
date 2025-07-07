@@ -189,10 +189,7 @@ class ExtensionTelemetryEventInstallLocationTest
     : public ExtensionTelemetryEventRouterTest,
       public testing::WithParamInterface<ExtensionInfo::InstallLocation> {
  public:
-  ExtensionTelemetryEventInstallLocationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kExtensionTelemetryForEnterprise);
-  }
+  ExtensionTelemetryEventInstallLocationTest() = default;
 
  protected:
   ExtensionInfo::InstallLocation install_location_ = GetParam();
@@ -291,10 +288,6 @@ TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
 
   // Expect policy disabled.
   EXPECT_FALSE(extension_telemetry_event_router_->IsPolicyEnabled());
-
-  // Enable feature.
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kExtensionTelemetryForEnterprise);
 
   // Expect policy still disabled due to reporting disabled.
   EXPECT_FALSE(extension_telemetry_event_router_->IsPolicyEnabled());

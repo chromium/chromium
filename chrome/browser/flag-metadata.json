@@ -4774,14 +4774,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "extension-telemetry-for-enterprise",
-    "owners": [
-      "richche@google.com",
-      "anunoy@chromium.org"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "extensions-collapse-main-menu",
     "owners": [ "dfried@chromium.org" ],
     "expiry_milestone": 145
