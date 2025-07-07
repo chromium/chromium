@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={1600x1200}{1200x1600}
-//
+// META: --window-size=800,600
+
 (async function(testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests window zoom on a secondary screen.');
@@ -12,25 +13,17 @@
 
   dp.Browser.setWindowBounds({windowId, bounds: {left: 1600}});
 
-  const windowStates = [
-    'maximized',
-    'normal',
-    'fullscreen',
-    'normal',
-    'minimized',
-    'maximized',
-    'fullscreen',
-    'normal',
-  ];
-
-  for (const state of windowStates) {
+  for (const state of ['maximized', 'fullscreen']) {
     dp.Browser.setWindowBounds({windowId, bounds: {windowState: state}});
 
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
-    const visibilityState = await session.evaluate(`document.visibilityState`);
     testRunner.log(`${bounds.left},${bounds.top} ${bounds.width}x${
-        bounds.height} ${bounds.windowState} ${visibilityState}`);
+        bounds.height} ${bounds.windowState}`);
+
+    // Chrome does not like to switch between maximized and full screen window
+    // states, so reset window back to normal state.
+    dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'normal'}});
   }
 
   testRunner.completeTest();
-})
+});

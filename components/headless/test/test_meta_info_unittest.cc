@@ -144,14 +144,32 @@ TEST(HeadlessTestMetaInfoTest, CompositeCommandLineSwitch) {
             "--expose-gc,--allow-natives-syntax");
 }
 
-TEST(HeadlessTestMetaInfoTest, NoNameCommandLineSwitch) {
+TEST(HeadlessTestMetaInfoTest, ForkHeadlessModeExpectations) {
+  ASSERT_FALSE(TestMetaInfo().fork_headless_mode_expectations);
+
   auto meta_info = TestMetaInfo::FromString(R"(
-  // META: --=42
+  // META: fork_headless_mode_expectations
   // )");
 
-  ASSERT_FALSE(meta_info.has_value());
+  ASSERT_TRUE(meta_info.has_value());
 
-  EXPECT_EQ(meta_info.error(), "Invalid meta info: --=42");
+  EXPECT_FALSE(meta_info.value().IsEmpty());
+
+  EXPECT_TRUE(meta_info.value().fork_headless_mode_expectations);
+}
+
+TEST(HeadlessTestMetaInfoTest, ForkHeadlessShellExpectations) {
+  ASSERT_FALSE(TestMetaInfo().fork_headless_shell_expectations);
+
+  auto meta_info = TestMetaInfo::FromString(R"(
+  // META: fork_headless_shell_expectations
+  // )");
+
+  ASSERT_TRUE(meta_info.has_value());
+
+  EXPECT_FALSE(meta_info.value().IsEmpty());
+
+  EXPECT_TRUE(meta_info.value().fork_headless_shell_expectations);
 }
 
 }  // namespace

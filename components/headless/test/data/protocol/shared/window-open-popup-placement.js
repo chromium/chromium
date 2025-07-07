@@ -1,12 +1,17 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={label='1st screen'}{label='2nd screen'}
+// META: --screen-info={1600x1200}
+// META: --disable-popup-blocking
 //
+// This results in a one off window height in Chrome Headless Mode, see
+// http://crbug.com/429408227.
+// META: fork_headless_mode_expectations
+
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests window open on a secondary screen.');
+      await testRunner.startBlank('Tests popup window open placement.');
 
   const {sessionId} =
       (await testRunner.browserP().Target.attachToBrowserTarget({})).result;
@@ -18,14 +23,24 @@
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
   httpInterceptor.addResponse('https://example.com/index.html', `
+      <html>
+      <head><link rel="icon" href="data:,"></head>
       <script>
-          const win = window.open('/page2.html', '_blank',
-              'left=820, top=20, width=400, height=200');
-          win.addEventListener('load', async () => {
-            const cs = (await win.getScreenDetails()).currentScreen;
-            console.log('Page2 screen: ' + cs.label);
-          });
-      </script>`);
+          const popup = window.open('/page2.html', '_blank',
+              'popup, left=10, top=20, width=600, height=400');
+          if (!popup) {
+            console.log('Failed to create popup');
+          } else {
+            popup.addEventListener('load', async () => {
+              console.log('Popup: ' +
+                  '{' + popup.screenLeft + ',' + popup.screenTop +
+                  ' ' + popup.innerWidth + 'x' + popup.innerHeight +
+                  '}');
+            });
+          }
+      </script>
+      </html>
+  `);
 
   httpInterceptor.addResponse(
       'https://example.com/page2.html', `<body>Page2</body>`);
@@ -41,4 +56,4 @@
   testRunner.log(message);
 
   testRunner.completeTest();
-})
+});

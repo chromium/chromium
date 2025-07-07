@@ -13,6 +13,11 @@ namespace headless {
 
 namespace {
 
+constexpr char kForkHeadlessModeExpectations[] =
+    "fork_headless_mode_expectations";
+constexpr char kForkHeadlessShellExpectations[] =
+    "fork_headless_shell_expectations";
+
 constexpr char kInvalidMetaInfo[] = "Invalid meta info: ";
 
 std::vector<std::string> CollectMetaInfos(std::string_view test_body) {
@@ -58,6 +63,16 @@ base::expected<TestMetaInfo, std::string> TestMetaInfo::FromString(
     static RE2 re_command_line_switch(R"(--([\w-]+)(?:=(.*))?)");
     if (RE2::FullMatch(meta_info, re_command_line_switch, &name, &value)) {
       result.command_line_switches[name] = value;
+      continue;
+    }
+
+    if (meta_info == kForkHeadlessModeExpectations) {
+      result.fork_headless_mode_expectations = true;
+      continue;
+    }
+
+    if (meta_info == kForkHeadlessShellExpectations) {
+      result.fork_headless_shell_expectations = true;
       continue;
     }
 
