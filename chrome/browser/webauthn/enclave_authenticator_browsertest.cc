@@ -349,6 +349,19 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kGetAssertionSecurityKey[] = R"((() => {
+  const credId = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [
+      {type: 'public-key', id: new Uint8Array(credId), transports: ["usb"]}
+    ],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kGetAssertionCredId1[] = R"((() => {
   const credId = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
   return navigator.credentials.get({ publicKey: {
@@ -1905,6 +1918,35 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GpmEnclaveNeedsReauth) {
   EXPECT_EQ(browser()->tab_strip_model()->GetTabCount(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       NoReauthButtonForSecurityKeyRequests) {
+  // Set the account state to a recoverable signin error.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountId account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Add a passkey to make sure it's not shown.
+  AddTestPasskeyToModel();
+
+  // Make a get assertion request that has a USB-only list of transports.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionSecurityKey);
+  delegate_observer()->WaitForUI();
+
+  // The reauth button should not be displayed.
+  EXPECT_FALSE(
+      std::ranges::any_of(dialog_model()->mechanisms, [](const auto& m) {
+        return std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
+      }));
+}
+
 // Tests that if the enclave is the default, but loading takes too long, the
 // user is sent to the mechanism selection screen instead.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
@@ -2244,9 +2286,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
 #endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MAYBE_NoGpmForCrossPlatformAttachment) {
-  EnableUVKeySupport();
-  SetTrustedVaultRecoverable();
-
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -2258,8 +2297,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
         return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
-  EXPECT_TRUE(
-      request_delegate()->enclave_controller_for_testing()->is_active());
+  EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)

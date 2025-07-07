@@ -35,6 +35,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -735,6 +736,33 @@ auto GetCallbackForAssertion(GetCredentialCallback callback) {
       std::move(callback));
 }
 
+base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
+    const device::CtapGetAssertionRequest& request) {
+  const base::flat_set<device::FidoTransportProtocol> kAllTransports = {
+      device::FidoTransportProtocol::kInternal,
+      device::FidoTransportProtocol::kNearFieldCommunication,
+      device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+      device::FidoTransportProtocol::kBluetoothLowEnergy,
+      device::FidoTransportProtocol::kHybrid,
+  };
+
+  const auto& allowed_list = request.allow_list;
+  if (allowed_list.empty()) {
+    return kAllTransports;
+  }
+
+  base::flat_set<device::FidoTransportProtocol> transports;
+  for (const auto& credential : allowed_list) {
+    if (credential.transports.empty()) {
+      return kAllTransports;
+    }
+    transports.insert(credential.transports.begin(),
+                      credential.transports.end());
+  }
+
+  return transports;
+}
+
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -862,14 +890,17 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       &std::get<device::CtapMakeCredentialRequest>(req_state_->ctap_request);
   auto* make_credential_options =
       &std::get<device::MakeCredentialOptions>(req_state_->request_options);
+  bool discover_enclave = browser_passkeys_available_ &&
+                          make_credential_options->authenticator_attachment !=
+                              device::AuthenticatorAttachment::kCrossPlatform;
   req_state_->request_delegate->ConfigureDiscoveries(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kMakeCredential,
       make_credential_options->resident_key,
       make_credential_options->user_verification,
       ctap_make_credential_request->user.name,
-      base::span<const device::CableDiscoveryData>(),
-      browser_passkeys_available_, discovery_factory());
+      base::span<const device::CableDiscoveryData>(), discover_enclave,
+      discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   make_credential_options->allow_skipping_pin_touch = allow_skipping_pin_touch;
@@ -912,6 +943,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
           &device::FidoRequestHandlerBase::RequestBluetoothPermission,
           req_state_->request_handler
               ->GetWeakPtr()) /* request_ble_permission_callback */);
+  // `set_observer` can destroy `this`. It is not safe to refer to local state
+  // after this call.
   req_state_->request_handler->set_observer(req_state_->request_delegate.get());
 }
 
@@ -928,12 +961,24 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   if (ctap_get_assertion_request->cable_extension && IsFocused()) {
     cable_pairings = *ctap_get_assertion_request->cable_extension;
   }
+  bool is_immediate_mediation =
+      req_state_->mediation_.value_or(Mediation::MODAL) == Mediation::IMMEDIATE;
+  base::flat_set<device::FidoTransportProtocol> transports =
+      base::STLSetIntersection<base::flat_set<device::FidoTransportProtocol>>(
+          GetWebAuthnTransports(
+              GetRenderFrameHost(), discovery_factory(),
+              UsesDiscoverableCreds(*ctap_get_assertion_request),
+              is_uvpaa_override_, is_immediate_mediation),
+          GetTransportsAllowedByRP(*ctap_get_assertion_request));
+  bool discover_enclave =
+      browser_passkeys_available_ &&
+      transports.contains(device::FidoTransportProtocol::kInternal);
   req_state_->request_delegate->ConfigureDiscoveries(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       ctap_get_assertion_request->user_verification,
-      /*user_name=*/std::nullopt, cable_pairings, browser_passkeys_available_,
+      /*user_name=*/std::nullopt, cable_pairings, discover_enclave,
       discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
@@ -941,21 +986,14 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
 #endif
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
-  bool is_immediate_mediation =
-      req_state_->mediation_.value_or(Mediation::MODAL) == Mediation::IMMEDIATE;
-  base::flat_set<device::FidoTransportProtocol> transports =
-      GetWebAuthnTransports(GetRenderFrameHost(), discovery_factory(),
-                            UsesDiscoverableCreds(*ctap_get_assertion_request),
-                            is_uvpaa_override_, is_immediate_mediation);
-
   auto platform_discoveries =
       discovery_factory()->IsTestOverride()
           ? std::vector<std::unique_ptr<device::FidoDiscoveryBase>>()
           : req_state_->request_delegate->CreatePlatformDiscoveries();
   auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
-      discovery_factory(), std::move(platform_discoveries), transports,
-      *ctap_get_assertion_request, *ctap_get_assertion_options,
-      allow_skipping_pin_touch,
+      discovery_factory(), std::move(platform_discoveries),
+      std::move(transports), *ctap_get_assertion_request,
+      *ctap_get_assertion_options, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
   request_handler->transport_availability_info()
@@ -997,8 +1035,10 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
           &device::FidoRequestHandlerBase::RequestBluetoothPermission,
           request_handler->GetWeakPtr()) /* request_ble_permission_callback */);
 
-  request_handler->set_observer(req_state_->request_delegate.get());
   req_state_->request_handler = std::move(request_handler);
+  // `set_observer` can destroy `this`. It is not safe to refer to local state
+  // after this call.
+  req_state_->request_handler->set_observer(req_state_->request_delegate.get());
 }
 
 bool AuthenticatorCommonImpl::IsFocused() const {

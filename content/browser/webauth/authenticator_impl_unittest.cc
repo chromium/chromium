@@ -919,6 +919,31 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
                                             static_cast<int64_t>(mode));
   }
 
+  // Replaces the virtual authenticator with a multiple discovery for all
+  // transports.
+  void InjectVirtualAuthenticatorForAllTransports() {
+    EXPECT_CALL(*mock_adapter_, IsPresent())
+        .WillRepeatedly(::testing::Return(true));
+    auto discovery =
+        std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+    for (device::FidoTransportProtocol transport : {
+             device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+             device::FidoTransportProtocol::kNearFieldCommunication,
+             device::FidoTransportProtocol::kBluetoothLowEnergy,
+             device::FidoTransportProtocol::kHybrid,
+             device::FidoTransportProtocol::kInternal,
+         }) {
+      device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device;
+      device.transport = transport;
+      device.state->transport = transport;
+      ASSERT_TRUE(device.state->InjectResidentKey(
+          /*credential_id=*/{{1, 2, 3, 4}}, kTestRelyingPartyId,
+          /*user_id=*/{{1, 1, 1, 1}}, "test@example.com", "Test User"));
+      discovery->AddDevice(std::move(device));
+    }
+    ReplaceDiscoveryFactory(std::move(discovery));
+  }
+
   scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
       mock_adapter_ = base::MakeRefCounted<
           ::testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -2063,6 +2088,12 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return caller_origin == remote_desktop_client_override_origin;
   }
 
+  void BrowserProvidedPasskeysAvailable(
+      BrowserContext* browser_context,
+      base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(browser_provided_passkeys_available);
+  }
+
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
   std::optional<bool> is_uvpaa_override;
@@ -2095,6 +2126,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // The origin permitted to use the RemoteDesktopClientOverride extension.
   std::optional<url::Origin> remote_desktop_client_override_origin;
+
+  // Return value of `BrowserProvidedPasskeysAvailable()`.
+  bool browser_provided_passkeys_available = false;
 };
 
 enum class EnterprisePolicy {
@@ -2154,12 +2188,17 @@ class TestAuthenticatorRequestDelegate
       RenderFrameHost* render_frame_host,
       base::OnceClosure action_callbacks_registered_callback,
       base::OnceClosure started_over_callback,
-      bool simulate_user_cancelled)
+      bool simulate_user_cancelled,
+      std::optional<bool>* enclave_authenticator_should_be_discovered,
+      base::flat_set<device::FidoTransportProtocol>* discovered_transports)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
         started_over_callback_(std::move(started_over_callback)),
         does_block_request_on_failure_(!started_over_callback_.is_null()),
-        simulate_user_cancelled_(simulate_user_cancelled) {}
+        simulate_user_cancelled_(simulate_user_cancelled),
+        enclave_authenticator_should_be_discovered_(
+            enclave_authenticator_should_be_discovered),
+        discovered_transports_(discovered_transports) {}
 
   TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
       delete;
@@ -2191,6 +2230,9 @@ class TestAuthenticatorRequestDelegate
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info)
       override {
+    if (discovered_transports_) {
+      *discovered_transports_ = transport_info.available_transports;
+    }
     // Simulate the behaviour of Chrome's |AuthenticatorRequestDialogModel|
     // which shows a specific error when no transports are available and lets
     // the user cancel the request.
@@ -2210,12 +2252,32 @@ class TestAuthenticatorRequestDelegate
     return true;
   }
 
+  void ConfigureDiscoveries(
+      const url::Origin& origin,
+      const std::string& rp_id,
+      RequestSource request_source,
+      device::FidoRequestType request_type,
+      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      device::UserVerificationRequirement user_verification_requirement,
+      std::optional<std::string_view> user_name,
+      base::span<const device::CableDiscoveryData> pairings_from_extension,
+      bool is_enclave_authenticator_available,
+      device::FidoDiscoveryFactory* fido_discovery_factory) override {
+    if (enclave_authenticator_should_be_discovered_) {
+      *enclave_authenticator_should_be_discovered_ =
+          is_enclave_authenticator_available;
+    }
+  }
+
   base::OnceClosure action_callbacks_registered_callback_;
   base::OnceClosure cancel_callback_;
   base::OnceClosure started_over_callback_;
   base::OnceClosure start_over_callback_;
   bool does_block_request_on_failure_ = false;
   bool simulate_user_cancelled_ = false;
+  bool browser_provided_passkeys_available_ = false;
+  raw_ptr<std::optional<bool>> enclave_authenticator_should_be_discovered_;
+  raw_ptr<base::flat_set<device::FidoTransportProtocol>> discovered_transports_;
 };
 
 // TestAuthenticatorContentBrowserClient is a test fake implementation of the
@@ -2249,7 +2311,8 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        std::move(started_over_callback_), simulate_user_cancelled_);
+        std::move(started_over_callback_), simulate_user_cancelled_,
+        &enclave_authenticator_should_be_discovered_, &discovered_transports_);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -2276,6 +2339,12 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   // The return value of IsSecurityLevelAcceptableForWebAuthn.
   bool is_webauthn_security_level_acceptable = true;
+
+  // Whether discovery of the enclave authenticator was requested or not.
+  std::optional<bool> enclave_authenticator_should_be_discovered_;
+
+  // The set of transports allowed for a request.
+  base::flat_set<device::FidoTransportProtocol> discovered_transports_;
 };
 
 // A test class that installs and removes an
@@ -2544,6 +2613,144 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestMakeCredentialCancel) {
       AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUserCancellation,
                                  AuthenticationRequestMode::kModalWebAuthn);
+}
+
+// Tests that the enclave authenticator should only be discovered for make
+// credential requests it can fulfill.
+TEST_F(AuthenticatorContentBrowserClientTest,
+       DiscoverEnclaveAuthenticatorMakeCredential) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  struct TestCase {
+    bool available;
+    device::AuthenticatorAttachment attachment;
+    bool expected_discovered;
+  } kTestCases[] = {
+      {false, device::AuthenticatorAttachment::kAny, false},
+      {true, device::AuthenticatorAttachment::kCrossPlatform, false},
+      {true, device::AuthenticatorAttachment::kAny, true},
+      {true, device::AuthenticatorAttachment::kPlatform, true},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "available=" << test_case.available);
+    SCOPED_TRACE(testing::Message()
+                 << "attachment=" << static_cast<int>(test_case.attachment));
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->browser_provided_passkeys_available = test_case.available;
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->authenticator_selection->authenticator_attachment =
+        test_case.attachment;
+    AuthenticatorMakeCredential(std::move(options));
+    ASSERT_TRUE(
+        test_client_.enclave_authenticator_should_be_discovered_.has_value());
+    EXPECT_EQ(*test_client_.enclave_authenticator_should_be_discovered_,
+              test_case.expected_discovered);
+  }
+}
+
+// Tests that the enclave authenticator should only be discovered for get
+// assertion requests it can fulfill.
+TEST_F(AuthenticatorContentBrowserClientTest,
+       DiscoverEnclaveAuthenticatorGetAssertion) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  device::PublicKeyCredentialDescriptor internal_cred(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 1),
+      {device::FidoTransportProtocol::kInternal});
+  device::PublicKeyCredentialDescriptor sk_cred(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 2),
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  device::PublicKeyCredentialDescriptor unknown_cred(
+      device::CredentialType::kPublicKey,
+      std::vector<uint8_t>(kTestCredentialIdLength, 3), {});
+  struct TestCase {
+    bool available;
+    std::vector<device::PublicKeyCredentialDescriptor> creds;
+    bool expected_discovered;
+  } kTestCases[] = {
+      {false, {internal_cred}, false},
+      {true, {sk_cred}, false},
+      {true, {internal_cred}, true},
+      {true, {unknown_cred}, true},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "available=" << test_case.available);
+    testing::Message creds_trace;
+    creds_trace << "creds=[";
+    if (test_case.creds.empty()) {
+      creds_trace << "empty]";
+    } else {
+      creds_trace << test_case.creds.at(0).id.at(0) << "]";
+    }
+    SCOPED_TRACE(creds_trace);
+    test_client_.GetTestWebAuthenticationDelegate()
+        ->browser_provided_passkeys_available = test_case.available;
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->allow_credentials = std::move(test_case.creds);
+    AuthenticatorGetAssertion(std::move(options));
+    ASSERT_TRUE(
+        test_client_.enclave_authenticator_should_be_discovered_.has_value());
+    EXPECT_EQ(*test_client_.enclave_authenticator_should_be_discovered_,
+              test_case.expected_discovered);
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, TransportsFromAllowList) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  InjectVirtualAuthenticatorForAllTransports();
+  device::PublicKeyCredentialDescriptor internal_cred(
+      device::CredentialType::kPublicKey, {1, 2, 3, 4},
+      {device::FidoTransportProtocol::kInternal});
+  device::PublicKeyCredentialDescriptor sk_cred(
+      device::CredentialType::kPublicKey, {1, 2, 3, 4},
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials = {std::move(internal_cred), std::move(sk_cred)};
+  AuthenticatorGetAssertion(std::move(options));
+  EXPECT_THAT(test_client_.discovered_transports_,
+              testing::UnorderedElementsAre(
+                  device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                  device::FidoTransportProtocol::kInternal));
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       AllTransportsAllowedIfHasAllowedCredentialWithEmptyTransportsList) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  InjectVirtualAuthenticatorForAllTransports();
+  device::PublicKeyCredentialDescriptor cred(device::CredentialType::kPublicKey,
+                                             {1, 2, 3, 4}, {});
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials = {std::move(cred)};
+  AuthenticatorGetAssertion(std::move(options));
+  EXPECT_THAT(test_client_.discovered_transports_,
+              testing::UnorderedElementsAre(
+                  device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                  device::FidoTransportProtocol::kNearFieldCommunication,
+                  device::FidoTransportProtocol::kBluetoothLowEnergy,
+                  device::FidoTransportProtocol::kHybrid,
+                  device::FidoTransportProtocol::kInternal));
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       AllTransportsAllowedIfAllowCredentialsListIsEmpty) {
+  test_client_.web_authentication_delegate.supports_resident_keys = true;
+  NavigateAndCommit(GURL(kTestOrigin1));
+  InjectVirtualAuthenticatorForAllTransports();
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials.clear();
+  AuthenticatorGetAssertion(std::move(options));
+  EXPECT_THAT(test_client_.discovered_transports_,
+              testing::UnorderedElementsAre(
+                  device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                  device::FidoTransportProtocol::kNearFieldCommunication,
+                  device::FidoTransportProtocol::kBluetoothLowEnergy,
+                  device::FidoTransportProtocol::kHybrid,
+                  device::FidoTransportProtocol::kInternal));
 }
 
 // Test that credentials can be created and used from an extension origin when
@@ -3742,7 +3949,9 @@ class MockAuthenticatorRequestDelegateObserver
             nullptr /* render_frame_host */,
             base::DoNothing() /* did_start_request_callback */,
             /*started_over_callback=*/base::OnceClosure(),
-            /*simulate_user_cancelled=*/false),
+            /*simulate_user_cancelled=*/false,
+            /*enclave_authenticator_should_be_discovered=*/nullptr,
+            /*discovered_transports=*/nullptr),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
 
   MockAuthenticatorRequestDelegateObserver(

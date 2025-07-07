@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -173,33 +172,6 @@ bool ResponseValid(
   return true;
 }
 
-base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
-    const CtapGetAssertionRequest& request) {
-  const base::flat_set<FidoTransportProtocol> kAllTransports = {
-      FidoTransportProtocol::kInternal,
-      FidoTransportProtocol::kNearFieldCommunication,
-      FidoTransportProtocol::kUsbHumanInterfaceDevice,
-      FidoTransportProtocol::kBluetoothLowEnergy,
-      FidoTransportProtocol::kHybrid,
-  };
-
-  const auto& allowed_list = request.allow_list;
-  if (allowed_list.empty()) {
-    return kAllTransports;
-  }
-
-  base::flat_set<FidoTransportProtocol> transports;
-  for (const auto& credential : allowed_list) {
-    if (credential.transports.empty()) {
-      return kAllTransports;
-    }
-    transports.insert(credential.transports.begin(),
-                      credential.transports.end());
-  }
-
-  return transports;
-}
-
 void ReportGetAssertionRequestTransport(FidoAuthenticator* authenticator) {
   if (authenticator->AuthenticatorTransport()) {
     base::UmaHistogramEnumeration(
@@ -325,12 +297,9 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
     CtapGetAssertionOptions options,
     bool allow_skipping_pin_touch,
     CompletionCallback completion_callback)
-    : FidoRequestHandlerBase(
-          fido_discovery_factory,
-          std::move(additional_discoveries),
-          base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
-              supported_transports,
-              GetTransportsAllowedByRP(request))),
+    : FidoRequestHandlerBase(fido_discovery_factory,
+                             std::move(additional_discoveries),
+                             supported_transports),
       completion_callback_(std::move(completion_callback)),
       request_(std::move(request)),
       options_(std::move(options)),

@@ -62,7 +62,6 @@ namespace device {
 
 namespace {
 
-constexpr uint8_t kBogusCredentialId[] = {0x01, 0x02, 0x03, 0x04};
 constexpr char kRequestTransportHistogram[] =
     "WebAuthentication.GetAssertionRequestTransport";
 constexpr char kResponseTransportHistogram[] =
@@ -183,15 +182,6 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
     EXPECT_THAT(
         request_handler->transport_availability_info().available_transports,
         ::testing::UnorderedElementsAreArray(transports));
-  }
-
-  void ExpectAllTransportsAreAllowedForRequest(
-      GetAssertionRequestHandler* request_handler) {
-    ExpectAllowedTransportsForRequestAre(
-        request_handler, {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-                          FidoTransportProtocol::kInternal,
-                          FidoTransportProtocol::kNearFieldCommunication,
-                          FidoTransportProtocol::kHybrid});
   }
 
   test::FakeFidoDiscovery* discovery() const { return discovery_; }
@@ -563,68 +553,6 @@ TEST_F(FidoGetAssertionHandlerTest, IncorrectUserEntity) {
             std::get<0>(get_assertion_future().Get()));
 }
 
-TEST_F(FidoGetAssertionHandlerTest,
-       AllTransportsAllowedIfAllowCredentialsListUndefined) {
-  auto request = CreateTestRequestWithCableExtension();
-  EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(true));
-  auto request_handler =
-      CreateGetAssertionHandlerWithRequest(std::move(request));
-  ExpectAllTransportsAreAllowedForRequest(request_handler.get());
-}
-
-TEST_F(FidoGetAssertionHandlerTest,
-       AllTransportsAllowedIfAllowCredentialsListIsEmpty) {
-  auto request = CreateTestRequestWithCableExtension();
-  EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(true));
-  auto request_handler =
-      CreateGetAssertionHandlerWithRequest(std::move(request));
-  ExpectAllTransportsAreAllowedForRequest(request_handler.get());
-}
-
-TEST_F(FidoGetAssertionHandlerTest,
-       AllTransportsAllowedIfHasAllowedCredentialWithEmptyTransportsList) {
-  auto request = CreateTestRequestWithCableExtension();
-  request.allow_list = {
-      PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(
-              test_data::kTestGetAssertionCredentialId),
-          {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
-      PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(kBogusCredentialId)),
-  };
-
-  EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(true));
-  auto request_handler =
-      CreateGetAssertionHandlerWithRequest(std::move(request));
-  ExpectAllTransportsAreAllowedForRequest(request_handler.get());
-}
-
-TEST_F(FidoGetAssertionHandlerTest,
-       AllowedTransportsAreUnionOfTransportsLists) {
-  auto request = CreateTestRequestWithCableExtension();
-  request.allow_list = {
-      PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(
-              test_data::kTestGetAssertionCredentialId),
-          {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
-      PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(kBogusCredentialId),
-          {FidoTransportProtocol::kInternal,
-           FidoTransportProtocol::kNearFieldCommunication}),
-  };
-
-  auto request_handler =
-      CreateGetAssertionHandlerWithRequest(std::move(request));
-  ExpectAllowedTransportsForRequestAre(
-      request_handler.get(), {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-                              FidoTransportProtocol::kInternal,
-                              FidoTransportProtocol::kNearFieldCommunication});
-}
-
 TEST_F(FidoGetAssertionHandlerTest, SupportedTransportsAreOnlyNfc) {
   const base::flat_set<FidoTransportProtocol> kNfc = {
       FidoTransportProtocol::kNearFieldCommunication,
@@ -889,46 +817,6 @@ TEST_F(FidoGetAssertionHandlerTest, PinUvAuthTokenPreTouchFailure) {
 
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(get_assertion_future().IsReady());
-}
-
-// Tests a scenario where authenticator of incorrect transport type was used to
-// conduct CTAP GetAssertion call.
-//
-// TODO(engedy): This should not happen, instead |allowCredentials| should be
-// filtered to only contain items compatible with the transport actually used to
-// talk to the authenticator.
-TEST(GetAssertionRequestHandlerTest, IncorrectTransportType) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  device::test::VirtualFidoDeviceFactory virtual_device_factory;
-  virtual_device_factory.SetSupportedProtocol(device::ProtocolVersion::kCtap2);
-  ASSERT_TRUE(virtual_device_factory.mutable_state()->InjectRegistration(
-      fido_parsing_utils::Materialize(test_data::kTestGetAssertionCredentialId),
-      test_data::kRelyingPartyId));
-
-  // Request the correct credential ID, but set a different transport hint.
-  CtapGetAssertionRequest request(test_data::kRelyingPartyId,
-                                  test_data::kClientDataJson);
-  request.allow_list = {
-      PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(
-              test_data::kTestGetAssertionCredentialId),
-          {FidoTransportProtocol::kBluetoothLowEnergy}),
-  };
-
-  TestGetAssertionRequestFuture future;
-  auto request_handler = std::make_unique<GetAssertionRequestHandler>(
-      &virtual_device_factory,
-      std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
-      base::flat_set<FidoTransportProtocol>(
-          {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
-      std::move(request), CtapGetAssertionOptions(),
-      /*allow_skipping_pin_touch=*/true, future.GetCallback());
-
-  task_environment.FastForwardUntilNoTasksRemain();
-  EXPECT_FALSE(future.IsReady());
 }
 
 TEST_F(FidoGetAssertionHandlerTest, ReportTransportMetric) {
