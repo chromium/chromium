@@ -1039,10 +1039,10 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   // Save a credential with a backup password.
   NSString* username = kExampleUsername;
-  NSString* password = kExamplePassword;
+  NSString* backupPassword = kExampleBackupPassword;
   [PasswordManagerAppInterface
       storeCredentialWithUsername:username
-                         password:password
+                         password:kExamplePassword
                               URL:net::NSURLWithGURL([self loginPageURL])
                            shared:NO
                    backupPassword:kExampleBackupPassword];
@@ -1060,7 +1060,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:backup_password_suggestion]
       performAction:grey_tap()];
 
-  [self verifyFieldsHaveBeenFilledWithUsername:username password:password];
+  [self verifyFieldsHaveBeenFilledWithUsername:username
+                                      password:backupPassword];
 }
 
 @end

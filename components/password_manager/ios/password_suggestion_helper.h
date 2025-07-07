@@ -87,14 +87,19 @@ class WebState;
                              (SuggestionsAvailableCompletion)completion;
 
 // Retrieves password form fill data for `frameId` and `username`.
+// `isBackupCredential` indicates whether the retrieved password should be the
+// backup or the main one.
 - (password_manager::FillDataRetrievalResult)
     passwordFillDataForUsername:(NSString*)username
+             isBackupCredential:(BOOL)isBackupCredential
                      forFrameId:(const std::string&)frameId;
 
 // Retrieves password form fill data for the corresponding `frameId`,
-// `username`, and contextual information.
+// `username`, and contextual information. `isBackupCredential` indicates
+// whether the retrieved password should be the backup or the main one.
 - (password_manager::FillDataRetrievalResult)
     passwordFillDataForUsername:(NSString*)username
+             isBackupCredential:(BOOL)isBackupCredential
         likelyRealPasswordField:(bool)passwordField
                  formIdentifier:(autofill::FormRendererId)formId
                 fieldIdentifier:(autofill::FieldRendererId)fieldId

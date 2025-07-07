@@ -174,6 +174,7 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
 
 FillDataRetrievalResult AccountSelectFillData::GetFillData(
     const std::u16string& username,
+    bool is_backup_credential,
     autofill::FormRendererId form_renderer_id,
     autofill::FieldRendererId field_renderer_id,
     bool is_likely_real_password_field) const {
@@ -185,11 +186,13 @@ FillDataRetrievalResult AccountSelectFillData::GetFillData(
       is_likely_real_password_field ? field_renderer_id
                                     : autofill::FieldRendererId();
 
-  return GetFillData(username, form_info, password_field_id);
+  return GetFillData(username, is_backup_credential, form_info,
+                     password_field_id);
 }
 
 FillDataRetrievalResult AccountSelectFillData::GetFillData(
-    const std::u16string& username) const {
+    const std::u16string& username,
+    bool is_backup_credential) const {
   if (!last_requested_form_) {
     SCOPED_CRASH_KEY_NUMBER(
         "Bug6401794", "fill_data_status",
@@ -197,19 +200,24 @@ FillDataRetrievalResult AccountSelectFillData::GetFillData(
     DUMP_WILL_BE_NOTREACHED();
     return base::unexpected(FillDataRetrievalStatus::kNoCachedLastRequestForm);
   }
-  return GetFillData(username, last_requested_form_,
+  return GetFillData(username, is_backup_credential, last_requested_form_,
                      last_requested_password_field_id_);
 }
 
 FillDataRetrievalResult AccountSelectFillData::GetFillData(
     const std::u16string& username,
+    bool is_backup_credential,
     const FormInfo* requested_form,
     autofill::FieldRendererId password_field_id) const {
   // There must be a `requested_form` at this point. It is the responsibility of
   // the caller to ensure that.
   CHECK(requested_form);
 
-  auto it = std::ranges::find(credentials_, username, &Credential::username);
+  auto it =
+      std::ranges::find_if(credentials_, [&](const Credential& credential) {
+        return credential.username == username &&
+               (!is_backup_credential || credential.backup_password);
+      });
   if (it == credentials_.end()) {
     return base::unexpected(FillDataRetrievalStatus::kNoCredentials);
   }
@@ -221,7 +229,9 @@ FillDataRetrievalResult AccountSelectFillData::GetFillData(
   result->username_value = credential.username;
   result->password_element_id =
       password_field_id ?: requested_form->password_element_id;
-  result->password_value = credential.password;
+  result->password_value = is_backup_credential
+                               ? credential.backup_password.value()
+                               : credential.password;
   return std::move(result);
 }
 

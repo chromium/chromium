@@ -721,12 +721,15 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
       NSString* username = suggestion.value;
       bool stateless = base::FeatureList::IsEnabled(
           password_manager::features::kIOSStatelessFillDataFlow);
+      bool isBackupCredential =
+          suggestion.type == autofill::SuggestionType::kBackupPasswordEntry;
 
       ASSIGN_OR_RETURN(
           password_manager::FillDataRetrievalResult fill_data_result,
           stateless
               ? [self.suggestionHelper
                     passwordFillDataForUsername:username
+                             isBackupCredential:isBackupCredential
                         likelyRealPasswordField:
                             suggestion.metadata.likely_from_real_password_field
                                  formIdentifier:suggestion.params
@@ -734,8 +737,10 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                                 fieldIdentifier:suggestion.params
                                                     ->field_renderer_id
                                         frameId:suggestion.params->frame_id]
-              : [self.suggestionHelper passwordFillDataForUsername:username
-                                                        forFrameId:frameId],
+              : [self.suggestionHelper
+                    passwordFillDataForUsername:username
+                             isBackupCredential:isBackupCredential
+                                     forFrameId:frameId],
           [completion](auto e) {
             base::UmaHistogramEnumeration(kFillDataRetrievalStatusHistogram, e);
             completion();

@@ -435,7 +435,7 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
       account_select_fill_data.RetrieveSuggestions(
           form_data.form_renderer_id, clicked_field, is_password_field);
       FillDataRetrievalResult result = account_select_fill_data.GetFillData(
-          base::ASCIIToUTF16(kUsernames[1]));
+          base::ASCIIToUTF16(kUsernames[1]), /*is_backup_credential=*/false);
       ASSERT_TRUE(result.has_value());
       const FillData* fill_data = result.value().get();
 
@@ -466,8 +466,8 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
 
   // AccountSelectFillData should keep only last credentials. Check that in
   // request of old credentials nothing is returned.
-  FillDataRetrievalResult result =
-      account_select_fill_data.GetFillData(base::ASCIIToUTF16(kUsernames[0]));
+  FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+      base::ASCIIToUTF16(kUsernames[0]), /*is_backup_credential=*/false);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(FillDataRetrievalStatus::kNoCredentials, result.error());
 }
@@ -500,8 +500,8 @@ TEST_F(AccountSelectFillDataTest, GetFillData_WhenStateless) {
       // GetFillData() when in stateless mode doesn't need to call
       // RetrieveSuggestions() first.
       FillDataRetrievalResult result = account_select_fill_data.GetFillData(
-          base::ASCIIToUTF16(kUsernames[1]), form_data.form_renderer_id,
-          clicked_field, is_password_field);
+          base::ASCIIToUTF16(kUsernames[1]), /*is_backup_credential=*/false,
+          form_data.form_renderer_id, clicked_field, is_password_field);
       ASSERT_TRUE(result.has_value());
       const FillData* fill_data = result.value().get();
       ASSERT_TRUE(fill_data);
@@ -528,7 +528,8 @@ TEST_F(AccountSelectFillDataTest,
   // GetFillData() when in stateless mode doesn't need to call
   // RetrieveSuggestions() first.
   FillDataRetrievalResult result = account_select_fill_data.GetFillData(
-      u"test-user", form_data_[0].form_renderer_id,
+      u"test-user", /*is_backup_credential=*/false,
+      form_data_[0].form_renderer_id,
       form_data_[0].username_element_renderer_id,
       /*is_password_field=*/false);
 
@@ -549,11 +550,59 @@ TEST_F(AccountSelectFillDataTest,
   // GetFillData() when in stateless mode doesn't need to call
   // RetrieveSuggestions() first.
   FillDataRetrievalResult result = account_select_fill_data.GetFillData(
-      u"test-user", form_data_[0].form_renderer_id, UnexistingFieldRendererId(),
+      u"test-user", /*is_backup_credential=*/false,
+      form_data_[0].form_renderer_id, UnexistingFieldRendererId(),
       /*is_password_field=*/false);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(FillDataRetrievalStatus::kNoFieldMatch, result.error());
+}
+
+// Tests that the right fill data is returned when there's a credential that
+// comes with a backup password.
+TEST_F(AccountSelectFillDataTest, GetFillData_WithBackupPasswords) {
+  // Enable the iOS backup password feature.
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kIOSFillRecoveryPassword};
+
+  PasswordFormFillData form_data = form_data_[0];
+  form_data.preferred_login.backup_password_value = kBackupPassword;
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
+
+  for (bool is_password_field : {false, true}) {
+    for (bool is_backup_credential : {false, true}) {
+      // Suggestions should be shown on any password field on the form. So in
+      // case of clicking on a password field it is taken an id different from
+      // existing field ids.
+      const FieldRendererId password_field_id =
+          is_password_field ? FieldRendererId(1000)
+                            : form_data.password_element_renderer_id;
+      const FieldRendererId clicked_field =
+          is_password_field ? password_field_id
+                            : form_data.username_element_renderer_id;
+
+      // GetFillData() doesn't have form identifier in arguments, it should be
+      // provided in RetrieveSuggestions().
+      account_select_fill_data.RetrieveSuggestions(
+          form_data.form_renderer_id, clicked_field, is_password_field);
+      FillDataRetrievalResult result = account_select_fill_data.GetFillData(
+          base::ASCIIToUTF16(kUsernames[0]), is_backup_credential);
+      ASSERT_TRUE(result.has_value());
+      const FillData* fill_data = result.value().get();
+
+      ASSERT_TRUE(fill_data);
+      EXPECT_EQ(form_data.url, fill_data->origin);
+      EXPECT_EQ(form_data.form_renderer_id.value(), fill_data->form_id.value());
+      EXPECT_EQ(kUsernameUniqueIDs[0], fill_data->username_element_id.value());
+      EXPECT_EQ(base::ASCIIToUTF16(kUsernames[0]), fill_data->username_value);
+      EXPECT_EQ(password_field_id, fill_data->password_element_id);
+      EXPECT_EQ(is_backup_credential ? kBackupPassword
+                                     : base::ASCIIToUTF16(kPasswords[0]),
+                fill_data->password_value);
+    }
+  }
 }
 
 TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {

@@ -122,46 +122,50 @@ class AccountSelectFillData {
 
   ~AccountSelectFillData();
 
-  // Adds form structure from |form_data| to internal lists of known forms and
-  // overrides known credentials with credentials from |form_data|. So only the
-  // credentials from the latest |form_data| will be shown to the user.
+  // Adds form structure from `form_data` to internal lists of known forms and
+  // overrides known credentials with credentials from `form_data`. So only the
+  // credentials from the latest `form_data` will be shown to the user.
   void Add(const autofill::PasswordFormFillData& form_data,
            bool always_populate_realm);
   void Reset();
   bool Empty() const;
 
   // Returns whether suggestions are available for field with id
-  // |field_identifier| which is in the form with id |form_identifier|.
+  // `field_identifier` which is in the form with id `form_identifier`.
   bool IsSuggestionsAvailable(autofill::FormRendererId form_identifier,
                               autofill::FieldRendererId field_identifier,
                               bool is_password_field) const;
 
-  // Returns suggestions for field with id |field_identifier| which is in the
-  // form with id |form_identifier|.
+  // Returns suggestions for field with id `field_identifier` which is in the
+  // form with id `form_identifier`.
   std::vector<UsernameAndRealm> RetrieveSuggestions(
       autofill::FormRendererId form_identifier,
       autofill::FieldRendererId field_identifier,
       bool is_password_field);
 
-  // Returns data for password form filling based on |username| chosen by the
-  // user.
-  // RetrieveSuggestions should be called before in order to specify on which
-  // field the user clicked.
-  FillDataRetrievalResult GetFillData(const std::u16string& username) const;
+  // Returns data for password form filling based on `username` chosen by the
+  // user. `is_backup_credential` indicates which of the backup or main password
+  // should be returned.
+  // RetrieveSuggestions should be called before in order to specify
+  // on which field the user clicked.
+  FillDataRetrievalResult GetFillData(const std::u16string& username,
+                                      bool is_backup_credential) const;
 
-  // Returns data for password form filling based on the |username| chosen by
-  // the user and contextual information. This interface is meant to be used
-  // when in stateless mode.
+  // Returns data for password form filling based on the `username` chosen by
+  // the user and contextual information. `is_backup_credential` indicates which
+  // of the backup or main password should be returned. This interface is meant
+  // to be used when in stateless mode.
   FillDataRetrievalResult GetFillData(
       const std::u16string& username,
+      bool is_backup_credential,
       autofill::FormRendererId form_renderer_id,
       autofill::FieldRendererId field_renderer_id,
       bool is_password_field) const;
 
-  // Returns form information from |forms_| that has id |form_identifier|.
-  // If |is_password_field| == false and |field_identifier| is not equal to
-  // form username_element null is returned. If |is_password_field| == true then
-  // |field_identifier| is ignored. That corresponds to the logic, that
+  // Returns form information from `forms_` that has id `form_identifier`.
+  // If `is_password_field` == false and `field_identifier` is not equal to
+  // form username_element null is returned. If `is_password_field` == true then
+  // `field_identifier` is ignored. That corresponds to the logic, that
   // suggestions should be shown on any password fields.
   FormInfoRetrievalResult GetFormInfo(
       autofill::FormRendererId form_identifier,
@@ -172,10 +176,13 @@ class AccountSelectFillData {
   void ResetCache();
 
  private:
-  // Returns data for password form filling based on the |username| chosen by
-  // the user and contextual information provided through |requested_form|.
+  // Returns data for password form filling based on the `username` chosen by
+  // the user and contextual information provided through `requested_form`.
+  // `is_backup_credential` indicates which of the backup or main password
+  // should be returned.
   FillDataRetrievalResult GetFillData(
       const std::u16string& username,
+      bool is_backup_credential,
       const FormInfo* requested_form,
       autofill::FieldRendererId password_field_id) const;
 
