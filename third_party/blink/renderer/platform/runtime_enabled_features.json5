@@ -2801,10 +2801,6 @@
       status: "stable",
     },
     {
-      name: "LayoutFlexNewStretch",
-      status: "stable",
-    },
-    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {

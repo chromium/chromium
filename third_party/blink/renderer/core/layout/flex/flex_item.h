@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -88,7 +87,6 @@ struct FlexItem {
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(block_node);
-    visitor->Trace(layout_result);
   }
 
   const BlockNode block_node;
@@ -128,10 +126,6 @@ struct FlexItem {
   // Fields mutated within the line-flexer.
   bool frozen = false;
   LayoutUnit flexed_content_size;
-
-  // The above fields are used by the flex algorithm. The following fields, by
-  // contrast, are just convenient storage.
-  Member<const LayoutResult> layout_result;
 };
 
 }  // namespace blink
