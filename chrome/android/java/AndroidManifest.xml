@@ -96,6 +96,12 @@ by a child template that "extends" this file.
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!--
+      The REPOSITION_SELF_WINDOWS permission is needed for Window Popup Web API to allow Chrome to
+      move windows when the |window.moveTo| JavaScript call is executed (also |window.{resizeBy,
+      resizeTo, moveBy}|).
+    -->
+    <uses-permission android:name="android.permission.REPOSITION_SELF_WINDOWS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>

@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
@@ -128,6 +130,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock TabCreator mTabCreator;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock ActivityManager mActivityManager;
+    // TODO(https://crbug.com/411002260): remove when Android Display Topology API is available to
+    // Chrome and it is not needed to pass the display from ATWCDA into PopupCreator
+    @Mock WindowAndroid mWindowAndroid;
+    @Mock DisplayAndroid mDisplayAndroid;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
@@ -145,6 +151,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(mUrl1).when(mWebContents).getVisibleUrl();
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+
+        doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
     }
 
     @After

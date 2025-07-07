@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -25,9 +27,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -46,6 +51,7 @@ public class PopupCreatorUnitTest {
     @Mock Tab mTab;
     @Mock DisplayAndroid mDisplay;
     @Mock ReparentingTask mReparentingTask;
+    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
 
     private static final int DISPLAY_ID = 73;
     private static final float DENSITY = 1.0f;
@@ -62,7 +68,47 @@ public class PopupCreatorUnitTest {
     public void testPopupsDisabledWhenFeatureDisabled() {
         Assert.assertFalse(
                 "Popups should not be enabled when the feature is disabled",
-                PopupCreator.arePopupsEnabled(mActivity));
+                PopupCreator.arePopupsEnabled(mDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testPopupsDisabledWhenDelegateReturnsFalse() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        doReturn(false)
+                .when(mFlaggedApiDelegate)
+                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
+
+        Assert.assertFalse(
+                "Popups should not be enabled if the delegate returns false when"
+                        + " isTaskMoveAllowedOnDisplay is called",
+                PopupCreator.arePopupsEnabled(mDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testPopupsDisabledWhenFlaggedApiDelegateNull() {
+        ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, null);
+        Assert.assertFalse(
+                "Popups should not be enabled if the delegate returned by ServiceLoaderUtil is"
+                        + " null",
+                PopupCreator.arePopupsEnabled(mDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testPopupsEnabledWhenDelegateReturnsTrue() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        doReturn(true)
+                .when(mFlaggedApiDelegate)
+                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
+
+        Assert.assertTrue(
+                "Popups should be enabled if the delegate returns true when"
+                        + " isTaskMoveAllowedOnDisplay is called",
+                PopupCreator.arePopupsEnabled(mDisplay));
     }
 
     @Test

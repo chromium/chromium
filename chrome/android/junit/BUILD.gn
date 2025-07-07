@@ -438,7 +438,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//base:flagged_apis_java",
+    ]
   }
 
   robolectric_library(

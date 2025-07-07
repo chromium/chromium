@@ -203,7 +203,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (mTab.isClosing()) return false;
 
         boolean openingPopup =
-                PopupCreator.arePopupsEnabled(mActivity)
+                PopupCreator.arePopupsEnabled(mTab.getWindowAndroid().getDisplay())
                         && (disposition == WindowOpenDisposition.NEW_POPUP);
 
         // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we
