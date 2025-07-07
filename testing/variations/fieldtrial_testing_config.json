@@ -12184,6 +12184,21 @@
             ]
         }
     ],
+    "IOSChromeAsyncExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeStartupParametersAsync"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSChromnientEscapeHatch": [
         {
             "platforms": [
@@ -13175,7 +13190,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ChromeStartupParametersAsync",
                         "YoutubeIncognito"
                     ]
                 }
