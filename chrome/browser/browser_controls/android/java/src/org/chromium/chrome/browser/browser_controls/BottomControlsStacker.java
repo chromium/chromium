@@ -312,7 +312,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * @see BrowserControlsSizer#notifyBackgroundColor(int).
      */
     public void notifyBackgroundColor(@ColorInt int color) {
-        // TODO(crbug.com/345488108): Handle #notifyBackgroundColor in this class.
+        // TODO(crbug.com/430084697): Handle #notifyBackgroundColor in this class.
         mBrowserControlsSizer.notifyBackgroundColor(color);
     }
 
