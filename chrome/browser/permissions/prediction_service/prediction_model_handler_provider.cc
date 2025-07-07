@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/prediction_model_handler_provider.h"
+#include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 
 #include "base/check_is_test.h"
 #include "base/notreached.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_REQUEST_H_
-#define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_REQUEST_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SERVICE_REQUEST_H_
+#define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SERVICE_REQUEST_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/prediction_service/prediction_service_base.h"
@@ -28,7 +28,7 @@ class PredictionServiceRequest {
   PredictionServiceRequest& operator=(const PredictionServiceRequest&) = delete;
 
  private:
-  void LookupReponseReceived(
+  void LookupResponseReceived(
       bool lookup_succesful,
       bool response_from_cache,
       const std::optional<permissions::GeneratePredictionsResponse>& response);
@@ -38,4 +38,4 @@ class PredictionServiceRequest {
   base::WeakPtrFactory<PredictionServiceRequest> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_REQUEST_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SERVICE_REQUEST_H_

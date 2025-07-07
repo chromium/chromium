@@ -38,16 +38,16 @@ source_set("permissions") {
     "permission_manager_factory.h",
     "permission_revocation_request.cc",
     "permission_revocation_request.h",
-    "prediction_model_handler_provider.cc",
-    "prediction_model_handler_provider.h",
+    "prediction_service/prediction_model_handler_provider.cc",
+    "prediction_service/prediction_model_handler_provider.h",
     "prediction_service/permissions_aiv1_handler.cc",
     "prediction_service/permissions_aiv1_handler.h",
     "prediction_service/prediction_based_permission_ui_selector.cc",
     "prediction_service/prediction_based_permission_ui_selector.h",
-    "prediction_service_factory.cc",
-    "prediction_service_factory.h",
-    "prediction_service_request.cc",
-    "prediction_service_request.h",
+    "prediction_service/prediction_service_factory.cc",
+    "prediction_service/prediction_service_factory.h",
+    "prediction_service/prediction_service_request.cc",
+    "prediction_service/prediction_service_request.h",
     "pref_based_quiet_permission_ui_selector.cc",
     "pref_based_quiet_permission_ui_selector.h",
     "quiet_notification_permission_ui_config.cc",
@@ -153,8 +153,8 @@ source_set("permissions") {
 
   if (build_with_tflite_lib) {
     sources += [
-      "prediction_model_handler_provider_factory.cc",
-      "prediction_model_handler_provider_factory.h",
+      "prediction_service/prediction_model_handler_provider_factory.cc",
+      "prediction_service/prediction_model_handler_provider_factory.h",
     ]
     if (!is_android) {
       deps += [ "//third_party/tflite_support" ]
@@ -284,7 +284,7 @@ if (!is_android) {
     }
 
     if (build_with_tflite_lib) {
-      sources += [ "prediction_service_browsertest.cc" ]
+      sources += [ "prediction_service/prediction_service_browsertest.cc" ]
       deps += [ "//components/permissions/prediction_service" ]
     }
   }

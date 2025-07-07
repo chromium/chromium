@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/prediction_service_request.h"
+#include "chrome/browser/permissions/prediction_service/prediction_service_request.h"
 
 #include <utility>
 
@@ -17,13 +17,13 @@ PredictionServiceRequest::PredictionServiceRequest(
     : callback_(std::move(callback)) {
   service->StartLookup(
       entity, base::NullCallback(),
-      base::BindOnce(&PredictionServiceRequest::LookupReponseReceived,
+      base::BindOnce(&PredictionServiceRequest::LookupResponseReceived,
                      weak_factory_.GetWeakPtr()));
 }
 
 PredictionServiceRequest::~PredictionServiceRequest() = default;
 
-void PredictionServiceRequest::LookupReponseReceived(
+void PredictionServiceRequest::LookupResponseReceived(
     bool lookup_succesful,
     bool response_from_cache,
     const std::optional<permissions::GeneratePredictionsResponse>& response) {
