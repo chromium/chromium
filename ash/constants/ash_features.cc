@@ -1814,7 +1814,7 @@ BASE_FEATURE(kLobsterForManagedUsers,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster i18n response.
-BASE_FEATURE(kLobsterI18n, "LobsterI18n", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLobsterI18n, "LobsterI18n", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
