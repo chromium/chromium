@@ -17,11 +17,6 @@ namespace autofill {
 // determined.
 bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field);
 
-// Returns the number of possible field types (type votes) of a `field` that are
-// in a specific `group`.
-size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
-                                         FieldTypeGroup group);
-
 // Returns true if the type of `field` is a possible type.
 bool TypeOfFieldIsPossibleType(const AutofillField& field);
 

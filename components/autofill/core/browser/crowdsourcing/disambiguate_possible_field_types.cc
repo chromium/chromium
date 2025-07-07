@@ -70,11 +70,12 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
   // name).
   AutofillField& field = *form.field(current_field_index);
   const size_t credit_card_type_count =
-      NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kCreditCard);
-  const size_t name_type_count =
-      NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kName);
+      std::ranges::count(field.possible_types(), FieldTypeGroup::kCreditCard,
+                         GroupTypeOfFieldType);
+  const size_t name_type_count = std::ranges::count(
+      field.possible_types(), FieldTypeGroup::kName, GroupTypeOfFieldType);
   if (field.possible_types().size() !=
-          (credit_card_type_count + name_type_count) ||
+          credit_card_type_count + name_type_count ||
       credit_card_type_count != 1 || name_type_count == 0) {
     return;
   }

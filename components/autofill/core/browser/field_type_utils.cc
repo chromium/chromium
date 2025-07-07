@@ -12,12 +12,6 @@
 
 namespace autofill {
 
-size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
-                                         FieldTypeGroup group) {
-  return std::ranges::count(field.possible_types(), group,
-                            GroupTypeOfFieldType);
-}
-
 bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
   // This function should only be invoked when the possible types have been
   // determined.
