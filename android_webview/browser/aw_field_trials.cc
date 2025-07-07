@@ -290,4 +290,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Explicitly disable PrefetchProxy instead of relying only on passing an
   // empty URL.
   aw_feature_overrides.DisableFeature(features::kPrefetchProxy);
+
+  // Document Picture-in-Picture API is not supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kDocumentPictureInPictureAPI);
 }

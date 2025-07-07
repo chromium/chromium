@@ -118,7 +118,6 @@ class CORE_EXPORT PictureInPictureController
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
 
-#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   // Returns the document picture-in-picture window opened by the Document. It
   // returns null if there is no open document picture-in-picture window for the
   // Document or if PictureInPictureController is not attached to the Document.
@@ -131,7 +130,6 @@ class CORE_EXPORT PictureInPictureController
   // picture-in-picture window. Returns null if the this is not attached to a
   // document picture-in-picture window.
   virtual LocalDOMWindow* GetDocumentPictureInPictureOwner() const = 0;
-#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 };
 
 }  // namespace blink
