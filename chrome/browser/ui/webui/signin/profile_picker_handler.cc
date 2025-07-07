@@ -539,12 +539,7 @@ void ProfilePickerHandler::HandleContinueWithoutAccount(
   RecordProfilePickerAction(ProfilePickerAction::kLaunchNewProfile);
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
-  ProfilePicker::SwitchToSignedOutPostIdentityFlow(
-      profile_color,
-      base::BindOnce(&ProfilePickerHandler::OnProfileCreationFinished,
-                     // `OnProfileCreationFinished` is called when we want to
-                     // close the profile picker.
-                     weak_factory_.GetWeakPtr()));
+  ProfilePicker::SwitchToSignedOutPostIdentityFlow(profile_color);
 }
 
 void ProfilePickerHandler::HandleGetSwitchProfile(
@@ -588,11 +583,6 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
 void ProfilePickerHandler::HandleCancelProfileSwitch(
     const base::Value::List& args) {
   ProfilePicker::CancelSignedInFlow();
-}
-
-void ProfilePickerHandler::OnProfileCreationFinished(
-    bool finished_successfully) {
-  FireWebUIListener("create-profile-finished", base::Value());
 }
 
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(

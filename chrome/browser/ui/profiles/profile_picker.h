@@ -241,8 +241,7 @@ class ProfilePicker {
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
   static void SwitchToSignedOutPostIdentityFlow(
-      std::optional<SkColor> profile_color,
-      base::OnceCallback<void(bool)> switch_finished_callback);
+      std::optional<SkColor> profile_color);
 
   struct ProfilePickingArgs {
     // Opens the settings page of the profile once it is first picked.

@@ -81,7 +81,7 @@ class ProfileManagementStepController {
       SearchEngineChoiceDialogService* search_engine_choice_dialog_service,
       content::WebContents* web_contents,
       SearchEngineChoiceDialogService::EntryPoint entry_point,
-      base::OnceCallback<void(StepSwitchFinishedCallback)> callback);
+      base::OnceClosure callback);
 
   // Creates the step that will finish the flow and launch the browser.
   static std::unique_ptr<ProfileManagementStepController>

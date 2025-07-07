@@ -124,30 +124,26 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
 #endif
 
 void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(
-    PostHostClearedCallback post_host_cleared_callback,
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+    PostHostClearedCallback post_host_cleared_callback) {
   post_identity_steps_ =
       RegisterPostIdentitySteps(std::move(post_host_cleared_callback));
-  AdvanceToNextPostIdentityStep(std::move(step_switch_finished_callback));
+  AdvanceToNextPostIdentityStep();
 }
 
-void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
   if (post_identity_steps_.empty()) {
     return;
   }
 
   Step next_step = post_identity_steps_.front();
   post_identity_steps_.pop();
-  SwitchToStep(next_step, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(next_step, /*reset_state=*/true);
 }
 
 void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
     Profile* profile,
     PostHostClearedCallback post_host_cleared_callback,
-    bool is_continue_callback,
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+    bool is_continue_callback) {
   CHECK(profile);
 
   if (is_continue_callback) {
@@ -159,11 +155,9 @@ void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
                 &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
                 base::Unretained(this), profile,
                 std::move(post_host_cleared_callback))));
-    SwitchToStep(Step::kFinishFlow, /*reset_state=*/true,
-                 std::move(step_switch_finished_callback));
+    SwitchToStep(Step::kFinishFlow, /*reset_state=*/true);
     return;
   }
 
-  SwitchToPostIdentitySteps(std::move(post_host_cleared_callback),
-                            std::move(step_switch_finished_callback));
+  SwitchToPostIdentitySteps(std::move(post_host_cleared_callback));
 }

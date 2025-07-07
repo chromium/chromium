@@ -299,8 +299,7 @@ class SearchEngineChoiceStepController
       SearchEngineChoiceDialogService* search_engine_choice_dialog_service,
       content::WebContents* web_contents,
       SearchEngineChoiceDialogService::EntryPoint entry_point,
-      base::OnceCallback<void(StepSwitchFinishedCallback)>
-          step_completed_callback)
+      base::OnceClosure step_completed_callback)
       : ProfileManagementStepController(host),
         entry_point_(entry_point),
         search_engine_choice_dialog_service_(
@@ -316,7 +315,7 @@ class SearchEngineChoiceStepController
 
     if (!search_engine_choice_dialog_service_) {
       // Forward `step_shown_callback`, as this step is skipped.
-      std::move(step_completed_callback_).Run(std::move(step_shown_callback));
+      std::move(step_completed_callback_).Run();
       return;
     }
 
@@ -360,9 +359,7 @@ class SearchEngineChoiceStepController
     search_engine_choice_ui->Initialize(
         /*display_dialog_callback=*/base::OnceClosure(),
         /*on_choice_made_callback=*/
-        base::BindOnce(std::move(step_completed_callback_),
-                       StepSwitchFinishedCallback()),
-        entry_point_);
+        std::move(step_completed_callback_), entry_point_);
   }
 
   // The entry point from which the search engine choice screen is displayed.
@@ -373,7 +370,7 @@ class SearchEngineChoiceStepController
   raw_ptr<SearchEngineChoiceDialogService> search_engine_choice_dialog_service_;
 
   // Callback to be executed when the step is completed.
-  base::OnceCallback<void(StepSwitchFinishedCallback)> step_completed_callback_;
+  base::OnceClosure step_completed_callback_;
 
   // The web contents in which we want to display the screen.
   raw_ptr<content::WebContents> web_contents_;
@@ -430,7 +427,7 @@ ProfileManagementStepController::CreateForSearchEngineChoice(
     SearchEngineChoiceDialogService* search_engine_choice_dialog_service,
     content::WebContents* web_contents,
     SearchEngineChoiceDialogService::EntryPoint entry_point,
-    base::OnceCallback<void(StepSwitchFinishedCallback)> callback) {
+    base::OnceClosure callback) {
   return std::make_unique<SearchEngineChoiceStepController>(
       host, search_engine_choice_dialog_service, web_contents, entry_point,
       std::move(callback));
