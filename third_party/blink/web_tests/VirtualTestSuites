@@ -417,7 +417,11 @@
       "external/wpt/css/css-animations/responsive/column-rule-color-001.html",
       "external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html",
       "external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html",
-      "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html"],
+      "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html",
+      "external/wpt/css/css-multicol/multicol-nested-column-rule-002.html",
+      "external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html",
+      "external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html",
+      "external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html"],
     "args": ["--disable-blink-features=CSSGapDecoration"],
     "expires": "June 1, 2026",
     "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com", "javiercon@microsoft.com"]

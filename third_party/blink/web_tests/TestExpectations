@@ -6447,6 +6447,11 @@ crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 
 ### Tests failing with CSSGapDecorations Enabled:
+# These tests are failing for multicol OOF items.
+crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html [ Failure ]
+crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html [ Failure ]
+crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html [ Failure ]
+crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Failure ]
 # These tests failing for interpolation and animations, which we haven't worked on for GapDecorations yet:
 crbug.com/419066541 animations/interpolation/webkit-column-rule-color-interpolation.html [ Failure ]
 crbug.com/419066541 external/wpt/css/css-multicol/animation/column-rule-color-interpolation.html [ Failure ]

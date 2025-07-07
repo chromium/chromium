@@ -1778,7 +1778,8 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 // is implemented for multi-column.
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
-  if (box_fragment_.GetGapGeometry()) {
+  if (box_fragment_.GetGapGeometry() ||
+      RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
     return;
   }
 
