@@ -832,6 +832,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("InProcessGpuUseIOThread"),
         Flag.baseFeature("EnableCustomInputStreamBufferSize"),
         Flag.baseFeature("NetworkServiceDedicatedThread"),
+        Flag.baseFeature("NetworkServiceTaskScheduler"),
         Flag.baseFeature("BrowserThreadPoolAdjustment"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_DISABLE_CHIPS,
