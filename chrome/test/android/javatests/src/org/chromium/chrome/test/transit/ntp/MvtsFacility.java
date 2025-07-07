@@ -11,6 +11,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.view.View;
+
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
@@ -35,8 +37,8 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     private final Set<Integer> mNonTileIndices;
     private final @Nullable Integer mAddNewButtonIndex;
     public ViewElement<MostVisitedTilesLayout> tilesLayoutElement;
-    public List<Item<Void>> tileItems;
-    public @Nullable Item<Void> addNewButtonItem;
+    public List<Item> tileItems;
+    public @Nullable Item addNewButtonItem;
 
     /**
      * @param siteSuggestions List of expects the tiles to show.
@@ -74,25 +76,24 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     protected void declareItems(ScrollableFacility<RegularNewTabPageStation>.ItemsBuilder items) {
         mSiteSuggestionsByTileIndex = new ArrayList<>();
         int parentIndex = 0;
-        ArrayList<Item<Void>> newTileItems = new ArrayList<>();
+        ArrayList<Item> newTileItems = new ArrayList<>();
         for (int i = 0; i < mSiteSuggestions.size(); i++) {
             while (mNonTileIndices.contains(parentIndex)) {
                 ++parentIndex;
             }
 
             mSiteSuggestionsByTileIndex.add(mSiteSuggestions.get(i));
-            Item item =
-                    items.declareStubItem(
-                            createTileSpec(parentIndex), /* offScreenDataMatcher= */ null);
+            ViewSpec<? extends View> onScreenViewSpec = createTileSpec(parentIndex);
+            /* offScreenDataMatcher= */ Item item = items.declareItem(onScreenViewSpec, null);
             newTileItems.add(item);
             ++parentIndex;
         }
 
         if (mAddNewButtonIndex != null) {
             mSiteSuggestionsByTileIndex.add(null);
-            addNewButtonItem =
-                    items.declareStubItem(
-                            createTileSpec(mAddNewButtonIndex), /* offScreenDataMatcher= */ null);
+            ViewSpec<? extends View> onScreenViewSpec = createTileSpec(mAddNewButtonIndex);
+            /* offScreenDataMatcher= */ addNewButtonItem =
+                    items.declareItem(onScreenViewSpec, null);
             newTileItems.add(addNewButtonItem);
         }
         tileItems = Collections.unmodifiableList(newTileItems);

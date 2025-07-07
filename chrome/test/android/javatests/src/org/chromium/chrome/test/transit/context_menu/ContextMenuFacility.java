@@ -35,9 +35,7 @@ public class ContextMenuFacility extends ScrollableFacility<WebPageStation> {
     protected void declareItems(ScrollableFacility<WebPageStation>.ItemsBuilder items) {
         // Context menu always has a header.
         items.declareItem(
-                itemViewSpec(withId(R.id.title_and_url)),
-                withMenuItemType(ListItemType.HEADER),
-                null);
+                itemViewSpec(withId(R.id.title_and_url)), withMenuItemType(ListItemType.HEADER));
     }
 
     protected ViewSpec<View> itemViewSpec(Matcher<View> matcher) {

@@ -34,14 +34,14 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     public static final int SELECT_TABS_ID = R.id.menu_select_tabs;
 
     private final boolean mIsIncognito;
-    private Item<RegularNewTabPageStation> mNewTab;
-    private Item<IncognitoNewTabPageStation> mNewIncognitoTab;
-    private @Nullable Item<NewTabGroupDialogFacility<HostStationT>> mNewTabGroup;
-    private Item<Void> mCloseAllTabs;
-    private Item<Void> mCloseIncognitoTabs;
-    private Item<TabSwitcherListEditorFacility<HostStationT>> mSelectTabs;
-    private Item<QuickDeleteDialogFacility> mQuickDelete;
-    private Item<SettingsStation> mSettings;
+    private Item mNewTab;
+    private Item mNewIncognitoTab;
+    private @Nullable Item mNewTabGroup;
+    private Item mCloseAllTabs;
+    private Item mCloseIncognitoTabs;
+    private Item mSelectTabs;
+    private Item mQuickDelete;
+    private Item mSettings;
 
     public TabSwitcherAppMenuFacility(boolean isIncognito) {
         mIsIncognito = isIncognito;
@@ -51,23 +51,18 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     protected void declareItems(ItemsBuilder items) {
         boolean isTablet = mHostStation.getActivity().isTablet();
 
-        mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);
-        mNewIncognitoTab =
-                declareMenuItemToStation(
-                        items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        mNewTab = declareMenuItem(items, NEW_TAB_ID);
+        mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
         if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            mNewTabGroup =
-                    declareMenuItem(items, NEW_TAB_GROUP_ID, this::createNewTabGroupFacility);
+            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
         }
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
             int tabCount =
                     ThreadUtils.runOnUiThreadBlocking(() -> mHostStation.getTabModel().getCount());
             if (tabCount > 0) {
-                mCloseAllTabs = declareStubMenuItem(items, CLOSE_ALL_TABS_ID);
-                mSelectTabs =
-                        declareMenuItemToFacility(
-                                items, SELECT_TABS_ID, this::createListEditorFacility);
+                mCloseAllTabs = declareMenuItem(items, CLOSE_ALL_TABS_ID);
+                mSelectTabs = declareMenuItem(items, SELECT_TABS_ID);
             } else {
                 // Empty state. In tablets the following items are not displayed, while in phones
                 // they are disabled.
@@ -79,63 +74,53 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
                     declareDisabledMenuItem(items, SELECT_TABS_ID);
                 }
             }
-            mQuickDelete =
-                    declareMenuItemToFacility(
-                            items, DELETE_BROWSING_DATA_ID, this::createQuickDeleteDialogFacility);
+            mQuickDelete = declareMenuItem(items, DELETE_BROWSING_DATA_ID);
         } else {
             // Incognito Hub Tab Switcher
 
             // If there are no incognito tabs, the incognito tab switcher pane disappears so
             // "Close Incognito Tabs" and "Select tabs" are always present and
             // enabled.
-            mCloseIncognitoTabs = declareStubMenuItem(items, CLOSE_INCOGNITO_TABS_ID);
-            mSelectTabs =
-                    declareMenuItemToFacility(
-                            items, SELECT_TABS_ID, this::createListEditorFacility);
+            mCloseIncognitoTabs = declareMenuItem(items, CLOSE_INCOGNITO_TABS_ID);
+            mSelectTabs = declareMenuItem(items, SELECT_TABS_ID);
         }
-        mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
+        mSettings = declareMenuItem(items, SETTINGS_ID);
     }
 
     /** Select "New tab" from the app menu. */
     public RegularNewTabPageStation openNewTab() {
-        return mNewTab.scrollToAndSelect();
+        return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
     }
 
     /** Select "New Incognito tab" from the app menu. */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
-        return mNewIncognitoTab.scrollToAndSelect();
+        return mNewIncognitoTab.scrollToAndSelectTo().arriveAt(createIncognitoNewTabPageStation());
     }
 
     /** Select "New tab group" from the app menu. */
     public NewTabGroupDialogFacility<HostStationT> openNewTabGroup() {
         assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
         assertNotNull(mNewTabGroup);
-        return mNewTabGroup.scrollToAndSelect();
-    }
-
-    private NewTabGroupDialogFacility<HostStationT> createNewTabGroupFacility(
-            ItemOnScreenFacility<NewTabGroupDialogFacility<HostStationT>> item) {
-        return Journeys.beginNewTabGroupUiFlow(item.viewElement.clickTo());
+        return Journeys.beginNewTabGroupUiFlow(mNewTabGroup.scrollToAndSelectTo());
     }
 
     /** Select "Settings" from the app menu. */
     public SettingsStation openSettings() {
-        return mSettings.scrollToAndSelect();
+        return mSettings.scrollToAndSelectTo().arriveAt(createSettingsStation());
     }
 
     /** Select "Select tabs" from the app menu. */
     public TabSwitcherListEditorFacility<HostStationT> clickSelectTabs() {
-        return mSelectTabs.scrollToAndSelect();
-    }
-
-    private TabSwitcherListEditorFacility<HostStationT> createListEditorFacility() {
-        return new TabSwitcherListEditorFacility<>(
-                Collections.emptyList(), Collections.emptyList());
+        return mSelectTabs
+                .scrollToAndSelectTo()
+                .enterFacility(
+                        new TabSwitcherListEditorFacility<>(
+                                Collections.emptyList(), Collections.emptyList()));
     }
 
     /** Select "Delete browsing data" from the app menu. */
     public QuickDeleteDialogFacility clearBrowsingData() {
         assert !mIsIncognito;
-        return mQuickDelete.scrollToAndSelect();
+        return mQuickDelete.scrollToAndSelectTo().enterFacility(createQuickDeleteDialogFacility());
     }
 }

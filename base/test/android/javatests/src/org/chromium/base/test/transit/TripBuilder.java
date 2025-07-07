@@ -324,7 +324,12 @@ public class TripBuilder {
         }
 
         if (mOriginStation != null) {
-            mFacilitiesToExit.addAll(mOriginStation.getFacilitiesWithPhase(Phase.ACTIVE));
+            for (Facility<?> facility : mOriginStation.getFacilitiesWithPhase(Phase.ACTIVE)) {
+                // Avoid trying to exit the same facility multiple times.
+                if (!mFacilitiesToExit.contains(facility)) {
+                    mFacilitiesToExit.add(facility);
+                }
+            }
         }
 
         if (!mConditions.isEmpty()) {

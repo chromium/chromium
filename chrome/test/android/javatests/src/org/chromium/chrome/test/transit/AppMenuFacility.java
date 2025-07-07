@@ -21,7 +21,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
@@ -40,8 +39,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 /**
  * Base class for app menus shown when pressing ("...").
@@ -57,45 +54,18 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
         menuListElement = declareView(ListView.class, withId(R.id.app_menu_list));
     }
 
-    /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
-    protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
-        return items.declareStubItem(itemViewSpec(withId(id)), itemDataMatcher(id));
-    }
-
-    /** Create a new app menu item which runs |selectHandler| when selected. */
-    protected <SelectReturnT> Item<SelectReturnT> declareMenuItem(
-            ItemsBuilder items,
-            @IdRes int id,
-            Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
-        return items.declareItem(itemViewSpec(withId(id)), itemDataMatcher(id), selectHandler);
-    }
-
-    /** Create a new app menu item which transitions to a |DestinationStationT| when selected. */
-    protected <DestinationStationT extends Station<?>>
-            Item<DestinationStationT> declareMenuItemToStation(
-                    ItemsBuilder items,
-                    @IdRes int id,
-                    Callable<DestinationStationT> destinationStationFactory) {
-        return items.declareItemToStation(
-                itemViewSpec(withId(id)), itemDataMatcher(id), destinationStationFactory);
-    }
-
-    /** Create a new app menu item which enters a |EnteredFacilityT| when selected. */
-    protected <EnteredFacilityT extends Facility> Item<EnteredFacilityT> declareMenuItemToFacility(
-            ItemsBuilder items,
-            @IdRes int id,
-            Callable<EnteredFacilityT> destinationFacilityFactory) {
-        return items.declareItemToFacility(
-                itemViewSpec(withId(id)), itemDataMatcher(id), destinationFacilityFactory);
+    /** Create a new app menu item. */
+    protected Item declareMenuItem(ItemsBuilder items, @IdRes int id) {
+        return items.declareItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     /** Create a new disabled app menu item. */
-    protected Item<Void> declareDisabledMenuItem(ItemsBuilder items, @IdRes int id) {
+    protected Item declareDisabledMenuItem(ItemsBuilder items, @IdRes int id) {
         return items.declareDisabledItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     /** Create a new app menu item expected to be absent. */
-    protected Item<Void> declareAbsentMenuItem(ItemsBuilder items, @IdRes int id) {
+    protected Item declareAbsentMenuItem(ItemsBuilder items, @IdRes int id) {
         return items.declareAbsentItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
@@ -105,7 +75,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
      * <p>Need to add a placeholder item so that expecting only the first n items includes possible
      * items.
      */
-    protected Item<Void> declarePossibleStubMenuItem(ItemsBuilder items, @IdRes int id) {
+    protected Item declarePossibleStubMenuItem(ItemsBuilder items, @IdRes int id) {
         return items.declarePossibleStubItem();
     }
 
@@ -113,12 +83,8 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
      * Create a new app menu item which may or may not exist, which runs |selectHandler| when
      * selected.
      */
-    protected <SelectReturnT> Item<SelectReturnT> declarePossibleMenuItem(
-            ItemsBuilder items,
-            @IdRes int id,
-            Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
-        return items.declarePossibleItem(
-                itemViewSpec(withId(id)), itemDataMatcher(id), selectHandler);
+    protected Item declarePossibleMenuItem(ItemsBuilder items, @IdRes int id) {
+        return items.declarePossibleItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;

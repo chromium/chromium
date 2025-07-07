@@ -15,8 +15,8 @@ import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
  * Facility represents a context menu triggered for a text link. This has to be used for a webpage.
  */
 public class LinkContextMenuFacility extends ContextMenuFacility {
-    private Item<Void> mOpenTabInNewTab;
-    private Item<TabGroupUiFacility<WebPageStation>> mOpenTabInNewTabInGroup;
+    private Item mOpenTabInNewTab;
+    private Item mOpenTabInNewTabInGroup;
 
     @Override
     protected void declareItems(ItemsBuilder items) {
@@ -24,46 +24,28 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
 
         mOpenTabInNewTab =
                 items.declareItem(
-                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab)),
-                        null,
-                        this::createTabInBackground);
+                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab)), null);
 
         mOpenTabInNewTabInGroup =
                 items.declareItem(
-                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab_group)),
-                        null,
-                        this::createTabInBackgroundInGroup);
+                        itemViewSpec(withText(R.string.contextmenu_open_in_new_tab_group)), null);
     }
 
     /** Click the "Open in new tab" item in the context menu. */
-    public Void openInNewTab() {
+    public void openInNewTab() {
+        assert mHostStation != null;
         assert mOpenTabInNewTab != null;
-        return mOpenTabInNewTab.scrollToAndSelect();
+        mOpenTabInNewTab
+                .scrollToAndSelectTo()
+                .waitFor(new TabCountChangedCondition(mHostStation.getTabModel(), 1));
     }
 
     /** Click the "Open in new tab in group" item in the context menu. */
     public TabGroupUiFacility<WebPageStation> openTabInNewGroup() {
+        assert mHostStation != null;
         assert mOpenTabInNewTabInGroup != null;
-        return mOpenTabInNewTabInGroup.scrollToAndSelect();
-    }
-
-    private Void createTabInBackground(ItemOnScreenFacility<Void> itemOnScreen) {
-        assert mHostStation != null;
-        itemOnScreen
-                .viewElement
-                .clickTo()
-                .waitForAnd(new TabCountChangedCondition(mHostStation.getTabModel(), 1))
-                .exitFacilities(this, itemOnScreen);
-        return null;
-    }
-
-    private TabGroupUiFacility<WebPageStation> createTabInBackgroundInGroup(
-            ItemOnScreenFacility<TabGroupUiFacility<WebPageStation>> itemOnScreen) {
-        assert mHostStation != null;
-        return itemOnScreen
-                .viewElement
-                .clickTo()
-                .exitFacilityAnd()
+        return mOpenTabInNewTabInGroup
+                .scrollToAndSelectTo()
                 .enterFacility(new TabGroupUiFacility<>());
     }
 }
