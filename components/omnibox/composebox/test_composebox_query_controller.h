@@ -47,6 +47,12 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
         set_next_cluster_info_request_should_return_error;
   }
 
+  void set_next_file_upload_request_should_return_error(
+      bool set_next_file_upload_request_should_return_error) {
+    next_file_upload_request_should_return_error_ =
+        set_next_file_upload_request_should_return_error;
+  }
+
   void set_on_query_controller_state_changed_callback(
       QueryControllerStateChangedCallback callback) {
     on_query_controller_state_changed_callback_ = std::move(callback);
@@ -57,8 +63,24 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     return num_cluster_info_fetch_requests_sent_;
   }
 
+  const int& num_file_upload_requests_sent() const {
+    return num_file_upload_requests_sent_;
+  }
+
   QueryControllerState query_controller_state() const {
     return query_controller_state_;
+  }
+
+  const GURL& last_sent_fetch_url() const { return last_sent_fetch_url_; }
+
+  // Gets the file info pointer for the given client token.
+  ComposeboxQueryController::FileInfo* GetFileInfo(
+      const base::UnguessableToken& client_token) {
+    auto it = active_files_.find(client_token);
+    if (it == active_files_.end()) {
+      return nullptr;
+    }
+    return it->second.get();
   }
 
  protected:
@@ -77,8 +99,17 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   // The number of cluster info fetch requests sent by the query controller.
   int num_cluster_info_fetch_requests_sent_ = 0;
 
+  // The number of file upload requests sent by the query controller.
+  int num_file_upload_requests_sent_ = 0;
+
   // If true, the next cluster info request will return an error.
   bool next_cluster_info_request_should_return_error_ = false;
+
+  // If true, the next file upload request will return an error.
+  bool next_file_upload_request_should_return_error_ = false;
+
+  // The last url for which a fetch request was sent by the query controller.
+  GURL last_sent_fetch_url_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_COMPOSEBOX_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
