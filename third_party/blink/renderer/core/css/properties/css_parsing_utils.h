@@ -105,6 +105,7 @@ using IsPositionKeyword = bool (*)(CSSValueID);
 
 constexpr size_t kMaxNumAnimationLonghands = 12;
 constexpr size_t kMaxNumAnimationTriggerLonghands = 6;
+constexpr size_t kMaxNumTimelineTriggerLonghands = 7;
 
 void Complete4Sides(std::array<CSSValue*, 4>&);
 
@@ -410,10 +411,16 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenStream&,
 CSSValue* ConsumeSingleTimelineInset(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
-bool ConsumeAnimationTriggerShorthand(const StylePropertyShorthand&,
-                                      HeapVector<Member<CSSValueList>, kMaxNumAnimationTriggerLonghands>&,
-                                      CSSParserTokenStream&,
-                                      const CSSParserContext&);
+bool ConsumeAnimationTriggerShorthand(
+    const StylePropertyShorthand&,
+    HeapVector<Member<CSSValueList>, kMaxNumAnimationTriggerLonghands>&,
+    CSSParserTokenStream&,
+    const CSSParserContext&);
+bool ConsumeTimelineTriggerShorthand(
+    const StylePropertyShorthand&,
+    HeapVector<Member<CSSValueList>, kMaxNumTimelineTriggerLonghands>&,
+    CSSParserTokenStream&,
+    const CSSParserContext&);
 
 CSSValue* GetImpliedRangeEnd(const CSSValue* start_range);
 

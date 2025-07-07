@@ -4002,6 +4002,96 @@ const CSSValue* TextWrap::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (const CSSAnimationData* animation_data = style.Animations()) {
+    CSSValueList* triggers_list = CSSValueList::CreateCommaSeparated();
+    for (wtf_size_t i = 0; i < animation_data->TimelineTriggerNameList().size();
+         ++i) {
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+      std::optional<Persistent<const ScopedCSSName>> name =
+          animation_data->TimelineTriggerNameList().at(i);
+      list->Append(
+          name ? *ComputedStyleUtils::ValueForCustomIdentOrNone(name->Get())
+               : *CSSIdentifierValue::Create(CSSValueID::kNone));
+
+      list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
+          animation_data->TimelineTriggerTimelineList().at(i), style));
+
+      list->Append(*ComputedStyleUtils::ValueForAnimationTriggerBehavior(
+          animation_data->TimelineTriggerBehaviorList().at(i)));
+
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TimelineTriggerRangeStartList().at(i), style,
+          Length::Percent(0.0)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+          animation_data->TimelineTriggerRangeEndList().at(i), style,
+          Length::Percent(100)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+          animation_data->TimelineTriggerExitRangeStartList().at(i), style,
+          Length::Percent(0.0)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+          animation_data->TimelineTriggerExitRangeEndList().at(i), style,
+          Length::Percent(100)));
+
+      triggers_list->Append(*list);
+    }
+    return triggers_list;
+  }
+
+  CSSValueList* default_list = CSSValueList::CreateSpaceSeparated();
+  default_list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
+      CSSAnimationData::InitialTimelineTriggerTimeline(), style));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationTriggerBehavior(
+      CSSAnimationData::InitialTimelineTriggerBehavior()));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTimelineTriggerRangeStart(), style,
+      Length::Percent(0.0)));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationRange(
+      CSSAnimationData::InitialTimelineTriggerRangeEnd(), style,
+      Length::Percent(100)));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+      CSSAnimationData::InitialTimelineTriggerExitRangeStart(), style,
+      Length::Percent(0.0)));
+  default_list->Append(*ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+      CSSAnimationData::InitialTimelineTriggerExitRangeEnd(), style,
+      Length::Percent(100)));
+
+  return default_list;
+}
+
+bool TimelineTrigger::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand& shorthand = timelineTriggerShorthand();
+  const unsigned longhand_count = shorthand.length();
+  HeapVector<Member<CSSValueList>,
+             css_parsing_utils::kMaxNumTimelineTriggerLonghands>
+      longhands(longhand_count);
+
+  if (!css_parsing_utils::ConsumeTimelineTriggerShorthand(shorthand, longhands,
+                                                          stream, context)) {
+    return false;
+  }
+
+  for (unsigned i = 0; i < longhand_count; ++i) {
+    css_parsing_utils::AddProperty(
+        shorthand.properties()[i]->PropertyID(), shorthand.id(), *longhands[i],
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
+  }
+
+  return true;
+}
+
 namespace {
 
 CSSValue* ConsumeTransitionValue(CSSPropertyID property,

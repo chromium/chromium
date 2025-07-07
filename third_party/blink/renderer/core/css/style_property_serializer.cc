@@ -680,6 +680,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValue(textEmphasisShorthand());
     case CSSPropertyID::kTextSpacing:
       return TextSpacingValue();
+    case CSSPropertyID::kTimelineTrigger:
+      return GetLayeredShorthandValue(timelineTriggerShorthand());
     case CSSPropertyID::kWebkitTextStroke:
       return GetShorthandValue(webkitTextStrokeShorthand());
     case CSSPropertyID::kTextWrap:

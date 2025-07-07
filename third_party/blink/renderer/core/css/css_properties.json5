@@ -8997,6 +8997,19 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "timeline-trigger",
+      longhands: [
+        "timeline-trigger-name", "timeline-trigger-timeline",
+        "timeline-trigger-behavior", "timeline-trigger-range-start",
+        "timeline-trigger-range-end", "timeline-trigger-exit-range-start",
+        "timeline-trigger-exit-range-end",
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+      runtime_flag: "AnimationTrigger",
+    },
+    {
       name: "-webkit-text-stroke",
       longhands: ["-webkit-text-stroke-width", "-webkit-text-stroke-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

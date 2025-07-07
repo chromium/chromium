@@ -925,6 +925,14 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap
         text-wrap-mode
         text-wrap-style
+    timeline-trigger
+        timeline-trigger-behavior
+        timeline-trigger-exit-range-end
+        timeline-trigger-exit-range-start
+        timeline-trigger-name
+        timeline-trigger-range-end
+        timeline-trigger-range-start
+        timeline-trigger-timeline
     transition
         transition-behavior
         transition-delay
