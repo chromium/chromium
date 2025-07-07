@@ -16,7 +16,7 @@
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
-#include "chrome/browser/actor/ui/variant_visitor.h"
+#include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
 #include "content/public/browser/browser_context.h"
@@ -32,20 +32,6 @@ struct is_variant_t<std::variant<Args...>> : std::true_type {};
 template <typename T>
 inline constexpr bool is_variant = is_variant_t<T>::value;
 
-// TODO(crbug.com/425784083): evaluate sharing these types between ToolRequests
-// and the UI code.
-PageTarget ConvertTarget(const PageToolRequest::Target& t) {
-  if (t.is_coordinate()) {
-    return t.coordinate();
-  } else if (t.is_node()) {
-    return DomNode{
-        .node_id = t.node().dom_node_id,
-        .document_identifier = t.node().document_identifier,
-    };
-  }
-  NOTREACHED();
-}
-
 template <typename T>
 auto NoUiEvents =
     [](const T& tr) -> std::deque<UiEvent> { return std::deque<UiEvent>(); };
@@ -53,7 +39,7 @@ auto NoUiEvents =
 constexpr Visitor PreToolEventsFn{
     [](const ClickToolRequest& tr) {
       return std::deque<UiEvent>{
-          MouseMove(tr.GetTabHandle(), ConvertTarget(tr.GetTarget())),
+          MouseMove(tr.GetTabHandle(), tr.GetTarget()),
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
     NoUiEvents<ActivateTabToolRequest>,
@@ -62,8 +48,7 @@ constexpr Visitor PreToolEventsFn{
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
     [](const MoveMouseToolRequest& tr) {
-      return std::deque<UiEvent>{
-          MouseMove(tr.GetTabHandle(), ConvertTarget(tr.GetTarget()))};
+      return std::deque<UiEvent>{MouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,

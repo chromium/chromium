@@ -104,6 +104,7 @@ source_set("impl") {
 
   deps = [
     ":actor",
+    ":variant_visitor",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
@@ -149,7 +150,12 @@ source_set("types") {
   public_deps = [
     "//base",
     "//chrome/common:mojo_bindings",
+    "//ui/gfx/geometry:geometry",
   ]
+}
+
+source_set("variant_visitor") {
+  sources = [ "variant_visitor.h" ]
 }
 
 source_set("test_support") {

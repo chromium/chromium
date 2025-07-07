@@ -69,20 +69,21 @@ TabHandle GetTabHandle(const T& action, TabInterface* deprecated_fallback_tab) {
   return tab_handle;
 }
 
-std::optional<PageToolRequest::Target> ToPageToolTarget(
+std::optional<PageTarget> ToPageTarget(
     const optimization_guide::proto::ActionTarget& target) {
   // A valid target must have either a coordinate or a
   // document_identifier-dom_node_id pair.
   if (target.has_coordinate()) {
-    return PageToolRequest::Target(
+    return PageTarget(
         gfx::Point(target.coordinate().x(), target.coordinate().y()));
   } else {
     if (!target.has_content_node_id() || !target.has_document_identifier()) {
       return std::nullopt;
     }
-    return PageToolRequest::Target(
-        {target.content_node_id(),
-         target.document_identifier().serialized_token()});
+    return PageTarget(
+        DomNode{.node_id = target.content_node_id(),
+                .document_identifier =
+                    target.document_identifier().serialized_token()});
   }
 }
 std::unique_ptr<ToolRequest> CreateClickRequest(
@@ -131,7 +132,7 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
       break;
   }
 
-  auto target = ToPageToolTarget(action.target());
+  auto target = ToPageTarget(action.target());
   if (!target.has_value()) {
     return nullptr;
   }
@@ -173,7 +174,7 @@ std::unique_ptr<ToolRequest> CreateTypeRequest(
       break;
   }
 
-  auto target = ToPageToolTarget(action.target());
+  auto target = ToPageTarget(action.target());
   if (!target.has_value()) {
     return nullptr;
   }
@@ -194,9 +195,9 @@ std::unique_ptr<ToolRequest> CreateScrollRequest(
     return nullptr;
   }
 
-  std::optional<PageToolRequest::Target> target;
+  std::optional<PageTarget> target;
   if (action.has_target()) {
-    target = ToPageToolTarget(action.target());
+    target = ToPageTarget(action.target());
   } else {
     // Scroll action may omit a target which means "target the viewport".
     TabInterface* tab = tab_handle.Get();
@@ -208,8 +209,9 @@ std::unique_ptr<ToolRequest> CreateScrollRequest(
             tab->GetContents()->GetPrimaryMainFrame())
             ->serialized_token();
 
-    target.emplace(PageToolRequest::Target(
-        {/*dom_node_id=*/kRootElementDomNodeId, document_identifier}));
+    target.emplace(
+        PageTarget(DomNode{.node_id = kRootElementDomNodeId,
+                           .document_identifier = document_identifier}));
   }
 
   if (!target) {
@@ -252,7 +254,7 @@ std::unique_ptr<ToolRequest> CreateMoveMouseRequest(
     return nullptr;
   }
 
-  auto target = ToPageToolTarget(action.target());
+  auto target = ToPageTarget(action.target());
   if (!target.has_value()) {
     return nullptr;
   }
@@ -270,12 +272,12 @@ std::unique_ptr<ToolRequest> CreateDragAndReleaseRequest(
     return nullptr;
   }
 
-  auto from_target = ToPageToolTarget(action.from_target());
+  auto from_target = ToPageTarget(action.from_target());
   if (!from_target.has_value()) {
     return nullptr;
   }
 
-  auto to_target = ToPageToolTarget(action.to_target());
+  auto to_target = ToPageTarget(action.to_target());
   if (!to_target.has_value()) {
     return nullptr;
   }
@@ -293,7 +295,7 @@ std::unique_ptr<ToolRequest> CreateSelectRequest(
     return nullptr;
   }
 
-  auto target = ToPageToolTarget(action.target());
+  auto target = ToPageTarget(action.target());
   if (!target.has_value()) {
     return nullptr;
   }

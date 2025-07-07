@@ -12,7 +12,7 @@ namespace actor {
 using ::tabs::TabHandle;
 
 ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
-                                   const Target& target,
+                                   const PageTarget& target,
                                    MouseClickType type,
                                    MouseClickCount count)
     : PageToolRequest(tab_handle, target),

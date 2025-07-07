@@ -20,9 +20,10 @@ class ToolRequestVisitorFunctor;
 class DragAndReleaseToolRequest : public PageToolRequest {
  public:
   DragAndReleaseToolRequest(tabs::TabHandle tab_handle,
-                            const Target& from_target,
-                            const Target& to_target);
+                            const PageTarget& from_target,
+                            const PageTarget& to_target);
   ~DragAndReleaseToolRequest() override;
+  DragAndReleaseToolRequest(const DragAndReleaseToolRequest& other);
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
@@ -34,8 +35,8 @@ class DragAndReleaseToolRequest : public PageToolRequest {
   std::unique_ptr<PageToolRequest> Clone() const override;
 
  private:
-  Target from_target_;
-  Target to_target_;
+  PageTarget from_target_;
+  PageTarget to_target_;
 };
 
 }  // namespace actor

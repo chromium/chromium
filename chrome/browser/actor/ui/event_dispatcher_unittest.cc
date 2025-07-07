@@ -65,7 +65,7 @@ TEST_F(EventDispatcherTest, NoActorKeyedServiceForProfile) {
                       -> std::unique_ptr<KeyedService> { return nullptr; }))
           .Build();
   MoveMouseToolRequest tr(tabs::TabHandle(123),
-                          PageToolRequest::Target(gfx::Point(100, 200)));
+                          PageTarget(gfx::Point(100, 200)));
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(broken_profile.get(), tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
@@ -83,7 +83,7 @@ TEST_F(EventDispatcherTest, NoUiStateManager) {
               }))
           .Build();
   MoveMouseToolRequest tr(tabs::TabHandle(123),
-                          PageToolRequest::Target(gfx::Point(100, 200)));
+                          PageTarget(gfx::Point(100, 200)));
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(broken_profile.get(), tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
@@ -104,7 +104,7 @@ TEST_F(EventDispatcherTest, SingleUiEvent) {
         std::move(callback).Run(MakeOkResult());
       }));
   MoveMouseToolRequest tr(tabs::TabHandle(123),
-                          PageToolRequest::Target(gfx::Point(100, 200)));
+                          PageTarget(gfx::Point(100, 200)));
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(profile_.get(), tr, result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
@@ -117,9 +117,9 @@ TEST_F(EventDispatcherTest, TwoToolRequests) {
         std::move(callback).Run(MakeOkResult());
       }));
   MoveMouseToolRequest tr1(tabs::TabHandle(123),
-                           PageToolRequest::Target(gfx::Point(100, 200)));
+                           PageTarget(gfx::Point(100, 200)));
   MoveMouseToolRequest tr2(tabs::TabHandle(456),
-                           PageToolRequest::Target(gfx::Point(300, 400)));
+                           PageTarget(gfx::Point(300, 400)));
   TestFuture<mojom::ActionResultPtr> result1, result2;
   dispatcher_->OnPreTool(profile_.get(), tr1, result1.GetCallback());
   dispatcher_->OnPreTool(profile_.get(), tr2, result2.GetCallback());
@@ -136,8 +136,7 @@ TEST_F(EventDispatcherTest, TwoUiEvents) {
       .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
         std::move(callback).Run(MakeOkResult());
       }));
-  ClickToolRequest tr(tabs::TabHandle(123),
-                      PageToolRequest::Target(gfx::Point(10, 50)),
+  ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
                       MouseClickType::kLeft, MouseClickCount::kSingle);
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(profile_.get(), tr, result.GetCallback());
@@ -151,8 +150,7 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
       }));
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseClick>(_), _))
       .Times(0);
-  ClickToolRequest tr(tabs::TabHandle(123),
-                      PageToolRequest::Target(gfx::Point(10, 50)),
+  ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
                       MouseClickType::kLeft, MouseClickCount::kSingle);
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(profile_.get(), tr, result.GetCallback());

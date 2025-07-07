@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -19,6 +20,8 @@
 namespace actor {
 
 class AggregatedJournal;
+
+mojom::ToolTargetPtr ToMojo(const PageTarget& target);
 
 // Tool requests targeting a specific, existing document should inherit from
 // this subclass. Being page-scoped implies also being tab-scoped since a page
@@ -31,43 +34,7 @@ class AggregatedJournal;
 // ready to invoke.
 class PageToolRequest : public TabToolRequest {
  public:
-  // Page tool requests must specify a target in the page. This must be
-  // one of (mutually exclusive):
-  //   * A main-frame relative coordinate
-  //   * A specific node, specified by DOMNodeId and document identifier pair.
-  //     DOMNodeId can be the kRootElementDomNodeId special value to target the
-  //     viewport.
-  using CoordinateTarget = gfx::Point;
-  struct NodeTarget {
-    int dom_node_id;
-    std::string document_identifier;
-  };
-
-  class Target {
-   public:
-    explicit Target(const NodeTarget& node_target);
-    explicit Target(const CoordinateTarget& coordinate_target);
-    Target(const Target& other);
-    ~Target();
-
-    bool is_coordinate() const {
-      return std::holds_alternative<CoordinateTarget>(impl_);
-    }
-    bool is_node() const { return std::holds_alternative<NodeTarget>(impl_); }
-
-    const CoordinateTarget& coordinate() const {
-      return std::get<CoordinateTarget>(impl_);
-    }
-    const NodeTarget& node() const { return std::get<NodeTarget>(impl_); }
-
-    // Constructs an actor::mojom::ToolTarget.
-    mojom::ToolTargetPtr ToMojoToolTarget() const;
-
-   private:
-    std::variant<NodeTarget, CoordinateTarget> impl_;
-  };
-
-  PageToolRequest(tabs::TabHandle tab_handle, const Target& target);
+  PageToolRequest(tabs::TabHandle tab_handle, const PageTarget& target);
   ~PageToolRequest() override;
   PageToolRequest(const PageToolRequest& other);
 
@@ -82,10 +49,10 @@ class PageToolRequest : public TabToolRequest {
                               AggregatedJournal& journal) const override;
 
   // Returns what in the page the tool should act upon.
-  const Target& GetTarget() const;
+  const PageTarget& GetTarget() const;
 
  private:
-  Target target_;
+  PageTarget target_;
 };
 
 }  // namespace actor

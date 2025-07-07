@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/page_tool.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -100,7 +102,7 @@ RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
 }
 
 RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
-                                          PageToolRequest::Target target) {
+                                          PageTarget target) {
   TabInterface* tab = tab_handle.Get();
   if (!tab) {
     return nullptr;
@@ -108,19 +110,19 @@ RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
 
   WebContents& contents = *tab->GetContents();
 
-  if (target.is_coordinate()) {
+  if (std::holds_alternative<gfx::Point>(target)) {
     RenderWidgetHost* target_rwh =
-        contents.FindWidgetAtPoint(gfx::PointF(target.coordinate()));
+        contents.FindWidgetAtPoint(gfx::PointF(std::get<gfx::Point>(target)));
     if (!target_rwh) {
       return nullptr;
     }
     return GetRootFrameForWidget(contents, target_rwh);
   }
 
-  CHECK(target.is_node());
+  CHECK(std::holds_alternative<DomNode>(target));
 
   RenderFrameHost* target_frame = GetRenderFrameForDocumentIdentifier(
-      *tab->GetContents(), target.node().document_identifier);
+      *tab->GetContents(), std::get<DomNode>(target).document_identifier);
 
   // After finding the target frame, walk up to its local root.
   return GetLocalRoot(target_frame);
@@ -130,22 +132,24 @@ RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
 // std::nullopt if Target does not hit any node.
 std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
     const AnnotatedPageContent* apc,
-    const PageToolRequest::Target& target) {
+    const PageTarget& target) {
   if (!apc) {
     return std::nullopt;
   }
   // TODO(rodneyding): Refactor FindNode* API to include optional target frame
   // document identifier to reduce search space.
-  if (target.is_coordinate()) {
-    return optimization_guide::FindNodeAtPoint(*apc, target.coordinate());
+  if (std::holds_alternative<gfx::Point>(target)) {
+    return optimization_guide::FindNodeAtPoint(*apc,
+                                               std::get<gfx::Point>(target));
   }
-  CHECK(target.is_node());
+  CHECK(std::holds_alternative<DomNode>(target));
   std::optional<TargetNodeInfo> result = optimization_guide::FindNodeWithID(
-      *apc, target.node().document_identifier, target.node().dom_node_id);
+      *apc, std::get<DomNode>(target).document_identifier,
+      std::get<DomNode>(target).node_id);
   // If such a node isn't found or the node is found under a different
   // document it's an error.
   if (!result || result->document_identifier.serialized_token() !=
-                     target.node().document_identifier) {
+                     std::get<DomNode>(target).document_identifier) {
     return std::nullopt;
   }
   return result;
@@ -155,12 +159,12 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
 // compare the candidate frame with the target frame identified in last
 // observation.
 bool ValidateTargetFrameCandidate(
-    const PageToolRequest::Target& target,
+    const PageTarget& target,
     RenderFrameHost* candidate_frame,
     WebContents& web_contents,
     const std::optional<TargetNodeInfo> target_node_info) {
   // Frame validation is performed only when targeting using coordinates.
-  CHECK(target.is_coordinate());
+  CHECK(std::holds_alternative<gfx::Point>(target));
 
   if (!target_node_info) {
     return false;
@@ -277,7 +281,8 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   // Perform validation for coordinate based target only.
   // TODO(bokan): We can't perform a TOCTOU check If there's no last
   // observation. Consider what to do in this case.
-  if (request_->GetTarget().is_coordinate() && last_observation) {
+  if (std::holds_alternative<gfx::Point>(request_->GetTarget()) &&
+      last_observation) {
     if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
                                       *tab->GetContents(),
                                       observed_target_node_info_)) {
@@ -303,7 +308,7 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = request_->ToMojoToolAction();
-  invocation->target = request_->GetTarget().ToMojoToolTarget();
+  invocation->target = ToMojo(request_->GetTarget());
   invocation->observed_target =
       ToMojoObservedToolTarget(observed_target_node_info_);
 

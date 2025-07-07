@@ -11,17 +11,8 @@
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/gfx/geometry/point.h"
 
 namespace actor::ui {
-
-struct DomNode {
-  int node_id;
-  std::string document_identifier;
-};
-
-using PageTarget = std::variant<gfx::Point, DomNode>;
-
 struct StartTask {
   explicit StartTask(actor::TaskId);
   StartTask(const StartTask&);

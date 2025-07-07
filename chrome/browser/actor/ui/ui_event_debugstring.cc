@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/actor/ui/variant_visitor.h"
+#include "chrome/browser/actor/variant_visitor.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor::ui {

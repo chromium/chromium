@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/page_tool_request.h"
 
 #include "chrome/browser/actor/tools/page_tool.h"
+#include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -20,29 +21,22 @@ using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
 using tabs::TabHandle;
 
-PageToolRequest::Target::Target(const NodeTarget& node_target)
-    : impl_(node_target) {}
+namespace {
+constexpr Visitor ToMojoFn{
+    [](const gfx::Point& pt) -> mojom::ToolTargetPtr {
+      return actor::mojom::ToolTarget::NewCoordinate(pt);
+    },
+    [](const DomNode& node) -> mojom::ToolTargetPtr {
+      return actor::mojom::ToolTarget::NewDomNodeId(node.node_id);
+    },
+};
+}  // namespace
 
-PageToolRequest::Target::Target(const CoordinateTarget& coordinate_target)
-    : impl_(coordinate_target) {}
-
-PageToolRequest::Target::Target(const Target& other) = default;
-
-PageToolRequest::Target::~Target() = default;
-
-mojom::ToolTargetPtr PageToolRequest::Target::ToMojoToolTarget() const {
-  // TODO(crbug.com/419037299): This needs to take in a target RenderFrameHost&
-  // and convert from WebContents-relative coordinates into Widget-local
-  // coordinates.
-  if (is_coordinate()) {
-    return actor::mojom::ToolTarget::NewCoordinate(coordinate());
-  }
-
-  CHECK(is_node());
-  return actor::mojom::ToolTarget::NewDomNodeId(node().dom_node_id);
+mojom::ToolTargetPtr ToMojo(const PageTarget& target) {
+  return std::visit(ToMojoFn, target);
 }
 
-PageToolRequest::PageToolRequest(TabHandle tab_handle, const Target& target)
+PageToolRequest::PageToolRequest(TabHandle tab_handle, const PageTarget& target)
     : TabToolRequest(tab_handle), target_(target) {}
 
 PageToolRequest::~PageToolRequest() = default;
@@ -60,7 +54,7 @@ ToolRequest::CreateToolResult PageToolRequest::CreateTool(
   return {std::make_unique<PageTool>(task_id, journal, *this), MakeOkResult()};
 }
 
-const PageToolRequest::Target& PageToolRequest::GetTarget() const {
+const PageTarget& PageToolRequest::GetTarget() const {
   return target_;
 }
 

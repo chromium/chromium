@@ -18,7 +18,7 @@ class ToolRequestVisitorFunctor;
 class ClickToolRequest : public PageToolRequest {
  public:
   ClickToolRequest(tabs::TabHandle tab_handle,
-                   const Target& target,
+                   const PageTarget& target,
                    MouseClickType type,
                    MouseClickCount count);
   ~ClickToolRequest() override;

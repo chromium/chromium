@@ -12,7 +12,7 @@ namespace actor {
 using ::tabs::TabHandle;
 
 ScrollToolRequest::ScrollToolRequest(TabHandle tab_handle,
-                                     const Target& target,
+                                     const PageTarget& target,
                                      Direction direction,
                                      float distance)
     : PageToolRequest(tab_handle, target),

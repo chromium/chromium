@@ -20,7 +20,7 @@ class ToolRequestVisitorFunctor;
 class SelectToolRequest : public PageToolRequest {
  public:
   SelectToolRequest(tabs::TabHandle tab_handle,
-                    const Target& target,
+                    const PageTarget& target,
                     std::string_view value);
   ~SelectToolRequest() override;
 

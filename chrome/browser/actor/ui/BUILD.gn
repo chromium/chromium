@@ -39,8 +39,8 @@ source_set("event_dispatcher") {
     ":tool_request_variant",
     ":ui_event_types",
     ":ui_event_utils",
-    ":variant_visitor",
     "//chrome/browser/actor:actor",
+    "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/actor/ui:ui",
   ]
 }
@@ -86,10 +86,7 @@ source_set("ui_event_types") {
     "//base",
     "//chrome/browser/actor:types",
   ]
-  deps = [
-    "//components/tabs:public",
-    "//ui/gfx/geometry:geometry",
-  ]
+  deps = [ "//components/tabs:public" ]
 }
 
 source_set("ui_event_utils") {
@@ -99,14 +96,10 @@ source_set("ui_event_utils") {
   ]
   deps = [
     ":ui_event_types",
-    ":variant_visitor",
     "//base",
+    "//chrome/browser/actor:variant_visitor",
     "//third_party/abseil-cpp:absl",
   ]
-}
-
-source_set("variant_visitor") {
-  sources = [ "variant_visitor.h" ]
 }
 
 source_set("unit_tests") {
