@@ -461,7 +461,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
   ASSERT_TRUE(EventsEmpty());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
-      InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
   std::unique_ptr<FakeInfobarDelegate> delegate =
       std::make_unique<FakeInfobarDelegate>(identifier);
   std::unique_ptr<FakeInfobarIOS> infobar =
@@ -484,7 +484,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
 
   // Add and remove first infobar.
   InfoBarDelegate::InfoBarIdentifier first_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::DEV_TOOLS_INFOBAR_DELEGATE;
   std::unique_ptr<FakeInfobarDelegate> first_delegate =
       std::make_unique<FakeInfobarDelegate>(first_identifier);
   std::unique_ptr<FakeInfobarIOS> first_infobar =
@@ -496,7 +496,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
 
   // Add second infobar.
   InfoBarDelegate::InfoBarIdentifier second_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SYNC_ERROR_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE;
   std::unique_ptr<FakeInfobarDelegate> second_delegate =
       std::make_unique<FakeInfobarDelegate>(second_identifier);
   std::unique_ptr<FakeInfobarIOS> second_infobar =

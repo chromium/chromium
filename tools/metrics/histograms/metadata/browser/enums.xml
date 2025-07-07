@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
   <int value="5" label="DOWNLOAD_REQUEST_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="6" label="FULLSCREEN_INFOBAR_DELEGATE (Obsolete)"/>
-  <int value="7" label="HUNG_PLUGIN_INFOBAR_DELEGATE"/>
+  <int value="7" label="HUNG_PLUGIN_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="8" label="HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="9" label="MEDIA_STREAM_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="10" label="MEDIA_THROTTLE_INFOBAR_DELEGATE (Obsolete)"/>
@@ -210,12 +210,12 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE"/>
   <int value="15" label="THEME_INSTALLED_INFOBAR_DELEGATE"/>
   <int value="16" label="GEOLOCATION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
-  <int value="17" label="THREE_D_API_INFOBAR_DELEGATE"/>
+  <int value="17" label="THREE_D_API_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="18" label="INSECURE_CONTENT_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="19" label="MIDI_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="20"
       label="PROTECTED_MEDIA_IDENTIFIER_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
-  <int value="21" label="NACL_INFOBAR_DELEGATE"/>
+  <int value="21" label="NACL_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="22"
       label="DATA_REDUCTION_PROXY_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="23" label="NOTIFICATION_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="DEFAULT_BROWSER_INFOBAR_DELEGATE"/>
   <int value="45" label="GOOGLE_API_KEYS_INFOBAR_DELEGATE"/>
   <int value="46" label="OBSOLETE_SYSTEM_INFOBAR_DELEGATE"/>
-  <int value="47" label="SESSION_CRASHED_INFOBAR_DELEGATE_MAC_IOS"/>
+  <int value="47" label="SESSION_CRASHED_INFOBAR_DELEGATE_MAC_IOS (Obsolete)"/>
   <int value="48" label="PAGE_INFO_INFOBAR_DELEGATE"/>
   <int value="49" label="AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE"/>
   <int value="50" label="TRANSLATE_INFOBAR_DELEGATE_NON_AURA"/>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
   <int value="56" label="SHOW_PASSKIT_ERROR_INFOBAR_DELEGATE_IOS"/>
   <int value="57" label="READER_MODE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="58" label="SYNC_ERROR_INFOBAR_DELEGATE_IOS"/>
-  <int value="59" label="UPGRADE_INFOBAR_DELEGATE"/>
+  <int value="59" label="UPGRADE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="60" label="WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID"/>
   <int value="61"
       label="DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
@@ -281,11 +281,12 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="FRAMEBUST_BLOCK_INFOBAR_ANDROID"/>
   <int value="78" label="SURVEY_INFOBAR_ANDROID"/>
   <int value="79" label="NEAR_OOM_INFOBAR_ANDROID"/>
-  <int value="80" label="INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE"/>
+  <int value="80"
+      label="INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="81" label="PAGE_LOAD_CAPPING_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="82" label="DOWNLOAD_PROGRESS_INFOBAR_ANDROID (Obsolete)"/>
   <int value="83" label="AR_CORE_UPGRADE_ANDROID"/>
-  <int value="84" label="BLOATED_RENDERER_INFOBAR_DELEGATE"/>
+  <int value="84" label="BLOATED_RENDERER_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="85"
       label="SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="86" label="NEAR_OOM_REDUCTION_INFOBAR_ANDROID"/>

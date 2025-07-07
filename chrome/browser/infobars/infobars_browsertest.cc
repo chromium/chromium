@@ -182,7 +182,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"incognito_connectability",
            IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
           {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
-          {"nacl", IBD::NACL_INFOBAR_DELEGATE},
           {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
           {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
           {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
@@ -238,10 +237,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           "id",
           std::make_unique<ThemeService::ThemeReinstaller>(
               browser()->profile(), base::OnceClosure()));
-      break;
-
-    case IBD::NACL_INFOBAR_DELEGATE:
-      ADD_FAILURE() << "This infobar is not supported when NaCl is disabled.";
       break;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -307,10 +302,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
       ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
-      break;
-
-    case IBD::SESSION_CRASHED_INFOBAR_DELEGATE_IOS:
-      ADD_FAILURE() << "This infobar is not supported on this OS.";
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:

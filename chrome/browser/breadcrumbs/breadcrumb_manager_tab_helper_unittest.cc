@@ -403,14 +403,14 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
   ASSERT_EQ(0u, GetNumEvents());
   // Add and remove first infobar.
   const auto first_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::DEV_TOOLS_INFOBAR_DELEGATE;
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateInfoBar(first_identifier));
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->RemoveAllInfoBars(/*animate=*/false);
   // Add second infobar.
   const auto second_identifier =
-      InfoBarDelegate::InfoBarIdentifier::SYNC_ERROR_INFOBAR_DELEGATE_IOS;
+      InfoBarDelegate::InfoBarIdentifier::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE;
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateInfoBar(second_identifier));
   const auto& events = GetEvents();
