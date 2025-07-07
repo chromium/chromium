@@ -112,7 +112,18 @@ class GlicAppStateObserver : public Host::Observer {
 
 class GlicPolicyTest : public PolicyTest {
  public:
-  GlicPolicyTest() = default;
+  GlicPolicyTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlic,
+          {
+              // This test currently loads about:blank instead of a client which
+              // could ever reach the kReady state. To speed that up, cut down
+              // the time we wait for it.
+              {features::kGlicMaxLoadingTimeMs.name, "500"},
+          }}},
+        {});
+  }
+
   GlicPolicyTest(const GlicPolicyTest&) = delete;
   GlicPolicyTest& operator=(const GlicPolicyTest&) = delete;
 
@@ -534,6 +545,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   }
 
   ASSERT_TRUE(service->window_controller().IsShowing());
+
+  GlicAppStateObserver app_observer(&service->host());
+  app_observer.Wait(mojom::WebUiState::kError);
 
   // Disable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);

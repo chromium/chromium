@@ -611,6 +611,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     } else {
       switch (this.profileReadyState) {
         case ProfileReadyState.kUnknownError:
+        case ProfileReadyState.kIneligible:
           this.setState(WebUiState.kUnavailable);
           break;
         case ProfileReadyState.kSignInRequired:
