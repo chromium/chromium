@@ -60,9 +60,10 @@ class MyObject : public Wrappable<MyObject>, public BaseClass {
 
   void Method() {}
 
-  static WrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kTestObject};
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   const char* GetHumanReadableName() const final { return "MyObject"; }
 
@@ -82,9 +83,10 @@ class MyObject2 : public Wrappable<MyObject2> {
  public:
   MyObject2() = default;
 
-  static WrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kTestObject2};
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   const char* GetHumanReadableName() const final { return "MyObject2"; }
 
@@ -100,9 +102,10 @@ class MyNamedObject : public Wrappable<MyNamedObject> {
   MyNamedObject& operator=(const MyNamedObject&) = delete;
   MyNamedObject() = default;
 
-  static WrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kTestObject2};
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   static MyNamedObject* Create(v8::Isolate* isolate) {
     return cppgc::MakeGarbageCollected<MyNamedObject>(
@@ -119,10 +122,6 @@ class MyNamedObject : public Wrappable<MyNamedObject> {
   }
   const char* GetHumanReadableName() const final { return "MyNamedObject"; }
 };
-
-WrapperInfo MyObject::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject};
-WrapperInfo MyObject2::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject2};
-WrapperInfo MyNamedObject::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject2};
 
 }  // namespace
 
@@ -312,9 +311,10 @@ class MyObjectWithLazyProperties
       delete;
   MyObjectWithLazyProperties() = default;
 
-  static WrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kTestObject};
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   const char* GetHumanReadableName() const final {
     return "MyObjectWithLazyProperties";
@@ -346,9 +346,6 @@ class MyObjectWithLazyProperties
 
   int access_count_ = 0;
 };
-
-WrapperInfo MyObjectWithLazyProperties::kWrapperInfo = {{kEmbedderNativeGin},
-                                                        kTestObject};
 
 TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   v8::Isolate* isolate = instance_->isolate();

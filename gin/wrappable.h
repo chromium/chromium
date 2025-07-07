@@ -83,7 +83,7 @@ class GIN_EXPORT WrappableBase : public v8::Object::Wrappable {
   // static object because we need the virtual dispatch for a type check. If we
   // unwrap an object of the wrong type, then we detect the issue by comparing
   // the static object with the WrapperInfo from the virtual dispatch.
-  virtual WrapperInfo* wrapper_info() const = 0;
+  virtual const WrapperInfo* wrapper_info() const = 0;
 
   v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate);
 

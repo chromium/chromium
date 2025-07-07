@@ -27,7 +27,7 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
     return wrapper_.Get(isolate);
   }
 
-  WrapperInfo* info = wrapper_info();
+  const WrapperInfo* info = wrapper_info();
 
   PerIsolateData* data = PerIsolateData::From(isolate);
   v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(info);

@@ -58,7 +58,7 @@ class GIN_EXPORT PerIsolateData {
       DeprecatedWrapperInfo* info,
       v8::Local<v8::ObjectTemplate> object_template);
 
-  void SetObjectTemplate(WrapperInfo* info,
+  void SetObjectTemplate(const WrapperInfo* info,
                          v8::Local<v8::ObjectTemplate> object_template);
 
   void SetFunctionTemplate(DeprecatedWrapperInfo* info,
@@ -71,7 +71,7 @@ class GIN_EXPORT PerIsolateData {
   v8::Local<v8::ObjectTemplate> DeprecatedGetObjectTemplate(
       DeprecatedWrapperInfo* info);
 
-  v8::Local<v8::ObjectTemplate> GetObjectTemplate(WrapperInfo* info);
+  v8::Local<v8::ObjectTemplate> GetObjectTemplate(const WrapperInfo* info);
 
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(
       DeprecatedWrapperInfo* info);
@@ -96,7 +96,7 @@ class GIN_EXPORT PerIsolateData {
  private:
   typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
       DeprecatedObjectTemplateMap;
-  typedef std::map<WrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
+  typedef std::map<const WrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
       ObjectTemplateMap;
   typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::FunctionTemplate>>
       FunctionTemplateMap;

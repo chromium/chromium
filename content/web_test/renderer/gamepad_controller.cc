@@ -46,9 +46,11 @@ int64_t CurrentTimeInMicroseconds() {
 class GamepadControllerBindings final
     : public gin::Wrappable<GamepadControllerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kGamepadControllerBindings};
 
-  gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   GamepadControllerBindings(const GamepadControllerBindings&) = delete;
   GamepadControllerBindings& operator=(const GamepadControllerBindings&) =
@@ -84,10 +86,6 @@ class GamepadControllerBindings final
 
   base::WeakPtr<GamepadController> controller_;
 };
-
-gin::WrapperInfo GamepadControllerBindings::kWrapperInfo = {
-    {gin::kEmbedderNativeGin},
-    gin::kGamepadControllerBindings};
 
 // static
 void GamepadControllerBindings::Install(
