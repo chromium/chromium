@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_H_
 
 #include <set>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -62,8 +63,8 @@ class PageActionPerActionMetricsRecorder
   std::set<GURL> page_action_recorded_urls_;
 
   // Properties associated with the specific page action being observed.
-  PageActionIconType page_action_type_;
-  std::string histogram_name_;
+  const PageActionIconType page_action_type_;
+  const std::string histogram_name_;
 
   // Used to get count of visible ephemeral page actions from the
   // `PageActionController`.
