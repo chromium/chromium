@@ -2714,23 +2714,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHAutofillHomeWorkProfileSuggestionFeature.name == feature->name) {
-    // Allows an IPH for showing the home and work address suggestion. This will
-    // only be shown once.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(EQUAL, 0);
-    config.trigger =
-        EventConfig("home_work_address_create_suggestion_feature_trigger",
-                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
-    config.used =
-        EventConfig("home_work_address_create_suggestion_feature_used",
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
-
-    return config;
-  }
-
   if (kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature.name ==
       feature->name) {
     // A config that allows the NTP-identity-disc IPH to be shown to users. This
@@ -2800,6 +2783,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 9), 90, 360);
     config.used = EventConfig("plus_address_create_suggestion_feature_used",
                               Comparator(LESS_THAN, 2), 90, 360);
+    return config;
+  }
+
+  if (kIPHAutofillHomeWorkProfileSuggestionFeature.name == feature->name) {
+    // Allows an IPH for showing the home and work address suggestion. This will
+    // only be shown once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("home_work_address_create_suggestion_feature_trigger",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("home_work_address_create_suggestion_feature_used",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+
     return config;
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
