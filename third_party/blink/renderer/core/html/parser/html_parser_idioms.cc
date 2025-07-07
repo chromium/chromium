@@ -196,7 +196,7 @@ bool ParseHTMLInteger(const String& input, int& value) {
     DCHECK_LT(position, chars.size());
 
     bool ok;
-    constexpr auto kOptions = WTF::NumberParsingOptions()
+    constexpr auto kOptions = NumberParsingOptions()
                                   .SetAcceptTrailingGarbage()
                                   .SetAcceptLeadingPlus();
     int wtf_value = CharactersToInt(chars.subspan(position), kOptions, &ok);
@@ -237,7 +237,7 @@ static NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
         DCHECK_LT(position, chars.size());
 
         NumberParsingResult result;
-        constexpr auto kOptions = WTF::NumberParsingOptions()
+        constexpr auto kOptions = NumberParsingOptions()
                                       .SetAcceptTrailingGarbage()
                                       .SetAcceptLeadingPlus()
                                       .SetAcceptMinusZeroForUnsigned();

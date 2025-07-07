@@ -80,7 +80,7 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
     return false;
 
   bool port_ok = false;
-  int port_number = port.Impl()->ToInt(WTF::NumberParsingOptions(), &port_ok);
+  int port_number = port.Impl()->ToInt(NumberParsingOptions(), &port_ok);
   if (!port_ok)
     return false;
 

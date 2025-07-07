@@ -118,10 +118,10 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 
   int source_number =
       CharactersToInt(StringView(source, left, source_right - left),
-                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
+                      NumberParsingOptions(), /*ok=*/nullptr);
   int target_number =
       CharactersToInt(StringView(target, left, target_right - left),
-                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
+                      NumberParsingOptions(), /*ok=*/nullptr);
 
   // The second number should increment by one and the rest of the strings
   // should be the same.

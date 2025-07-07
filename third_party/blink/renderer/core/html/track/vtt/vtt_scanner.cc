@@ -86,8 +86,7 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
     auto [number_data, rest] = buf.split_at(num_digits);
     // Consume the digits.
     buf = rest;
-    return CharactersToUInt(number_data, WTF::NumberParsingOptions(),
-                            &valid_number);
+    return CharactersToUInt(number_data, NumberParsingOptions(), &valid_number);
   });
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and

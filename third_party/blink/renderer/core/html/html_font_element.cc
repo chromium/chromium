@@ -85,7 +85,7 @@ static std::optional<int> ParseFontSize(
   int value = CharactersToInt(
       characters.subspan(digits_start,
                          static_cast<size_t>(position - digits_start)),
-      WTF::NumberParsingOptions(), nullptr);
+      NumberParsingOptions(), nullptr);
 
   // Step 9
   if (mode == kRelativePlus) {

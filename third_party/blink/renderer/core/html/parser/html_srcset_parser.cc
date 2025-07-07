@@ -88,7 +88,7 @@ struct DescriptorToken {
     }
     return CharactersToInt(
         attribute.subspan(start, length_excluding_descriptor),
-        WTF::NumberParsingOptions(), &is_valid);
+        NumberParsingOptions(), &is_valid);
   }
 
   template <typename CharType>

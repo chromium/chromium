@@ -45,7 +45,7 @@ static inline int PartialStringToInt(const String& string,
                                      wtf_size_t end) {
   return WTF::VisitCharacters(
       StringView(string, start, end - start), [](auto chars) {
-        return CharactersToInt(chars, WTF::NumberParsingOptions(), nullptr);
+        return CharactersToInt(chars, NumberParsingOptions(), nullptr);
       });
 }
 

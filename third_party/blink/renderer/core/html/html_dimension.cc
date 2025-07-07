@@ -62,7 +62,7 @@ static HTMLDimension ParseDimension(
     bool ok = false;
     unsigned integer_value = CharactersToUInt(
         characters.subspan(digits_start, position - digits_start),
-        WTF::NumberParsingOptions(), &ok);
+        NumberParsingOptions(), &ok);
     if (!ok)
       return HTMLDimension(0., HTMLDimension::kRelative);
     value += integer_value;
@@ -78,8 +78,8 @@ static HTMLDimension ParseDimension(
       }
 
       if (fraction_numbers.size()) {
-        double fraction_value = CharactersToUInt(
-            base::span(fraction_numbers), WTF::NumberParsingOptions(), &ok);
+        double fraction_value = CharactersToUInt(base::span(fraction_numbers),
+                                                 NumberParsingOptions(), &ok);
         if (!ok)
           return HTMLDimension(0., HTMLDimension::kRelative);
 

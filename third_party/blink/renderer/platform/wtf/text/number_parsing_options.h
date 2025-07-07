@@ -11,18 +11,18 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace WTF {
+namespace blink {
 
 // Copyable and immutable object representing number parsing flags.
 class NumberParsingOptions final {
   STACK_ALLOCATED();
 
  public:
-  // 'Strict' behavior for WTF::String.
+  // 'Strict' behavior for blink::String.
   static constexpr NumberParsingOptions Strict() {
     return NumberParsingOptions().SetAcceptLeadingPlus().SetAcceptWhiteSpace();
   }
-  // Non-'Strict' behavior for WTF::String.
+  // Non-'Strict' behavior for blink::String.
   static constexpr NumberParsingOptions Loose() {
     return Strict().SetAcceptTrailingGarbage();
   }
@@ -77,10 +77,6 @@ class NumberParsingOptions final {
   unsigned accept_minus_zero_for_unsigned_ : 1;
 };
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::NumberParsingOptions;
-}
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_NUMBER_PARSING_OPTIONS_H_
