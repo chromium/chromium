@@ -263,6 +263,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
   protected onLanguageSearchValueChanged_(e: CustomEvent<{value: string}>) {
     this.languageSearchValue_ = e.detail.value;
   }
+
+  protected onKeyDown_(e: KeyboardEvent) {
+    e.stopPropagation();
+  }
 }
 
 declare global {
