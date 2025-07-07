@@ -123,8 +123,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public @Nullable List<RenderFrameHost> getAllRenderFrameHosts() {
-        if (mNativeRenderFrameHostAndroid == 0) return null;
+    public List<RenderFrameHost> getAllRenderFrameHosts() {
+        if (mNativeRenderFrameHostAndroid == 0) return List.of();
         return RenderFrameHostImplJni.get().getAllRenderFrameHosts(mNativeRenderFrameHostAndroid);
     }
 

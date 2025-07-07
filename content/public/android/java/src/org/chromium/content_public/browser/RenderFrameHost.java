@@ -83,13 +83,12 @@ public interface RenderFrameHost {
      *
      * @return A list of RenderFramesHosts including the current frame and all descendents.
      */
-    public @Nullable List<RenderFrameHost> getAllRenderFrameHosts();
+    public List<RenderFrameHost> getAllRenderFrameHosts();
 
     /**
      * Returns whether the feature policy allows the feature in this frame.
      *
      * @param feature A feature controlled by feature policy.
-     *
      * @return Whether the feature policy allows the feature in this frame.
      */
     boolean isFeatureEnabled(@PermissionsPolicyFeature int feature);

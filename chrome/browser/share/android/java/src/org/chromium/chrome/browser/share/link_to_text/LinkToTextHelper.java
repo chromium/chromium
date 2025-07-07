@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.net.Uri;
 
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.TextFragmentReceiver;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -19,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** This class provides the utility methods for link to text. */
+@NullMarked
 public class LinkToTextHelper {
     public static final String SHARED_HIGHLIGHTING_SUPPORT_URL =
             "https://support.google.com/chrome?p=shared_highlighting";
@@ -41,7 +45,7 @@ public class LinkToTextHelper {
         for (RenderFrameHost renderFrameHost : renderFrameHosts) {
             TextFragmentReceiver producer =
                     renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
-            producer.removeFragments();
+            assumeNonNull(producer).removeFragments();
         }
     }
 
@@ -75,7 +79,7 @@ public class LinkToTextHelper {
             return;
         }
 
-        tab.getWebContents()
+        assumeNonNull(tab.getWebContents())
                 .getMainFrame()
                 .getCanonicalUrlForSharing(
                         new Callback<>() {
@@ -106,7 +110,7 @@ public class LinkToTextHelper {
      */
     public static void hasExistingSelectors(Tab tab, Callback<Boolean> callback) {
         List<RenderFrameHost> renderFrameHosts =
-                tab.getWebContents().getMainFrame().getAllRenderFrameHosts();
+                assumeNonNull(tab.getWebContents()).getMainFrame().getAllRenderFrameHosts();
 
         for (RenderFrameHost renderFrameHost : renderFrameHosts) {
             TextFragmentReceiver producer =
@@ -151,7 +155,7 @@ public class LinkToTextHelper {
      */
     public static void getExistingSelectorsAllFrames(Tab tab, Callback<String> callback) {
         List<RenderFrameHost> renderFrameHosts =
-                tab.getWebContents().getMainFrame().getAllRenderFrameHosts();
+                assumeNonNull(tab.getWebContents()).getMainFrame().getAllRenderFrameHosts();
         getExistingSelectorsFromFrameAtIndex(
                 new ArrayList<>(), renderFrameHosts, callback, /* index= */ 0);
     }
