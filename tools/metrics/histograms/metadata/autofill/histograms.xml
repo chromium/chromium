@@ -7113,27 +7113,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.TransliterationDuration" units="ms"
-    expires_after="2025-11-01">
-  <owner>sygiet@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The time in milliseconds it took to get the transliterate a string. Recorded
-    after the transliteration was done.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.TransliteratorCreationTime" units="ms"
-    expires_after="2025-11-01">
-  <owner>sygiet@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The time in milliseconds it took to get the transliterator object, that is
-    created by the third party ICU library. Recorded after the object was
-    received by autofill.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.TransliteratorInitStatus" enum="BooleanSuccess"
     expires_after="2025-12-31">
   <owner>sygiet@google.com</owner>

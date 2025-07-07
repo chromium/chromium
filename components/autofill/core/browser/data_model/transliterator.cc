@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -122,18 +121,12 @@ std::u16string Transliterate(std::u16string_view value,
     return std::u16string(value);
   }
 
-  base::Time transliterator_creation_time = base::Time::Now();
   const base::i18n::Transliterator* transliterator =
       GetCachedTransliterator(transliteration_id);
-  // TODO(crbug.com/399657187): Remove once the issue is resolved.
-  base::UmaHistogramTimes("Autofill.TransliteratorCreationTime",
-                          base::Time::Now() - transliterator_creation_time);
-
   // Transliterator initialization failed.
   if (!transliterator) {
     return base::i18n::ToLower(value);
   }
-  base::ScopedUmaHistogramTimer logger("Autofill.TransliterationDuration");
   return transliterator->Transliterate(value);
 }
 }  // namespace
