@@ -23,6 +23,6 @@ specific_include_rules = {
     "+components/network_session_configurator/common/network_switches.h",
   ],
   "page_content_proto_util_unittest\.cc": [
-    "+third_party/blink/renderer/platform/graphics",
+    "+third_party/skia/include/core/SkColor.h",
   ],
 }
