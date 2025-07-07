@@ -86,12 +86,13 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 #pragma mark - LensCommands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  id<LensOverlayCommands> _lensOverlayCommands = HandlerForProtocol(
+  id<LensOverlayCommands> lensOverlayHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LensOverlayCommands);
-  [_lensOverlayCommands
-      searchImageWithLens:command.image
-               entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
-               completion:nil];
+  [lensOverlayHandler
+          searchImageWithLens:command.image
+                   entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
+      initialPresentationBase:_baseViewController
+                   completion:nil];
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {

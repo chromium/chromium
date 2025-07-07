@@ -22,9 +22,12 @@
                  completion:(void (^)(BOOL))completion;
 
 /// Responds to a search image with Lens request by creating a new Lens UI with
-/// the given image. The completion is called once the UI is presented.
+/// the given image. The overlay will be shown over the specified
+/// initial presentation base.
+/// The completion is called once the UI is presented.
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
+    initialPresentationBase:(UIViewController*)initialPresentationBase
                  completion:(void (^)(BOOL))completion;
 
 /// Responds to a search image with Lens request by creating a new Lens UI with

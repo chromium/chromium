@@ -340,7 +340,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
+    initialPresentationBase:(UIViewController*)initialPresentationBase
                  completion:(void (^)(BOOL))completion {
+  _presentationBaseViewController = initialPresentationBase;
   BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
   if (!success) {
     if (completion) {

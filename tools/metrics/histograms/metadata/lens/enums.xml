@@ -77,6 +77,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Network issue"/>
   <int value="30" label="Escape key press on preselection toast"/>
   <int value="31" label="Search with camera requested"/>
+  <int value="32" label="FRE promo next button"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

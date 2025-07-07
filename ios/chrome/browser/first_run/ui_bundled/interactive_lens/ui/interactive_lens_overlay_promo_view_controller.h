@@ -23,16 +23,18 @@
 // Delegate for actions on the Interactive Lens screen.
 @property(nonatomic, weak) id<InteractiveLensPromoDelegate> delegate;
 
-// Designated initializer for this view controller. `lensView` is view for the
-// interactive Lens Overlay.
-- (instancetype)initWithLensView:(UIView*)lensView NS_DESIGNATED_INITIALIZER;
+// The view controller that contains the Lens UI.
+@property(nonatomic, readonly) UIViewController* lensContainerViewController;
+
+// The image to be displayed in the promo.
+@property(nonatomic, readonly) UIImage* lensSearchImage;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

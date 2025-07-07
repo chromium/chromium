@@ -126,7 +126,10 @@ enum class LensOverlayDismissalSource {
   // overlay to close.
   kSearchWithCameraRequested = 31,
 
-  kMaxValue = kSearchWithCameraRequested
+  // The user tapped the "next" button on the FRE promo. Only used on iOS.
+  kFREPromoNextButton = 32,
+
+  kMaxValue = kFREPromoNextButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

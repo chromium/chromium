@@ -12,6 +12,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
     "//ios/chrome/browser/bubble/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/promo_style",
