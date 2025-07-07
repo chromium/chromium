@@ -1,12 +1,12 @@
 caption: Enable or disable the <ph name="USER_AGENT_REDUCTION_FEATURE_NAME">User-Agent
   Reduction</ph>.
 default: 0
+deprecated: true
 desc: "The <ph name=\"USER_AGENT_HEADER_NAME\">User-Agent</ph> HTTP request header\
-  \ is scheduled to be reduced. In order to facilitate testing and compatibility,\
-  \ this policy can enable the reduction feature for all websites, or disable the\
-  \ ability for origin trials or field trials to enable the feature.\n\n      To learn\
-  \ more about the <ph name=\"USER_AGENT_REDUCTION_FEATURE_NAME\">User-Agent Reduction</ph>\
-  \ and its timeline, read here:\n\n      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html\n\
+  \ had been reduced by default since Chrome 110 and deprecaton trial ended after\
+  \ Chrome 113. In order to continue receiving detailed plaform information, please\
+  \ migrate to User-Agent Client Hints which serve as a replacement for deprecated\
+  \ detailed User-Agent header: https://web.dev/articles/migrate-to-ua-ch\n\
   \      "
 example_value: 0
 features:
@@ -15,13 +15,13 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: User Agent reduction will be controllable via Field-Trials and Origin-Trials.
+- caption: Reduced User Agent.
   name: Default
   value: 0
-- caption: User Agent reduction disabled, and not enabled by Field-Trials or Origin-Trials.
+- caption: Full (legacy) User Agent.
   name: ForceDisabled
   value: 1
-- caption: User Agent reduction will be enabled for all origins.
+- caption: Reduced User Agent.
   name: ForceEnabled
   value: 2
 owners:
