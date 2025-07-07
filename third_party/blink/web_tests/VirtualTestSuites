@@ -1287,11 +1287,10 @@
       "--enable-threaded-compositing",
       "--disable-features=RasterInducingScroll"
     ],
-    "expires": "Jul 1, 2025",
+    "expires": "Jul 1, 2026",
     "owners": [
       "gastonr@microsoft.com",
-      "gerchiko@microsoft.com",
-      "yshalivskyy@microsoft.com"
+      "gerchiko@microsoft.com"
     ]
   },
   {
