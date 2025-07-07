@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_WAIT_TOOL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
