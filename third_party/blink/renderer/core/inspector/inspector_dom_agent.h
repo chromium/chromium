@@ -148,6 +148,7 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response getOuterHTML(std::optional<int> node_id,
                                   std::optional<int> backend_node_id,
                                   std::optional<String> object_id,
+                                  std::optional<bool> include_shadow_dom,
                                   String* outer_html) override;
   protocol::Response setOuterHTML(int node_id,
                                   const String& outer_html) override;

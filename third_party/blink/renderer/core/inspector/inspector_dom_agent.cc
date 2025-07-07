@@ -1211,6 +1211,7 @@ protocol::Response InspectorDOMAgent::getOuterHTML(
     std::optional<int> node_id,
     std::optional<int> backend_node_id,
     std::optional<String> object_id,
+    std::optional<bool> include_shadow_dom,
     WTF::String* outer_html) {
   Node* node = nullptr;
   protocol::Response response =
@@ -1218,7 +1219,12 @@ protocol::Response InspectorDOMAgent::getOuterHTML(
   if (!response.IsSuccess())
     return response;
 
-  *outer_html = CreateMarkup(node);
+  ShadowRootInclusion shadow_roots{
+      include_shadow_dom.value_or(false)
+          ? ShadowRootInclusion::Behavior::kIncludeAllShadowRootsForInspector
+          : ShadowRootInclusion::Behavior::kOnlyProvidedShadowRoots};
+  *outer_html =
+      CreateMarkup(node, kIncludeNode, kDoNotResolveURLs, shadow_roots);
   return protocol::Response::Success();
 }
 

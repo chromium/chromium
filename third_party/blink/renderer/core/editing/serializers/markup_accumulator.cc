@@ -631,6 +631,8 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
           return no_serialization;
         }
         break;
+      case Behavior::kIncludeAllShadowRootsForInspector:
+        break;
     }
   }
 
