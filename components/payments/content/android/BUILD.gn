@@ -106,6 +106,7 @@ android_resources("java_resources") {
   sources = payments_java_resources
   deps = [
     ":minimal_java_resources",
+    "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/strings:components_strings_grd",
@@ -409,6 +410,11 @@ android_library("unit_device_javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
+}
+
+java_group("javatests") {
+  testonly = true
+  deps = [ "//components/payments/content/android/spc:javatests" ]
 }
 
 android_library("test_support_java") {
