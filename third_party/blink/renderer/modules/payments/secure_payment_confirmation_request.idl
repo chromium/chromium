@@ -23,8 +23,3 @@ dictionary SecurePaymentConfirmationRequest {
     // that this SPC call is for.
     [RuntimeEnabled=SecurePaymentConfirmationUxRefresh] sequence<PaymentEntityLogo> paymentEntitiesLogos;
 };
-
-dictionary NetworkOrIssuerInformation {
-  required USVString name;
-  required USVString icon;
-};
