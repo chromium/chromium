@@ -169,6 +169,10 @@ class TestRenderingContext2D final
     return true;
   }
 
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+    return nullptr;
+  }
+
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override {
     return nullptr;
   }

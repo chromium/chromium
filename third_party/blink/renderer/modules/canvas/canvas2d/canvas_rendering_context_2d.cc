@@ -1126,6 +1126,11 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 }
 
 CanvasResourceProvider*
+CanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
+  return Host()->GetResourceProviderForCanvas2D();
+}
+
+CanvasResourceProvider*
 CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   HTMLCanvasElement* const element = canvas();
   if (!element) [[unlikely]] {

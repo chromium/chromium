@@ -292,7 +292,7 @@ void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
       !host) {
     return;
   }
-  DCHECK(!host->GetResourceProviderForCanvas2D());
+  DCHECK(!GetResourceProviderForCanvas2D());
 
   if (host->IsValidImageSize()) {
     if (dispatch_context_lost_event_timer_.IsActive()) {
@@ -784,7 +784,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
 }
 
 bool BaseRenderingContext2D::IsAccelerated() const {
-  auto* resource_provider = Host()->GetResourceProviderForCanvas2D();
+  auto* resource_provider = GetResourceProviderForCanvas2D();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();
 }
@@ -802,7 +802,7 @@ scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  CanvasResourceProvider* provider = Host()->GetResourceProviderForCanvas2D();
+  CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   return provider ? provider->Snapshot(reason) : nullptr;
 }
 
@@ -1509,7 +1509,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   gpu::SyncToken canvas_access_sync_token;
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
-      host->GetResourceProviderForCanvas2D()
+      GetResourceProviderForCanvas2D()
           ->GetBackingClientSharedImageForExternalWrite(
               &canvas_access_sync_token,
               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
@@ -1592,7 +1592,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // If this canvas already has a resource provider, this means that drawing has
   // occurred after `transferToWebGPU`. We disallow transferring back in this
   // case, and raise an exception instead.
-  if (host->GetResourceProviderForCanvas2D()) {
+  if (GetResourceProviderForCanvas2D()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The canvas was touched after transferToGPUTexture.");

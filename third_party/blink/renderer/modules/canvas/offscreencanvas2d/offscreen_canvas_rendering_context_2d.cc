@@ -272,7 +272,7 @@ OffscreenCanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
 }
 
 CanvasResourceProvider*
-OffscreenCanvasRenderingContext2D::GetCanvasResourceProvider() const {
+OffscreenCanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
   return Host()->GetResourceProviderForCanvas2D();
 }
 
@@ -358,7 +358,7 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage(
   if (!IsPaintable())
     return nullptr;
   scoped_refptr<StaticBitmapImage> image =
-      GetCanvasResourceProvider()->Snapshot(reason);
+      GetResourceProviderForCanvas2D()->Snapshot(reason);
 
   return image;
 }
@@ -389,7 +389,7 @@ const cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas()
   if (!is_valid_size_ || isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  CanvasResourceProvider* const provider = GetCanvasResourceProvider();
+  CanvasResourceProvider* const provider = GetResourceProviderForCanvas2D();
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
@@ -398,7 +398,7 @@ const cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas()
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
     const {
-  const CanvasResourceProvider* provider = GetCanvasResourceProvider();
+  const CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
@@ -493,13 +493,13 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
 bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() {
   if (IsPaintable())
-    return GetCanvasResourceProvider()->IsValid();
+    return GetResourceProviderForCanvas2D()->IsValid();
   return false;
 }
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  if (CanvasResourceProvider* provider = GetCanvasResourceProvider())
+  if (CanvasResourceProvider* provider = GetResourceProviderForCanvas2D())
       [[likely]] {
     return provider->FlushCanvas(reason);
   }

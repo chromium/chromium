@@ -318,6 +318,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ColorSchemeMayHaveChanged() override;
 
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
