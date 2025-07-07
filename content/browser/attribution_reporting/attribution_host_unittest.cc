@@ -262,8 +262,9 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                headers.get(),
                                                /*reporting_url=*/d_url));
-  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted(
-                                             impression.attribution_src_token));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationCompleted(
+                  impression.attribution_src_token, _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -321,8 +322,9 @@ TEST_F(AttributionHostTest,
 
   // Expect that `NotifyNavigationRegistrationCompleted` gets called even if the
   // last reporting_origin was not suitable.
-  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted(
-                                             impression.attribution_src_token));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationRegistrationCompleted(
+                  impression.attribution_src_token, _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 

@@ -95,8 +95,11 @@ class AttributionDataHostManager {
   // completes. Should be called even for navigations when
   // `NotifyNavigationRegistrationStarted` did not get call for the token as
   // `RegisterNavigationDataHost` might have been called with the token.
+  //
+  // `navigation_id` is only used for debugging purposes.
   virtual void NotifyNavigationRegistrationCompleted(
-      const blink::AttributionSrcToken& attribution_src_token) = 0;
+      const blink::AttributionSrcToken& attribution_src_token,
+      int64_t navigation_id = 0) = 0;
 
   // Notifies the manager that a background attribution request has started.
   // Every call to `NotifyBackgroundRegistrationStarted` must be eventually

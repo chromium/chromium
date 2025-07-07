@@ -277,7 +277,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   CHECK(attribution_manager);
   attribution_manager->GetDataHostManager()
       ->NotifyNavigationRegistrationCompleted(
-          impression->attribution_src_token);
+          impression->attribution_src_token,
+          navigation_handle->GetNavigationId());
 
   ongoing_registration_eligible_navigations_.erase(
       navigation_handle->GetNavigationId());
