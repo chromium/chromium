@@ -2354,6 +2354,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE" meaning="Button label to continue with a managed profile" desc="Message displayed in the primary button on a screen where the user is asked to create a work profile.">
        Continue
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT" meaning="Button label to continue with a managed profile" desc="Message displayed in the button on a screen where the user is notified about the personal profile migration to a work profile.">
+       Got it
+      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_BROWSER_INFORMATION_SUBTITLE" desc="Message of a section of the learn more screen about how the administrator manages the browser and can access browser information.">
         Your organization may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.
       </message>
@@ -2377,6 +2380,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        A separate space for work
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_MIGRATION_SUBTITLE" desc="Message displayed on a screen where the user is notified about the personal profile migration to a work profile.">
+        Using Chrome with your managed account helps you keep browsing related to your organization (including tabs, history, and passwords) separate from your other browsing
       </message>
       <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
           Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.

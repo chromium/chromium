@@ -619,6 +619,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Prefs used to force multi-profile migration.
   registry->RegisterTimePref(
       prefs::kWaitingForMultiProfileForcedMigrationTimestamp, base::Time());
+  // TODO(crbug.com/408131474): Change pref value post multi-profile force
+  // migration completion.
+  registry->RegisterBooleanPref(prefs::kMultiProfileForcedMigrationDone, false);
 
   registry->RegisterTimePref(prefs::kNextSSORecallTime, base::Time());
 

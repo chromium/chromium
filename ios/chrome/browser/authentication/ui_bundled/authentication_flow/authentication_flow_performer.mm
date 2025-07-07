@@ -310,7 +310,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                         skipBrowsingDataMigration:skipBrowsingDataMigration
                        mergeBrowsingDataByDefault:mergeBrowsingDataByDefault
             browsingDataMigrationDisabledByPolicy:
-                browsingDataMigrationDisabledByPolicy];
+                browsingDataMigrationDisabledByPolicy
+                       multiProfileForceMigration:NO];
     _managedConfirmationScreenCoordinator.delegate = self;
     [_managedConfirmationScreenCoordinator start];
     return;

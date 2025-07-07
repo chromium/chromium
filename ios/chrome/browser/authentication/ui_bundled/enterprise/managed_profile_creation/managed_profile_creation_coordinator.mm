@@ -34,6 +34,7 @@
   BOOL _skipBrowsingDataMigration;
   BOOL _mergeBrowsingDataByDefault;
   BOOL _browsingDataMigrationDisabledByPolicy;
+  BOOL _multiProfileForceMigration;
   ManagedProfileCreationViewController* _viewController;
   // Used to display `_viewController` initially and
   // `_browsingDataMigrationViewController` if the user tries to modify how
@@ -51,7 +52,8 @@
                  skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
                 mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
      browsingDataMigrationDisabledByPolicy:
-         (BOOL)browsingDataMigrationDisabledByPolicy {
+         (BOOL)browsingDataMigrationDisabledByPolicy
+                multiProfileForceMigration:(BOOL)multiProfileForceMigration {
   // TODO(crbug.com/381853288): Add a mediator to listen to the identity
   // changes.
   DCHECK(viewController);
@@ -63,14 +65,16 @@
     _mergeBrowsingDataByDefault = mergeBrowsingDataByDefault;
     _browsingDataMigrationDisabledByPolicy =
         browsingDataMigrationDisabledByPolicy;
+    _multiProfileForceMigration = multiProfileForceMigration;
   }
   return self;
 }
 
 - (void)start {
   _viewController = [[ManagedProfileCreationViewController alloc]
-      initWithUserEmail:_identity.userEmail
-           hostedDomain:_hostedDomain];
+               initWithUserEmail:_identity.userEmail
+                    hostedDomain:_hostedDomain
+      multiProfileForceMigration:_multiProfileForceMigration];
   _viewController.delegate = self;
   _viewController.managedProfileCreationViewControllerPresentationDelegate =
       self;

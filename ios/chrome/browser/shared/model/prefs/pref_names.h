@@ -793,6 +793,10 @@ inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 // 0 means Gemini is enabled (default), and 1 means it's disabled.
 inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 
+// A boolean specifying if the multi-profile force-migration is done.
+inline constexpr char kMultiProfileForcedMigrationDone[] =
+    "ios.multi_profile_forced_migration_done";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

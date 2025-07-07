@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   NSString* _userEmail;
   NSString* _hostedDomain;
   BOOL _keepBrowsinDataSeparate;
+  BOOL _multiProfileForceMigration;
 
   UITableView* _tableView;
   NSLayoutConstraint* _tableViewHeightConstraint;
@@ -53,11 +54,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @synthesize browsingDataMigrationDisabledByPolicy;
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-                     hostedDomain:(NSString*)hostedDomain {
+                     hostedDomain:(NSString*)hostedDomain
+       multiProfileForceMigration:(BOOL)multiProfileForceMigration {
   self = [super init];
   if (self) {
     _userEmail = userEmail;
     _hostedDomain = hostedDomain;
+    _multiProfileForceMigration = multiProfileForceMigration;
   }
   return self;
 }
@@ -83,6 +86,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   } else if (self.browsingDataMigrationDisabledByPolicy) {
     self.subtitleText = l10n_util::GetNSString(
         IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION);
+  } else if (_multiProfileForceMigration) {
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_MIGRATION_SUBTITLE);
   } else {
     self.subtitleText =
         l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE);
@@ -94,10 +100,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       base::SysNSStringToUTF16(_hostedDomain));
   self.disclaimerURLs = @[ [NSURL URLWithString:kManagedProfileLearnMoreURL] ];
 
+  // If _multiProfileForceMigration is YES, the user cannot refuse the
+  // migration, and the secondary button is hidden.
   self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
+      _multiProfileForceMigration
+          ? l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT)
+          : l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL);
+      _multiProfileForceMigration
+          ? nil
+          : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL);
 
   // Maybe add the data migration button
   if (self.canShowBrowsingDataMigration) {

@@ -25,6 +25,7 @@
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
                      hostedDomain:(NSString*)hostedDomain
+       multiProfileForceMigration:(BOOL)multiProfileForceMigration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

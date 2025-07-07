@@ -37,6 +37,8 @@
 // in `viewController`. UIViewController::presentViewController will be used
 // to show the ViewController created and owned by
 // ManagedProfileCreationCoordinator.
+// `multiProfileForceMigration` indicates if the UI shows to the user after
+// multi-profile force migration.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                   identity:(id<SystemIdentity>)identity
                               hostedDomain:(NSString*)hostedDomain
@@ -44,7 +46,9 @@
                  skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
                 mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
      browsingDataMigrationDisabledByPolicy:
-         (BOOL)browsingDataMigrationDisabledByPolicy NS_DESIGNATED_INITIALIZER;
+         (BOOL)browsingDataMigrationDisabledByPolicy
+                multiProfileForceMigration:(BOOL)multiProfileForceMigration
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
