@@ -78,7 +78,7 @@ impl Logger {
             self.buffer.push_str(s);
         }
         if self.stderr_level >= level {
-            eprint!("{}", s);
+            eprint!("{s}");
         }
     }
 

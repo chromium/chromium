@@ -151,11 +151,11 @@ pub(crate) fn highlight_location(src: &str, line_no: usize, col_no: usize) -> St
 
     for (i, &line) in lines[start..end].iter().enumerate() {
         let actual_line = start + i + 1;
-        result.push_str(&format!("{:>4} | {}\n", actual_line, line));
+        result.push_str(&format!("{actual_line:>4} | {line}\n"));
         if actual_line == line_no {
-            let prefix_len = format!("{:>4} | ", actual_line).len();
+            let prefix_len = format!("{actual_line:>4} | ").len();
             let marker = " ".repeat(prefix_len + col_no.saturating_sub(1)) + "^";
-            result.push_str(&format!("{}\n", marker));
+            result.push_str(&format!("{marker}\n"));
         }
     }
 
@@ -239,14 +239,14 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
     lexeme_idx_to_token.insert(spec.skip_id(cls), Token::SKIP);
     for (token, literal) in Token::LITERAL_TOKENS {
         let l = spec
-            .add_simple_literal(format!("{:?}", token), literal, false)
+            .add_simple_literal(format!("{token:?}"), literal, false)
             .unwrap();
         lexeme_idx_to_token.insert(l, *token);
     }
     for (token, regexp) in Token::REGEX_TOKENS {
         let l = spec
             .add_greedy_lexeme(
-                format!("{:?}", token),
+                format!("{token:?}"),
                 RegexAst::Regex(regexp.to_string()),
                 false,
                 None,
@@ -271,7 +271,7 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
     let mut lexemes = Vec::new();
     let mut start_idx = 0;
 
-    let input = format!("{}\n", input);
+    let input = format!("{input}\n");
     let input_bytes = input.as_bytes();
 
     let mut idx = 0;

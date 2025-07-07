@@ -553,9 +553,9 @@ impl RegexVec {
 
     pub fn print_state_table(&self) {
         for (state, row) in self.state_table.chunks(self.alpha.len()).enumerate() {
-            println!("state: {}", state);
+            println!("state: {state}");
             for (b, &new_state) in row.iter().enumerate() {
-                println!("  s{:?} -> {:?}", b, new_state);
+                println!("  s{b:?} -> {new_state:?}");
             }
         }
     }

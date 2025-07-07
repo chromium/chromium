@@ -296,7 +296,7 @@ impl Lexer {
         //     format!("[{}]", info.name)
         // }
 
-        format!("{:?} {:?}", lex, set)
+        format!("{lex:?} {set:?}")
     }
 }
 

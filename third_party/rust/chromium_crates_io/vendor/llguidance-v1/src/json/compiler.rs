@@ -289,10 +289,7 @@ impl Compiler {
         }
         .map(|val| val as i64);
         let rx = rx_int_range(minimum, maximum).with_context(|| {
-            format!(
-                "Failed to generate regex for integer range: min={:?}, max={:?}",
-                minimum, maximum
-            )
+            format!("Failed to generate regex for integer range: min={minimum:?}, max={maximum:?}")
         })?;
         let mut ast = RegexAst::Regex(rx);
         if let Some(d) = num.multiple_of.as_ref() {
@@ -312,8 +309,7 @@ impl Compiler {
         let rx = rx_float_range(minimum, maximum, !exclusive_minimum, !exclusive_maximum)
             .with_context(|| {
                 format!(
-                    "Failed to generate regex for float range: min={:?}, max={:?}",
-                    minimum, maximum
+                    "Failed to generate regex for float range: min={minimum:?}, max={maximum:?}"
                 )
             })?;
         let mut ast = RegexAst::Regex(rx);
@@ -414,7 +410,7 @@ impl Compiler {
                     // Property is required; add context and propagate UnsatisfiableSchemaError
                     Some(_) => {
                         return Err(e.context(UnsatisfiableSchemaError {
-                            message: format!("required property '{}' is unsatisfiable", name),
+                            message: format!("required property '{name}' is unsatisfiable"),
                         }));
                     }
                 },
@@ -560,10 +556,7 @@ impl Compiler {
                 } else {
                     let taken = self.builder.regex.select(taken_name_ids);
                     let not_taken = self.builder.regex.not(taken);
-                    let valid = self
-                        .builder
-                        .regex
-                        .regex(&format!("\"({})*\"", CHAR_REGEX))?;
+                    let valid = self.builder.regex.regex(&format!("\"({CHAR_REGEX})*\""))?;
                     let valid_and_not_taken = self.builder.regex.and(vec![valid, not_taken]);
                     self.builder.lexeme(valid_and_not_taken)
                 };
@@ -580,8 +573,7 @@ impl Compiler {
         } else if min_properties > 0 {
             return Err(anyhow!(UnsatisfiableSchemaError {
                 message: format!(
-                    "minProperties ({}) is greater than number of properties ({})",
-                    min_properties, num_required
+                    "minProperties ({min_properties}) is greater than number of properties ({num_required})"
                 ),
             }));
         }
@@ -716,8 +708,7 @@ impl Compiler {
             if min_length > max_length {
                 return Err(anyhow!(UnsatisfiableSchemaError {
                     message: format!(
-                        "minLength ({}) is greater than maxLength ({})",
-                        min_length, max_length
+                        "minLength ({min_length}) is greater than maxLength ({max_length})"
                     ),
                 }));
             }
@@ -740,7 +731,7 @@ impl Compiler {
 
                 if l < min_length || l > max_length.unwrap_or(usize::MAX) {
                     return Err(anyhow!(UnsatisfiableSchemaError {
-                        message: format!("Constant {:?} doesn't match length constraints", s)
+                        message: format!("Constant {s:?} doesn't match length constraints")
                     }));
                 }
 
@@ -806,8 +797,7 @@ impl Compiler {
             if min_items > max_items {
                 return Err(anyhow!(UnsatisfiableSchemaError {
                     message: format!(
-                        "minItems ({}) is greater than maxItems ({})",
-                        min_items, max_items
+                        "minItems ({min_items}) is greater than maxItems ({max_items})"
                     ),
                 }));
             }
@@ -852,8 +842,7 @@ impl Compiler {
                         Some(_) => {
                             return Err(e.context(UnsatisfiableSchemaError {
                                 message: format!(
-                                    "prefixItems[{}] is unsatisfiable but minItems is {}",
-                                    i, min_items
+                                    "prefixItems[{i}] is unsatisfiable but minItems is {min_items}"
                                 ),
                             }));
                         }

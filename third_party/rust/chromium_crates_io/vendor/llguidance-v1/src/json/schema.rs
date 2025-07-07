@@ -637,7 +637,7 @@ fn compile_contents_map(ctx: &Context, schemadict: IndexMap<&str, &Value>) -> Re
     if !unimplemented_keys.is_empty() {
         // ensure consistent order for tests
         unimplemented_keys.sort();
-        let msg = format!("Unimplemented keys: {:?}", unimplemented_keys);
+        let msg = format!("Unimplemented keys: {unimplemented_keys:?}");
         if ctx.options.lenient {
             ctx.record_warning(msg);
         } else {
@@ -962,7 +962,7 @@ fn compile_string(ctx: &Context, schema: &HashMap<&str, &Value>) -> Result<Schem
             if let Some(fmt) = lookup_format(&key) {
                 Some(RegexAst::Regex(fmt.to_string()))
             } else {
-                let msg = format!("Unknown format: {}", key);
+                let msg = format!("Unknown format: {key}");
                 if ctx.options.lenient {
                     ctx.record_warning(msg);
                     None
@@ -1212,7 +1212,7 @@ mod test_retriever {
             Schema::Ref(uri) => {
                 assert_eq!(uri, key);
             }
-            _ => panic!("Unexpected schema: {:?}", schema),
+            _ => panic!("Unexpected schema: {schema:?}"),
         }
         assert_eq!(defs.len(), 1);
         let val = defs.get(key).unwrap();
@@ -1223,7 +1223,7 @@ mod test_retriever {
                 max_length: None,
                 regex: None,
             }) => {}
-            _ => panic!("Unexpected schema: {:?}", val),
+            _ => panic!("Unexpected schema: {val:?}"),
         }
     }
 }

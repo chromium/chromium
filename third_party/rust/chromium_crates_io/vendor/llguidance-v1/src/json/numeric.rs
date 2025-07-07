@@ -136,7 +136,7 @@ pub fn rx_int_range(left: Option<i64>, right: Option<i64>) -> Result<String> {
                 let l = left.to_string();
                 let r = right.to_string();
                 if left == right {
-                    return Ok(format!("({})", l));
+                    return Ok(format!("({l})"));
                 }
 
                 let lpref = &l[..l.len() - 1];
@@ -145,7 +145,7 @@ pub fn rx_int_range(left: Option<i64>, right: Option<i64>) -> Result<String> {
                 let rx = &r[r.len() - 1..];
 
                 if lpref == rpref {
-                    return Ok(format!("({}[{}-{}])", lpref, lx, rx));
+                    return Ok(format!("({lpref}[{lx}-{rx}])"));
                 }
 
                 let mut left_rec = lpref.parse::<i64>().unwrap_or(0);
@@ -162,17 +162,17 @@ pub fn rx_int_range(left: Option<i64>, right: Option<i64>) -> Result<String> {
 
                 if lx != "0" {
                     left_rec += 1;
-                    parts.push(format!("{}[{}-9]", lpref, lx));
+                    parts.push(format!("{lpref}[{lx}-9]"));
                 }
 
                 if rx != "9" {
                     right_rec -= 1;
-                    parts.push(format!("{}[0-{}]", rpref, rx));
+                    parts.push(format!("{rpref}[0-{rx}]"));
                 }
 
                 if left_rec <= right_rec {
                     let inner = rx_int_range(Some(left_rec), Some(right_rec))?;
-                    parts.push(format!("{}[0-9]", inner));
+                    parts.push(format!("{inner}[0-9]"));
                 }
 
                 Ok(mk_or(parts))
@@ -195,7 +195,7 @@ fn lexi_x_to_9(x: &str, incl: bool) -> Result<String> {
         if x.is_empty() {
             Ok("[0-9]*".to_string())
         } else if x.len() == 1 {
-            Ok(format!("[{}-9][0-9]*", x))
+            Ok(format!("[{x}-9][0-9]*"))
         } else {
             let x0 = x
                 .chars()
@@ -345,7 +345,7 @@ fn lexi_range(ld: &str, rd: &str, ld_incl: bool, rd_incl: bool) -> Result<String
 }
 
 fn float_to_str(f: f64) -> String {
-    format!("{}", f)
+    format!("{f}")
 }
 
 pub fn rx_float_range(
@@ -420,7 +420,7 @@ pub fn rx_float_range(
                 } else {
                     let mut parts = vec![];
                     let neg_part = rx_float_range(Some(0.0), Some(-left), false, left_inclusive)?;
-                    parts.push(format!("(-{})", neg_part));
+                    parts.push(format!("(-{neg_part})"));
 
                     if right > 0.0 || right_inclusive {
                         let pos_part =
@@ -469,9 +469,9 @@ pub fn rx_float_range(
                         lexi_range(&ld, &rd, left_inclusive, right_inclusive)?
                     );
                     if ld.parse::<i64>().unwrap_or(0) == 0 {
-                        Ok(format!("({}({})?)", left_rec, suff))
+                        Ok(format!("({left_rec}({suff})?)"))
                     } else {
-                        Ok(format!("({}{})", left_rec, suff))
+                        Ok(format!("({left_rec}{suff})"))
                     }
                 } else {
                     let mut parts = vec![];
@@ -486,7 +486,7 @@ pub fn rx_float_range(
 
                     if right_rec > left_rec {
                         let inner = rx_int_range(Some(left_rec), Some(right_rec - 1))?;
-                        parts.push(format!("({}(\\.[0-9]+)?)", inner));
+                        parts.push(format!("({inner}(\\.[0-9]+)?)"));
                     }
 
                     if !rd.is_empty() {
@@ -496,7 +496,7 @@ pub fn rx_float_range(
                             lexi_0_to_x(&rd, right_inclusive)?
                         ));
                     } else if right_inclusive {
-                        parts.push(format!("{}(\\.0+)?", right_rec));
+                        parts.push(format!("{right_rec}(\\.0+)?"));
                     }
 
                     Ok(mk_or(parts))
@@ -511,10 +511,7 @@ pub fn check_number_bounds(num: &NumberSchema) -> Result<(), String> {
     let (maximum, exclusive_maximum) = num.get_maximum();
     if let (Some(min), Some(max)) = (minimum, maximum) {
         if min > max {
-            return Err(format!(
-                "minimum ({}) is greater than maximum ({})",
-                min, max
-            ));
+            return Err(format!("minimum ({min}) is greater than maximum ({max})"));
         }
         if min == max && (exclusive_minimum || exclusive_maximum) {
             let minimum_repr = if exclusive_minimum {
@@ -528,8 +525,7 @@ pub fn check_number_bounds(num: &NumberSchema) -> Result<(), String> {
                 "maximum"
             };
             return Err(format!(
-                "{} ({}) is equal to {} ({})",
-                minimum_repr, min, maximum_repr, max
+                "{minimum_repr} ({min}) is equal to {maximum_repr} ({max})"
             ));
         }
     }
@@ -538,16 +534,14 @@ pub fn check_number_bounds(num: &NumberSchema) -> Result<(), String> {
             if let Some(min) = minimum {
                 if min > 0.0 || (exclusive_minimum && min >= 0.0) {
                     return Err(format!(
-                        "minimum ({}) is greater than 0, but multipleOf is 0",
-                        min
+                        "minimum ({min}) is greater than 0, but multipleOf is 0"
                     ));
                 }
             };
             if let Some(max) = maximum {
                 if max < 0.0 || (exclusive_maximum && max <= 0.0) {
                     return Err(format!(
-                        "maximum ({}) is less than 0, but multipleOf is 0",
-                        max
+                        "maximum ({max}) is less than 0, but multipleOf is 0"
                     ));
                 }
             };
@@ -604,22 +598,22 @@ mod test_ranges {
     use regex::Regex;
 
     fn do_test_int_range(rx: &str, left: Option<i64>, right: Option<i64>) {
-        let re = Regex::new(&format!("^{}$", rx)).unwrap();
+        let re = Regex::new(&format!("^{rx}$")).unwrap();
         for n in (left.unwrap_or(0) - 1000)..=(right.unwrap_or(0) + 1000) {
             let matches = re.is_match(&n.to_string());
             let expected =
                 (left.is_none() || left.unwrap() <= n) && (right.is_none() || n <= right.unwrap());
             if expected != matches {
                 let range_str = match (left, right) {
-                    (Some(l), Some(r)) => format!("[{}, {}]", l, r),
-                    (Some(l), None) => format!("[{}, ∞)", l),
-                    (None, Some(r)) => format!("(-∞, {}]", r),
+                    (Some(l), Some(r)) => format!("[{l}, {r}]"),
+                    (Some(l), None) => format!("[{l}, ∞)"),
+                    (None, Some(r)) => format!("(-∞, {r}]"),
                     (None, None) => "(-∞, ∞)".to_string(),
                 };
                 if matches {
-                    panic!("{} not in range {} but matches {:?}", n, range_str, rx);
+                    panic!("{n} not in range {range_str} but matches {rx:?}");
                 } else {
-                    panic!("{} in range {} but does not match {:?}", n, range_str, rx);
+                    panic!("{n} in range {range_str} but does not match {rx:?}");
                 }
             }
         }
@@ -678,7 +672,7 @@ mod test_ranges {
         left_inclusive: bool,
         right_inclusive: bool,
     ) {
-        let re = Regex::new(&format!("^{}$", rx)).unwrap();
+        let re = Regex::new(&format!("^{rx}$")).unwrap();
         let left_int = left.map(|x| {
             let left_int = x.ceil() as i64;
             if !left_inclusive && x == left_int as f64 {
@@ -720,15 +714,15 @@ mod test_ranges {
                     let lket = if left_inclusive { "[" } else { "(" };
                     let rket = if right_inclusive { "]" } else { ")" };
                     let range_str = match (left, right) {
-                        (Some(l), Some(r)) => format!("{}{}, {}{}", lket, l, r, rket),
-                        (Some(l), None) => format!("{}{}, ∞)", lket, l),
-                        (None, Some(r)) => format!("(-∞, {}{}", r, rket),
+                        (Some(l), Some(r)) => format!("{lket}{l}, {r}{rket}"),
+                        (Some(l), None) => format!("{lket}{l}, ∞)"),
+                        (None, Some(r)) => format!("(-∞, {r}{rket}"),
                         (None, None) => "(-∞, ∞)".to_string(),
                     };
                     if matches {
-                        panic!("{} not in range {} but matches {:?}", n, range_str, rx);
+                        panic!("{n} not in range {range_str} but matches {rx:?}");
                     } else {
-                        panic!("{} in range {} but does not match {:?}", n, range_str, rx);
+                        panic!("{n} in range {range_str} but does not match {rx:?}");
                     }
                 }
             }
@@ -1174,9 +1168,7 @@ mod test_number_bounds {
             assert_eq!(
                 result.is_ok(),
                 case.ok,
-                "Failed for case {:?} with result {:?}",
-                case,
-                result
+                "Failed for case {case:?} with result {result:?}"
             );
         }
     }

@@ -352,7 +352,7 @@ impl SlicedBiasComputer {
             todo.extend(slice.children.iter());
         }
 
-        s.push_str(&format!("total_nodes: {}\n", total_nodes));
+        s.push_str(&format!("total_nodes: {total_nodes}\n"));
         s.push_str(&format!(
             "WILDCARD: {}\n",
             self.top_slice.trie_with_children.trie_stats()

@@ -417,7 +417,7 @@ impl TokenParser {
         for &t in tokens {
             if t as usize >= n_vocab {
                 return Err(self.stop(
-                    &format!("token id {} out of range", t),
+                    &format!("token id {t} out of range"),
                     StopReason::InternalError,
                 ));
             }
@@ -503,7 +503,7 @@ impl TokenParser {
 
         if (tok_id as usize) >= trie.vocab_size() {
             return Err(self.stop(
-                &format!("token id {} out of range", tok_id),
+                &format!("token id {tok_id} out of range"),
                 StopReason::InternalError,
             ));
         }
@@ -557,7 +557,7 @@ impl TokenParser {
         match self.parser.apply_token(tok_bytes, tok_id) {
             Err(e) => {
                 return Err(self.stop(
-                    &format!("Parser Error: {}", e),
+                    &format!("Parser Error: {e}"),
                     StopReason::ParserTooComplex, // TODO - there are other reasons
                 ));
             }
@@ -873,7 +873,7 @@ impl TokenParser {
             let num_backtrack = self.consume_token(t)?;
             if num_backtrack > 0 {
                 return Err(self.stop(
-                    &format!("backtrack required after ff_token: {}", t),
+                    &format!("backtrack required after ff_token: {t}"),
                     StopReason::InternalError,
                 ));
             }

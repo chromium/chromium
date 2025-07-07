@@ -167,7 +167,7 @@ impl Compiler {
                     let rx = if flags.is_empty() {
                         val
                     } else {
-                        format!("(?{}){}", flags, val)
+                        format!("(?{flags}){val}")
                     };
                     self.mk_regex("regex", rx)
                 }
@@ -435,7 +435,7 @@ impl Compiler {
             return self.builder.apply(*id, param);
         }
         if let Some(&is_param) = self.in_progress.get(name) {
-            let id = self.builder.new_param_node(&format!("{}_", name), is_param);
+            let id = self.builder.new_param_node(&format!("{name}_"), is_param);
             self.node_ids.insert(name.to_string(), id);
             return self.builder.apply(id, param);
         }
@@ -689,7 +689,7 @@ impl Grammar {
             }
             Statement::MultiImport { path, names } => {
                 for n in names {
-                    let qname = format!("{}.{}", path, n);
+                    let qname = format!("{path}.{n}");
                     let regex = lookup_common_regex(&qname)?;
                     self.add_token_def(loc, n.to_string(), regex)?;
                 }

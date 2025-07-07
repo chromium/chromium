@@ -18,7 +18,7 @@ fn main() {
 
     if !missing.is_empty() {
         // this means we're running outside of cargo
-        println!("cargo:warning=Missing variables: {:?}", missing);
+        println!("cargo:warning=Missing variables: {missing:?}");
     } else {
         // otherwise, assume OUT_DIR is target/debug/build/llguidance-<hash>/out
         let copy_path = format!("{}/../../../llguidance.h", env::var("OUT_DIR").unwrap());

@@ -43,7 +43,7 @@ impl Symbol {
     fn param_name(&self, param: &ParamExpr) -> String {
         let mut r = self.short_name();
         if param != &ParamExpr::Null {
-            r.push_str(&format!("::{}", param));
+            r.push_str(&format!("::{param}"));
         }
         r
     }
@@ -325,21 +325,21 @@ impl Display for ParamExpr {
         match self {
             ParamExpr::Null => write!(f, "null"),
             ParamExpr::SelfRef => write!(f, "_"),
-            ParamExpr::Const(v) => write!(f, "{}", v),
-            ParamExpr::Incr(pr) => write!(f, "incr({})", pr),
-            ParamExpr::Decr(pr) => write!(f, "decr({})", pr),
+            ParamExpr::Const(v) => write!(f, "{v}"),
+            ParamExpr::Incr(pr) => write!(f, "incr({pr})"),
+            ParamExpr::Decr(pr) => write!(f, "decr({pr})"),
             ParamExpr::BitOr(v) => {
                 if v.0.count_ones() == 1 {
                     write!(f, "set_bit({})", v.0.trailing_zeros())
                 } else {
-                    write!(f, "bit_or({})", v)
+                    write!(f, "bit_or({v})")
                 }
             }
             ParamExpr::BitAnd(v) => {
                 if (!v.0).count_ones() == 1 {
                     write!(f, "clear_bit({})", (!v.0).trailing_zeros())
                 } else {
-                    write!(f, "bit_and({})", v)
+                    write!(f, "bit_and({v})")
                 }
             }
         }
@@ -377,33 +377,33 @@ impl Display for ParamCond {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ParamCond::True => write!(f, "true"),
-            ParamCond::NE(pr, pv) => write!(f, "ne({}, {})", pr, pv),
+            ParamCond::NE(pr, pv) => write!(f, "ne({pr}, {pv})"),
             ParamCond::EQ(pr, pv) => {
                 if pr.len() == 1 && pv.0 == 0 {
                     write!(f, "bit_clear({})", pr.start())
                 } else if pr.len() == 1 && pv.0 == 1 {
                     write!(f, "bit_set({})", pr.start())
                 } else if pv.0 == 0 {
-                    write!(f, "is_zeros({})", pr)
+                    write!(f, "is_zeros({pr})")
                 } else if pv.0 == (pr.mask() >> pr.start()) {
-                    write!(f, "is_ones({})", pr)
+                    write!(f, "is_ones({pr})")
                 } else {
-                    write!(f, "eq({}, {})", pr, pv)
+                    write!(f, "eq({pr}, {pv})")
                 }
             }
-            ParamCond::LE(pr, pv) => write!(f, "le({}, {})", pr, pv),
-            ParamCond::LT(pr, pv) => write!(f, "lt({}, {})", pr, pv),
-            ParamCond::GE(pr, pv) => write!(f, "ge({}, {})", pr, pv),
-            ParamCond::GT(pr, pv) => write!(f, "gt({}, {})", pr, pv),
-            ParamCond::BitCountNE(pr, bc) => write!(f, "bit_count_ne({}, {})", pr, bc),
-            ParamCond::BitCountEQ(pr, bc) => write!(f, "bit_count_eq({}, {})", pr, bc),
-            ParamCond::BitCountLE(pr, bc) => write!(f, "bit_count_le({}, {})", pr, bc),
-            ParamCond::BitCountLT(pr, bc) => write!(f, "bit_count_lt({}, {})", pr, bc),
-            ParamCond::BitCountGE(pr, bc) => write!(f, "bit_count_ge({}, {})", pr, bc),
-            ParamCond::BitCountGT(pr, bc) => write!(f, "bit_count_gt({}, {})", pr, bc),
-            ParamCond::And(c1, c2) => write!(f, "and({}, {})", c1, c2),
-            ParamCond::Or(c1, c2) => write!(f, "or({}, {})", c1, c2),
-            ParamCond::Not(c) => write!(f, "not({})", c),
+            ParamCond::LE(pr, pv) => write!(f, "le({pr}, {pv})"),
+            ParamCond::LT(pr, pv) => write!(f, "lt({pr}, {pv})"),
+            ParamCond::GE(pr, pv) => write!(f, "ge({pr}, {pv})"),
+            ParamCond::GT(pr, pv) => write!(f, "gt({pr}, {pv})"),
+            ParamCond::BitCountNE(pr, bc) => write!(f, "bit_count_ne({pr}, {bc})"),
+            ParamCond::BitCountEQ(pr, bc) => write!(f, "bit_count_eq({pr}, {bc})"),
+            ParamCond::BitCountLE(pr, bc) => write!(f, "bit_count_le({pr}, {bc})"),
+            ParamCond::BitCountLT(pr, bc) => write!(f, "bit_count_lt({pr}, {bc})"),
+            ParamCond::BitCountGE(pr, bc) => write!(f, "bit_count_ge({pr}, {bc})"),
+            ParamCond::BitCountGT(pr, bc) => write!(f, "bit_count_gt({pr}, {bc})"),
+            ParamCond::And(c1, c2) => write!(f, "and({c1}, {c2})"),
+            ParamCond::Or(c1, c2) => write!(f, "or({c1}, {c2})"),
+            ParamCond::Not(c) => write!(f, "not({c})"),
         }
     }
 }
@@ -894,7 +894,7 @@ impl Grammar {
         let mut idx = self.symbol_count_cache.get(&name).cloned().unwrap_or(2);
         // don't allow empty names
         while name.is_empty() || self.symbol_by_name.contains_key(&name) {
-            name = format!("{}#{}", name0, idx);
+            name = format!("{name0}#{idx}");
             idx += 1;
         }
         self.symbol_count_cache.insert(name0.to_string(), idx);
@@ -943,8 +943,7 @@ impl Grammar {
             }
         }
         format!(
-            "{} terminals; {} non-terminals with {} rules with {} symbols",
-            num_term, num_non_term, num_rules, size
+            "{num_term} terminals; {num_non_term} non-terminals with {num_rules} rules with {size} symbols"
         )
     }
 
@@ -1070,7 +1069,7 @@ impl CSymbol {
     fn param_name(&self, param: &ParamExpr) -> String {
         let mut r = self.short_name();
         if param != &ParamExpr::Null {
-            r.push_str(&format!("::{}", param));
+            r.push_str(&format!("::{param}"));
         }
         r
     }
@@ -1629,7 +1628,7 @@ impl Debug for CGrammar {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for s in &self.symbols {
             if let Some(ln) = self.null_rule(s.idx) {
-                writeln!(f, "{}", ln)?;
+                writeln!(f, "{ln}")?;
             }
             for (r, cond) in s.iter_rules() {
                 writeln!(f, "{}", self.rule_to_string(r, cond))?;
@@ -1656,7 +1655,7 @@ fn rule_to_string(
         rhs.insert(dot, "•".to_string());
     }
     let lhs = if props.parametric && !lhs.is_empty() {
-        format!("{}::_", lhs)
+        format!("{lhs}::_")
     } else {
         lhs.to_string()
     };
@@ -1667,7 +1666,7 @@ fn rule_to_string(
         if cond.is_true() {
             String::new()
         } else {
-            format!("   %if {} ", cond)
+            format!("   %if {cond} ")
         },
         props
     )

@@ -809,8 +809,7 @@ impl ParserState {
 
         if self.stats.all_items > self.max_all_items && self.parser_error.is_none() {
             self.parser_error = Some(format!(
-                "Too many items (limit {}; {}); try avoiding single-byte/short lexemes",
-                limit, lbl
+                "Too many items (limit {limit}; {lbl}); try avoiding single-byte/short lexemes"
             ));
         }
 
@@ -1436,7 +1435,7 @@ impl ParserState {
                         }
                     }
                     if let Some(token_id) = unique_token_id {
-                        let mut bytes = format!("X[{}]", token_id).into_bytes();
+                        let mut bytes = format!("X[{token_id}]").into_bytes();
                         bytes[0] = TokTrie::SPECIAL_TOKEN_MARKER;
                         let mut all_ok = true;
                         for b in bytes {
@@ -2258,8 +2257,7 @@ impl ParserState {
         if grm_stack_top.as_usize() == 0 {
             assert!(
                 grammar_ids.contains(&LexemeClass::ROOT),
-                "grammar stack empty for non-root grammar: {:?}",
-                grammar_ids
+                "grammar stack empty for non-root grammar: {grammar_ids:?}"
             );
         }
 
@@ -2420,7 +2418,7 @@ impl ParserState {
                         lexer_state = next_state;
                     }
                     LexerResult::SpecialToken(_) => panic!("hidden byte resulted in special token"),
-                    LexerResult::Error => panic!("hidden byte failed; {:?}", hidden_bytes),
+                    LexerResult::Error => panic!("hidden byte failed; {hidden_bytes:?}"),
                     LexerResult::Lexeme(second_lexeme) => {
                         if trace_here {
                             debug!("hidden bytes lexeme: {:?}", second_lexeme);
@@ -2724,7 +2722,7 @@ fn item_to_string(g: &CGrammar, item: &Item, param: ParamValue) -> String {
         item.start_pos()
     );
     if !param.is_default() {
-        r.push_str(&format!(" ::{}", param));
+        r.push_str(&format!(" ::{param}"));
     }
     r
 }
@@ -2744,8 +2742,8 @@ impl ParserError {
 
     pub fn message(&self) -> String {
         match self {
-            ParserError::LexerError(s) => format!("lexer error: {}", s),
-            ParserError::ParserError(s) => format!("parser error: {}", s),
+            ParserError::LexerError(s) => format!("lexer error: {s}"),
+            ParserError::ParserError(s) => format!("parser error: {s}"),
         }
     }
 }

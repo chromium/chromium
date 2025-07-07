@@ -105,7 +105,7 @@ impl StopController {
                 if let Some(rx) = self.regex.as_mut() {
                     rx.state = rx.initial_state;
                 }
-                buf.extend_from_slice(format!("<[{}]>", tok_id).as_bytes());
+                buf.extend_from_slice(format!("<[{tok_id}]>").as_bytes());
             } else if let Some(rx) = self.regex.as_mut() {
                 let mut state = rx.state;
                 let mut dfa = rx.dfa.lock().unwrap();

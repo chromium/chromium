@@ -130,14 +130,14 @@ impl ValidationResult {
             ValidationResult::Warnings(w) => {
                 if with_warnings {
                     w.iter()
-                        .map(|w| format!("WARNING: {}", w))
+                        .map(|w| format!("WARNING: {w}"))
                         .collect::<Vec<_>>()
                         .join("\n")
                 } else {
                     String::new()
                 }
             }
-            ValidationResult::Error(e) => format!("ERROR: {}", e),
+            ValidationResult::Error(e) => format!("ERROR: {e}"),
         }
     }
 }

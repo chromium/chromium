@@ -158,7 +158,7 @@ pub enum GrammarId {
 impl Display for GrammarId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            GrammarId::Name(s) => write!(f, "@{}", s),
+            GrammarId::Name(s) => write!(f, "@{s}"),
         }
     }
 }
@@ -346,7 +346,7 @@ impl GrammarWithLexer {
 
     pub fn from_regex(rx: &str) -> Self {
         let rx = regex_to_lark(rx, "");
-        let mut r = Self::from_lark(format!("start: /{}/", rx));
+        let mut r = Self::from_lark(format!("start: /{rx}/"));
         r.name = Some("regex".to_string());
         r
     }

@@ -153,7 +153,7 @@ impl LexerSpec {
         for (msg, count) in &self.grammar_warnings {
             let mut s = msg.clone();
             if count > &1 {
-                s.push_str(&format!(" ({} times)", count));
+                s.push_str(&format!(" ({count} times)"));
             }
             total_len += s.len();
             r.push(s);
@@ -439,7 +439,7 @@ impl LexerSpec {
         let lex0 = self.lexemes.len();
         for (idx, added) in extra_lexemes.iter().enumerate() {
             self.add_lexeme_spec(LexemeSpec {
-                name: format!("$extra_{}", idx),
+                name: format!("$extra_{idx}"),
                 rx: RegexAst::Regex(added.clone()),
                 is_extra: true,
                 ..self.empty_spec()
@@ -499,7 +499,7 @@ impl Debug for LexerSpec {
         writeln!(f, "LexerSpec {{ lexemes: [")?;
         for lex in &self.lexemes {
             let slex = lex.to_string(512, Some(self.regex_builder.exprset()));
-            writeln!(f, "  {}", slex)?;
+            writeln!(f, "  {slex}")?;
         }
         write!(
             f,
