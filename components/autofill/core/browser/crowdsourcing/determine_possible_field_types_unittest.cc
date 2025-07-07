@@ -310,13 +310,10 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   test::SetProfileInfo(&profiles[3], "Vincent", "Wilhelm", "van Gogh", "NL");
   profiles[3].set_guid(MakeGuid(4));
 
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", "4234-5678-9012-3456", "04",
                           "2999", "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
 
   FormData form;
   form.set_name(u"MyForm");
@@ -329,7 +326,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       ConstructFormStructureFromFormData(form);
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
+      profiles, {credit_card}, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
@@ -365,9 +362,6 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
 // BrowserAutofillManager reuses the CVC value to identify a potentially
 // existing CVC form field to cast a |CREDIT_CARD_VERIFICATION_CODE|-type vote.
 TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
-  std::vector<AutofillProfile> profiles;
-  std::vector<CreditCard> credit_cards;
-
   constexpr char kCvc[] = "1234";
   constexpr char16_t kCvc16[] = u"1234";
   constexpr char kFourDigitButNotCvc[] = "6676";
@@ -388,11 +382,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
-  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/kCvc16, /*dates_and_formats=*/{},
       "en-us", *form_structure);
@@ -426,25 +419,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
-
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", credit_card_number, "04",
                           actual_credit_card_exp_year, "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), {credit_card},
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/std::u16string(),
       /*dates_and_formats=*/{}, "en-us", *form_structure);
@@ -478,25 +460,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
-
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", credit_card_number, "04",
                           actual_credit_card_exp_year, "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), {credit_card},
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/std::u16string(),
       /*dates_and_formats=*/{}, "en-us", *form_structure);
@@ -529,25 +500,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure->field(1)->set_possible_types({UNKNOWN_TYPE});
-  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
-
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", credit_card_number, "04",
                           actual_credit_card_exp_year, "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), {credit_card},
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/std::u16string(),
       /*dates_and_formats=*/{}, "en-us", *form_structure);
@@ -580,25 +540,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
-  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
-
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", credit_card_number, "04",
                           actual_credit_card_exp_year, "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), {credit_card},
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/std::u16string(),
       /*dates_and_formats=*/{}, "en-us", *form_structure);
@@ -627,26 +576,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types(
-      {CREDIT_CARD_NUMBER, UNKNOWN_TYPE});
-  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
-
-  // Set up the test credit cards.
-  std::vector<CreditCard> credit_cards;
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", credit_card_number, "04",
                           credit_card_exp_year, "1");
   credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, std::vector<EntityInstance>(),
-      std::vector<LoyaltyCard>(),
+      std::vector<AutofillProfile>(), {credit_card},
+      std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
       *form_structure);
@@ -672,17 +609,12 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  // Set the field types.
-  form_structure->field(0)->set_possible_types({LOYALTY_MEMBERSHIP_PROGRAM});
-
-  // Set up the test loyalty cards.
-  std::vector<LoyaltyCard> loyalty_cards;
   LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
   loyalty_card.set_loyalty_card_number(loyalty_card_number);
-  loyalty_cards.push_back(loyalty_card);
+
   DeterminePossibleFieldTypesForUpload(
       std::vector<AutofillProfile>(), std::vector<CreditCard>(),
-      std::vector<EntityInstance>(), loyalty_cards,
+      std::vector<EntityInstance>(), {loyalty_card},
       /*fields_that_match_state=*/{},
       /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
       *form_structure);
