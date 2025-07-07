@@ -43,7 +43,7 @@ std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
   }
 
   std::optional<double> creation_timestamp =
-      current_session_dict->FindInt(kLastInteractionTimestampDictKey);
+      current_session_dict->FindDouble(kLastInteractionTimestampDictKey);
   if (!creation_timestamp) {
     return std::nullopt;
   }
