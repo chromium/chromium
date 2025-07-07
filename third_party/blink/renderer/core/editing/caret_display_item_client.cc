@@ -222,15 +222,17 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (new_color != color_) {
     needs_paint_invalidation_ = true;
     color_ = new_color;
-    // TODO(https://crbug.com/353713061):
-    // https://drafts.csswg.org/css-ui/#caret-color When caret-shape is block,
-    // ensuring good visibility and contrast is best achieved with a
-    // UA-determined color other than currentColor.
-    if (is_caret_color_auto && caret_shape == CaretShape::kBlock) {
-      // Temporarily setting opacity to 0.5.
-      color_.SetAlpha(0.5);
-    }
   }
+
+  // TODO(https://crbug.com/353713061):
+  // https://drafts.csswg.org/css-ui/#caret-color When caret-shape is block,
+  // ensuring good visibility and contrast is best achieved with a
+  // UA-determined color other than currentColor.
+  if (is_caret_color_auto && caret_shape == CaretShape::kBlock) {
+    // Temporarily set opacity to 0.5.
+    color_.SetAlpha(0.5);
+  }
+
   auto new_local_rect = rect_and_block.caret_rect;
   // TODO(crbug.com/1123630): Avoid paint invalidation on caret movement.
   if (new_local_rect != local_rect_) {
