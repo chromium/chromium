@@ -3982,9 +3982,6 @@ extern const char kESimEmptyActivationCodeSupportedDescription[];
 extern const char kPermissiveUsbPassthroughName[];
 extern const char kPermissiveUsbPassthroughDescription[];
 
-extern const char kCameraAngleBackendName[];
-extern const char kCameraAngleBackendDescription[];
-
 extern const char kDisableBruschettaInstallChecksName[];
 extern const char kDisableBruschettaInstallChecksDescription[];
 

@@ -6806,10 +6806,6 @@ const char kPermissiveUsbPassthroughName[] =
 const char kPermissiveUsbPassthroughDescription[] =
     "When enabled, applies more permissive rules passthrough of USB devices.";
 
-const char kCameraAngleBackendName[] = "Camera service ANGLE backend";
-const char kCameraAngleBackendDescription[] =
-    "When enabled, uses ANGLE as the GL driver in the camera service.";
-
 const char kChromeboxUsbPassthroughRestrictionsName[] =
     "Limit primary mice/keyboards from USB passthrough on chromeboxes";
 const char kChromeboxUsbPassthroughRestrictionsDescription[] =

@@ -1335,14 +1335,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "camera-angle-backend",
-    "owners": [
-      "rjodin@chromium.org",
-      "chromeos-gfx-gpu@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",
