@@ -42,6 +42,9 @@ SaveAndFillDialog::SaveAndFillDialog(
 SaveAndFillDialog::~SaveAndFillDialog() = default;
 
 void SaveAndFillDialog::AddedToWidget() {
+  GetWidget()->MakeCloseSynchronous(base::BindOnce(
+      &SaveAndFillDialog::OnDialogClosed, base::Unretained(this)));
+
   focus_manager_ = GetFocusManager();
   if (focus_manager_) {
     focus_manager_->AddFocusChangeListener(this);
@@ -193,6 +196,16 @@ void SaveAndFillDialog::InitViews() {
       /*error_message=*/controller_->GetInvalidNameOnCardErrorMessage());
   name_on_card_data_.GetInputTextField().SetController(this);
   AddChildView(std::move(name_on_card_data_.container));
+}
+
+void SaveAndFillDialog::OnDialogClosed(views::Widget::ClosedReason reason) {
+  if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
+    // TODO (crbug.com//378164516): Extract user input from the Save and Fill
+    // dialog.
+    controller_->OnUserAcceptedDialog({});
+  } else if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
+    controller_->OnUserCanceledDialog();
+  }
 }
 
 }  // namespace autofill

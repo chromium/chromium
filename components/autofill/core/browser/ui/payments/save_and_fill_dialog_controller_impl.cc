@@ -27,7 +27,13 @@ void SaveAndFillDialogControllerImpl::ShowDialog(
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
   dialog_view_ = std::move(create_and_show_view_callback).Run();
+  card_save_and_fill_dialog_callback_ =
+      std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
+}
+
+void SaveAndFillDialogControllerImpl::Dismiss() {
+  dialog_view_.reset();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -201,6 +207,24 @@ bool SaveAndFillDialogControllerImpl::IsValidNameOnCard(
     return false;
   }
   return autofill::IsValidNameOnCard(input_text);
+}
+
+void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
+    const payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+        user_provided_card_save_and_fill_details) {
+  std::move(card_save_and_fill_dialog_callback_)
+      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
+               kAccepted,
+           user_provided_card_save_and_fill_details);
+  Dismiss();
+}
+
+void SaveAndFillDialogControllerImpl::OnUserCanceledDialog() {
+  std::move(card_save_and_fill_dialog_callback_)
+      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
+               kDeclined,
+           /*user_provided_card_save_and_fill_details=*/{});
+  Dismiss();
 }
 
 base::WeakPtr<SaveAndFillDialogController>

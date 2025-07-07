@@ -30,6 +30,7 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
           create_and_show_view_callback,
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
           card_save_and_fill_dialog_callback);
+  void Dismiss();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::u16string GetWindowTitle() const override;
@@ -55,6 +56,12 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
       std::u16string_view expiration_date) const override;
   bool IsValidNameOnCard(std::u16string_view input_text) const override;
 
+  void OnUserAcceptedDialog(
+      const payments::PaymentsAutofillClient::
+          UserProvidedCardSaveAndFillDetails&
+              user_provided_card_save_and_fill_details) override;
+  void OnUserCanceledDialog() override;
+
   base::WeakPtr<SaveAndFillDialogController> GetWeakPtr() override;
 
  private:
@@ -65,6 +72,9 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   // Determines whether the local or upload save version of the UI should be
   // shown.
   bool is_upload_save_and_fill_ = false;
+
+  payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+      card_save_and_fill_dialog_callback_;
 
   base::WeakPtrFactory<SaveAndFillDialogControllerImpl> weak_ptr_factory_{this};
 };

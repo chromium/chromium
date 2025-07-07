@@ -43,6 +43,8 @@ class SaveAndFillDialog : public views::DialogDelegateView,
  private:
   // Initialize the dialog's contents.
   void InitViews();
+  // Callback that is triggered when the dialog is accepted or canceled.
+  void OnDialogClosed(views::Widget::ClosedReason reason);
 
   base::WeakPtr<SaveAndFillDialogController> controller_;
 

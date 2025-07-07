@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
@@ -42,6 +43,14 @@ class SaveAndFillDialogController {
   virtual bool IsValidExpirationDate(
       std::u16string_view expiration_date) const = 0;
   virtual bool IsValidNameOnCard(std::u16string_view input_text) const = 0;
+
+  // Callbacks for when the user accepts the Save and Fill dialog.
+  virtual void OnUserAcceptedDialog(
+      const payments::PaymentsAutofillClient::
+          UserProvidedCardSaveAndFillDetails&
+              user_provided_card_save_and_fill_details) = 0;
+  // Callbacks for when the user cancels the Save and Fill dialog.
+  virtual void OnUserCanceledDialog() = 0;
 
   virtual base::WeakPtr<SaveAndFillDialogController> GetWeakPtr() = 0;
 };
