@@ -74,7 +74,7 @@ def prep_errorprone_run(enable_annotator, parser):
 
     processor_path = [_NULLAWAY_JAR] + _read_build_config_value(
         'gen/tools/android/errorprone_plugin/errorprone_plugin.build_config.json',
-        'host_classpath')
+        'processed_classpath')
     if enable_annotator:
         processor_path.append(_ANNOTATOR_JAR)
 
