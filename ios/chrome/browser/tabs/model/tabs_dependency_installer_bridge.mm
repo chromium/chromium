@@ -4,22 +4,32 @@
 
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 
-TabsDependencyInstallerBridge::TabsDependencyInstallerBridge(
-    id<TabsDependencyInstalling> installing,
-    WebStateList* web_state_list)
-    : installing_(installing), installation_helper_(web_state_list, this) {}
+TabsDependencyInstallerBridge::TabsDependencyInstallerBridge() = default;
 
-void TabsDependencyInstallerBridge::InstallDependency(
+TabsDependencyInstallerBridge::~TabsDependencyInstallerBridge() = default;
+
+void TabsDependencyInstallerBridge::StartObserving(
+    id<TabsDependencyInstalling> installing,
+    WebStateList* web_state_list) {
+  installing_ = installing;
+  TabsDependencyInstaller::StartObserving(web_state_list);
+}
+
+void TabsDependencyInstallerBridge::StopObserving() {
+  TabsDependencyInstaller::StopObserving();
+  installing_ = nil;
+}
+
+void TabsDependencyInstallerBridge::OnWebStateInserted(
     web::WebState* web_state) {
-  if ([installing_
-          respondsToSelector:@selector(installDependencyForWebState:)]) {
-    [installing_ installDependencyForWebState:web_state];
+  if ([installing_ respondsToSelector:@selector(webStateInserted:)]) {
+    [installing_ webStateInserted:web_state];
   }
 }
-void TabsDependencyInstallerBridge::UninstallDependency(
+
+void TabsDependencyInstallerBridge::OnWebStateRemoved(
     web::WebState* web_state) {
-  if ([installing_
-          respondsToSelector:@selector(uninstallDependencyForWebState:)]) {
-    [installing_ uninstallDependencyForWebState:web_state];
+  if ([installing_ respondsToSelector:@selector(webStateRemoved:)]) {
+    [installing_ webStateRemoved:web_state];
   }
 }

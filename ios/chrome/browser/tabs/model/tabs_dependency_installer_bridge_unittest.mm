@@ -22,10 +22,10 @@
 @end
 
 @implementation TestInstaller
-- (void)installDependencyForWebState:(web::WebState*)webState {
+- (void)webStateInserted:(web::WebState*)webState {
   _installCount++;
 }
-- (void)uninstallDependencyForWebState:(web::WebState*)webState {
+- (void)webStateRemoved:(web::WebState*)webState {
   _uninstallCount++;
 }
 @end
@@ -36,16 +36,19 @@ class TabsDependencyInstallerBridgeTest : public PlatformTest {
       : web_state_list_(&web_state_list_delegate_),
         installer_([[TestInstaller alloc] init]) {}
 
+  ~TabsDependencyInstallerBridgeTest() override { bridge_.StopObserving(); }
+
  protected:
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
+  TabsDependencyInstallerBridge bridge_;
   TestInstaller* installer_;
 };
 
 // Test that inserting and replacing web states calls the dependency installer
 // the expected number of times.
 TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
-  TabsDependencyInstallerBridge bridge(installer_, &web_state_list_);
+  bridge_.StartObserving(installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(
       std::move(web_state_1),
@@ -57,10 +60,9 @@ TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
   EXPECT_EQ(installer_.uninstallCount, 1);
 }
 
-// Tests that deleting the installer bridge uninstalls all web states.
+// Tests that stopping the observation uninstalls all web states.
 TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
-  auto bridge = std::make_unique<TabsDependencyInstallerBridge>(
-      installer_, &web_state_list_);
+  bridge_.StartObserving(installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(
       std::move(web_state_1),
@@ -71,6 +73,6 @@ TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
       WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_EQ(installer_.installCount, 2);
   EXPECT_EQ(installer_.uninstallCount, 0);
-  bridge.reset();
+  bridge_.StopObserving();
   EXPECT_EQ(installer_.uninstallCount, 2);
 }

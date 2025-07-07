@@ -133,7 +133,7 @@ PresentQLPreviewController GetHistogramEnum(
 @implementation ARQuickLookCoordinator {
   // Bridge which observes WebStateList and alerts this coordinator when this
   // needs to register the Mediator with a new WebState.
-  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+  TabsDependencyInstallerBridge _dependencyInstallerBridge;
   // The delegate passed to the QLPreviewController. It informs the WebState
   // that it may be hidden (during the presentation of the USDZ file) and it
   // serves as a data source for the preview controller.
@@ -144,28 +144,24 @@ PresentQLPreviewController GetHistogramEnum(
                                    browser:(Browser*)browser {
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
-    _dependencyInstallerBridge =
-        std::make_unique<TabsDependencyInstallerBridge>(
-            self, browser->GetWebStateList());
+    _dependencyInstallerBridge.StartObserving(self, browser->GetWebStateList());
   }
   return self;
 }
 
 - (void)stop {
-  // Reset this observer manually. We want this to go out of scope now, to
-  // ensure it detaches before `browser` and its WebStateList get destroyed.
-  _dependencyInstallerBridge.reset();
-
+  // Stop observing the WebStateList before destroying the bridge object.
+  _dependencyInstallerBridge.StopObserving();
   _delegate = nil;
 }
 
 #pragma mark - TabsDependencyInstalling methods
 
-- (void)installDependencyForWebState:(web::WebState*)webState {
+- (void)webStateInserted:(web::WebState*)webState {
   ARQuickLookTabHelper::GetOrCreateForWebState(webState)->set_delegate(self);
 }
 
-- (void)uninstallDependencyForWebState:(web::WebState*)webState {
+- (void)webStateRemoved:(web::WebState*)webState {
   ARQuickLookTabHelper::GetOrCreateForWebState(webState)->set_delegate(nil);
 }
 

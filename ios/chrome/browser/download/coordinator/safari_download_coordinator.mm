@@ -67,24 +67,21 @@ const char kUmaDownloadAppleWalletOrderFileUI[] =
 @implementation SafariDownloadCoordinator {
   // Bridge which observes WebStateList and alerts this coordinator when this
   // needs to register the Mediator with a new WebState.
-  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+  TabsDependencyInstallerBridge _dependencyInstallerBridge;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
-    _dependencyInstallerBridge =
-        std::make_unique<TabsDependencyInstallerBridge>(
-            self, browser->GetWebStateList());
+    _dependencyInstallerBridge.StartObserving(self, browser->GetWebStateList());
   }
   return self;
 }
 
 - (void)stop {
-  // Reset this observer manually. We want this to go out of scope now, to
-  // ensure it detaches before `browser` and its WebStateList get destroyed.
-  _dependencyInstallerBridge.reset();
+  // Stop observing the WebStateList before destroying the bridge object.
+  _dependencyInstallerBridge.StopObserving();
 
   self.safariViewController = nil;
   [self dismissAlertCoordinator];
@@ -134,11 +131,11 @@ const char kUmaDownloadAppleWalletOrderFileUI[] =
 
 #pragma mark - TabsDependencyInstalling methods
 
-- (void)installDependencyForWebState:(web::WebState*)webState {
+- (void)webStateInserted:(web::WebState*)webState {
   SafariDownloadTabHelper::FromWebState(webState)->set_delegate(self);
 }
 
-- (void)uninstallDependencyForWebState:(web::WebState*)webState {
+- (void)webStateRemoved:(web::WebState*)webState {
   SafariDownloadTabHelper::FromWebState(webState)->set_delegate(nil);
 }
 

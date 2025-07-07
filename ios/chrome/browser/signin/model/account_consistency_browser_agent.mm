@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -26,13 +27,13 @@
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/web/public/navigation/referrer.h"
 
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
     : BrowserUserData(browser), base_view_controller_(base_view_controller) {
-  installation_helper_ = std::make_unique<TabsDependencyInstallationHelper>(
-      browser->GetWebStateList(), this);
+  StartObserving(browser->GetWebStateList());
   browser_->AddObserver(this);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
@@ -42,6 +43,7 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
 
 AccountConsistencyBrowserAgent::~AccountConsistencyBrowserAgent() {
   StopSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
+  StopObserving();
 }
 
 void AccountConsistencyBrowserAgent::StopSigninCoordinator(
@@ -51,7 +53,7 @@ void AccountConsistencyBrowserAgent::StopSigninCoordinator(
   add_account_coordinator_ = nil;
 }
 
-void AccountConsistencyBrowserAgent::InstallDependency(
+void AccountConsistencyBrowserAgent::OnWebStateInserted(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForProfile(
@@ -60,7 +62,7 @@ void AccountConsistencyBrowserAgent::InstallDependency(
   }
 }
 
-void AccountConsistencyBrowserAgent::UninstallDependency(
+void AccountConsistencyBrowserAgent::OnWebStateRemoved(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForProfile(
@@ -149,7 +151,6 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
 }
 
 void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {
-  installation_helper_.reset();
   browser_->RemoveObserver(this);
 }
 

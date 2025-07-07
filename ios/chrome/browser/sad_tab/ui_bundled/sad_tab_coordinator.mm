@@ -29,16 +29,14 @@
 @implementation SadTabCoordinator {
   SadTabViewController* _viewController;
   // Bridge to observe the web state list from Objective-C.
-  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+  TabsDependencyInstallerBridge _dependencyInstallerBridge;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _dependencyInstallerBridge =
-        std::make_unique<TabsDependencyInstallerBridge>(
-            self, self.browser->GetWebStateList());
+    _dependencyInstallerBridge.StartObserving(self, browser->GetWebStateList());
   }
   return self;
 }
@@ -92,9 +90,8 @@
 }
 
 - (void)disconnect {
-  // Deleting the installer bridge will cause all web states to have
-  // dependencies uninstalled.
-  _dependencyInstallerBridge.reset();
+  // Stop observing the WebStateList before destroying the bridge object.
+  _dependencyInstallerBridge.StopObserving();
 }
 
 - (void)setOverscrollDelegate:
