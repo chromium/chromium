@@ -1228,7 +1228,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
-    "src/org/chromium/chrome/browser/sync/AutofillTest.java",
     "src/org/chromium/chrome/browser/sync/BookmarksTest.java",
     "src/org/chromium/chrome/browser/sync/ExplicitPassphrasePlatformClientTest.java",
     "src/org/chromium/chrome/browser/sync/OpenTabsTest.java",
