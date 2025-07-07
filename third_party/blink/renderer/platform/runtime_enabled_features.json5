@@ -4147,7 +4147,7 @@
     },
     {
       name: "ScrollIntoViewNearest",
-      status: "experimental"
+      status: "stable"
     },
     // TODO(355460994): Remove after M129.
     // scroll into root frame didn't take scrollbar and borders into account,
