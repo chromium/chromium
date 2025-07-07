@@ -669,15 +669,17 @@ bool WebAppRegistrar::IsTabbedWindowModeEnabled(
   return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kTabbed;
 }
 
-GURL WebAppRegistrar::GetAppNewTabUrl(const webapps::AppId& app_id) const {
+const GURL& WebAppRegistrar::GetAppNewTabUrl(
+    const webapps::AppId& app_id) const {
   if (IsTabbedWindowModeEnabled(app_id)) {
     auto* web_app = GetAppById(app_id);
     if (!web_app) {
-      return GURL();
+      return GURL::EmptyGURL();
     }
 
     if (web_app->tab_strip()) {
-      std::optional<GURL> url = web_app->tab_strip().value().new_tab_button.url;
+      const std::optional<GURL>& url =
+          web_app->tab_strip().value().new_tab_button.url;
       if (url.has_value()) {
         return url.value();
       }

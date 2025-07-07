@@ -54,7 +54,7 @@ ui::ImageModel WebKioskBrowserControllerBase::GetWindowIcon() const {
   return GetWindowAppIcon();
 }
 
-GURL WebKioskBrowserControllerBase::GetAppStartUrl() const {
+const GURL& WebKioskBrowserControllerBase::GetAppStartUrl() const {
   return registrar().GetAppStartUrl(app_id());
 }
 

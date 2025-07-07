@@ -178,10 +178,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual std::u16string GetFormattedUrlOrigin() const = 0;
 
   // Gets the start_url for the app.
-  virtual GURL GetAppStartUrl() const = 0;
+  virtual const GURL& GetAppStartUrl() const = 0;
 
   // Gets the new tab URL for tabbed apps.
-  virtual GURL GetAppNewTabUrl() const;
+  virtual const GURL& GetAppNewTabUrl() const;
 
   // Returns the pinned home tab if there is one, otherwise nullptr.
   virtual content::WebContents* GetPinnedHomeTab() const;

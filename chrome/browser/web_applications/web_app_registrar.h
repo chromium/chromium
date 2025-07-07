@@ -431,7 +431,7 @@ class WebAppRegistrar {
   // Returns whether the app should be opened in tabbed window mode.
   bool IsTabbedWindowModeEnabled(const webapps::AppId& app_id) const;
 
-  GURL GetAppNewTabUrl(const webapps::AppId& app_id) const;
+  const GURL& GetAppNewTabUrl(const webapps::AppId& app_id) const;
 
   // Returns the URL of the pinned home tab for tabbed apps which have this
   // enabled, otherwise returns nullopt.

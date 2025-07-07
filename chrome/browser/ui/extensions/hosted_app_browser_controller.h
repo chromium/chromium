@@ -43,7 +43,7 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
-  GURL GetAppStartUrl() const override;
+  const GURL& GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   bool CanUserUninstall() const override;
   void Uninstall(

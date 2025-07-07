@@ -582,7 +582,7 @@ std::string AppBrowserController::GetTitleForMediaControls() const {
   return std::string();
 }
 
-GURL AppBrowserController::GetAppNewTabUrl() const {
+const GURL& AppBrowserController::GetAppNewTabUrl() const {
   return GetAppStartUrl();
 }
 

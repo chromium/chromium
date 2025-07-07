@@ -446,11 +446,11 @@ std::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   return result;
 }
 
-GURL WebAppBrowserController::GetAppStartUrl() const {
+const GURL& WebAppBrowserController::GetAppStartUrl() const {
   return registrar().GetAppStartUrl(app_id());
 }
 
-GURL WebAppBrowserController::GetAppNewTabUrl() const {
+const GURL& WebAppBrowserController::GetAppNewTabUrl() const {
   return registrar().GetAppNewTabUrl(app_id());
 }
 

@@ -44,7 +44,7 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
   ui::ImageModel GetWindowIcon() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
-  GURL GetAppStartUrl() const override;
+  const GURL& GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   bool CanUserUninstall() const override;
   bool IsInstalled() const override;

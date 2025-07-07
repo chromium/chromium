@@ -338,7 +338,7 @@ class WebApp {
     return management_to_external_config_map_;
   }
 
-  const std::optional<blink::Manifest::TabStrip> tab_strip() const {
+  const std::optional<blink::Manifest::TabStrip>& tab_strip() const {
     return tab_strip_;
   }
 
