@@ -104,7 +104,6 @@ public class VersioningMessageBannerUnitTest {
 
         @PrimaryActionClickBehavior int behavior = model.get(ON_PRIMARY_ACTION).get();
         assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, behavior);
-        // TODO(https://crbug.com/422514006): Uncomment when VersioningModalDialog is implemented.
-        // verify(mModalDialogManager).showDialog(any(), anyInt());
+        verify(mModalDialogManager).showDialog(any(), anyInt());
     }
 }

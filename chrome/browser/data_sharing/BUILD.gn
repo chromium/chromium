@@ -328,6 +328,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinatorUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningMessageBannerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningModalDialogUnitTest.java",
     ]
     deps = [
       ":data_sharing_public_java",

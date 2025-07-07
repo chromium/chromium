@@ -4,10 +4,28 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.versioning;
 
+import static org.chromium.ui.modaldialog.ModalDialogProperties.ALL_KEYS;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.BUTTON_STYLES;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.CONTROLLER;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.MESSAGE_PARAGRAPH_1;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.NEGATIVE_BUTTON_TEXT;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.POSITIVE_BUTTON_TEXT;
+import static org.chromium.ui.modaldialog.ModalDialogProperties.TITLE;
+
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
+import org.chromium.ui.modaldialog.SimpleModalDialogController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Constructs and shows a dialog suggesting the user update their version of Chrome. Positive action
@@ -22,6 +40,55 @@ public class VersioningModalDialog {
      * @param modalDialogManager Used to show as a dialog.
      */
     public static void show(Context context, ModalDialogManager modalDialogManager) {
-        // TODO(https://crbug.com/422514006): Implement.
+        new VersioningModalDialog(context, modalDialogManager).show();
+    }
+
+    private final Context mContext;
+    private final ModalDialogManager mModalDialogManager;
+
+    private VersioningModalDialog(Context context, ModalDialogManager modalDialogManager) {
+        mContext = context;
+        mModalDialogManager = modalDialogManager;
+    }
+
+    private void show() {
+        mModalDialogManager.showDialog(buildModel(), ModalDialogType.APP);
+    }
+
+    private PropertyModel buildModel() {
+        Controller controller =
+                new SimpleModalDialogController(mModalDialogManager, this::onDismiss);
+        String title =
+                mContext.getString(R.string.collaboration_chrome_out_of_date_error_dialog_header);
+        String message =
+                mContext.getString(
+                        R.string.collaboration_shared_tab_groups_panel_out_of_date_message_cell_text);
+        String positiveButton =
+                mContext.getString(
+                        R.string.collaboration_chrome_out_of_date_error_dialog_update_button);
+        String negativeButton =
+                mContext.getString(
+                        R.string.collaboration_chrome_out_of_date_error_dialog_not_now_button);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(CONTROLLER, controller)
+                        .with(TITLE, title)
+                        .with(MESSAGE_PARAGRAPH_1, message)
+                        .with(POSITIVE_BUTTON_TEXT, positiveButton)
+                        .with(NEGATIVE_BUTTON_TEXT, negativeButton)
+                        .with(CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(BUTTON_STYLES, ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+        return builder.build();
+    }
+
+    private void onDismiss(@DialogDismissalCause Integer dismissalCause) {
+        assert dismissalCause != null;
+        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) return;
+
+        String chromeAppId = mContext.getPackageName();
+        String uriString = ContentUrlConstants.PLAY_STORE_URL_PREFIX + chromeAppId;
+        Uri uri = Uri.parse(uriString);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        mContext.startActivity(intent);
     }
 }
