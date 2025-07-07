@@ -91,17 +91,18 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
 }
 
 void ProfilePickerDiceSignInProvider::SwitchToSignIn(
-    base::OnceCallback<void(bool)> switch_finished_callback,
+    StepSwitchFinishedCallback switch_finished_callback,
     SignedInCallback signin_finished_callback) {
   // Update the callback even if the profile is already initialized (to respect
   // that the callback may be different).
   callback_ = std::move(signin_finished_callback);
 
   if (IsInitialized()) {
-    std::move(switch_finished_callback).Run(true);
     // Do not load any url because the desired sign-in screen is still loaded in
     // `contents()`.
-    host_->ShowScreen(contents(), GURL());
+    host_->ShowScreen(
+        contents(), GURL(),
+        base::BindOnce(std::move(switch_finished_callback.value()), true));
     host_->SetNativeToolbarVisible(true);
     return;
   }
@@ -145,7 +146,7 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
   // Move from sign-in back to the previous screen of profile creation.
   // Do not load any url because the desired screen is still loaded in the
   // picker contents.
-  host_->ShowScreenInPickerContents(GURL());
+  host_->ShowScreenInPickerContents(GURL(), base::OnceClosure());
   host_->SetNativeToolbarVisible(false);
 }
 
@@ -233,10 +234,10 @@ ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
 }
 
 void ProfilePickerDiceSignInProvider::OnProfileInitialized(
-    base::OnceCallback<void(bool)> switch_finished_callback,
+    StepSwitchFinishedCallback switch_finished_callback,
     Profile* new_profile) {
   if (!new_profile) {
-    std::move(switch_finished_callback).Run(false);
+    std::move(switch_finished_callback.value()).Run(false);
     return;
   }
   DCHECK(!profile_);
@@ -284,7 +285,8 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
                      // Unretained is enough as the callback is called by the
                      // host itself.
                      base::Unretained(host_), /*visible=*/true)
-          .Then(base::BindOnce(std::move(switch_finished_callback), true));
+          .Then(base::BindOnce(std::move(switch_finished_callback.value()),
+                               true));
   host_->ShowScreen(contents(), BuildSigninURL(),
                     std::move(navigation_finished_closure));
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

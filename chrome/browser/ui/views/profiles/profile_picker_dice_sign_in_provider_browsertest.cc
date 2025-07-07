@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,9 +80,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
           std::move(callback).Run();
         });
 
-    provider.SwitchToSignIn(
-        base::IgnoreArgs<bool>(switch_finished_loop.QuitClosure()),
-        signin_finished_callback.Get());
+    provider.SwitchToSignIn(StepSwitchFinishedCallback(base::IgnoreArgs<bool>(
+                                switch_finished_loop.QuitClosure())),
+                            signin_finished_callback.Get());
 
     switch_finished_loop.Run();
   }
@@ -124,9 +125,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
           std::move(callback).Run();
         });
 
-    provider.SwitchToSignIn(
-        base::IgnoreArgs<bool>(switch_finished_loop.QuitClosure()),
-        signin_finished_callback.Get());
+    provider.SwitchToSignIn(StepSwitchFinishedCallback(base::IgnoreArgs<bool>(
+                                switch_finished_loop.QuitClosure())),
+                            signin_finished_callback.Get());
 
     switch_finished_loop.Run();
   }

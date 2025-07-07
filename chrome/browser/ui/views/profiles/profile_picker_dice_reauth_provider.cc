@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -73,8 +74,12 @@ ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
 
 ProfilePickerDiceReauthProvider::~ProfilePickerDiceReauthProvider() = default;
 
-void ProfilePickerDiceReauthProvider::SwitchToReauth() {
+void ProfilePickerDiceReauthProvider::SwitchToReauth(
+    StepSwitchFinishedCallback step_switch_callback) {
   CHECK(!contents_);
+  CHECK(!step_switch_callback->is_null());
+  CHECK(step_switch_callback_->is_null());
+  step_switch_callback_ = std::move(step_switch_callback);
 
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       &*profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
@@ -82,8 +87,8 @@ void ProfilePickerDiceReauthProvider::SwitchToReauth() {
 
   contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(&*profile_));
-  host_->ShowScreen(contents_.get(), GetLoadingScreenURL());
-
+  host_->ShowScreen(contents_.get(), GetLoadingScreenURL(),
+                    /*navigation_finished_closure=*/base::OnceClosure());
   timer_.Start(
       FROM_HERE, base::Seconds(kDiceTokenFetchTimeoutSeconds),
       base::BindOnce(
@@ -107,6 +112,7 @@ void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
   Finish(false, ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck);
+  std::move(step_switch_callback_.value()).Run(false);
 }
 
 void ProfilePickerDiceReauthProvider::TryCreateForceSigninVerifier() {
@@ -127,6 +133,7 @@ void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
   // with success directly.
   if (token_is_valid) {
     Finish(true, ProfilePickerReauthResult::kSuccessTokenAlreadyValid);
+    std::move(step_switch_callback_.value()).Run(false);
     return;
   }
 
@@ -149,7 +156,9 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
       base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,
                      // Unretained is enough as the callback is called by the
                      // host itself.
-                     base::Unretained(host_), /*visible=*/true));
+                     base::Unretained(host_), /*visible=*/true)
+          .Then(
+              base::BindOnce(std::move(step_switch_callback_.value()), true)));
   // Listen to the changes of the web contents to know if we got to the
   // `continue_url`.
   content::WebContentsObserver::Observe(contents());
@@ -212,7 +221,8 @@ void ProfilePickerDiceReauthProvider::DidFinishNavigation(
     // check through the `DiceTabHelper` and the `ProcessDiceHeaderDelegateImpl`
     // after fetching the tokens.
     // Show a loading screen while waiting.
-    host_->ShowScreen(contents_.get(), GetLoadingScreenURL());
+    host_->ShowScreen(contents_.get(), GetLoadingScreenURL(),
+                      /*navigation_finished_closure=*/base::OnceClosure());
   }
 }
 

@@ -76,8 +76,12 @@ ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
   }
 }
 
-void ProfilePickerSignedInFlowController::Init() {
+void ProfilePickerSignedInFlowController::Init(
+    StepSwitchFinishedCallback step_switch_callback) {
   DCHECK(!IsInitialized());
+  CHECK(!step_switch_callback->is_null());
+  CHECK(step_switch_callback_->is_null());
+  step_switch_callback_ = std::move(step_switch_callback);
 
   contents()->SetDelegate(this);
 
@@ -121,6 +125,9 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
 
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
+  if (!step_switch_callback_->is_null()) {
+    std::move(step_switch_callback_.value()).Run(true);
+  }
   host_->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/false),
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerSignedInFlowController::
@@ -134,6 +141,9 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
+  if (!step_switch_callback_->is_null()) {
+    std::move(step_switch_callback_.value()).Run(true);
+  }
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                     /*navigation_finished_closure=*/
@@ -148,22 +158,29 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
 void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(IsInitialized());
+  if (!step_switch_callback_->is_null()) {
+    std::move(step_switch_callback_.value()).Run(true);
+  }
   // The sign-in flow is finished, no profile window should be shown in the end.
   Cancel();
 
   switch_profile_path_ = profile_path;
   host_->ShowScreenInPickerContents(
-      GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
+      GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
+      base::OnceClosure());
 }
 
 void ProfilePickerSignedInFlowController::ResetHostAndShowErrorDialog(
     const ForceSigninUIError& error) {
   CHECK(IsInitialized());
+  if (!step_switch_callback_->is_null()) {
+    std::move(step_switch_callback_.value()).Run(false);
+  }
 
   Cancel();
-  host_->Reset(
+  host_->Reset(StepSwitchFinishedCallback(
       base::BindOnce(&ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
-                     base::Unretained(host_), error));
+                     base::Unretained(host_), error)));
 }
 
 std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()

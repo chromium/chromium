@@ -179,8 +179,8 @@ class SyncConfirmationStepControllerForTest
 
     sync_confirmation_ui->InitializeMessageHandlerWithBrowser(nullptr);
 
-    if (step_shown_callback) {
-      std::move(step_shown_callback).Run(/*success=*/true);
+    if (!step_shown_callback->is_null()) {
+      std::move(step_shown_callback.value()).Run(/*success=*/true);
     }
   }
 

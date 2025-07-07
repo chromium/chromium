@@ -13,10 +13,12 @@ class Browser;
 
 // Type of the callbacks that are called to be notified that the switch to a
 // given step by `ProfileManagementFlowController` is completed. `success` is
-// is set to false if some sort of error is detected, and `true` otherwise.
-// This type is intended for documentation purposes, there is no plan to treat
-// it like an opaque type.
-using StepSwitchFinishedCallback = base::OnceCallback<void(bool success)>;
+// is set to false if some sort of error is detected, or if the step should not
+// be switched to, and `true` otherwise. This type is intended for documentation
+// purposes, there is no plan to treat it like an opaque type.
+using StepSwitchFinishedCallback =
+    base::StrongAlias<class StepSwitchFinishedCallbackTag,
+                      base::OnceCallback<void(bool success)>>;
 
 // Callback executed when the flow finishes, after the host was cleared and
 // we opened a browser for the newly set up profile.

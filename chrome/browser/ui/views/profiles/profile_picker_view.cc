@@ -358,8 +358,10 @@ void ProfilePickerView::ShowScreen(
   }
 
   if (url.is_empty()) {
-    DCHECK(!navigation_finished_closure);
     ShowScreenFinished(contents);
+    if (navigation_finished_closure) {
+      std::move(navigation_finished_closure).Run();
+    }
     return;
   }
 
@@ -711,7 +713,8 @@ void ProfilePickerView::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   GetProfilePickerFlowController()->SwitchToDiceSignIn(
-      std::move(profile_info), std::move(switch_finished_callback));
+      std::move(profile_info),
+      StepSwitchFinishedCallback(std::move(switch_finished_callback)));
 }
 
 void ProfilePickerView::SwitchToReauth(
