@@ -22,6 +22,10 @@
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID;
 
+// Called when a response is received.
+- (void)responseReceivedWithClientID:(NSString*)clientID
+                            serverID:(NSString*)serverID;
+
 // Called when the user taps the BWG settings button from within the BWG UI.
 - (void)didTapBWGSettingsButton;
 

@@ -41,6 +41,11 @@
   [self setSessionActive:NO clientID:clientID];
 }
 
+- (void)responseReceivedWithClientID:(NSString*)clientID
+                            serverID:(NSString*)serverID {
+  [self updateSessionWithClientID:clientID serverID:serverID];
+}
+
 - (void)didTapBWGSettingsButton {
   // TODO(crbug.com/419070203): Implement.
 }
