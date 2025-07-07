@@ -268,11 +268,4 @@ bool CanvasRenderingContextHost::ShouldTryToUseGpuRaster() const {
   return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
-void CanvasRenderingContextHost::FlushRecordingForCanvas2D(FlushReason reason) {
-  CHECK(IsRenderingContext2D());
-  if (auto* provider = GetResourceProviderForCanvas2D()) {
-    provider->FlushCanvas(reason);
-  }
-}
-
 }  // namespace blink

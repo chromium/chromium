@@ -155,8 +155,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   virtual void DiscardResources() = 0;
 
-  void FlushRecordingForCanvas2D(FlushReason reason);
-
  protected:
   ~CanvasRenderingContextHost() override = default;
 

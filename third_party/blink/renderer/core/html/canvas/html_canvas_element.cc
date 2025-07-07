@@ -389,7 +389,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   if (printed_in_current_task || IsPrinting()) {
     reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
-  FlushRecordingForCanvas2D(reason);
+  GetResourceProviderForCanvas2D()->FlushCanvas(reason);
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
@@ -1235,7 +1235,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   if (IsPrinting() && IsRenderingContext2D() &&
       GetResourceProviderForCanvas2D()) {
     auto* provider = GetResourceProviderForCanvas2D();
-    FlushRecordingForCanvas2D(FlushReason::kPrinting);
+    provider->FlushCanvas(FlushReason::kPrinting);
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the provider.
     const std::optional<cc::PaintRecord>& last_recording =

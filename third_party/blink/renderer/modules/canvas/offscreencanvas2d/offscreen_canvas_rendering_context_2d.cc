@@ -133,7 +133,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   if (!GetOrCreateCanvas2DResourceProvider()) {
     return;
   }
-  Host()->FlushRecordingForCanvas2D(reason);
+  GetResourceProviderForCanvas2D()->FlushCanvas(reason);
 }
 
 // BaseRenderingContext2D implementation
@@ -454,7 +454,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     int y) {
   DCHECK(IsCanvas2DBufferValid());
 
-  Host()->FlushRecordingForCanvas2D(FlushReason::kWritePixels);
+  GetResourceProviderForCanvas2D()->FlushCanvas(FlushReason::kWritePixels);
 
   // Short-circuit out if an error occurred while flushing the recording.
   if (!Host()->GetResourceProviderForCanvas2D()->IsValid()) {

@@ -285,7 +285,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
       recorder.RestartRecording();
     }
   } else {
-    host->FlushRecordingForCanvas2D(FlushReason::kWritePixels);
+    provider->FlushCanvas(FlushReason::kWritePixels);
 
     // Short-circuit out if an error occurred while flushing the recording.
     if (!provider->IsValid()) {
@@ -685,7 +685,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   if (!provider) {
     return nullptr;
   }
-  Host()->FlushRecordingForCanvas2D(reason);
+  provider->FlushCanvas(reason);
   return provider->Snapshot(reason);
 }
 
@@ -881,7 +881,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   HTMLCanvasElement* host = canvas();
   CHECK(host);
 
-  host->FlushRecordingForCanvas2D(reason);
+  GetResourceProviderForCanvas2D()->FlushCanvas(reason);
   if (reason == FlushReason::kCanvasPushFrame) {
     if (host->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.
