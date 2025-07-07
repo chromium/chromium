@@ -36,7 +36,9 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _dependencyInstallerBridge.StartObserving(self, browser->GetWebStateList());
+    _dependencyInstallerBridge.StartObserving(
+        self, browser->GetWebStateList(),
+        TabsDependencyInstaller::Policy::kOnlyRealized);
   }
   return self;
 }

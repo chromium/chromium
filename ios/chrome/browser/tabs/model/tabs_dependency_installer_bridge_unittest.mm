@@ -48,7 +48,8 @@ class TabsDependencyInstallerBridgeTest : public PlatformTest {
 // Test that inserting and replacing web states calls the dependency installer
 // the expected number of times.
 TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
-  bridge_.StartObserving(installer_, &web_state_list_);
+  bridge_.StartObserving(installer_, &web_state_list_,
+                         TabsDependencyInstaller::Policy::kOnlyRealized);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(
       std::move(web_state_1),
@@ -62,7 +63,8 @@ TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
 
 // Tests that stopping the observation uninstalls all web states.
 TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
-  bridge_.StartObserving(installer_, &web_state_list_);
+  bridge_.StartObserving(installer_, &web_state_list_,
+                         TabsDependencyInstaller::Policy::kOnlyRealized);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(
       std::move(web_state_1),

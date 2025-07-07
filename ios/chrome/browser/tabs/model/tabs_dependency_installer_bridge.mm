@@ -10,9 +10,10 @@ TabsDependencyInstallerBridge::~TabsDependencyInstallerBridge() = default;
 
 void TabsDependencyInstallerBridge::StartObserving(
     id<TabsDependencyInstalling> installing,
-    WebStateList* web_state_list) {
+    WebStateList* web_state_list,
+    Policy policy) {
   installing_ = installing;
-  TabsDependencyInstaller::StartObserving(web_state_list);
+  TabsDependencyInstaller::StartObserving(web_state_list, policy);
 }
 
 void TabsDependencyInstallerBridge::StopObserving() {

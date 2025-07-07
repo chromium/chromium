@@ -19,11 +19,27 @@ class WebState;
 // a WebstateList.
 class TabsDependencyInstaller {
  public:
+  // Policy controlling when the TabsDependencyInstaller should be
+  // notified that a WebState is ready to be configured.
+  enum class Policy {
+    // The TabsDependencyInstaller will only be notified if the WebState is
+    // realized. If it become realized later (e.g. when becoming active) the
+    // TabsDependencyInstaller will be notified at that point in time.
+    kOnlyRealized,
+
+    // The notification of the TabsDependencyInstaller will depends on the
+    // feature kCreateTabHelperOnlyForRealizedWebStates. If enabled, this
+    // will behave as kOnlyRealized, otherwise, the TabsDependencyInstaller
+    // will be notified as soon as the WebState is inserted even if it is
+    // still unrealized.
+    kAccordingToFeature,
+  };
+
   TabsDependencyInstaller();
   virtual ~TabsDependencyInstaller();
 
   // Starts observing the WebStateList and installing the dependencies.
-  void StartObserving(WebStateList* web_state_list);
+  void StartObserving(WebStateList* web_state_list, Policy policy);
 
   // Stops observing the WebStateList (and if there are still WebStates
   // with installed dependencies, uninstall them). Must be called before

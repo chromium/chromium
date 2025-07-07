@@ -221,6 +221,7 @@ source_set("dependency_installer") {
     "tabs_dependency_installer_bridge.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
@@ -241,6 +242,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":dependency_installer",
+    ":features",
     ":model",
     ":synced_tabs",
     ":tab_sync_util",

@@ -68,7 +68,8 @@
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
   if ((self = [super init])) {
-    _dependencyInstallerBridge.StartObserving(self, webStateList);
+    _dependencyInstallerBridge.StartObserving(
+        self, webStateList, TabsDependencyInstaller::Policy::kOnlyRealized);
   }
   return self;
 }

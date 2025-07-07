@@ -36,7 +36,8 @@ class TabsDependencyInstallerBridge final : public TabsDependencyInstaller {
 
   // Starts observing the WebStateList and installing the dependencies.
   void StartObserving(id<TabsDependencyInstalling> installing,
-                      WebStateList* web_state_list);
+                      WebStateList* web_state_list,
+                      Policy policy);
 
   // Stops observing the WebStateList (and if there are still WebStates
   // with installed dependencies, uninstall them). Must be called before
