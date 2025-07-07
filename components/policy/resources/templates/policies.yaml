@@ -1373,7 +1373,7 @@ policies:
   1372: LocalNetworkAccessBlockedForUrls
   1373: DeviceBluetoothJustWorksPairingEnabled
   1374: LiveCaptionEnabled
-atomic_groups:
+  1375: DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

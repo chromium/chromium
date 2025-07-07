@@ -1389,6 +1389,18 @@ TEST_F(DeviceSettingsProviderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
             *provider_->Get(kDeviceUserInitiatedFirmwareUpdatesEnabled));
 }
 
+TEST_F(DeviceSettingsProviderTest,
+       DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled) {
+  em::BooleanPolicyProto* proto =
+      device_policy_->payload()
+          .mutable_deviceuserinitiatedflexsystemfirmwareupdatesenabled();
+  proto->set_value(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(
+      base::Value(true),
+      *provider_->Get(kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled));
+}
+
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListUnset) {
   // Device setting must be unset if the policy is not set.
   VerifyPolicyValue(kDeviceDlcPredownloadList, nullptr);

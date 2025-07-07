@@ -633,6 +633,29 @@ TEST_F(DevicePolicyDecoderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
       std::move(device_user_initiated_firmware_updates_enabled_value));
 }
 
+TEST_F(DevicePolicyDecoderTest,
+       DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled);
+
+  base::Value device_user_initiated_flex_system_firmware_updates_enabled_value(
+      true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy
+          .mutable_deviceuserinitiatedflexsystemfirmwareupdatesenabled();
+  proto->set_value(
+      device_user_initiated_flex_system_firmware_updates_enabled_value
+          .GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
+      std::move(
+          device_user_initiated_flex_system_firmware_updates_enabled_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, DeviceSystemAecEnabled) {
   em::ChromeDeviceSettingsProto device_policy;
 

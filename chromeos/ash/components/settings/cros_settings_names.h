@@ -685,6 +685,9 @@ inline constexpr char kDeviceHindiInscriptLayoutEnabled[] =
 inline constexpr char kDeviceUserInitiatedFirmwareUpdatesEnabled[] =
     "cros.device.user_initiated_firmware_updates_enabled";
 
+inline constexpr char kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled[] =
+    "cros.device.user_initiated_flex_system_firmware_updates_enabled";
+
 // A list of strings representing DLC identifiers to be pre downloaded on the
 // device.
 inline constexpr char kDeviceDlcPredownloadList[] =

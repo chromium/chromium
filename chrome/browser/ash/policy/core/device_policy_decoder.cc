@@ -1897,11 +1897,23 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                       policy.tpm_firmware_update_settings()),
                   nullptr);
   }
+
   if (policy.has_deviceuserinitiatedfirmwareupdatesenabled()) {
     const em::BooleanPolicyProto& container(
         policy.deviceuserinitiatedfirmwareupdatesenabled());
     if (container.has_value()) {
       policies->Set(key::kDeviceUserInitiatedFirmwareUpdatesEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
+
+  if (policy.has_deviceuserinitiatedflexsystemfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedflexsystemfirmwareupdatesenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                     POLICY_SOURCE_CLOUD, base::Value(container.value()),
                     nullptr);
