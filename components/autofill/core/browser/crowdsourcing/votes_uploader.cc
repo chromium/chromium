@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
@@ -263,10 +264,19 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                 dates_and_formats_by_field =
                     ExtractDatesInFields(form->fields());
 
-            DeterminePossibleFieldTypesForUpload(
-                profiles, credit_cards, entities, loyalty_cards,
-                fields_that_match_state, last_unlocked_credit_card_cvc,
-                dates_and_formats_by_field, app_locale, *form);
+            std::vector<PossibleTypes> possible_types =
+                DeterminePossibleFieldTypesForUpload(
+                    profiles, credit_cards, entities, loyalty_cards,
+                    fields_that_match_state, last_unlocked_credit_card_cvc,
+                    dates_and_formats_by_field, app_locale, *form);
+
+            for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
+              field->set_possible_types(pt.types);
+              if (pt.known_value) {
+                field->set_properties_mask(field->properties_mask() |
+                                           FieldPropertiesFlags::kKnownValue);
+              }
+            }
 
             EncodeUploadRequestOptions options;
             options.encoder = std::move(randomized_encoder);

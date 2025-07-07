@@ -5,16 +5,23 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_DISAMBIGUATE_POSSIBLE_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_DISAMBIGUATE_POSSIBLE_FIELD_TYPES_H_
 
+#include <vector>
+
+#include "base/containers/span.h"
+
 namespace autofill {
 
 class FormStructure;
+struct PossibleTypes;
 
 // Applies several heuristics to select the most probable types for fields with
 // ambiguous possible types. Heuristics are run in order of priority which is
 // based on reflecting user intent the most.
 // Note that the case where a single-line street address is ambiguous to address
 // line 1 is handled on the server.
-void DisambiguatePossibleFieldTypes(FormStructure& form);
+std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
+    const FormStructure& form,
+    std::vector<PossibleTypes> possible_types);
 
 }  // namespace autofill
 

@@ -5,7 +5,9 @@
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -26,27 +28,31 @@ bool IsNameType(const AutofillField& field) {
 // address name types are discarded. If `is_credit_card` is false, the opposite
 // happens. This is called when we have multiple possible name types from mixed
 // field type groups.
-void SelectProbableNameTypes(AutofillField& field,
-                             bool select_credit_card_names) {
+[[nodiscard]] FieldTypeSet SelectProbableNameTypes(
+    FieldTypeSet possible_types,
+    bool select_credit_card_names) {
   FieldTypeSet types_to_keep;
-  for (FieldType type : field.possible_types()) {
+  for (FieldType type : possible_types) {
     if (GroupTypeOfFieldType(type) == (select_credit_card_names
                                            ? FieldTypeGroup::kCreditCard
                                            : FieldTypeGroup::kName)) {
       types_to_keep.insert(type);
     }
   }
-  field.set_possible_types(types_to_keep);
+  return types_to_keep;
 }
 
 // If a field was autofilled on form submission and the value was accepted, set
 // possible types to the autofilled type.
-void SetPossibleTypesToAutofilledTypeIfAvailable(AutofillField& field) {
+[[nodiscard]] FieldTypeSet OverridePossibleTypesToAutofilledTypeIfAvailable(
+    const AutofillField& field,
+    FieldTypeSet possible_types) {
   if (field.is_autofilled() && field.autofilled_type() &&
       base::FeatureList::IsEnabled(
           features::kAutofillDisambiguateContradictingFieldTypes)) {
-    field.set_possible_types({*field.autofilled_type()});
+    return {*field.autofilled_type()};
   }
+  return possible_types;
 }
 
 // Disambiguates name types from mixed field type groups when the name exists in
@@ -55,23 +61,22 @@ void SetPossibleTypesToAutofilledTypeIfAvailable(AutofillField& field) {
 // Note that generally a name field can legitimately have multiple types
 // according to the types tree structure, e.g. `NAME_FULL`, `NAME_LAST` and
 // `NAME_LAST_{FIRST,SECOND}` at the same time.
-void MaybeDisambiguateNameTypes(FormStructure& form,
-                                size_t current_field_index) {
+[[nodiscard]] FieldTypeSet MaybeDisambiguateNameTypes(
+    const FormStructure& form,
+    size_t current_field_index,
+    FieldTypeSet possible_types) {
   // Disambiguation is only applicable if there is a mixture of one or more
   // address related name types ('one or more' because e.g. NAME_LAST and
   // NAME_LAST_SECOND can be identical) and exactly one credit card related name
   // type ('exactly one' because credit cards names only support a single last
   // name).
-  AutofillField& field = *form.field(current_field_index);
-  const size_t credit_card_type_count =
-      std::ranges::count(field.possible_types(), FieldTypeGroup::kCreditCard,
-                         GroupTypeOfFieldType);
+  const size_t credit_card_type_count = std::ranges::count(
+      possible_types, FieldTypeGroup::kCreditCard, GroupTypeOfFieldType);
   const size_t name_type_count = std::ranges::count(
-      field.possible_types(), FieldTypeGroup::kName, GroupTypeOfFieldType);
-  if (field.possible_types().size() !=
-          credit_card_type_count + name_type_count ||
+      possible_types, FieldTypeGroup::kName, GroupTypeOfFieldType);
+  if (possible_types.size() != credit_card_type_count + name_type_count ||
       credit_card_type_count != 1 || name_type_count == 0) {
-    return;
+    return possible_types;
   }
 
   // This case happens when both a profile and a credit card have the same
@@ -91,11 +96,11 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
   size_t index = current_field_index;
   while (index != 0 && !has_found_previous_type) {
     --index;
-    AutofillField* prev_field = form.field(index);
-    if (!IsNameType(*prev_field)) {
+    const AutofillField& prev_field = *form.field(index);
+    if (!IsNameType(prev_field)) {
       has_found_previous_type = true;
       is_previous_credit_card =
-          prev_field->Type().group() == FieldTypeGroup::kCreditCard;
+          prev_field.Type().group() == FieldTypeGroup::kCreditCard;
     }
   }
 
@@ -104,11 +109,11 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
   bool is_next_credit_card = false;
   index = current_field_index;
   while (++index < form.field_count() && !has_found_next_type) {
-    AutofillField* next_field = form.field(index);
-    if (!IsNameType(*next_field)) {
+    const AutofillField& next_field = *form.field(index);
+    if (!IsNameType(next_field)) {
       has_found_next_type = true;
       is_next_credit_card =
-          next_field->Type().group() == FieldTypeGroup::kCreditCard;
+          next_field.Type().group() == FieldTypeGroup::kCreditCard;
     }
   }
 
@@ -119,35 +124,39 @@ void MaybeDisambiguateNameTypes(FormStructure& form,
     // name group there is no sure way to disambiguate.
     if (has_found_previous_type && has_found_next_type &&
         (is_previous_credit_card != is_next_credit_card)) {
-      return;
+      return possible_types;
     }
 
     // Otherwise, use the previous (if it was found) or next field group to
     // decide whether the field is a name or a credit card name.
-    SelectProbableNameTypes(field, has_found_previous_type
-                                       ? is_previous_credit_card
-                                       : is_next_credit_card);
+    possible_types = SelectProbableNameTypes(
+        possible_types, has_found_previous_type ? is_previous_credit_card
+                                                : is_next_credit_card);
   }
+  return possible_types;
 }
 
 }  // namespace
 
-void DisambiguatePossibleFieldTypes(FormStructure& form) {
+std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
+    const FormStructure& form,
+    std::vector<PossibleTypes> possible_types) {
   for (size_t i = 0; i < form.field_count(); ++i) {
-    AutofillField& field = *form.field(i);
-    if (field.possible_types().size() <= 1) {
+    if (possible_types[i].types.size() <= 1) {
       continue;
     }
     // Setting possible types to an autofilled value that was accepted by the
     // user should have the highest priority among disambiguation methods
     // because it represents user intent the most.
-    SetPossibleTypesToAutofilledTypeIfAvailable(field);
-
-    if (field.possible_types().size() <= 1) {
+    possible_types[i].types = OverridePossibleTypesToAutofilledTypeIfAvailable(
+        *form.field(i), possible_types[i].types);
+    if (possible_types[i].types.size() <= 1) {
       continue;
     }
-    MaybeDisambiguateNameTypes(form, i);
+    possible_types[i].types =
+        MaybeDisambiguateNameTypes(form, i, possible_types[i].types);
   }
+  return possible_types;
 }
 
 }  // namespace autofill

@@ -9,6 +9,7 @@
 #include "base/containers/to_vector.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -22,7 +23,7 @@ using ::testing::UnorderedElementsAre;
 
 // Tests that `DisambiguatePossibleFieldTypes` makes the correct choices.
 class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
- public:
+ protected:
   struct TestFieldData {
     FieldType predicted_type;
     FieldTypeSet ambiguous_possible_field_types;
@@ -40,22 +41,21 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
     }
 
     FormStructure form_structure(form);
-    for (auto [field, test_field] :
-         base::zip(form_structure.fields(), test_fields)) {
-      field->set_possible_types(test_field.ambiguous_possible_field_types);
+    std::vector<PossibleTypes> possible_types(form_structure.fields().size());
+    for (auto [test_field, field, pt] :
+         base::zip(test_fields, form_structure.fields(), possible_types)) {
       field->set_server_predictions(
           {test::CreateFieldPrediction(test_field.predicted_type)});
       if (test_field.is_autofilled) {
         field->set_autofilled_type(test_field.predicted_type);
         field->set_is_autofilled(true);
       }
+      pt.types = test_field.ambiguous_possible_field_types;
     }
 
-    DisambiguatePossibleFieldTypes(form_structure);
-    return base::ToVector(form_structure.fields(),
-                          [](const std::unique_ptr<AutofillField>& field) {
-                            return field->possible_types();
-                          });
+    return base::ToVector(DisambiguatePossibleFieldTypes(
+                              form_structure, std::move(possible_types)),
+                          &PossibleTypes::types);
   }
 
  private:

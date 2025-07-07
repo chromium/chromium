@@ -25,6 +25,24 @@ class EntityInstance;
 class FormStructure;
 class LoyaltyCard;
 
+// The result of DeterminePossibleFieldTypesForUpload() for a specific
+// AutofillField.
+struct PossibleTypes {
+  PossibleTypes();
+  PossibleTypes(const PossibleTypes&) = delete;
+  PossibleTypes& operator=(const PossibleTypes&) = delete;
+  PossibleTypes(PossibleTypes&&);
+  PossibleTypes& operator=(PossibleTypes&&);
+  ~PossibleTypes();
+
+  // The FieldTypes for which data on file matches the field's value.
+  FieldTypeSet types;
+
+  // Indicates if the value is a known CVC value.
+  // TODO(crbug.com/429655113): Do we need this? If not, remove.
+  bool known_value = false;
+};
+
 // Note that the `dates` and `formats` are not aligned (i.e., do not base::zip()
 // them!). They may even be of distinct size (see Example 2 of
 // ExtractDatesInFields()).
@@ -76,12 +94,12 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
     const std::string& app_locale);
 
 // Determines the `FieldType`s for which profiles etc. define non-empty
-// values. The result is stored in FormStructure::possible_types().
+// values.
 //
 // This is potentially expensive -- on the order of 50ms even for a small set of
 // `stored_data`. Hence, it should not run on the UI thread -- to avoid
 // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
-void DeterminePossibleFieldTypesForUpload(
+[[nodiscard]] std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
     base::span<const EntityInstance> entities,
@@ -90,7 +108,7 @@ void DeterminePossibleFieldTypesForUpload(
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
-    FormStructure& form);
+    const FormStructure& form);
 
 // Returns the set of `FieldType`s for which the given profiles etc. contain
 // non-empty values.
