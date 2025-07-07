@@ -277,15 +277,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   }
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self verifyTableIsEmpty];
-  }
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [_toolbarManager updateForReadingListWidth:self.view.bounds.size.width];
 }
-#endif
 
 #pragma mark - UITableViewDataSource
 

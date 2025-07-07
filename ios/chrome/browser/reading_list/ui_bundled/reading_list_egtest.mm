@@ -121,7 +121,6 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
       selectElementWithMatcher:
           grey_allOf(
               grey_accessibilityID(kReadingListToolbarMarkButtonID),
-              grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
               chrome_test_util::ButtonWithAccessibilityLabelId(a11y_label_id),
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }

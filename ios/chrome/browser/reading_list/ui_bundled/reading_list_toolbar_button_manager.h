@@ -53,6 +53,9 @@ enum class ReadingListSelectionState {
         (UIViewController*)viewController
                                          browser:(Browser*)browser;
 
+// Updates the buttons to adapt to the `readingListWidth`.
+- (void)updateForReadingListWidth:(CGFloat)readingListWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_UI_BUNDLED_READING_LIST_TOOLBAR_BUTTON_MANAGER_H_
