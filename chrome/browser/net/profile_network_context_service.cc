@@ -283,8 +283,7 @@ std::unique_ptr<net::ClientCertStore> GetWrappedCertStore(
     std::unique_ptr<net::ClientCertStore> platform_store) {
   client_certificates::CertificateProvisioningService*
       profile_provisioning_service = nullptr;
-  if (profile && client_certificates::features::
-                     IsManagedClientCertificateForUserEnabled()) {
+  if (profile) {
     profile_provisioning_service = client_certificates::
         CertificateProvisioningServiceFactory::GetForProfile(profile);
   }

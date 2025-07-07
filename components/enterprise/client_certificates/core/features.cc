@@ -10,14 +10,6 @@
 
 namespace client_certificates::features {
 
-BASE_FEATURE(kManagedClientCertificateForUserEnabled,
-             "ManagedClientCertificateForUserEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsManagedClientCertificateForUserEnabled() {
-  return base::FeatureList::IsEnabled(kManagedClientCertificateForUserEnabled);
-}
-
 BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
              "ManagedBrowserClientCertificateEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);

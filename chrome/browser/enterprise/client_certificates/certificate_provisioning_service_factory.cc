@@ -34,14 +34,6 @@ namespace client_certificates {
 
 namespace {
 
-ProfileSelections BuildCertificateProvisioningProfileSelections() {
-  if (!features::IsManagedClientCertificateForUserEnabled()) {
-    return ProfileSelections::BuildNoProfilesSelected();
-  }
-
-  return ProfileSelections::BuildForRegularProfile();
-}
-
 policy::DeviceManagementService* GetDeviceManagementService() {
   policy::BrowserPolicyConnector* connector =
       g_browser_process->browser_policy_connector();
@@ -65,9 +57,8 @@ CertificateProvisioningServiceFactory::GetForProfile(Profile* profile) {
 }
 
 CertificateProvisioningServiceFactory::CertificateProvisioningServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "CertificateProvisioningService",
-          BuildCertificateProvisioningProfileSelections()) {
+    : ProfileKeyedServiceFactory("CertificateProvisioningService",
+                                 ProfileSelections::BuildForRegularProfile()) {
   DependsOn(CertificateStoreFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
 }
