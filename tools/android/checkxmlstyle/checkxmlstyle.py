@@ -12,6 +12,17 @@ This file checks for the following:
   - XML namspace "app" is used for "http://schemas.android.com/apk/res-auto"
   - Android text attributes are only defined in text appearance styles
   - Warning on adding new text appearance styles
+  - Encourages using TextViewWithLeading rather than android:lineSpacingExtra
+    and android:lineSpacingMultiplier
+  - Encourages using ButtonCompat rather than Button, AppButtonCompat
+  - Checks whether inappropriate quotes are used in string resources
+  - Checks whether inappropriate ellipsis are used in string resources
+  - Encourages android:importantForAccessibility="no" rather than
+    tools:ignore="ContentDescription" for images that don't need content
+    descriptions
+  - Checks whether style attribute reference could work
+  - Checks whether direct theme color attributes are used in xml files in
+    layout, encouraging the usage of Chrome's semantically named colors
 """
 
 from collections import defaultdict
@@ -428,7 +439,7 @@ def _CheckTextAppearance(input_api, output_api):
     text appearance styles, listed below.
 
     It is recommended to use the pre-defined text appearance styles in
-      src/ui/android/java/res/values-v17/styles.xml
+      src/ui/android/java/res/values/styles.xml
 
     And to use
       android:textAppearance="@style/SomeTextAppearance"
@@ -439,7 +450,7 @@ def _CheckTextAppearance(input_api, output_api):
     new text appearance style.
 
     If your approved text appearance style is a common text appreance style,
-    please define it in src/ui/android/java/res/values-v17/styles.xml.
+    please define it in src/ui/android/java/res/values/styles.xml.
 
     Otherwise, if your approved text appearance is feature-specific, in
     chrome/android/java/res/values*/styles.xml, please define
