@@ -12,7 +12,7 @@ enum ReadableStreamType { "bytes" };
 [
     Exposed=*
 ] interface ReadableStream {
-    [RuntimeEnabled=ReadableStreamAsyncIterable, HasAsyncIteratorReturnAlgorithm] async iterable<any>(optional ReadableStreamIteratorOptions options = {});
+    [HasAsyncIteratorReturnAlgorithm] async iterable<any>(optional ReadableStreamIteratorOptions options = {});
 
     [CallWith=ScriptState, RaisesException] constructor(optional any underlyingSource, optional any strategy);
     readonly attribute boolean locked;
