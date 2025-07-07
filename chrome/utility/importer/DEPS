@@ -5,4 +5,5 @@ include_rules = [
   "+components/user_data_importer/common",
   "+components/search_engines",
   "+components/strings/grit",
+  "+components/user_data_importer/content",
 ]

@@ -88,14 +88,10 @@ static_library("utility") {
 
   if (!is_android) {
     sources += [
-      "importer/bookmark_html_reader.cc",
-      "importer/bookmark_html_reader.h",
       "importer/bookmarks_file_importer.cc",
       "importer/bookmarks_file_importer.h",
       "importer/external_process_importer_bridge.cc",
       "importer/external_process_importer_bridge.h",
-      "importer/favicon_reencode.cc",
-      "importer/favicon_reencode.h",
       "importer/importer.cc",
       "importer/importer.h",
       "importer/importer_creator.cc",
@@ -144,6 +140,7 @@ static_library("utility") {
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
       "//components/user_data_importer/common",
+      "//components/user_data_importer/content",
       "//services/proxy_resolver:lib",
       "//services/screen_ai",
     ]

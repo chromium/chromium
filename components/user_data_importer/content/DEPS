@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/search_engines",
+  "+net/base",
+  "+components/favicon_base",
+  "+content/public/child",
+  "+skia/ext",
+  "+third_party/skia/include/core",
+  "+ui/gfx",
+]

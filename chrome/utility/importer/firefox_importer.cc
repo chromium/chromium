@@ -19,11 +19,11 @@
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/utility/importer/bookmark_html_reader.h"
-#include "chrome/utility/importer/favicon_reencode.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
+#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/favicon_reencode.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -56,10 +56,11 @@ void LoadDefaultBookmarks(const base::FilePath& app_path,
 
   std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   std::vector<user_data_importer::SearchEngineInfo> search_engines;
-  bookmark_html_reader::ImportBookmarksFile(
-      base::RepeatingCallback<bool(void)>(),
-      base::RepeatingCallback<bool(const GURL&)>(), file, &bookmarks,
-      &search_engines, nullptr);
+
+  user_data_importer::ContentBookmarkParser bookmark_parser;
+  bookmark_parser.Parse(base::RepeatingCallback<bool(void)>(),
+                        base::RepeatingCallback<bool(const GURL&)>(), file,
+                        &bookmarks, &search_engines, nullptr);
   for (const auto& bookmark : bookmarks)
     urls->insert(bookmark.url);
 }
@@ -354,12 +355,12 @@ void FirefoxImporter::ImportBookmarks() {
       std::string search_engine_url;
       if (item->url.is_valid())
         search_engine_info.url = base::UTF8ToUTF16(item->url.spec());
-      else if (bookmark_html_reader::CanImportURLAsSearchEngine(
-                   item->url,
-                   &search_engine_url))
+      else if (user_data_importer::CanImportURLAsSearchEngine(
+                   item->url, &search_engine_url)) {
         search_engine_info.url = base::UTF8ToUTF16(search_engine_url);
-      else
+      } else {
         continue;
+      }
       search_engine_info.keyword = base::UTF8ToUTF16(item->keyword);
       search_engine_info.display_name = item->title;
       search_engines.push_back(search_engine_info);

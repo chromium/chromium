@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/content/favicon_reencode.h"
 
 #include "content/public/child/image_decoder_utils.h"
 #include "skia/ext/image_operations.h"

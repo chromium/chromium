@@ -27,8 +27,8 @@
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/edge_database_reader_win.h"
-#include "chrome/utility/importer/favicon_reencode.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/content/favicon_reencode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 

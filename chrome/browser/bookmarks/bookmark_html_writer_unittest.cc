@@ -34,7 +34,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/utility/importer/bookmark_html_reader.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/favicon/core/favicon_service.h"
@@ -44,6 +43,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -461,10 +461,10 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
   std::vector<user_data_importer::ImportedBookmarkEntry> parsed_bookmarks;
   std::vector<user_data_importer::SearchEngineInfo> parsed_search_engines;
   favicon_base::FaviconUsageDataList favicons;
-  bookmark_html_reader::ImportBookmarksFile(
-      base::RepeatingCallback<bool(void)>(),
-      base::RepeatingCallback<bool(const GURL&)>(), path_, &parsed_bookmarks,
-      &parsed_search_engines, &favicons);
+  user_data_importer::ContentBookmarkParser bookmark_parser;
+  bookmark_parser.Parse(base::RepeatingCallback<bool(void)>(),
+                        base::RepeatingCallback<bool(const GURL&)>(), path_,
+                        &parsed_bookmarks, &parsed_search_engines, &favicons);
 
   // Check loaded favicon (url1 is represented by 4 separate bookmarks).
   EXPECT_EQ(4U, favicons.size());

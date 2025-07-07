@@ -225,17 +225,6 @@ class SafariDataImporterTest : public testing::Test {
     importer_->history_size_threshold_ = history_size_threshold;
   }
 
-  // Asserts that GetNumberOfBookmarksImported() is `num_bookmarks` on platforms
-  // where bookmark import is implemented, or 0 (callback ran with error) on
-  // other platforms.
-  void ExpectBookmarksIfImplemented(int num_bookmarks) {
-#if BUILDFLAG(IS_IOS)
-    EXPECT_EQ(GetNumberOfBookmarksImported(), num_bookmarks);
-#else
-    EXPECT_EQ(GetNumberOfBookmarksImported(), 0);
-#endif  // BUILDFLAG(IS_IOS)
-  }
-
  private:
   void WaitUntilPresenterIsReady() {
     ASSERT_TRUE(base::test::RunUntil([&]() { return presenter_ready_; }));
@@ -368,8 +357,6 @@ class SafariDataImporterTest : public testing::Test {
       mock_delete_file_;
 };
 
-// TODO(crbug.com/407587751): Enable Bookmark tests on non-IOS once stub method
-// in content_bookmark_parser is functional.
 #if BUILDFLAG(IS_IOS)
 TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
   ImportBookmarks(
@@ -611,7 +598,6 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
 
   // <A>Google Reader</A> was skipped for lack of URL
 }
-
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SafariDataImporterTest, NoHistory) {
@@ -703,9 +689,13 @@ TEST_F(SafariDataImporterTest, CancelImport) {
 
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
-  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
-  // implemented.
-  ExpectBookmarksIfImplemented(7);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 7);
+#else
+  // TODO(crbug.com/407587751): Update test when bookmarks parsing for Blink is
+  // updated.
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
+#endif
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 
@@ -718,9 +708,13 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
   ASSERT_EQ(import_results.number_imported, 0u);
-  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
-  // implemented.
-  ExpectBookmarksIfImplemented(7);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 7);
+#else
+  // TODO(crbug.com/407587751): Update test when bookmarks parsing for Blink is
+  // updated.
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
+#endif
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 

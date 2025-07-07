@@ -6,9 +6,28 @@ source_set("content") {
   sources = [
     "content_bookmark_parser.cc",
     "content_bookmark_parser.h",
+    "favicon_reencode.cc",
+    "favicon_reencode.h",
   ]
   deps = [
     "//base",
+    "//components/favicon_base",
+    "//components/search_engines",
+    "//components/user_data_importer/common",
     "//components/user_data_importer/utility:safari_data_importer",
+    "//content/public/child",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_bookmark_parser_unittest.cc" ]
+  deps = [
+    ":content",
+    "//base",
+    "//components/user_data_importer/common",
+    "//testing/gtest",
   ]
 }

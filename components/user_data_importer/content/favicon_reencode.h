@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UTILITY_IMPORTER_FAVICON_REENCODE_H_
-#define CHROME_UTILITY_IMPORTER_FAVICON_REENCODE_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAVICON_REENCODE_H_
+#define COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAVICON_REENCODE_H_
 
 #include <stddef.h>
 
@@ -22,4 +22,4 @@ std::optional<std::vector<uint8_t>> ReencodeFavicon(
 
 }  // namespace importer
 
-#endif  // CHROME_UTILITY_IMPORTER_FAVICON_REENCODE_H_
+#endif  // COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAVICON_REENCODE_H_
