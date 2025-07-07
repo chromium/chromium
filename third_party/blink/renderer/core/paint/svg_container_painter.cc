@@ -36,8 +36,9 @@ bool SVGContainerPainter::CanUseCullRect() const {
   if (layout_svg_container_.IsSVGHiddenContainer())
     return false;
 
-  if (layout_svg_container_.SVGDescendantMayHaveTransformRelatedAnimation())
+  if (layout_svg_container_.SVGDescendantMayHaveTransformRelatedOperations()) {
     return false;
+  }
 
   return SVGModelObjectPainter::CanUseCullRect(
       layout_svg_container_.StyleRef());

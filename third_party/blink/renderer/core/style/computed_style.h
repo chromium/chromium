@@ -1945,6 +1945,12 @@ class ComputedStyle final : public ComputedStyleBase {
            UsedPointerEvents() != EPointerEvents::kNone;
   }
 
+  // returns `true` is the element has a non-identity transform, `false`
+  // otherwise.
+  bool HasNonIdentityTransformOperation() const {
+    return HasTransformOperations() && !Transform().IsIdentityOrTranslation();
+  }
+
   // Animation utility functions.
   bool HasCurrentTransformRelatedAnimation() const {
     return HasCurrentTransformAnimation() || HasCurrentScaleAnimation() ||

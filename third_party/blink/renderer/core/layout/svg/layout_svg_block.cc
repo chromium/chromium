@@ -150,9 +150,13 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
                              : kDescendantIsolationNeedsUpdate);
   }
 
-  if (style.HasCurrentTransformRelatedAnimation() &&
-      !old_style->HasCurrentTransformRelatedAnimation()) {
-    Parent()->SetSVGDescendantMayHaveTransformRelatedAnimation();
+  if ((style.HasCurrentTransformRelatedAnimation() &&
+       !old_style->HasCurrentTransformRelatedAnimation()) ||
+      (RuntimeEnabledFeatures::
+           SvgAvoidCullingElementsWithTransformOperationsEnabled() &&
+       style.HasNonIdentityTransformOperation() &&
+       !old_style->HasNonIdentityTransformOperation())) {
+    Parent()->SetSVGDescendantMayHaveTransformRelatedOperations();
   }
 
   if (diff.HasDifference())

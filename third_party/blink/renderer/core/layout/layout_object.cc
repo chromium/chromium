@@ -5265,21 +5265,24 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
 #endif
 }
 
-void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
+void LayoutObject::SetSVGDescendantMayHaveTransformRelatedOperations() {
   NOT_DESTROYED();
   auto* object = this;
   while (!object->IsSVGRoot()) {
     DCHECK(object->IsSVGChild());
-    if (object->SVGDescendantMayHaveTransformRelatedAnimation())
+    if (object->SVGDescendantMayHaveTransformRelatedOperations()) {
       break;
-    if (object->IsSVGHiddenContainer())
+    }
+    if (object->IsSVGHiddenContainer()) {
       return;
-    object->bitfields_.SetSVGDescendantMayHaveTransformRelatedAnimation(true);
+    }
+    object->bitfields_.SetSVGDescendantMayHaveTransformRelatedOperations(true);
     object = object->Parent();
-    if (!object)
+    if (!object) {
       return;
+    }
   }
-  // If we have set SetSVGDescendantMayHaveTransformRelatedAnimation() for
+  // If we have set SetSVGDescendantMayHaveTransformRelatedOperations() for
   // any object, set the enclosing layer needs repaint because some
   // LayoutSVGContainer may paint differently by ignoring the cull rect.
   // See SVGContainerPainter.

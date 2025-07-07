@@ -120,13 +120,16 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
 
   if (!IsSVGHiddenContainer()) {
     SetTransformAffectsVectorEffect(false);
-    ClearSVGDescendantMayHaveTransformRelatedAnimation();
+    ClearSVGDescendantMayHaveTransformRelatedOperations();
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
       if (child->TransformAffectsVectorEffect())
         SetTransformAffectsVectorEffect(true);
       if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
-          child->SVGDescendantMayHaveTransformRelatedAnimation()) {
-        SetSVGDescendantMayHaveTransformRelatedAnimation();
+          child->SVGDescendantMayHaveTransformRelatedOperations() ||
+          (RuntimeEnabledFeatures::
+               SvgAvoidCullingElementsWithTransformOperationsEnabled() &&
+           child->StyleRef().HasNonIdentityTransformOperation())) {
+        SetSVGDescendantMayHaveTransformRelatedOperations();
       }
     }
   }

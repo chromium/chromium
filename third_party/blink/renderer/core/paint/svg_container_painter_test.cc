@@ -88,11 +88,18 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
     </svg>
   )HTML");
 
-  // Initially all <g>s and <rect>s are empty and don't paint.
+  const DisplayItem::Type kSVGTransformPaintPhaseForeground =
+      static_cast<DisplayItem::Type>(DisplayItem::kSVGTransformPaintPhaseFirst +
+                                     5);
 
+  // Initially only rect2 is painted because it has a transform operation.
+  auto* rect2 = GetLayoutObjectByElementId("rect2");
+  PaintChunk::Id rect2_id(rect2->Id(), kSVGTransformPaintPhaseForeground);
+  auto rect2_properties = rect2->FirstFragment().ContentsProperties();
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                          IsPaintChunk(1, 1)));  // Svg hit test.
+                          IsPaintChunk(1, 1),  // Svg hit test.
+                          IsPaintChunk(1, 2, rect2_id, rect2_properties)));
 
   auto* rect1_element = GetDocument().getElementById(AtomicString("rect1"));
   auto* rect2_element = GetDocument().getElementById(AtomicString("rect2"));
@@ -102,15 +109,9 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
   UpdateAllLifecyclePhasesForTest();
 
   // Start animations on the rects.
-  const DisplayItem::Type kSVGTransformPaintPhaseForeground =
-      static_cast<DisplayItem::Type>(DisplayItem::kSVGTransformPaintPhaseFirst +
-                                     5);
   auto* rect1 = GetLayoutObjectByElementId("rect1");
-  auto* rect2 = GetLayoutObjectByElementId("rect2");
   PaintChunk::Id rect1_id(rect1->Id(), kSVGTransformPaintPhaseForeground);
   auto rect1_properties = rect1->FirstFragment().ContentsProperties();
-  PaintChunk::Id rect2_id(rect2->Id(), kSVGTransformPaintPhaseForeground);
-  auto rect2_properties = rect2->FirstFragment().ContentsProperties();
   // Both rects should be painted to be ready for composited animation.
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -136,9 +137,45 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
   rect2->Parent()->SetNeedsLayout("test");
   rect1->EnclosingLayer()->SetNeedsRepaint();
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(1, 1),  // Svg hit test.
+          // rect2 is still painted because it has a transform operation.
+          IsPaintChunk(1, 2, rect2_id, rect2_properties)));
+}
+
+TEST_P(SVGContainerPainterTest,
+       ElementsWithTransformOperationsAreAlwaysPainted) {
+  SetBodyInnerHTML(R"HTML(
+    <svg width="300" height="300">
+      <g>
+        <rect id="rect" width="100" height="100" fill="blue" style="transform: scale(0);" />
+        <circle id="circle" cx="150" cy="150" r="50" fill="red" style="transform: scale(0);" />
+      </g>
+    </svg>
+  )HTML");
+
+  const DisplayItem::Type kSVGTransformPaintPhaseForeground =
+      static_cast<DisplayItem::Type>(DisplayItem::kSVGTransformPaintPhaseFirst +
+                                     5);
+
+  auto* rect = GetLayoutObjectByElementId("rect");
+  PaintChunk::Id rect_id(rect->Id(), kSVGTransformPaintPhaseForeground);
+  auto rect_properties = rect->FirstFragment().ContentsProperties();
+
+  auto* circle = GetLayoutObjectByElementId("circle");
+  PaintChunk::Id circle_id(circle->Id(), kSVGTransformPaintPhaseForeground);
+  auto circle_properties = circle->FirstFragment().ContentsProperties();
+
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                          IsPaintChunk(1, 1)));  // Svg hit test.
+                          IsPaintChunk(1, 1),  // Hit test for svg.
+                          // `rect` and `circle` are painted despite having a
+                          // scale(0) because they have a transform operation.
+                          IsPaintChunk(1, 2, rect_id, rect_properties),
+                          IsPaintChunk(2, 3, circle_id, circle_properties)));
 }
 
 }  // namespace blink
