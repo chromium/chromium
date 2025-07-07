@@ -39,6 +39,7 @@ source_set("impl") {
     ]
     deps = [
       "//chrome/browser:primitives",
+      "//chrome/browser/translate",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",

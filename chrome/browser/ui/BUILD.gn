@@ -104,19 +104,6 @@ static_library("ui") {
     "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
-    "translate/partial_translate_bubble_model.h",
-    "translate/partial_translate_bubble_model_impl.cc",
-    "translate/partial_translate_bubble_model_impl.h",
-    "translate/partial_translate_bubble_ui_action_logger.cc",
-    "translate/partial_translate_bubble_ui_action_logger.h",
-    "translate/source_language_combobox_model.cc",
-    "translate/source_language_combobox_model.h",
-    "translate/target_language_combobox_model.cc",
-    "translate/target_language_combobox_model.h",
-    "translate/translate_bubble_model.h",
-    "translate/translate_bubble_model_impl.cc",
-    "translate/translate_bubble_model_impl.h",
-    "translate/translate_language_list_model.h",
     "uninstall_browser_prompt.h",
     "view_ids.h",
     "webauthn/authenticator_request_dialog_view_controller.h",
@@ -400,6 +387,7 @@ static_library("ui") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar:impl",
     "//chrome/browser/ui/toolbar/chrome_labs",
+    "//chrome/browser/ui/translate",
     "//chrome/browser/ui/unowned_user_data",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/about",
@@ -1201,8 +1189,6 @@ static_library("ui") {
       "tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h",
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.cc",
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.h",
-      "translate/translate_bubble_factory.cc",
-      "translate/translate_bubble_factory.h",
       "uma_browsing_activity_observer.cc",
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",
@@ -1549,6 +1535,7 @@ static_library("ui") {
       "//chrome/browser/ui/tab_sharing:impl",
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
+      "//chrome/browser/ui/translate:impl",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
 
@@ -1855,6 +1842,10 @@ static_library("ui") {
       # TODO(crbug.com/429171097): Remove this circular dependency when
       # c/b/ui/bubble_anchor_util.h gets componentized.
       "//chrome/browser/ui/tab_sharing:impl",
+
+      # TODO(crbug.com/430013958): Remove this circular dependency when
+      # `translate_bubble_factory.cc` stop including c/b/ui/browser_window.h.
+      "//chrome/browser/ui/translate:impl",
     ]
 
     if (is_mac) {

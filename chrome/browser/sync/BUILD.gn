@@ -57,6 +57,7 @@ source_set("sync") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/translate",
     "//components/browser_sync",
     "//components/collaboration/public",
     "//components/favicon/core",
