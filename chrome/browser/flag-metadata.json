@@ -6471,6 +6471,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "management-promotion-banner-flag",
+    "owners": ["austinzzr@google.com"],
+    "expiry_milestone": 141
+  },
+  {
     "name": "mantis-feature-key",
     "owners": [ "cros-mantis@google.com" ],
     "expiry_milestone": 140

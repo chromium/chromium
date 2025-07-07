@@ -5097,6 +5097,8 @@ extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];
+extern const char kEnableManagementPromotionBannerName[];
+extern const char kEnableManagementPromotionBannerDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kSupervisedUserBlockInterstitialV3Name[];

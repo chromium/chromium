@@ -11185,6 +11185,7 @@ from previous Chrome versions.
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
   <int value="-1056368985" label="NtpRealboxCr23All:enabled"/>
+  <int value="-1056348338" label="EnableManagementPromotionBanner:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
   <int value="-1056267724"
       label="ClientSideDetectionBrandAndIntentForScamDetection:disabled"/>
@@ -17659,6 +17660,7 @@ from previous Chrome versions.
   <int value="1349313561" label="RestrictedApiOrigins:enabled"/>
   <int value="1349414902" label="DeviceForceScheduledReboot:disabled"/>
   <int value="1350197823" label="DragToSnapInClamshellMode:enabled"/>
+  <int value="1351054716" label="EnableManagementPromotionBanner:disabled"/>
   <int value="1351213243" label="SuppressTextMessages:disabled"/>
   <int value="1351344112" label="ContentIndexingDownloadHome:enabled"/>
   <int value="1351830811" label="do-not-ignore-autocomplete-off"/>

@@ -8682,6 +8682,11 @@ const char kEnablePolicyPromotionBannerName[] =
     "Enable Policy Promotion Banner";
 const char kEnablePolicyPromotionBannerDescription[] =
     "Enables showing the policy promotion banner on chrome://policy page.";
+const char kEnableManagementPromotionBannerName[] =
+    "Enable Management Promotion Banner";
+const char kEnableManagementPromotionBannerDescription[] =
+    "Enables showing the management promotion banner on chrome://management "
+    "page.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kSupervisedUserBlockInterstitialV3Name[] =
