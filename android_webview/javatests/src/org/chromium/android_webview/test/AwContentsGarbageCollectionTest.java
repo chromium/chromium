@@ -9,7 +9,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.CHECK_INTERVA
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.Build;
 import android.os.ResultReceiver;
 import android.util.Pair;
 import android.view.Window;
@@ -402,9 +401,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
 
             gcAndCheckAllAwContentsDestroyed();
         } finally {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                Reference.reachabilityFence(heldObject);
-            }
+            Reference.reachabilityFence(heldObject);
         }
     }
 

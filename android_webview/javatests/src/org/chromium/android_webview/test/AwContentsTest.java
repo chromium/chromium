@@ -1127,7 +1127,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testHardwareRenderingSmokeTestVulkanWhereSupported() throws Throwable {
         // Manually curated list.
         final String[] supportedModels = {

@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
-import android.os.Build;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.InstrumentationRegistry;
@@ -88,19 +87,10 @@ public class AwNetworkConfigurationTest extends AwParameterizedTest {
         int count = onReceivedSslErrorHelper.getCallCount();
         String url = mTestServer.getURL("/android_webview/test/data/hello_world.html");
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Assert.assertEquals(
-                    "We should generate an SSL error on >= Q",
-                    count + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-        } else {
-            if (count != onReceivedSslErrorHelper.getCallCount()) {
-                Assert.fail(
-                        "We should not have received any SSL errors on < Q but we received"
-                                + " error "
-                                + onReceivedSslErrorHelper.getError());
-            }
-        }
+        Assert.assertEquals(
+                "We should generate an SSL error on >= Q",
+                count + 1,
+                onReceivedSslErrorHelper.getCallCount());
     }
 
     private static String getPackageName() {

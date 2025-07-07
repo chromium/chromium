@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.Configuration;
-import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,7 +27,6 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.Callable;
@@ -36,7 +34,6 @@ import java.util.concurrent.Callable;
 /** The integration test for the dark mode. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class AwDarkModeTest extends AwParameterizedTest {
     private static final String FILE = "/main.html";
     private static final String DATA =

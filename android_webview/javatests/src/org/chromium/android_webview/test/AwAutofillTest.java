@@ -14,8 +14,6 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -2390,11 +2388,6 @@ public class AwAutofillTest extends AwParameterizedTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         List<Integer> expectedValues = new ArrayList<>();
 
-        // On Android version below P scroll triggers additional
-        // AUTOFILL_VIEW_ENTERED (@see AutofillProvider#onTextFieldDidScroll).
-        if (VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            expectedValues.add(AUTOFILL_VIEW_ENTERED);
-        }
         // Check if NotifyVirtualValueChanged() called again and with extra AUTOFILL_VIEW_EXITED
         // and AUTOFILL_VIEW_ENTERED
         expectedValues.addAll(
