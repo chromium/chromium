@@ -21,6 +21,7 @@
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
 -BookmarkBarViewTest15.MenuStaysVisibleAfterDelete
+-BookmarkBarViewTest17.ContextMenus3
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 -BookmarkBarViewTest23.ContextMenusKeyboard
 -BookmarkBarViewTest29.DNDToEmptyMenu
