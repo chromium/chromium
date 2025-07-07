@@ -857,10 +857,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       ReleaseMailboxCB mailbox_holder_release_cb,
       base::TimeDelta timestamp);
 
+#if BUILDFLAG(IS_CHROMEOS)
   void MakeScopedMappingForGpuMemoryBuffer(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb,
       bool success) const;
+#endif
   void WrapScopedSharedImageMapping(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb,
@@ -941,8 +943,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   base::ReadOnlySharedMemoryRegion owned_shm_region_;
   base::ReadOnlySharedMemoryMapping owned_shm_mapping_;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+#endif
 
   // This field will be set by clients when using MappableSI instead of
   // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.

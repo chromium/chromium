@@ -370,6 +370,9 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
     const bool enable_mappable_si,
     ReleaseMailboxCB mailbox_holder_release_cb,
     base::TimeDelta timestamp) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  CHECK(enable_mappable_si);
+#endif
   if (enable_mappable_si) {
     CHECK(shared_image && !gpu_memory_buffer);
   } else {
@@ -456,7 +459,9 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
     DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance";
     return nullptr;
   }
+#if BUILDFLAG(IS_CHROMEOS)
   frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+#endif
   if (enable_mappable_si) {
     frame->mailbox_holder_release_cb_ = std::move(mailbox_holder_release_cb);
   } else {
@@ -1302,17 +1307,24 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   } else if (is_mappable_si_enabled_) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
-  } else if (gpu_memory_buffer_) {
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  else if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
   }
+#endif
   return false;
 }
 
 gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
+#if !BUILDFLAG(IS_CHROMEOS)
+  return nullptr;
+#else
   if (wrapped_frame_) {
     return wrapped_frame_->GetGpuMemoryBufferForTesting();  // IN-TEST
   }
   return gpu_memory_buffer_.get();
+#endif
 }
 
 std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
@@ -1328,10 +1340,12 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
           new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
     }
   }
+#if BUILDFLAG(IS_CHROMEOS)
   if (gpu_memory_buffer_ && gpu_memory_buffer_->Map()) {
     return base::WrapUnique(
         new VideoFrame::ScopedMapping(gpu_memory_buffer_.get(), nullptr));
   }
+#endif
   return nullptr;
 }
 
@@ -1351,6 +1365,7 @@ void VideoFrame::MapGMBOrSharedImageAsync(
                        base::Unretained(this), std::move(result_cb)));
     return;
   }
+#if BUILDFLAG(IS_CHROMEOS)
   if (gpu_memory_buffer_) {
     // `base::Unretained()` is safe because of the requirement for callers to
     // keep the VideoFrame alive until the callback executes.
@@ -1359,6 +1374,7 @@ void VideoFrame::MapGMBOrSharedImageAsync(
                        base::Unretained(this), std::move(result_cb)));
     return;
   }
+#endif
   std::move(result_cb).Run(nullptr);
 }
 
@@ -1371,7 +1387,11 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
     CHECK(shared_image_);
     return shared_image_->AsyncMappingIsNonBlocking();
   }
+#if BUILDFLAG(IS_CHROMEOS)
   return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
+#else
+  NOTREACHED();
+#endif
 }
 
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
@@ -1383,9 +1403,11 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
     CHECK(HasSharedImage());
     return shared_image_->CloneGpuMemoryBufferHandle();
   }
+#if BUILDFLAG(IS_CHROMEOS)
   if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->CloneHandle();
   }
+#endif
   return gfx::GpuMemoryBufferHandle();
 }
 
@@ -1943,6 +1965,7 @@ gfx::Size VideoFrame::ScopedMapping::Size() {
   return gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
                             : scoped_mapping_->Size();
 }
+#if BUILDFLAG(IS_CHROMEOS)
 void VideoFrame::MakeScopedMappingForGpuMemoryBuffer(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb,
@@ -1952,6 +1975,7 @@ void VideoFrame::MakeScopedMappingForGpuMemoryBuffer(
                                      gpu_memory_buffer_.get(), nullptr))
                                : nullptr);
 }
+#endif
 
 void VideoFrame::WrapScopedSharedImageMapping(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
