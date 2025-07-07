@@ -246,6 +246,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
             (testSubmissionDetection_defaultPrevented_whenNotAllowed)]) {
     config.features_disabled.push_back(
         kAutofillAllowDefaultPreventedSubmission);
+    // The testing setup for this feature needs capture mode disabled.
+    config.features_disabled.push_back(
+        kAutofillFormSubmissionEventsInCaptureMode);
   }
 
   if ([self isRunningTest:@selector(testSubmissionDetectionWithDeduping)]) {

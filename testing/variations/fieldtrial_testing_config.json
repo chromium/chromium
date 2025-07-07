@@ -12069,6 +12069,21 @@
             ]
         }
     ],
+    "IOSAutofillFormSubmissionEventsInCaptureMode": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFormSubmissionEventsInCaptureMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillInIsolatedWorld": [
         {
             "platforms": [
