@@ -105,7 +105,9 @@ class ServerPrintersProviderTest : public ::testing::Test {
         ServerPrintersProvider::Create(test_profile_.get());
   }
 
-  void TearDown() override { PrintServersProviderFactory::Get()->Shutdown(); }
+  void TearDown() override {
+    PrintServersProviderFactory::Get()->ShutdownForTesting();
+  }
 
   std::string CreateResponse(const std::string& name,
                              const std::string& description) {
