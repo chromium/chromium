@@ -398,6 +398,7 @@ static_library("ui") {
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/updates/announcement_notification:impl",
+    "//chrome/browser/vr",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",

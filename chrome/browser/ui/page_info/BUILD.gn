@@ -42,6 +42,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/serial",
+    "//chrome/browser/vr",
   ]
 
   if (is_android) {
