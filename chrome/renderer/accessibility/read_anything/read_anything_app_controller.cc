@@ -611,6 +611,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     ukm::SourceId ukm_source_id,
     bool is_pdf) {
   if (tree_id == model_.active_tree_id() && !is_pdf) {
+    VLOG(1) << "On active tree changed with same id: " << tree_id;
     return;
   }
   RecordNumSelections();
@@ -725,6 +726,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // model causes issues for read aloud.
   if (IsReadAloudEnabled() && !model_.distillation_in_progress() &&
       tree_id == ui::AXTreeIDUnknown() && content_node_ids.empty()) {
+    VLOG(1) << "Distillation terminated after the main content extractor "
+               "disconnected";
     return;
   }
   // If speech is playing, we don't want to redraw and disrupt speech. We will
@@ -732,6 +735,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   if (read_aloud_model_.speech_playing()) {
     model_.set_requires_distillation(true);
     model_.set_distillation_in_progress(false);
+    VLOG(1) << "Distillation terminated because speech is playing";
     return;
   }
   // Reset state, including the current side panel selection so we can update
@@ -751,6 +755,20 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   if (tree_id != model_.active_tree_id() ||
       model_.active_tree_id() == ui::AXTreeIDUnknown() ||
       !model_.ContainsTree(tree_id) || tree_id == ui::AXTreeIDUnknown()) {
+    // VLOG statements added to help with debugging issues with distillation
+    // on non-dev builds.
+    if (tree_id != model_.active_tree_id()) {
+      VLOG(1) << "Distillation terminated because not on active tree";
+    }
+    if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
+      VLOG(1) << "Distillation terminated because active tree is unknown";
+    }
+    if (!model_.ContainsTree(tree_id)) {
+      VLOG(1) << "Distillation terminated because current tree is missing";
+    }
+    if (tree_id == ui::AXTreeIDUnknown()) {
+      VLOG(1) << "Distillation terminated because current tree is unknown";
+    }
     return;
   }
 
