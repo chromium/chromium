@@ -11,47 +11,25 @@ import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This is an item decorator for lists of items displayed in Touch to Fill BottomSheets. */
 @NullMarked
 public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
     protected final Context mContext;
 
-    /**
-     * Returns the proper background for each of the credential items depending on their position.
-     *
-     * @param position Position of the credential inside the list, including the header and the
-     *     button.
-     * @param containsFillButton Indicates if the fill button is in the list.
-     * @param itemCount Shows how many items are in the list, including the header and the button.
-     * @return The ID of the selected background resource.
-     */
-    protected int selectBackgroundDrawable(
-            int position, boolean containsFillButton, int itemCount) {
-        if (containsFillButton) { // Round all the corners of the only item.
-            return R.drawable.touch_to_fill_credential_background_modern_rounded_all;
+    private void loadBackgroundDrawable(@Nullable View view, @DrawableRes int backgroundId) {
+        if (view == null) {
+            // RecyclerView might return a {@code null} view if it's not displayed to the user.
+            return;
         }
-        if (position == itemCount - 1) { // Round the bottom of the last suggestion item.
-            return R.drawable.touch_to_fill_credential_background_modern_rounded_down;
-        }
-        if (position == 1) { // Round the top of the first item.
-            return R.drawable.touch_to_fill_credential_background_modern_rounded_up;
-        }
-        // The rest of the items have a background with no rounded edges.
-        return R.drawable.touch_to_fill_credential_background_modern;
-    }
-
-    private void loadBackgroundDrawable(
-            View view, int position, boolean containsFillButton, int itemCount) {
         GradientDrawable background =
-                (GradientDrawable)
-                        AppCompatResources.getDrawable(
-                                mContext,
-                                selectBackgroundDrawable(position, containsFillButton, itemCount));
+                (GradientDrawable) AppCompatResources.getDrawable(mContext, backgroundId);
         TouchToFillUtil.addColorAndRippleToBackground(view, background, mContext);
     }
 
@@ -65,17 +43,40 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         assumeNonNull(parent.getAdapter());
-        int itemCount = parent.getAdapter().getItemCount();
-        // Do not count items at the end like footer, fill button, additional info, etc.
-        while (itemCount > 1
-                && shouldSkipItemType(parent.getAdapter().getItemViewType(itemCount - 1))) {
-            itemCount--;
+        int firstItem = 0;
+        int lastItem = parent.getAdapter().getItemCount() - 1;
+        // Find the first item to decorate by skipping all header items.
+        while (firstItem <= lastItem
+                && shouldSkipItemType(parent.getAdapter().getItemViewType(firstItem))) {
+            ++firstItem;
         }
-        for (int posInView = 0; posInView < parent.getChildCount(); posInView++) {
-            View child = parent.getChildAt(posInView);
-            int posInAdapter = parent.getChildAdapterPosition(child);
-            if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
-            loadBackgroundDrawable(child, posInAdapter, containsFillButton(parent), itemCount);
+        // Find the last item to decorate by skipping items like footer, fill button, additional
+        // info, etc.
+        while (firstItem <= lastItem
+                && shouldSkipItemType(parent.getAdapter().getItemViewType(lastItem))) {
+            --lastItem;
+        }
+        if (firstItem > lastItem) {
+            // No items to decorate.
+            return;
+        }
+        if (firstItem == lastItem) {
+            // There's only 1 item to decorate - round all corners.
+            loadBackgroundDrawable(
+                    parent.getChildAt(firstItem),
+                    R.drawable.touch_to_fill_credential_background_modern_rounded_all);
+            return;
+        }
+        loadBackgroundDrawable(
+                parent.getChildAt(firstItem),
+                R.drawable.touch_to_fill_credential_background_modern_rounded_up);
+        loadBackgroundDrawable(
+                parent.getChildAt(lastItem),
+                R.drawable.touch_to_fill_credential_background_modern_rounded_down);
+        for (int viewPosition = firstItem + 1; viewPosition < lastItem; viewPosition++) {
+            loadBackgroundDrawable(
+                    parent.getChildAt(viewPosition),
+                    R.drawable.touch_to_fill_credential_background_modern);
         }
     }
 
@@ -90,16 +91,9 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
 
     /**
      * Used as helper to determine undecorated items like headers and buttons.
+     *
      * @param type A type of an item in the list on the {@link BottomSheet}.
      * @return True if the item of the said type should be undecorated.
      */
     protected abstract boolean shouldSkipItemType(int type);
-
-    /**
-     * Used as a helper to determine the appropriate background shape for the decorated items in the
-     * list.
-     * @param parent The {@link RecyclerView} containing the items on the {@link BottomSheet}.
-     * @return True if the last item in the list is a button.
-     */
-    protected abstract boolean containsFillButton(RecyclerView parent);
 }

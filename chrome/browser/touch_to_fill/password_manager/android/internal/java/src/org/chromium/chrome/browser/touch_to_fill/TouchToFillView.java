@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,12 +35,6 @@ class TouchToFillView extends TouchToFillViewBase {
         }
 
         @Override
-        protected int selectBackgroundDrawable(
-                int position, boolean containsFillButton, int itemCount) {
-            return super.selectBackgroundDrawable(position, containsFillButton, itemCount);
-        }
-
-        @Override
         protected boolean shouldSkipItemType(@ItemType int type) {
             switch (type) {
                 case ItemType.HEADER: // Fallthrough.
@@ -57,14 +48,6 @@ class TouchToFillView extends TouchToFillViewBase {
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;
             return true; // Should never be reached. But if, skip to not change anything.
-        }
-
-        @Override
-        protected boolean containsFillButton(RecyclerView parent) {
-            int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
-            // The button will be above the footer if it's present.
-            return itemCount > 1
-                    && parent.getAdapter().getItemViewType(itemCount - 2) == ItemType.FILL_BUTTON;
         }
     }
 

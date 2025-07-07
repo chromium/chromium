@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
@@ -44,15 +43,6 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
         @Override
         protected boolean shouldSkipItemType(@ItemType int type) {
             return type != ItemType.BANK_ACCOUNT && type != ItemType.EWALLET;
-        }
-
-        @Override
-        protected boolean containsFillButton(RecyclerView parent) {
-            int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
-            // The button will be above the footer if it's present.
-            return itemCount > 1
-                    && parent.getAdapter().getItemViewType(itemCount - 2)
-                            == ItemType.CONTINUE_BUTTON;
         }
     }
 
