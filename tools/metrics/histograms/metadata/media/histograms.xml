@@ -4253,7 +4253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.HTMLMediaElement.MediaPlaybackWhileNotVisible.InterruptionType"
-    enum="MediaPlaybackInterruptionType" expires_after="2025-08-12">
+    enum="MediaPlaybackInterruptionType" expires_after="2026-02-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <owner>media-dev-uma@chromium.org</owner>

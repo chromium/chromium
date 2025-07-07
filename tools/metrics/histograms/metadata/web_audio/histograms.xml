@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioContext.MediaPlaybackWhileNotVisible.InterruptionType"
-    enum="AudioContextInterruptionType" expires_after="2025-08-12">
+    enum="AudioContextInterruptionType" expires_after="2026-02-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
