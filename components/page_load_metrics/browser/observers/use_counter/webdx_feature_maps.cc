@@ -426,6 +426,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8WasmSimdOpcodes, WebDXFeature::kWasmSimd},
           {WebFeature::kObservableConstructor, WebDXFeature::kObservable},
           {WebFeature::kEventTargetOnObservable, WebDXFeature::kObservable},
+          {WebFeature::kWebAppTitle, WebDXFeature::kMetaApplicationTitle},
           // Add new features above this line.
       }};
 
