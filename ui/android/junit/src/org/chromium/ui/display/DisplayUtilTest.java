@@ -117,6 +117,24 @@ public class DisplayUtilTest {
         DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
     }
 
+    // Tests when we have opted out of Clank's internal scaling when display compatibility is true.
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testGetUiDensityForAutomotive_displayCompatTrue() {
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
+        DisplayUtil.setIsDisplayCompatAppForTesting(true);
+
+        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
+
+        assertEquals(
+                "Density should be the base density when opted out of Clank's internal scaling.",
+                DisplayMetrics.DENSITY_DEFAULT,
+                DisplayUtil.getUiDensityForAutomotive(
+                        ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT));
+
+        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
+    }
+
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testScaleUpDisplayMetricsForAutomotive() {

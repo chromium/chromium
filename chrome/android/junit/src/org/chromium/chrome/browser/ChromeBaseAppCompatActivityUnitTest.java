@@ -68,9 +68,13 @@ public class ChromeBaseAppCompatActivityUnitTest {
                 .getRealMetrics(any());
     }
 
+    // Verifies that Clank's internal scaling works.
     @Test
     @MediumTest
     public void testApplyOverridesForAutomotive_onAutomotiveDevice_scaleUpUi() {
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
+        DisplayUtil.setIsDisplayCompatAppForTesting(false);
+
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
 
         Configuration config = new Configuration();
