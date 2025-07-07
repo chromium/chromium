@@ -26,6 +26,9 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
@@ -44,6 +47,32 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+namespace {
+
+EventTarget* RetargetPseudo(EventTarget* target) {
+  if (!target || !target->ToNode()) {
+    return target;
+  }
+  return PseudoElement::RetargetPseudoElement(target->ToNode());
+}
+
+EventTarget* RetargetCurrentTarget(const Member<EventTarget>& target) {
+  if (!target) {
+    return nullptr;
+  }
+  // For the SVG <use> element events should be mirrored back to the element
+  // that the <use> points to.
+  // https://svgwg.org/svg2-draft/struct.html#UseEventHandling.
+  if (auto* curr_svg_element = DynamicTo<SVGElement>(target->ToNode())) {
+    if (SVGElement* svg_element = curr_svg_element->CorrespondingElement()) {
+      return svg_element;
+    }
+  }
+  return target.Get();
+}
+
+}  // namespace
 
 Event::Event() : Event(g_empty_atom, Bubbles::kNo, Cancelable::kNo) {
   was_initialized_ = false;
@@ -253,12 +282,20 @@ void Event::preventDefault() {
 }
 
 void Event::SetTarget(EventTarget* target) {
-  if (target_ == target)
+  if (raw_target_ == target) {
     return;
+  }
 
-  target_ = target;
-  if (target_)
+  raw_target_ = target;
+  target_ = RetargetPseudo(target);
+  if (raw_target_) {
     ReceivedTarget();
+  }
+}
+
+void Event::SetCurrentTarget(EventTarget* current_target) {
+  raw_current_target_ = current_target;
+  current_target_ = RetargetPseudo(current_target);
 }
 
 void Event::SetRelatedTargetIfExists(EventTarget* related_target) {
@@ -275,7 +312,10 @@ void Event::ReceivedTarget() {}
 
 Element* Event::Retarget(const Element* element) const {
   CHECK(RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled());
-  EventTarget* retarget_against = currentTarget() ? currentTarget() : target();
+  EventTarget* retarget_against = RawCurrentTarget();
+  if (!retarget_against) {
+    retarget_against = RawTarget();
+  }
   if (element && retarget_against && retarget_against->ToNode()) {
     return &retarget_against->ToNode()->GetTreeScope().Retarget(*element);
   }
@@ -353,14 +393,11 @@ HeapVector<Member<EventTarget>> Event::composedPath(
 }
 
 EventTarget* Event::currentTarget() const {
-  if (!current_target_)
-    return nullptr;
-  if (auto* curr_svg_element =
-          DynamicTo<SVGElement>(current_target_->ToNode())) {
-    if (SVGElement* svg_element = curr_svg_element->CorrespondingElement())
-      return svg_element;
-  }
-  return current_target_.Get();
+  return RetargetCurrentTarget(current_target_);
+}
+
+EventTarget* Event::RawCurrentTarget() const {
+  return RetargetCurrentTarget(raw_current_target_);
 }
 
 double Event::timeStamp(ScriptState* script_state) const {
@@ -394,7 +431,9 @@ DispatchEventResult Event::DispatchEvent(EventDispatcher& dispatcher) {
 
 void Event::Trace(Visitor* visitor) const {
   visitor->Trace(current_target_);
+  visitor->Trace(raw_current_target_);
   visitor->Trace(target_);
+  visitor->Trace(raw_target_);
   visitor->Trace(underlying_event_);
   visitor->Trace(event_path_);
   ScriptWrappable::Trace(visitor);

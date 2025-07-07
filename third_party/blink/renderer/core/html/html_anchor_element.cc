@@ -209,8 +209,8 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   if (!mouse_event)
     return;
 
-  DCHECK(event->target());
-  Node* target = event->target()->ToNode();
+  DCHECK(event->RawTarget());
+  Node* target = event->RawTarget()->ToNode();
   DCHECK(target);
   auto* image_element = DynamicTo<HTMLImageElement>(target);
   if (!image_element || !image_element->IsServerMap())

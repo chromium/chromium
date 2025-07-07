@@ -143,13 +143,19 @@ class CORE_EXPORT Event : public ScriptWrappable {
   const AtomicString& type() const { return type_; }
   void SetType(const AtomicString& type) { type_ = type; }
 
+  // Retargeted target for IDL call: the return object can never be a pseudo
+  // element.
   EventTarget* target() const { return target_.Get(); }
+  // Raw target for internal usage, can be a pseudo element.
+  EventTarget* RawTarget() const { return raw_target_.Get(); }
   void SetTarget(EventTarget*);
 
+  // Retargeted target for IDL call: the return object can never be a pseudo
+  // element.
   EventTarget* currentTarget() const;
-  void SetCurrentTarget(EventTarget* current_target) {
-    current_target_ = current_target;
-  }
+  // Raw target for internal usage, can be a pseudo element.
+  EventTarget* RawCurrentTarget() const;
+  void SetCurrentTarget(EventTarget* current_target);
 
   // This callback is invoked when an event listener has been dispatched
   // at the current target. It should only be used to influence UMA metrics
@@ -371,7 +377,9 @@ class CORE_EXPORT Event : public ScriptWrappable {
   probe::AsyncTaskContext async_task_context_;
 
   Member<EventTarget> current_target_;
+  Member<EventTarget> raw_current_target_;
   Member<EventTarget> target_;
+  Member<EventTarget> raw_target_;
   Member<const Event> underlying_event_;
   Member<EventPath> event_path_;
   // The monotonic platform time in seconds, for input events it is the

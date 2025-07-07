@@ -283,6 +283,26 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
   }
 }
 
+Node* PseudoElement::RetargetPseudoElement(Node* node) {
+  if (!node || !node->IsPseudoElement()) {
+    return node;
+  }
+  // For ::scroll-marker, the target should be the ultimate originating element
+  // of its ::scroll-marker-group.
+  if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(node)) {
+    CHECK(scroll_marker->ScrollMarkerGroup());
+    return &scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
+  }
+  CHECK(node->parentNode())
+      << "don't call this function on disposed pseudo-elements!";
+  // For ::scroll-button(), the target should be the ultimate originating
+  // element of its ::scroll-marker-group.
+  if (auto* scroll_button = DynamicTo<ScrollButtonPseudoElement>(node)) {
+    return &scroll_button->UltimateOriginatingElement();
+  }
+  return &To<PseudoElement>(node)->UltimateOriginatingElement();
+}
+
 PseudoElement::PseudoElement(Element* parent,
                              PseudoId pseudo_id,
                              const AtomicString& view_transition_name)

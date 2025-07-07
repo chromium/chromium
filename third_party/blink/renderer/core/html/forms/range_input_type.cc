@@ -179,7 +179,7 @@ void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {
   if (GetElement().IsDisabledFormControl())
     return;
 
-  Node* target_node = event.target()->ToNode();
+  Node* target_node = event.RawTarget()->ToNode();
   if (event.button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
       !target_node)

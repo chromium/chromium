@@ -87,6 +87,11 @@ class CORE_EXPORT PseudoElement : public Element {
   static AtomicString PseudoElementNameForEvents(Element*);
   static bool IsWebExposed(PseudoId, const Node*);
 
+  // Retargets pseudo-element to some element. This function
+  // should be used in web exposed APIs to make sure we don't
+  // expose pseudo-elements to web.
+  static Node* RetargetPseudoElement(Node* node);
+
   // Pseudo-elements are not allowed to be the inner node for hit testing.
   // Find the closest ancestor which is a real dom node.
   virtual Node* InnerNodeForHitTesting();

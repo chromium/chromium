@@ -454,7 +454,7 @@ void MouseEvent::ReceivedTarget() {
 }
 
 void MouseEvent::ComputeRelativePosition() {
-  Node* target_node = target() ? target()->ToNode() : nullptr;
+  Node* target_node = RawTarget() ? RawTarget()->ToNode() : nullptr;
   if (!target_node)
     return;
 
@@ -525,7 +525,7 @@ void MouseEvent::ComputeRelativePosition() {
 }
 
 void MouseEvent::RecordLayerXYMetrics() {
-  Node* node = target() ? target()->ToNode() : nullptr;
+  Node* node = RawTarget() ? RawTarget()->ToNode() : nullptr;
   if (!node)
     return;
   // Using the target for these metrics is a heuristic for measuring the impact

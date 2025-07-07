@@ -692,11 +692,11 @@ void WindowPerformance::EventTimingProcessingEnd(
 #endif  // BUILDFLAG(IS_MAC)
   }
 
-  if (event.target()) {
-    // `event->target()` is assigned as part of EventDispatch, and will be unset
-    // whenever we skip dispatch. (See: crbug.com/1367329).
-    // Note: target may be dom detached, and even GC-ed, before Observer fires.
-    entry->SetTarget(event.target()->ToNode());
+  if (EventTarget* raw_target = event.RawTarget()) {
+    // `event->RawTarget()` is assigned as part of EventDispatch, and will be
+    // unset whenever we skip dispatch. (See: crbug.com/1367329). Note: target
+    // may be dom detached, and even GC-ed, before Observer fires.
+    entry->SetTarget(raw_target->ToNode());
   }
 
   // Request presentation time first, because this might increment presentation

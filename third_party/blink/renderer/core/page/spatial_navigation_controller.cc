@@ -179,7 +179,7 @@ bool SpatialNavigationController::HandleArrowKeyboardEvent(
 
   // If the focus has already moved by a previous handler, return false.
   const Element* focused = GetFocusedElement();
-  if (focused && focused != event->target()) {
+  if (focused && focused != event->RawTarget()) {
     // SpatNav does not need to handle this arrow key because
     // the webpage had a key-handler that already moved focus.
     return false;

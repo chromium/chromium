@@ -137,7 +137,7 @@ DocumentParser* MediaDocument::CreateParser() {
 }
 
 void MediaDocument::DefaultEventHandler(Event& event) {
-  Node* target_node = event.target()->ToNode();
+  Node* target_node = event.RawTarget()->ToNode();
   if (!target_node)
     return;
 

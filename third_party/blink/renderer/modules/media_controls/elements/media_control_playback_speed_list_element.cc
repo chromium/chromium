@@ -128,7 +128,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
     event.SetDefaultHandled();
   } else if (event.type() == event_type_names::kChange) {
     // Identify which input element was selected and update playback speed
-    Node* target = event.target()->ToNode();
+    Node* target = event.RawTarget()->ToNode();
     if (!target || !target->IsElementNode())
       return;
 

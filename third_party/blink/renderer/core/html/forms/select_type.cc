@@ -81,7 +81,7 @@ class PopupUpdater;
 namespace {
 
 HTMLOptionElement* EventTargetOption(const Event& event) {
-  auto* element = DynamicTo<Element>(event.target()->ToNode());
+  auto* element = DynamicTo<Element>(event.RawTarget()->ToNode());
   if (!element) {
     return nullptr;
   }
