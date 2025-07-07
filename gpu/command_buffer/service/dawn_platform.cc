@@ -249,6 +249,8 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
     case dawn::platform::Features::kWebGPUEnableRangeAnalysisForRobustness:
       return base::FeatureList::IsEnabled(
           features::kWebGPUEnableRangeAnalysisForRobustness);
+    case dawn::platform::Features::kWebGPUUseSpirv14:
+      return base::FeatureList::IsEnabled(features::kWebGPUUseSpirv14);
     default:
       return false;
   }

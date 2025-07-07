@@ -278,6 +278,10 @@ BASE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness,
              "WebGPUEnableRangeAnalysisForRobustness",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebGPUUseSpirv14,
+            "WebGPUUseSpirv14",
+            base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
