@@ -22,7 +22,11 @@ build/win-build-perf-siso
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
 ci/linux-modules-compile-fyi-rel
+ci/linux-rbe-trusted-test
+ci/linux-rbe-untrusted-test
 ci/linux-win-cross-rel
+ci/win-rbe-trusted-test
+ci/win-rbe-untrusted-test
 try/ios-simulator-exp
 try/linux-full-remote-rel
 try/linux-full-remote-rel-compilator

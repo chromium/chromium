@@ -127,6 +127,12 @@
   "chromium.build.fyi": {
     "Mac Builder Siso FYI": "build/Mac Builder Siso FYI/gn-args.json"
   },
+  "chromium.build.test": {
+    "linux-rbe-trusted-test": "ci/linux-rbe-trusted-test/gn-args.json",
+    "linux-rbe-untrusted-test": "ci/linux-rbe-untrusted-test/gn-args.json",
+    "win-rbe-trusted-test": "ci/win-rbe-trusted-test/gn-args.json",
+    "win-rbe-untrusted-test": "ci/win-rbe-untrusted-test/gn-args.json"
+  },
   "chromium.cft": {
     "linux-rel-cft": "ci/linux-rel-cft/gn-args.json",
     "mac-rel-cft": "ci/mac-rel-cft/gn-args.json",
