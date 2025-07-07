@@ -39933,7 +39933,8 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x4c16s2-aarch64-neondot.c",
-      "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x8c16s2-aarch64-neondot.c",
+      "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x4c8s2-aarch64-neondot.c",
+      "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-4x4c8s2-aarch64-neondot.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39959,7 +39960,8 @@ if (current_cpu == "arm64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x4c16s2-aarch64-neondot.c",
-        "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x8c16s2-aarch64-neondot.c",
+        "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-1x4c8s2-aarch64-neondot.c",
+        "src/src/qp8-f32-qb4w-gemm/qp8-f32-qb4w-gemm-minmax-4x4c8s2-aarch64-neondot.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]

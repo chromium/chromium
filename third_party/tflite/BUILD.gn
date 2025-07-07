@@ -1263,6 +1263,8 @@ tflite_static_library("tflite") {
     sources += [
       "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
       "src/tensorflow/lite/delegates/xnnpack/file_util.h",
+      "src/tensorflow/lite/delegates/xnnpack/mmap_handle.cc",
+      "src/tensorflow/lite/delegates/xnnpack/mmap_handle.h",
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
