@@ -594,7 +594,7 @@ BASE_FEATURE(kGetCookiesOnSet,
 
 BASE_FEATURE(kIncreaseCookieAccessCacheSize,
              "IncreaseCookieAccessCacheSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kCookieAccessCacheSize,
