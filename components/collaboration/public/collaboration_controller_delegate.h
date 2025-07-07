@@ -41,6 +41,8 @@ class CollaborationControllerDelegate {
       kGroupClosedByOrganizationPolicy = 6,
       // Show the update chrome error dialog.
       kUpdateChromeUiForVersionOutOfDate = 7,
+      // Show the sharing turned off error dialog.
+      kSharingDisabledByPolicy = 8,
     };
 
     ErrorInfo() : type_(Type::kUnknown) { GetDefaultString(); }
@@ -79,6 +81,8 @@ class CollaborationControllerDelegate {
           return "Group Is Closed By Organization Policy";
         case Type::kUpdateChromeUiForVersionOutOfDate:
           return "Update Chrome For Version Out Of Date";
+        case Type::kSharingDisabledByPolicy:
+          return "Enterprise Sharing Is Off";
       }
     }
 
@@ -131,6 +135,12 @@ class CollaborationControllerDelegate {
               IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_HEADER);
           error_body = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_BODY);
+          break;
+        case Type::kSharingDisabledByPolicy:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_BODY);
           break;
         case Type::kGenericError:
         case Type::kUnknown:

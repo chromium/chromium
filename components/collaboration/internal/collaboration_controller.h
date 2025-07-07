@@ -14,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -26,12 +27,12 @@ class SyncService;
 
 namespace collaboration {
 
-class CollaborationService;
 class ControllerState;
 
 // The class for managing a single collaboration group flow.
 class CollaborationController
-    : public tab_groups::TabGroupSyncService::Observer {
+    : public tab_groups::TabGroupSyncService::Observer,
+      public CollaborationService::Observer {
  public:
   // States of a collaboration group flow. All new flows starts PENDNG.
   enum class StateId {
@@ -195,6 +196,14 @@ class CollaborationController
   void OnTabGroupMigrated(const tab_groups::SavedTabGroup& new_group,
                           const base::Uuid& old_sync_id,
                           tab_groups::TriggerSource source) override;
+
+  // CollaborationService::Observer implementation.
+  void OnServiceStatusChanged(
+      const CollaborationService::Observer::ServiceStatusUpdate& update)
+      override;
+
+  // Called when enterprise policy disabled the feature.
+  void TransitionForEnterprisePolicy(ServiceStatus status);
 
  private:
   static constexpr std::array<std::pair<StateId, StateId>, 41>
@@ -371,6 +380,8 @@ class CollaborationController
   base::ScopedObservation<tab_groups::TabGroupSyncService,
                           tab_groups::TabGroupSyncService::Observer>
       tab_group_sync_service_observer_{this};
+  base::ScopedObservation<CollaborationService, CollaborationService::Observer>
+      collaboration_service_observer_{this};
   base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};
 };
 

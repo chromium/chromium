@@ -131,6 +131,8 @@ class CollaborationServiceImpl : public CollaborationService,
       CollaborationController::Flow flow,
       std::unique_ptr<CollaborationControllerDelegate> delegate);
 
+  THREAD_CHECKER(thread_checker_);
+
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observer_{this};
@@ -168,8 +170,6 @@ class CollaborationServiceImpl : public CollaborationService,
 
   // List of pointers that are cleaning up asynchronously.
   std::set<std::unique_ptr<CollaborationController>> cancelled_controllers_;
-
-  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<CollaborationServiceImpl> weak_ptr_factory_{this};
 };

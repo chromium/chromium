@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
-#include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/collaboration_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
@@ -48,6 +47,7 @@ using GroupDataOrFailureOutcome =
     data_sharing::DataSharingService::GroupDataOrFailureOutcome;
 using StateId = CollaborationController::StateId;
 using Flow = CollaborationController::Flow;
+using ServiceStatusUpdate = CollaborationService::Observer::ServiceStatusUpdate;
 
 constexpr base::TimeDelta kTimeoutWaitingForDataSharingGroup =
     base::Seconds(20);
@@ -258,7 +258,9 @@ class PendingState : public ControllerState {
       return;
     }
     // Handle disabled by policy.
-    if (!status.IsAllowedToJoin()) {
+    if (status.collaboration_status == CollaborationStatus::kDisabledPending ||
+        status.collaboration_status ==
+            CollaborationStatus::kDisabledForPolicy) {
       controller_->TransitionTo(StateId::kWaitingForPolicyUpdate);
       return;
     }
@@ -307,26 +309,16 @@ class WaitingForPolicyUpdateState : public ControllerState,
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     ServiceStatus status =
         controller_->collaboration_service()->GetServiceStatus();
-    if (status.signin_status == SigninStatus::kSigninDisabled) {
+    if (status.signin_status != SigninStatus::kSigninDisabled) {
       RecordJoinOrShareOrManageEvent(
           GetLogger(), controller_->flow().type,
-          CollaborationServiceJoinEvent::kDevicePolicyDisableSignin,
-          CollaborationServiceShareOrManageEvent::kDevicePolicyDisableSignin);
+          CollaborationServiceJoinEvent::kManagedAccountSignin,
+          CollaborationServiceShareOrManageEvent::kManagedAccountSignin);
       RecordCollaborationFlowEvent(
           GetLogger(), controller_->flow().type,
-          CollaborationServiceFlowEvent::kDevicePolicyDisableSignin);
-      HandleErrorWithType(ErrorInfo::Type::kSigninDisabledByPolicy);
-      return;
+          CollaborationServiceFlowEvent::kManagedAccountSignin);
     }
-
-    RecordJoinOrShareOrManageEvent(
-        GetLogger(), controller_->flow().type,
-        CollaborationServiceJoinEvent::kManagedAccountSignin,
-        CollaborationServiceShareOrManageEvent::kManagedAccountSignin);
-    RecordCollaborationFlowEvent(
-        GetLogger(), controller_->flow().type,
-        CollaborationServiceFlowEvent::kManagedAccountSignin);
-    HandleErrorWithType(ErrorInfo::Type::kSyncDisabledByPolicy);
+    controller_->TransitionForEnterprisePolicy(status);
   }
 
   void OnProcessingFinishedWithSuccess() override {
@@ -1386,6 +1378,7 @@ CollaborationController::CollaborationController(
       finish_and_delete_(std::move(finish_and_delete)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   tab_group_sync_service_observer_.Observe(tab_group_sync_service_);
+  collaboration_service_observer_.Observe(collaboration_service_);
 
   RecordJoinOrShareOrManageEvent(
       data_sharing_service_->GetLogger(), flow_.type,
@@ -1500,6 +1493,39 @@ void CollaborationController::OnTabGroupMigrated(
   CancelShareOrManageFlow(old_sync_id);
   if (new_group.local_group_id().has_value()) {
     CancelShareOrManageFlow(new_group.local_group_id().value());
+  }
+}
+
+void CollaborationController::OnServiceStatusChanged(
+    const ServiceStatusUpdate& update) {
+  // If the Shared Tab Groups feature, sync or signin got disabled by an
+  // enterprise policy while this flow is active, cancel the current flow and
+  // show an error.
+  if (update.old_status.collaboration_status !=
+          CollaborationStatus::kDisabledForPolicy &&
+      update.new_status.collaboration_status ==
+          CollaborationStatus::kDisabledForPolicy) {
+    TransitionForEnterprisePolicy(update.new_status);
+  }
+}
+
+void CollaborationController::TransitionForEnterprisePolicy(
+    ServiceStatus status) {
+  if (status.signin_status == SigninStatus::kSigninDisabled) {
+    RecordJoinOrShareOrManageEvent(
+        data_sharing_service()->GetLogger(), flow().type,
+        CollaborationServiceJoinEvent::kDevicePolicyDisableSignin,
+        CollaborationServiceShareOrManageEvent::kDevicePolicyDisableSignin);
+    RecordCollaborationFlowEvent(
+        data_sharing_service()->GetLogger(), flow().type,
+        CollaborationServiceFlowEvent::kDevicePolicyDisableSignin);
+    current_state_->HandleErrorWithType(
+        ErrorInfo::Type::kSigninDisabledByPolicy);
+  } else if (status.sync_status == SyncStatus::kSyncDisabledByEnterprise) {
+    current_state_->HandleErrorWithType(ErrorInfo::Type::kSyncDisabledByPolicy);
+  } else {
+    current_state_->HandleErrorWithType(
+        ErrorInfo::Type::kSharingDisabledByPolicy);
   }
 }
 
