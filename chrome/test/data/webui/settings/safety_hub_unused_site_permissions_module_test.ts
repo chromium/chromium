@@ -11,7 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
-import { ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType } from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -33,35 +33,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     ContentSettingsTypes.MIC,
     ContentSettingsTypes.CAMERA,
     ContentSettingsTypes.COOKIES,
+    ContentSettingsTypes.NOTIFICATIONS,
   ];
 
-  const mockData =
-      [1, 2, 3, 4]
-          .map(i => ({
-                 origin: `https://www.example${i}.com:443`,
-                 permissions: permissions.slice(0, i),
-                 expiration:
-                     '13317004800000000',  // Represents 2023-01-01T00:00:00.
-                 revocationType: PermissionsRevocationType.UNUSED_PERMISSIONS,
-               }))
-          .concat([
-            {
-              origin: `https://www.example5.com:443`,
-              permissions: [ContentSettingsTypes.NOTIFICATIONS],
-              expiration:
-                  '13317004800000000',  // Represents 2023-01-01T00:00:00.
-              revocationType:
-                  PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS,
-            },
-            {
-              origin: `https://www.example6.com:443`,
-              permissions: [ContentSettingsTypes.NOTIFICATIONS],
-              expiration:
-                  '13317004800000000',  // Represents 2023-01-01T00:00:00.
-              revocationType:
-                  PermissionsRevocationType.DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-            },
-          ]);
+  const mockData = [1, 2, 3, 4, 5].map(
+      i => ({
+        origin: `https://www.example${i}.com:443`,
+        permissions: permissions.slice(0, i),
+        expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
+      }));
 
   function assertEqualsMockData(
       siteList: UnusedSitePermissions[], mockDataLength: number) {
@@ -222,7 +202,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   test('Abusive and Unused Site Permission strings', function() {
     const siteList = getSiteList();
-    assertEquals(6, siteList.length);
+    assertEquals(5, siteList.length);
 
     // Check that the text describing the permissions is correct.
     assertEquals(
@@ -272,16 +252,6 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertTrue(
         !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
               .match('Dangerous site. Chrome|Chromium removed notifications.'));
-
-    assertEquals(
-        mockData[4]!.origin,
-        siteList[4]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
-    assertTrue(
-        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
-              .match(
-                  'You haven\'t visited recently. ' +
-                  'Chrome|Chromium removed notifications.'));
   });
 
   test('Record Suggestions Count', async function() {
@@ -487,8 +457,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Header Strings', async function() {
     // Check header string for plural case.
     let entries = getSiteList();
-    assertEquals(6, entries.length);
-    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 6);
+    assertEquals(5, entries.length);
+    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 5);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
@@ -516,7 +486,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
     testElement.$.gotItButton.click();
     await assertPluralString(
-        'safetyHubUnusedSitePermissionsToastBulkLabel', 6, 2);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', 5, 2);
 
     // Check the header string for a completion case after Allow Again action.
     webUIListenerCallback(
@@ -533,8 +503,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Subheader Strings', async function() {
     // Check header string for plural case.
     let entries = getSiteList();
-    assertEquals(6, entries.length);
-    await assertPluralString('safetyHubRevokedPermissionsSecondaryLabel', 6, 1);
+    assertEquals(5, entries.length);
+    await assertPluralString('safetyHubRevokedPermissionsSecondaryLabel', 5, 1);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);

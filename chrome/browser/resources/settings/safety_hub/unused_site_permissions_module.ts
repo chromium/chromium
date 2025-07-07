@@ -31,7 +31,7 @@ import {getLocalizationStringForContentType} from '../site_settings/site_setting
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import type {SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
-import {PermissionsRevocationType, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
+import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
 import type {SettingsSafetyHubModuleElement, SiteInfo} from './safety_hub_module.js';
 import {getTemplate} from './unused_site_permissions_module.html.js';
 
@@ -195,9 +195,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
    * For 4 or more, the two first permissions are listed explicitly and for
    * the remaining ones a count is shown, e.g. 'and 2 more'.
    */
-  private getPermissionsText_(
-      revocationType: PermissionsRevocationType,
-      permissions: ContentSettingsTypes[]): string {
+  private getPermissionsText_(permissions: ContentSettingsTypes[]): string {
     assert(
         permissions.length > 0,
         'There is no permission for the user to review.');
@@ -208,14 +206,15 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       return localizationString ? this.i18n(localizationString) : '';
     });
 
-    // For abusive revocations, use a string that mentions abusive sites.
-    // Disruptive and unused revocations share the same string that mentions not
-    // visiting the site.
-    if (revocationType ===
-            PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS ||
-        revocationType ===
-            PermissionsRevocationType
-                .UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS) {
+    // Unused notifications are not auto-revoked, so if the permissions
+    // include notifications, then the revocation is for an abusive site.
+    // In this case, we want to use the specific string for revoked abusive
+    // notifications.
+    if (permissionsI18n
+            .map(permission => {
+              return permission.toLowerCase();
+            })
+            .includes('notifications')) {
       return this.i18n(
           'safetyHubAbusiveNotificationPermissionsSettingSublabel');
     }
@@ -340,11 +339,8 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   /* Repopulate the list when unused site permission list is updated. */
   private onUnusedSitePermissionListChanged_(sites: UnusedSitePermissions[]) {
     this.sites_ = sites.map(
-        (site: UnusedSitePermissions): UnusedSitePermissionsDisplay => ({
-          ...site,
-          detail:
-              this.getPermissionsText_(site.revocationType, site.permissions),
-        }));
+        (site: UnusedSitePermissions): UnusedSitePermissionsDisplay =>
+            ({...site, detail: this.getPermissionsText_(site.permissions)}));
   }
 
   private setHeaderToCompletionState_() {
