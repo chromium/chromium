@@ -829,6 +829,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private waitingOnPanelWillOpenValue = false;
   private clientActiveObs = ObservableValue.withValue(false);
   private panelOpenState = PanelOpenState.CLOSED;
+  private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
 
   constructor(
@@ -995,16 +996,42 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
       // Failed, not responsive.
       if (this.webClientState.getCurrentValue() === WebClientState.RESPONSIVE) {
-        this.detailedWebClientState =
-            DetailedWebClientState.TEMPORARY_UNRESPONSIVE;
-        this.setWebClientState(WebClientState.UNRESPONSIVE);
-        this.startWebClientErrorTimer();
+        const ignoreUnresponsiveClient =
+            await this.shouldAllowUnresponsiveClient();
+        if (!ignoreUnresponsiveClient) {
+          this.detailedWebClientState =
+              DetailedWebClientState.TEMPORARY_UNRESPONSIVE;
+          this.setWebClientState(WebClientState.UNRESPONSIVE);
+          this.startWebClientErrorTimer();
+        }
       }
 
       // Crucial: Wait for the original (late) response promise to settle before
       // the next check cycle starts.
       await responsePromise;
     }
+  }
+
+  private async shouldAllowUnresponsiveClient(): Promise<boolean> {
+    if (loadTimeData.getBoolean(
+            'clientResponsivenessCheckIgnoreWhenDebuggerAttached')) {
+      const isDebuggerAttached: boolean =
+          await this.handler.isDebuggerAttached()
+              .then(result => result.isAttachedToWebview)
+              .catch(() => false);
+
+      if (isDebuggerAttached) {
+        if (!this.hasShownDebuggerAttachedWarning) {
+          console.warn(
+              'GlicApiHost: ignoring unresponsive client because ' +
+              'a debugger (likely DevTools) is attached');
+          this.hasShownDebuggerAttachedWarning = true;
+        }
+        return true;
+      }
+    }
+
+    return false;
   }
 
   startWebClientErrorTimer() {

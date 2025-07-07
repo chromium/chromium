@@ -691,6 +691,11 @@ interface WebClientHandler {
   // For example, an RPC may have been rejected due to the the service being
   // disabled.
   MaybeRefreshUserStatus();
+
+  // Returns whether the debugger is attached to the webview.
+  // This is useful for debugging the webview without having the responsiveness
+  // check get in the way.
+  IsDebuggerAttached() => (bool is_attached_to_webview);
 };
 
 // Data sent from the browser to the web client with panel opening information.

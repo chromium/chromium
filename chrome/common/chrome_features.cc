@@ -557,6 +557,12 @@ const base::FeatureParam<int> kGlicClientResponsivenessCheckTimeoutMs{
 const base::FeatureParam<int> kGlicClientUnresponsiveUiMaxTimeMs{
     &kGlicClientResponsivenessCheck, "glic-client-unresponsive-ui-max-time-ms",
     5000};
+// When true, the responsiveness check will be ignored when the debugger is
+// attached to the webview.
+const base::FeatureParam<bool>
+    kGlicClientResponsivenessCheckIgnoreWhenDebuggerAttached{
+        &kGlicClientResponsivenessCheck,
+        "glic-client-responsiveness-check-ignore-when-debugger-attached", true};
 
 BASE_FEATURE(kGlicUseShaderCache,
              "GlicUseShaderCache",

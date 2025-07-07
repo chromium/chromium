@@ -146,6 +146,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                      features::kGlicClientResponsivenessCheckTimeoutMs.Get());
   source->AddInteger("clientUnresponsiveUiMaxTimeMs",
                      features::kGlicClientUnresponsiveUiMaxTimeMs.Get());
+  source->AddBoolean(
+      "clientResponsivenessCheckIgnoreWhenDebuggerAttached",
+      features::kGlicClientResponsivenessCheckIgnoreWhenDebuggerAttached.Get());
   source->AddBoolean("enableWebClientUnresponsiveMetrics",
                      base::FeatureList::IsEnabled(
                          features::kGlicWebClientUnresponsiveMetrics));

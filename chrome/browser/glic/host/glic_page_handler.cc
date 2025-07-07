@@ -58,6 +58,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -1163,6 +1164,19 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     glic_service_->enabling().UpdateUserStatusWithThrottling();
+  }
+
+  void IsDebuggerAttached(IsDebuggerAttachedCallback callback) override {
+    content::RenderFrameHost* guest_main_frame =
+        page_handler_->GetGuestMainFrame();
+    if (!guest_main_frame) {
+      std::move(callback).Run(false);
+      return;
+    }
+    content::WebContents* guest_web_contents =
+        content::WebContents::FromRenderFrameHost(guest_main_frame);
+    std::move(callback).Run(
+        content::DevToolsAgentHost::IsDebuggerAttached(guest_web_contents));
   }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,
