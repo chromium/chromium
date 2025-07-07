@@ -480,7 +480,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
@@ -499,7 +498,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testSyncHistoryAndTabsToggle() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
         ChromeSwitchPreference historyToggle =
@@ -732,7 +730,7 @@ public class ManageSyncSettingsTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
 
-        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
         final ManageSyncSettings fragment = startManageSyncPreferences();
         Assert.assertFalse(
@@ -1282,7 +1280,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         CriteriaHelper.pollUiThread(
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
@@ -1301,7 +1298,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         CriteriaHelper.pollUiThread(
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
@@ -1330,7 +1326,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         CriteriaHelper.pollUiThread(
                 () -> mSyncTestRule.getSyncService().isPassphraseRequiredForPreferredDataTypes());
@@ -1389,7 +1384,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         SyncService syncService = mSyncTestRule.getSyncService();
         CriteriaHelper.pollUiThread(() -> syncService.isPassphraseRequiredForPreferredDataTypes());

@@ -35,7 +35,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -87,7 +86,6 @@ public class BookmarkBatchUploadCardRenderTest {
                                 new GURL("https://test.com")));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
@@ -112,7 +110,6 @@ public class BookmarkBatchUploadCardRenderTest {
                                 "reading list entry", new GURL("https://test.com")));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))
@@ -145,7 +142,6 @@ public class BookmarkBatchUploadCardRenderTest {
                 });
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.selectable_list_recycler_view))

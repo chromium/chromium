@@ -59,7 +59,6 @@ public class SyncTest {
     public void testStopAndClear() {
         mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(new byte[] {1, 2, 3, 4});
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
         CriteriaHelper.pollUiThread(
                 () ->
                         mSyncTestRule.getSyncService().getPassphraseType()
@@ -85,7 +84,6 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testStopAndStartSync() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
         Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
 
         // Signing out should disable sync.
@@ -99,7 +97,6 @@ public class SyncTest {
                 });
 
         accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
         Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
@@ -164,7 +161,6 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testIsSyncingUnencryptedUrlsWhileUsingCustomPassphrase() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
         SyncTestUtil.encryptWithPassphrase("passphrase");
         CriteriaHelper.pollUiThread(
                 () ->

@@ -266,11 +266,23 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Set up a test account and sign in. Does not setup sync.
+     * Set up a test account, sign in, and waits for sync machinery to become active.
      *
      * @return the test {@link CoreAccountInfo} that is signed in.
      */
     public CoreAccountInfo setUpAccountAndSignInForTesting() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        SyncTestUtil.waitForSyncTransportActive();
+        return TestAccounts.ACCOUNT1;
+    }
+
+    /**
+     * Set up a test account and sign in. Use this instead of setUpAccountAndSignInForTesting if
+     * sync can't become active, e.g. because there is a policy preventing it.
+     *
+     * @return the test {@link CoreAccountInfo} that is signed in.
+     */
+    public CoreAccountInfo setUpAccountAndSignInWithoutWaitingForTesting() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         return TestAccounts.ACCOUNT1;
     }
