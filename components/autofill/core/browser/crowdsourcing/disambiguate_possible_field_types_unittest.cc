@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/to_vector.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -16,18 +17,12 @@
 
 namespace autofill {
 
-using test::CreateTestFormField;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 // Tests that `DisambiguatePossibleFieldTypes` makes the correct choices.
 class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
- protected:
-  DisambiguatePossibleFieldTypesTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillDisambiguateContradictingFieldTypes);
-  }
-
+ public:
   struct TestFieldData {
     FieldType predicted_type;
     FieldTypeSet ambiguous_possible_field_types;
@@ -41,14 +36,15 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
     FormData form;
     for (size_t i = 0; i < test_fields.size(); ++i) {
       test_api(form).Append(
-          CreateTestFormField("", "", "", FormControlType::kInputText));
+          test::CreateTestFormField("", "", "", FormControlType::kInputText));
     }
+
     FormStructure form_structure(form);
     for (auto [field, test_field] :
          base::zip(form_structure.fields(), test_fields)) {
       field->set_possible_types(test_field.ambiguous_possible_field_types);
       field->set_server_predictions(
-          {::autofill::test::CreateFieldPrediction(test_field.predicted_type)});
+          {test::CreateFieldPrediction(test_field.predicted_type)});
       if (test_field.is_autofilled) {
         field->set_autofilled_type(test_field.predicted_type);
         field->set_is_autofilled(true);
@@ -56,20 +52,16 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
     }
 
     DisambiguatePossibleFieldTypes(form_structure);
-
-    std::vector<FieldTypeSet> disambiguated_possible_field_types;
-    std::ranges::transform(
-        form_structure.fields(),
-        std::back_inserter(disambiguated_possible_field_types),
-        [](const std::unique_ptr<AutofillField>& field) {
-          return field->possible_types();
-        });
-    return disambiguated_possible_field_types;
+    return base::ToVector(form_structure.fields(),
+                          [](const std::unique_ptr<AutofillField>& field) {
+                            return field->possible_types();
+                          });
   }
 
- protected:
+ private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillDisambiguateContradictingFieldTypes};
 };
 
 // Name disambiguation.
@@ -82,11 +74,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                           UnorderedElementsAre(NAME_FIRST),
                           UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND)));
@@ -101,11 +89,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {CREDIT_CARD_NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NUMBER),
                           UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST)));
@@ -120,11 +104,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}}};
-
-  const std::vector<FieldTypeSet> disambiguated_possible_field_types =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(disambiguated_possible_field_types,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(NAME_FIRST),
                           UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND),
                           UnorderedElementsAre(ADDRESS_HOME_CITY)));
@@ -138,11 +118,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_NUMBER, {CREDIT_CARD_NUMBER}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST),
                           UnorderedElementsAre(CREDIT_CARD_NUMBER)));
@@ -158,11 +134,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {CREDIT_CARD_NAME_LAST,
        {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_STATE, {ADDRESS_HOME_STATE}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                           UnorderedElementsAre(NAME_FIRST),
                           UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND),
@@ -178,11 +150,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, {CREDIT_CARD_EXP_4_DIGIT_YEAR}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(CREDIT_CARD_NUMBER),
                           UnorderedElementsAre(CREDIT_CARD_NAME_FIRST),
                           UnorderedElementsAre(CREDIT_CARD_NAME_LAST),
@@ -199,11 +167,8 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, {CREDIT_CARD_EXP_4_DIGIT_YEAR}}};
 
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
   EXPECT_THAT(
-      kDisambiguatedPossibleFieldTypes,
+      GetDisambiguatedPossibleFieldTypes(kTestFields),
       ElementsAre(UnorderedElementsAre(ADDRESS_HOME_CITY),
                   UnorderedElementsAre(NAME_FIRST, CREDIT_CARD_NAME_FIRST),
                   UnorderedElementsAre(NAME_LAST, CREDIT_CARD_NAME_LAST,
@@ -220,12 +185,8 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {NAME_FIRST, {NAME_FIRST, CREDIT_CARD_NAME_FIRST}},
       {NAME_LAST, {NAME_LAST, CREDIT_CARD_NAME_LAST, NAME_LAST_SECOND}},
       {ADDRESS_HOME_CITY, {ADDRESS_HOME_CITY}}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
   EXPECT_THAT(
-      kDisambiguatedPossibleFieldTypes,
+      GetDisambiguatedPossibleFieldTypes(kTestFields),
       ElementsAre(UnorderedElementsAre(CREDIT_CARD_EXP_4_DIGIT_YEAR),
                   UnorderedElementsAre(NAME_FIRST, CREDIT_CARD_NAME_FIRST),
                   UnorderedElementsAre(NAME_LAST, CREDIT_CARD_NAME_LAST,
@@ -239,11 +200,7 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
       {ADDRESS_HOME_LINE1,
        {CREDIT_CARD_EXP_4_DIGIT_YEAR, NAME_FULL, COMPANY_NAME},
        true}};
-
-  const std::vector<FieldTypeSet> kDisambiguatedPossibleFieldTypes =
-      GetDisambiguatedPossibleFieldTypes(kTestFields);
-
-  EXPECT_THAT(kDisambiguatedPossibleFieldTypes,
+  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
               ElementsAre(UnorderedElementsAre(ADDRESS_HOME_LINE1)));
 }
 
