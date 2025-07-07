@@ -89,6 +89,7 @@ if (!is_android) {
 
   source_set("tab_group") {
     sources = [
+      "shared_tab_group_version_upgrade_modal.h",
       "tab_group_deletion_dialog_controller.h",
       "tab_group_desktop.h",
       "tab_group_features.h",
@@ -111,6 +112,7 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
+      "shared_tab_group_version_upgrade_modal.cc",
       "tab_group_deletion_dialog_controller.cc",
       "tab_group_desktop.cc",
       "tab_group_features.cc",
@@ -127,6 +129,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/color:color_headers",

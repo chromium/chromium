@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/shared_tab_group_version_upgrade_modal.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -430,6 +431,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   // Finally, add info bars.
   AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
                          /*is_web_app=*/false);
+
+  tab_groups::MaybeShowSharedTabGroupVersionUpgradeModal(browser);
 }
 
 StartupBrowserCreatorImpl::DetermineStartupTabsResult::
