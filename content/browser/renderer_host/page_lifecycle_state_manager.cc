@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/state_transitions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -98,7 +99,8 @@ void PageLifecycleStateManager::SetFrameTreeVisibility(
 }
 
 void PageLifecycleStateManager::SetBackForwardCacheEntered(
-    BackForwardCacheEntered entered) {
+    BackForwardCacheEntered entered,
+    char context_for_bug_427316606) {
   static const base::NoDestructor<
       base::StateTransitions<BackForwardCacheEntered>>
       transitions(base::StateTransitions<BackForwardCacheEntered>({
@@ -109,17 +111,9 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
       }));
   // TODO(https://crbug.com/427316606): Remove this when we understand how this
   // transition sometimes occurs.
-  switch (entered) {
-    case BackForwardCacheEntered::kNo:
-      back_forward_cache_state_counts_.no++;
-      break;
-    case BackForwardCacheEntered::kEntering:
-      back_forward_cache_state_counts_.entering++;
-      break;
-    case BackForwardCacheEntered::kEntered:
-      back_forward_cache_state_counts_.entered++;
-      break;
-  }
+  back_forward_cache_state_tracker_.append(
+      base::StringPrintf("%c%d", context_for_bug_427316606, entered));
+
   if (back_forward_cache_entered_ == BackForwardCacheEntered::kNo &&
       entered == BackForwardCacheEntered::kEntered) {
     DumpWithoutCrashForBug427316606();
@@ -130,12 +124,8 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
 }
 
 void PageLifecycleStateManager::DumpWithoutCrashForBug427316606() {
-  SCOPED_CRASH_KEY_NUMBER("bfcache", "count_no",
-                          back_forward_cache_state_counts_.no);
-  SCOPED_CRASH_KEY_NUMBER("bfcache", "count_entering",
-                          back_forward_cache_state_counts_.entering);
-  SCOPED_CRASH_KEY_NUMBER("bfcache", "count_entered",
-                          back_forward_cache_state_counts_.entered);
+  SCOPED_CRASH_KEY_STRING64("bfcache", "tracker",
+                            back_forward_cache_state_tracker_);
   base::debug::DumpWithoutCrashing();
 }
 
@@ -151,7 +141,7 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
          !last_acknowledged_state_->eviction_enabled);
   eviction_enabled_ = is_in_back_forward_cache;
   if (is_in_back_forward_cache) {
-    SetBackForwardCacheEntered(BackForwardCacheEntered::kEntering);
+    SetBackForwardCacheEntered(BackForwardCacheEntered::kEntering, 'S');
     // When a page is put into BackForwardCache, the page can run a busy loop.
     // Set a timeout monitor to check that the transition finishes within the
     // time limit.
@@ -165,7 +155,7 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     // When a page is restored from the back-forward cache, we should reset this
     // state so that it behaves correctly next time navigation occurs.
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kNotDispatched;
-    SetBackForwardCacheEntered(BackForwardCacheEntered::kNo);
+    SetBackForwardCacheEntered(BackForwardCacheEntered::kNo, 'S');
   }
 
   SendUpdatesToRendererIfNeeded(std::move(page_restore_params),
@@ -283,7 +273,10 @@ void PageLifecycleStateManager::OnPageLifecycleStateChanged(
       back_forward_cache_entered_ != BackForwardCacheEntered::kEntered) {
     SCOPED_CRASH_KEY_NUMBER("bfcache", "current_entered_",
                             static_cast<int>(back_forward_cache_entered_));
-    SetBackForwardCacheEntered(BackForwardCacheEntered::kEntered);
+    SCOPED_CRASH_KEY_NUMBER("bfcache", "splsr",
+                            set_page_lifecycle_state_response);
+    SetBackForwardCacheEntered(BackForwardCacheEntered::kEntered,
+                               set_page_lifecycle_state_response ? 'R' : 'C');
     // TODO(https://crbug.com/427316606): Remove this.
     // This should only happen during a response to SetPageLifecycleState.
     if (!set_page_lifecycle_state_response) {
