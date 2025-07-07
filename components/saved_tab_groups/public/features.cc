@@ -29,7 +29,7 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
 // continue to use SavedTabGroupKeyedService.
 BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag for Java controller layer migration to use TabGroupSyncDelegate.
 // Noop when disabled.
