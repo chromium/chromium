@@ -805,6 +805,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       setConstant:content_suggestions::DoodleHeight(self.logoVendor.showingLogo,
                                                     doodleShowing,
                                                     self.traitCollection)];
+  self.doodleTopMarginConstraint.constant =
+      content_suggestions::DoodleTopMargin(self.logoVendor.showingLogo,
+                                           self.logoVendor.isShowingDoodle,
+                                           self.traitCollection);
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(self.logoIsShowing,
                                                self.logoVendor.isShowingDoodle,
