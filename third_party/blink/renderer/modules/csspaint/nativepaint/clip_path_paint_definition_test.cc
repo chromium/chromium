@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_definition.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -115,8 +116,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kNoAnimation:
       case CompositedPaintStatus::kNotComposited:
         // GetAnimationIfCompositable should return nothing in this circumstance
-        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo),
-                  nullptr);
+        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo), nullptr);
         // If a clip path is non-composited or non-existent, then the clip path
         // mask should not be set. If it is, it can cause a crash.
         EXPECT_TRUE(!lo->FirstFragment().PaintProperties() ||
@@ -131,8 +131,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kComposited:
         // GetAnimationIfCompositable should return the given animation, if it
         // is compositable
-        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo),
-                  animation);
+        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo), animation);
         // Composited clip-path animations depend on ClipPathMask() being set
         EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
         // Composited clip-path animations shouldn't cause further animation
@@ -161,6 +160,14 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     EnsureCCClipPathInvariantsHoldThroughoutPainting(
         needs_repaint, status, element, animation,
         override_scheduled_animation);
+  }
+
+  void UpdateAndAdvanceTimeTo(int ms) {
+    GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                                 base::Milliseconds(ms));
+    GetDocument()
+        .GetDocumentAnimations()
+        .UpdateAnimationTimingForAnimationFrame();
   }
 
   // Some animations require the paint artifact compositor's update flag to be
@@ -219,13 +226,14 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -262,21 +270,22 @@ TEST_F(ClipPathPaintDefinitionTest, ReverseClipPathAnimationNoUpdates) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
       animation);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(15000));
+  // Init clock
+  UpdateAndAdvanceTimeTo(15000);
   animation->updatePlaybackRate(-1);
 
   // Run lifecycle once more: animation should still be composited. Because it's
@@ -316,14 +325,15 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited,
       element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -361,14 +371,15 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
   Element* element = GetElementById("target");
   container->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited,
       element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -403,13 +414,14 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -452,13 +464,14 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -517,14 +530,15 @@ TEST_F(ClipPathPaintDefinitionTest,
   Element* element_pseudo = To<Element>(element->PseudoAwareFirstChild());
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited,
       element_pseudo);
 
   Animation* animation = GetFirstAnimation(element_pseudo);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -564,13 +578,14 @@ TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -611,13 +626,14 @@ TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
 
   Animation* animation = GetFirstAnimation(element);
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -676,6 +692,9 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
   InitPaintArtifactCompositor();
   UpdateAllLifecyclePhasesForTest();
 
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
   Element* element = GetElementById("target");
   // Init animation with clip-path and a translate.
 
@@ -688,8 +707,6 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
   Animation* animation =
       GetFirstAnimationForProperty(element, GetCSSPropertyClipPath());
 
-  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                               base::Milliseconds(0));
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
 
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
@@ -702,6 +719,93 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
       animation, /* override_scheduled_animation= */ true);
+}
+
+// Test the case where there is a clip-path animation with two simple
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        #target {
+            transition: 1s clip-path ease-in-out;
+            clip-path: circle(25% at 50% 50%);
+        }
+
+        #target.transition {
+             clip-path: circle(50% at 50% 50%);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("transition"));
+
+  // Init clock
+  UpdateAndAdvanceTimeTo(0);
+
+  // Ensure transition starts as normal
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+  Animation* animation = GetFirstAnimation(element);
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+      animation);
+
+  // Simulate the animation being started on compositor, so that the animation
+  // receives a start time
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  // Advance some time in the transition so that cancelling it will require
+  // reversing it.
+  UpdateAndAdvanceTimeTo(500);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Cancel the transition by resetting the style
+  element->setAttribute(html_names::kClassAttr, AtomicString(""));
+
+  // Run all lifecycle phases except paint. This should trigger a transition
+  // retarget, and resolve the clip path status of this brand new ransition as
+  // kComposited, as clip-path status is resolved early in pre-paint.
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+
+  // Transition retargeting will set a start time, but will still allow
+  // compositing
+  animation = GetFirstAnimationForProperty(element, GetCSSPropertyClipPath());
+  EXPECT_TRUE(animation->StartTimeInternal().has_value());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+
+  // Simulate another animation update that finishes the transition before
+  // PreCommit has been run the first time.
+  UpdateAndAdvanceTimeTo(1000);
+  GetDocument()
+      .GetDocumentAnimations()
+      .UpdateAnimationTimingForAnimationFrame();
+
+  // Even though the newly-finished transition was never started on compositor,
+  // the completion of it should trigger a status reset
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNeedsRepaint);
+
+  // Update the lifecycle, at this point, pre-commit should run, but there's
+  // nothing to start on the compositor because the transition is already
+  // finished. By the end of this call, all strong references to the transition
+  // will be gone.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kNotComposited);
+
+  // Ensure the transition is garbage collected
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Force paint invalidation and run lifecycle to ensure no CHECK failures or
+  // other crashes occur during painting, even though the transition has been
+  // removed from memory.
+  element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  UpdateAllLifecyclePhasesForTest();
 }
 
 }  // namespace blink
