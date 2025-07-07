@@ -11,6 +11,7 @@
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -63,10 +64,15 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
     user_agent = visible_item->GetUserAgentType();
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(web_state);
+  BOOL in_reader_mode = YES;
+  auto* reader_mode_tab_helper = ReaderModeTabHelper::FromWebState(web_state);
+  in_reader_mode = reader_mode_tab_helper && reader_mode_tab_helper->IsActive();
+  AbstractFindTabHelper* find_tab_helper =
+      GetConcreteFindTabHelperFromWebState(web_state);
   BOOL is_page_searchable =
-      (helper && helper->CurrentPageSupportsFindInPage() &&
-       !helper->IsFindUIActive());
+      !in_reader_mode &&
+      (find_tab_helper && find_tab_helper->CurrentPageSupportsFindInPage() &&
+       !find_tab_helper->IsFindUIActive());
   NSString* tab_title = tab_util::GetTabTitle(web_state);
 
   ProfileIOS* profile =

@@ -28,6 +28,7 @@ source_set("data") {
     "//base",
     "//components/send_tab_to_self",
     "//ios/chrome/browser/find_in_page/model",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
