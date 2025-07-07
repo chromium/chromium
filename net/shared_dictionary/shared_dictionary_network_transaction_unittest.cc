@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
@@ -89,18 +89,14 @@ class DummySyncDictionary : public SharedDictionary {
   explicit DummySyncDictionary(const std::string& data_string,
                                const std::string& id = "")
       : data_(base::MakeRefCounted<StringIOBuffer>(data_string)),
-        size_(data_string.size()),
         id_(id) {
-    std::unique_ptr<crypto::SecureHash> secure_hash =
-        crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-    secure_hash->Update(data_->data(), size_);
-    secure_hash->Finish(hash_);
+    hash_ = crypto::hash::Sha256(data_->span());
   }
 
   // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override { return OK; }
   scoped_refptr<IOBuffer> data() const override { return data_; }
-  size_t size() const override { return size_; }
+  size_t size() const override { return data_->size(); }
   const SHA256HashValue& hash() const override { return hash_; }
   const std::string& id() const override { return id_; }
 
@@ -108,8 +104,7 @@ class DummySyncDictionary : public SharedDictionary {
   ~DummySyncDictionary() override = default;
 
  private:
-  const scoped_refptr<IOBuffer> data_;
-  const size_t size_;
+  const scoped_refptr<StringIOBuffer> data_;
   const std::string id_;
   SHA256HashValue hash_;
 };
