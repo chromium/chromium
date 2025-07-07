@@ -3572,8 +3572,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FirstWebContentsProfile.Recorded" enum="Boolean"
-    expires_after="2025-08-10">
-  <owner>esum@google.com</owner>
+    expires_after="2026-07-06">
+  <owner>xiyuan@google.com</owner>
   <owner>chromeos-wms@google.com</owner>
   <summary>
     Whether the Startup.FirstWebContents.* metrics were recorded for the first
