@@ -2152,6 +2152,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "diamond-prototype",
+    "owners": ["gambard@chromium.com", "ewannpv@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "direct-sockets-in-service-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 150

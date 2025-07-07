@@ -1302,3 +1302,11 @@ BASE_FEATURE(kIOSTrustedVaultNotification,
 bool IsIOSTrustedVaultNotificationEnabled() {
   return base::FeatureList::IsEnabled(kIOSTrustedVaultNotification);
 }
+
+BASE_FEATURE(kDiamondPrototype,
+             "DiamondPrototype",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDiamondPrototypeEnabled() {
+  return base::FeatureList::IsEnabled(kDiamondPrototype);
+}

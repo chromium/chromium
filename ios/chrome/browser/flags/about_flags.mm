@@ -2792,6 +2792,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSTrustedVaultNotificationName,
      flag_descriptions::kIOSTrustedVaultNotificationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSTrustedVaultNotification)},
+    {"diamond-prototype", flag_descriptions::kDiamondPrototypeName,
+     flag_descriptions::kDiamondPrototypeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDiamondPrototype)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

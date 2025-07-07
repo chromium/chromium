@@ -1092,4 +1092,10 @@ BASE_DECLARE_FEATURE(kIOSTrustedVaultNotification);
 // Returns whether `kIOSTrustedVaultNotification` is enabled.
 bool IsIOSTrustedVaultNotificationEnabled();
 
+// Feature flag for diamond prototype
+BASE_DECLARE_FEATURE(kDiamondPrototype);
+
+// Whether the diamond prototype is enabled.
+bool IsDiamondPrototypeEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

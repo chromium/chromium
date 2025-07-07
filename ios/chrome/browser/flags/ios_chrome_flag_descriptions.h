@@ -262,6 +262,9 @@ extern const char kEnableFeedCardMenuSignInPromoDescription[];
 extern const char kEnableTraitCollectionRegistrationName[];
 extern const char kEnableTraitCollectionRegistrationDescription[];
 
+extern const char kDiamondPrototypeName[];
+extern const char kDiamondPrototypeDescription[];
+
 extern const char kDisableAutofillStrikeSystemName[];
 extern const char kDisableAutofillStrikeSystemDescription[];
 
