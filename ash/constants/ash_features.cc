@@ -315,6 +315,12 @@ BASE_FEATURE(kBocaTranslateToggle,
              "BocaTranslateToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables migration to `BabelOrcaSpeechRecognizerClient` for
+// speech recognition.
+BASE_FEATURE(kBocaMigrateSpeechRecongnizerClient,
+             "BocaMigrateSpeechRecongnizerClient",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3467,6 +3473,10 @@ bool IsBocaSequentialInsertActivityEnabled() {
 
 bool IsBocaTranslateToggleEnabled() {
   return base::FeatureList::IsEnabled(kBocaTranslateToggle);
+}
+
+bool IsBocaMigrateSpeechRecognizerClientEnabled() {
+  return base::FeatureList::IsEnabled(kBocaMigrateSpeechRecongnizerClient);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

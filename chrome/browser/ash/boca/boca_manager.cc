@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_client.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 #include "chrome/browser/ash/boca/babelorca/caption_bubble_context_boca.h"
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
@@ -89,9 +91,16 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     return nullptr;
   }
 
-  auto speech_recognizer =
-      std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
-          profile, soda_installer, application_locale, caption_language);
+  std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer;
+  if (features::IsBocaMigrateSpeechRecognizerClientEnabled()) {
+    speech_recognizer =
+        std::make_unique<babelorca::BabelOrcaSpeechRecognizerClient>(
+            profile, soda_installer, application_locale, caption_language);
+  } else {
+    speech_recognizer =
+        std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
+            profile, soda_installer, application_locale, caption_language);
+  }
   auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
