@@ -26626,6 +26626,26 @@
             ]
         }
     ],
+    "WebRTC-DataChannelMessageInterleaving": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRTC-DataChannelMessageInterleaving"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-ForceDtls13": [
         {
             "platforms": [
