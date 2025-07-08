@@ -196,19 +196,21 @@ void MaybeRestoreNewDeskButtonState() {
 // represent the window on the target root.
 class OverviewItemMoveHelper : public aura::WindowObserver {
  public:
-  // |target_item_bounds| is the bounds of the dragged overview item when the
-  // drag ends. |target_item_bounds| is used to put the new item where the old
-  // item ended, so it looks like it is the same item. Then the item is animated
-  // from there to its proper position in the grid.
-  OverviewItemMoveHelper(aura::Window* window,
-                         aura::Window* another_window,
+  // |windows| contains the list of windows to be moved, and |item_window| is the
+  // one currently being dragged in this list. |target_item_bounds| is the bounds
+  // of the item window when the drag ends. |target_item_bounds| is used to put
+  // the new item where the old item ended, so it looks like it is the same
+  // item. Then the item is animated from there to its proper position in the
+  // grid.
+  OverviewItemMoveHelper(aura::Window::Windows windows,
+                         aura::Window* item_window,
                          const gfx::RectF& target_item_bounds)
-      : window_(window),
-        another_window_(another_window),
+      : windows_(std::move(windows)),
+        item_window_(item_window),
         target_item_bounds_(target_item_bounds) {
-    window->AddObserver(this);
-    if (another_window_) {
-      another_window_->AddObserver(this);
+    CHECK(base::Contains(windows_, item_window_));
+    for (auto window : windows_) {
+      window->AddObserver(this);
     }
   }
   OverviewItemMoveHelper(const OverviewItemMoveHelper&) = delete;
@@ -219,20 +221,18 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       overview_controller->overview_session()->PositionWindows(
           /*animate=*/true);
     }
+    DCHECK(windows_.empty());
   }
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
-    DCHECK(window_ == window || another_window_ == window);
-    ResetWindow(window);
-    if (!window_ && !another_window_) {
-      delete this;
-    }
+    DCHECK(base::Contains(windows_, window));
+    ResetWindowAndDeleteIfEmpty(window);
   }
   void OnWindowAddedToRootWindow(aura::Window* window) override {
-    DCHECK(window_ == window || another_window_ == window);
-    window->RemoveObserver(this);
-    bool is_another_window = another_window_ == window;
+    DCHECK(base::Contains(windows_, window));
+    bool is_item_window = item_window_ == window;
+
     OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       // OverviewSession::AddItemInMruOrder() will add |window| to the grid
@@ -242,36 +242,35 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       session->AddItemInMruOrder(window, /*reposition=*/false,
                                  /*animate=*/false, /*restack=*/false,
                                  /*use_spawn_animation=*/false);
-      if (!is_another_window) {
+      if (is_item_window) {
         OverviewItemBase* item = session->GetOverviewItemForWindow(window);
         DCHECK(item);
         item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
         item->set_should_restack_on_animation_end(true);
       } else if (overview_controller->InOverviewSession()) {
-        // Don't animate another window as its origin bounds isn't specified.
+        // Don't animate non item window as its origin bounds isn't specified.
         overview_controller->overview_session()->PositionWindows(
             /*animate=*/false);
       }
       // The destructor will call OverviewSession::PositionWindows().
     }
-    ResetWindow(window);
-    if (!window_ && !another_window_) {
+    ResetWindowAndDeleteIfEmpty(window);
+  }
+
+ private:
+  void ResetWindowAndDeleteIfEmpty(aura::Window* window) {
+    window->RemoveObserver(this);
+    if (item_window_ == window) {
+      item_window_ = nullptr;
+    }
+    std::erase(windows_, window);
+    if (windows_.empty()) {
       delete this;
     }
   }
 
- private:
-  void ResetWindow(aura::Window* window) {
-    if (window_ == window) {
-      window_ = nullptr;
-    }
-    if (another_window_ == window) {
-      another_window_ = nullptr;
-    }
-  }
-
-  raw_ptr<aura::Window> window_;
-  raw_ptr<aura::Window> another_window_;
+  aura::Window::Windows windows_;
+  raw_ptr<aura::Window> item_window_;
   const gfx::RectF target_item_bounds_;
 };
 
@@ -907,15 +906,14 @@ OverviewWindowDragController::CompleteNormalDrag(
     }
     item_ = nullptr;
     event_source_item_ = nullptr;
-    // The |OverviewItemMoveHelper| will self destruct when we move |window| to
-    // |target_root|.
-    new OverviewItemMoveHelper(
-        window, mover.windows().empty() ? nullptr : mover.windows()[0],
-        target_item_bounds);
     // Move windows to the destination. The |OverviewItemMoveHelper| will take
     // care of the rest when the window is moved to another display's window
     // tree.
     mover.add_window(window);
+
+    // The |OverviewItemMoveHelper| will self destruct when we move |window| to
+    // |target_root|.
+    new OverviewItemMoveHelper(mover.windows(), window, target_item_bounds);
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
