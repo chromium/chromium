@@ -16515,9 +16515,7 @@ GLsizei GLES2DecoderImpl::InternalFormatSampleCountsHelper(
         return conformant == GL_FALSE;
       };
 
-      sample_counts.erase(std::remove_if(sample_counts.begin(),
-                                         sample_counts.end(), is_nonconformant),
-                          sample_counts.end());
+      std::erase_if(sample_counts, is_nonconformant);
       num_sample_counts = sample_counts.size();
     }
 
