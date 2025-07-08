@@ -277,6 +277,33 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-perf-trigger",
+    # Using the 'googlers' as the owner whitelist groups, so that this builder
+    # should run only on CLs owner by googlers and robots
+    # such as autorollers and rubber-stamper.
+    # We also want to catch regressions caused by sub-projects such as v8. We
+    # will update the way how autoroll robots create CLs, with the footer
+    # 'Cq-Include-Trybots: luci.chrome.try:linux-perf-trigger'.
+    owner_whitelist = ["googlers"],
+    tryjob = try_.job(
+        # In the current setting, we will use static mapping to decide whether
+        # changing a file can has impact on a certain benchmark. Due to the
+        # limitation on resources, we will run Speedometer3 benchmark only.
+        # As a result, only those CLs changing a file(s) listed in the static
+        # map will trigger a perf tests.
+        # As a result, while we have the experiment_percentage as X%, the
+        # actual number of CLs which trigger a Pinpoint try job should be far
+        # less than X% based on the following facts:
+        #  - all CLs will trigger this try job.
+        #  - most of the jobs triggered will not have match in the static map
+        #    and thus will exist in a couple of minutes.
+        #  - so far we only have 166 files listed in the map, which is a tiny
+        #    amount compared to the number of files in the chromium repo.
+        experiment_percentage = 10,
+    ),
+)
+
+chrome_internal_verifier(
     builder = "linux-nearby-chrome-fyi",
 )
 
