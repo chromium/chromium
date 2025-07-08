@@ -584,14 +584,16 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.AddAccountToDevice.IsSubjectToEnterprisePoliciesFetchDuration.{Status}"
-    units="ms" expires_after="2025-08-19">
+    units="ms" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     This histogram records the time to load IsSubjectToEnterprisePolicies
     account capability.
 
     Recorded right after an account was added by the user action when {Status}.
+
+    Only logged on iOS.
   </summary>
   <token key="Status">
     <variant name="Failed" summary="add account failed"/>
