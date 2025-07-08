@@ -144,6 +144,12 @@ if (!is_android) {
         "//ui/events:events_base",
         "//ui/views:test_support",
       ]
+      if (enable_dice_support) {
+        sources += [
+          "dice_migration_service_interactive_uitest.cc",
+          "dice_migration_service_pixel_browsertest.cc",
+        ]
+      }
     }
   }
 
@@ -177,12 +183,14 @@ if (!is_android) {
 
     if (enable_dice_support) {
       sources += [
+        "dice_migration_service_browsertest.cc",
         "promos/bubble_sign_in_promo_delegate_browsertest.cc",
         "promos/signin_promo_tab_helper_browsertest.cc",
         "signin_view_controller_browsertest.cc",
       ]
       deps += [
         "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
+        "//chrome/test:sync_integration_test_support",
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]

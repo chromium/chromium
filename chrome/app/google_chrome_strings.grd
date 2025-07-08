@@ -2599,6 +2599,17 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the bookmark bubble asking the user to enable UNO.">
         To get this bookmark and more on all your devices, sign in to Chrome
       </message>
+
+      <!-- Dice Migration strings -->
+      <message name="IDS_DICE_MIGRATION_DIALOG_TITLE" desc="The title in the Dice Migration dialog advertising the sign-in benefit.">
+        Your Chrome, everywhere
+      </message>
+      <message name="IDS_DICE_MIGRATION_DIALOG_DESCRIPTION" desc="The content of the Dice Migration dialog advertising the benefits of signing in to Chrome.">
+        When you click 'Got it', you can save and use passwords and more in your Google Account whenever you're signed in to Chrome. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_DICE_MIGRATION_DIALOG_OK_BUTTON" desc="The primary button label in the Dice Migration dialog, letting the user acknowledge signing in to Chrome.">
+        Got it
+      </message>
     </messages>
   </release>
 </grit>

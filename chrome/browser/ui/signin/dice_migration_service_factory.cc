@@ -5,11 +5,16 @@
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "components/signin/public/base/signin_switches.h"
 
 DiceMigrationServiceFactory::DiceMigrationServiceFactory()
-    : ProfileKeyedServiceFactory("DiceMigrationService") {}
+    : ProfileKeyedServiceFactory("DiceMigrationService") {
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
+}
 
 DiceMigrationServiceFactory::~DiceMigrationServiceFactory() = default;
 
