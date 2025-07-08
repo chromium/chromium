@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -15,13 +18,11 @@
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -34,7 +35,6 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
 
 ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() = default;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
     const {
   // If the delegate has an associated window controller, return it.
@@ -56,10 +56,12 @@ WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
   // |include_incognito|.
   Profile* profile = Profile::FromBrowserContext(function_->browser_context());
 
-  Browser* browser = chrome::FindAnyBrowser(
-      profile, function_->include_incognito_information());
-  if (browser) {
-    return browser->GetFeatures().extension_window_controller();
+  for (auto* browser : GetBrowserWindowInterfacesOrderedByActivation()) {
+    if (browser->GetProfile() == profile ||
+        (function_->include_incognito_information() &&
+         browser->GetProfile()->GetOriginalProfile() == profile)) {
+      return BrowserExtensionWindowController::From(browser);
+    }
   }
 
   // NOTE(rafaelw): This can return NULL in some circumstances. In particular,
@@ -71,7 +73,6 @@ WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
   // is available. http://code.google.com/p/chromium/issues/detail?id=13284
   return nullptr;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
   // TODO(crbug.com/423725749): Enable this logic on Android once

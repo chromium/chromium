@@ -8,22 +8,27 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 source_set("internal") {
   sources = []
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+  ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "browser_window_interface_iterator_android.cc" ]
+  } else {
     sources += [
       "browser_window_features.cc",
-      "browser_window_interface_iterator.cc",
+      "browser_window_interface_iterator_non_android.cc",
       "desktop_browser_window_capabilities.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-    deps = [
+    deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search:region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",

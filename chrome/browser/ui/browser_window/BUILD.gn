@@ -10,14 +10,16 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
-  sources = [ "public/browser_window_interface.h" ]
+  sources = [
+    "public/browser_window_interface.h",
+    "public/browser_window_interface_iterator.h",
+  ]
   public_deps = [ "//content/public/browser" ]
   deps = [ "//chrome/browser/ui/unowned_user_data" ]
 
   if (!is_android) {
     sources += [
       "public/browser_window_features.h",
-      "public/browser_window_interface_iterator.h",
       "public/desktop_browser_window_capabilities.h",
       "public/desktop_browser_window_capabilities_delegate.h",
     ]
