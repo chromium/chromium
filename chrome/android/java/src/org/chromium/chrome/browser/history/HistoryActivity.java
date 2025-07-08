@@ -53,7 +53,9 @@ public class HistoryActivity extends SnackbarActivity {
                         shouldShowClearData,
                         appSpecificHistory,
                         showAppFilter,
-                        /* openHistoryItemCallback= */ null);
+                        /* openHistoryItemCallback= */ null,
+                        // HistoryActivity doesn't support edge to edge yet.
+                        /* edgeToEdgePadAdjusterGenerator= */ null);
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
         if (showAppFilter) createBottomSheetController(contentView);

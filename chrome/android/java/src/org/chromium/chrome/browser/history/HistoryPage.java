@@ -62,7 +62,8 @@ public class HistoryPage extends BasicNativePage {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ true,
-                        /* openHistoryItemCallback= */ null);
+                        /* openHistoryItemCallback= */ null,
+                        host::createEdgeToEdgePadAdjuster);
         mTitle = host.getContext().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

@@ -150,7 +150,9 @@ public class HistoryPane implements Pane {
                             /* shouldShowClearData= */ true,
                             /* launchedForApp= */ false,
                             /* showAppFilter= */ true,
-                            this::onHistoryItemOpened);
+                            this::onHistoryItemOpened,
+                            // TODO(crbug.com/427776544): make history pane support edge to edge.
+                            /* edgeToEdgePadAdjusterGenerator= */ null);
             mRootView.addView(mHistoryManager.getView());
         } else if (loadHint == LoadHint.COLD) {
             destroyManagerAndRemoveView();
