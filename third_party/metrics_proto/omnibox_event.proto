@@ -765,6 +765,8 @@ message OmniboxEventProto {
                             // and touch the reminder that one can press Tab.
     SELECT_SUGGESTION = 8;  // Select a keyword suggestion, such as by arrowing
                             // or tabbing to it.
+    TOOLBELT = 9;           // Select and activate a search shortcuts action
+                            // from the omnibox toolbelt.
   }
 
   optional KeywordModeEntryMethod keyword_mode_entry_method = 20;

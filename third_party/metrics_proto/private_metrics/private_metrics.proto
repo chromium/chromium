@@ -1,0 +1,62 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package private_metrics;
+
+import "dwa/deidentified_web_analytics.proto";
+
+// A report containing encrypted private metrics data. Private metrics leverage
+// Trusted Execution Environments (TEEs) to enable secure and private collection
+// of essential metrics, facilitating safer releases and a better understanding
+// of user experience without compromising privacy. This proto will be stored
+// in Sawmill post upload to the UMA frontend, and will be subsequently
+// processed up by the k-anonymity pipeline in a trusted execution environment.
+// Next tag: 2
+message EncryptedPrivateMetricReport {
+  // HPKE-encrypted and proto-serialized report, with associated data.
+  // Associated data is the unencrypted non-sensitive header portion in
+  // HPKE encryption. For `encrypted_report`, the associated data includes
+  // information how the report was encrypted, the ID of the key used to encrypt
+  // the report, and the ID of the epoch for which the report was generated.
+  // TODO(b/425689566): We will perform server-side validation to check that the
+  // associated_data is of type `BlobHeader`, and that all fields contained are
+  // included in the `BlobHeader` protocol buffer.
+  optional bytes encrypted_report = 1;
+}
+
+// A report containing unencrypted private metrics data. The unencrypted report
+// does not leave the client.
+// Next tag: 3
+message PrivateMetricReport {
+  // A temporary unique identifier that changes every epoch. One epoch is a
+  // period of 24 hours. This is generated and managed by the Private Metrics
+  // service.
+  optional fixed64 ephemeral_id = 1;
+
+  message Event {
+    // Each event may contain multiple buckets that need to pass the k-anonymity
+    // filter. Buckets may contain quasi-identifiers. For example, for
+    // `dwa_event`, there are two buckets: one that combines the system profile,
+    // event hash, and field trial experiments, and the other the content hash.
+    // This field should be used for the sole purpose of enforcing k-anonymity,
+    // and nothing else. We are not concerned that the values of the buckets may
+    // diverge from the actual values (e.g. system profile, event hash, etc.)
+    // used to generate the bucket values because in a genuine Chrome client,
+    // the bucket values generated are trusted. We treat the k-anonymity bucket
+    // values as opaque and do not attempt to interpret them.
+    repeated fixed64 k_anonymity_buckets = 1 [packed = true];
+    // Content/value of the measurement.
+    oneof data {
+      dwa.DeidentifiedWebAnalyticsEvent dwa_event = 2;
+    }
+  }
+
+  // Each report is composed of a collection of events.
+  repeated Event events = 2;
+}

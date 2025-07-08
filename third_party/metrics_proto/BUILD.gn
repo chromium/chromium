@@ -26,6 +26,7 @@ _proto_files = [
   "perf_data.proto",
   "perf_stat.proto",
   "printer_event.proto",
+  "private_metrics/private_metrics.proto",
   "reporting_info.proto",
   "sampled_profile.proto",
   "structured_data.proto",

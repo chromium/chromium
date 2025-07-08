@@ -162,4 +162,7 @@ message DeidentifiedWebAnalyticsEvent {
   // Field trials that we want to associate with this event, name id and
   // group id behave the same as in UMA.
   repeated metrics.SystemProfileProto.FieldTrial field_trials = 3;
+
+  // Coarse system information associated with this event.
+  optional CoarseSystemInfo coarse_system_info = 4;
 }

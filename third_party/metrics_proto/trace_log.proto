@@ -15,7 +15,7 @@ package metrics;
 // timeline model of events occurring in all Chrome processes and threads.
 // Chrome uploads data as a serialized perfetto trace message. The proto format
 // is defined in perfetto tracing library in
-// //src/third_party/perfetto/protos/perfetto/trace/trace.proto
+// https://github.com/google/perfetto/tree/HEAD/protos/perfetto/.
 
 // Wrapper for the uploaded trace data, and parsed trace as stored in the logs.
 // Next ID: 6
