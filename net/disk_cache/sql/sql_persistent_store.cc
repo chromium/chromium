@@ -129,6 +129,11 @@ void PopulateTraceDetails(const std::optional<EntryInfo>& entry_info,
     dict.Add("entry_info", "not found");
   }
 }
+void PopulateTraceDetails(const RangeResult& range_result,
+                          perfetto::TracedDictionary& dict) {
+  dict.Add("range_start", range_result.start);
+  dict.Add("range_available_len", range_result.available_len);
+}
 void PopulateTraceDetails(const EntryInfoWithIdAndKey& result,
                           perfetto::TracedDictionary& dict) {
   PopulateTraceDetails(result.info, dict);
@@ -316,6 +321,9 @@ class Backend {
                            int buf_len,
                            int64_t body_end,
                            bool sparse_reading);
+  RangeResult GetEntryAvailableRange(const base::UnguessableToken& token,
+                                     int64_t offset,
+                                     int len);
 
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
@@ -361,6 +369,10 @@ class Backend {
                                    int buf_len,
                                    int64_t body_end,
                                    bool sparse_reading);
+  RangeResult GetEntryAvailableRangeInternal(
+      const base::UnguessableToken& token,
+      int64_t offset,
+      int len);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
@@ -1953,6 +1965,95 @@ IntOrError Backend::ReadEntryDataInternal(const base::UnguessableToken& token,
   return written_bytes;
 }
 
+RangeResult Backend::GetEntryAvailableRange(const base::UnguessableToken& token,
+                                            int64_t offset,
+                                            int len) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.GetEntryAvailableRange", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("token", token.ToString());
+                       dict.Add("offset", offset);
+                       dict.Add("len", len);
+                     });
+  base::ElapsedTimer timer;
+  auto result = GetEntryAvailableRangeInternal(token, offset, len);
+  RecordTimeAndErrorResultHistogram("GetEntryAvailableRange", timer.Elapsed(),
+                                    Error::kOk);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.GetEntryAvailableRange", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, dict);
+                   });
+  return result;
+}
+
+RangeResult Backend::GetEntryAvailableRangeInternal(
+    const base::UnguessableToken& token,
+    int64_t offset,
+    int len) {
+  CheckDatabaseInitStatus();
+  // Truncate `len` to make sure that `offset + len` does not overflow.
+  len = std::min(static_cast<int64_t>(len),
+                 std::numeric_limits<int64_t>::max() - offset);
+  const int64_t end = offset + len;
+  std::optional<int64_t> available_start;
+  int64_t available_end = 0;
+
+  // To finds the available contiguous range of data for a given entry. queries
+  // the `blobs` table for data chunks that overlap with the requested range
+  // [offset, end).
+  {
+    constexpr char kSqlSelectOverrapping[] =
+        // clang-format off
+        "SELECT "
+            "start,"  // 0
+            "end "    // 1
+        "FROM blobs "
+        "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=? AND "   // 1
+          "start<? AND "     // 2
+          "end>? "           // 3
+        "ORDER BY start";
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlSelectOverrapping));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverrapping));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
+    statement.BindInt64(2, end);
+    statement.BindInt64(3, offset);
+    while (statement.Step()) {
+      int64_t blob_start = statement.ColumnInt64(0);
+      int64_t blob_end = statement.ColumnInt64(1);
+      if (!available_start) {
+        // This is the first blob we've found in the requested range. Start
+        // tracking the contiguous available range from here.
+        available_start = std::max(blob_start, offset);
+        available_end = std::min(blob_end, end);
+      } else {
+        // We have already found a blob, check if this one is contiguous.
+        if (available_end == blob_start) {
+          // The next blob is contiguous with the previous one. Extend the
+          // available range.
+          available_end = std::min(blob_end, end);
+        } else {
+          // There's a gap in the data. Return the contiguous range found so
+          // far.
+          return RangeResult(*available_start,
+                             available_end - *available_start);
+        }
+      }
+    }
+  }
+  // If we found any data, return the total contiguous range.
+  if (available_start) {
+    return RangeResult(*available_start, available_end - *available_start);
+  }
+  return RangeResult(offset, 0);
+}
+
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
     int64_t res_id_cursor) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
@@ -2246,6 +2347,14 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
     backend_.AsyncCall(&Backend::ReadEntryData)
         .WithArgs(token, offset, std::move(buffer), buf_len, body_end,
                   sparse_reading)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void GetEntryAvailableRange(const base::UnguessableToken& token,
+                              int64_t offset,
+                              int len,
+                              RangeResultCallback callback) override {
+    backend_.AsyncCall(&Backend::GetEntryAvailableRange)
+        .WithArgs(token, offset, len)
         .Then(WrapCallback(std::move(callback)));
   }
 

@@ -321,6 +321,18 @@ class SqlPersistentStoreTest : public testing::Test {
               SqlPersistentStore::Error::kOk);
   }
 
+  // Helper to fill a range with a repeated character and write it to the store.
+  void FillDataInRange(const CacheEntryKey& key,
+                       const base::UnguessableToken& token,
+                       int64_t old_body_end,
+                       int64_t start,
+                       int64_t len,
+                       char fill_char) {
+    const std::string data(len, fill_char);
+    WriteDataAndAssertSuccess(key, token, old_body_end, start, data,
+                              /*truncate=*/false);
+  }
+
   // Helper to write a sequence of single-byte blobs from a string_view and
   // verify the result.
   void WriteAndVerifySingleByteBlobs(const CacheEntryKey& key,
@@ -340,6 +352,15 @@ class SqlPersistentStoreTest : public testing::Test {
       EXPECT_EQ(actual_blobs[i].end, i + 1);
       ASSERT_THAT(actual_blobs[i].data, ElementsAre(content[i]));
     }
+  }
+
+  // Synchronous wrapper for GetEntryAvailableRange.
+  RangeResult GetEntryAvailableRange(const base::UnguessableToken& token,
+                                     int64_t offset,
+                                     int len) {
+    base::test::TestFuture<const RangeResult&> future;
+    store_->GetEntryAvailableRange(token, offset, len, future.GetCallback());
+    return future.Get();
   }
 
   // Helper to read data and verify its content.
@@ -2662,6 +2683,155 @@ TEST_F(SqlPersistentStoreTest, SparseRead) {
   CheckBlobData(token, {{0, kData1}, {offset2, kData2}});
 }
 
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNoData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  auto result = GetEntryAvailableRange(token, 0, 100);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 0);
+  EXPECT_EQ(result.available_len, 0);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNoOverlap) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  const std::string kData = "some data";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/100,
+                            kData, /*truncate=*/false);
+
+  // Query before the data.
+  auto result1 = GetEntryAvailableRange(token, 0, 50);
+  EXPECT_EQ(result1.net_error, net::OK);
+  EXPECT_EQ(result1.start, 0);
+  EXPECT_EQ(result1.available_len, 0);
+
+  // Query after the data.
+  auto result2 = GetEntryAvailableRange(token, 200, 50);
+  EXPECT_EQ(result2.net_error, net::OK);
+  EXPECT_EQ(result2.start, 200);
+  EXPECT_EQ(result2.available_len, 0);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeFullOverlap) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+
+  auto result = GetEntryAvailableRange(token, 100, 100);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 100);
+}
+
+// Tests a query range that ends within the existing data.
+// Query: [50, 150), Data: [100, 200) -> Overlap: [100, 150)
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryEndsInData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+
+  auto result = GetEntryAvailableRange(token, 50, 100);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 50);
+}
+
+// Tests a query range that starts within the existing data.
+// Query: [150, 250), Data: [100, 200) -> Overlap: [150, 200)
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryStartsInData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+
+  auto result = GetEntryAvailableRange(token, 150, 100);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 150);
+  EXPECT_EQ(result.available_len, 50);
+}
+
+// Tests a query range that fully contains the existing data.
+// Query: [50, 250), Data: [100, 200) -> Overlap: [100, 200)
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeQueryContainsData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+
+  auto result = GetEntryAvailableRange(token, 50, 200);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 100);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeContained) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 50, 200, 'a');
+
+  auto result = GetEntryAvailableRange(token, 100, 100);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 100);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeContiguousBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+  FillDataInRange(kKey, token, /*old_body_end=*/200, 200, 100, 'b');
+
+  auto result = GetEntryAvailableRange(token, 100, 200);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 200);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeNonContiguousBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  FillDataInRange(kKey, token, /*old_body_end=*/0, 100, 100, 'a');
+  FillDataInRange(kKey, token, /*old_body_end=*/200, 300, 100, 'b');
+
+  auto result = GetEntryAvailableRange(token, 100, 300);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 100);
+  EXPECT_EQ(result.available_len, 100);
+}
+
+TEST_F(SqlPersistentStoreTest, GetEntryAvailableRangeMultipleBlobsStopsAtGap) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write three blobs: [100, 200), [200, 300), [400, 500)
+  FillDataInRange(kKey, token, 0, 100, 100, 'a');
+  FillDataInRange(kKey, token, 200, 200, 100, 'a');
+  FillDataInRange(kKey, token, 300, 400, 100, 'a');
+
+  // Query for [150, 450). Should return [150, 300), which has length 150.
+  auto result = GetEntryAvailableRange(token, 150, 300);
+  EXPECT_EQ(result.net_error, net::OK);
+  EXPECT_EQ(result.start, 150);
+  EXPECT_EQ(result.available_len, 150);
+}
+
 TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
   CreateAndInitStore();
   auto result = OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
@@ -3017,6 +3187,23 @@ TEST_F(SqlPersistentStoreTest, ReadDataCallbackNotRunOnStoreDestruction) {
           [&](SqlPersistentStore::IntOrError) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       GetEntryAvailableRangeCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  bool callback_run = false;
+  store_->GetEntryAvailableRange(
+      token, 0, 100, base::BindLambdaForTesting([&](const RangeResult&) {
+        callback_run = true;
+      }));
+
+  store_.reset();
+  FlushPendingTask();
+
   EXPECT_FALSE(callback_run);
 }
 

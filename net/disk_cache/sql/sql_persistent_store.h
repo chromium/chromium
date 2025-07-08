@@ -16,6 +16,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/buildflags.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 
 // This backend is experimental and only available when the build flag is set.
@@ -242,6 +243,19 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                              int64_t body_end,
                              bool sparse_reading,
                              IntOrErrorCallback callback) = 0;
+
+  // Finds the available contiguous range of data for a given entry.
+  // `token` identifies the entry.
+  // `offset` is the starting position of the range to check.
+  // `len` is the length of the range to check.
+  // `callback` is invoked with the result. The `RangeResult` will contain the
+  // starting offset and length of the first contiguous block of data found
+  // within the requested range `[offset, offset + len)`. If no data is found
+  // in the requested range, the `available_len` in the result will be 0.
+  virtual void GetEntryAvailableRange(const base::UnguessableToken& token,
+                                      int64_t offset,
+                                      int len,
+                                      RangeResultCallback callback) = 0;
 
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries
