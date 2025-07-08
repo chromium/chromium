@@ -3646,6 +3646,21 @@
             ]
         }
     ],
+    "BocaMigrateSpeechRecongnizerClient": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "BocaMigrateSpeechRecongnizerClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "BocaOnTaskLockedQuizMigration": [
         {
             "platforms": [
