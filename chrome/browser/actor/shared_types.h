@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
 #define CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
 
+#include <variant>
+
 #include "chrome/common/actor.mojom-data-view.h"
 #include "ui/gfx/geometry/point.h"
 
