@@ -51,7 +51,8 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         mAccountManagerFacade.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+                    Assert.assertFalse(
+                            mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT2.getId()));
                 });
     }
 
@@ -62,7 +63,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
-                            mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getEmail()));
+                            mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getId()));
                 });
     }
 
@@ -74,7 +75,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Assert.assertFalse(
-                                mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getEmail()));
+                                mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getId()));
                     });
         }
     }

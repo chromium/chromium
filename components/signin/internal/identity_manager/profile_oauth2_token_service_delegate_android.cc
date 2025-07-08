@@ -50,7 +50,7 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   AndroidAccessTokenFetcher(
       ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate,
       OAuth2AccessTokenConsumer* consumer,
-      const std::string& account_id);
+      const CoreAccountInfo& account_info);
 
   AndroidAccessTokenFetcher(const AndroidAccessTokenFetcher&) = delete;
   AndroidAccessTokenFetcher& operator=(const AndroidAccessTokenFetcher&) =
@@ -74,7 +74,7 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
 
   raw_ptr<ProfileOAuth2TokenServiceDelegateAndroid>
       oauth2_token_service_delegate_;
-  std::string account_id_;
+  CoreAccountInfo account_info_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;
 };
@@ -82,10 +82,10 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
 AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(
     ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate,
     OAuth2AccessTokenConsumer* consumer,
-    const std::string& account_id)
+    const CoreAccountInfo& account_info)
     : OAuth2AccessTokenFetcher(consumer),
       oauth2_token_service_delegate_(oauth2_token_service_delegate),
-      account_id_(account_id),
+      account_info_(account_info),
       request_was_cancelled_(false),
       weak_factory_(this) {}
 
@@ -96,8 +96,6 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
                                       const std::vector<std::string>& scopes) {
   JNIEnv* env = AttachCurrentThread();
   std::string scope = CombineScopes(scopes);
-  ScopedJavaLocalRef<jstring> j_email =
-      ConvertUTF8ToJavaString(env, account_id_);
   ScopedJavaLocalRef<jstring> j_scope = ConvertUTF8ToJavaString(env, scope);
   std::unique_ptr<FetchOAuth2TokenCallback> heap_callback(
       new FetchOAuth2TokenCallback(
@@ -106,8 +104,8 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
 
   // Call into Java to get a new token.
   signin::Java_ProfileOAuth2TokenServiceDelegate_getAccessTokenFromNative(
-      env, oauth2_token_service_delegate_->GetJavaObject(), j_email, j_scope,
-      reinterpret_cast<intptr_t>(heap_callback.release()));
+      env, oauth2_token_service_delegate_->GetJavaObject(), account_info_,
+      j_scope, reinterpret_cast<intptr_t>(heap_callback.release()));
 }
 
 void AndroidAccessTokenFetcher::CancelRequest() {
@@ -185,21 +183,18 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     return base::Contains(accounts, account_id);
   }
 
-  std::string account_name = MapAccountIdToAccountName(account_id);
-  if (account_name.empty()) {
+  if (account_tracker_service_->GetAccountInfo(account_id).IsEmpty()) {
     // This corresponds to the case when the account with id |account_id| is not
     // present on the device and thus was not seeded.
     DVLOG(1)
         << "ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable"
-        << " cannot find account name for account id " << account_id;
+        << " cannot find account for account id " << account_id;
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_account_name =
-      ConvertUTF8ToJavaString(env, account_name);
   jboolean refresh_token_is_available =
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
-          env, java_ref_, j_account_name);
+          env, java_ref_, account_id);
   return refresh_token_is_available == JNI_TRUE;
 }
 
@@ -234,11 +229,12 @@ ProfileOAuth2TokenServiceDelegateAndroid::CreateAccessTokenFetcher(
       << "ProfileOAuth2TokenServiceDelegateAndroid::CreateAccessTokenFetcher"
       << " account= " << account_id;
   ValidateAccountId(account_id);
-  std::string account_name = MapAccountIdToAccountName(account_id);
-  DCHECK(!account_name.empty())
-      << "Cannot find account name for account id " << account_id;
+  CoreAccountInfo account_info =
+      account_tracker_service_->GetAccountInfo(account_id);
+  DCHECK(!account_info.IsEmpty())
+      << "Cannot find account info for account id " << account_id;
   return std::make_unique<AndroidAccessTokenFetcher>(this, consumer,
-                                                     account_name);
+                                                     account_info);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
@@ -427,21 +423,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(
   } else if (fire_refresh_token_loaded_ == RT_LOAD_NOT_START) {
     fire_refresh_token_loaded_ = RT_WAIT_FOR_VALIDATION;
   }
-}
-
-std::string ProfileOAuth2TokenServiceDelegateAndroid::MapAccountIdToAccountName(
-    const CoreAccountId& account_id) const {
-  return account_tracker_service_->GetAccountInfo(account_id).email;
-}
-
-CoreAccountId
-ProfileOAuth2TokenServiceDelegateAndroid::MapAccountNameToAccountId(
-    const std::string& account_name) const {
-  CoreAccountId account_id =
-      account_tracker_service_->FindAccountInfoByEmail(account_name).account_id;
-  DCHECK(!account_id.empty() || account_name.empty())
-      << "Can't find account id, account_name=" << account_name;
-  return account_id;
 }
 
 namespace signin {

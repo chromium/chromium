@@ -151,14 +151,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         @Nullable AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
         if (accountHolder == null) {
             Log.w(TAG, "Cannot find account:" + coreAccountInfo.toString());
-            ThreadUtils.runOnUiThread(
+            ThreadUtils.postOnUiThread(
                     () ->
                             callback.onGetTokenFailure(
                                     new GoogleServiceAuthError(
                                             GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
             return;
         }
-        ThreadUtils.runOnUiThread(
+        ThreadUtils.postOnUiThread(
                 () -> callback.onGetTokenSuccess(accountHolder.getAccessTokenOrGenerateNew(scope)));
     }
 

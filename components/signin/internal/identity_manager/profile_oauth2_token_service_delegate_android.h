@@ -90,10 +90,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void LoadCredentialsInternal(
       const CoreAccountId& primary_account_id) override;
 
-  std::string MapAccountIdToAccountName(const CoreAccountId& account_id) const;
-  CoreAccountId MapAccountNameToAccountId(
-      const std::string& account_name) const;
-
   enum RefreshTokenLoadStatus {
     RT_LOAD_NOT_START,
     RT_WAIT_FOR_VALIDATION,
