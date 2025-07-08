@@ -152,7 +152,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   void AddEmphasisMark(const GlyphData& emphasis_data,
                        CanvasRotationInVertical canvas_rotation,
                        gfx::PointF glyph_center,
-                       float mid_glyph_offset);
+                       float mid_glyph_offset,
+                       float letter_spacing);
   static void AddEmphasisMarkToBloberizer(
       void* context,
       unsigned character_index,

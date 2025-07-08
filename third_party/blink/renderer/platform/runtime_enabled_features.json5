@@ -4745,6 +4745,11 @@
       status: "stable",
     },
     {
+      // crbug.com/40812040
+      name: "TextEmphasisLetterSpacing",
+      status: "stable",
+    },
+    {
       // crbug.com/368657256
       name: "TextEmphasisPositionAuto",
       status: "experimental",

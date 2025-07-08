@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
@@ -245,7 +246,8 @@ inline void ShapeResultBloberizer::AddEmphasisMark(
     const GlyphData& emphasis_data,
     CanvasRotationInVertical canvas_rotation,
     gfx::PointF glyph_center,
-    float mid_glyph_offset) {
+    float mid_glyph_offset,
+    float letter_spacing) {
   const SimpleFontData* emphasis_font_data = emphasis_data.font_data;
   DCHECK(emphasis_font_data);
 
@@ -254,9 +256,15 @@ inline void ShapeResultBloberizer::AddEmphasisMark(
       IsCanvasRotationInVerticalUpright(emphasis_data.canvas_rotation);
 
   if (!is_vertical) {
-    Add(emphasis_data.glyph, emphasis_font_data,
-        CanvasRotationInVertical::kRegular, mid_glyph_offset - glyph_center.x(),
-        0);
+    if (RuntimeEnabledFeatures::TextEmphasisLetterSpacingEnabled()) {
+      Add(emphasis_data.glyph, emphasis_font_data,
+          CanvasRotationInVertical::kRegular,
+          mid_glyph_offset - glyph_center.x() - letter_spacing / 2, 0);
+    } else {
+      Add(emphasis_data.glyph, emphasis_font_data,
+          CanvasRotationInVertical::kRegular,
+          mid_glyph_offset - glyph_center.x(), 0);
+    }
   } else {
     Add(emphasis_data.glyph, emphasis_font_data, emphasis_data.canvas_rotation,
         gfx::Vector2dF(-glyph_center.x(), mid_glyph_offset - glyph_center.y()),
@@ -339,11 +347,13 @@ class ClusterCallbackContext {
   ClusterCallbackContext(ShapeResultBloberizer* bloberizer,
                          const StringView& text,
                          const GlyphData& emphasis_data,
-                         gfx::PointF glyph_center)
+                         gfx::PointF glyph_center,
+                         float letter_spacing)
       : bloberizer(bloberizer),
         text(text),
         emphasis_data(emphasis_data),
-        glyph_center(std::move(glyph_center)) {}
+        glyph_center(std::move(glyph_center)),
+        letter_spacing(letter_spacing) {}
   ClusterCallbackContext(const ClusterCallbackContext&) = delete;
   ClusterCallbackContext& operator=(const ClusterCallbackContext&) = delete;
 
@@ -351,6 +361,7 @@ class ClusterCallbackContext {
   const StringView& text;
   const GlyphData& emphasis_data;
   gfx::PointF glyph_center;
+  float letter_spacing;
 };
 }  // namespace
 
@@ -371,7 +382,8 @@ class ClusterCallbackContext {
   if (text.Is8Bit()) {
     if (Character::CanReceiveTextEmphasis(text[character_index])) {
       bloberizer->AddEmphasisMark(emphasis_data, canvas_rotation, glyph_center,
-                                  advance_so_far + cluster_advance / 2);
+                                  advance_so_far + cluster_advance / 2,
+                                  parsed_context->letter_spacing);
     }
   } else {
     float glyph_advance_x = cluster_advance / graphemes_in_cluster;
@@ -382,7 +394,8 @@ class ClusterCallbackContext {
               text.CodepointAt(character_index))) {
         bloberizer->AddEmphasisMark(emphasis_data, canvas_rotation,
                                     glyph_center,
-                                    advance_so_far + glyph_advance_x / 2);
+                                    advance_so_far + glyph_advance_x / 2,
+                                    parsed_context->letter_spacing);
       }
       advance_so_far += glyph_advance_x;
     }
@@ -589,7 +602,8 @@ ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
     : ShapeResultBloberizer(font_description, Type::kNormal) {
   gfx::PointF glyph_center =
       emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
-  ClusterCallbackContext context = {this, text, emphasis, glyph_center};
+  ClusterCallbackContext context = {this, text, emphasis, glyph_center,
+                                    font_description.LetterSpacing()};
   float initial_advance = 0;
   unsigned index_offset = 0;
   advance_ = result->ForEachGraphemeClusters(
