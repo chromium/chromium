@@ -345,6 +345,10 @@ inline constexpr char kChromeUIBookmarksSidePanelHost[] =
     "bookmarks-side-panel.top-chrome";
 inline constexpr char kChromeUIBookmarksSidePanelURL[] =
     "chrome://bookmarks-side-panel.top-chrome/";
+inline constexpr char kChromeUICommentsSidePanelHost[] =
+    "comments-side-panel.top-chrome";
+inline constexpr char kChromeUICommentsSidePanelURL[] =
+    "chrome://comments-side-panel.top-chrome/";
 inline constexpr char kChromeUICustomizeChromeSidePanelHost[] =
     "customize-chrome-side-panel.top-chrome";
 inline constexpr char kChromeUICustomizeChromeSidePanelURL[] =

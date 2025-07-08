@@ -245,6 +245,7 @@ chromium-metrics-reviews@google.com.
 <variants name="WebUIName">
   <variant name=""/>
   <variant name=".BookmarksSidePanel"/>
+  <variant name=".CommentsSidePanel"/>
   <variant name=".Compose"/>
   <variant name=".CustomizeChrome"/>
   <variant name=".DataSharingBubble"/>

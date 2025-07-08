@@ -42,6 +42,7 @@ const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
       base::MakeFixedFlatMap<std::string_view, std::string_view>({
           {chrome::kChromeUIBookmarksHost, "Bookmarks"},
           {chrome::kChromeUIBookmarksSidePanelHost, "BookmarksSidePanel"},
+          {chrome::kChromeUICommentsSidePanelHost, "CommentsSidePanel"},
           {chrome::kChromeUICustomizeChromeSidePanelHost,
            "CustomizeChromeSidePanel"},
           {chrome::kChromeUIDownloadsHost, "Downloads"},

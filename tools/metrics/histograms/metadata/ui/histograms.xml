@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
 <variants name="TopChromeWebUIName">
   <variant name=""/>
   <variant name=".BookmarksSidePanel"/>
+  <variant name=".CommentsSidePanel"/>
   <variant name=".CompanionSidePanelUntrusted"/>
   <variant name=".Compose"/>
   <variant name=".CustomizeChrome"/>
