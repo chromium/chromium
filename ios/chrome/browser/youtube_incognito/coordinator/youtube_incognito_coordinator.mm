@@ -109,9 +109,10 @@ CGFloat const kHalfSheetCornerRadius = 20;
 
 - (void)loadURLInTab:(const GURL&)URL {
   DCHECK(URL == GetLearnMoreIncognitoUrl());
+  const ApplicationModeForTabOpening mode =
+      ApplicationModeForTabOpening::INCOGNITO;
   [self.tabOpener
-      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
-                                                     NORMAL
+      dismissModalsAndMaybeOpenSelectedTabInMode:mode
                                withUrlLoadParams:UrlLoadParams::InNewTab(URL)
                                   dismissOmnibox:YES
                                       completion:nil];
