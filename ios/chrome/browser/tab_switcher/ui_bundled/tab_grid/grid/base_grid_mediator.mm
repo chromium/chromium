@@ -197,24 +197,29 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   _browser.reset();
   if (browser) {
     _browser = browser->AsWeakPtr();
-  }
+    _webStateList = browser->GetWebStateList();
+    _profile = browser->GetProfile();
+    _URLLoader = UrlLoadingBrowserAgent::FromBrowser(browser);
 
-  _webStateList = browser ? browser->GetWebStateList() : nullptr;
-  _profile = browser ? browser->GetProfile() : nullptr;
-  _URLLoader = browser ? UrlLoadingBrowserAgent::FromBrowser(browser) : nullptr;
-
-  FaviconLoader* faviconLoader = nil;
-  // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
-  if (_profile && !_profile->IsOffTheRecord()) {
-    collaboration::CollaborationService* collaborationService =
-        collaboration::CollaborationServiceFactory::GetForProfile(_profile);
-    if (IsTabGroupSyncEnabled() ||
-        IsSharedTabGroupsJoinEnabled(collaborationService)) {
-      faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(_profile);
+    // Fetch favicons if in regular mode and sync or shared tab groups is
+    // enabled.
+    FaviconLoader* faviconLoader = nil;
+    if (!_profile->IsOffTheRecord()) {
+      collaboration::CollaborationService* collaborationService =
+          collaboration::CollaborationServiceFactory::GetForProfile(_profile);
+      if (IsTabGroupSyncEnabled() ||
+          IsSharedTabGroupsJoinEnabled(collaborationService)) {
+        faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(_profile);
+      }
     }
+    _tabImagesConfigurator =
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+  } else {
+    _webStateList = nullptr;
+    _profile = nullptr;
+    _URLLoader = nullptr;
+    _tabImagesConfigurator.reset();
   }
-  _tabImagesConfigurator =
-      std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
 
   [self.snapshotStorage addObserver:self];
 
