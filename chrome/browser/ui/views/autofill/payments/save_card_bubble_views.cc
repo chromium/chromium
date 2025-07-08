@@ -226,7 +226,8 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   if (is_cvc_only_save) {
     // Add card last four, the spacing, and the CVC icon.
     card_identifier_view->AddChildView(std::make_unique<views::Label>(
-        card.ObfuscatedNumberWithVisibleLastFourDigits(),
+        card.ObfuscatedNumberWithVisibleLastFourDigits(
+            /*obfuscation_length=*/2),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
     auto* gap_view =
         card_identifier_view->AddChildView(std::make_unique<views::View>());
