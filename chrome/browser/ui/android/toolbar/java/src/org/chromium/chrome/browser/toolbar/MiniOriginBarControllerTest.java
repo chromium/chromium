@@ -169,6 +169,21 @@ public class MiniOriginBarControllerTest {
     }
 
     @Test
+    public void testFormFieldFocusLostFromShowing() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+
+        Assert.assertEquals(
+                MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
+        Assert.assertEquals(
+                MiniOriginState.NOT_READY, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
     public void testDestroy() {
         mMiniOriginBarController.destroy();
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
@@ -377,7 +392,6 @@ public class MiniOriginBarControllerTest {
 
         Mockito.clearInvocations(mLocationBarView);
         // Simulate hiding the keyboard
-        mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
 
         animationListener.onPrepare(mImeAnimation);

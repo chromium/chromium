@@ -410,7 +410,8 @@ public class MiniOriginBarController implements Observer {
                 return switch (miniOriginEvent) {
                     case MiniOriginEvent.ACCESSORY_SHEET_APPEARED -> MiniOriginState
                             .SHOWING_WITH_ACCESSORY_SHEET;
-                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP,
+                            MiniOriginEvent.FORM_FIELD_LOST_FOCUS -> MiniOriginState.NOT_READY;
                     case MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED -> MiniOriginState.ANIMATING;
                     case MiniOriginEvent.KEYBOARD_DISAPPEARED ->
                     // Skip our animation if we get a keyboard disappearance event before the
