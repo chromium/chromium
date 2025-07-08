@@ -440,10 +440,7 @@ void MediaRecorder::ContextDestroyed() {
 void MediaRecorder::WriteData(base::span<const uint8_t> data,
                               bool last_in_slice,
                               ErrorEvent* error_event) {
-  if (!first_write_received_) {
-    // If we haven't yet started, treat the first write as the start signal.
-    OnStarted();
-  }
+  MaybeEmitStartEvent();
 
   if (error_event) {
     ScheduleDispatchEvent(error_event);
@@ -466,13 +463,6 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
       BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
 }
 
-void MediaRecorder::OnStarted() {
-  DCHECK(!first_write_received_);
-  mime_type_ = recorder_handler_->ActualMimeType();
-  ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
-  first_write_received_ = true;
-}
-
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   DVLOG(1) << __func__ << " message=" << message.Ascii();
 
@@ -485,6 +475,15 @@ void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   event_init->setError(error_value);
   StopRecording(
       ErrorEvent::Create(script_state, event_type_names::kError, event_init));
+}
+
+void MediaRecorder::MaybeEmitStartEvent() {
+  if (emitted_start_event_) {
+    return;
+  }
+  mime_type_ = recorder_handler_->ActualMimeType();
+  ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
+  emitted_start_event_ = true;
 }
 
 void MediaRecorder::OnAllTracksEnded() {
@@ -532,7 +531,7 @@ void MediaRecorder::StopRecording(ErrorEvent* error_event) {
   recorder_handler_->Stop();
   WriteData(/*data=*/{}, /*last_in_slice=*/true, error_event);
   ScheduleDispatchEvent(Event::Create(event_type_names::kStop));
-  first_write_received_ = false;
+  emitted_start_event_ = false;
 }
 
 void MediaRecorder::ScheduleDispatchEvent(Event* event) {

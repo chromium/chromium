@@ -83,8 +83,11 @@ class MODULES_EXPORT MediaRecorder
   virtual void WriteData(base::span<const uint8_t> data,
                          bool last_in_slice,
                          ErrorEvent* error_event);
-  virtual void OnStarted();
   virtual void OnError(DOMExceptionCode code, const String& message);
+
+  // If `emitted_start_event_` is false, sets `mime_type_`, emits the start
+  // event, and sets `emitted_start_event_` to true.
+  void MaybeEmitStartEvent();
 
   // This causes an invalid modification error to be sent and recording to be
   // stopped if recording is not inactive.
@@ -112,7 +115,7 @@ class MODULES_EXPORT MediaRecorder
   std::optional<uint32_t> overall_bits_per_second_;
 
   State state_ = State::kInactive;
-  bool first_write_received_ = false;
+  bool emitted_start_event_ = false;
   std::unique_ptr<BlobData> blob_data_;
   std::optional<base::TimeTicks> blob_event_first_chunk_timecode_;
   Member<MediaRecorderHandler> recorder_handler_;

@@ -1211,7 +1211,7 @@ void MediaRecorderHandler::OnVideoEncodingError(
 
 void MediaRecorderHandler::OnStarted() {
   if (recorder_) {
-    recorder_->OnStarted();
+    recorder_->MaybeEmitStartEvent();
   }
 }
 
