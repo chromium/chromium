@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_PIN_INFOBAR_PIN_INFOBAR_CONTROLLER_H_
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_PIN_INFOBAR_PIN_INFOBAR_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
@@ -13,6 +14,7 @@
 class BrowserWindowInterface;
 
 namespace infobars {
+class ContentInfoBarManager;
 class InfoBar;
 }  // namespace infobars
 
@@ -54,6 +56,22 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
   // If the above are true, the infobar is shown. Passes `done_callback` a
   // boolean indicating whether the infobar was shown.
   void MaybeShowInfoBar(base::OnceCallback<void(bool)> done_callback);
+
+  // The browser that owns this `PinInfoBarController`.
+  const raw_ptr<BrowserWindowInterface> browser_;
+
+  // The infobar being shown, or `nullptr` if no infobar currently exists.
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
+
+  // The manager of the infobar being shown, or `nullptr` if no infobar
+  // currently exists.
+  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_ = nullptr;
+
+  // Enables `OnBrowserClosed()` to be called.
+  std::vector<base::CallbackListSubscription> browser_subscriptions_;
+
+  // Must be the last member variable.
+  base::WeakPtrFactory<PinInfoBarController> weak_factory_{this};
 };
 
 }  // namespace default_browser

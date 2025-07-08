@@ -4,28 +4,58 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/cstring_view.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 
 namespace default_browser {
 
-PinInfoBarController::PinInfoBarController(BrowserWindowInterface* browser) {
-  NOTIMPLEMENTED();
+PinInfoBarController::PinInfoBarController(BrowserWindowInterface* browser)
+    : browser_(browser) {
+  CHECK(base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar));
+  browser_subscriptions_.push_back(
+      browser_->RegisterBrowserDidClose(base::BindRepeating(
+          &PinInfoBarController::OnBrowserClosed, base::Unretained(this))));
 }
 
 PinInfoBarController::~PinInfoBarController() = default;
 
 void PinInfoBarController::OnBrowserClosed(BrowserWindowInterface* browser) {
-  NOTIMPLEMENTED();
+  if (infobar_) {
+    infobar_manager_->RemoveInfoBar(infobar_);
+  }
 }
 
 void PinInfoBarController::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                             bool animate) {
-  NOTIMPLEMENTED();
+  if (infobar_ != infobar) {
+    return;
+  }
+  infobar_ = nullptr;
+  infobar_manager_->RemoveObserver(this);
+  infobar_manager_ = nullptr;
 }
 
 // static
@@ -38,19 +68,60 @@ void PinInfoBarController::MaybeShowInfoBarForBrowser(
 
 void PinInfoBarController::MaybeShowInfoBar(
     base::OnceCallback<void(bool)> done_callback) {
-  NOTIMPLEMENTED();
+  // Check if Chrome is the default browser.
+  scoped_refptr<shell_integration::DefaultBrowserWorker>(
+      new shell_integration::DefaultBrowserWorker())
+      ->StartCheckIsDefault(
+          base::BindOnce(&PinInfoBarController::OnIsDefaultBrowserResult,
+                         weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 void PinInfoBarController::OnIsDefaultBrowserResult(
     base::OnceCallback<void(bool)> done_callback,
     shell_integration::DefaultWebClientState default_state) {
-  NOTIMPLEMENTED();
+  if (default_state != shell_integration::DefaultWebClientState::IS_DEFAULT) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+  // Check if Chrome can be pinned to the taskbar.
+  browser_util::ShouldOfferToPin(
+      ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      base::BindOnce(&PinInfoBarController::OnShouldOfferToPinResult,
+                     weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 void PinInfoBarController::OnShouldOfferToPinResult(
     base::OnceCallback<void(bool)> done_callback,
     bool should_offer_to_pin) {
-  NOTIMPLEMENTED();
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Only offer to pin if:
+  // * it's okay to pin to the taskbar
+  // * this is a normal browser window
+  // * the current profile is not incognito or a guest
+  const auto* profile = browser_->GetProfile();
+  if (!should_offer_to_pin ||
+      browser_->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+      profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
+  // Don't show the infobar if it's already showing.
+  // TODO(crbug.com/420960161): don't show the infobar if it was recently shown.
+  if (infobar_) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
+  // Show the pin-to-taskbar infobar.
+  content::WebContents* web_contents =
+      browser_->GetTabStripModel()->GetActiveWebContents();
+  infobar_manager_ =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  infobar_manager_->AddObserver(this);
+  infobar_ = PinInfoBarDelegate::Create(infobar_manager_);
+  std::move(done_callback).Run(true);
 }
 
 }  // namespace default_browser

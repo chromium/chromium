@@ -6,13 +6,64 @@ assert(is_win)
 
 source_set("pin_infobar") {
   sources = [
-    "pin_infobar_controller.cc",
     "pin_infobar_controller.h",
+    "pin_infobar_delegate.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
     "//chrome/browser:shell_integration",
-    "//chrome/browser/ui/browser_window",
+  ]
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//components/infobars/core",
+    "//components/vector_icons",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "pin_infobar_controller.cc",
+    "pin_infobar_delegate.cc",
+  ]
+  deps = [
+    ":pin_infobar",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:with_no_strings",
+    "//components/omnibox/browser:vector_icons",
+    "//components/tabs:public",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pin_infobar_controller_unittest.cc",
+    "pin_infobar_delegate_unittest.cc",
+  ]
+  deps = [
+    ":pin_infobar",
+    "//base/test:test_support",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

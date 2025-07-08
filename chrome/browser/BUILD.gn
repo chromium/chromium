@@ -6495,6 +6495,7 @@ static_library("browser") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/platform_experience:prefs",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/win:cloud_synced_folder_checker",
       "//chrome/browser/win:mica_titlebar",
@@ -6525,6 +6526,13 @@ static_library("browser") {
       "//ui/base:fullscreen_win",
       "//ui/color:accent_color_observer",
       "//ui/display/util:util",
+    ]
+
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
+    allow_circular_includes_from += [
+      # Due to dependency on `//chrome/browser/win/taskbar_manager.h`.
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
     ]
 
     all_dependent_configs = [ ":browser_win_linker_flags" ]
