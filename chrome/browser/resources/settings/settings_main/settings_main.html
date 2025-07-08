@@ -60,6 +60,15 @@
     </template>
   </div>
 
+  <div slot="view" id="search">
+    <template is="dom-if" if="[[renderPlugin_(
+        routes_.SEARCH, lastRoute_, inSearchMode_)]]">
+      <settings-search-page-index prefs="{{prefs}}"
+          in-search-mode="[[inSearchMode_]]">
+      </settings-search-page-index>
+    </template>
+  </div>
+
 <if expr="not is_chromeos">
   <template is="dom-if" if="[[showPage_(pageVisibility_.defaultBrowser)]]">
     <div slot="view" id="defaultBrowser">

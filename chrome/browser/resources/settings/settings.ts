@@ -107,6 +107,7 @@ export {ScrollableMixin} from './scrollable_mixin.js';
 export {ChoiceMadeLocation, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_page/search_engines_browser_proxy.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
+export {SettingsSearchPageIndexElement} from './search_page/search_page_index.js';
 export {getSearchManager, SearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';
 export {SettingsMainElement} from './settings_main/settings_main.js';
 export {SettingsMenuElement} from './settings_menu/settings_menu.js';

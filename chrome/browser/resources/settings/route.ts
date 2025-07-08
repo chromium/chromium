@@ -171,8 +171,12 @@ function createRoutes(): SettingsRoutes {
       '/help', 'about', loadTimeData.getString('aboutPageTitle'));
   r.ABOUT.hasMigratedToPlugin = true;
 
+  // Search page.
   r.SEARCH = r.BASIC.createSection(
       '/search', 'search', loadTimeData.getString('searchPageTitle'));
+  r.SEARCH.hasMigratedToPlugin = true;
+  r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
+  r.SEARCH_ENGINES.hasMigratedToPlugin = true;
 
   if (!loadTimeData.getBoolean('isGuest')) {
     r.PEOPLE = r.BASIC.createSection(
@@ -258,8 +262,6 @@ function createRoutes(): SettingsRoutes {
     r.DEFAULT_BROWSER.hasMigratedToPlugin = true;
   }
   // </if>
-
-  r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
 
   if (visibility.onStartup !== false) {
     r.ON_STARTUP = r.BASIC.createSection(

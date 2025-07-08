@@ -11,8 +11,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../site_favicon.js';
@@ -20,19 +19,20 @@ import '../site_favicon.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './search_page.html.js';
 
 const SettingsSearchPageElementBase =
-    BaseMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   static get is() {
@@ -58,11 +58,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         computed: 'computeDefaultSearchEngine_(searchEngines_)',
       },
 
-      /** Filter applied to search engines. */
-      searchEnginesFilter_: String,
-
-      focusConfig_: Object,
-
       // Boolean to check whether we need to show the dialog or not.
       showSearchEngineListDialog_: Boolean,
 
@@ -74,10 +69,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   declare prefs: Object;
   declare private searchEngines_: SearchEngine[];
-  declare private searchEnginesFilter_: string;
   declare private showSearchEngineListDialog_: boolean;
   declare private defaultSearchEngine_: SearchEngine|null;
-  declare private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -97,12 +90,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     };
     this.browserProxy_.getSearchEnginesList().then(updateSearchEngines);
     this.addWebUiListener('search-engines-changed', updateSearchEngines);
-
-    this.focusConfig_ = new Map();
-    if (routes.SEARCH_ENGINES) {
-      this.focusConfig_.set(
-          routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger');
-    }
   }
 
   override connectedCallback() {
@@ -160,6 +147,22 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private setFaviconSize_() {
     this.style.setProperty(
         '--favicon-size', this.isEeaChoiceCountry_ ? '24px' : '16px');
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    return new Map([
+      [routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger'],
+    ]);
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'searchEngines');
+    const control =
+        this.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
+    assert(control);
+    return control;
   }
 }
 

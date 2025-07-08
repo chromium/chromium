@@ -102,6 +102,7 @@ build_webui_tests("build") {
     "searchable_view_container_mixin_test.ts",
     "search_engine_entry_test.ts",
     "search_engines_page_test.ts",
+    "search_page_index_test.ts",
     "search_page_test.ts",
     "search_settings_test.ts",
     "secure_dns_interactive_test.ts",

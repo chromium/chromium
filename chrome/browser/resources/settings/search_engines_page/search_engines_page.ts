@@ -16,6 +16,7 @@ import '../simple_confirmation_dialog.js';
 import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
@@ -30,6 +31,7 @@ import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.j
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
@@ -52,8 +54,8 @@ export interface SettingsSearchEnginesPageElement {
   };
 }
 
-const SettingsSearchEnginesPageElementBase =
-    GlobalScrollTargetMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsSearchEnginesPageElementBase = SettingsViewMixin(
+    GlobalScrollTargetMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
@@ -94,29 +96,29 @@ export class SettingsSearchEnginesPageElement extends
       },
 
       /** Filters out all search engines that do not match. */
-      filter: {
+      filter_: {
         type: String,
         value: '',
       },
 
       matchingDefaultEngines_: {
         type: Array,
-        computed: 'computeMatchingEngines_(defaultEngines, filter)',
+        computed: 'computeMatchingEngines_(defaultEngines, filter_)',
       },
 
       matchingActiveEngines_: {
         type: Array,
-        computed: 'computeMatchingEngines_(activeEngines, filter)',
+        computed: 'computeMatchingEngines_(activeEngines, filter_)',
       },
 
       matchingOtherEngines_: {
         type: Array,
-        computed: 'computeMatchingEngines_(otherEngines, filter)',
+        computed: 'computeMatchingEngines_(otherEngines, filter_)',
       },
 
       matchingExtensions_: {
         type: Array,
-        computed: 'computeMatchingEngines_(extensions, filter)',
+        computed: 'computeMatchingEngines_(extensions, filter_)',
       },
 
       omniboxExtensionlastFocused_: Object,
@@ -155,7 +157,7 @@ export class SettingsSearchEnginesPageElement extends
   declare extensions: SearchEngine[];
   declare subpageRoute: Route;
   declare private showExtensionsList_: boolean;
-  declare filter: string;
+  declare private filter_: string;
   declare private matchingDefaultEngines_: SearchEngine[];
   declare private matchingActiveEngines_: SearchEngine[];
   declare private matchingOtherEngines_: SearchEngine[];
@@ -267,11 +269,11 @@ export class SettingsSearchEnginesPageElement extends
    * Filters the given list based on the currently existing filter string.
    */
   private computeMatchingEngines_(list: SearchEngine[]): SearchEngine[] {
-    if (this.filter === '') {
+    if (this.filter_ === '') {
       return list;
     }
 
-    const filter = this.filter.toLowerCase();
+    const filter = this.filter_.toLowerCase();
     return list.filter(e => {
       return [e.displayName, e.name, e.keyword, e.url].some(
           term => term.toLowerCase().includes(filter));
@@ -296,6 +298,11 @@ export class SettingsSearchEnginesPageElement extends
         spaceEnabled ?
             SearchEnginesInteractions.KEYBOARD_SHORTCUT_SPACE_OR_TAB :
             SearchEnginesInteractions.KEYBOARD_SHORTCUT_TAB);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

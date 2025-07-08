@@ -584,33 +584,36 @@ suite('SearchEnginePageTests', function() {
 
     assertSearchResults(4, 3, 7, 1);
 
+    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    assertTrue(!!subpage);
+
     // Search by name
-    page.filter = searchEnginesInfo.defaults[0]!.name;
+    subpage.searchTerm = searchEnginesInfo.defaults[0]!.name;
     flush();
     assertSearchResults(1, 0, 0, 0);
 
     // Search by displayName
-    page.filter = searchEnginesInfo.others[0]!.displayName;
+    subpage.searchTerm = searchEnginesInfo.others[0]!.displayName;
     flush();
     assertSearchResults(0, 0, 1, 0);
 
     // Search by keyword
-    page.filter = searchEnginesInfo.others[1]!.keyword;
+    subpage.searchTerm = searchEnginesInfo.others[1]!.keyword;
     flush();
     assertSearchResults(0, 0, 1, 0);
 
     // Search by URL
-    page.filter = 'search?';
+    subpage.searchTerm = 'search?';
     flush();
     assertSearchResults(4, 3, 7, 0);
 
     // Test case where none of the sublists have results.
-    page.filter = 'does not exist';
+    subpage.searchTerm = 'does not exist';
     flush();
     assertSearchResults(0, 0, 0, 0);
 
     // Test case where an 'extension' search engine matches.
-    page.filter = 'extension';
+    subpage.searchTerm = 'extension';
     flush();
     assertSearchResults(0, 0, 0, 1);
   });

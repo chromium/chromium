@@ -1,8 +1,12 @@
-    <style include="cr-shared-style settings-shared">
-      settings-omnibox-extension-entry {
-        border-top: var(--cr-separator-line);
-      }
-    </style>
+  <style include="cr-shared-style settings-shared">
+    settings-omnibox-extension-entry {
+      border-top: var(--cr-separator-line);
+    }
+  </style>
+  <settings-subpage
+      page-title="$i18n{searchEnginesManageSiteSearch}"
+      search-label="$i18n{searchEnginesSearch}"
+      search-term="{{filter_}}">
     <div class="cr-row first">
       <div class="secondary">$i18n{searchEnginesPageExplanation}</div>
     </div>
@@ -139,3 +143,4 @@
         </template>
       </iron-list>
     </template>
+  </settings-subpage>

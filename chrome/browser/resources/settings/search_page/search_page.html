@@ -34,8 +34,7 @@
   }
 
 </style>
-<settings-animated-pages id="pages" section="search"
-    focus-config="[[focusConfig_]]">
+<settings-section page-title="$i18n{searchPageTitle}">
   <div route-path="default">
     <!-- Omnibox search engine -->
     <div class="cr-row first">
@@ -102,14 +101,4 @@
         on-click="onManageSearchEnginesClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
   </div>
-  <template is="dom-if" route-path="/searchEngines">
-    <settings-subpage
-        associated-control="[[$$('#enginesSubpageTrigger')]]"
-        page-title="$i18n{searchEnginesManageSiteSearch}"
-        search-label="$i18n{searchEnginesSearch}"
-        search-term="{{searchEnginesFilter_}}">
-      <settings-search-engines-page prefs="{{prefs}}"
-          filter="[[searchEnginesFilter_]]">
-    </settings-subpage>
-  </template>
-</settings-animated-pages>
+</settings-section>
