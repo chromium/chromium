@@ -25,6 +25,7 @@ export enum SettingsAiPageFeaturePrefName {
   HISTORY_SEARCH = 'optimization_guide.history_search_setting_state',
   COMPOSE = 'optimization_guide.compose_setting_state',
   TAB_ORGANIZATION = 'optimization_guide.tab_organization_setting_state',
+  AUTOFILL_AI = 'autofill.autofill_ai.opt_in_status'
 }
 
 // Exporting enterprise pref names so that they can be referenced by tests.

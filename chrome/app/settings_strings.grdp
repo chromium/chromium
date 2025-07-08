@@ -3772,10 +3772,10 @@
     As you browse sites, their page contents are encrypted and saved to your device
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
-    On • Use everyday language to search your browsing history and find sites you visited
+    Use everyday language to search your browsing history and find sites you visited. This setting is on.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
-    Off • Use everyday language to search your browsing history and find sites you visited
+    Use everyday language to search your browsing history and find sites you visited. This setting is off.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2" desc="Sublabel of the setting that enables history search, powered by AI, with answers enabled.">
     Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
@@ -3793,10 +3793,10 @@
     AI-powered history search results and answers may become outdated if site content has changed since your last visit
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
-    On • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
+    Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history. This setting is on.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
-    Off • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
+    Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history. The setting is off.
   </message>
 
   <!-- Web Content -->

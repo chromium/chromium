@@ -9,6 +9,8 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import {BaseMixin} from '../base_mixin.js';
 import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -64,6 +66,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
       },
 
+      autofillAiSubLabel_: {
+        type: String,
+        value: () => loadTimeData.getString('autofillAiDescription'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -95,13 +102,23 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      `onAutofillAiPrefChanged_(
+          prefs.autofill.autofill_ai.opt_in_status.value)`,
+    ];
+  }
+
   declare private showAutofillAiControl_: boolean;
+  private entityDataManager_: EntityDataManagerProxy =
+      EntityDataManagerProxyImpl.getInstance();
   declare private showComposeControl_: boolean;
   declare private showCompareControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
   declare private focusConfig_: FocusConfig;
+  declare private autofillAiSubLabel_: string;
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -209,6 +226,13 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     return isAnswersEnabled ?
         loadTimeData.getString('historySearchWithAnswersSublabelOff') :
         loadTimeData.getString('historySearchSublabelOff');
+  }
+
+  private async onAutofillAiPrefChanged_(): Promise<void> {
+    const optInStatus = await this.entityDataManager_.getOptInStatus();
+    this.autofillAiSubLabel_ = loadTimeData.getString(
+        optInStatus ? 'autofillAiDescriptionFeatureOn' :
+                      'autofillAiDescriptionFeatureOff');
   }
 }
 

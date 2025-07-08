@@ -88,6 +88,13 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/autofill.">
     Chromium understands forms better and can autofill them faster for you
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION_FEATURE_ON" desc="The sublabel of the autofill AI row on chrome://settings/ai when the autofill AI feature is on.
+">
+Chromium understands forms better and can autofill them faster for you. This setting is on.
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION_FEATURE_OFF" desc="The sublabel of the autofill AI row on chrome://settings/ai when the autofill AI feature is off.">
+Chromium understands forms better and can autofill them faster for you. This setting is off.
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
     Chromium understands forms better and can autofill them faster for you
   </message>

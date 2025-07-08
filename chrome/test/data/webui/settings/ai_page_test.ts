@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
+import {EntityDataManagerProxyImpl, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -12,6 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('AiPage', function() {
@@ -19,6 +20,7 @@ suite('AiPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -32,6 +34,11 @@ suite('AiPage', function() {
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
   });
 
   teardown(function() {
@@ -262,6 +269,34 @@ suite('AiPage', function() {
 
     assertEquals(
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
+  });
+
+  test('autofillAiRow', async () => {
+    entityDataManager.setGetOptInStatusResponse(false);
+    loadTimeData.overrideValues({
+      showAutofillAiControl: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+    page.setPrefValue(PrefName.AUTOFILL_AI, false);
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
+    assertEquals(
+        loadTimeData.getString('autofillAiDescriptionFeatureOff'),
+        autofillAiRow.subLabel);
+    // Note that while the pref change triggers the update, the opt-in status
+    // itself is read using the `entityDataManager.getOptInStatus()` helper
+    // method. This is because this method handles reading the pref for
+    // currently signed in user.
+    entityDataManager.setGetOptInStatusResponse(true);
+    page.setPrefValue(PrefName.AUTOFILL_AI, true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('autofillAiDescriptionFeatureOn'),
+        autofillAiRow.subLabel);
   });
 
   test('autofillAiRowClick', async () => {
