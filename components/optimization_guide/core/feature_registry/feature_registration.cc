@@ -42,7 +42,7 @@ const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.autofill_prediction_improvements_"
     "enterprise_policy_allowed";
 
-const char kPasswordChangeSubmissionEnterprisePolicyAllowed[] =
+const char kAutomatedPasswordChangeEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.password_change_submission_"
     "enterprise_policy_allowed";
 
@@ -203,12 +203,11 @@ void RegisterPasswordChangeSubmission() {
   const char* kPasswordChangeSubmissionName = "PasswordChangeSubmission";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kPasswordChangeSubmissionEnterprisePolicyAllowed);
+          prefs::kAutomatedPasswordChangeEnterprisePolicyAllowed);
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
       "PasswordChangeSubmission",
-      UserVisibleFeatureKey::kPasswordChangeSubmission,
-      std::move(enterprise_policy));
+      UserVisibleFeatureKey::kPasswordChangeSubmission, enterprise_policy);
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(

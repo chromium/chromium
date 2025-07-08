@@ -21,7 +21,7 @@ extern const char kWallpaperSearchEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kHistorySearchEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPasswordChangeSubmissionEnterprisePolicyAllowed[];
+extern const char kAutomatedPasswordChangeEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kProductSpecificationsEnterprisePolicyAllowed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

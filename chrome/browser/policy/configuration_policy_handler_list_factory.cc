@@ -1955,6 +1955,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAutoplayAllowed,
     prefs::kAutoplayAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kAutomatedPasswordChangeSettings,
+    optimization_guide::prefs::kAutomatedPasswordChangeEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         // || BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -3353,6 +3356,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kGeminiSettings, prefs::kGeminiSettings,
       GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
+  gen_ai_default_policies.emplace_back(
+      key::kAutomatedPasswordChangeSettings,
+      optimization_guide::prefs::
+          kAutomatedPasswordChangeEnterprisePolicyAllowed);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS)

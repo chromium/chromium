@@ -2244,6 +2244,7 @@ chromium-metrics-reviews@google.com.
   <int value="1374" label="LiveCaptionEnabled"/>
   <int value="1375"
       label="DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled"/>
+  <int value="1376" label="AutomatedPasswordChangeSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

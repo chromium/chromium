@@ -1374,6 +1374,7 @@ policies:
   1373: DeviceBluetoothJustWorksPairingEnabled
   1374: LiveCaptionEnabled
   1375: DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled
+  1376: AutomatedPasswordChangeSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

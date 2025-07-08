@@ -1288,9 +1288,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::
-                     kPasswordChangeSubmissionEnterprisePolicyAllowed] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[optimization_guide::prefs::
                      kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::
