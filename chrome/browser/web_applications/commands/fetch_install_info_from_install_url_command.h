@@ -22,17 +22,27 @@ namespace web_app {
 
 class WebAppDataRetriever;
 
+// The result of a `FetchInstallInfoFromInstallUrlCommand`.
 enum class FetchInstallInfoResult {
+  // Successfully fetched the `WebAppInstallInfo`.
   kAppInfoObtained,
+  // The web contents was destroyed before the command could complete.
   kWebContentsDestroyed,
+  // The given `install_url` failed to load.
   kUrlLoadingFailure,
+  // The site did not have a valid web app manifest.
   kNoValidManifest,
+  // The manifest ID of the fetched manifest did not match the expected ID.
   kWrongManifestId,
-  kFailure
+  // A generic failure occurred.
+  kFailure,
 };
 
 std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result);
 
+// Fetches the WebAppInstallInfo for a given install URL. This is used for
+// installing sub-apps, where the manifest ID and parent manifest ID are known,
+// and a full install process is not necessary.
 class FetchInstallInfoFromInstallUrlCommand
     : public WebAppCommand<SharedWebContentsLock,
                            std::unique_ptr<WebAppInstallInfo>> {

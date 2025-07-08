@@ -24,11 +24,17 @@ enum class RunOnOsLoginAction {
   kMaxValue = kSyncModeFromDBToOS
 };
 
+// The completion state of a `RunOnOsLoginCommand`.
 enum class RunOnOsLoginCommandCompletionState {
+  // The command completed successfully.
   kSuccessfulCompletion = 0,
+  // The command was shut down before it could complete.
   kCommandSystemShutDown = 1,
+  // The user is not allowed to change the run on OS login mode for this app.
   kNotAllowedByPolicy = 2,
+  // The run on OS login mode was already set to the desired value.
   kRunOnOsLoginModeAlreadyMatched = 3,
+  // The app is not locally installed, so run on OS login is not applicable.
   kAppNotLocallyInstalled = 4,
   // kOSHooksNotProperlySet = 5,
   kMaxValue = kAppNotLocallyInstalled

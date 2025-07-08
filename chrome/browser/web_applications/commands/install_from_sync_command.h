@@ -36,6 +36,10 @@ namespace web_app {
 
 class WebAppDataRetriever;
 
+// Installs a web app using data from sync. This command will first try to
+// fetch a manifest from the app's start URL to get the latest metadata. If that
+// fails, it will fall back to using the information provided from sync data to
+// ensure the app is installed.
 class InstallFromSyncCommand
     : public WebAppCommand<SharedWebContentsWithAppLock,
                            const webapps::AppId&,

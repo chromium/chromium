@@ -177,6 +177,14 @@ void ExternalAppResolutionCommand::Abort(webapps::InstallResultCode code) {
 
 void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
     webapps::WebAppUrlLoaderResult result) {
+  // This is the main entry point for the command after the initial URL load.
+  // From here, we branch into one of three paths:
+  // 1. The URL loaded successfully, so we proceed with a regular web app
+  //    installation.
+  // 2. The URL failed to load, but we are configured to install a placeholder
+  //    app as a fallback.
+  // 3. The URL failed to load and we are not installing a placeholder, so we
+  //    try to install from the app info factory as a last resort.
   GetMutableDebugValue().Set("load_url_result", base::ToString(result));
   if (result == webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     data_retriever_->GetWebAppInstallInfo(
@@ -251,6 +259,9 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
 
 void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
     std::unique_ptr<WebAppInstallInfo> web_app_info) {
+  // This is the first step of the main installation path. It is called after
+  // the initial URL has loaded and basic information about the page has been
+  // retrieved.
   install_params_ = ConvertExternalInstallOptionsToParams(install_options_);
   CHECK(install_params_.has_value());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
@@ -630,6 +641,9 @@ void ExternalAppResolutionCommand::OnLaunch(base::WeakPtr<Browser>,
 
 void ExternalAppResolutionCommand::OnPlaceHolderAppLockAcquired() {
   CHECK(apps_lock_);
+  // This is the entry point for the placeholder installation path. It is called
+  // after the initial URL load has failed and we have acquired a lock for the
+  // placeholder app ID.
   CHECK(apps_lock_->IsGranted());
   if (on_lock_upgraded_callback_for_testing_) {
     std::move(on_lock_upgraded_callback_for_testing_).Run();
@@ -669,6 +683,9 @@ void ExternalAppResolutionCommand::OnPlaceHolderInstalled(
 }
 
 void ExternalAppResolutionCommand::InstallFromInfo() {
+  // This is the entry point for the offline installation path. It is called
+  // when the initial URL load fails and we are not installing a placeholder, or
+  // when `only_use_app_info_factory` is true.
   install_params_ = ConvertExternalInstallOptionsToParams(install_options_);
   CHECK(install_params_.has_value());
 

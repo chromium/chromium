@@ -13,6 +13,7 @@
 
 namespace web_app {
 
+// Represents a successful cleanup of the bundle cache.
 class CleanupBundleCacheSuccess {
  public:
   explicit CleanupBundleCacheSuccess(size_t number_of_cleaned_up_directories)
@@ -31,6 +32,7 @@ class CleanupBundleCacheSuccess {
   size_t number_of_cleaned_up_directories_ = 0;
 };
 
+// Represents an error during bundle cache cleanup.
 class CleanupBundleCacheError {
  public:
   enum class Type { kCouldNotDeleteAllBundles, kSystemShutdown };

@@ -44,6 +44,7 @@ class WebContents;
 
 namespace web_app {
 
+// Represents a successful preparation and storage of a pending IWA update.
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
       base::Version update_version,
@@ -60,6 +61,8 @@ std::ostream& operator<<(
     std::ostream& os,
     const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success);
 
+// Represents an error during the preparation and storage of a pending IWA
+// update.
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
   std::string message;
 };

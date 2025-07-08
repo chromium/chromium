@@ -41,10 +41,12 @@ enum class InstallResultCode;
 
 namespace web_app {
 
+// Represents an error during the application of a pending IWA update.
 struct IsolatedWebAppApplyUpdateCommandError {
   std::string message;
 };
 
+// Represents a successful application of a pending IWA update.
 class IsolatedWebAppApplyUpdateCommandSuccess {
  public:
   IsolatedWebAppApplyUpdateCommandSuccess(

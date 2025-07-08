@@ -32,21 +32,17 @@
 
 namespace web_app {
 
-namespace {
-RewriteIconResult RecordIconMigrationResult(RewriteIconResult result) {
-  base::UmaHistogramEnumeration("WebApp.DIY.IconMigrationResult", result);
-  return result;
-}
-}  // namespace
-
 RewriteDiyIconsCommand::RewriteDiyIconsCommand(
     const webapps::AppId& app_id,
     base::OnceCallback<void(RewriteIconResult)> callback)
-    : WebAppCommand(
-          "RewriteDiyIconsCommand",
-          AppLockDescription({app_id}),
-          base::BindOnce(&RecordIconMigrationResult).Then(std::move(callback)),
-          std::make_tuple(RewriteIconResult::kUpdateShortcutFailed)),
+    : WebAppCommand("RewriteDiyIconsCommand",
+                    AppLockDescription({app_id}),
+                    base::BindOnce([](RewriteIconResult result) {
+                      base::UmaHistogramEnumeration(
+                          "WebApp.DIY.IconMigrationResult", result);
+                      return result;
+                    }).Then(std::move(callback)),
+                    std::make_tuple(RewriteIconResult::kUpdateShortcutFailed)),
       app_id_(app_id) {
   GetMutableDebugValue().Set("app_id", app_id_);
 }

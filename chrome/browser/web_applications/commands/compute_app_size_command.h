@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -24,7 +23,9 @@ class AppLock;
 class GetIsolatedWebAppSizeJob;
 class GetProgressiveWebAppSizeJob;
 
-// ComputeAppSizeCommand calculates the app and data size of a given app
+// Calculates the total size of a web app, including the size of the app itself
+// and any data it has stored. This works for both Progressive Web Apps and
+// Isolated Web Apps.
 class ComputeAppSizeCommand
     : public WebAppCommand<AppLock, std::optional<ComputedAppSizeWithOrigin>> {
  public:

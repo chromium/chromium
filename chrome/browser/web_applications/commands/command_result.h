@@ -7,11 +7,10 @@
 
 // TODO(b/304553492): Use this for recording per-command metrics.
 enum class CommandResult {
-  // The command did not see any unexpected errors.
+  // The command completed without any unexpected errors.
   kSuccess,
-  // An unexpected failure occurred, which should possibly result in chirp
-  // alerts.
-  kFailure
+  // An unexpected failure occurred, which might warrant a bug or an alert.
+  kFailure,
 };
 
 // TODO(dmurph): Put utilities for recording command metrics into this file.

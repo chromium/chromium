@@ -31,9 +31,13 @@ namespace web_app {
 
 class AppLock;
 class WebAppDataRetriever;
+// The result of checking if a URL is installable.
 enum class InstallableCheckResult {
+  // The URL is not installable as a web app.
   kNotInstallable,
+  // The URL is installable as a web app.
   kInstallable,
+  // A web app for the given URL is already installed.
   kAlreadyInstalled,
 };
 

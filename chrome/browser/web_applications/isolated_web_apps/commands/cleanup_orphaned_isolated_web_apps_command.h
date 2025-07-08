@@ -21,6 +21,7 @@ class FilePath;
 
 namespace web_app {
 
+// Represents a successful cleanup of orphaned Isolated Web App directories.
 struct CleanupOrphanedIsolatedWebAppsCommandSuccess {
   explicit CleanupOrphanedIsolatedWebAppsCommandSuccess(
       int number_of_cleaned_up_directories);
@@ -35,6 +36,7 @@ std::ostream& operator<<(
     std::ostream& os,
     const CleanupOrphanedIsolatedWebAppsCommandSuccess& success);
 
+// Represents an error during the cleanup of orphaned Isolated Web Apps.
 struct CleanupOrphanedIsolatedWebAppsCommandError {
   enum class Type { kCouldNotDeleteAllBundles, kSystemShutdown };
 
@@ -46,6 +48,9 @@ std::ostream& operator<<(
     std::ostream& os,
     const CleanupOrphanedIsolatedWebAppsCommandError& error);
 
+// This command finds and removes any Isolated Web App directories on disk that
+// are no longer present in the WebAppRegistrar. This can happen if the browser
+// crashes during an IWA installation or uninstallation.
 class CleanupOrphanedIsolatedWebAppsCommand
     : public WebAppCommand<
           AllAppsLock,

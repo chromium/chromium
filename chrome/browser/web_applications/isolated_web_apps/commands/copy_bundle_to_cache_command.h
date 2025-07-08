@@ -35,11 +35,17 @@ class CopyBundleToCacheSuccess {
 };
 
 enum class CopyBundleToCacheError {
+  // The system was shut down before the command could complete.
   kSystemShutdown,
+  // The app is not installed.
   kAppNotInstalled,
+  // The app is not an Isolated Web App.
   kNotIwa,
+  // The app is not an owned bundle, so its path cannot be extracted.
   kCannotExtractOwnedBundlePath,
+  // Failed to create the destination directory in the cache.
   kFailedToCreateDir,
+  // Failed to copy the bundle file to the cache.
   kFailedToCopyFile,
 };
 

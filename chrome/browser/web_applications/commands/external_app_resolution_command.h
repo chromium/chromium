@@ -51,8 +51,13 @@ class WebAppUninstallAndReplaceJob;
 
 struct WebAppInstallInfo;
 
-// Invariant: This command assumes that a new placeholder app for this
-// install_url cannot be installed between the scheduling and running of this
+// Command to install a web app from an external source, such as a policy or
+// default app. This command handles loading the install URL, fetching the
+// manifest, and creating the web app. It can also install a placeholder if the
+// full installation fails, and can replace existing placeholders.
+//
+// Invariant: This command assumes that a new placeholder app for the given
+// `install_url` cannot be installed between the scheduling and running of this
 // command.
 class ExternalAppResolutionCommand
     : public WebAppCommand<SharedWebContentsLock,

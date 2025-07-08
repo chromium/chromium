@@ -19,7 +19,10 @@ class Profile;
 
 namespace web_app {
 
+// The result of checking if a Signed Web Bundle is installable as an Isolated
+// Web App.
 enum class IsolatedInstallabilityCheckResult {
+  // The bundle is installable as a new app.
   kInstallable,
   // The app inside the bundle is already installed, but the bundle contains
   // an updated version.
@@ -27,11 +30,14 @@ enum class IsolatedInstallabilityCheckResult {
   // The app inside the bundle is already installed, and the bundle contains
   // an outdated version.
   kOutdated,
+  // The system was shut down before the command could complete.
   kShutdown,
 };
 
-// Checks the registrar for Isolated Web App installability given the
-// |bundle_metadata|.
+// Checks if a Signed Web Bundle is installable as an Isolated Web App. It
+// compares the version from the bundle's metadata with the version of an
+// already installed app (if one exists) to determine if the bundle is a new
+// install, an update, or outdated.
 class CheckIsolatedWebAppBundleInstallabilityCommand
     : public WebAppCommand<AppLock,
                            IsolatedInstallabilityCheckResult,

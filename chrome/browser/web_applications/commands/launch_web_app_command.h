@@ -26,6 +26,9 @@ namespace web_app {
 
 class WebAppProvider;
 
+// Launches a web app given a set of launch parameters. This command handles
+// ensuring the app is fully installed with OS integration if needed before
+// launching.
 class LaunchWebAppCommand
     : public WebAppCommand<AppLock,
                            base::WeakPtr<Browser>,

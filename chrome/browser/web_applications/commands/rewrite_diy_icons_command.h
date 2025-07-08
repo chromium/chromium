@@ -29,6 +29,10 @@ enum class RewriteIconResult {
   kMaxValue = kUpdateShortcutFailed
 };
 
+// On macOS, rewrites the icons for a DIY app to apply the correct mask, if this
+// operation has not yet occurred. This is a one-time migration for existing
+// DIY apps to ensure their icons look correct in the dock and other system
+// surfaces.
 class RewriteDiyIconsCommand
     : public WebAppCommand<AppLock, RewriteIconResult> {
  public:

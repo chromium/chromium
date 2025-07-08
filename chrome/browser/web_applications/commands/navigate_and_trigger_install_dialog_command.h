@@ -36,10 +36,15 @@ class WebAppDataRetriever;
 class WebAppUiManager;
 
 enum class NavigateAndTriggerInstallDialogCommandResult {
+  // The command failed, e.g. due to navigation error or the site not being
+  // installable.
   kFailure,
+  // The web app was already installed.
   kAlreadyInstalled,
+  // The install dialog was successfully shown to the user.
   kDialogShown,
-  kShutdown
+  // The system was shut down before the command could complete.
+  kShutdown,
 };
 
 // The navigation will always succeed. The `result` indicates whether the

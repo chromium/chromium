@@ -108,21 +108,59 @@ There are some webapps which are managed by external sources - for example, the 
 
 Sometimes, the installation of these apps can fail because the install url is not reachable (usually a cert or login needs to occur, and the url is redirected). When this happens, the system [can][15] install a "placeholder" app, which is a fake application that, when launched, navigates to the install url of the application, given by the external app manager.
 
-To resolve placeholder apps back into the intended installation, web contents (either in-(placeholder)-app or in the browser) are all listened to. If any web content successfully [navigates][16] to a placeholder app's `install_url`, then:
+To resolve placeholder apps back into the intended installation, another external
+install is triggered for the same install URL. The
+[ExternalAppResolutionCommand][19] is given the ID of the existing
+placeholder app. After the new app is successfully installed, the
+placeholder app is uninstalled.
 
-1. The placeholder app is uninstalled.
-2. After uninstallation, the non-placeholder app is [installed][19].
+### Installation State
 
-### Locally Installed
+A web app can exist in several different installation states, which determine
+its capabilities and how it's presented to the user. These states are
+represented internally by the [`InstallState` enum][install-state-proto].
 
-When signing into a non-ChromeOS device, all web apps are installed but not **locally installed**. This means that OS integration is not triggered (so there are no platform shortcuts created), install icons will still show up for the app websites, and the app icon will appear grayed out on chrome://apps.
+*   **Suggested from another device**: The app is installed on another one of
+    the user's devices and has been synced to the current device, but it
+    hasn't been fully installed yet. These apps appear in `chrome://apps` (often
+    grayed out) but don't have OS integrations like shortcuts or protocol
+    handlers. They cannot be launched in a standalone window until they are
+    fully installed. This state corresponds to
+    `InstallState::SUGGESTED_FROM_ANOTHER_DEVICE`.
 
-For an app to become locally installed, the user must do one of the following:
+*   **Installed without OS integration**: The app is installed on the device,
+    but without any OS-level integrations. This is common for pre-installed
+    apps on non-ChromeOS platforms. Like suggested apps, they cannot be
+    launched in a standalone window until OS integration is enabled. This state
+    corresponds to `InstallState::INSTALLED_WITHOUT_OS_INTEGRATION`.
 
-- Navigate to `chrome://apps`, find the grayed-out icon of the app, right click on it, and select "Install".
-- Follow any of the normal installation routes to install that app (e.g. visit the app page in the browser and interact with the omnibox install icon)
+*   **Installed with OS integration**: The app is fully installed and
+    integrated with the operating system. This includes shortcuts, protocol
+    handling, file handling, and the ability to run on OS login. This is the
+    state for user-installed apps or apps that have had their OS integration
+    explicitly triggered. This state corresponds to
+    `InstallState::INSTALLED_WITH_OS_INTEGRATION`.
 
-This was done because on non-ChromeOS devices it was considered a bad user experience to fully install all of the profile's web apps (creating platform shortcuts, etc), as this might not be expected by the user.
+To query for apps with specific capabilities, which often depend on their
+installation state, the [`WebAppFilter`][web-app-filter] class should be used.
+For example, `WebAppFilter::IsSuggestedApp()` can be used to find apps that are
+suggested from another device.
+
+#### Triggering a full installation
+
+For an app that is only "suggested" or "installed without OS integration", a
+full installation with OS integration can be triggered by:
+
+*   The user installing the app again through a normal installation flow (e.g.,
+    the omnibox install icon).
+*   The user right-clicking the app on `chrome://apps` and selecting "Install".
+*   Programmatically, by scheduling an
+    [`InstallAppLocallyCommand`][install-app-locally-command].
+
+This was designed this way because on non-ChromeOS devices, it was considered a
+bad user experience to fully install all of a user's synced web apps (creating
+platform shortcuts, etc.), as this might not be expected by the user on a new
+device.
 
 ### Isolated Web Apps
 
@@ -131,20 +169,22 @@ See [this document][21] for more information.
 [2]: https://www.w3.org/TR/appmanifest/
 [3]: https://wicg.github.io/manifest-incubations/index.html
 [4]: manifest_representations.md
-[5]: https://source.chromium.org/search?q=web_app::CanCreateWebApp
+[5]: https://source.chromium.org/search?q=f:web_app_utils.h%20CanCreateWebApp
 [6]: #promotable
 [7]: https://www.w3.org/TR/appmanifest/#processing
 [8]: https://developers.google.com/web/ilt/pwa/introduction-to-service-worker
 [9]: https://www.w3.org/TR/appmanifest/#id-member
 [10]: https://www.w3.org/TR/appmanifest/#dfn-identity
-[11]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.cc;l=69;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97
-[12]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app.h;l=43;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97;bpv=1;bpt=1
+[11]: https://source.chromium.org/search?q=f:web_app_helpers.h%20GenerateAppIdFromManifestId
+[12]: https://source.chromium.org/search?q=f:web_app.h%20WebApp::app_id
 [13]: https://www.w3.org/TR/appmanifest/#display-modes
 [14]: #display-mode
 [15]: https://source.chromium.org/search?q=ExternalInstallOptions::install_placeholder
-[16]: https://source.chromium.org/search?q=WebAppTabHelper::ReinstallPlaceholderAppIfNecessary
-[17]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_constants.h;l=32?q=WebAppManagement&ss=chromium%2Fchromium%2Fsrc
-[18]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_utils.cc;l=481?q=CanUserUninstallWebApp&ss=chromium%2Fchromium%2Fsrc
-[19]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/externally_managed_app_install_task.cc;l=215?q=OnPlaceholderUninstalled&ss=chromium%2Fchromium%2Fsrc
+[17]: https://source.chromium.org/search?q=f:web_app_management.h%20"enum class Type"
+[18]: https://source.chromium.org/search?q=f:web_app.h%20CanUserUninstallWebApp
+[19]: https://source.chromium.org/search?q=ExternalAppResolutionCommand
 [20]: manifest_update_process.md
 [21]: isolated_web_apps.md
+[install-state-proto]: /chrome/browser/web_applications/proto/web_app_install_state.proto
+[web-app-filter]: /chrome/browser/web_applications/web_app_filter.h
+[install-app-locally-command]: /chrome/browser/web_applications/commands/install_app_locally_command.h

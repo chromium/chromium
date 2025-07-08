@@ -16,6 +16,10 @@
 
 namespace web_app {
 
+// Takes an app that is already in the registry but not locally installed (e.g.
+// synced from another device) and installs it with OS integration, making it
+// available in the launcher, on the desktop, etc. This also sets the app's
+// first install time.
 class InstallAppLocallyCommand : public WebAppCommand<AppLock> {
  public:
   InstallAppLocallyCommand(const webapps::AppId& app_id,

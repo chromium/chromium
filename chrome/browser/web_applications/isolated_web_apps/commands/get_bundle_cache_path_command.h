@@ -41,8 +41,11 @@ class GetBundleCachePathSuccess {
 };
 
 enum class GetBundleCachePathError {
+  // The system was shut down before the command could complete.
   kSystemShutdown = 0,
+  // The specified version of the IWA was not found in the cache.
   kProvidedVersionNotFound = 1,
+  // The IWA is not present in the cache.
   kIwaNotCached = 2,
 };
 

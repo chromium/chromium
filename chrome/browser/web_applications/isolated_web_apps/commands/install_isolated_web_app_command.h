@@ -46,6 +46,7 @@ class WebContents;
 
 namespace web_app {
 
+// Represents a successful installation of an Isolated Web App.
 struct InstallIsolatedWebAppCommandSuccess {
   InstallIsolatedWebAppCommandSuccess(IsolatedWebAppUrlInfo url_info,
                                       base::Version installed_version,
@@ -62,6 +63,7 @@ struct InstallIsolatedWebAppCommandSuccess {
 std::ostream& operator<<(std::ostream& os,
                          const InstallIsolatedWebAppCommandSuccess& success);
 
+// Represents an error during the installation of an Isolated Web App.
 struct InstallIsolatedWebAppCommandError {
   std::string message;
 };
@@ -69,12 +71,10 @@ struct InstallIsolatedWebAppCommandError {
 std::ostream& operator<<(std::ostream& os,
                          const InstallIsolatedWebAppCommandError& error);
 
-// Isolated Web App requires:
-//  * no cross-origin navigation
-//  * content should never be loaded in normal tab
-//
-// |content::IsolatedWebAppThrottle| enforces that. The requirements prevent
-// re-using web contents.
+// Command to install an Isolated Web App from a given `IsolatedWebAppUrlInfo`
+// and `IsolatedWebAppInstallSource`. This command will perform a full
+// installation, including checking for trust and signatures, creating the
+// storage partition, and finalizing the installation.
 class InstallIsolatedWebAppCommand
     : public WebAppCommand<AppLock,
                            base::expected<InstallIsolatedWebAppCommandSuccess,

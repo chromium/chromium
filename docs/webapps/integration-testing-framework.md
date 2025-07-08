@@ -100,7 +100,11 @@ The first column of the test specifies which platforms the test should be create
 - `L` = Linux
 - `C` = ChromeOS
 
-This is because some tests need to be platform-specific. For example, all tests that involve "locally installing" an app are only applicable on Windows/Mac/Linux, as ChromeOS automatically locally installs all apps from sync. Because of this, tests must be able to specify which platforms they should be run on.
+This is because some tests need to be platform-specific. For example, all tests
+that involve triggering a full installation for a suggested app (e.g. via
+`InstallLocally`) are only applicable on Windows/Mac/Linux, as ChromeOS
+automatically fully installs all apps from sync. Because of this, tests must be
+able to specify which platforms they should be run on.
 
 ### Sync Partition and Default Partition
 Due to some browsertest support limitations, certain actions are only supported in the sync testing framework. Because of this, the script supports a separate "partition" of tests for any test that uses sync actions. This means that at test output time, a test will either go in the "sync" partition or the "default" partition.

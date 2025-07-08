@@ -34,6 +34,11 @@ enum class GeneratedIconFixResult {
   kMaxValue = kSuccess,
 };
 
+// This command attempts to fix an app that has a generated icon by
+// re-downloading the icon from the app's manifest. This is typically used for
+// apps that were installed from sync and failed to download their icon
+// initially, or for apps whose icons were not available during a manifest
+// update.
 class GeneratedIconFixCommand
     : public WebAppCommand<SharedWebContentsWithAppLock,
                            GeneratedIconFixResult> {
