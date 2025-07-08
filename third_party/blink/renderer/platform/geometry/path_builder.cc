@@ -222,10 +222,6 @@ PathBuilder& PathBuilder::AddPath(const Path& src,
 
 PathBuilder& PathBuilder::AddRoundedRect(const FloatRoundedRect& rect,
                                          bool clockwise) {
-  if (rect.IsEmpty()) {
-    return *this;
-  }
-
   builder_.addRRect(SkRRect(rect),
                     clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
                     /* start at upper-left after corner radius */ 0);
