@@ -500,15 +500,7 @@ class AppBoundEncryptionWinReencryptTest
 };
 
 // Test the basic interface to Encrypt and Decrypt data.
-// TODO(crbug.com/417904984, crbug.com/419245842): fails flakily on
-// win-rel-ready.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_EncryptDecrypt DISABLED_EncryptDecrypt
-#else
-#define MAYBE_EncryptDecrypt EncryptDecrypt
-#endif
-IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest,
-                       MAYBE_EncryptDecrypt) {
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
   ASSERT_TRUE(install_static::IsSystemInstall());
   const std::string plaintext("plaintext");
   std::string ciphertext;
