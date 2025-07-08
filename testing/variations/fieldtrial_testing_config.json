@@ -11701,7 +11701,6 @@
     "HeapProfilerMultiKeyHashSet": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "ios",
@@ -11711,35 +11710,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HeapProfilerMultiKeyHashSet"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HeapProfilingLoadFactor": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
+                    "name": "EnabledMultiKey_20250708",
                     "params": {
-                        "browser-hash-set-load-factor": "0.7",
-                        "gpu-hash-set-load-factor": "0.7",
-                        "network-hash-set-load-factor": "0.7",
-                        "renderer-hash-set-load-factor": "0.7",
-                        "utility-hash-set-load-factor": "0.7"
+                        "nonstable-probability": "1.0",
+                        "stable-probability": "1.0"
                     },
                     "enable_features": [
+                        "HeapProfilerMultiKeyHashSet",
                         "HeapProfilerReporting"
                     ]
                 }
