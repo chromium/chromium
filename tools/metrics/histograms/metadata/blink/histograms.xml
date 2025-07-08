@@ -864,6 +864,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-12-28">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time it takes to perform a Cookies operation with or without
     IPC call from the CookieJar. IPC call can be skipped in case where the
@@ -4840,6 +4841,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-12-28">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time (in ms) added to SetCookie operation from the CookieJar used for
     ablation study purpose.

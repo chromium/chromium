@@ -6653,6 +6653,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-11-30">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the time spent executing
     RestrictedCookieManager::SetCookieFromString, plus its callback.
