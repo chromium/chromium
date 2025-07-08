@@ -23,6 +23,16 @@
 // to another list, the window is closed, the application is terminating, ...
 - (void)webStateRemoved:(web::WebState*)webState;
 
+// Serves as a hook for purging any data associated with a WebState before
+// it is permanently removed (i.e. cannot be re-opened).
+- (void)webStateDeleted:(web::WebState*)webState;
+
+// Serves as a hook for performing any action when the active WebState
+// change. Either of `newActive` or `oldActive` may be null (in case
+// of the WebStateList transitioning to/from the empty state).
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive;
+
 @end
 
 // Bridge allowing Objective-C classes to install dependencies by conforming to
@@ -45,6 +55,9 @@ class TabsDependencyInstallerBridge final : public TabsDependencyInstaller {
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) final;
   void OnWebStateRemoved(web::WebState* web_state) final;
+  void OnWebStateDeleted(web::WebState* web_state) final;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) final;
 
  private:
   // The Objective-C class which installs/uninstalls dependencies in response to

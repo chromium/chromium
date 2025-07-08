@@ -16,17 +16,26 @@
 // Test object for tracking calls through the DpendencyInstalling protocol.
 @interface TestInstaller : NSObject <TabsDependencyInstalling>
 
-@property(nonatomic) NSInteger installCount;
-@property(nonatomic) NSInteger uninstallCount;
+@property(nonatomic) NSInteger insertedCount;
+@property(nonatomic) NSInteger removedCount;
+@property(nonatomic) NSInteger deletedCount;
+@property(nonatomic) NSInteger activatedCount;
 
 @end
 
 @implementation TestInstaller
 - (void)webStateInserted:(web::WebState*)webState {
-  _installCount++;
+  _insertedCount++;
 }
 - (void)webStateRemoved:(web::WebState*)webState {
-  _uninstallCount++;
+  _removedCount++;
+}
+- (void)webStateDeleted:(web::WebState*)webState {
+  _deletedCount++;
+}
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive {
+  _activatedCount++;
 }
 @end
 
@@ -54,15 +63,56 @@ TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
   web_state_list_.InsertWebState(
       std::move(web_state_1),
       WebStateList::InsertionParams::Automatic().Activate());
-  EXPECT_EQ(installer_.installCount, 1);
+  EXPECT_EQ(installer_.insertedCount, 1);
   auto web_state_2 = std::make_unique<web::FakeWebState>();
   web_state_list_.ReplaceWebStateAt(0, std::move(web_state_2));
-  EXPECT_EQ(installer_.installCount, 2);
-  EXPECT_EQ(installer_.uninstallCount, 1);
+  EXPECT_EQ(installer_.insertedCount, 2);
+  EXPECT_EQ(installer_.removedCount, 1);
 }
 
-// Tests that stopping the observation uninstalls all web states.
-TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
+// Tests that closing web states calls the dependency installed as expected.
+TEST_F(TabsDependencyInstallerBridgeTest, DeleteWebState) {
+  bridge_.StartObserving(installer_, &web_state_list_,
+                         TabsDependencyInstaller::Policy::kOnlyRealized);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state_list_.InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+  EXPECT_EQ(installer_.deletedCount, 0);
+
+  web_state_list_.CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+  EXPECT_EQ(installer_.deletedCount, 1);
+}
+
+// Tests that changing the active web states calls the dependency installer
+// as expected.
+TEST_F(TabsDependencyInstallerBridgeTest, ActivateWebState) {
+  bridge_.StartObserving(installer_, &web_state_list_,
+                         TabsDependencyInstaller::Policy::kOnlyRealized);
+
+  auto web_state_1 = std::make_unique<web::FakeWebState>();
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
+  EXPECT_EQ(installer_.activatedCount, 1);
+
+  auto web_state_2 = std::make_unique<web::FakeWebState>();
+  web_state_list_.InsertWebState(
+      std::move(web_state_2),
+      WebStateList::InsertionParams::Automatic().Activate());
+  EXPECT_EQ(installer_.activatedCount, 2);
+
+  web_state_list_.ActivateWebStateAt(0);
+  EXPECT_EQ(installer_.activatedCount, 3);
+
+  // If the active web state does not change, the installer is not notified.
+  web_state_list_.ActivateWebStateAt(0);
+  EXPECT_EQ(installer_.activatedCount, 3);
+}
+
+// Tests that stopping the observation removes all web states.
+TEST_F(TabsDependencyInstallerBridgeTest, RemoveOnBridgeDestruction) {
   bridge_.StartObserving(installer_, &web_state_list_,
                          TabsDependencyInstaller::Policy::kOnlyRealized);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
@@ -73,8 +123,8 @@ TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
   web_state_list_.InsertWebState(
       std::move(web_state_2),
       WebStateList::InsertionParams::Automatic().Activate());
-  EXPECT_EQ(installer_.installCount, 2);
-  EXPECT_EQ(installer_.uninstallCount, 0);
+  EXPECT_EQ(installer_.insertedCount, 2);
+  EXPECT_EQ(installer_.removedCount, 0);
   bridge_.StopObserving();
-  EXPECT_EQ(installer_.uninstallCount, 2);
+  EXPECT_EQ(installer_.removedCount, 2);
 }

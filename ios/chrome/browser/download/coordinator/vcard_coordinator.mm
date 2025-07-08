@@ -56,6 +56,15 @@
   VcardTabHelper::FromWebState(webState)->set_delegate(nil);
 }
 
+- (void)webStateDeleted:(web::WebState*)webState {
+  // Nothing to do.
+}
+
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive {
+  // Nothing to do.
+}
+
 #pragma mark - Private
 
 // Dismisses the the `navigationViewController`.

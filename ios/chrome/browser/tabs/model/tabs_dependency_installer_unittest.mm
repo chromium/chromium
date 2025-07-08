@@ -55,6 +55,9 @@ class ScopedFeatureListHelper {
 // to the inserted/removed methods.
 class TestTabsDependencyInstaller : public TabsDependencyInstaller {
  public:
+  // Represents information about a WebStateActivated() event.
+  using Activation = std::pair<web::WebStateID, web::WebStateID>;
+
   ~TestTabsDependencyInstaller() override = default;
 
   // TabsDependencyInstaller implementation.
@@ -63,6 +66,15 @@ class TestTabsDependencyInstaller : public TabsDependencyInstaller {
   }
   void OnWebStateRemoved(web::WebState* web_state) override {
     uninstalled_.push_back(web_state->GetUniqueIdentifier());
+  }
+  void OnWebStateDeleted(web::WebState* web_state) override {
+    deleted_.push_back(web_state->GetUniqueIdentifier());
+  }
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override {
+    activated_.push_back(Activation(
+        old_active ? old_active->GetUniqueIdentifier() : web::WebStateID(),
+        new_active ? new_active->GetUniqueIdentifier() : web::WebStateID()));
   }
 
   bool WasInstalled(web::WebStateID web_state_id) const {
@@ -73,6 +85,19 @@ class TestTabsDependencyInstaller : public TabsDependencyInstaller {
     return UninstallCount(web_state_id) > 0;
   }
 
+  bool WasDeleted(web::WebStateID web_state_id) const {
+    return DeletedCount(web_state_id) > 0;
+  }
+
+  bool WasActivated(Activation activation) const {
+    return ActivatedCount(activation) > 0;
+  }
+
+  bool WasActivated(web::WebStateID old_active_id,
+                    web::WebStateID new_active_id) const {
+    return WasActivated(Activation(old_active_id, new_active_id));
+  }
+
   size_t InstallCount(web::WebStateID web_state_id) const {
     return std::ranges::count(installed_, web_state_id);
   }
@@ -81,9 +106,24 @@ class TestTabsDependencyInstaller : public TabsDependencyInstaller {
     return std::ranges::count(uninstalled_, web_state_id);
   }
 
+  size_t DeletedCount(web::WebStateID web_state_id) const {
+    return std::ranges::count(deleted_, web_state_id);
+  }
+
+  size_t ActivatedCount(Activation activation) const {
+    return std::ranges::count(activated_, activation);
+  }
+
+  size_t ActivatedCount(web::WebStateID old_active_id,
+                        web::WebStateID new_active_id) const {
+    return ActivatedCount(Activation(old_active_id, new_active_id));
+  }
+
  private:
   std::vector<web::WebStateID> installed_;
   std::vector<web::WebStateID> uninstalled_;
+  std::vector<web::WebStateID> deleted_;
+  std::vector<Activation> activated_;
 };
 
 }  // anonymous namespace
@@ -225,6 +265,99 @@ TEST_P(TabsDependencyInstallerTest, UnrealizedWebStates) {
     // no longer tracked by TabsDependencyInstaller).
     EXPECT_FALSE(installer_.WasInstalled(web_state_4_id));
   }
+}
+
+// Verifies that the installer is notified of permanent deletion of WebState.
+TEST_P(TabsDependencyInstallerTest, Deleted) {
+  struct TestCase {
+    bool expect_notification;
+    WebStateList::ClosingFlags removal_flags;
+  };
+
+  constexpr TestCase kTestCases[] = {
+      {
+          .expect_notification = false,
+          .removal_flags = WebStateList::CLOSE_NO_FLAGS,
+      },
+      {
+          .expect_notification = true,
+          .removal_flags = WebStateList::CLOSE_USER_ACTION,
+      },
+      {
+          .expect_notification = true,
+          .removal_flags = WebStateList::CLOSE_TABS_CLEANUP,
+      },
+  };
+
+  installer_.StartObserving(
+      &web_state_list_, std::get<TabsDependencyInstaller::Policy>(GetParam()));
+
+  // Check that the method WebStateDeleted() is called if the tabs is closed
+  // due to an user action or due to tabs cleanup.
+  for (const TestCase& test_case : kTestCases) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetIsRealized(false);
+    web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+    const int index = web_state_list_.InsertWebState(std::move(web_state));
+    ASSERT_NE(index, WebStateList::kInvalidIndex);
+
+    web_state_list_.CloseWebStateAt(index, test_case.removal_flags);
+    EXPECT_EQ(installer_.WasDeleted(web_state_id),
+              test_case.expect_notification);
+  }
+
+  // Check that the method WebStateDeleted() is not called if the tab is
+  // detached.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetIsRealized(false);
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  const int index = web_state_list_.InsertWebState(std::move(web_state));
+  ASSERT_NE(index, WebStateList::kInvalidIndex);
+
+  auto detached_web_state = web_state_list_.DetachWebStateAt(index);
+  ASSERT_TRUE(detached_web_state);
+  EXPECT_EQ(detached_web_state->GetUniqueIdentifier(), web_state_id);
+  EXPECT_FALSE(installer_.WasDeleted(web_state_id));
+}
+
+// Verifies that the WebStateActivated() method is correctly called when
+// the active WebState changes.
+TEST_P(TabsDependencyInstallerTest, Activation) {
+  installer_.StartObserving(
+      &web_state_list_, std::get<TabsDependencyInstaller::Policy>(GetParam()));
+
+  auto web_state_1 = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_1_id = web_state_1->GetUniqueIdentifier();
+  const int index_1 = web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
+  ASSERT_NE(index_1, WebStateList::kInvalidIndex);
+
+  // Check that the installer is notified when the first WebState is inserted.
+  EXPECT_TRUE(installer_.WasActivated(web::WebStateID(), web_state_1_id));
+
+  auto web_state_2 = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_2_id = web_state_2->GetUniqueIdentifier();
+  const int index_2 = web_state_list_.InsertWebState(std::move(web_state_2));
+  ASSERT_NE(index_2, WebStateList::kInvalidIndex);
+
+  // Check that the installer is not notified when a WebState is inserted
+  // without changing the active WebState.
+  EXPECT_FALSE(installer_.WasActivated(web_state_1_id, web_state_2_id));
+
+  // Check that activating a WebState causes the installer to be notified.
+  web_state_list_.ActivateWebStateAt(index_2);
+  EXPECT_TRUE(installer_.WasActivated(web_state_1_id, web_state_2_id));
+
+  // Check that the installer is notified if the active WebState changes
+  // when a WebState is detached/closed.
+  auto detached_web_state = web_state_list_.DetachWebStateAt(index_2);
+  ASSERT_TRUE(detached_web_state);
+  EXPECT_EQ(detached_web_state->GetUniqueIdentifier(), web_state_2_id);
+  EXPECT_TRUE(installer_.WasActivated(web_state_2_id, web_state_1_id));
+
+  web_state_list_.CloseWebStateAt(index_1, WebStateList::CLOSE_USER_ACTION);
+  EXPECT_TRUE(installer_.WasActivated(web_state_1_id, web::WebStateID()));
 }
 
 // Verifies that no methods are triggered after stopping the observation.

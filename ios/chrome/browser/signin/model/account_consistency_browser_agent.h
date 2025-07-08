@@ -33,6 +33,9 @@ class AccountConsistencyBrowserAgent
   // TabsDependencyInstaller
   void OnWebStateInserted(web::WebState* web_state) override;
   void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
   // ManageAccountsDelegate
   void OnRestoreGaiaCookies() override;

@@ -70,6 +70,17 @@ void AccountConsistencyBrowserAgent::OnWebStateRemoved(
   }
 }
 
+void AccountConsistencyBrowserAgent::OnWebStateDeleted(
+    web::WebState* web_state) {
+  // Nothing to do.
+}
+
+void AccountConsistencyBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  // Nothing to do.
+}
+
 void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())

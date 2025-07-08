@@ -44,6 +44,9 @@ class TabsDependencyInstallationHelper : public WebStateListObserver,
   ~TabsDependencyInstallationHelper() override;
 
   // WebStateListObserver:
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateListStatus& status) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
@@ -99,6 +102,21 @@ TabsDependencyInstallationHelper::~TabsDependencyInstallationHelper() {
 
 #pragma mark - WebStateListObserver
 
+void TabsDependencyInstallationHelper::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
+
+  if (!detach_change.is_user_action() && !detach_change.is_tabs_cleanup()) {
+    return;
+  }
+
+  dependency_installer_->OnWebStateDeleted(detach_change.detached_web_state());
+}
+
 void TabsDependencyInstallationHelper::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
@@ -141,6 +159,11 @@ void TabsDependencyInstallationHelper::WebStateListDidChange(
     case WebStateListChange::Type::kGroupDelete:
       // Do nothing when a group is deleted.
       break;
+  }
+
+  if (status.active_web_state_change()) {
+    dependency_installer_->OnActiveWebStateChanged(status.old_active_web_state,
+                                                   status.new_active_web_state);
   }
 }
 

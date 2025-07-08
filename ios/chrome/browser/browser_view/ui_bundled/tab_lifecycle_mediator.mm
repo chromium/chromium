@@ -337,4 +337,13 @@
   }
 }
 
+- (void)webStateDeleted:(web::WebState*)webState {
+  // Nothing to do.
+}
+
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive {
+  // Nothing to do.
+}
+
 @end

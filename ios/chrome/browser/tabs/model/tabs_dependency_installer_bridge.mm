@@ -30,3 +30,14 @@ void TabsDependencyInstallerBridge::OnWebStateRemoved(
     web::WebState* web_state) {
   [installing_ webStateRemoved:web_state];
 }
+
+void TabsDependencyInstallerBridge::OnWebStateDeleted(
+    web::WebState* web_state) {
+  [installing_ webStateDeleted:web_state];
+}
+
+void TabsDependencyInstallerBridge::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  [installing_ newWebStateActivated:new_active oldActiveWebState:old_active];
+}

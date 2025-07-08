@@ -55,6 +55,16 @@ class TabsDependencyInstaller {
   // to another list, the window is closed, the application is terminating, ...
   virtual void OnWebStateRemoved(web::WebState* web_state) = 0;
 
+  // Serves as a hook for purging any data associated with a WebState before
+  // it is permanently removed (i.e. cannot be re-opened).
+  virtual void OnWebStateDeleted(web::WebState* web_state) = 0;
+
+  // Serves as a hook for performing any action when the active WebState
+  // change. Either of `new_active` or `old_active` may be null (in case
+  // of the WebStateList transitioning to/from the empty state).
+  virtual void OnActiveWebStateChanged(web::WebState* old_active,
+                                       web::WebState* new_active) = 0;
+
  private:
   // Helper used to observe the WebStateList and WebStates and forward the
   // events to the current instance.
