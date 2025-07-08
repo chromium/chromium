@@ -249,11 +249,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "android-meta-click-history-navigation",
-    "owners": ["jhimawan@google.com"],
-    "expiry_milestone": 170
-  },
-  {
     "name": "android-native-pages-in-new-tab",
     "owners": ["agazal@google.com", "wenyufu@google.com"],
     "expiry_milestone": 170

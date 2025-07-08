@@ -178,8 +178,6 @@ public abstract class ChromeFeatureList {
             "AndroidDumpOnScrollWithoutResource";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_KEYBOARD_A11Y = "AndroidKeyboardA11y";
-    public static final String ANDROID_META_CLICK_HISTORY_NAVIGATION =
-            "AndroidMetaClickHistoryNavigation";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
     public static final String ANDROID_NATIVE_PAGES_IN_NEW_TAB = "AndroidNativePagesInNewTab";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =

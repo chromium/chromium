@@ -204,15 +204,6 @@ const char kAndroidKeyboardA11yDescription[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kAndroidMetaClickHistoryNavigationName[] =
-    "Allows use of meta keys on forward/back history navigation arrows";
-const char kAndroidMetaClickHistoryNavigationDescription[] =
-    "Allows use of meta keys (ctrl+shift+click to open in new focused tab, "
-    "ctrl+click to open in new background tab, shift+click to open in new "
-    "window) on forward/back history navigation arrows";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const char kAndroidNativePagesInNewTabName[] =
     "Open downloads, history and bookmarks in new tab";
 const char kAndroidNativePagesInNewTabDescription[] =

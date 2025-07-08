@@ -10256,11 +10256,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-keyboard-a11y", flag_descriptions::kAndroidKeyboardA11yName,
      flag_descriptions::kAndroidKeyboardA11yDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidKeyboardA11y)},
-    {"android-meta-click-history-navigation",
-     flag_descriptions::kAndroidMetaClickHistoryNavigationName,
-     flag_descriptions::kAndroidMetaClickHistoryNavigationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidMetaClickHistoryNavigation)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

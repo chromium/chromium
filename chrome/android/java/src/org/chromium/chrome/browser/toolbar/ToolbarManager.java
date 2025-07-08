@@ -1695,25 +1695,20 @@ public class ToolbarManager
 
     private void back(int metaState) {
         setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_META_CLICK_HISTORY_NAVIGATION)) {
-            boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
-            boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
-            if (hasControl && hasShift) {
-                // Holding ALT is allowed as well (reference desktop behavior).
-                final boolean isSuccess =
-                        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
-                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundTab");
-            } else if (hasControl) {
-                final boolean isSuccess =
-                        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
-                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewBackgroundTab");
-            } else if (hasShift) {
-                final boolean isSuccess = mToolbarTabController.backInNewWindow();
-                if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundWindow");
-            } else {
-                final boolean isSuccess = mToolbarTabController.back();
-                if (isSuccess) RecordUserAction.record("MobileToolbarBack");
-            }
+        boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
+        boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
+        if (hasControl && hasShift) {
+            // Holding ALT is allowed as well (reference desktop behavior).
+            final boolean isSuccess =
+                    mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
+            if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundTab");
+        } else if (hasControl) {
+            final boolean isSuccess =
+                    mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
+            if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewBackgroundTab");
+        } else if (hasShift) {
+            final boolean isSuccess = mToolbarTabController.backInNewWindow();
+            if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundWindow");
         } else {
             final boolean isSuccess = mToolbarTabController.back();
             if (isSuccess) RecordUserAction.record("MobileToolbarBack");
