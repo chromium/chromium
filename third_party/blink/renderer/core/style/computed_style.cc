@@ -2785,7 +2785,6 @@ bool ComputedStyle::MarkerShouldBeInside(
     if (IsA<HTMLLIElement>(parent) && !IsInsideListElement() &&
         PseudoElementLayoutObjectIsNeeded(kPseudoIdMarker, marker_style,
                                           &parent)) {
-      parent.GetDocument().CountUse(WebFeature::kInsideListMarkerPositionQuirk);
       return true;
     }
   }

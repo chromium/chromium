@@ -4294,7 +4294,7 @@ enum WebFeature {
   kV8DocumentAllLegacyCall = 4998,
   kV8DocumentAllLegacyConstruct = 4999,
   // The items above roughly this point are available in the M127 branch.
-  kInsideListMarkerPositionQuirk = 5000,
+  kOBSOLETE_InsideListMarkerPositionQuirk = 5000,
   kZstdContentEncodingForNavigation = 5001,
   kZstdContentEncodingForMainFrameNavigation = 5002,
   kZstdContentEncodingForSubFrameNavigation = 5003,

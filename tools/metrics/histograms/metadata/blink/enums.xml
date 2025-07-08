@@ -5569,7 +5569,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4997" label="V8InvalidatedNoUndetectableObjectsProtector"/>
   <int value="4998" label="V8DocumentAllLegacyCall"/>
   <int value="4999" label="V8DocumentAllLegacyConstruct"/>
-  <int value="5000" label="InsideListMarkerPositionQuirk"/>
+  <int value="5000" label="OBSOLETE_InsideListMarkerPositionQuirk"/>
   <int value="5001" label="ZstdContentEncodingForNavigation"/>
   <int value="5002" label="ZstdContentEncodingForMainFrameNavigation"/>
   <int value="5003" label="ZstdContentEncodingForSubFrameNavigation"/>
