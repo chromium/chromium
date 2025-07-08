@@ -171,7 +171,7 @@
 }
 
 - (void)showSafeBrowsing {
-  DCHECK(!self.safeBrowsingCoordinator);
+  [self.safeBrowsingCoordinator stop];
   self.safeBrowsingCoordinator = [[PrivacySafeBrowsingCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
