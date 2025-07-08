@@ -274,14 +274,15 @@ versionCache['com.google.android.libraries.identity.googleid:googleid'] = '1.1.1
 versionCache['com.google.android.material:material'] = '1.14.0-alpha02'
 versionCache['com.google.android.play:core-common'] = '2.0.3'
 versionCache['com.google.android.play:feature-delivery'] = '2.1.0'
+versionCache['com.google.android:annotations'] = '4.1.1.4'
 versionCache['com.google.ar:impress'] = '0.0.3'
 versionCache['com.google.auto.service:auto-service-annotations'] = '1.0-rc6'
 versionCache['com.google.auto.value:auto-value-annotations'] = '1.11.0'
 versionCache['com.google.code.findbugs:jsr305'] = '3.0.2'
-versionCache['com.google.code.gson:gson'] = '2.8.0'
+versionCache['com.google.code.gson:gson'] = '2.13.1'
 versionCache['com.google.dagger:dagger'] = '2.52'
 versionCache['com.google.errorprone:error_prone_annotation'] = '2.38.0'
-versionCache['com.google.errorprone:error_prone_annotations'] = '2.36.0'
+versionCache['com.google.errorprone:error_prone_annotations'] = '2.38.0'
 versionCache['com.google.firebase:firebase-annotations'] = '16.2.0'
 versionCache['com.google.firebase:firebase-common'] = '21.0.0'
 versionCache['com.google.firebase:firebase-common-ktx'] = '21.0.0'
@@ -314,6 +315,11 @@ versionCache['com.squareup.wire:wire-runtime'] = '5.2.1'
 versionCache['com.squareup.wire:wire-runtime-jvm'] = '5.2.1'
 versionCache['com.squareup:javapoet'] = '1.13.0'
 versionCache['com.squareup:javawriter'] = '2.1.1'
+versionCache['io.grpc:grpc-android'] = '1.73.0'
+versionCache['io.grpc:grpc-api'] = '1.73.0'
+versionCache['io.grpc:grpc-context'] = '1.73.0'
+versionCache['io.grpc:grpc-core'] = '1.73.0'
+versionCache['io.perfmark:perfmark-api'] = '0.27.0'
 versionCache['io.reactivex.rxjava3:rxjava'] = '3.0.2'
 versionCache['jakarta.inject:jakarta.inject-api'] = '2.0.1'
 versionCache['javax.annotation:javax.annotation-api'] = '1.3.2'
@@ -327,7 +333,7 @@ versionCache['org.ccil.cowan.tagsoup:tagsoup'] = '1.2.1'
 versionCache['org.checkerframework:checker-compat-qual'] = '2.5.5'
 versionCache['org.checkerframework:checker-qual'] = '3.25.0'
 versionCache['org.checkerframework:checker-util'] = '3.25.0'
-versionCache['org.codehaus.mojo:animal-sniffer-annotations'] = '1.17'
+versionCache['org.codehaus.mojo:animal-sniffer-annotations'] = '1.24'
 versionCache['org.conscrypt:conscrypt-openjdk-uber'] = '2.5.2'
 versionCache['org.hamcrest:hamcrest'] = '2.2'
 versionCache['org.hamcrest:hamcrest-core'] = '2.2'
@@ -394,14 +400,16 @@ dependencies {
     // Use testCompile to have requires_robolectric = true set on targets.
     testCompileLatest "org.robolectric:robolectric:+"
 
-    compileLatest 'com.google.protobuf:protobuf-javalite:+'
-
     compileLatest "com.google.guava:guava:+"
     buildCompileLatest "com.google.guava:guava:+"
 
+    // Libraries from Google:
+    compileLatest 'com.google.protobuf:protobuf-javalite:+'
     compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
     compileLatest 'com.google.android.material:material:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
+    compileLatest 'com.google.code.gson:gson:+'
+    compileLatest 'io.grpc:grpc-android:+'
 
     // Play services libraries
     compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
@@ -422,6 +430,7 @@ dependencies {
     compileLatest "com.google.android.gms:play-services-vision-common:+"
     compileLatest "com.google.android.gms:play-services-vision:+"
 
+    // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
 }
 

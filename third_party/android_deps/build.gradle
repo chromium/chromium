@@ -16,50 +16,33 @@ dependencies {
     compile 'com.android.support:support-annotations:28.0.0'
     buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
 
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.google.firebase:firebase-iid:21.1.0'
     compile 'com.google.firebase:firebase-messaging:24.1.0'
-    compile 'com.google.j2objc:j2objc-annotations:2.8'
     // buildCompile needed because we add a custom dep of onto this from guava
     // to fix "unknown enum constant ReflectionSupport$Level.FULL".
     buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-    compile 'com.google.protobuf:protobuf-javalite:4.28.0'
-    compile 'javax.inject:javax.inject:1'
 
     // Needed by androidx.room, but by default it selects a lower version that
     // does not exist in CIPD.
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
     // Needed by androidx.datastore
     compile "com.squareup.okio:okio-jvm:3.9.0"
-    // Needed by androidx.appcompat -> androidx.cursoradaptor
-    compile "org.jspecify:jspecify:1.0.0"
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
     // Needed by androidx.benchmark
     androidTestCompile "com.squareup.moshi:moshi-adapters:1.15.0"
 
-    String daggerVersion = '2.52'
-    compile "com.google.dagger:dagger:${daggerVersion}"
-
-    // Dependency of androidx.xr.scenecore
-    compile "com.google.ar:impress:0.0.2"
-
     // Used by ModuleInterfaceProcessor.java
     buildCompile 'com.squareup:javapoet:1.13.0'
 
-    // Provides annotations used to opt into checks.
-    compile "com.google.errorprone:error_prone_annotations:2.23.0"
-    compile "org.checkerframework:checker-qual:3.25.0"
+    // TODO(agrieve): Move to autorolled.
     compile 'org.checkerframework:checker-util:3.25.0'
-    compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
     // Not used directly, but listing here to pin versions to latest because
     // that's what's been uploaded to CIPD.
@@ -69,11 +52,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-stats:17.1.0'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1'
 
-    buildCompile 'com.google.code.gson:gson:2.8.0'
     buildCompile 'org.ow2.asm:asm:7.0'
     buildCompile 'org.ow2.asm:asm-commons:7.0'
-    buildCompile 'org.ow2.asm:asm-tree:7.0'
-    buildCompile 'org.ow2.asm:asm-util:7.0'
 
     // Used by resource shrinking.
     // buildCompileNoDeps targets do not bring in any of their dependencies,

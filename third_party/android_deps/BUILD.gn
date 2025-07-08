@@ -11,24 +11,6 @@ define_autorolled_targets("unused") {
 }
 
 if (!limit_android_deps) {
-  java_group("dagger_java") {
-    preferred_dep = true
-    if (defined(dagger_java_target)) {
-      deps = [ dagger_java_target ]
-    } else {
-      deps = [ "//third_party/android_deps:com_google_dagger_dagger_java" ]
-    }
-  }
-
-  java_annotation_processor("dagger_processor") {
-    main_class = "dagger.internal.codegen.ComponentProcessor"
-    if (defined(dagger_annotation_processor_target)) {
-      deps = [ dagger_annotation_processor_target ]
-    } else {
-      deps = [ "//third_party/android_build_tools/dagger_compiler:dagger_compiler_java" ]
-    }
-  }
-
   java_group("espresso_java") {
     preferred_dep = true
     testonly = true
@@ -159,13 +141,6 @@ java_prebuilt("com_android_tools_sdk_common_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_code_gson_gson_java") {
-  jar_path = "cipd/libs/com_google_code_gson_gson/gson-2.8.0.jar"
-  output_name = "com_google_code_gson_gson"
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_squareup_javapoet_java") {
   jar_path = "cipd/libs/com_squareup_javapoet/javapoet-1.13.0.jar"
   output_name = "com_squareup_javapoet"
@@ -202,40 +177,6 @@ if (!limit_android_deps) {
     ]
     proguard_configs =
         [ "local_modifications/accessibility_test_framework.pcfg" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_google_ar_impress_java") {
-    aar_path = "cipd/libs/com_google_ar_impress/impress-0.0.2.aar"
-    info_path = "libs/com_google_ar_impress/com_google_ar_impress.info"
-    enable_bytecode_checks = false
-    deps =
-        [ "//third_party/androidx:androidx_concurrent_concurrent_futures_java" ]
-
-    # Rules are unnecessary.
-    ignore_proguard_configs = true
-
-    # Chrome does not use the APIs that require the native library.
-    ignore_native_libraries = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (!defined(dagger_java_target)) {
-    java_prebuilt("com_google_dagger_dagger_java") {
-      jar_path = "cipd/libs/com_google_dagger_dagger/dagger-2.52.jar"
-      output_name = "com_google_dagger_dagger"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # Target is swapped out when internal code is enabled.
-      # Please depend on //third_party/android_deps:dagger_java instead.
-      visibility = [ "//third_party/android_deps:*" ]
-      deps = [
-        ":jakarta_inject_jakarta_inject_api_java",
-        ":javax_inject_javax_inject_java",
-      ]
-    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -398,15 +339,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
-    jar_path = "cipd/libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.17.jar"
-    output_name = "org_codehaus_mojo_animal_sniffer_annotations"
-    supports_android = true
-    requires_android = true
-    enable_bytecode_checks = false
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_parcelize_runtime_java") {
     jar_path = "cipd/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime/kotlin-parcelize-runtime-1.9.22.jar"
     output_name = "org_jetbrains_kotlin_kotlin_parcelize_runtime"
@@ -523,6 +455,28 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_tasks_java",
       ]
     }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_google_ar_impress_java") {
+    aar_path = "cipd/libs/com_google_ar_impress/impress-0.0.3.aar"
+    info_path = "libs/com_google_ar_impress/com_google_ar_impress.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps =
+        [ "//third_party/androidx:androidx_concurrent_concurrent_futures_java" ]
+
+    # Rules are unnecessary.
+    ignore_proguard_configs = true
+
+    # Chrome does not use the APIs that require the native library.
+    ignore_native_libraries = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -677,22 +631,6 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_tasks_java",
       ]
     }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("jakarta_inject_jakarta_inject_api_java") {
-    jar_path = "cipd/libs/jakarta_inject_jakarta_inject_api/jakarta.inject-api-2.0.1.jar"
-    output_name = "jakarta_inject_jakarta_inject_api"
-    supports_android = true
-    requires_android = true
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

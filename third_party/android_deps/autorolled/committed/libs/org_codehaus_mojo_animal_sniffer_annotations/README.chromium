@@ -1,8 +1,8 @@
 Name: Animal Sniffer Annotations
 Short Name: animal-sniffer-annotations
 URL: http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/
-Version: 1.17
-Update Mechanism: Manual
+Version: 1.24
+Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
 CPEPrefix: unknown

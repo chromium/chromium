@@ -599,8 +599,7 @@ def main():
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
 
-        CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, _DEPS),
-                            os.path.join(build_dir, _DEPS))
+        Copy(_CHROMIUM_SRC, [_DEPS], build_dir, [_DEPS])
 
         _InitSubprojects(args.android_deps_dir, build_android_deps_dir,
                          bool(args.build_dir))
@@ -676,6 +675,10 @@ def main():
              output_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
+
+        # Auto-rollers adjust DEPS for androidx & autorolled.
+        if is_primary_android_deps:
+            Copy(build_dir, [_DEPS], _CHROMIUM_SRC, [_DEPS])
 
         # Not all projects (eg: the primary project) output a bill of materials.
         # Thus only copy if it exists.

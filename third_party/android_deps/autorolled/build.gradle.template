@@ -57,6 +57,17 @@ dependencies {
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
+    compileLatest "com.google.errorprone:error_prone_annotations:+"
+    compileLatest "org.jspecify:jspecify:+"
+    compileLatest "javax.inject:javax.inject:+"
+
+    // Needed by internal targets
+    compileLatest "com.google.code.findbugs:jsr305:+"
+    compileLatest "com.google.j2objc:j2objc-annotations:+"
+    compileLatest "org.checkerframework:checker-qual:+"
+    compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
+    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
+    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
