@@ -84,11 +84,7 @@ base::Time GetCoarseVisitedTime(base::Time time);
 // Returns a TimeDelta representing a week.
 base::TimeDelta GetCoarseVisitedTimePrecision();
 
-// Returns whether ContentSettingsType is an eligible permission for
-// auto-revocation.
-bool CanBeAutoRevoked(ContentSettingsType type,
-                      ContentSetting setting,
-                      bool is_one_time = false);
+// Returns whether the permission is an eligible permission for auto-revocation.
 bool CanBeAutoRevoked(ContentSettingsType type,
                       const base::Value& value,
                       bool is_one_time = false);

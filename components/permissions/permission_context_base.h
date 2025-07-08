@@ -179,7 +179,7 @@ class PermissionContextBase : public content_settings::Observer {
  protected:
   // Retrieves the current permission status. |render_frame_host| may be
   // nullptr.
-  virtual base::Value GetPermissionStatusInternal(
+  virtual PermissionSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
@@ -210,7 +210,7 @@ class PermissionContextBase : public content_settings::Observer {
   // Store the decided permission state. Virtual since the permission might be
   // stored with different restrictions (for example for desktop notifications).
   virtual void UpdateSetting(const PermissionRequestData& request_data,
-                             base::Value setting,
+                             PermissionSetting setting,
                              bool is_one_time);
 
   // Whether the permission should be restricted to secure origins.

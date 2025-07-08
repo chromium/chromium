@@ -678,8 +678,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   }
 
   if (!persist) {
-    std::move(callback).Run(request_data.resolver->DeterminePermissionStatus(
-        base::Value(content_setting)));
+    std::move(callback).Run(
+        request_data.resolver->DeterminePermissionStatus(content_setting));
     return;
   }
 
@@ -720,7 +720,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
           ContentSettingsType::STORAGE_ACCESS, grants,
           base::BindOnce(std::move(callback),
                          request_data.resolver->DeterminePermissionStatus(
-                             base::Value(content_setting))));
+                             content_setting)));
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(

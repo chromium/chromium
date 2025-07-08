@@ -21,7 +21,11 @@ class GeolocationSettingDelegate
   std::optional<PermissionSetting> InheritInIncognito(
       const PermissionSetting& setting) const override;
 
+  bool CanBeAutoRevoked(PermissionSetting setting,
+                        bool is_one_time) const override;
+
   base::Value ToValue(const PermissionSetting& setting) const override;
+
   std::optional<PermissionSetting> FromValue(
       const base::Value& value) const override;
 };

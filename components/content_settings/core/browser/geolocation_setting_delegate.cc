@@ -17,17 +17,17 @@ namespace content_settings {
 
 bool GeolocationSettingDelegate::IsValid(
     const PermissionSetting& setting) const {
-  auto* geo_setting = std::get_if<GeolocationSetting>(&setting);
-  if (!geo_setting) {
+  auto geo_setting = std::get<GeolocationSetting>(setting);
+
+  if (!IsValidPermissionOption(geo_setting.approximate)) {
     return false;
   }
-  if (!IsValidPermissionOption(geo_setting->approximate)) {
+
+  if (!IsValidPermissionOption(geo_setting.precise)) {
     return false;
   }
-  if (!IsValidPermissionOption(geo_setting->precise)) {
-    return false;
-  }
-  if (IsMorePermissive(geo_setting->precise, geo_setting->approximate)) {
+
+  if (IsMorePermissive(geo_setting.precise, geo_setting.approximate)) {
     return false;
   }
   return true;
@@ -57,6 +57,7 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
     return std::nullopt;
   }
   const auto& dict = value.GetDict();
+
   auto approximate_optional = dict.FindInt("approximate");
   if (!approximate_optional.has_value()) {
     return std::nullopt;
@@ -75,6 +76,13 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
   }
 
   return setting;
+}
+
+bool GeolocationSettingDelegate::CanBeAutoRevoked(PermissionSetting setting,
+                                                  bool is_one_time) const {
+  auto* geolocation_setting = std::get_if<GeolocationSetting>(&setting);
+  return !is_one_time && geolocation_setting &&
+         (*geolocation_setting).approximate == PermissionOption::kAllowed;
 }
 
 }  // namespace content_settings

@@ -81,6 +81,7 @@ void PermissionSettingsRegistry::Init() {
 
   // TODO(crbug.com/425642101): Register a new content setting for advanced GEO
   // permissions.
+
   // EXAMPLE:
   //   Register(ContentSettingsType::GEOLOCATION, "geolocation_with_options",
   //   CONTENT_SETTING_ASK,

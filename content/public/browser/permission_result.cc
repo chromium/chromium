@@ -13,25 +13,19 @@ PermissionResult::PermissionResult()
 PermissionResult::PermissionResult(
     PermissionStatus permission_status,
     PermissionStatusSource permission_status_source,
-    std::optional<base::Value> retrieved_permission_data)
+    std::optional<PermissionSetting> retrieved_permission_setting)
     : status(permission_status),
       source(permission_status_source),
-      retrieved_permission_data(std::move(retrieved_permission_data)) {}
+      retrieved_permission_setting(retrieved_permission_setting) {}
 
 PermissionResult::PermissionResult(const PermissionResult& other) {
   status = other.status;
   source = other.source;
-  retrieved_permission_data =
-      other.retrieved_permission_data.has_value()
-          ? std::make_optional(other.retrieved_permission_data.value().Clone())
-          : std::nullopt;
+  retrieved_permission_setting = other.retrieved_permission_setting;
 }
-PermissionResult& PermissionResult::operator=(PermissionResult& other) {
-  status = other.status;
-  source = other.source;
-  retrieved_permission_data = std::move(other.retrieved_permission_data);
-  return *this;
-}
+
+PermissionResult& PermissionResult::operator=(PermissionResult& other) =
+    default;
 PermissionResult::PermissionResult(PermissionResult&&) = default;
 PermissionResult& PermissionResult::operator=(PermissionResult&&) = default;
 

@@ -431,8 +431,9 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
   ProviderType provider_type = ProviderType::kNone;
   ContentSetting content_setting =
       GetDefaultContentSettingInternal(content_type, &provider_type);
-  if (content_setting != CONTENT_SETTING_DEFAULT && provider_id)
+  if (content_setting != CONTENT_SETTING_DEFAULT && provider_id) {
     *provider_id = provider_type;
+  }
   return content_setting;
 }
 
@@ -524,8 +525,9 @@ void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
       primary_url, secondary_url, content_type);
   ContentSettingsPattern primary_pattern = patterns.first;
   ContentSettingsPattern secondary_pattern = patterns.second;
-  if (!primary_pattern.IsValid() || !secondary_pattern.IsValid())
+  if (!primary_pattern.IsValid() || !secondary_pattern.IsValid()) {
     return;
+  }
 
   SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
                                std::move(value), constraints);
@@ -597,8 +599,9 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
   content_settings::PatternPair patterns =
       GetNarrowestPatterns(primary_url, secondary_url, type);
 
-  if (!patterns.first.IsValid() || !patterns.second.IsValid())
+  if (!patterns.first.IsValid() || !patterns.second.IsValid()) {
     return;
+  }
 
   SetContentSettingCustomScope(patterns.first, patterns.second, type, setting,
                                constraints);
@@ -635,8 +638,9 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
         info.secondary_pattern.Compare(patterns.second);
     DCHECK(r2 != ContentSettingsPattern::DISJOINT_ORDER_POST &&
            r2 != ContentSettingsPattern::DISJOINT_ORDER_PRE);
-    if (r2 == ContentSettingsPattern::PREDECESSOR)
+    if (r2 == ContentSettingsPattern::PREDECESSOR) {
       patterns.second = std::move(info.secondary_pattern);
+    }
   }
 
   return patterns;
@@ -687,8 +691,9 @@ void HostContentSettingsMap::SetContentSettingDefaultScope(
 
   ContentSettingsPattern primary_pattern = patterns.first;
   ContentSettingsPattern secondary_pattern = patterns.second;
-  if (!primary_pattern.IsValid() || !secondary_pattern.IsValid())
+  if (!primary_pattern.IsValid() || !secondary_pattern.IsValid()) {
     return;
+  }
 
   SetContentSettingCustomScope(primary_pattern, secondary_pattern, content_type,
                                setting, constraints);
@@ -730,8 +735,9 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
       if (setting_entry.source == ProviderType::kPrefProvider) {
         // |content_info| will be non-nullptr iff |content_type| is a content
         // setting rather than a website setting.
-        if (content_info)
+        if (content_info) {
           ++num_exceptions_with_setting[setting_entry.GetContentSetting()];
+        }
         ++num_exceptions;
       }
     }
@@ -746,8 +752,9 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
       CHECK(content_info);
       for (int setting = 0; setting < CONTENT_SETTING_NUM_SETTINGS; ++setting) {
         ContentSetting content_setting = IntToContentSetting(setting);
-        if (!content_info->IsSettingValid(content_setting))
+        if (!content_info->IsSettingValid(content_setting)) {
           continue;
+        }
         std::string histogram_with_suffix =
             histogram_name + "." + ContentSettingToString(content_setting);
         base::UmaHistogramCustomCounts(
@@ -896,9 +903,10 @@ std::optional<base::TimeDelta> HostContentSettingsMap::RenewContentSetting(
 void HostContentSettingsMap::ClearSettingsForOneType(
     ContentSettingsType content_type) {
   UsedContentSettingsProviders();
-  for (const auto& provider_pair : content_settings_providers_)
+  for (const auto& provider_pair : content_settings_providers_) {
     provider_pair.second->ClearAllContentSettingsRules(
         content_type, content_settings::PartitionKey::WipGetDefault());
+  }
   FlushLossyWebsiteSettings();
 }
 
@@ -966,8 +974,9 @@ void HostContentSettingsMap::ShutdownOnUIThread() {
   DCHECK(prefs_);
   expiration_enforcement_timers_.clear();
   prefs_ = nullptr;
-  for (const auto& provider_pair : content_settings_providers_)
+  for (const auto& provider_pair : content_settings_providers_) {
     provider_pair.second->ShutdownOnUIThread();
+  }
 }
 
 void HostContentSettingsMap::AddSettingsForOneType(
@@ -981,8 +990,9 @@ void HostContentSettingsMap::AddSettingsForOneType(
       provider->GetRuleIterator(
           content_type, incognito,
           content_settings::PartitionKey::WipGetDefault()));
-  if (!rule_iterator)
+  if (!rule_iterator) {
     return;
+  }
 
   while (rule_iterator->HasNext()) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
@@ -1026,11 +1036,13 @@ void HostContentSettingsMap::AddSettingsForOneType(
 
 void HostContentSettingsMap::UsedContentSettingsProviders() const {
 #ifndef NDEBUG
-  if (used_from_thread_id_ == base::kInvalidThreadId)
+  if (used_from_thread_id_ == base::kInvalidThreadId) {
     return;
+  }
 
-  if (base::PlatformThread::CurrentId() != used_from_thread_id_)
+  if (base::PlatformThread::CurrentId() != used_from_thread_id_) {
     used_from_thread_id_ = base::kInvalidThreadId;
+  }
 #endif
 }
 
@@ -1095,9 +1107,10 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
         provider.get(), primary_url, secondary_url, content_type,
         is_off_the_record_, primary_pattern, secondary_pattern, metadata);
     if (!value.is_none()) {
-      if (info)
+      if (info) {
         info->source =
             content_settings::GetSettingSourceFromProviderType(provider_type);
+      }
       return value;
     }
   }
@@ -1191,8 +1204,9 @@ void HostContentSettingsMap::
     MigrateSingleSettingPrecedingPermissionDelegationActivation(
         const content_settings::WebsiteSettingsInfo* info) {
   // Only migrate settings that don't support secondary patterns.
-  if (info->SupportsSecondaryPattern())
+  if (info->SupportsSecondaryPattern()) {
     return;
+  }
 
   ContentSettingsType type = info->type();
 

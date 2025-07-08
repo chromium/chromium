@@ -41,8 +41,8 @@ TEST(GeolocationSettingDelegateTest, ParseInvalidGeolocationSetting) {
 
 TEST(GeolocationSettingDelegateTest, ValidateGeolocationSetting) {
   GeolocationSettingDelegate delegate;
-
   GeolocationSetting setting;
+
   setting.approximate = PermissionOption::kAllowed;
   setting.precise = PermissionOption::kDenied;
   EXPECT_TRUE(delegate.IsValid(setting));

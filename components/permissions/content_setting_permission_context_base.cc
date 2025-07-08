@@ -49,8 +49,13 @@ void ContentSettingPermissionContextBase::UpdateContentSetting(
 
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time if the permission can be revoked.
-  if (content_settings::CanBeAutoRevoked(content_settings_type(),
-                                         content_setting, is_one_time)) {
+  // TODO(crbug.com/425642101): Migrate to using the
+  // PermissionSettingsInfo::Delegate once content settings are migrated to the
+  // PermissionSettingsRegistry.
+  if (content_settings::CanBeAutoRevoked(
+          content_settings_type(),
+          content_settings::ContentSettingToValue(content_setting),
+          is_one_time)) {
     // For #2, by definition, that should be all of them. If that changes in
     // the future, consider whether revocation for such permission makes
     // sense, and/or change this to an early return so that we don't
@@ -73,9 +78,9 @@ void ContentSettingPermissionContextBase::UpdateContentSetting(
 
 void ContentSettingPermissionContextBase::UpdateSetting(
     const PermissionRequestData& request_data,
-    base::Value setting,
+    PermissionSetting setting,
     bool is_one_time) {
-  auto content_setting = content_settings::ValueToContentSetting(setting);
+  auto content_setting = std::get<ContentSetting>(setting);
   CHECK(content_setting == CONTENT_SETTING_ALLOW ||
         content_setting == CONTENT_SETTING_BLOCK);
   UpdateContentSetting(request_data, content_setting, is_one_time);
@@ -92,13 +97,13 @@ ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
                           content_settings_type());
 }
 
-base::Value ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+PermissionSetting
+ContentSettingPermissionContextBase::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  return content_settings::ContentSettingToValue(
-      GetContentSettingStatusInternal(render_frame_host, requesting_origin,
-                                      embedding_origin));
+  return GetContentSettingStatusInternal(render_frame_host, requesting_origin,
+                                         embedding_origin);
 }
 
 }  // namespace permissions

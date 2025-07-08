@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
@@ -33,23 +34,25 @@ ContentSettingPermissionResolver::ContentSettingPermissionResolver(
 
 blink::mojom::PermissionStatus
 ContentSettingPermissionResolver::DeterminePermissionStatus(
-    const base::Value& value) const {
-  return PermissionUtil::ContentSettingToPermissionStatus(
-      value.is_none() ? default_value_
-                      : content_settings::ValueToContentSetting(value));
+    const PermissionSetting& setting) const {
+  ContentSetting content_setting = std::get<ContentSetting>(setting);
+  content_setting = content_setting == CONTENT_SETTING_DEFAULT
+                        ? default_value_
+                        : content_setting;
+  return PermissionUtil::ContentSettingToPermissionStatus(content_setting);
 }
 
-base::Value ContentSettingPermissionResolver::ComputePermissionDecisionResult(
-    const base::Value& previous_value,
+PermissionSetting
+ContentSettingPermissionResolver::ComputePermissionDecisionResult(
+    const PermissionSetting& previous_setting,
     PermissionDecision decision,
     const base::Value& prompt_options) const {
-  return base::Value(
-      PermissionUtil::PermissionDecisionToContentSetting(decision));
+  return PermissionUtil::PermissionDecisionToContentSetting(decision);
 }
 
 ContentSettingPermissionResolver::PromptParameters
 ContentSettingPermissionResolver::GetPromptParameters(
-    const base::Value& current_setting_state) const {
+    const PermissionSetting& current_setting_state) const {
   // TODO(crbug.com/417916654): Migrate PermissionRequest prompt parameters into
   // PermissionResolvers.
   NOTIMPLEMENTED();

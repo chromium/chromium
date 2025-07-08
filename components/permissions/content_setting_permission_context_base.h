@@ -46,14 +46,14 @@ class ContentSettingPermissionContextBase : public PermissionContextBase {
   // override permission-specific functionality.
 
   // PermissionContextBase:
-  base::Value GetPermissionStatusInternal(
+  PermissionSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const final;
 
   // PermissionContextBase:
   void UpdateSetting(const PermissionRequestData& request_data,
-                     base::Value content_setting,
+                     PermissionSetting content_setting,
                      bool is_one_time) final;
 };
 

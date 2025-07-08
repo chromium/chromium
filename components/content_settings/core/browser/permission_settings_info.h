@@ -37,6 +37,10 @@ class PermissionSettingsInfo {
     virtual std::optional<PermissionSetting> InheritInIncognito(
         const PermissionSetting& setting) const = 0;
 
+    // Returns whether the permission setting can be auto-revoked by SafetyHub.
+    virtual bool CanBeAutoRevoked(PermissionSetting setting,
+                                  bool is_one_time) const = 0;
+
     // Parsing and conversion methods.
     virtual base::Value ToValue(const PermissionSetting& setting) const = 0;
     virtual std::optional<PermissionSetting> FromValue(

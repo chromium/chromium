@@ -39,14 +39,14 @@ class PermissionResolver {
   // Determines the permission status of the request given the user's permission
   // state.
   virtual blink::mojom::PermissionStatus DeterminePermissionStatus(
-      const base::Value& value) const = 0;
+      const PermissionSetting& setting) const = 0;
 
   // Determines the user's new permission state given a user decision for the
   // request.
-  virtual base::Value ComputePermissionDecisionResult(
-      const base::Value& previous_value,
+  virtual PermissionSetting ComputePermissionDecisionResult(
+      const PermissionSetting& previous_setting,
       PermissionDecision decision,
-      const base::Value& prompt_options = base::Value()) const = 0;
+      const base::Value& prompt_options) const = 0;
 
   // Determines the `PromptParameters` for the current request given the
   // `current_setting_state` which is the fully coalesced current settings
@@ -56,7 +56,7 @@ class PermissionResolver {
   // PermissionRequestData instance, which holds the PermissionResolver for the
   // particular request.
   virtual PromptParameters GetPromptParameters(
-      const base::Value& current_setting_state) const = 0;
+      const PermissionSetting& current_setting_state) const = 0;
 
   // Utility method to obtain the `ContentSettingsType` of the object if it
   // exists.

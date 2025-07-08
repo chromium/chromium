@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -223,35 +224,46 @@ base::TimeDelta GetCoarseVisitedTimePrecision() {
 }
 
 bool CanBeAutoRevoked(ContentSettingsType type,
-                      ContentSetting setting,
-                      bool is_one_time) {
-  return CanBeAutoRevoked(type, ContentSettingToValue(setting), is_one_time);
-}
-
-bool CanBeAutoRevoked(ContentSettingsType type,
                       const base::Value& value,
                       bool is_one_time) {
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time.
   // We're only interested in expiring permissions that are either
-  // A. regular permissions (= ContentSettingsRegistry-based), which
+  // A. permission settings (= PermissionSettingsRegistry-based), which
+  //    1. query the delegate.
+  // B. regular permissions (= ContentSettingsRegistry-based), which
   //    1. Are ALLOWed.
   //    2. Fall back to ASK.
   //    3. Are not already a one-time grant.
-  // B. chooser permissions (= WebsiteSettingsRegistry-based), which
+  // C. chooser permissions (= WebsiteSettingsRegistry-based), which
   //    1. Are allowlisted.
   //    2. Have a non-empty value.
-
-  auto* info =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
-  if (info) {
-    return !is_one_time &&
-           ValueToContentSetting(value) == CONTENT_SETTING_ALLOW &&
-           CanTrackLastVisit(type);
+  auto* permission_settings_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+  if (permission_settings_info) {
+    auto setting = permission_settings_info->delegate().FromValue(value);
+    DCHECK(setting);
+    if (!setting.has_value()) {
+      return false;
+    }
+    return permission_settings_info->delegate().CanBeAutoRevoked(
+        setting.value(), is_one_time);
+  } else {
+    // TODO(crbug.com/425642101): Migrate to using the
+    // |PermissionSettingsInfo::Delegate| once content settings are migrated to
+    // the PermissionSettingsRegistry.
+    auto* info =
+        content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
+    if (info) {
+      return !is_one_time &&
+             ValueToContentSetting(value) == CONTENT_SETTING_ALLOW &&
+             CanTrackLastVisit(type);
+    } else {
+      // If the value is already empty, no need to revoke the permission.
+      return IsChooserPermissionEligibleForAutoRevocation(type) &&
+             !value.is_none();
+    }
   }
-
-  // If the value is already empty, no need to revoke the permission.
-  return IsChooserPermissionEligibleForAutoRevocation(type) && !value.is_none();
 }
 
 bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
