@@ -60,7 +60,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kAlreadyExists = 12,
     kNotFound = 13,
     kInvalidArgument = 14,
-    kMaxValue = kInvalidArgument
+    kBodyEndMismatch = 15,
+    kMaxValue = kBodyEndMismatch
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -108,6 +109,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using OptionalEntryInfoWithIdAndKey = std::optional<EntryInfoWithIdAndKey>;
   using OptionalEntryInfoWithIdAndKeyCallback =
       base::OnceCallback<void(OptionalEntryInfoWithIdAndKey)>;
+  using IntOrError = base::expected<int, Error>;
+  using IntOrErrorCallback = base::OnceCallback<void(IntOrError)>;
 
   // Creates a new instance of the persistent store. The returned object must be
   // initialized by calling `Initialize()`. This function never returns a null
@@ -199,6 +202,46 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                             scoped_refptr<net::IOBuffer> buffer,
                                             int64_t header_size_delta,
                                             ErrorCallback callback) = 0;
+
+  // Writes data to an entry's body. This can be used to write new data,
+  // overwrite existing data, or append to the entry.
+  // `key` and `token` identify the target entry.
+  // `old_body_end` is the expected current size of the body. It is used to
+  // determine whether to trim or truncate existing data, and for consistency
+  // checks.
+  // `offset` is the position within the entry's body to start writing.
+  // `buffer` contains the data to be written. This can be null for truncation.
+  // `buf_len` is the size of `buffer`.
+  // If `truncate` is true, the entry's body will be truncated to the end of
+  // this write. Otherwise, the body size will grow if the write extends past
+  // the current end.
+  // `callback` is invoked upon completion with an error code.
+  virtual void WriteEntryData(const CacheEntryKey& key,
+                              const base::UnguessableToken& token,
+                              int64_t old_body_end,
+                              int64_t offset,
+                              scoped_refptr<net::IOBuffer> buffer,
+                              int buf_len,
+                              bool truncate,
+                              ErrorCallback callback) = 0;
+
+  // Reads data from an entry's body.
+  // `token` identifies the entry to read from.
+  // `offset` is the position within the entry's body to start reading.
+  // `buffer` is the destination for the read data.
+  // `buf_len` is the size of `buffer`.
+  // `body_end` is the logical size of the entry's body.
+  // If `sparse_reading` is true, the read will stop at the first gap in the
+  // stored data. If false, gaps will be filled with zeros.
+  // `callback` is invoked with the number of bytes read on success, or an error
+  // code on failure.
+  virtual void ReadEntryData(const base::UnguessableToken& token,
+                             int64_t offset,
+                             scoped_refptr<net::IOBuffer> buffer,
+                             int buf_len,
+                             int64_t body_end,
+                             bool sparse_reading,
+                             IntOrErrorCallback callback) = 0;
 
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries

@@ -2850,7 +2850,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="InvalidData"/>
   <int value="12" label="AlreadyExists"/>
   <int value="13" label="NotFound"/>
-  <int value="14" label="kInvalidArgument"/>
+  <int value="14" label="InvalidArgument"/>
+  <int value="15" label="BodyEndMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -30,7 +31,10 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::ElementsAre;
 
 namespace disk_cache {
 
@@ -179,6 +183,14 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Take();
   }
 
+  // Helper to create an entry and return its token, asserting success.
+  base::UnguessableToken CreateEntryAndGetToken(const CacheEntryKey& key) {
+    auto create_result = CreateEntry(key);
+    CHECK(create_result.has_value())
+        << "Failed to create entry for key: " << key.string();
+    return create_result->token;
+  }
+
   // Synchronous wrapper for OpenEntry.
   SqlPersistentStore::OptionalEntryInfoOrError OpenEntry(
       const CacheEntryKey& key) {
@@ -268,6 +280,84 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Get();
   }
 
+  // Synchronous wrapper for WriteEntryData.
+  SqlPersistentStore::Error WriteEntryData(const CacheEntryKey& key,
+                                           const base::UnguessableToken& token,
+                                           int64_t old_body_end,
+                                           int64_t offset,
+                                           scoped_refptr<net::IOBuffer> buffer,
+                                           int buf_len,
+                                           bool truncate) {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->WriteEntryData(key, token, old_body_end, offset, std::move(buffer),
+                           buf_len, truncate, future.GetCallback());
+    return future.Get();
+  }
+
+  // Synchronous wrapper for ReadEntryData.
+  SqlPersistentStore::IntOrError ReadEntryData(
+      const base::UnguessableToken& token,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t body_end,
+      bool sparse_reading) {
+    base::test::TestFuture<SqlPersistentStore::IntOrError> future;
+    store_->ReadEntryData(token, offset, std::move(buffer), buf_len, body_end,
+                          sparse_reading, future.GetCallback());
+    return future.Take();
+  }
+
+  // Helper to write data from a string_view and assert success.
+  void WriteDataAndAssertSuccess(const CacheEntryKey& key,
+                                 const base::UnguessableToken& token,
+                                 int64_t old_body_end,
+                                 int64_t offset,
+                                 std::string_view data,
+                                 bool truncate) {
+    auto buffer = base::MakeRefCounted<net::StringIOBuffer>(std::string(data));
+    ASSERT_EQ(WriteEntryData(key, token, old_body_end, offset,
+                             std::move(buffer), data.size(), truncate),
+              SqlPersistentStore::Error::kOk);
+  }
+
+  // Helper to write a sequence of single-byte blobs from a string_view and
+  // verify the result.
+  void WriteAndVerifySingleByteBlobs(const CacheEntryKey& key,
+                                     const base::UnguessableToken& token,
+                                     std::string_view content) {
+    for (size_t i = 0; i < content.size(); ++i) {
+      std::string data(1, content[i]);
+      WriteDataAndAssertSuccess(key, token, i, i, data,
+                                /*truncate=*/false);
+    }
+    ReadAndVerifyData(token, 0, content.size(), content.size(), false,
+                      std::string(content));
+
+    std::vector<BlobData> actual_blobs = GetAllBlobData(token);
+    for (size_t i = 0; i < content.size(); ++i) {
+      EXPECT_EQ(actual_blobs[i].start, i);
+      EXPECT_EQ(actual_blobs[i].end, i + 1);
+      ASSERT_THAT(actual_blobs[i].data, ElementsAre(content[i]));
+    }
+  }
+
+  // Helper to read data and verify its content.
+  void ReadAndVerifyData(const base::UnguessableToken& token,
+                         int64_t offset,
+                         int buffer_len,
+                         int64_t body_end,
+                         bool sparse_reading,
+                         std::string_view expected_data) {
+    auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_len);
+    auto read_result = ReadEntryData(token, offset, read_buffer, buffer_len,
+                                     body_end, sparse_reading);
+    ASSERT_TRUE(read_result.has_value());
+    EXPECT_EQ(read_result.value(), static_cast<int>(expected_data.size()));
+    EXPECT_EQ(std::string_view(read_buffer->data(), read_result.value()),
+              expected_data);
+  }
+
   // Helper to count rows in the resource table.
   int64_t CountResourcesTable() {
     auto db_handle = ManuallyOpenDatabase();
@@ -293,6 +383,7 @@ class SqlPersistentStoreTest : public testing::Test {
     int64_t bytes_usage;
     std::string head_data;
     bool doomed;
+    int64_t body_end;
   };
 
   // Helper to read entry details from the resources table.
@@ -300,7 +391,7 @@ class SqlPersistentStoreTest : public testing::Test {
       const CacheEntryKey& key) {
     auto db_handle = ManuallyOpenDatabase();
     sql::Statement s(db_handle->GetUniqueStatement(
-        "SELECT last_used, bytes_usage, head, doomed "
+        "SELECT last_used, bytes_usage, head, doomed, body_end "
         "FROM resources WHERE cache_key=?"));
     s.BindString(0, key.string());
     if (s.Step()) {
@@ -311,9 +402,93 @@ class SqlPersistentStoreTest : public testing::Test {
           std::string(reinterpret_cast<const char*>(s.ColumnBlob(2).data()),
                       s.ColumnBlob(2).size());
       details.doomed = s.ColumnBool(3);
+      details.body_end = s.ColumnInt64(4);
       return details;
     }
     return std::nullopt;
+  }
+
+  // Helper to verify the body_end and bytes_usage of a resource entry.
+  void VerifyBodyEndAndBytesUsage(const CacheEntryKey& key,
+                                  int64_t expected_body_end,
+                                  int64_t expected_bytes_usage) {
+    auto details = GetResourceEntryDetails(key);
+    ASSERT_TRUE(details.has_value());
+    EXPECT_EQ(details->body_end, expected_body_end);
+    EXPECT_EQ(details->bytes_usage, expected_bytes_usage);
+  }
+
+  struct BlobData {
+    int64_t start;
+    int64_t end;
+    std::vector<uint8_t> data;
+
+    BlobData(int64_t s, int64_t e, std::vector<uint8_t> d)
+        : start(s), end(e), data(std::move(d)) {}
+
+    auto operator<=>(const BlobData&) const = default;
+  };
+
+  // Helper to create BlobData from a string_view for easier testing.
+  BlobData MakeBlobData(int64_t start, std::string_view data) {
+    return BlobData(start, start + data.size(),
+                    std::vector<uint8_t>(data.begin(), data.end()));
+  }
+
+  // Helper to retrieve all blob data for a given entry token.
+  std::vector<BlobData> GetAllBlobData(const base::UnguessableToken& token) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
+        "SELECT start, end, blob FROM blobs WHERE token_high=? AND token_low=? "
+        "ORDER BY start"));
+    s.BindInt64(0, static_cast<int64_t>(token.GetHighForSerialization()));
+    s.BindInt64(1, static_cast<int64_t>(token.GetLowForSerialization()));
+
+    std::vector<BlobData> blobs;
+    while (s.Step()) {
+      blobs.emplace_back(
+          s.ColumnInt64(0), s.ColumnInt64(1),
+          std::vector<uint8_t>(s.ColumnBlob(2).begin(), s.ColumnBlob(2).end()));
+    }
+    return blobs;
+  }
+
+  // Helper to check the blob data for a given token.
+  void CheckBlobData(const base::UnguessableToken& token,
+                     std::initializer_list<std::pair<int64_t, std::string_view>>
+                         expected_blobs) {
+    std::vector<BlobData> expected;
+    for (const auto& blob_pair : expected_blobs) {
+      expected.push_back(MakeBlobData(blob_pair.first, blob_pair.second));
+    }
+    EXPECT_THAT(GetAllBlobData(token), testing::ElementsAreArray(expected));
+  }
+
+  // Helper to corrupt the blob data for a given token.
+  void CorruptBlobData(const base::UnguessableToken& token,
+                       base::span<const uint8_t> new_data) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "UPDATE blobs SET blob = ? WHERE token_high = ? AND token_low = ?"));
+    statement.BindBlob(0, new_data);
+    statement.BindInt64(1, token.GetHighForSerialization());
+    statement.BindInt64(2, token.GetLowForSerialization());
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // Helper to corrupt the start and end offsets for a given token.
+  void CorruptBlobRange(const base::UnguessableToken& token,
+                        int64_t new_start,
+                        int64_t new_end) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "UPDATE blobs SET start = ?, end = ? WHERE token_high = ? AND "
+        "token_low = ?"));
+    statement.BindInt64(0, new_start);
+    statement.BindInt64(1, new_end);
+    statement.BindInt64(2, token.GetHighForSerialization());
+    statement.BindInt64(3, token.GetLowForSerialization());
+    ASSERT_TRUE(statement.Run());
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -598,10 +773,7 @@ TEST_F(SqlPersistentStoreTest, OpenEntrySuccess) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
 
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto created_token = create_result->token;
-  ASSERT_FALSE(created_token.is_empty());
+  const auto created_token = CreateEntryAndGetToken(kKey);
 
   auto open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
@@ -646,9 +818,7 @@ TEST_F(SqlPersistentStoreTest, OpenOrCreateEntryOpensExisting) {
   const CacheEntryKey kKey("existing-key");
 
   // Create an entry first.
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto created_token = create_result->token;
+  const auto created_token = CreateEntryAndGetToken(kKey);
 
   // Now, open it with OpenOrCreateEntry.
   auto open_result = OpenOrCreateEntry(kKey);
@@ -671,9 +841,7 @@ TEST_F(SqlPersistentStoreTest, OpenEntryInvalidToken) {
   const CacheEntryKey kKey("invalid-token-key");
 
   // Create an entry with a valid token.
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  EXPECT_FALSE(create_result->token.is_empty());
+  EXPECT_FALSE(CreateEntryAndGetToken(kKey).is_empty());
 
   // Manually open the database and corrupt the `token_high` and `token_low` for
   // the entry.
@@ -710,12 +878,8 @@ TEST_F(SqlPersistentStoreTest, DoomEntrySuccess) {
       kSqlBackendStaticResourceSize + kKeyToKeep.string().size();
 
   // Create two entries.
-  auto create_result_to_doom = CreateEntry(kKeyToDoom);
-  ASSERT_TRUE(create_result_to_doom.has_value());
-  auto create_result_to_keep = CreateEntry(kKeyToKeep);
-  ASSERT_TRUE(create_result_to_keep.has_value());
-
-  const auto token_to_doom = create_result_to_doom->token;
+  const auto token_to_doom = CreateEntryAndGetToken(kKeyToDoom);
+  const auto token_to_keep = CreateEntryAndGetToken(kKeyToKeep);
   ASSERT_EQ(GetEntryCount(), 2);
   ASSERT_EQ(GetSizeOfAllEntries(), size_to_doom + size_to_keep);
 
@@ -737,7 +901,7 @@ TEST_F(SqlPersistentStoreTest, DoomEntrySuccess) {
   auto open_kept_result = OpenEntry(kKeyToKeep);
   ASSERT_TRUE(open_kept_result.has_value());
   ASSERT_TRUE(open_kept_result->has_value());
-  EXPECT_EQ((*open_kept_result)->token, create_result_to_keep->token);
+  EXPECT_EQ((*open_kept_result)->token, token_to_keep);
 
   // Verify the doomed entry still exists in the table but is marked as doomed,
   // and the other entry is unaffected.
@@ -768,15 +932,13 @@ TEST_F(SqlPersistentStoreTest, DoomEntryFailsWrongToken) {
   const int64_t size2 = kSqlBackendStaticResourceSize + kKey2.string().size();
 
   // Create two entries.
-  auto create_result1 = CreateEntry(kKey1);
-  ASSERT_TRUE(create_result1.has_value());
-  auto create_result2 = CreateEntry(kKey2);
-  ASSERT_TRUE(create_result2.has_value());
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  const auto token2 = CreateEntryAndGetToken(kKey2);
   ASSERT_EQ(GetEntryCount(), 2);
 
   // Attempt to doom key1 with an incorrect token.
-  auto result = DoomEntry(kKey1, base::UnguessableToken::Create());
-  ASSERT_EQ(result, SqlPersistentStore::Error::kNotFound);
+  ASSERT_EQ(DoomEntry(kKey1, base::UnguessableToken::Create()),
+            SqlPersistentStore::Error::kNotFound);
 
   // Verify that the counts remain unchanged and both entries can still be
   // opened.
@@ -786,12 +948,12 @@ TEST_F(SqlPersistentStoreTest, DoomEntryFailsWrongToken) {
   auto open_result1 = OpenEntry(kKey1);
   ASSERT_TRUE(open_result1.has_value());
   ASSERT_TRUE(open_result1->has_value());
-  EXPECT_EQ((*open_result1)->token, create_result1->token);
+  EXPECT_EQ((*open_result1)->token, token1);
 
   auto open_result2 = OpenEntry(kKey2);
   ASSERT_TRUE(open_result2.has_value());
   ASSERT_TRUE(open_result2->has_value());
-  EXPECT_EQ((*open_result2)->token, create_result2->token);
+  EXPECT_EQ((*open_result2)->token, token2);
 }
 
 TEST_F(SqlPersistentStoreTest, DoomEntryWithCorruptSizeRecovers) {
@@ -803,11 +965,9 @@ TEST_F(SqlPersistentStoreTest, DoomEntryWithCorruptSizeRecovers) {
       kSqlBackendStaticResourceSize + keep_key_size;
 
   // Create one entry to keep, and one to corrupt and doom.
-  auto create_corrupt_result = CreateEntry(kKeyToCorrupt);
-  ASSERT_TRUE(create_corrupt_result.has_value());
+  const auto token_to_doom = CreateEntryAndGetToken(kKeyToCorrupt);
   ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
   ASSERT_EQ(GetEntryCount(), 2);
-  const auto token_to_doom = create_corrupt_result->token;
 
   // Manually open the database and corrupt the `bytes_usage` for one entry
   // to an extreme value that will cause an overflow during calculation.
@@ -847,9 +1007,7 @@ TEST_F(SqlPersistentStoreTest, DeleteDoomedEntrySuccess) {
   const CacheEntryKey kKey("my-key");
 
   // Create and doom an entry.
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
   ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
   ASSERT_EQ(GetEntryCount(), 0);
   ASSERT_EQ(CountResourcesTable(), 1);
@@ -861,14 +1019,31 @@ TEST_F(SqlPersistentStoreTest, DeleteDoomedEntrySuccess) {
   EXPECT_EQ(CountResourcesTable(), 0);
 }
 
+TEST_F(SqlPersistentStoreTest, DeleteDoomedEntryDeletesBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kData = "some data";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+  CheckBlobData(token, {{0, kData}});
+  EXPECT_EQ(GetSizeOfAllEntries(), kSqlBackendStaticResourceSize +
+                                       kKey.string().size() + kData.size());
+
+  // DoomEntry is responsible for updating the total size of the cache.
+  ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+
+  ASSERT_EQ(DeleteDoomedEntry(kKey, token), SqlPersistentStore::Error::kOk);
+  CheckBlobData(token, {});
+}
+
 TEST_F(SqlPersistentStoreTest, DeleteDoomedEntryFailsOnLiveEntry) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
 
   // Create a live entry.
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
   ASSERT_EQ(GetEntryCount(), 1);
 
   // Attempt to delete it with DeleteDoomedEntry. This should fail because the
@@ -892,8 +1067,7 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntrySuccess) {
 
   // Create two entries.
   ASSERT_TRUE(CreateEntry(kKeyToDelete).has_value());
-  auto create_result_to_keep = CreateEntry(kKeyToKeep);
-  ASSERT_TRUE(create_result_to_keep.has_value());
+  const auto token_to_keep = CreateEntryAndGetToken(kKeyToKeep);
   ASSERT_EQ(GetEntryCount(), 2);
   ASSERT_EQ(GetSizeOfAllEntries(), size_to_delete + size_to_keep);
 
@@ -913,10 +1087,22 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntrySuccess) {
   auto open_kept_result = OpenEntry(kKeyToKeep);
   ASSERT_TRUE(open_kept_result.has_value());
   ASSERT_TRUE(open_kept_result->has_value());
-  EXPECT_EQ((*open_kept_result)->token, create_result_to_keep->token);
+  EXPECT_EQ((*open_kept_result)->token, token_to_keep);
 
   // Verify the entry is physically gone from the database.
   EXPECT_EQ(CountResourcesTable(), 1);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntryDeletesBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kData = "some data";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+  CheckBlobData(token, {{0, kData}});
+  ASSERT_EQ(DeleteLiveEntry(kKey), SqlPersistentStore::Error::kOk);
+  CheckBlobData(token, {});
 }
 
 TEST_F(SqlPersistentStoreTest, DeleteLiveEntryFailsNotFound) {
@@ -937,12 +1123,11 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryFailsOnDoomedEntry) {
       kSqlBackendStaticResourceSize + kLiveKey.string().size();
 
   // Create one live entry and one entry that will be doomed.
-  auto create_doomed_result = CreateEntry(kDoomedKey);
-  ASSERT_TRUE(create_doomed_result.has_value());
+  const auto doomed_token = CreateEntryAndGetToken(kDoomedKey);
   ASSERT_TRUE(CreateEntry(kLiveKey).has_value());
 
   // Doom one of the entries.
-  ASSERT_EQ(DoomEntry(kDoomedKey, create_doomed_result->token),
+  ASSERT_EQ(DoomEntry(kDoomedKey, doomed_token),
             SqlPersistentStore::Error::kOk);
   // After dooming, one entry is live, one is doomed (logically removed).
   ASSERT_EQ(GetEntryCount(), 1);
@@ -1071,6 +1256,23 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesNonEmpty) {
   EXPECT_FALSE(open_result->has_value());
 }
 
+TEST_F(SqlPersistentStoreTest, DeleteAllEntriesDeletesBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  const std::string kData1 = "data1";
+  WriteDataAndAssertSuccess(kKey1, token1, 0, 0, kData1, /*truncate=*/false);
+  const CacheEntryKey kKey2("key2");
+  const auto token2 = CreateEntryAndGetToken(kKey2);
+  const std::string kData2 = "data2";
+  WriteDataAndAssertSuccess(kKey2, token2, 0, 0, kData2, /*truncate=*/false);
+  CheckBlobData(token1, {{0, kData1}});
+  CheckBlobData(token2, {{0, kData2}});
+  ASSERT_EQ(DeleteAllEntries(), SqlPersistentStore::Error::kOk);
+  CheckBlobData(token1, {});
+  CheckBlobData(token2, {});
+}
+
 TEST_F(SqlPersistentStoreTest, DeleteAllEntriesEmpty) {
   CreateAndInitStore();
   ASSERT_EQ(GetEntryCount(), 0);
@@ -1103,8 +1305,7 @@ TEST_F(SqlPersistentStoreTest, ChangeEntryCountOverflowRecovers) {
   // an overflow. The store should recover by recalculating the count from
   // the `resources` table (which will be 1).
   const CacheEntryKey kKey("my-key");
-  auto result = CreateEntry(kKey);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(CreateEntry(kKey).has_value());
 
   // The new count should be 1 (the one entry we just created), not an
   // overflowed value. The size should also be correct for one entry.
@@ -1138,8 +1339,7 @@ TEST_F(SqlPersistentStoreTest, ChangeTotalSizeOverflowRecovers) {
   // Create a new entry. This will attempt to increment the total size,
   // causing an overflow. The store should recover by recalculating.
   const CacheEntryKey kKey("my-key");
-  auto result = CreateEntry(kKey);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(CreateEntry(kKey).has_value());
 
   // The new total size should be just the size of the new entry.
   // The entry count should have been incremented from its initial state (0).
@@ -1291,6 +1491,26 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   EXPECT_TRUE(OpenEntry(kKey5).value().has_value());
 
   EXPECT_EQ(CountResourcesTable(), 4);
+}
+
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenDeletesBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  const std::string kData1 = "data1";
+  WriteDataAndAssertSuccess(kKey1, token1, 0, 0, kData1, /*truncate=*/false);
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time time1 = base::Time::Now();
+  const CacheEntryKey kKey2("key2");
+  const auto token2 = CreateEntryAndGetToken(kKey2);
+  const std::string kData2 = "data2";
+  WriteDataAndAssertSuccess(kKey2, token2, 0, 0, kData2, /*truncate=*/false);
+  CheckBlobData(token1, {{0, kData1}});
+  CheckBlobData(token2, {{0, kData2}});
+  ASSERT_EQ(DeleteLiveEntriesBetween(time1, base::Time::Max()),
+            SqlPersistentStore::Error::kOk);
+  CheckBlobData(token1, {{0, kData1}});  // Should not be deleted
+  CheckBlobData(token2, {});             // Should be deleted
 }
 
 TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenEmptyCache) {
@@ -1462,10 +1682,8 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedOnDoomedEntry) {
   const CacheEntryKey kKey("doomed-key");
 
   // Create and then doom the entry.
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  ASSERT_EQ(DoomEntry(kKey, create_result->token),
-            SqlPersistentStore::Error::kOk);
+  const auto token = CreateEntryAndGetToken(kKey);
+  ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
 
   // Attempting to update a doomed entry should fail as if it's not found.
   ASSERT_EQ(UpdateEntryLastUsed(kKey, base::Time::Now()),
@@ -1475,9 +1693,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryLastUsedOnDoomedEntry) {
 TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessInitial) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
 
   // Initial bytes_usage is just the key size.
   const int64_t initial_bytes_usage = kKey.string().size();
@@ -1515,9 +1731,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessInitial) {
 TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessReplace) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
 
   // Initial update with some header data.
   const std::string kInitialHeadData = "initial_data";
@@ -1562,9 +1776,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessReplace) {
 TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessGrow) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
 
   // Initial update with some header data.
   const std::string kInitialHeadData = "short";
@@ -1608,9 +1820,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessGrow) {
 TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessShrink) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
 
   // Initial update with large header data.
   const std::string kInitialHeadData = "much_longer_header_data";
@@ -1677,9 +1887,7 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedWrongToken) {
 TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedDoomedEntry) {
   CreateAndInitStore();
   const CacheEntryKey kKey("doomed-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  const auto token = create_result->token;
+  const auto token = CreateEntryAndGetToken(kKey);
   ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
 
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
@@ -1744,6 +1952,716 @@ TEST_F(SqlPersistentStoreTest,
   EXPECT_EQ(details->head_data, "");  // Header should remain empty.
 }
 
+TEST_F(SqlPersistentStoreTest, WriteAndReadData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kData = "hello world";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+  EXPECT_EQ(GetSizeOfAllEntries(), kSqlBackendStaticResourceSize +
+                                       kKey.string().size() + kData.size());
+  // Read data back.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kData.size(),
+                    /*body_end=*/kData.size(), /*sparse_reading=*/false, kData);
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kData}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, kData.size(),
+                             kKey.string().size() + kData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataSizeMismatch) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob data size so it doesn't match its start/end
+  // offsets.
+  CorruptBlobData(token, base::as_byte_span("short"));
+
+  // This read will try to read the corrupted blob, which should be detected.
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kInitialData.size());
+  auto read_result =
+      ReadEntryData(token, /*offset=*/0, read_buffer, kInitialData.size(),
+                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataRangeOverflow) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob's start and end to cause an overflow.
+  CorruptBlobRange(token, std::numeric_limits<int64_t>::min(), 10);
+
+  // This read will try to read the corrupted blob, which should be detected.
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kInitialData.size());
+  auto read_result =
+      ReadEntryData(token, /*offset=*/0, read_buffer, kInitialData.size(),
+                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataSizeMismatch) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob data size so it doesn't match its start/end
+  // offsets.
+  CorruptBlobData(token, base::as_byte_span("short"));
+
+  // This write will overlap with the corrupted blob, triggering
+  // TrimOverlappingBlobs, which should detect the inconsistency.
+  const std::string kOverwriteData = "abc";
+  auto overwrite_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/2, overwrite_buffer,
+                           kOverwriteData.size(), /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataRangeOverflow) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob's start and end to cause an overflow.
+  CorruptBlobRange(token, std::numeric_limits<int64_t>::min(), 10);
+
+  // This write will overlap with the corrupted blob, triggering
+  // TrimOverlappingBlobs, which should detect the overflow.
+  const std::string kOverwriteData = "abc";
+  auto overwrite_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/5, overwrite_buffer,
+                           kOverwriteData.size(), /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataSizeMismatch) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob data size so it doesn't match its start/end
+  // offsets.
+  CorruptBlobData(token, base::as_byte_span("short"));
+
+  // This write will truncate the entry, triggering TruncateExistingBlobs,
+  // which should detect the inconsistency.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/5, /*buffer=*/nullptr, /*buf_len=*/0,
+                           /*truncate=*/true),
+            SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataRangeOverflow) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob's start and end to cause an overflow.
+  CorruptBlobRange(token, std::numeric_limits<int64_t>::min(), 10);
+
+  // This write will truncate the entry, triggering TruncateExistingBlobs,
+  // which should detect the overflow.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/0, /*buffer=*/nullptr, /*buf_len=*/0,
+                           /*truncate=*/true),
+            SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataInvalidArgument) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  const int buf_len = buffer->size();
+
+  // Test with negative old_body_end.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/-1, /*offset=*/0,
+                           buffer, buf_len, /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with negative offset.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/0, /*offset=*/-1,
+                           buffer, buf_len, /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with offset + buf_len overflow.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/0,
+                           /*offset=*/std::numeric_limits<int64_t>::max(),
+                           buffer, buf_len, /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with negative buf_len.
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                           buffer, /*buf_len=*/-1, /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with null buffer but positive buf_len.
+  EXPECT_EQ(
+      WriteEntryData(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                     /*buffer=*/nullptr, /*buf_len=*/1, /*truncate=*/false),
+      SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with buf_len > buffer->size().
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                           buffer, buf_len + 1, /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataInvalidDataBodyEndMismatch) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write initial data to set body_end.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  // The body_end in the database is now kInitialData.size().
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  ASSERT_EQ(details->body_end, kInitialData.size());
+
+  // Now, try to write again, but provide an incorrect old_body_end.
+  const std::string kOverwriteData = "abc";
+  auto overwrite_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
+  EXPECT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/5, /*offset=*/8,
+                           overwrite_buffer, kOverwriteData.size(),
+                           /*truncate=*/false),
+            SqlPersistentStore::Error::kBodyEndMismatch);
+}
+
+TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidArgument) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  const int buf_len = buffer->size();
+
+  // Test with negative offset.
+  auto result = ReadEntryData(token, /*offset=*/-1, buffer, buf_len,
+                              /*body_end=*/10, /*sparse_reading=*/false);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with negative buf_len.
+  result = ReadEntryData(token, /*offset=*/0, buffer, /*buf_len=*/-1,
+                         /*body_end=*/10, /*sparse_reading=*/false);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with null buffer.
+  result = ReadEntryData(token, /*offset=*/0, /*buffer=*/nullptr, buf_len,
+                         /*body_end=*/10, /*sparse_reading=*/false);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
+
+  // Test with buf_len > buffer->size().
+  result = ReadEntryData(token, /*offset=*/0, buffer, buf_len + 1,
+                         /*body_end=*/10, /*sparse_reading=*/false);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
+}
+
+TEST_F(SqlPersistentStoreTest, OverwriteEntryData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  const std::string kOverwriteData = "abc";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/kInitialData.size(),
+                            /*offset=*/2, kOverwriteData, /*truncate=*/false);
+  // Verify size updates.
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(details->body_end, kInitialData.size());
+  EXPECT_EQ(details->bytes_usage, kKey.string().size() + kInitialData.size());
+  // Read back and verify.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kInitialData.size(),
+                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false,
+                    "12abc67890");
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, "12"}, {2, "abc"}, {5, "67890"}});
+}
+
+TEST_F(SqlPersistentStoreTest, AppendEntryData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kInitialData = "initial";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  const std::string kAppendData = "-appended";
+  const int64_t new_body_end = kInitialData.size() + kAppendData.size();
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/kInitialData.size(),
+                            /*offset=*/kInitialData.size(), kAppendData,
+                            /*truncate=*/false);
+  // Read back and verify.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/new_body_end,
+                    new_body_end, /*sparse_reading=*/false, "initial-appended");
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kInitialData}, {kInitialData.size(), kAppendData}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, new_body_end,
+                             kKey.string().size() + new_body_end);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateEntryData) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  const std::string kTruncateData = "abc";
+  const int64_t new_body_end = 2 + kTruncateData.size();
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/kInitialData.size(),
+                            /*offset=*/2, kTruncateData, /*truncate=*/true);
+  // Read back and verify.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/new_body_end,
+                    new_body_end, /*sparse_reading=*/false, "12abc");
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, "12"}, {2, "abc"}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, new_body_end,
+                             kKey.string().size() + new_body_end);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateWithNullBuffer) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write some initial data.
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  VerifyBodyEndAndBytesUsage(kKey, kInitialData.size(),
+                             kKey.string().size() + kInitialData.size());
+
+  // Now, truncate the entry to a smaller size using a null buffer.
+  const int64_t kTruncateOffset = 5;
+  ASSERT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/kTruncateOffset, /*buffer=*/nullptr,
+                           /*buf_len=*/0, /*truncate=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Read back and verify.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
+                    kTruncateOffset, /*sparse_reading=*/false, "12345");
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, "12345"}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, kTruncateOffset,
+                             kKey.string().size() + kTruncateOffset);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateOverlappingMultipleBlobs) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  WriteAndVerifySingleByteBlobs(kKey, token, "01234");
+
+  // Overwrite with a 2-byte truncate write in the middle.
+  const std::string kOverwriteData = "XX";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/5, /*offset=*/1,
+                            kOverwriteData, /*truncate=*/true);
+
+  // The new body end should be offset + length = 1 + 2 = 3.
+  const int64_t new_body_end = 3;
+
+  // Verify the content.
+  ReadAndVerifyData(token, 0, new_body_end, new_body_end, false, "0XX");
+
+  // Verify the underlying blobs.
+  // The original blob for "0" should be trimmed.
+  // The original blobs for "1", "2", "3", "4" should be gone.
+  // A new blob for "XX" should be present.
+  CheckBlobData(token, {{0, "0"}, {1, "XX"}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, new_body_end,
+                             kKey.string().size() + new_body_end);
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateMultipleBlobsWithZeroLengthWrite) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  WriteAndVerifySingleByteBlobs(kKey, token, "01234");
+
+  // Truncate at offset 2 with a zero-length write.
+  ASSERT_EQ(
+      WriteEntryData(kKey, token, /*old_body_end=*/5, /*offset=*/2,
+                     /*buffer=*/nullptr, /*buf_len=*/0, /*truncate=*/true),
+      SqlPersistentStore::Error::kOk);
+
+  // The new body end should be the offset = 2.
+  const int64_t new_body_end = 2;
+
+  // Verify the content.
+  ReadAndVerifyData(token, 0, new_body_end, new_body_end, false, "01");
+  // Verify the underlying blobs.
+  // The original blobs for "2", "3", "4" should be gone.
+  // The original blob for "0" and "1" should remain.
+  CheckBlobData(token, {{0, "0"}, {1, "1"}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, new_body_end,
+                             kKey.string().size() + new_body_end);
+}
+
+TEST_F(SqlPersistentStoreTest, OverwriteMultipleBlobsWithoutTruncate) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  WriteAndVerifySingleByteBlobs(kKey, token, "01234");
+
+  // Overwrite with a 2-byte write in the middle, without truncating.
+  const std::string kOverwriteData = "AB";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/5, /*offset=*/1,
+                            kOverwriteData, /*truncate=*/false);
+
+  // The body end should remain 5.
+  const int64_t new_body_end = 5;
+
+  // Verify the content.
+  ReadAndVerifyData(token, 0, new_body_end, new_body_end, false, "0AB34");
+  // Verify the underlying blobs.
+  CheckBlobData(token, {{0, "0"}, {1, "AB"}, {3, "3"}, {4, "4"}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, new_body_end,
+                             kKey.string().size() + new_body_end);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteToDoomedEntry) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
+  const std::string kData = "hello world";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kData}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, kData.size(),
+                             kKey.string().size() + kData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataNotFound) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("non-existent-key");
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  ASSERT_EQ(WriteEntryData(kKey, base::UnguessableToken::Create(),
+                           /*old_body_end=*/0, /*offset=*/0, write_buffer,
+                           write_buffer->size(), /*truncate=*/false),
+            SqlPersistentStore::Error::kNotFound);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataWrongToken) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  ASSERT_TRUE(CreateEntry(kKey).has_value());
+
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  ASSERT_EQ(WriteEntryData(kKey, base::UnguessableToken::Create(),
+                           /*old_body_end=*/0, /*offset=*/0, write_buffer,
+                           write_buffer->size(), /*truncate=*/false),
+            SqlPersistentStore::Error::kNotFound);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataNullBufferNoTruncate) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  CheckBlobData(token, {{0, kInitialData}});
+
+  const int64_t initial_body_end = kInitialData.size();
+  const int64_t initial_size_of_all_entries = GetSizeOfAllEntries();
+
+  // Writing a null buffer with truncate=false should be a no-op.
+  ASSERT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/initial_body_end,
+                           /*offset=*/5, /*buffer=*/nullptr, /*buf_len=*/0,
+                           /*truncate=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify size and content are unchanged.
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(details->body_end, initial_body_end);
+  EXPECT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/initial_body_end,
+                    initial_body_end, /*sparse_reading=*/false, kInitialData);
+  CheckBlobData(token, {{0, kInitialData}});
+  VerifyBodyEndAndBytesUsage(kKey, kInitialData.size(),
+                             kKey.string().size() + kInitialData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataZeroLengthBufferNoTruncate) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  CheckBlobData(token, {{0, kInitialData}});
+
+  const int64_t initial_body_end = kInitialData.size();
+  const int64_t initial_size_of_all_entries = GetSizeOfAllEntries();
+
+  // Writing a zero-length buffer with truncate=false should be a no-op.
+  auto zero_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
+  ASSERT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/initial_body_end,
+                           /*offset=*/5, zero_buffer, /*buf_len=*/0,
+                           /*truncate=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify size and content are unchanged.
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(details->body_end, initial_body_end);
+  EXPECT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/initial_body_end,
+                    initial_body_end, /*sparse_reading=*/false, kInitialData);
+  CheckBlobData(token, {{0, kInitialData}});
+  VerifyBodyEndAndBytesUsage(kKey, kInitialData.size(),
+                             kKey.string().size() + kInitialData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, TruncateWithNullBufferExtendingBody) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write some initial data.
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Now, truncate the entry to a larger size using a null buffer.
+  const int64_t kTruncateOffset = 20;
+  ASSERT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/kTruncateOffset, /*buffer=*/nullptr,
+                           /*buf_len=*/0, /*truncate=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Read back and verify. The new space should be zero-filled.
+  std::string expected_data = kInitialData;
+  expected_data.append(kTruncateOffset - kInitialData.size(), '\0');
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
+                    kTruncateOffset, /*sparse_reading=*/false, expected_data);
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kInitialData}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, kTruncateOffset,
+                             kKey.string().size() + kInitialData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, ExtendWithNullBufferNoTruncate) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // Write some initial data.
+  const std::string kInitialData = "1234567890";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Now, extend the entry to a larger size using a null buffer without
+  // truncate.
+  const int64_t kExtendOffset = 20;
+  ASSERT_EQ(WriteEntryData(kKey, token, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/kExtendOffset, /*buffer=*/nullptr,
+                           /*buf_len=*/0, /*truncate=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // Read back and verify. The new space should be zero-filled.
+  std::string expected_data = kInitialData;
+  expected_data.append(kExtendOffset - kInitialData.size(), '\0');
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kExtendOffset,
+                    kExtendOffset, /*sparse_reading=*/false, expected_data);
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kInitialData}});
+  // Verify size updates.
+  VerifyBodyEndAndBytesUsage(kKey, kExtendOffset,
+                             kKey.string().size() + kInitialData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+
+  // 1. Initial write.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            "0123456789", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 10, 10, false, "0123456789");
+  CheckBlobData(token, {{0, "0123456789"}});
+  VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
+
+  // 2. Overwrite middle.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/10, /*offset=*/2,
+                            "AAAA", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 10, 10, false, "01AAAA6789");
+  CheckBlobData(token, {{0, "01"}, {2, "AAAA"}, {6, "6789"}});
+  VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
+
+  // 3. Overwrite end.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/10, /*offset=*/8,
+                            "BB", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 10, 10, false, "01AAAA67BB");
+  CheckBlobData(token, {{0, "01"}, {2, "AAAA"}, {6, "67"}, {8, "BB"}});
+  VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
+
+  // 4. Overwrite beginning.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/10, /*offset=*/0, "C",
+                            /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 10, 10, false, "C1AAAA67BB");
+  CheckBlobData(token, {{0, "C"}, {1, "1"}, {2, "AAAA"}, {6, "67"}, {8, "BB"}});
+  VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
+
+  // 5. Overwrite all.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/10, /*offset=*/0,
+                            "DDDDDDDDDD", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 10, 10, false, "DDDDDDDDDD");
+  CheckBlobData(token, {{0, "DDDDDDDDDD"}});
+  VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
+
+  // 6. Append.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/10, /*offset=*/10,
+                            "E", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 11, 11, false, "DDDDDDDDDDE");
+  CheckBlobData(token, {{0, "DDDDDDDDDD"}, {10, "E"}});
+  VerifyBodyEndAndBytesUsage(kKey, 11, kKey.string().size() + 11);
+
+  // 7. Sparse write.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/11, /*offset=*/12,
+                            "F", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 13, 13, false,
+                    base::MakeStringViewWithNulChars("DDDDDDDDDDE\0F"));
+  CheckBlobData(token, {{0, "DDDDDDDDDD"}, {10, "E"}, {12, "F"}});
+  VerifyBodyEndAndBytesUsage(kKey, 13, kKey.string().size() + 12);
+
+  // 8. Overwrite with truncate.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/13, /*offset=*/5,
+                            "GG", /*truncate=*/true);
+  ReadAndVerifyData(token, 0, 7, 7, false, "DDDDDGG");
+  CheckBlobData(token, {{0, "DDDDD"}, {5, "GG"}});
+  VerifyBodyEndAndBytesUsage(kKey, 7, kKey.string().size() + 7);
+
+  // 9. Null buffer truncate.
+  ASSERT_EQ(
+      WriteEntryData(kKey, token, /*old_body_end=*/7, /*offset=*/5,
+                     /*buffer=*/nullptr, /*buf_len=*/0, /*truncate=*/true),
+      SqlPersistentStore::Error::kOk);
+  ReadAndVerifyData(token, 0, 5, 5, false, "DDDDD");
+  CheckBlobData(token, {{0, "DDDDD"}});
+  VerifyBodyEndAndBytesUsage(kKey, 5, kKey.string().size() + 5);
+
+  // 10. Write into a sparse region.
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/5, /*offset=*/10,
+                            "SPARSE", /*truncate=*/false);
+  ReadAndVerifyData(token, 0, 16, 16, false,
+                    base::MakeStringViewWithNulChars("DDDDD\0\0\0\0\0SPARSE"));
+  CheckBlobData(token, {{0, "DDDDD"}, {10, "SPARSE"}});
+  VerifyBodyEndAndBytesUsage(kKey, 16, kKey.string().size() + 11);
+}
+
+TEST_F(SqlPersistentStoreTest, SparseRead) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kData1 = "chunk1";
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kData1, /*truncate=*/false);
+  const std::string kData2 = "chunk2";
+  const int64_t offset2 = 10;
+  const int64_t new_body_end = offset2 + kData2.size();
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/kData1.size(),
+                            /*offset=*/offset2, kData2, /*truncate=*/false);
+  // Read with zero-filling.
+  std::string expected_data = "chunk1";
+  expected_data.append(offset2 - kData1.size(), '\0');
+  expected_data.append("chunk2");
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/new_body_end,
+                    new_body_end, /*sparse_reading=*/false, expected_data);
+
+  // Read with sparse_reading=true.
+  // A sparse read that encounters a gap should stop at the end of the first
+  // chunk.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/new_body_end,
+                    new_body_end, /*sparse_reading=*/true, kData1);
+
+  // A sparse read that extends into the gap should still stop at the end of
+  // the first chunk.
+  ReadAndVerifyData(token, /*offset=*/0, /*buffer_len=*/kData1.size() + 1,
+                    new_body_end, /*sparse_reading=*/true, kData1);
+
+  // Read from the middle of chunk2.
+  const int64_t read_offset = offset2 + 2;  // Start at 'u' in "chunk2"
+  const int read_len = 2;
+  ReadAndVerifyData(token, read_offset, /*buffer_len=*/read_len, new_body_end,
+                    /*sparse_reading=*/false, "un");
+
+  // Read from the middle of chunk2, past the end of the data.
+  const int long_read_len = 20;
+  ReadAndVerifyData(token, read_offset, /*buffer_len=*/long_read_len,
+                    new_body_end, /*sparse_reading=*/false, "unk2");
+
+  // Verify blob data in the database.
+  CheckBlobData(token, {{0, kData1}, {offset2, kData2}});
+}
+
 TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
   CreateAndInitStore();
   auto result = OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
@@ -1754,15 +2672,14 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSingleEntry) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
 
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
+  const auto created_token = CreateEntryAndGetToken(kKey);
 
   // Open the first (and only) entry.
   auto next_result1 =
       OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
   ASSERT_TRUE(next_result1.has_value());
   EXPECT_EQ(next_result1->key, kKey);
-  EXPECT_EQ(next_result1->info.token, create_result->token);
+  EXPECT_EQ(next_result1->info.token, created_token);
   EXPECT_TRUE(next_result1->info.opened);
   EXPECT_EQ(next_result1->info.body_end, 0);
   ASSERT_NE(next_result1->info.head, nullptr);
@@ -1779,12 +2696,9 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdMultipleEntries) {
   const CacheEntryKey kKey2("key2");
   const CacheEntryKey kKey3("key3");
 
-  auto create_result1 = CreateEntry(kKey1);
-  ASSERT_TRUE(create_result1.has_value());
-  auto create_result2 = CreateEntry(kKey2);
-  ASSERT_TRUE(create_result2.has_value());
-  auto create_result3 = CreateEntry(kKey3);
-  ASSERT_TRUE(create_result3.has_value());
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  const auto token2 = CreateEntryAndGetToken(kKey2);
+  const auto token3 = CreateEntryAndGetToken(kKey3);
 
   // Entries should be returned in reverse order of creation (descending
   // res_id).
@@ -1792,19 +2706,19 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdMultipleEntries) {
       OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey3);
-  EXPECT_EQ(next_result->info.token, create_result3->token);
+  EXPECT_EQ(next_result->info.token, token3);
   const int64_t res_id3 = next_result->res_id;
 
   next_result = OpenLatestEntryBeforeResId(res_id3);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey2);
-  EXPECT_EQ(next_result->info.token, create_result2->token);
+  EXPECT_EQ(next_result->info.token, token2);
   const int64_t res_id2 = next_result->res_id;
 
   next_result = OpenLatestEntryBeforeResId(res_id2);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKey1);
-  EXPECT_EQ(next_result->info.token, create_result1->token);
+  EXPECT_EQ(next_result->info.token, token1);
   const int64_t res_id1 = next_result->res_id;
 
   next_result = OpenLatestEntryBeforeResId(res_id1);
@@ -1817,15 +2731,12 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsDoomed) {
   const CacheEntryKey kKeyToDoom("key-to-doom");
   const CacheEntryKey kKey3("key3");
 
-  auto create_result1 = CreateEntry(kKey1);
-  ASSERT_TRUE(create_result1.has_value());
-  auto create_result_doomed = CreateEntry(kKeyToDoom);
-  ASSERT_TRUE(create_result_doomed.has_value());
-  auto create_result3 = CreateEntry(kKey3);
-  ASSERT_TRUE(create_result3.has_value());
+  ASSERT_TRUE(CreateEntry(kKey1).has_value());
+  const auto token_to_doom = CreateEntryAndGetToken(kKeyToDoom);
+  ASSERT_TRUE(CreateEntry(kKey3).has_value());
 
   // Doom the middle entry.
-  ASSERT_EQ(DoomEntry(kKeyToDoom, create_result_doomed->token),
+  ASSERT_EQ(DoomEntry(kKeyToDoom, token_to_doom),
             SqlPersistentStore::Error::kOk);
 
   // OpenLatestEntryBeforeResId should skip the doomed entry.
@@ -1851,10 +2762,8 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsInvalidToken) {
   const CacheEntryKey kKeyValidAfter("valid-after");
 
   ASSERT_TRUE(CreateEntry(kKeyValidBefore).has_value());
-  auto create_invalid_result = CreateEntry(kKeyInvalid);
-  ASSERT_TRUE(create_invalid_result.has_value());
-  auto create_valid_after_result = CreateEntry(kKeyValidAfter);
-  ASSERT_TRUE(create_valid_after_result.has_value());
+  ASSERT_TRUE(CreateEntry(kKeyInvalid).has_value());
+  ASSERT_TRUE(CreateEntry(kKeyValidAfter).has_value());
 
   // Manually corrupt the token for kKeyInvalid.
   {
@@ -1952,11 +2861,9 @@ TEST_F(SqlPersistentStoreTest,
 TEST_F(SqlPersistentStoreTest, DoomEntryCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-
+  const auto token = CreateEntryAndGetToken(kKey);
   bool callback_run = false;
-  store_->DoomEntry(kKey, create_result->token,
+  store_->DoomEntry(kKey, token,
                     base::BindLambdaForTesting([&](SqlPersistentStore::Error) {
                       callback_run = true;
                     }));
@@ -1970,16 +2877,14 @@ TEST_F(SqlPersistentStoreTest,
        DeleteDoomedEntryCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
-  ASSERT_EQ(DoomEntry(kKey, create_result->token),
-            SqlPersistentStore::Error::kOk);
+  const auto token = CreateEntryAndGetToken(kKey);
+  ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
 
   bool callback_run = false;
   store_->DeleteDoomedEntry(
-      kKey, create_result->token,
-      base::BindLambdaForTesting(
-          [&](SqlPersistentStore::Error) { callback_run = true; }));
+      kKey, token, base::BindLambdaForTesting([&](SqlPersistentStore::Error) {
+        callback_run = true;
+      }));
   store_.reset();
   FlushPendingTask();
 
@@ -2068,18 +2973,50 @@ TEST_F(SqlPersistentStoreTest,
        UpdateEntryHeaderAndLastUsedCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
-  auto create_result = CreateEntry(kKey);
-  ASSERT_TRUE(create_result.has_value());
+  const auto token = CreateEntryAndGetToken(kKey);
 
   bool callback_run = false;
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   store_->UpdateEntryHeaderAndLastUsed(
-      kKey, create_result->token, base::Time::Now(), buffer, buffer->size(),
+      kKey, token, base::Time::Now(), buffer, buffer->size(),
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
 
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteDataCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  const std::string kData = "hello world";
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  bool callback_run = false;
+  store_->WriteEntryData(
+      kKey, token, /*old_body_end=*/0, /*offset=*/0, write_buffer, kData.size(),
+      /*truncate=*/false,
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Error) { callback_run = true; }));
+  store_.reset();
+  FlushPendingTask();
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest, ReadDataCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto token = CreateEntryAndGetToken(kKey);
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  bool callback_run = false;
+  store_->ReadEntryData(
+      token, /*offset=*/0, read_buffer, read_buffer->size(),
+      /*body_end=*/10, /*sparse_reading=*/false,
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::IntOrError) { callback_run = true; }));
+  store_.reset();
+  FlushPendingTask();
   EXPECT_FALSE(callback_run);
 }
 

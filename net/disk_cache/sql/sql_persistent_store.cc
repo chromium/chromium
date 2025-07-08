@@ -52,6 +52,12 @@ struct InitResult {
   int64_t max_bytes = 0;
 };
 
+// A helper struct to associate an IOBuffer with a starting offset.
+struct BufferWithStart {
+  scoped_refptr<net::IOBuffer> buffer;
+  int64_t start;
+};
+
 using EntryInfo = SqlPersistentStore::EntryInfo;
 using Error = SqlPersistentStore::Error;
 using EntryInfoOrError = SqlPersistentStore::EntryInfoOrError;
@@ -59,6 +65,7 @@ using OptionalEntryInfoOrError = SqlPersistentStore::OptionalEntryInfoOrError;
 using EntryInfoWithIdAndKey = SqlPersistentStore::EntryInfoWithIdAndKey;
 using OptionalEntryInfoWithIdAndKey =
     SqlPersistentStore::OptionalEntryInfoWithIdAndKey;
+using IntOrError = SqlPersistentStore::IntOrError;
 
 using InitResultOrError = base::expected<InitResult, Error>;
 
@@ -77,6 +84,16 @@ int64_t TokenLow(const base::UnguessableToken& token) {
   return static_cast<int64_t>(token.GetLowForSerialization());
 }
 
+bool IsBlobSizeValid(int64_t blob_start,
+                     int64_t blob_end,
+                     const base::span<const uint8_t>& blob) {
+  size_t blob_size;
+  if (!base::CheckSub(blob_end, blob_start).AssignIfValid(&blob_size)) {
+    return false;
+  }
+  return blob.size() == blob_size;
+}
+
 // Calculates the maximum size for a single cache entry's data.
 int64_t CalculateMaxFileSize(int64_t max_bytes) {
   return std::max(base::saturated_cast<int64_t>(
@@ -85,6 +102,9 @@ int64_t CalculateMaxFileSize(int64_t max_bytes) {
 }
 
 // Helper functions to populate Perfetto trace events with details.
+void PopulateTraceDetails(int result, perfetto::TracedDictionary& dict) {
+  dict.Add("result", result);
+}
 void PopulateTraceDetails(Error error, perfetto::TracedDictionary& dict) {
   dict.Add("error", static_cast<int>(error));
 }
@@ -283,6 +303,19 @@ class Backend {
                                      base::Time last_used,
                                      scoped_refptr<net::IOBuffer> buffer,
                                      int64_t header_size_delta);
+  Error WriteEntryData(const CacheEntryKey& key,
+                       const base::UnguessableToken& token,
+                       int64_t old_body_end,
+                       int64_t offset,
+                       scoped_refptr<net::IOBuffer> buffer,
+                       int buf_len,
+                       bool truncate);
+  IntOrError ReadEntryData(const base::UnguessableToken& token,
+                           int64_t offset,
+                           scoped_refptr<net::IOBuffer> buffer,
+                           int buf_len,
+                           int64_t body_end,
+                           bool sparse_reading);
 
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
@@ -315,9 +348,58 @@ class Backend {
       base::Time last_used,
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta);
+  Error WriteEntryDataInternal(const CacheEntryKey& key,
+                               const base::UnguessableToken& token,
+                               int64_t old_body_end,
+                               int64_t offset,
+                               scoped_refptr<net::IOBuffer> buffer,
+                               int buf_len,
+                               bool truncate);
+  IntOrError ReadEntryDataInternal(const base::UnguessableToken& token,
+                                   int64_t offset,
+                                   scoped_refptr<net::IOBuffer> buffer,
+                                   int buf_len,
+                                   int64_t body_end,
+                                   bool sparse_reading);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
+
+  // Trims blobs that overlap with the new write range [offset, end), and
+  // updates the total size delta.
+  Error TrimOverlappingBlobs(
+      const base::UnguessableToken& token,
+      int64_t offset,
+      int64_t end,
+      bool truncate,
+      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Truncates data by deleting all blobs that start at or after the given
+  // offset.
+  Error TruncateBlobsAfter(
+      const base::UnguessableToken& token,
+      int64_t truncate_offset,
+      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Inserts a vector of new blobs into the database, and updates the total size
+  // delta.
+  Error InsertNewBlobs(const base::UnguessableToken& token,
+                       const std::vector<BufferWithStart>& new_blobs,
+                       base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Inserts a single new blob into the database, and updates the total size
+  // delta.
+  Error InsertNewBlob(const base::UnguessableToken& token,
+                      int64_t start,
+                      const scoped_refptr<net::IOBuffer>& buffer,
+                      int buf_len,
+                      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Deletes blobs by their IDs, and updates the total size delta.
+  Error DeleteBlobsById(
+      const std::vector<int64_t>& blob_ids_to_be_removed,
+      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Deletes a single blob by its ID, and updates the total size delta.
+  Error DeleteBlobById(int64_t blob_id,
+                       base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  // Deletes all blobs associated with a given token.
+  Error DeleteBlobsByToken(const base::UnguessableToken& token);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and
   // `total_size_delta`. If the update results in an overflow or a negative
@@ -830,7 +912,10 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
                                 : Error::kFailedToCommitTransaction;
   }
 
-  // TODO(crbug.com/422065015): delete body data from the `blobs` table.
+  // Delete the associated blobs from the `blobs` table.
+  if (Error error = DeleteBlobsByToken(token); error != Error::kOk) {
+    return error;
+  }
 
   return transaction.Commit() ? Error::kOk : Error::kFailedToExecute;
 }
@@ -911,7 +996,13 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
                                 : Error::kFailedToCommitTransaction;
   }
 
-  // TODO(crbug.com/422065015): delete body data from the `blobs` table.
+  // Delete the blobs associated with the deleted entries.
+  for (const auto& token_to_be_deleted : tokens_to_be_deleted) {
+    if (Error delete_result = DeleteBlobsByToken(token_to_be_deleted);
+        delete_result != Error::kOk) {
+      return delete_result;
+    }
+  }
 
   // If we detected corruption, or if the size update calculation overflowed,
   // our metadata is suspect. We recover by recalculating everything from
@@ -1077,8 +1168,13 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
     }
   }
 
-  // TODO(crbug.com/422065015): delete body data from the `blobs` table using
-  // `tokens_to_be_deleted`.
+  // Delete the blobs associated with the entries to be deleted.
+  for (const auto& token_to_be_deleted : tokens_to_be_deleted) {
+    Error delete_result = DeleteBlobsByToken(token_to_be_deleted);
+    if (delete_result != Error::kOk) {
+      return delete_result;
+    }
+  }
 
   // Delete the selected entries from the `resources` table.
   for (const auto& res_id : res_ids_to_be_deleted) {
@@ -1258,6 +1354,603 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
   }
 
   return Error::kOk;
+}
+
+Error Backend::WriteEntryData(const CacheEntryKey& key,
+                              const base::UnguessableToken& token,
+                              int64_t old_body_end,
+                              int64_t offset,
+                              scoped_refptr<net::IOBuffer> buffer,
+                              int buf_len,
+                              bool truncate) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.WriteEntryData", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("key", key.string());
+                       dict.Add("token", token.ToString());
+                       dict.Add("old_body_end", old_body_end);
+                       dict.Add("offset", offset);
+                       dict.Add("buf_len", buf_len);
+                       dict.Add("truncate", truncate);
+                       PopulateTraceDetails(store_status_, dict);
+                     });
+  base::ElapsedTimer timer;
+  auto result = WriteEntryDataInternal(key, token, old_body_end, offset,
+                                       std::move(buffer), buf_len, truncate);
+  RecordTimeAndErrorResultHistogram("WriteEntryData", timer.Elapsed(), result);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryData", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
+  return result;
+}
+
+Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
+                                      const base::UnguessableToken& token,
+                                      int64_t old_body_end,
+                                      int64_t offset,
+                                      scoped_refptr<net::IOBuffer> buffer,
+                                      int buf_len,
+                                      bool truncate) {
+  CheckDatabaseInitStatus();
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToStartTransaction;
+  }
+
+  int64_t write_end;
+  if (old_body_end < 0 || offset < 0 || buf_len < 0 ||
+      (!buffer && buf_len > 0) || (buffer && buf_len > buffer->size()) ||
+      !base::CheckAdd<int64_t>(offset, buf_len).AssignIfValid(&write_end)) {
+    return Error::kInvalidArgument;
+  }
+
+  const int64_t new_body_end =
+      truncate ? write_end : std::max(write_end, old_body_end);
+  // An overflow is not expected here, as both `new_body_end` and `old_body_end`
+  // are non-negative int64_t value.
+  const int64_t body_end_delta = new_body_end - old_body_end;
+
+  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
+
+  // If the write starts before the current end of the body, it might overlap
+  // with existing data.
+  if (offset < old_body_end) {
+    if (Error result = TrimOverlappingBlobs(token, offset, write_end, truncate,
+                                            checked_total_size_delta);
+        result != Error::kOk) {
+      return result;
+    }
+  }
+
+  // If the new body size is smaller, existing blobs beyond the new end must be
+  // truncated.
+  if (body_end_delta < 0) {
+    CHECK(truncate);
+    if (Error result =
+            TruncateBlobsAfter(token, new_body_end, checked_total_size_delta);
+        result != Error::kOk) {
+      return result;
+    }
+  }
+
+  // Insert the new data blob if there is data to write.
+  if (buf_len) {
+    if (Error result = InsertNewBlob(token, offset, buffer, buf_len,
+                                     checked_total_size_delta);
+        result != Error::kOk) {
+      return result;
+    }
+  }
+
+  if (!checked_total_size_delta.IsValid()) {
+    // If the total size delta calculation resulted in an overflow, it suggests
+    // that the size values in the database were corrupt.
+    return Error::kInvalidData;
+  }
+  int64_t total_size_delta = checked_total_size_delta.ValueOrDie();
+
+  // Update the entry's metadata in the `resources` table if the body size
+  // changed or if the total size of blobs changed.
+  if (body_end_delta || total_size_delta) {
+    constexpr char kSqlUpdateResourceBodySize[] =
+        // clang-format off
+        "UPDATE resources "
+        "SET "
+            "body_end=body_end+?, "       // 0
+            "bytes_usage=bytes_usage+? "  // 1
+        "WHERE "
+            "cache_key=? AND "            // 2
+            "token_high=? AND "           // 3
+            "token_low=? "                // 4
+        "RETURNING "
+            "body_end,"                   // 0
+            "doomed";                     // 1
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlUpdateResourceBodySize));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateResourceBodySize));
+    statement.BindInt64(0, body_end_delta);
+    statement.BindInt64(1, total_size_delta);
+    statement.BindString(2, key.string());
+    statement.BindInt64(3, TokenHigh(token));
+    statement.BindInt64(4, TokenLow(token));
+    if (statement.Step()) {
+      // Consistency check: The `RETURNING` clause gives us the `body_end` value
+      // after the update. If this doesn't match our calculated `new_body_end`,
+      // it means the `body_end` in the database was not the `old_body_end` we
+      // expected. This indicates data corruption, so we return an error.
+      const int64_t returned_new_body_end = statement.ColumnInt64(0);
+      if (returned_new_body_end != new_body_end) {
+        return Error::kBodyEndMismatch;
+      }
+      // If the entry is doomed, its size is no longer tracked in the cache's
+      // total size, so we don't update the store status.
+      const bool doomed = statement.ColumnBool(1);
+      if (doomed) {
+        total_size_delta = 0;
+      }
+    } else {
+      // If no rows were updated, it means the entry was not found (or the
+      // token was wrong).
+      return Error::kNotFound;
+    }
+  }
+
+  // Commit the transaction, which also updates the in-memory and on-disk store
+  // status.
+  if (!UpdateStoreStatusAndCommitTransaction(
+          transaction,
+          /*entry_count_delta=*/0,
+          /*total_size_delta=*/total_size_delta)) {
+    return Error::kFailedToCommitTransaction;
+  }
+  return Error::kOk;
+}
+
+// This function handles writes that overlap with existing data blobs. It finds
+// any blobs that intersect with the new write range `[offset, end)`, removes
+// them, and recreates any non-overlapping portions as new, smaller blobs. This
+// effectively "cuts out" the space for the new data.
+Error Backend::TrimOverlappingBlobs(
+    const base::UnguessableToken& token,
+    int64_t offset,
+    int64_t end,
+    bool truncate,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  TRACE_EVENT1("disk_cache", "SqlBackend.TrimOverlappingBlobs", "data",
+               [&](perfetto::TracedValue trace_context) {
+                 auto dict = std::move(trace_context).WriteDictionary();
+                 dict.Add("token", token.ToString());
+                 dict.Add("offset", offset);
+                 dict.Add("end", end);
+               });
+
+  // First, delete all blobs that are fully contained within the new write
+  // range.
+  // If the write has zero length, no blobs can be fully contained within it, so
+  // this can be skipped.
+  if (offset != end) {
+    constexpr char kSqlDeleteContained[] =
+        // clang-format off
+        "DELETE FROM blobs "
+        "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=? AND "   // 1
+          "start>=? AND "      // 2
+          "end<=? "            // 3
+        "RETURNING "
+          "start,"             // 0
+          "end";               // 1
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlDeleteContained));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteContained));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
+    statement.BindInt64(2, offset);
+    statement.BindInt64(3, end);
+    while (statement.Step()) {
+      const int64_t blob_start = statement.ColumnInt64(0);
+      const int64_t blob_end = statement.ColumnInt64(1);
+      checked_total_size_delta -= blob_end - blob_start;
+    }
+  }
+
+  // Now, handle blobs that partially overlap with the write range. There should
+  // be at most two such blobs.
+  // The SQL condition `blob_start < end AND blob_end > offset` checks for
+  // overlap. Example of [offset, end) vs [blob_start, blob_end):
+  //   [0, 2) vs [2, 6): Not hit.
+  //   [0, 3) vs [2, 6): Hit.
+  //   [5, 9) vs [2, 6): Hit.
+  //   [6, 9) vs [2, 6): Not hit.
+  std::vector<int64_t> blob_ids_to_be_removed;
+  std::vector<BufferWithStart> new_blobs;
+  // A zero-length, non-truncating write is a no-op. For all other writes, we
+  // must handle partially overlapping blobs.
+  if (!(offset == end && !truncate)) {
+    constexpr char kSqlSelectOverlapping[] =
+        // clang-format off
+      "SELECT "
+          "blob_id,"           // 0
+          "start,"             // 1
+          "end,"               // 2
+          "blob "              // 3
+      "FROM blobs "
+      "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=? AND "   // 1
+          "start<? AND "       // 2
+          "end>?";             // 3
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlSelectOverlapping));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverlapping));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
+    statement.BindInt64(2, end);
+    statement.BindInt64(3, offset);
+    while (statement.Step()) {
+      const int64_t blob_id = statement.ColumnInt64(0);
+      const int64_t blob_start = statement.ColumnInt64(1);
+      const int64_t blob_end = statement.ColumnInt64(2);
+      base::span<const uint8_t> blob = statement.ColumnBlob(3);
+      // Consistency check: The blob's size should match its start and end
+      // offsets.
+      if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
+        return Error::kInvalidData;
+      }
+      // Mark the overlapping blob for removal.
+      blob_ids_to_be_removed.push_back(blob_id);
+      // If the existing blob starts before the new write, create a new blob
+      // for the leading part that doesn't overlap.
+      if (blob_start < offset) {
+        new_blobs.push_back(BufferWithStart{
+            base::MakeRefCounted<net::VectorIOBuffer>(
+                blob.first(base::checked_cast<size_t>(offset - blob_start))),
+            blob_start});
+      }
+      // If the existing blob ends after the new write and we are not
+      // truncating, create a new blob for the trailing part that doesn't
+      // overlap.
+      if (!truncate && end < blob_end) {
+        new_blobs.push_back(BufferWithStart{
+            base::MakeRefCounted<net::VectorIOBuffer>(
+                blob.last(base::checked_cast<size_t>(blob_end - end))),
+            end});
+      }
+    }
+  }
+
+  // Delete the old blobs.
+  if (Error error =
+          DeleteBlobsById(blob_ids_to_be_removed, checked_total_size_delta);
+      error != Error::kOk) {
+    return error;
+  }
+
+  // Insert the new, smaller blobs that were preserved from the non-overlapping
+  // parts.
+  if (Error error = InsertNewBlobs(token, new_blobs, checked_total_size_delta);
+      error != Error::kOk) {
+    return error;
+  }
+  return Error::kOk;
+}
+
+Error Backend::TruncateBlobsAfter(
+    const base::UnguessableToken& token,
+    int64_t truncate_offset,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  TRACE_EVENT1("disk_cache", "SqlBackend.TruncateBlobsAfter", "data",
+               [&](perfetto::TracedValue trace_context) {
+                 auto dict = std::move(trace_context).WriteDictionary();
+                 dict.Add("token", token.ToString());
+                 dict.Add("truncate_offset", truncate_offset);
+               });
+  // Delete all blobs that start at or after the truncation offset.
+  {
+    constexpr char kSqlDeleteAfter[] =
+        // clang-format off
+        "DELETE FROM blobs "
+        "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=? AND "   // 1
+          "start>=? "          // 2
+        "RETURNING "
+          "start,"             // 0
+          "end";               // 1
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlDeleteAfter));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteAfter));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
+    statement.BindInt64(2, truncate_offset);
+    while (statement.Step()) {
+      const int64_t blob_start = statement.ColumnInt64(0);
+      const int64_t blob_end = statement.ColumnInt64(1);
+      checked_total_size_delta -= blob_end - blob_start;
+    }
+    if (!statement.Succeeded()) {
+      return Error::kFailedToExecute;
+    }
+  }
+  return Error::kOk;
+}
+
+// Inserts a vector of new blobs into the database.
+Error Backend::InsertNewBlobs(
+    const base::UnguessableToken& token,
+    const std::vector<BufferWithStart>& new_blobs,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  // Iterate through the provided blobs and insert each one.
+  for (const auto& new_blob : new_blobs) {
+    if (Error error =
+            InsertNewBlob(token, new_blob.start, new_blob.buffer,
+                          new_blob.buffer->size(), checked_total_size_delta);
+        error != Error::kOk) {
+      return error;
+    }
+  }
+  return Error::kOk;
+}
+
+// Inserts a single new blob into the database.
+Error Backend::InsertNewBlob(
+    const base::UnguessableToken& token,
+    int64_t start,
+    const scoped_refptr<net::IOBuffer>& buffer,
+    int buf_len,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  TRACE_EVENT1("disk_cache", "SqlBackend.InsertNewBlob", "data",
+               [&](perfetto::TracedValue trace_context) {
+                 auto dict = std::move(trace_context).WriteDictionary();
+                 dict.Add("token", token.ToString());
+                 dict.Add("start", start);
+                 dict.Add("buf_len", buf_len);
+               });
+  const int64_t end =
+      (base::CheckedNumeric<int64_t>(start) + buf_len).ValueOrDie();
+  constexpr char kSqlInsertIntoBlobs[] =
+      // clang-format off
+      "INSERT INTO blobs("
+          "token_high,"  // 0
+          "token_low,"   // 1
+          "start,"       // 2
+          "end,"         // 3
+          "blob) "       // 4
+      "VALUES(?,?,?,?,?)";
+  // clang-format on
+  // Intentionally DCHECK() for performance
+  DCHECK(db_.IsSQLValid(kSqlInsertIntoBlobs));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertIntoBlobs));
+  statement.BindInt64(0, TokenHigh(token));
+  statement.BindInt64(1, TokenLow(token));
+  statement.BindInt64(2, start);
+  statement.BindInt64(3, end);
+  statement.BindBlob(4,
+                     buffer->span().first(base::checked_cast<size_t>(buf_len)));
+  if (!statement.Run()) {
+    return Error::kFailedToExecute;
+  }
+  checked_total_size_delta += buf_len;
+  return Error::kOk;
+}
+
+// A helper function to delete multiple blobs by their IDs.
+Error Backend::DeleteBlobsById(
+    const std::vector<int64_t>& blob_ids_to_be_removed,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  // Iterate through the provided blob IDs and delete each one.
+  for (auto blob_id : blob_ids_to_be_removed) {
+    if (Error error = DeleteBlobById(blob_id, checked_total_size_delta);
+        error != Error::kOk) {
+      return error;
+    }
+  }
+  return Error::kOk;
+}
+
+// Deletes a single blob from the `blobs` table given its ID. It uses the
+// `RETURNING` clause to get the size of the deleted blob to update the total.
+Error Backend::DeleteBlobById(
+    int64_t blob_id,
+    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+  TRACE_EVENT1("disk_cache", "SqlBackend.DeleteBlobById", "data",
+               [&](perfetto::TracedValue trace_context) {
+                 auto dict = std::move(trace_context).WriteDictionary();
+                 dict.Add("blob_id", blob_id);
+               });
+  constexpr char kSqlDeleteFromBlobs[] =
+      // clang-format off
+      "DELETE FROM blobs "
+      "WHERE "
+          "blob_id=? "  // 0
+      "RETURNING "
+          "start,"      // 0
+          "end";        // 1
+  // clang-format on
+  // Intentionally DCHECK() for performance
+  DCHECK(db_.IsSQLValid(kSqlDeleteFromBlobs));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromBlobs));
+  statement.BindInt64(0, blob_id);
+  if (!statement.Step()) {
+    // `Step()` returned false, which means either the query completed with no
+    // hit, or an error occurred.
+    if (db_.GetErrorCode() == static_cast<int>(sql::SqliteResultCode::kDone)) {
+      return Error::kNotFound;
+    }
+    // An unexpected database error occurred.
+    return Error::kFailedToExecute;
+  }
+  const int64_t start = statement.ColumnInt64(0);
+  const int64_t end = statement.ColumnInt64(1);
+  if (end <= start) {
+    return Error::kInvalidData;
+  }
+  // Subtract the size of the deleted blob from the total size delta.
+  checked_total_size_delta -= end - start;
+  return Error::kOk;
+}
+
+// Deletes all blobs associated with a specific entry token.
+Error Backend::DeleteBlobsByToken(const base::UnguessableToken& token) {
+  TRACE_EVENT1("disk_cache", "SqlBackend.DeleteBlobsByToken", "token",
+               [&](perfetto::TracedValue trace_context) {
+                 auto dict = std::move(trace_context).WriteDictionary();
+                 dict.Add("token", token.ToString());
+               });
+  constexpr char kSqlDeleteFromBlobs[] =
+      // clang-format off
+      "DELETE FROM blobs "
+      "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=?";       // 1
+  // clang-format on
+  // Intentionally DCHECK() for performance
+  DCHECK(db_.IsSQLValid(kSqlDeleteFromBlobs));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromBlobs));
+  statement.BindInt64(0, TokenHigh(token));
+  statement.BindInt64(1, TokenLow(token));
+  if (!statement.Run()) {
+    return Error::kFailedToExecute;
+  }
+  return Error::kOk;
+}
+
+IntOrError Backend::ReadEntryData(const base::UnguessableToken& token,
+                                  int64_t offset,
+                                  scoped_refptr<net::IOBuffer> buffer,
+                                  int buf_len,
+                                  int64_t body_end,
+                                  bool sparse_reading) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.ReadEntryData", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("token", token.ToString());
+                       dict.Add("offset", offset);
+                       dict.Add("buf_len", buf_len);
+                       dict.Add("body_end", body_end);
+                       dict.Add("sparse_reading", sparse_reading);
+                       PopulateTraceDetails(store_status_, dict);
+                     });
+  base::ElapsedTimer timer;
+  auto result = ReadEntryDataInternal(token, offset, std::move(buffer), buf_len,
+                                      body_end, sparse_reading);
+  RecordTimeAndErrorResultHistogram("ReadEntryData", timer.Elapsed(),
+                                    result.error_or(Error::kOk));
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.ReadEntryData", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
+  return result;
+}
+
+IntOrError Backend::ReadEntryDataInternal(const base::UnguessableToken& token,
+                                          int64_t offset,
+                                          scoped_refptr<net::IOBuffer> buffer,
+                                          int buf_len,
+                                          int64_t body_end,
+                                          bool sparse_reading) {
+  CheckDatabaseInitStatus();
+
+  if (offset < 0 || buf_len < 0 || !buffer || buf_len > buffer->size()) {
+    return base::unexpected(Error::kInvalidArgument);
+  }
+
+  // Truncate `buffer_len` to make sure that `offset + buffer_len` does not
+  // overflow.
+  int64_t buffer_len = std::min(static_cast<int64_t>(buf_len),
+                                std::numeric_limits<int64_t>::max() - offset);
+  const int64_t read_end =
+      (base::CheckedNumeric<int64_t>(offset) + buffer_len).ValueOrDie();
+  // Select all blobs that overlap with the read range [offset, read_end),
+  // ordered by their start offset.
+  constexpr char kSqlSelectOverrapping[] =
+      // clang-format off
+      "SELECT "
+          "start,"             // 0
+          "end,"               // 1
+          "blob "              // 2
+      "FROM blobs "
+      "WHERE "
+          "token_high=? AND "  // 0
+          "token_low=? AND "   // 1
+          "start<? AND "       // 2
+          "end>? "             // 3
+      "ORDER BY start";
+  // clang-format on
+  // Intentionally DCHECK() for performance
+  DCHECK(db_.IsSQLValid(kSqlSelectOverrapping));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverrapping));
+  statement.BindInt64(0, TokenHigh(token));
+  statement.BindInt64(1, TokenLow(token));
+  statement.BindInt64(2, read_end);
+  statement.BindInt64(3, offset);
+
+  size_t written_bytes = 0;
+  while (statement.Step()) {
+    const int64_t blob_start = statement.ColumnInt64(0);
+    const int64_t blob_end = statement.ColumnInt64(1);
+    base::span<const uint8_t> blob = statement.ColumnBlob(2);
+    if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
+      return base::unexpected(Error::kInvalidData);
+    }
+    // Determine the part of the blob that falls within the read request.
+    const int64_t copy_start = std::max(offset, blob_start);
+    const int64_t copy_end = std::min(read_end, blob_end);
+    const size_t copy_size = base::checked_cast<size_t>(copy_end - copy_start);
+    const size_t pos_in_buffer =
+        base::checked_cast<size_t>(copy_start - offset);
+    // If there's a gap between the last written byte and the start of the
+    // current blob, handle it based on `sparse_reading`.
+    if (written_bytes < pos_in_buffer) {
+      if (sparse_reading) {
+        // In sparse reading mode, we stop at the first gap.
+        // This might be before any data got read.
+        return written_bytes;
+      }
+      // In normal mode, fill the gap with zeros.
+      std::ranges::fill(
+          buffer->span().subspan(written_bytes, pos_in_buffer - written_bytes),
+          0);
+    }
+    // Copy the relevant part of the blob into the output buffer.
+    buffer->span()
+        .subspan(pos_in_buffer, copy_size)
+        .copy_from_nonoverlapping(blob.subspan(
+            base::checked_cast<size_t>(copy_start - blob_start), copy_size));
+    written_bytes = copy_end - offset;
+  }
+
+  if (sparse_reading) {
+    return written_bytes;
+  }
+
+  // After processing all blobs, check if we need to zero-fill the rest of the
+  // buffer up to the logical end of the entry's body.
+  const size_t last_pos_in_buffer =
+      std::min(body_end - offset, static_cast<int64_t>(buffer_len));
+  if (written_bytes < last_pos_in_buffer) {
+    std::ranges::fill(buffer->span().subspan(
+                          written_bytes, last_pos_in_buffer - written_bytes),
+                      0);
+    written_bytes = last_pos_in_buffer;
+  }
+
+  return written_bytes;
 }
 
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
@@ -1528,6 +2221,31 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                                     ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::UpdateEntryHeaderAndLastUsed)
         .WithArgs(key, token, last_used, std::move(buffer), header_size_delta)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void WriteEntryData(const CacheEntryKey& key,
+                      const base::UnguessableToken& token,
+                      int64_t old_body_end,
+                      int64_t offset,
+                      scoped_refptr<net::IOBuffer> buffer,
+                      int buf_len,
+                      bool truncate,
+                      ErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::WriteEntryData)
+        .WithArgs(key, token, old_body_end, offset, std::move(buffer), buf_len,
+                  truncate)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void ReadEntryData(const base::UnguessableToken& token,
+                     int64_t offset,
+                     scoped_refptr<net::IOBuffer> buffer,
+                     int buf_len,
+                     int64_t body_end,
+                     bool sparse_reading,
+                     IntOrErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::ReadEntryData)
+        .WithArgs(token, offset, std::move(buffer), buf_len, body_end,
+                  sparse_reading)
         .Then(WrapCallback(std::move(callback)));
   }
 
