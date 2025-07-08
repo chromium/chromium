@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
+#include "third_party/blink/renderer/core/html/html_permission_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -348,53 +349,6 @@ bool IsBorderSufficientlyDistinctFromBackgroundColor(
   }
 
   return true;
-}
-
-// Build an expression that is equivalent to `size * |factor|)`. To be used
-// inside a `calc-size` expression.
-const CalculationExpressionNode* BuildFitContentExpr(float factor) {
-  const auto* constant_expr =
-      MakeGarbageCollected<CalculationExpressionNumberNode>(factor);
-  const auto* size_expr =
-      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
-          CalculationExpressionSizingKeywordNode::Keyword::kSize);
-  return CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children({constant_expr, size_expr}),
-      CalculationOperator::kMultiply);
-}
-
-// Builds an expression that takes a |length| and bounds it lower, higher, or on
-// both sides with the provided expressions.
-const CalculationExpressionNode* BuildLengthBoundExpr(
-    const Length& length,
-    const CalculationExpressionNode* lower_bound_expr,
-    const CalculationExpressionNode* upper_bound_expr) {
-  if (lower_bound_expr && upper_bound_expr) {
-    return CalculationExpressionOperationNode::CreateSimplified(
-        CalculationExpressionOperationNode::Children(
-            {lower_bound_expr,
-             length.AsCalculationValue()->GetOrCreateExpression(),
-             upper_bound_expr}),
-        CalculationOperator::kClamp);
-  }
-
-  if (lower_bound_expr) {
-    return CalculationExpressionOperationNode::CreateSimplified(
-        CalculationExpressionOperationNode::Children(
-            {lower_bound_expr,
-             length.AsCalculationValue()->GetOrCreateExpression()}),
-        CalculationOperator::kMax);
-  }
-
-  if (upper_bound_expr) {
-    return CalculationExpressionOperationNode::CreateSimplified(
-        CalculationExpressionOperationNode::Children(
-            {upper_bound_expr,
-             length.AsCalculationValue()->GetOrCreateExpression()}),
-        CalculationOperator::kMin);
-  }
-
-  NOTREACHED();
 }
 
 void RecordUserInteractionAccepted(bool accepted) {
@@ -861,22 +815,22 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
         builder.FontSize() * kMinimumLetterSpacingToFontSizeRatio));
   }
 
-  builder.SetMinHeight(AdjustedBoundedLength(
+  builder.SetMinHeight(AdjustedBoundedLengthWrapper(
       builder.MinHeight(),
       /*lower_bound=*/builder.FontSize() * kMinLengthToFontSizeRatio,
       /*upper_bound=*/builder.FontSize() * kMaxLengthToFontSizeRatio,
       /*should_multiply_by_content_size=*/false));
-  builder.SetMaxHeight(AdjustedBoundedLength(
+  builder.SetMaxHeight(AdjustedBoundedLengthWrapper(
       builder.MaxHeight(),
       /*lower_bound=*/std::nullopt,
       /*upper_bound=*/builder.FontSize() * kMaxLengthToFontSizeRatio,
       /*should_multiply_by_content_size=*/false));
 
   builder.SetMinWidth(
-      AdjustedBoundedLength(builder.MinWidth(),
-                            /*lower_bound=*/kMinLengthToFontSizeRatio,
-                            /*upper_bound=*/kMaxLengthToFontSizeRatio,
-                            /*should_multiply_by_content_size=*/true));
+      AdjustedBoundedLengthWrapper(builder.MinWidth(),
+                                   /*lower_bound=*/kMinLengthToFontSizeRatio,
+                                   /*upper_bound=*/kMaxLengthToFontSizeRatio,
+                                   /*should_multiply_by_content_size=*/true));
 
   bool unlimited_width_allowed =
       IsBorderSufficientlyDistinctFromBackgroundColor(builder.CloneStyle());
@@ -891,7 +845,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     }
     builder.SetPaddingRight(builder.PaddingLeft());
   } else {
-    builder.SetMaxWidth(AdjustedBoundedLength(
+    builder.SetMaxWidth(AdjustedBoundedLengthWrapper(
         builder.MaxWidth(),
         /*lower_bound=*/std::nullopt, /*upper_bound=*/kMaxLengthToFontSizeRatio,
         /*should_multiply_by_content_size=*/true));
@@ -910,12 +864,12 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
             "'padding-right' is always set to be identical to 'padding-left'.");
       }
 
-      builder.SetPaddingLeft(
-          AdjustedBoundedLength(builder.PaddingLeft(),
-                                /*lower_bound=*/std::nullopt,
-                                /*upper_bound=*/builder.FontSize() *
-                                    kMaxHorizontalPaddingToFontSizeRatio,
-                                /*should_multiply_by_content_size=*/false));
+      builder.SetPaddingLeft(AdjustedBoundedLengthWrapper(
+          builder.PaddingLeft(),
+          /*lower_bound=*/std::nullopt,
+          /*upper_bound=*/builder.FontSize() *
+              kMaxHorizontalPaddingToFontSizeRatio,
+          /*should_multiply_by_content_size=*/false));
       builder.SetPaddingRight(builder.PaddingLeft());
       builder.SetWidth(Length::FitContent());
     } else {
@@ -934,7 +888,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
           "The permission element does not support 'padding-bottom'. "
           "'padding-bottom' is always set to be identical to 'padding-top'.");
     }
-    builder.SetPaddingTop(AdjustedBoundedLength(
+    builder.SetPaddingTop(AdjustedBoundedLengthWrapper(
         builder.PaddingTop(),
         /*lower_bound=*/std::nullopt,
         /*upper_bound=*/builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
@@ -1607,7 +1561,7 @@ bool HTMLPermissionElement::IsStyleValid() {
   return true;
 }
 
-Length HTMLPermissionElement::AdjustedBoundedLength(
+Length HTMLPermissionElement::AdjustedBoundedLengthWrapper(
     const Length& length,
     std::optional<float> lower_bound,
     std::optional<float> upper_bound,
@@ -1621,77 +1575,8 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
         "content, intrinsic, or stretch sizes are not supported as values for "
         "the min/max width and height of the permission element");
   }
-
-  const Length& length_to_use =
-      is_content_or_stretch || length.IsNone() ? Length::Auto() : length;
-
-  // If the |length| is not supported and the |bound| is static, return a simple
-  // fixed length.
-  if (length_to_use.IsAuto() && !should_multiply_by_content_size) {
-    return Length(
-        lower_bound.has_value() ? lower_bound.value() : upper_bound.value(),
-        Length::Type::kFixed);
-  }
-
-  // If the |length| is supported and the |bound| is static, return a
-  // min|max|clamp expression-type length.
-  if (!should_multiply_by_content_size) {
-    const auto* lower_bound_expr =
-        lower_bound.has_value()
-            ? MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
-                  PixelsAndPercent(lower_bound.value()))
-            : nullptr;
-
-    const auto* upper_bound_expr =
-        upper_bound.has_value()
-            ? MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
-                  PixelsAndPercent(upper_bound.value()))
-            : nullptr;
-
-    // expr = min|max|clamp(bound, length, [bound2])
-    const auto* expr =
-        BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
-    return Length(CalculationValue::CreateSimplified(
-        expr, Length::ValueRange::kNonNegative));
-  }
-
-  // bound_expr = size * bound.
-  const auto* lower_bound_expr = lower_bound.has_value()
-                                     ? BuildFitContentExpr(lower_bound.value())
-                                     : nullptr;
-  const auto* upper_bound_expr = upper_bound.has_value()
-                                     ? BuildFitContentExpr(upper_bound.value())
-                                     : nullptr;
-
-  const CalculationExpressionNode* bound_expr = nullptr;
-
-  if (!length_to_use.IsAuto()) {
-    // bound_expr = min|max|clamp(size * bound, length, [size * bound2])
-    bound_expr =
-        BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
-  } else {
-    bound_expr = lower_bound_expr ? lower_bound_expr : upper_bound_expr;
-  }
-
-  // This uses internally the CalculationExpressionSizingKeywordNode to create
-  // an expression that depends on the size of the contents of the permission
-  // element, in order to set necessary min/max bounds on width and height. If
-  // https://drafts.csswg.org/css-values-5/#calc-size is ever abandoned,
-  // the functionality should still be kept around in some way that can
-  // facilitate this use case.
-
-  const auto* fit_content_expr =
-      MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
-          CalculationExpressionSizingKeywordNode::Keyword::kFitContent);
-
-  // expr = calc-size(fit-content, bound_expr)
-  const auto* expr = CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children(
-          {fit_content_expr, bound_expr}),
-      CalculationOperator::kCalcSize);
-
-  return Length(CalculationValue::CreateSimplified(
-      expr, Length::ValueRange::kNonNegative));
+  return HTMLPermissionElementUtils::AdjustedBoundedLength(
+      length, lower_bound, upper_bound, should_multiply_by_content_size);
 }
 
 void HTMLPermissionElement::DidFinishLifecycleUpdate(
