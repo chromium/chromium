@@ -996,7 +996,6 @@ static_library("ui") {
       "browser_tabrestore.h",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
-      "browser_user_data.h",
       "browser_view_prefs.cc",
       "browser_view_prefs.h",
       "browser_window.h",
