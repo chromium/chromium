@@ -51,6 +51,8 @@
 - (ToolbarButton*)stopButton;
 // ToolbarButton to create a new tab.
 - (ToolbarButton*)openNewTabButton;
+// ToolbarButton for the diamond prototype.
+- (ToolbarButton*)diamondPrototypeButton;
 // Button to cancel the edit of the location bar.
 - (UIButton*)cancelButton;
 

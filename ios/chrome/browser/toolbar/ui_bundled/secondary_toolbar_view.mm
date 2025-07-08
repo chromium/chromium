@@ -67,6 +67,8 @@ UIView* SecondaryToolbarLocationBarContainerView(
 @property(nonatomic, strong, readwrite) ToolbarButton* forwardButton;
 // Button to display the tools menu, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
+// Button for diamond prototype, redefined as readwrite.
+@property(nonatomic, strong, readwrite) ToolbarButton* diamondPrototypeButton;
 // Button to display the tab grid, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarTabGridButton* tabGridButton;
 // Button to create a new tab, redefined as readwrite.
@@ -192,33 +194,58 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   UIView* contentView = _contentView;
 
-  // Toolbar buttons.
-  self.backButton = [self.buttonFactory backButton];
-  self.forwardButton = [self.buttonFactory forwardButton];
-  self.openNewTabButton = [self.buttonFactory openNewTabButton];
-  self.tabGridButton = [self.buttonFactory tabGridButton];
-  self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
+  if (IsDiamondPrototypeEnabled()) {
+    self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
+    self.toolsMenuButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
+    self.toolsMenuButton.backgroundColor = [UIColor colorNamed:kGrey50Color];
+    self.toolsMenuButton.layer.cornerRadius = 13;
+    self.toolsMenuButton.visibilityMask = ToolbarComponentVisibilityAlways;
+    [self.toolsMenuButton updateHiddenInCurrentSizeClass];
+    [self addSubview:self.toolsMenuButton];
 
-  // Move the tools menu button such as it looks visually balanced with the
-  // button on the other side of the toolbar.
-  NSInteger textDirection = base::i18n::IsRTL() ? -1 : 1;
-  self.toolsMenuButton.transform =
-      CGAffineTransformMakeTranslation(textDirection * kToolsMenuOffset, 0);
+    self.diamondPrototypeButton = [self.buttonFactory diamondPrototypeButton];
+    self.diamondPrototypeButton.tintColor =
+        [UIColor colorNamed:kSolidBlackColor];
+    self.diamondPrototypeButton.backgroundColor =
+        [UIColor colorNamed:kGrey50Color];
+    self.diamondPrototypeButton.layer.cornerRadius = 13;
+    [self addSubview:self.self.diamondPrototypeButton];
 
-  self.allButtons = @[
-    self.backButton, self.forwardButton, self.openNewTabButton,
-    self.tabGridButton, self.toolsMenuButton
-  ];
+    self.allButtons = @[ self.diamondPrototypeButton, self.toolsMenuButton ];
 
-  // Separator.
-  self.separator = [[UIView alloc] init];
-  self.separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
-  self.separator.translatesAutoresizingMaskIntoConstraints = NO;
-  [contentView addSubview:self.separator];
+  } else {
+    // Toolbar buttons.
+    self.backButton = [self.buttonFactory backButton];
+    self.forwardButton = [self.buttonFactory forwardButton];
+    self.openNewTabButton = [self.buttonFactory openNewTabButton];
+    self.tabGridButton = [self.buttonFactory tabGridButton];
+    self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
+
+    // Move the tools menu button such as it looks visually balanced with the
+    // button on the other side of the toolbar.
+    NSInteger textDirection = base::i18n::IsRTL() ? -1 : 1;
+    self.toolsMenuButton.transform =
+        CGAffineTransformMakeTranslation(textDirection * kToolsMenuOffset, 0);
+
+    self.allButtons = @[
+      self.backButton, self.forwardButton, self.openNewTabButton,
+      self.tabGridButton, self.toolsMenuButton
+    ];
+
+    // Separator.
+    self.separator = [[UIView alloc] init];
+    self.separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+    self.separator.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:self.separator];
+  }
 
   // Button StackView.
-  self.buttonStackView =
-      [[UIStackView alloc] initWithArrangedSubviews:self.allButtons];
+  if (IsDiamondPrototypeEnabled()) {
+    self.buttonStackView = [[UIStackView alloc] init];
+  } else {
+    self.buttonStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:self.allButtons];
+  }
   self.buttonStackView.distribution = UIStackViewDistributionEqualSpacing;
   self.buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [contentView addSubview:self.buttonStackView];
@@ -281,15 +308,39 @@ UIView* SecondaryToolbarLocationBarContainerView(
     AddSameConstraintsToSides(self, self.bottomSeparator,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
 
+    if (IsDiamondPrototypeEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.diamondPrototypeButton.leadingAnchor
+            constraintEqualToAnchor:safeArea.leadingAnchor
+                           constant:kExpandedLocationBarHorizontalMargin],
+        [self.diamondPrototypeButton.centerYAnchor
+            constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
+        [self.diamondPrototypeButton.trailingAnchor
+            constraintEqualToAnchor:self.locationBarContainer.leadingAnchor
+                           constant:-kExpandedLocationBarHorizontalMargin],
+        [self.toolsMenuButton.trailingAnchor
+            constraintEqualToAnchor:safeArea.trailingAnchor
+                           constant:-kExpandedLocationBarHorizontalMargin],
+        [self.toolsMenuButton.centerYAnchor
+            constraintEqualToAnchor:self.locationBarContainer.centerYAnchor],
+        [self.locationBarContainer.trailingAnchor
+            constraintEqualToAnchor:self.toolsMenuButton.leadingAnchor
+                           constant:-kExpandedLocationBarHorizontalMargin],
+      ]];
+
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.locationBarContainer.leadingAnchor
+            constraintEqualToAnchor:safeArea.leadingAnchor
+                           constant:kExpandedLocationBarHorizontalMargin],
+        [self.locationBarContainer.trailingAnchor
+            constraintEqualToAnchor:safeArea.trailingAnchor
+                           constant:-kExpandedLocationBarHorizontalMargin],
+      ]];
+    }
     [NSLayoutConstraint activateConstraints:@[
       self.locationBarTopConstraint,
       self.locationBarContainerHeight,
-      [self.locationBarContainer.leadingAnchor
-          constraintEqualToAnchor:safeArea.leadingAnchor
-                         constant:kExpandedLocationBarHorizontalMargin],
-      [self.locationBarContainer.trailingAnchor
-          constraintEqualToAnchor:safeArea.trailingAnchor
-                         constant:-kExpandedLocationBarHorizontalMargin],
       [self.buttonStackView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kBottomButtonsTopMargin],
@@ -314,14 +365,19 @@ UIView* SecondaryToolbarLocationBarContainerView(
     [self.buttonStackView.trailingAnchor
         constraintEqualToAnchor:safeArea.trailingAnchor
                        constant:-kAdaptiveToolbarMargin],
-
-    [self.separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [self.separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
-    [self.separator.heightAnchor
-        constraintEqualToConstant:ui::AlignValueToUpperPixel(
-                                      kToolbarSeparatorHeight)],
   ]];
+
+  if (!IsDiamondPrototypeEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [self.separator.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
+      [self.separator.heightAnchor
+          constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                        kToolbarSeparatorHeight)],
+    ]];
+  }
 }
 
 #pragma mark - AdaptiveToolbarView

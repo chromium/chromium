@@ -80,6 +80,10 @@
   [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }
 
+- (void)diamondPrototypeAction:(id)sender {
+  // TODO(crbug.com/429955447): implement the action.
+}
+
 - (void)cancelOmniboxFocusAction {
   [self.omniboxHandler cancelOmniboxEdit];
 }

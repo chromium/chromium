@@ -272,6 +272,39 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   return newTabButton;
 }
 
+- (ToolbarButton*)diamondPrototypeButton {
+  CHECK(IsDiamondPrototypeEnabled());
+
+  auto loadImageBlock = ^UIImage* {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    return MakeSymbolMonochrome(
+        CustomSymbolWithPointSize(kCameraLensSymbol, kSymbolToolbarPointSize));
+#endif
+    return nil;
+  };
+
+  auto loadIPHHighlightedImageBlock = ^UIImage* {
+    NOTREACHED();
+  };
+
+  ToolbarButton* diamondPrototypeButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
+                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
+
+  [diamondPrototypeButton addTarget:self.actionHandler
+                             action:@selector(diamondPrototypeAction:)
+                   forControlEvents:UIControlEventTouchUpInside];
+
+  [self configureButton:diamondPrototypeButton
+                  width:kAdaptiveToolbarButtonWidth];
+  [diamondPrototypeButton.heightAnchor
+      constraintEqualToConstant:kAdaptiveToolbarButtonWidth]
+      .active = YES;
+
+  diamondPrototypeButton.visibilityMask = ToolbarComponentVisibilityAlways;
+  return diamondPrototypeButton;
+}
+
 - (UIButton*)cancelButton {
   UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
   cancelButton.tintColor = [UIColor colorNamed:kBlueColor];

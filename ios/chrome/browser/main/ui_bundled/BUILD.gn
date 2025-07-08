@@ -89,6 +89,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",

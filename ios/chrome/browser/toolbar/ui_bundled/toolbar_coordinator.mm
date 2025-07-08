@@ -386,6 +386,9 @@
   }
   CGFloat height =
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
+  if (IsDiamondPrototypeEnabled()) {
+    height = 0;
+  }
   if (_omniboxPosition == ToolbarType::kSecondary) {
     height += ToolbarExpandedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
