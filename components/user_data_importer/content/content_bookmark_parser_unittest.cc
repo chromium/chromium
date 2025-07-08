@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,6 +129,7 @@ class ContentBookmarkParserWithData : public testing::Test {
 
   base::FilePath test_data_path_;
   std::unique_ptr<BookmarkParser> bookmark_parser_ = MakeBookmarkParser();
+  base::ScopedMockClockOverride clock;
 };
 
 void ContentBookmarkParserWithData::SetUp() {
@@ -165,7 +167,7 @@ void ContentBookmarkParserWithData::ExpectThirdFirefox2Bookmark(
     const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Google", entry.title);
   EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(base::Time::FromTimeT(0000000000), entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock.Now());
   EXPECT_EQ(1U, entry.path.size());
   if (entry.path.size() == 1) {
     EXPECT_EQ(u"Not Empty But Default", entry.path.front());

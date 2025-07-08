@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -42,22 +43,6 @@
 
 using testing::ElementsAre;
 using testing::IsEmpty;
-
-namespace {
-#if BUILDFLAG(IS_IOS)
-// Asserts that `time` is within 2 minutes of the current time.
-void ExpectTimeIsNowIsh(const base::Time& time) {
-  base::Time now = base::Time::Now();
-  EXPECT_LE(now - time, base::Minutes(2))
-      << "Expected " << time
-      << " to be no more than 2 minutes before now: " << now;
-
-  EXPECT_LE(time - now, base::Minutes(2))
-      << "Expected " << time
-      << " to be no more than 2 minutes after now: " << now;
-}
-#endif  // BUILDFLAG(IS_IOS)
-}  // namespace
 
 namespace user_data_importer {
 
@@ -225,6 +210,8 @@ class SafariDataImporterTest : public testing::Test {
     importer_->history_size_threshold_ = history_size_threshold;
   }
 
+  base::ScopedMockClockOverride clock_;
+
  private:
   void WaitUntilPresenterIsReady() {
     ASSERT_TRUE(base::test::RunUntil([&]() { return presenter_ready_; }));
@@ -357,17 +344,16 @@ class SafariDataImporterTest : public testing::Test {
       mock_delete_file_;
 };
 
-#if BUILDFLAG(IS_IOS)
 TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
-  ImportBookmarks(
-      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
-      <!--This is an automatically generated file.\
-      It will be read and overwritten.\
-      Do Not Edit! -->\
-      <DL>\
-      <DT><A HREF=\"https://www.google.com/\" ADD_DATE=\"904914000\">Google</A>\
-      <DT><A HREF=\"https://www.chromium.org/\">Chromium</A>\
-      </DL>");
+  ImportBookmarks(R"(
+      <!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <!--This is an automatically generated file.
+      It will be read and overwritten.
+      Do Not Edit! -->
+      <DL>
+      <DT><A HREF="https://www.google.com/" ADD_DATE="904914000">Google</A>
+      <DT><A HREF="https://www.chromium.org/">Chromium</A>
+      </DL>)");
   EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
 
   ASSERT_EQ(GetPendingBookmarks().size(), 2u);
@@ -383,7 +369,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -395,12 +381,12 @@ TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
 // use it, so we have to support both with and without.
 TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
   ImportBookmarks(
-      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
-      <!--This is an automatically generated file.\
-      It will be read and overwritten.\
-      Do Not Edit! -->\
-      <DT><A HREF=\"https://www.google.com/\" ADD_DATE=\"904914000\">Google</A>\
-      <DT><A HREF=\"https://www.chromium.org/\">Chromium</A>\"");
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <!--This is an automatically generated file.
+      It will be read and overwritten.
+      Do Not Edit! -->
+      <DT><A HREF="https://www.google.com/" ADD_DATE="904914000">Google</A>
+      <DT><A HREF="https://www.chromium.org/">Chromium</A>)");
   EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
 
   ASSERT_EQ(GetPendingBookmarks().size(), 2u);
@@ -416,7 +402,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -425,24 +411,28 @@ TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
 
 TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   ImportBookmarks(
-      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
-      <!--This is an automatically generated file.\
-      It will be read and overwritten.\
-      Do Not Edit! -->\
-      <DL>\
-      <DT><A HREF=\"https://www.google.com/\" ADD_DATE=\"904914000\">Google</A>\
-      <DT><H3>Folder 1</H3>\
-      <DL><p>\
-        <DT><A HREF=\"https://www.example.com/\" ADD_DATE=\"915181200\">Example</A>\
-        <DT><H3 ADD_DATE=\"1145523600\">Folder 1.1</H3>\
-        <DL><p>\
-          <DT><A HREF=\"https://en.wikipedia.org/wiki/Kitsune\" ADD_DATE=\"1674205200\">Kitsune</A>\
-        </DL><p>\
-      </DL><p>\
-      <DT><H3>Empty Folder</H3>\
-      <DL><p>\
-      </DL>\
-      </DL>");
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <!--This is an automatically generated file.
+      It will be read and overwritten.
+      Do Not Edit! -->
+      <DL>
+      <DT><A HREF="https://www.google.com/" ADD_DATE="904914000">Google</A>
+      <DT><H3>Folder 1</H3>
+      <DL><p>
+        <DT><A HREF="https://www.example.com/" ADD_DATE="915181200">Example</A>
+        <DT><H3 ADD_DATE="1145523600">Folder 1.1</H3>
+        <DL><p>
+          <DT><A HREF="https://en.wikipedia.org/wiki/Kitsune" ADD_DATE="1674205200">Kitsune</A>
+        </DL><p>
+      </DL><p>
+      <DT><H3>Empty Folder</H3>
+      <DL><p>
+      </DL>
+      </DL>)");
+
+// TODO(crbug.com/407587751): Align iOS and Blink implementation on if non-empty
+// folders should be added explicitly.
+#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
 
   ASSERT_EQ(GetPendingBookmarks().size(), 6u);
@@ -459,7 +449,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Folder 1");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -491,27 +481,67 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Empty Folder");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
   EXPECT_EQ(GetPendingReadingList().size(), 0u);
+#else
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 4);
+
+  ASSERT_EQ(GetPendingBookmarks().size(), 4u);
+
+  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
+  EXPECT_FALSE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Google");
+  EXPECT_EQ(entry.creation_time,
+            base::Time::FromSecondsSinceUnixEpoch(904914000));
+  EXPECT_EQ(entry.url, GURL("https://www.google.com/"));
+  EXPECT_THAT(entry.path, IsEmpty());
+
+  entry = GetPendingBookmarks()[1];
+  EXPECT_FALSE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Example");
+  EXPECT_EQ(entry.creation_time,
+            base::Time::FromSecondsSinceUnixEpoch(915181200));
+  EXPECT_EQ(entry.url, GURL("https://www.example.com/"));
+  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
+
+  entry = GetPendingBookmarks()[2];
+  EXPECT_FALSE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Kitsune");
+  EXPECT_EQ(entry.creation_time,
+            base::Time::FromSecondsSinceUnixEpoch(1674205200));
+  EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/Kitsune"));
+  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1", u"Folder 1.1"));
+
+  entry = GetPendingBookmarks()[3];
+  EXPECT_TRUE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Empty Folder");
+  // No timestamp maps to current time.
+  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_TRUE(entry.url.is_empty());
+  EXPECT_THAT(entry.path, IsEmpty());
+
+  EXPECT_EQ(GetPendingReadingList().size(), 0u);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
+#if BUILDFLAG(IS_IOS)
 TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   ImportBookmarks(
-      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
-      <!--This is an automatically generated file.\
-      It will be read and overwritten.\
-      Do Not Edit! -->\
-      <DL>\
-      <DT><A HREF=\"https://www.google.com/\" ADD_DATE=\"904914000\">Google</A>\
-      <DT><H3 id=\"com.apple.ReadingList\">Reading List</H3>\
-      <DL><p>\
-      <DT><A HREF=\"https://en.wikipedia.org/wiki/The_Beach_Boys\">The Beach Boys</A>\
-      <DT><A HREF=\"https://en.wikipedia.org/wiki/Brian_Wilson\" ADD_DATE=\"-868878000\">Brian Wilson</A>\
-      </DL><p>\
-      </DL>");
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <!--This is an automatically generated file.
+      It will be read and overwritten.
+      Do Not Edit! -->
+      <DL>
+      <DT><A HREF="https://www.google.com/" ADD_DATE="904914000">Google</A>
+      <DT><H3 id="com.apple.ReadingList">Reading List</H3>
+      <DL><p>
+      <DT><A HREF="https://en.wikipedia.org/wiki/The_Beach_Boys">The Beach Boys</A>
+      <DT><A HREF="https://en.wikipedia.org/wiki/Brian_Wilson" ADD_DATE="-868878000">Brian Wilson</A>
+      </DL><p>
+      </DL>)");
   EXPECT_EQ(GetNumberOfBookmarksImported(), 4);
 
   EXPECT_EQ(GetPendingBookmarks().size(), 1u);
@@ -521,7 +551,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   ImportedBookmarkEntry entry = GetPendingReadingList()[0];
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Reading List");
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -529,7 +559,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"The Beach Boys");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"));
   EXPECT_THAT(entry.path, ElementsAre(u"Reading List"));
 
@@ -541,40 +571,45 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/Brian_Wilson"));
   EXPECT_THAT(entry.path, ElementsAre(u"Reading List"));
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
-  ImportBookmarks(
-      "<!DOCTYPE NETSCAPE-Bookmark-file-1>\
-      <!--This is an automatically generated file.\
-      It will be read and overwritten.\
-      Do Not Edit! -->\
-      <DL>\
-      <DT><A>Google</A>\
-      <DT><H3>Folder 1</H3>\
-      <DL><p>\
-        <DT><A HREF=\"https://www.chromium.org/\">Chromium</A>\
-        ICON_URI=\"https://www.chromium.org/favicon.ico\"\
-        <DT><A HREF=\"https://www.example.org/\" ADD_DATE=\"Last Tuesday\">Example</A>\
-        <DT><A>Google Reader</A>\
-      </DL><p>\
-      <!-- Various unsupported types below -->\
-      FEED=\"true\"\
-      FEEDURL=\"https://www.example.com\"\
-      WEBSLICE=\"true\"\
-      ISLIVEPREVIEW=\"true\"\
-      PREVIEWSIZE=\"100 x 100\"\
-      </DL>");
+  ImportBookmarks(R"(
+      <!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <!--This is an automatically generated file.
+      It will be read and overwritten.
+      Do Not Edit! -->
+      <DL>
+      <DT><A>Google</A>
+      <DT><H3>Folder 1</H3>
+      <DL><p>
+        <DT><A HREF="https://www.chromium.org/">Chromium</A>
+        ICON_URI="https://www.chromium.org/favicon.ico"
+        <DT><A HREF="https://www.example.org/" ADD_DATE="Last Tuesday">Example</A>
+        <DT><A>Google Reader</A>
+      </DL><p>
+      <!-- Various unsupported types below -->
+      FEED="true"
+      FEEDURL="https://www.example.com"
+      WEBSLICE="true"
+      ISLIVEPREVIEW="true"
+      PREVIEWSIZE="100 x 100"
+      </DL>)");
+
+// TODO(crbug.com/407587751): Align iOS and Blink implementation on if non-empty
+// folders should be added explicitly.
+#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(GetNumberOfBookmarksImported(), 3);
 
   ASSERT_EQ(GetPendingBookmarks().size(), 3u);
 
-  // <A>Google</A> was skipped for lack of URL
+  // <A>Google</A> was skipped for lack of URL.
 
   ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Folder 1");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -584,7 +619,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
@@ -592,13 +627,40 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Example");
   // Invalid timestamp maps to current time.
-  ExpectTimeIsNowIsh(entry.creation_time);
+  EXPECT_EQ(entry.creation_time, clock_.Now());
   EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
-  // <A>Google Reader</A> was skipped for lack of URL
-}
+  // <A>Google Reader</A> was skipped for lack of URL.
+#else
+
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
+
+  ASSERT_EQ(GetPendingBookmarks().size(), 2u);
+
+  // <A>Google</A> was skipped for lack of URL.
+
+  // The folder contains a mix of invalid and valid entries. Ensure the valid
+  // ones are preserved.
+  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
+  EXPECT_FALSE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Chromium");
+  // No timestamp maps to current time.
+  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
+  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
+
+  entry = GetPendingBookmarks()[1];
+  EXPECT_FALSE(entry.is_folder);
+  EXPECT_EQ(entry.title, u"Example");
+  // Invalid timestamp maps to current time.
+  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
+  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
+
+  // <A>Google Reader</A> was skipped for lack of URL.
 #endif  // BUILDFLAG(IS_IOS)
+}
 
 TEST_F(SafariDataImporterTest, NoHistory) {
   ImportHistory();
@@ -689,11 +751,11 @@ TEST_F(SafariDataImporterTest, CancelImport) {
 
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
+  // TODO(crbug.com/407587751): Align iOS and Blink implementation on if
+  // non-empty folders should be added explicitly.
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(GetNumberOfBookmarksImported(), 7);
 #else
-  // TODO(crbug.com/407587751): Update test when bookmarks parsing for Blink is
-  // updated.
   EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
 #endif
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
@@ -708,13 +770,15 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
   ASSERT_EQ(import_results.number_imported, 0u);
+
+// TODO(crbug.com/407587751): Align iOS and Blink implementation on if non-empty
+// folders should be added explicitly.
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(GetNumberOfBookmarksImported(), 7);
 #else
-  // TODO(crbug.com/407587751): Update test when bookmarks parsing for Blink is
-  // updated.
   EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
 #endif
+
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 
@@ -726,8 +790,6 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
-  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
-  // implemented.
   ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 7);

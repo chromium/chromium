@@ -155,6 +155,7 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   std::string value;
 
   // Add date
+  *add_date = base::Time::Now();
   if (GetAttribute(attribute_list, kAddDateAttribute, &value)) {
     int64_t time;
     base::StringToInt64(value, &time);
@@ -197,7 +198,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   *favicon = GURL();
   shortcut->clear();
   post_data->clear();
-  *add_date = base::Time();
+  *add_date = base::Time::Now();
 
   if (!base::StartsWith(line, kItemOpen, base::CompareCase::SENSITIVE)) {
     return false;
@@ -225,15 +226,16 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
                         base::OnStringConversionError::SKIP, title);
   *title = base::UnescapeForHTML(*title);
 
-  // URL
-  if (GetAttribute(attribute_list, kHrefAttribute, &value)) {
-    std::u16string url16;
-    base::CodepageToUTF16(value, charset.c_str(),
-                          base::OnStringConversionError::SKIP, &url16);
-    url16 = base::UnescapeForHTML(url16);
-
-    *url = GURL(url16);
+  // URL is mandatory.
+  if (!GetAttribute(attribute_list, kHrefAttribute, &value)) {
+    return false;
   }
+
+  std::u16string url16;
+  base::CodepageToUTF16(value, charset.c_str(),
+                        base::OnStringConversionError::SKIP, &url16);
+  url16 = base::UnescapeForHTML(url16);
+  *url = GURL(url16);
 
   // Favicon
   if (GetAttribute(attribute_list, kIconAttribute, &value)) {
@@ -301,20 +303,22 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
                         base::OnStringConversionError::SKIP, title);
   *title = base::UnescapeForHTML(*title);
 
-  // URL
+  // URL is mandatory.
   std::string value;
-  if (GetAttribute(attribute_list, kHrefAttributeUpper, &value) ||
-      GetAttribute(attribute_list, kHrefAttributeLower, &value)) {
-    if (charset.length() != 0) {
-      std::u16string url16;
-      base::CodepageToUTF16(value, charset.c_str(),
-                            base::OnStringConversionError::SKIP, &url16);
-      url16 = base::UnescapeForHTML(url16);
+  if (!GetAttribute(attribute_list, kHrefAttributeUpper, &value) &&
+      !GetAttribute(attribute_list, kHrefAttributeLower, &value)) {
+    return false;
+  }
 
-      *url = GURL(url16);
-    } else {
-      *url = GURL(value);
-    }
+  if (charset.length() != 0) {
+    std::u16string url16;
+    base::CodepageToUTF16(value, charset.c_str(),
+                          base::OnStringConversionError::SKIP, &url16);
+    url16 = base::UnescapeForHTML(url16);
+
+    *url = GURL(url16);
+  } else {
+    *url = GURL(value);
   }
 
   return true;

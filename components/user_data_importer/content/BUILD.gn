@@ -27,6 +27,7 @@ source_set("unit_tests") {
   deps = [
     ":content",
     "//base",
+    "//base/test:test_support",
     "//components/user_data_importer/common",
     "//testing/gtest",
   ]
