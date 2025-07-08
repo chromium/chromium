@@ -4,7 +4,7 @@
 //
 // META: --screen-info={800x600 \
 // META:   workAreaLeft=10 workAreaRight=90 workAreaTop=20 workAreaBottom=80}
-
+//
 (async function(testRunner) {
   const {dp} = await testRunner.startBlank(
       'Tests maximized/fullscreen window matches workarea.');
@@ -20,4 +20,4 @@
   }
 
   testRunner.completeTest();
-});
+})

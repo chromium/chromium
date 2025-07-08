@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={label='#1'}{label='#2'}
+// META: --screen-info={1600x1200}
 // META: --disable-popup-blocking
-//
-// This results in a one off window height in Chrome Headless Mode, see
-// http://crbug.com/429408227.
-// META: fork_headless_mode_expectations
 //
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests window open on a secondary screen.');
+      await testRunner.startBlank('Tests popup window open placement.');
 
   const {sessionId} =
       (await testRunner.browserP().Target.attachToBrowserTarget({})).result;
@@ -26,20 +22,16 @@
       <html>
       <head><link rel="icon" href="data:,"></head>
       <script>
-          const win = window.open('/page2.html', '_blank',
-              'popup, left=820, top=20, width=600, height=400');
-          if (!win) {
-            console.log('Failed to create Page2');
+          const popup = window.open('/page2.html', '_blank',
+              'popup, left=10, top=20, width=600, height=400');
+          if (!popup) {
+            console.log('Failed to create popup');
           } else {
-            win.addEventListener('load', async () => {
-              const cs = (await win.getScreenDetails()).currentScreen;
-              let lines = [
-                'Page2',
-                ' window: ' + win.screenX + ',' + win.screenY
-                       + ' '+ win.innerWidth + 'x' + win.innerHeight,
-                ' screen: ' + cs.label,
-              ];
-              console.log(lines.join('\\n'));
+            popup.addEventListener('load', async () => {
+              console.log('Popup: ' +
+                  '{' + popup.screenLeft + ',' + popup.screenTop +
+                  ' ' + popup.innerWidth + 'x' + popup.innerHeight +
+                  '}');
             });
           }
       </script>
@@ -60,4 +52,4 @@
   testRunner.log(message);
 
   testRunner.completeTest();
-});
+})

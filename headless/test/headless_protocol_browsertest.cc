@@ -61,11 +61,6 @@ base::FilePath HeadlessProtocolBrowserTest::GetScriptPath() {
       .AppendASCII(GetScriptName());
 }
 
-base::FilePath HeadlessProtocolBrowserTest::GetTestExpectationFilePath() {
-  return headless::GetTestExpectationFilePath(GetScriptPath(), test_meta_info_,
-                                              HeadlessType::kHeadlessShell);
-}
-
 bool HeadlessProtocolBrowserTest::IsSharedTestScript() {
   return headless::IsSharedTestScript(GetScriptName());
 }
@@ -196,7 +191,7 @@ void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
 void HeadlessProtocolBrowserTest::ProcessTestResult(
     const std::string& test_result) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath expectation_path = GetTestExpectationFilePath();
+  base::FilePath expectation_path = GetTestExpectationFilePath(GetScriptPath());
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetResults)) {
@@ -637,7 +632,7 @@ HEADLESS_PROTOCOL_TEST(MaximizedWindowSize, "shared/maximized-window-size.js")
 HEADLESS_PROTOCOL_TEST(FullscreenWindowSize, "shared/fullscreen-window-size.js")
 
 HEADLESS_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
-                       "shared/window-open-on-secondary-screen.js")
+                       "sanity/window-open-on-secondary-screen.js")
 
 HEADLESS_PROTOCOL_TEST(ScreenRotationSecondaryScreen,
                        "sanity/screen-rotation-secondary-screen.js")
@@ -660,23 +655,23 @@ HEADLESS_PROTOCOL_TEST(MultipleScreenDetails,
                        "shared/multiple-screen-details.js")
 
 HEADLESS_PROTOCOL_TEST(WindowOpenPopupPlacement,
-                       "shared/window-open-popup-placement.js")
+                       "sanity/window-open-popup-placement.js")
 
 HEADLESS_PROTOCOL_TEST(WindowSizeSwitchHandling,
-                       "shared/window-size-switch-handling.js")
+                       "sanity/window-size-switch-handling.js")
 
 HEADLESS_PROTOCOL_TEST(WindowSizeSwitchLargerThanScreen,
-                       "shared/window-size-switch-larger-than-screen.js")
+                       "sanity/window-size-switch-larger-than-screen.js")
 
 HEADLESS_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 
 HEADLESS_PROTOCOL_TEST(WindowStateTransitions,
-                       "shared/window-state-transitions.js")
+                       "sanity/window-state-transitions.js")
 
 HEADLESS_PROTOCOL_TEST(WindowZoomOnSecondaryScreen,
-                       "shared/window-zoom-on-secondary-screen.js")
+                       "sanity/window-zoom-on-secondary-screen.js")
 
 HEADLESS_PROTOCOL_TEST(WindowZoomSizeMatchesWorkArea,
-                       "shared/window-zoom-size-matches-work-area.js")
+                       "sanity/window-zoom-size-matches-work-area.js")
 
 }  // namespace headless

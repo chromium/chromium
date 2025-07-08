@@ -1,0 +1,2 @@
+Tests --window-size larger than screen.
+Window size: 1600x1200

@@ -11,10 +11,10 @@
 
   const {result: {value}} =
       (await dp.Runtime.evaluate({
-        expression: `window.outerWidth + 'x' + window.outerHeight`,
+        expression: `window.outerWidth + 'x' + window.outerHeight`
       })).result;
 
   testRunner.log('Window size: ' + value);
 
   testRunner.completeTest();
-});
+})

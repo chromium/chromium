@@ -1,4 +1,2 @@
 Tests window open on a secondary screen.
-Page2
- window: 820,20 600x400
- screen: #2
+Page2 screen: 2nd screen

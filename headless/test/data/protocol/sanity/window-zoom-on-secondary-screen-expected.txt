@@ -1,0 +1,9 @@
+Tests window zoom on a secondary screen.
+1600,0 1200x1600 maximized visible
+1600,0 800x600 normal visible
+1600,0 1200x1600 fullscreen visible
+1600,0 800x600 normal visible
+1600,0 800x600 minimized hidden
+1600,0 1200x1600 maximized visible
+1600,0 1200x1600 fullscreen visible
+1600,0 800x600 normal visible

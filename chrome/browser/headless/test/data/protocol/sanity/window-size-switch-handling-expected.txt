@@ -1,0 +1,2 @@
+Tests --window-size switch handling.
+Window size: 700x500

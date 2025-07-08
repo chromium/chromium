@@ -8,26 +8,15 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "components/headless/test/test_meta_info.h"
 
 namespace headless {
 
 // Returns true if the specified script name refers to a shared script.
-constexpr bool IsSharedTestScript(std::string_view script_name) {
-  return script_name.starts_with("shared/");
-}
-
-enum class HeadlessType {
-  kUnspecified,
-  kHeadlessMode,
-  kHeadlessShell,
-};
+bool IsSharedTestScript(std::string_view script_name);
 
 // Returns expectation file path given the test script path.
 base::FilePath GetTestExpectationFilePath(
-    const base::FilePath& test_script_path,
-    const TestMetaInfo& test_meta_info,
-    HeadlessType headless_type);
+    const base::FilePath& test_script_path);
 
 }  // namespace headless
 
