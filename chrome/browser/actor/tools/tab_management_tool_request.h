@@ -16,8 +16,6 @@ class ToolRequestVisitorFunctor;
 // Creates a new blank tab in the specified window.
 class CreateTabToolRequest : public ToolRequest {
  public:
-  enum class Disposition { kForeground, kBackground };
-
   CreateTabToolRequest(int32_t window_id, WindowOpenDisposition disposition);
   ~CreateTabToolRequest() override;
 
