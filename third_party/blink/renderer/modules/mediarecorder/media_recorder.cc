@@ -380,6 +380,10 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
     return;
   }
 
+  if (recorder_handler_) {
+    recorder_handler_->MaybeFlush();
+  }
+
   WriteData(/*data=*/{}, /*last_in_slice=*/true, /*error_event=*/nullptr);
 }
 

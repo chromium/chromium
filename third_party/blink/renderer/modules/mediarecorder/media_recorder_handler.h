@@ -37,6 +37,7 @@ class AudioBus;
 class AudioParameters;
 class VideoFrame;
 class VideoEncoderMetricsProvider;
+class MemoryWebmMuxerDelegate;
 class Muxer;
 }  // namespace media
 
@@ -100,6 +101,11 @@ class MODULES_EXPORT MediaRecorderHandler final
   void Stop();
   void Pause();
   void Resume();
+
+  // In the event we're using MemoryWebmMuxerDelegate, this will cause us to
+  // flush currently muxed data and prevent duration and cues from being written
+  // at the front of the muxed media.
+  void MaybeFlush();
 
   // Implements WICG Media Capabilities encodingInfo() call for local encoding.
   // https://wicg.github.io/media-capabilities/#media-capabilities-interface
@@ -222,6 +228,9 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   // Worker class doing the actual muxing work.
   std::unique_ptr<media::MuxerTimestampAdapter> muxer_adapter_;
+
+  // Pointer to the MemoryWebmMuxerDelegate given to `muxer_adapter_` if exists.
+  raw_ptr<media::MemoryWebmMuxerDelegate> memory_muxer_delegate_ = nullptr;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

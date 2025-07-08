@@ -33,6 +33,12 @@ class MEDIA_EXPORT MemoryWebmMuxerDelegate : public WebmMuxer::Delegate {
   void ElementStartNotify(mkvmuxer::uint64 element_id,
                           mkvmuxer::int64 position) override;
 
+  // Flushes all data from `buffer_` and effectively turns this class into
+  // LiveWebmMuxerDelegate. I.e., duration will no longer be written during
+  // finalization and cues will be written at the end of the file instead of
+  // at the beginning as required for seeking.
+  void FlushAndDisableSeeking();
+
  protected:
   // WebmMuxerDelegate:
   mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) override;
@@ -46,6 +52,8 @@ class MEDIA_EXPORT MemoryWebmMuxerDelegate : public WebmMuxer::Delegate {
 
   // Optional callback called once we initialize the first segment.
   base::OnceClosure started_callback_;
+
+  bool seeking_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 };
 
 }  // namespace media
