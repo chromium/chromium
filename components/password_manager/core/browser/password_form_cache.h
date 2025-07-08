@@ -15,9 +15,9 @@ class PasswordFormManager;
 
 // Allows observing events inside PasswordFormManager. Declared here to allow
 // adding observers to all form mangers in the cache.
-class PasswordFormManagerObserver {
+class PasswordFormManagerObserver : public base::CheckedObserver {
  public:
-  virtual ~PasswordFormManagerObserver() {}
+  ~PasswordFormManagerObserver() override = default;
 
   // Invoked whenever `form_manager` parses a form.
   virtual void OnPasswordFormParsed(PasswordFormManager* form_manager) = 0;
@@ -43,12 +43,11 @@ class PasswordFormCache {
       autofill::FieldRendererId field_id) const = 0;
 
   // Allows adding an observer for all newly added password form managers.
-  virtual void SetObserver(
-      base::WeakPtr<PasswordFormManagerObserver> observer) {}
+  virtual void AddObserver(PasswordFormManagerObserver* observer) {}
 
   // Removes observer from all current form managers and prevents attaching
   // observer to newly added.
-  virtual void ResetObserver() {}
+  virtual void RemoveObserver(PasswordFormManagerObserver* observer) {}
 };
 
 }  // namespace password_manager

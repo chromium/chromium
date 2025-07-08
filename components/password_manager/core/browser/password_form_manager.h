@@ -293,8 +293,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   }
 #endif
 
-  void SetObserver(base::WeakPtr<PasswordFormManagerObserver> observer);
-  void ResetObserver();
+  void AddObserver(PasswordFormManagerObserver* observer);
+  void RemoveObserver(PasswordFormManagerObserver* observer);
 
  protected:
   // Constructor for Credentials API.
@@ -509,7 +509,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // For generating timing metrics on retrieving server-side predictions.
   std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
 
-  base::WeakPtr<PasswordFormManagerObserver> form_parsed_observer_;
+  base::ObserverList<PasswordFormManagerObserver> form_parsed_observers_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

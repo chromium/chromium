@@ -4747,13 +4747,16 @@ TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
 
 #endif
 
-TEST_P(PasswordFormManagerTest, NotifiesObserver) {
+TEST_P(PasswordFormManagerTest, NotifiesObservers) {
   MockPasswordFormManagerObserver observer;
+  MockPasswordFormManagerObserver observer_2;
 
   CreateFormManager(observed_form_);
-  form_manager_->SetObserver(observer.GetWeakPtr());
+  form_manager_->AddObserver(&observer);
+  form_manager_->AddObserver(&observer_2);
 
   EXPECT_CALL(observer, OnPasswordFormParsed(form_manager_.get()));
+  EXPECT_CALL(observer_2, OnPasswordFormParsed(form_manager_.get()));
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -4763,8 +4766,8 @@ TEST_P(PasswordFormManagerTest, DoesNotNotifyAfterObserverRemoved) {
   MockPasswordFormManagerObserver observer;
 
   CreateFormManager(observed_form_);
-  form_manager_->SetObserver(observer.GetWeakPtr());
-  form_manager_->ResetObserver();
+  form_manager_->AddObserver(&observer);
+  form_manager_->RemoveObserver(&observer);
 
   EXPECT_CALL(observer, OnPasswordFormParsed).Times(0);
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});

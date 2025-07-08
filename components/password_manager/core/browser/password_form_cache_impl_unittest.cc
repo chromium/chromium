@@ -260,7 +260,7 @@ TEST_F(PasswordFormCacheTest, GetFormManagers) {
 // Test that the cache adds observers to newly added managers.
 TEST_F(PasswordFormCacheTest, ObservationOnFormManager) {
   MockPasswordFormManagerObserver observer;
-  static_cast<PasswordFormCache*>(&cache())->SetObserver(observer.GetWeakPtr());
+  static_cast<PasswordFormCache*>(&cache())->AddObserver(&observer);
 
   auto form_manager = std::make_unique<PasswordFormManager>(
       &client(), driver().AsWeakPtr(), CreateTestPasswordFormData(),
