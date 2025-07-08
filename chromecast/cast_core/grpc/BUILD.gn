@@ -15,6 +15,7 @@ source_set("grpc") {
     "grpc_handler.h",
     "grpc_server.cc",
     "grpc_server.h",
+    "grpc_server_reactor.cc",
     "grpc_server_reactor.h",
     "grpc_server_streaming_call.h",
     "grpc_server_streaming_handler.h",
@@ -32,6 +33,11 @@ source_set("grpc") {
     "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/grpc:grpc++",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 }
 
