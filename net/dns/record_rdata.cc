@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/record_rdata.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
@@ -294,8 +290,8 @@ std::unique_ptr<NsecRecordRdata> NsecRecordRdata::Create(
     uint8_t length;        // Bitmap length in bytes. Between 1 and 32.
   };
 
-  const BitmapHeader* header =
-      reinterpret_cast<const BitmapHeader*>(data.data() + next_domain_length);
+  const BitmapHeader* header = reinterpret_cast<const BitmapHeader*>(
+      UNSAFE_TODO(data.data() + next_domain_length));
 
   // The block number must be zero in mDns-specific NSEC records. The bitmap
   // length must be between 1 and 32.

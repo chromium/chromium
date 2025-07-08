@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "net/base/net_errors.h"
@@ -236,9 +232,10 @@ TEST(WebSocketFrameTest, MaskPayload) {
     WebSocketMaskingKey masking_key;
     base::as_writable_byte_span(masking_key.key)
         .copy_from(base::as_byte_span(test.masking_key));
-    std::vector<char> frame_data(test.input, test.input + test.data_length);
-    std::vector<char> expected_output(test.output,
-                                      test.output + test.data_length);
+    std::vector<char> frame_data(test.input,
+                                 UNSAFE_TODO(test.input + test.data_length));
+    std::vector<char> expected_output(
+        test.output, UNSAFE_TODO(test.output + test.data_length));
     MaskWebSocketFramePayload(masking_key, test.frame_offset,
                               base::as_writable_byte_span(frame_data));
     EXPECT_EQ(expected_output, frame_data);
@@ -293,25 +290,26 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
   for (size_t frame_offset = 0; frame_offset < kMaskingKeyLength;
        ++frame_offset) {
     for (size_t alignment = 0; alignment < kMaxVectorAlignment; ++alignment) {
-      char* const aligned_scratch = scratch.get() + alignment;
+      char* const aligned_scratch = UNSAFE_TODO(scratch.get() + alignment);
       const size_t aligned_len = std::min(kScratchBufferSize - alignment,
                                           kTestInputSize - frame_offset);
       for (size_t chunk_size = 1; chunk_size < kMaxVectorSize; ++chunk_size) {
-        memcpy(aligned_scratch, kTestInput + frame_offset, aligned_len);
+        UNSAFE_TODO(
+            memcpy(aligned_scratch, kTestInput + frame_offset, aligned_len));
         for (size_t chunk_start = 0; chunk_start < aligned_len;
              chunk_start += chunk_size) {
           const size_t this_chunk_size =
               std::min(chunk_size, aligned_len - chunk_start);
           MaskWebSocketFramePayload(
               masking_key, frame_offset + chunk_start,
-              base::as_writable_bytes(
-                  base::span(aligned_scratch + chunk_start, this_chunk_size)));
+              base::as_writable_bytes(UNSAFE_TODO(
+                  base::span(aligned_scratch + chunk_start, this_chunk_size))));
         }
         // Stop the test if it fails, since we don't want to spew thousands of
         // failures.
-        ASSERT_TRUE(std::equal(aligned_scratch,
-                               aligned_scratch + aligned_len,
-                               kTestOutput + frame_offset))
+        UNSAFE_TODO(ASSERT_TRUE(std::equal(aligned_scratch,
+                                           aligned_scratch + aligned_len,
+                                           kTestOutput + frame_offset)))
             << "Output failed to match for frame_offset=" << frame_offset
             << ", alignment=" << alignment << ", chunk_size=" << chunk_size;
       }

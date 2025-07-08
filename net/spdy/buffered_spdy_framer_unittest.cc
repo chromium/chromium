@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/buffered_spdy_framer.h"
 
 #include <algorithm>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "net/log/net_log_with_source.h"
 #include "net/spdy/spdy_test_util_common.h"
@@ -151,7 +147,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
       size_t bytes_processed =
           buffered_spdy_framer_.ProcessInput(input_ptr, bytes_read);
       input_remaining -= bytes_processed;
-      input_ptr += bytes_processed;
+      UNSAFE_TODO(input_ptr += bytes_processed);
     }
   }
 

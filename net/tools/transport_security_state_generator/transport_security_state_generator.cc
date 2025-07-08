@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <iostream>
 #include <map>
 #include <set>
@@ -15,6 +10,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -51,8 +47,8 @@ bool CheckForDuplicatePins(const Pinsets& pinsets) {
     }
     seen_names.insert(pin.first);
 
-    std::string hash =
-        std::string(pin.second.data(), pin.second.data() + pin.second.size());
+    std::string hash = std::string(
+        pin.second.data(), UNSAFE_TODO(pin.second.data() + pin.second.size()));
     auto it = seen_hashes.find(hash);
     if (it != seen_hashes.cend()) {
       LOG(ERROR) << "Duplicate pin hash for " << pin.first

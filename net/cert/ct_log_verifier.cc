@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/ct_log_verifier.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "crypto/evp.h"
@@ -96,8 +92,9 @@ bool CTLogVerifier::VerifySignedTreeHead(
 
   if (signed_tree_head.tree_size == 0) {
     // Root hash must equate SHA256 hash of the empty string.
-    return memcmp(signed_tree_head.sha256_root_hash, kSHA256EmptyStringHash,
-                  ct::kSthRootHashLength) == 0;
+    return UNSAFE_TODO(memcmp(signed_tree_head.sha256_root_hash,
+                              kSHA256EmptyStringHash,
+                              ct::kSthRootHashLength)) == 0;
   }
 
   return true;

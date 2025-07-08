@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <inttypes.h>
 
 #include <iostream>
@@ -19,6 +14,7 @@
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -74,14 +70,15 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
     bssl::UniquePtr<char> scoped_name(name);
     bssl::UniquePtr<char> scoped_header(header);
     bssl::UniquePtr<unsigned char> scoped_data(data);
-    if (strcmp(name, "CERTIFICATE") != 0) {
+    if (UNSAFE_TODO(strcmp(name, "CERTIFICATE")) != 0) {
       LOG(ERROR) << "Found PEM block of type " << name
                  << " instead of CERTIFICATE";
       return std::nullopt;
     }
-    std::string sha256_hex = base::ToLowerASCII(base::HexEncode(
-        crypto::SHA256Hash(base::span(data, base::checked_cast<size_t>(len)))));
-    certs[sha256_hex] = std::string(data, data + len);
+    std::string sha256_hex =
+        base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(
+            UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(len))))));
+    certs[sha256_hex] = std::string(data, UNSAFE_TODO(data + len));
   }
   return std::move(certs);
 }

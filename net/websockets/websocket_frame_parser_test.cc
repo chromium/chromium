@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame_parser.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "net/websockets/websocket_frame.h"
@@ -89,7 +85,8 @@ TEST(WebSocketFrameParserTest, DecodeNormalFrame) {
   EXPECT_TRUE(frame->final_chunk);
 
   ASSERT_EQ(static_cast<size_t>(kHelloLength), frame->payload.size());
-  EXPECT_TRUE(std::equal(kHello, kHello + kHelloLength, frame->payload.data()));
+  UNSAFE_TODO(EXPECT_TRUE(
+      std::equal(kHello, kHello + kHelloLength, frame->payload.data())));
 }
 
 TEST(WebSocketFrameParserTest, DecodeMaskedFrame) {
@@ -172,7 +169,8 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
   std::vector<uint8_t> input;
   // Concatenate all frames.
   for (const auto& data : kInputs) {
-    input.insert(input.end(), data.frame, data.frame + data.frame_length);
+    input.insert(input.end(), data.frame,
+                 UNSAFE_TODO(data.frame + data.frame_length));
   }
 
   WebSocketFrameParser parser;
@@ -190,10 +188,10 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     EXPECT_TRUE(frame->final_chunk);
     ASSERT_EQ(kInputs[i].expected_payload_length,
               static_cast<uint64_t>(frame->payload.size()));
-    EXPECT_TRUE(std::equal(
+    UNSAFE_TODO(EXPECT_TRUE(std::equal(
         kInputs[i].expected_payload,
         kInputs[i].expected_payload + kInputs[i].expected_payload_length,
-        frame->payload.data()));
+        frame->payload.data())));
 
     const WebSocketFrameHeader* header = frame->header.get();
     EXPECT_TRUE(header != nullptr);
@@ -218,8 +216,9 @@ TEST(WebSocketFrameParserTest, DecodePartialFrame) {
     auto [input1, input2] =
         base::span(hello_frame_data).split_at(kFrameHeaderSize + cutting_pos);
 
-    std::vector<char> expected1(kHello, kHello + cutting_pos);
-    std::vector<char> expected2(kHello + cutting_pos, kHello + kHelloLength);
+    std::vector<char> expected1(kHello, UNSAFE_TODO(kHello + cutting_pos));
+    std::vector<char> expected2(UNSAFE_TODO(kHello + cutting_pos),
+                                UNSAFE_TODO(kHello + kHelloLength));
 
     WebSocketFrameParser parser;
 
@@ -287,8 +286,9 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
     auto [input1, input2] = base::span(masked_hello_frame_data)
                                 .split_at(kFrameHeaderSize + cutting_pos);
 
-    std::vector<char> expected1(kHello, kHello + cutting_pos);
-    std::vector<char> expected2(kHello + cutting_pos, kHello + kHelloLength);
+    std::vector<char> expected1(kHello, UNSAFE_TODO(kHello + cutting_pos));
+    std::vector<char> expected2(UNSAFE_TODO(kHello + cutting_pos),
+                                UNSAFE_TODO(kHello + kHelloLength));
 
     WebSocketFrameParser parser;
 
@@ -314,7 +314,7 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
                 static_cast<uint64_t>(frame1->payload.size()));
       std::vector<char> payload1(
           frame1->payload.data(),
-          frame1->payload.data() + frame1->payload.size());
+          UNSAFE_TODO(frame1->payload.data() + frame1->payload.size()));
       MaskWebSocketFramePayload(header1->masking_key, 0,
                                 base::as_writable_byte_span(payload1));
       EXPECT_EQ(expected1, payload1);
@@ -345,7 +345,7 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
                 static_cast<uint64_t>(frame2->payload.size()));
       std::vector<char> payload2(
           frame2->payload.data(),
-          frame2->payload.data() + frame2->payload.size());
+          UNSAFE_TODO(frame2->payload.data() + frame2->payload.size()));
       MaskWebSocketFramePayload(header1->masking_key, cutting_pos,
                                 base::as_writable_byte_span(payload2));
       EXPECT_EQ(expected2, payload2);

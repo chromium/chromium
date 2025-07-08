@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "net/tools/transport_security_state_generator/cert_util.h"
 
 #include <string>
 #include <vector>
 
-#include "net/tools/transport_security_state_generator/cert_util.h"
+#include "base/compiler_specific.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,7 +140,8 @@ TEST(CertUtilTest, CalculateSPKIHashFromCertificate) {
   bssl::UniquePtr<X509> cert1 =
       GetX509CertificateFromPEM(kSelfSignedWithCommonNamePEM);
   EXPECT_TRUE(CalculateSPKIHashFromCertificate(cert1.get(), &hash1));
-  std::vector<uint8_t> hash_vector(hash1.data(), hash1.data() + hash1.size());
+  std::vector<uint8_t> hash_vector(hash1.data(),
+                                   UNSAFE_TODO(hash1.data() + hash1.size()));
   EXPECT_THAT(
       hash_vector,
       testing::ElementsAreArray(
@@ -155,7 +153,8 @@ TEST(CertUtilTest, CalculateSPKIHashFromCertificate) {
   bssl::UniquePtr<X509> cert2 =
       GetX509CertificateFromPEM(kSelfSignedWithoutCommonNamePEM);
   EXPECT_TRUE(CalculateSPKIHashFromCertificate(cert2.get(), &hash2));
-  std::vector<uint8_t> hash_vector2(hash2.data(), hash2.data() + hash2.size());
+  std::vector<uint8_t> hash_vector2(hash2.data(),
+                                    UNSAFE_TODO(hash2.data() + hash2.size()));
   EXPECT_THAT(
       hash_vector2,
       testing::ElementsAreArray(
@@ -168,7 +167,8 @@ TEST(CertUtilTest, CalculateSPKIHashFromCertificate) {
 TEST(CertUtilTest, CalculateSPKIHashFromKey) {
   SPKIHash hash1;
   EXPECT_TRUE(CalculateSPKIHashFromKey(kPublicKeyPEM, &hash1));
-  std::vector<uint8_t> hash_vector(hash1.data(), hash1.data() + hash1.size());
+  std::vector<uint8_t> hash_vector(hash1.data(),
+                                   UNSAFE_TODO(hash1.data() + hash1.size()));
   EXPECT_THAT(
       hash_vector,
       testing::ElementsAreArray(

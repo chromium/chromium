@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/record_rdata.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
@@ -48,11 +44,12 @@ TEST(RecordRdataTest, ParseSrvRecord) {
 
   DnsRecordParser parser(record, 0, /*num_records=*/0);
   const unsigned first_record_len = 22;
-  base::span<const uint8_t> record1_span(record.data(), first_record_len);
-  base::span<const uint8_t> record2_span(
+  base::span<const uint8_t> UNSAFE_TODO(
+      record1_span(record.data(), first_record_len));
+  base::span<const uint8_t> UNSAFE_TODO(record2_span(
       base::span<const uint8_t>(record).subspan(first_record_len).data(),
       (record.size() * sizeof(decltype(record)::value_type)) -
-          first_record_len);
+          first_record_len));
   std::unique_ptr<SrvRecordRdata> record1_obj =
       SrvRecordRdata::Create(record1_span, parser);
   ASSERT_TRUE(record1_obj != nullptr);

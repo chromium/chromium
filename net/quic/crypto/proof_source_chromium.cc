@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/quic/crypto/proof_source_chromium.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/x509_util.h"
@@ -56,7 +52,7 @@ bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
   }
 
   const uint8_t* p = reinterpret_cast<const uint8_t*>(key_data.data());
-  std::vector<uint8_t> input(p, p + key_data.size());
+  std::vector<uint8_t> input(p, UNSAFE_TODO(p + key_data.size()));
   private_key_ = crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(input);
   if (!private_key_) {
     DLOG(FATAL) << "Unable to create private key.";

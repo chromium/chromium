@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ssl/ssl_platform_key_nss.h"
 
 #include <cert.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -167,7 +163,8 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
       // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
       bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
       if (!sig || !BN_bin2bn(signature->data(), order_len, sig->r) ||
-          !BN_bin2bn(signature->data() + order_len, order_len, sig->s)) {
+          !BN_bin2bn(UNSAFE_TODO(signature->data() + order_len), order_len,
+                     sig->s)) {
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
 

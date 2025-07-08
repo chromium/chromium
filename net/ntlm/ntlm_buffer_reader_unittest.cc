@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm_buffer_reader.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,9 +121,9 @@ TEST(NtlmBufferReaderTest, ReadBytes) {
   NtlmBufferReader reader(expected);
 
   ASSERT_TRUE(reader.ReadBytes(actual));
-  ASSERT_EQ(0, memcmp(actual, expected, std::size(actual)));
+  UNSAFE_TODO(ASSERT_EQ(0, memcmp(actual, expected, std::size(actual))));
   ASSERT_TRUE(reader.IsEndOfBuffer());
-  ASSERT_FALSE(reader.ReadBytes(base::span(actual, 1u)));
+  UNSAFE_TODO(ASSERT_FALSE(reader.ReadBytes(base::span(actual, 1u))));
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
@@ -449,7 +445,7 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoOtherField) {
   // Verify the domain name AvPair.
   ASSERT_EQ(TargetInfoAvId::kDomainName, av_pairs[0].avid);
   ASSERT_EQ(8, av_pairs[0].avlen);
-  ASSERT_EQ(0, memcmp(buf + 4, av_pairs[0].buffer.data(), 8));
+  UNSAFE_TODO(ASSERT_EQ(0, memcmp(buf + 4, av_pairs[0].buffer.data(), 8)));
 }
 
 TEST(NtlmBufferReaderTest, ReadTargetInfoNoTerminator) {

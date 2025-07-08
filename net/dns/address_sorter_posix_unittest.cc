@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/address_sorter_posix.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -294,10 +290,13 @@ class AddressSorterPosixSyncOrAsyncTest
   // after sorting.
   void Verify(const char* const addresses[], const int order[]) {
     std::vector<IPEndPoint> endpoints;
-    for (const char* const* addr = addresses; *addr != nullptr; ++addr)
+    for (const char* const* addr = addresses; *addr != nullptr;
+         UNSAFE_TODO(++addr)) {
       endpoints.emplace_back(ParseIP(*addr), 80);
-    for (size_t i = 0; order[i] >= 0; ++i)
-      CHECK_LT(order[i], static_cast<int>(endpoints.size()));
+    }
+    for (size_t i = 0; UNSAFE_TODO(order[i]) >= 0; ++i) {
+      UNSAFE_TODO(CHECK_LT(order[i], static_cast<int>(endpoints.size())));
+    }
 
     std::vector<IPEndPoint> sorted;
     TestCompletionCallback callback;
@@ -306,8 +305,11 @@ class AddressSorterPosixSyncOrAsyncTest
                                  callback.callback()));
     callback.WaitForResult();
 
-    for (size_t i = 0; (i < sorted.size()) || (order[i] >= 0); ++i) {
-      IPEndPoint expected = order[i] >= 0 ? endpoints[order[i]] : IPEndPoint();
+    for (size_t i = 0; (i < sorted.size()) || (UNSAFE_TODO(order[i]) >= 0);
+         ++i) {
+      IPEndPoint expected = UNSAFE_TODO(order[i]) >= 0
+                                ? endpoints[UNSAFE_TODO(order[i])]
+                                : IPEndPoint();
       IPEndPoint actual = i < sorted.size() ? sorted[i] : IPEndPoint();
       EXPECT_TRUE(expected == actual)
           << "Endpoint out of order at position " << i << "\n"

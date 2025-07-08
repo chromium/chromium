@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -173,7 +169,7 @@ void Create3DesKeysFromNtlmHash(
   keys[16] = ntlm_hash[14];
   keys[17] = ntlm_hash[14] << 7 | ntlm_hash[15] >> 1;
   keys[18] = ntlm_hash[15] << 6;
-  memset(keys.data() + 19, 0, 5);
+  UNSAFE_TODO(memset(keys.data() + 19, 0, 5));
 }
 
 void GenerateNtlmHashV1(const std::u16string& password,
@@ -211,7 +207,7 @@ void GenerateResponseDesl(base::span<const uint8_t, kNtlmHashLen> hash,
     DES_cblock* key_block = reinterpret_cast<DES_cblock*>(
         base::span<uint8_t>(keys).subspan(ix).data());
     DES_cblock* response_block =
-        reinterpret_cast<DES_cblock*>(response.data() + ix);
+        reinterpret_cast<DES_cblock*>(UNSAFE_TODO(response.data() + ix));
 
     DES_key_schedule key_schedule;
     DES_set_odd_parity(key_block);
@@ -239,7 +235,7 @@ void GenerateResponsesV1(
 
   // In NTLM v1 (with LMv1 disabled), the lm_response and ntlm_response are the
   // same. So just copy the ntlm_response into the lm_response.
-  memcpy(lm_response.data(), ntlm_response.data(), kResponseLenV1);
+  UNSAFE_TODO(memcpy(lm_response.data(), ntlm_response.data(), kResponseLenV1));
 }
 
 void GenerateLMResponseV1WithSessionSecurity(
@@ -247,8 +243,10 @@ void GenerateLMResponseV1WithSessionSecurity(
     base::span<uint8_t, kResponseLenV1> lm_response) {
   // In NTLM v1 with Session Security (aka NTLM2) the lm_response is 8 bytes of
   // client challenge and 16 bytes of zeros. (See 3.3.1)
-  memcpy(lm_response.data(), client_challenge.data(), kChallengeLen);
-  memset(lm_response.data() + kChallengeLen, 0, kResponseLenV1 - kChallengeLen);
+  UNSAFE_TODO(
+      memcpy(lm_response.data(), client_challenge.data(), kChallengeLen));
+  UNSAFE_TODO(memset(lm_response.data() + kChallengeLen, 0,
+                     kResponseLenV1 - kChallengeLen));
 }
 
 void GenerateSessionHashV1WithSessionSecurity(

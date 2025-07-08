@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/quic/mock_decrypter.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_bug_tracker.h"
 
@@ -80,7 +76,7 @@ bool MockDecrypter::DecryptPacket(uint64_t /*packet_number*/,
     return false;
   }
 
-  memcpy(output, ciphertext.data(), plaintext_size);
+  UNSAFE_TODO(memcpy(output, ciphertext.data(), plaintext_size));
   *output_length = plaintext_size;
   return true;
 }

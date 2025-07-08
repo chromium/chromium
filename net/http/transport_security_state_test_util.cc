@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/transport_security_state_test_util.h"
 
 #include <iterator>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/http/transport_security_state.h"
@@ -38,7 +34,7 @@ ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource(
 
   const char* last_report_uri = nullptr;
   for (size_t i = 0; i < base_source->pinsets_count; ++i) {
-    const auto* pinset = &base_source->pinsets[i];
+    const auto* pinset = &UNSAFE_TODO(base_source->pinsets[i]);
     if (pinset->report_uri == kNoReportURI)
       continue;
     // Currently only one PKP report URI is supported.
@@ -50,7 +46,7 @@ ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource(
         GURL(pinset->report_uri).ReplaceComponents(replace_port).spec();
   }
   for (size_t i = 0; i < base_source->pinsets_count; ++i) {
-    const auto* pinset = &base_source->pinsets[i];
+    const auto* pinset = &UNSAFE_TODO(base_source->pinsets[i]);
     pinsets_.push_back({pinset->accepted_pins, pinset->rejected_pins,
                         pinset->report_uri == kNoReportURI
                             ? kNoReportURI

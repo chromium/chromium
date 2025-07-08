@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/dns/dns_response.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
@@ -16,6 +11,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -87,8 +83,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto response_packet =
       base::MakeRefCounted<net::IOBufferWithSize>(response_string.size());
-  memcpy(response_packet->data(), response_string.data(),
-         response_string.size());
+  UNSAFE_TODO(memcpy(response_packet->data(), response_string.data(),
+                     response_string.size()));
 
   net::DnsResponse received_response(response_packet, response_string.size());
   received_response.InitParseWithoutQuery(response_string.size());

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/quic/mock_encrypter.h"
 
+#include "base/compiler_specific.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_data_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 
@@ -48,7 +44,7 @@ bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
   if (max_output_length < ciphertext_size) {
     return false;
   }
-  memcpy(output, plaintext.data(), ciphertext_size);
+  UNSAFE_TODO(memcpy(output, plaintext.data(), ciphertext_size));
   *output_length = ciphertext_size;
   return true;
 }

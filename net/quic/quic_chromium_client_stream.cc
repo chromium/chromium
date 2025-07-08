@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/quic/quic_chromium_client_stream.h"
 
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -316,7 +312,7 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   std::string http_payload;
   http_payload.resize(1 + packet.size());
   http_payload[0] = 0;
-  memcpy(&http_payload[1], packet.data(), packet.size());
+  UNSAFE_TODO(memcpy(&http_payload[1], packet.data(), packet.size()));
 
   // Attempt to send the HTTP payload as a datagram over the stream.
   quic::MessageStatus message_status = stream_->SendHttp3Datagram(http_payload);

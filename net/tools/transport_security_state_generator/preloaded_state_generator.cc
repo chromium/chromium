@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/tools/transport_security_state_generator/preloaded_state_generator.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -207,7 +203,7 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
       output.append("\"");
 
       for (size_t j = i * 16; j < ((i + 1) * 16); ++j) {
-        base::StringAppendF(&output, "\\x%02x", hash.data()[j]);
+        base::StringAppendF(&output, "\\x%02x", UNSAFE_TODO(hash.data()[j]));
       }
 
       output.append("\"");

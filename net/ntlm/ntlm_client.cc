@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm_client.h"
 
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
@@ -238,7 +234,7 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
         GenerateUpdatedTargetInfo(IsMicEnabled(), IsEpaEnabled(),
                                   channel_bindings, spn, av_pairs, &timestamp);
 
-    memset(lm_response, 0, kResponseLenV1);
+    UNSAFE_TODO(memset(lm_response, 0, kResponseLenV1));
     if (timestamp == UINT64_MAX) {
       // If the server didn't send a time, then use the clients time.
       timestamp = client_time;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/ct_objects_extractor.h"
 
 #include <string.h>
@@ -49,7 +44,8 @@ const uint8_t kSHA256Oid[] = {0x60, 0x86, 0x48, 0x01, 0x65,
 bool StringEqualToCBS(const std::string& value1, const CBS* value2) {
   if (CBS_len(value2) != value1.size())
     return false;
-  return memcmp(value1.data(), CBS_data(value2), CBS_len(value2)) == 0;
+  return UNSAFE_TODO(
+             memcmp(value1.data(), CBS_data(value2), CBS_len(value2))) == 0;
 }
 
 bool SkipElements(CBS* cbs, int count) {

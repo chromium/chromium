@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +44,7 @@ class WebSocketFrameTestMaskBenchmark : public ::testing::Test {
   void Benchmark(const char* const story,
                  const char* const payload,
                  size_t size) {
-    std::vector<char> scratch(payload, payload + size);
+    std::vector<char> scratch(payload, UNSAFE_TODO(payload + size));
     WebSocketMaskingKey masking_key;
     base::as_writable_byte_span(masking_key.key)
         .copy_from(base::as_byte_span(kMaskingKey));

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/extras/preload_data/decoder.h"
+
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 
 namespace net::extras {
@@ -159,7 +156,7 @@ bool PreloadDecoder::HuffmanDecoder::Decode(PreloadDecoder::BitReader* reader,
       return false;
     }
 
-    uint8_t b = current[bit];
+    uint8_t b = UNSAFE_TODO(current[bit]);
     if (b & 0x80) {
       *out = static_cast<char>(b & 0x7f);
       return true;
