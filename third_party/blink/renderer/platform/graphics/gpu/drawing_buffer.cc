@@ -735,7 +735,21 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
       // necessary to do the readback here via the WebGL context as the image
       // returned from this method may later be sent to the compositor, and the
       // shared GPU context is unavailable when software compositing is used.
-      return GetRGBAUnacceleratedStaticBitmapImage(kBackBuffer);
+      auto image = GetRGBAUnacceleratedStaticBitmapImage(kBackBuffer);
+
+      // transferToImageBitmap() semantically "takes" the image from the back
+      // buffer, analogously to presentation. Hence, mark the buffer as being
+      // unchanged since its last export as well as needing clearing if relevant
+      // (note: for GPU compositing this is done in
+      // ExportSharedImageFromBackBuffer()). This is crucial to ensure correct
+      // semantics of followup operations (e.g., for offscreen canvas it's
+      // needed to ensure that PushFrame() will actually push a frame after a
+      // transferToImageBitmap() call).
+      contents_changed_ = false;
+      if (preserve_drawing_buffer_ == kDiscard) {
+        SetBufferClearNeeded(true);
+      }
+      return image;
     }
 #endif
   }
