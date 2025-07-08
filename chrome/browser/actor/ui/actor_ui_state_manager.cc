@@ -19,7 +19,7 @@ using tabs::TabInterface;
 // to be shared with tab controller.
 const UiTabState& GetAgentControlledUiTabState() {
   static const UiTabState kAgentState = {
-      .agent_overlay = {.is_active = true},
+      .agent_overlay = AgentOverlayState(/*is_active=*/true),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kAgent}};
@@ -28,7 +28,7 @@ const UiTabState& GetAgentControlledUiTabState() {
 
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
-      .agent_overlay = {.is_active = false},
+      .agent_overlay = AgentOverlayState(/*is_active=*/false),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kClient}};
@@ -37,7 +37,7 @@ const UiTabState& GetPausedUiTabState() {
 
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
-      .agent_overlay = {.is_active = false},
+      .agent_overlay = AgentOverlayState(/*is_active=*/false),
       .handoff_button = {.is_active = false}};
   return kCompletedState;
 }

@@ -24,6 +24,8 @@ using MouseClickCount = mojom::ClickAction_Count;
 struct DomNode {
   int node_id;
   std::string document_identifier;
+
+  bool operator==(const DomNode& other) const = default;
 };
 
 using PageTarget = std::variant<gfx::Point, DomNode>;

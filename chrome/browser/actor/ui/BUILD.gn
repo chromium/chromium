@@ -23,6 +23,10 @@ source_set("states") {
     "states/agent_overlay_state.h",
     "states/handoff_button_state.h",
   ]
+
+  sources = [ "states/agent_overlay_state.cc" ]
+
+  public_deps = [ "//chrome/browser/actor:types" ]
 }
 
 source_set("event_dispatcher") {

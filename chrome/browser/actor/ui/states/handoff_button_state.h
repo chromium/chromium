@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_
 #define CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_
 
-namespace actor {
+namespace actor::ui {
 
 // Tab-scoped state.
 struct HandoffButtonState {
@@ -22,6 +22,6 @@ struct HandoffButtonState {
   bool operator==(const HandoffButtonState& other) const = default;
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_STATES_HANDOFF_BUTTON_STATE_H_

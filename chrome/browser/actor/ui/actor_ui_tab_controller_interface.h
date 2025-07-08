@@ -11,10 +11,9 @@
 namespace actor::ui {
 
 struct UiTabState {
-  actor::AgentOverlayState agent_overlay;
-  actor::HandoffButtonState handoff_button;
-
   bool operator==(const UiTabState& other) const = default;
+  AgentOverlayState agent_overlay;
+  HandoffButtonState handoff_button;
 };
 
 class ActorUiTabControllerInterface {

@@ -111,30 +111,30 @@ TEST_P(ActorUiStateManagerTest, OnActorTaskState_UpdateTabScopedUi) {
 const auto kTestValues = std::vector<std::tuple<ActorTask::State, UiTabState>>{
     {ActorTask::State::kCreated,
      UiTabState{
-         .agent_overlay = {.is_active = true},
+         .agent_overlay = AgentOverlayState(/*is_active=*/true),
          .handoff_button = {.is_active = true,
                             .controller =
                                 HandoffButtonState::ControlOwnership::kAgent}}},
     {ActorTask::State::kActing,
      UiTabState{
-         .agent_overlay = {.is_active = true},
+         .agent_overlay = AgentOverlayState(/*is_active=*/true),
          .handoff_button = {.is_active = true,
                             .controller =
                                 HandoffButtonState::ControlOwnership::kAgent}}},
     {ActorTask::State::kReflecting,
      UiTabState{
-         .agent_overlay = {.is_active = true},
+         .agent_overlay = AgentOverlayState(/*is_active=*/true),
          .handoff_button = {.is_active = true,
                             .controller =
                                 HandoffButtonState::ControlOwnership::kAgent}}},
     {ActorTask::State::kPausedByClient,
      UiTabState{
-         .agent_overlay = {.is_active = false},
+         .agent_overlay = AgentOverlayState(/*is_active=*/false),
          .handoff_button =
              {.is_active = true,
               .controller = HandoffButtonState::ControlOwnership::kClient}}},
     {ActorTask::State::kFinished,
-     UiTabState{.agent_overlay = {.is_active = false},
+     UiTabState{.agent_overlay = AgentOverlayState(/*is_active=*/false),
                 .handoff_button = {.is_active = false}}}};
 
 INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerTest,
