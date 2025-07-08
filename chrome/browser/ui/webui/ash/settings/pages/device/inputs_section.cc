@@ -353,7 +353,8 @@ InputsSection::InputsSection(Profile* profile,
       base::BindRepeating(&InputsSection::UpdateSpellCheckSearchTags,
                           base::Unretained(this)));
 
-  observation_.Observe(input_method::InputMethodManager::Get());
+  auto* input_method_manager = input_method::InputMethodManager::Get();
+  observation_.Observe(input_method_manager);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
@@ -366,6 +367,8 @@ InputsSection::InputsSection(Profile* profile,
   }
 
   UpdateSpellCheckSearchTags();
+
+  UpdateAutocorrectTags(input_method_manager);
 }
 
 InputsSection::~InputsSection() = default;
@@ -614,10 +617,8 @@ void InputsSection::UpdateSpellCheckSearchTags() {
   }
 }
 
-void InputsSection::InputMethodChanged(
-    input_method::InputMethodManager* manager,
-    Profile* profile,
-    bool show_message) {
+void InputsSection::UpdateAutocorrectTags(
+    input_method::InputMethodManager* manager) {
   DCHECK(manager);
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(
@@ -628,6 +629,13 @@ void InputsSection::InputMethodChanged(
   if (input_method::IsAutocorrectSupported(engine_id)) {
     updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
   }
+}
+
+void InputsSection::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  UpdateAutocorrectTags(manager);
 }
 
 bool InputsSection::ShouldShowEmojiSuggestionsSettings() const {

@@ -48,6 +48,7 @@ class InputsSection : public OsSettingsSection,
   bool ShouldShowEmojiSuggestionsSettings() const;
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();
+  void UpdateAutocorrectTags(input_method::InputMethodManager* manager);
 
   // input_method::InputMethodManager::Observer:
   void InputMethodChanged(input_method::InputMethodManager* manager,
