@@ -322,6 +322,15 @@ void ViewAndroid::RequestUnbufferedDispatch(const MotionEventAndroid& event) {
                                                      event.GetJavaObject());
 }
 
+void ViewAndroid::SetTooltip(const std::u16string& text) {
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
+  if (delegate.is_null()) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ViewAndroidDelegate_setTooltipText(env, delegate, text);
+}
+
 void ViewAndroid::SetCopyOutputCallback(CopyViewCallback callback) {
   copy_view_callback_ = std::move(callback);
 }

@@ -27,6 +27,7 @@ import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -152,6 +153,9 @@ public class ViewAndroidDelegate {
      */
     public final void setContainerView(@Nullable ViewGroup containerView) {
         ViewGroup oldContainerView = mContainerView;
+        if (oldContainerView != null) {
+            oldContainerView.setTooltipText("");
+        }
         mContainerView = containerView;
         updateAnchorViews(oldContainerView);
         for (ContainerViewObserver observer : mContainerViewObservers) {
@@ -573,6 +577,12 @@ public class ViewAndroidDelegate {
     private void requestFocus() {
         View containerView = getContainerViewGroup();
         if (containerView != null) ViewUtils.requestFocus(containerView);
+    }
+
+    @CalledByNative
+    private void setTooltipText(@JniType("std::u16string") String text) {
+        View container = getContainerView();
+        if (container != null) container.setTooltipText(text);
     }
 
     /**

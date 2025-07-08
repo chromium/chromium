@@ -84,6 +84,8 @@ class TouchSelectionControllerClientManagerAndroid;
 class WebContentsAccessibilityAndroid;
 struct ContextMenuParams;
 
+BASE_FEATURE(kTooltips, "Tooltips", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // -----------------------------------------------------------------------------
 // See comments in render_widget_host_view.h about this class and its members.
 // -----------------------------------------------------------------------------
@@ -179,6 +181,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   uint32_t GetCaptureSequenceNumber() const override;
   int GetMouseWheelMinimumGranularity() const override;
   void UpdateCursor(const ui::Cursor& cursor) override;
+  input::CursorManager* GetCursorManager() override;
   void SetIsLoading(bool is_loading) override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
@@ -191,6 +194,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
+  void UpdateTooltip(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  const gfx::Rect& bounds) override;
   void ClearKeyboardTriggeredTooltip() override;
@@ -717,6 +721,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool observing_root_window_;
 
   bool controls_initialized_ = false;
+
+  std::unique_ptr<input::CursorManager> cursor_manager_;
+  std::u16string tooltip_text_;
 
   float prev_top_shown_pix_;
   float prev_top_controls_pix_;

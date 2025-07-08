@@ -305,8 +305,10 @@ void WebContentsViewAndroid::RenderViewHostChanged(RenderViewHost* old_host,
   if (old_host) {
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
-      static_cast<RenderWidgetHostViewAndroid*>(rwhv)->UpdateNativeViewTree(
-          /*parent_native_view=*/nullptr, /*parent_layer=*/nullptr);
+      auto* rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhv);
+      rwhva->UpdateNativeViewTree(/*parent_native_view=*/nullptr,
+                                  /*parent_layer=*/nullptr);
+      rwhva->UpdateTooltip(std::u16string());
     }
   }
 
