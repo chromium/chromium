@@ -72,16 +72,8 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
-// TODO(crbug.com/421286357): Flaky on linux builders.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TouchExplorationSendsHoverEvents \
-  DISABLED_TouchExplorationSendsHoverEvents
-#else
-#define MAYBE_TouchExplorationSendsHoverEvents TouchExplorationSendsHoverEvents
-#endif
-
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
-                       MAYBE_TouchExplorationSendsHoverEvents) {
+                       TouchExplorationSendsHoverEvents) {
   // Create HTML with a 7 x 5 table, each exactly 50 x 50 pixels.
   std::string html_url =
       "data:text/html,"
@@ -91,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       "  td { width: 50px; height: 50px; padding: 0; }"
       "</style>"
       "<body>"
-      "<table>";
+      "<table aria-label='test-table'>";
   int cell = 0;
   for (int row = 0; row < 5; ++row) {
     html_url += "<tr>";
@@ -111,6 +103,11 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   ui::BrowserAccessibilityManager* manager =
       web_contents->GetRootBrowserAccessibilityManager();
   ASSERT_NE(nullptr, manager);
+
+  // Eliminate test flakiness by waiting for the accessibility tree to contain
+  // the "test-table" node. That should indicate that the table has been fully
+  // parsed by `AXObjectCacheImpl`.
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents, "test-table");
 
   // Loop over all of the cells in the table. For each one, send a simulated
   // touch exploration event in the center of that cell, and assert that we
