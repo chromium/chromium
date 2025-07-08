@@ -884,7 +884,8 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
                              ->GetContents()
                              ->GetLastCommittedURL();
   if (lookup_results.empty()) {
-    if (URLsMatchWithoutTextFragment(page_url, nav_url)) {
+    if (lens::features::IsLensSearchNotFoundOnPageToastEnabled() &&
+        URLsMatchWithoutTextFragment(page_url, nav_url)) {
       lens::RecordHandleTextDirectiveResult(
           lens::LensOverlayTextDirectiveResult::kNotFoundOnPage);
       ShowToast(l10n_util::GetStringUTF8(
@@ -904,7 +905,8 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
   for (auto pair : lookup_results) {
     // If any of the text fragments are not found, then open in a new tab.
     if (!pair.second) {
-      if (URLsMatchWithoutTextFragment(page_url, nav_url)) {
+      if (lens::features::IsLensSearchNotFoundOnPageToastEnabled() &&
+          URLsMatchWithoutTextFragment(page_url, nav_url)) {
         lens::RecordHandleTextDirectiveResult(
             lens::LensOverlayTextDirectiveResult::kNotFoundOnPage);
         ShowToast(l10n_util::GetStringUTF8(

@@ -140,6 +140,11 @@ BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayBackToPage);
 
+// Enables the search not found on page toast when a user clicks a citation for
+// the current page they are viewing but the text was not found.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -993,6 +998,10 @@ bool IsLensOverlayPermissionBubbleAltEnabled();
 // Whether the back to live page functionality is enabled in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayBackToPageEnabled();
+
+// Whether to enable the not found on page toast.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSearchNotFoundOnPageToastEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
