@@ -796,6 +796,8 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
+  const char16_t kJunkString[] = {0xdead, 0xbeef, '\0'};
+
   auto keys = std::to_array({
       IndexedDBKey(-15, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(-10, blink::mojom::IDBKeyType::Number),
@@ -813,6 +815,14 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
       IndexedDBKey(u"baaa"),
       IndexedDBKey(u"baab"),
       IndexedDBKey(u"c"),
+
+      // Some more adventurous strings.
+      IndexedDBKey(u"\xA2"),
+      // Valid UTF16.
+      IndexedDBKey(u"\x4f60\x597d "),
+      // Invalid UTF16. The first character is a truncated UTF-16 character.
+      IndexedDBKey(u"\xd800\x597d"),
+      IndexedDBKey(std::u16string(kJunkString)),
 
       IndexedDBKey(std::string()),
       IndexedDBKey(std::string("\x01")),

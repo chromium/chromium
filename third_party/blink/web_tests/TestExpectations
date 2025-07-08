@@ -6625,7 +6625,6 @@ crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unha
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
 # To-be-fixed tests from the IndexedDB SQLite virtual suite.
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/cursor-key-order.html [ Crash Failure ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/exceptions.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-long-queue.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/open-ordering.html [ Crash ]

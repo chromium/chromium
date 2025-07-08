@@ -142,8 +142,9 @@ bool DecodeStringWithSentinel(std::string_view& encoded,
     if (encoded.at(0) != kPaddingByte) {
       return false;
     }
-    output->push_back(static_cast<char16_t>(encoded.at(1)) << 8 |
-                      encoded.at(2));
+    uint8_t hi = static_cast<uint8_t>(encoded.at(1));
+    uint8_t lo = static_cast<uint8_t>(encoded.at(2));
+    output->push_back((char16_t{hi} << 8) | char16_t{lo});
   }
   return false;
 }
