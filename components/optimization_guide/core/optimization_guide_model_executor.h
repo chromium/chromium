@@ -168,6 +168,12 @@ enum class OnDeviceModelEligibilityReason {
   // On-device model execution for this feature was not enabled.
   kFeatureExecutionNotEnabled = 11,
   // On-device model adaptation was required but not available.
+  //
+  // Since model adaptations are bundled with feature configs, for general
+  // error cases when server cannot provide model adaptation,
+  // `kConfigNotAvailableForFeature` is returned instead.
+  // `kModelAdaptationNotAvailable` is only emitted in certain special cases
+  // (e.g. if the requested capability will never be supported by the device).
   kModelAdaptationNotAvailable = 12,
   // Validation has not completed for the model yet.
   kValidationPending = 13,
