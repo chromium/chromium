@@ -28,7 +28,6 @@
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -75,11 +74,10 @@ std::vector<DateAndFormat> GetMatchingCompleteDateAndFormats(
 // TODO(crbug.com/429655113): Do we need this? If not, remove.
 void FindAndSetPossibleCvcFieldTypes(
     std::u16string_view last_unlocked_credit_card_cvc,
-    const FormStructure& form_structure,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<PossibleTypes> possible_types) {
   if (!last_unlocked_credit_card_cvc.empty()) {
-    for (auto [field, pt] :
-         base::zip(form_structure.fields(), possible_types)) {
+    for (auto [field, pt] : base::zip(fields, possible_types)) {
       if (last_unlocked_credit_card_cvc ==
           base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL)) {
         pt.types.insert(CREDIT_CARD_VERIFICATION_CODE);
@@ -107,7 +105,7 @@ void FindAndSetPossibleCvcFieldTypes(
   // * it does not look like an expiration year or an expiration year was
   //   already found;
   // * it is filled with a 3-4 digit number;
-  for (auto [field, pt] : base::zip(form_structure.fields(), possible_types)) {
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
     if (pt.types.contains(CREDIT_CARD_NUMBER)) {
       credit_card_number_found = true;
       continue;
@@ -215,11 +213,11 @@ void FindAndSetPossibleDateFieldTypes(
     base::span<const EntityInstance> entities,
     const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
-    const FormStructure& form,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<PossibleTypes> possible_types) {
   std::map<data_util::Date, std::vector<size_t>> date_to_field_indices;
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    if (auto it = dates_and_formats.find(form.field(i)->global_id());
+  for (size_t i = 0; i < fields.size(); ++i) {
+    if (auto it = dates_and_formats.find(fields[i]->global_id());
         it != dates_and_formats.end()) {
       for (const data_util::Date& date : it->second.dates) {
         date_to_field_indices[date].push_back(i);
@@ -309,7 +307,7 @@ DatesAndFormats::~DatesAndFormats() = default;
 
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
-    const FormStructure& form_structure,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     const std::string& app_locale) {
   std::set<FieldGlobalId> fields_that_match_state;
   for (const auto* profile : profiles) {
@@ -324,7 +322,7 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     const std::u16string& country_code =
         profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
 
-    for (auto& field : form_structure) {
+    for (auto& field : fields) {
       if (fields_that_match_state.contains(field->global_id())) {
         continue;
       }
@@ -353,12 +351,12 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
-    const FormStructure& form) {
+    base::span<const std::unique_ptr<AutofillField>> fields) {
   std::vector<PossibleTypes> possible_types;
-  possible_types.resize(form.fields().size());
+  possible_types.resize(fields.size());
 
   // Most type detection happens in this loop.
-  for (auto [field, types] : base::zip(form.fields(), possible_types)) {
+  for (auto [field, types] : base::zip(fields, possible_types)) {
     types.types = GetPossibleFieldTypes(*field, profiles, credit_cards,
                                         entities, loyalty_cards,
                                         fields_that_match_state, app_locale);
@@ -367,19 +365,19 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   // Date detection is not part of the above loop because dates can span
   // multiple fields.
   FindAndSetPossibleDateFieldTypes(entities, dates_and_formats, app_locale,
-                                   form, possible_types);
+                                   fields, possible_types);
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
-  FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, form,
+  FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
                                   possible_types);
 
-  for (auto [field, pt] : base::zip(form.fields(), possible_types)) {
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
     if (pt.types.empty()) {
       pt.types = {UNKNOWN_TYPE};
     }
   }
 
-  return DisambiguatePossibleFieldTypes(form, std::move(possible_types));
+  return DisambiguatePossibleFieldTypes(fields, std::move(possible_types));
 }
 
 FieldTypeSet DetermineAvailableFieldTypes(

@@ -22,7 +22,7 @@ namespace autofill {
 class AutofillProfile;
 class CreditCard;
 class EntityInstance;
-class FormStructure;
+class AutofillField;
 class LoyaltyCard;
 
 // The result of DeterminePossibleFieldTypesForUpload() for a specific
@@ -90,7 +90,7 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
 // passed to DeterminePossibleFieldTypesForUpload().
 [[nodiscard]] std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
-    const FormStructure& form_structure,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     const std::string& app_locale);
 
 // Determines the `FieldType`s for which profiles etc. define non-empty
@@ -108,7 +108,7 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
-    const FormStructure& form);
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 // Returns the set of `FieldType`s for which the given profiles etc. contain
 // non-empty values.

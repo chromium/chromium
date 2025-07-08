@@ -11,7 +11,7 @@
 
 namespace autofill {
 
-class FormStructure;
+class AutofillField;
 struct PossibleTypes;
 
 // Applies several heuristics to select the most probable types for fields with
@@ -20,7 +20,7 @@ struct PossibleTypes;
 // Note that the case where a single-line street address is ambiguous to address
 // line 1 is handled on the server.
 std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
-    const FormStructure& form,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     std::vector<PossibleTypes> possible_types);
 
 }  // namespace autofill

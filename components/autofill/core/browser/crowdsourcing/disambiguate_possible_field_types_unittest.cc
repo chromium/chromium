@@ -53,9 +53,10 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
       pt.types = test_field.ambiguous_possible_field_types;
     }
 
-    return base::ToVector(DisambiguatePossibleFieldTypes(
-                              form_structure, std::move(possible_types)),
-                          &PossibleTypes::types);
+    return base::ToVector(
+        DisambiguatePossibleFieldTypes(form_structure.fields(),
+                                       std::move(possible_types)),
+        &PossibleTypes::types);
   }
 
  private:

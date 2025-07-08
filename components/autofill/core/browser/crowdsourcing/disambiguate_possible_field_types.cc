@@ -8,7 +8,6 @@
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -62,7 +61,7 @@ bool IsNameType(const AutofillField& field) {
 // according to the types tree structure, e.g. `NAME_FULL`, `NAME_LAST` and
 // `NAME_LAST_{FIRST,SECOND}` at the same time.
 [[nodiscard]] FieldTypeSet MaybeDisambiguateNameTypes(
-    const FormStructure& form,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     size_t current_field_index,
     FieldTypeSet possible_types) {
   // Disambiguation is only applicable if there is a mixture of one or more
@@ -96,7 +95,7 @@ bool IsNameType(const AutofillField& field) {
   size_t index = current_field_index;
   while (index != 0 && !has_found_previous_type) {
     --index;
-    const AutofillField& prev_field = *form.field(index);
+    const AutofillField& prev_field = *fields[index];
     if (!IsNameType(prev_field)) {
       has_found_previous_type = true;
       is_previous_credit_card =
@@ -108,8 +107,8 @@ bool IsNameType(const AutofillField& field) {
   bool has_found_next_type = false;
   bool is_next_credit_card = false;
   index = current_field_index;
-  while (++index < form.field_count() && !has_found_next_type) {
-    const AutofillField& next_field = *form.field(index);
+  while (++index < fields.size() && !has_found_next_type) {
+    const AutofillField& next_field = *fields[index];
     if (!IsNameType(next_field)) {
       has_found_next_type = true;
       is_next_credit_card =
@@ -139,9 +138,9 @@ bool IsNameType(const AutofillField& field) {
 }  // namespace
 
 std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
-    const FormStructure& form,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     std::vector<PossibleTypes> possible_types) {
-  for (size_t i = 0; i < form.field_count(); ++i) {
+  for (size_t i = 0; i < fields.size(); ++i) {
     if (possible_types[i].types.size() <= 1) {
       continue;
     }
@@ -149,12 +148,12 @@ std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
     // user should have the highest priority among disambiguation methods
     // because it represents user intent the most.
     possible_types[i].types = OverridePossibleTypesToAutofilledTypeIfAvailable(
-        *form.field(i), possible_types[i].types);
+        *fields[i], possible_types[i].types);
     if (possible_types[i].types.size() <= 1) {
       continue;
     }
     possible_types[i].types =
-        MaybeDisambiguateNameTypes(form, i, possible_types[i].types);
+        MaybeDisambiguateNameTypes(fields, i, possible_types[i].types);
   }
   return possible_types;
 }
