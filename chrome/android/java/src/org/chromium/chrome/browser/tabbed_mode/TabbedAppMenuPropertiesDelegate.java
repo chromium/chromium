@@ -24,6 +24,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -225,8 +226,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Add to Group
         if (shouldShowAddToGroup()) modelList.add(buildAddToGroupItem(currentTab));
 
-        // Pin tab.
-        if (shouldShowPinTab()) modelList.add(buildPinTabItem());
+        // Pin/Unpin tab.
+        if (shouldShowTogglePinTabItem(currentTab)) {
+            modelList.add(buildTogglePinTabItem(currentTab));
+        }
 
         // New Window
         if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
@@ -507,18 +510,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
-    private boolean shouldShowPinTab() {
-        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
+    @Contract("null -> false")
+    private boolean shouldShowTogglePinTabItem(Tab currentTab) {
+        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled() && currentTab != null;
     }
 
-    private MVCListAdapter.ListItem buildPinTabItem() {
-        assert shouldShowPinTab();
+    private MVCListAdapter.ListItem buildTogglePinTabItem(Tab currentTab) {
+        assert shouldShowTogglePinTabItem(currentTab);
+        boolean isPinned = currentTab.getIsPinned();
+        int menuId = isPinned ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id;
+        int titleId = isPinned ? R.string.menu_unpin_tab : R.string.menu_pin_tab;
+
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
-                        R.id.pin_tab_menu_id,
-                        R.string.menu_pin_tab,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_keep_24dp : 0));
+                        menuId, titleId, shouldShowIconBeforeItem() ? R.drawable.ic_keep_24dp : 0));
     }
 
     private MVCListAdapter.ListItem buildNewWindowItem() {

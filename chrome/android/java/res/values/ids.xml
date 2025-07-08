@@ -130,6 +130,7 @@ found in the LICENSE file.
     <item type="id" name="new_incognito_tab_menu_id" />
     <item type="id" name="add_to_group_menu_id" />
     <item type="id" name="pin_tab_menu_id" />
+    <item type="id" name="unpin_tab_menu_id" />
     <item type="id" name="new_window_menu_id" />
     <item type="id" name="move_to_other_window_menu_id" />
     <item type="id" name="manage_all_windows_menu_id" />
