@@ -270,7 +270,7 @@ class AppMenuHandlerImpl
         mModelList = mDelegate.getMenuItems();
         mModelList.addObserver(mListObserver);
         ContextThemeWrapper wrapper =
-                new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
+                new ContextThemeWrapper(mContext, R.style.AppMenuThemeOverlay);
 
         TypedArray a =
                 wrapper.obtainStyledAttributes(

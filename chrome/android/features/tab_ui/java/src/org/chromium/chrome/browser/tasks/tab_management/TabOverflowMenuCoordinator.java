@@ -100,7 +100,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 int popupWidthPx,
                 @Nullable Callback<OverflowMenuHolder<T>> onDismiss,
                 Activity activity) {
-            mContext = new ContextThemeWrapper(activity, R.style.Base_OverflowMenuThemeOverlay);
+            mContext = new ContextThemeWrapper(activity, R.style.OverflowMenuThemeOverlay);
             mComponentCallbacks =
                     new ComponentCallbacks() {
                         @Override

@@ -58,7 +58,8 @@ found in the LICENSE file.
         <item name="android:listChoiceBackgroundIndicator">@drawable/list_item_ripple</item>
         <item name="android:colorControlHighlight">@color/control_highlight_color</item>
     </style>
-    <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay">
+    <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
+    <style name="AppMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay">
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
