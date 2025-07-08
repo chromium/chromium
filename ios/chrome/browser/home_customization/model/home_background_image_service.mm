@@ -20,10 +20,7 @@ HomeBackgroundImageService::HomeBackgroundImageService(
   ntp_background_service_->AddObserver(this);
 }
 
-HomeBackgroundImageService::~HomeBackgroundImageService() {
-  ntp_background_service_->RemoveObserver(this);
-  ntp_background_service_ = nullptr;
-}
+HomeBackgroundImageService::~HomeBackgroundImageService() = default;
 
 void HomeBackgroundImageService::FetchDefaultCollectionImages(
     CollectionsImagesCallback callback) {
@@ -134,4 +131,7 @@ void HomeBackgroundImageService::OnCollectionInfoAvailable() {
 
 void HomeBackgroundImageService::OnCollectionImagesAvailable() {}
 void HomeBackgroundImageService::OnNextCollectionImageAvailable() {}
-void HomeBackgroundImageService::OnNtpBackgroundServiceShuttingDown() {}
+void HomeBackgroundImageService::OnNtpBackgroundServiceShuttingDown() {
+  ntp_background_service_->RemoveObserver(this);
+  ntp_background_service_ = nullptr;
+}

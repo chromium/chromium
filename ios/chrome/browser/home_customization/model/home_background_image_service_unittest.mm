@@ -31,15 +31,20 @@ const char kTestActionUrl[] = "https://wallpapers.co/some_image/learn_more";
 
 class HomeBackgroundImageServiceTest : public PlatformTest {
  public:
-  HomeBackgroundImageServiceTest()
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        application_locale_storage_(
-            std::make_unique<ApplicationLocaleStorage>()) {
+  void SetUp() override {
+    test_shared_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
     service_ = std::make_unique<NtpBackgroundService>(
         application_locale_storage_.get(), test_shared_loader_factory_);
     model_ = std::make_unique<HomeBackgroundImageService>(service_.get());
+  }
+
+  void TearDown() override {
+    service_->Shutdown();
+    service_.reset();
+    model_.reset();
   }
 
   void SetUpResponseWithNetworkSuccess(
