@@ -136,9 +136,9 @@ class FloatingWorkspaceService
   // AppRegistryCacheWrapper::Observer
   void OnAppRegistryCacheAdded(const AccountId& account_id) override;
 
-  void InitForV2(syncer::SyncService* sync_service,
-                 desks_storage::DeskSyncService* desk_sync_service,
-                 syncer::DeviceInfoSyncService* device_info_sync_service);
+  void InitImpl(syncer::SyncService* sync_service,
+                desks_storage::DeskSyncService* desk_sync_service,
+                syncer::DeviceInfoSyncService* device_info_sync_service);
 
   // Start and Stop capturing and uploading the active desks.
   void StartCaptureAndUploadActiveDesk();

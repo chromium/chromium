@@ -182,16 +182,14 @@ void FloatingWorkspaceService::Init(
   if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
                       kFloatingWorkspaceV2Enabled &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-    InitForV2(sync_service, desk_sync_service, device_info_sync_service);
+    InitImpl(sync_service, desk_sync_service, device_info_sync_service);
     return;
   }
 
   if (version_ ==
       floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
     should_run_restore_ = false;
-    // TODO(crbug.com/419508619): fix naming (now we call `InitForV2` in the
-    // code path where the `version_` is not `kFloatingWorkspaceV2Enabled`).
-    InitForV2(sync_service, desk_sync_service, device_info_sync_service);
+    InitImpl(sync_service, desk_sync_service, device_info_sync_service);
   }
 }
 
@@ -377,7 +375,7 @@ void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
 
 void FloatingWorkspaceService::OnDeviceInfoChange() {}
 
-void FloatingWorkspaceService::InitForV2(
+void FloatingWorkspaceService::InitImpl(
     syncer::SyncService* sync_service,
     desks_storage::DeskSyncService* desk_sync_service,
     syncer::DeviceInfoSyncService* device_info_sync_service) {
