@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines:search_engines",
     "//chrome/test:test_support",
     "//components/omnibox/composebox",
+    "//components/omnibox/composebox:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
   ]

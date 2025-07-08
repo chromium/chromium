@@ -17,6 +17,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/search_engines/util.h"
+#include "components/variations/variations_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
@@ -203,7 +204,8 @@ class ComposeboxQueryController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel,
       std::string locale,
-      TemplateURLService* template_url_service);
+      TemplateURLService* template_url_service,
+      variations::VariationsClient* variations_client);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -362,7 +364,11 @@ class ComposeboxQueryController {
   // Task runner used to create the file upload request proto asynchronously.
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
-  raw_ptr<TemplateURLService> template_url_service_;
+  // Owned by the Profile, and thus guaranteed to outlive this instance.
+  const raw_ptr<TemplateURLService> template_url_service_;
+
+  // Owned by the Profile, and thus guaranteed to outlive this instance.
+  const raw_ptr<variations::VariationsClient> variations_client_;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

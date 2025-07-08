@@ -754,7 +754,8 @@ void NewTabPageUI::BindInterface(
           IdentityManagerFactory::GetForProfile(profile_),
           g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
           g_browser_process->GetApplicationLocale(),
-          TemplateURLServiceFactory::GetForProfile(profile_)),
+          TemplateURLServiceFactory::GetForProfile(profile_),
+          profile_->GetVariationsClient()),
       web_contents());
 }
 

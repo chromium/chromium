@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/variations/variations_client.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -38,6 +39,7 @@
 #endif  // !BUILDFLAG(IS_IOS)
 
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
+constexpr char kVariationsHeaderKey[] = "X-Client-Data";
 constexpr char kTestUser[] = "test_user@gmail.com";
 constexpr char kTestServerSessionId[] = "test_server_session_id";
 constexpr char kLocale[] = "en-US";
@@ -68,9 +70,11 @@ class ComposeboxQueryControllerTest
     icu::Locale::setDefault(icu::Locale(kLocale), error_code);
     ASSERT_TRUE(U_SUCCESS(error_code));
 
+    fake_variations_client_ = std::make_unique<FakeVariationsClient>();
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
-        version_info::Channel::UNKNOWN, kLocale, template_url_service());
+        version_info::Channel::UNKNOWN, kLocale, template_url_service(),
+        fake_variations_client_.get());
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -163,6 +167,7 @@ class ComposeboxQueryControllerTest
   network::TestURLLoaderFactory test_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  std::unique_ptr<FakeVariationsClient> fake_variations_client_;
   std::unique_ptr<TestComposeboxQueryController> controller_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
@@ -406,6 +411,47 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
             1);
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+TEST_F(ComposeboxQueryControllerTest, UploadFileRequestIncludesCorsVariations) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  controller().NotifySessionStarted();
+  run_loop.Run();
+
+  // The cluster info request should have the cors variations header.
+  EXPECT_THAT(controller().last_sent_cors_exempt_headers(),
+              testing::Contains(kVariationsHeaderKey));
+
+  // Add file to cache.
+  std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
+      std::make_unique<ComposeboxQueryController::FileInfo>();
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
+  file_info->mime_type_ = lens::MimeType::kPdf;
+
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
+
+  controller().StartFileUploadFlow(
+      std::move(file_info),
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  WaitForFileExpectedUploadStatus();
+
+  // Validate.
+  EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
+
+  // The file upload request should have the cors variations header.
+  EXPECT_THAT(controller().last_sent_cors_exempt_headers(),
+              testing::Contains(kVariationsHeaderKey));
+}
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Wait until the state changes to kClusterInfoReceived.
