@@ -59,6 +59,12 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
         /*disabled_features=*/{});
   }
 
+  void DisableQuickShareV2() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kQuickShareV2});
+  }
+
  protected:
   void SetUpButton() {
     pod_controller_ =
@@ -138,8 +144,10 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
+// TODO(430326919): Remove once Quick Share v2 is launched.
 TEST_F(NearbyShareFeaturePodControllerTest,
        ButtonToggledByHighVisibilityEnabledEvent) {
+  DisableQuickShareV2();
   SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   ASSERT_FALSE(IsButtonToggled());
@@ -149,7 +157,9 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   EXPECT_FALSE(IsButtonToggled());
 }
 
+// TODO(430326919): Remove once Quick Share v2 is launched.
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
+  DisableQuickShareV2();
   SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
   test_delegate_->method_calls().clear();
@@ -167,7 +177,9 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
             test_delegate_->method_calls()[1]);
 }
 
+// TODO(430326919): Remove once Quick Share v2 is launched.
 TEST_F(NearbyShareFeaturePodControllerTest, IconUMATracking) {
+  DisableQuickShareV2();
   SimulateUserLogin(kRegularUserLoginInfo);
   SetUpButton();
 
@@ -196,7 +208,9 @@ TEST_F(NearbyShareFeaturePodControllerTest, IconUMATracking) {
                                       /*expected_count=*/1);
 }
 
+// TODO(430326919): Remove once Quick Share v2 is launched.
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
+  DisableQuickShareV2();
   SimulateUserLogin(kRegularUserLoginInfo);
   test_delegate_->set_is_enabled(false);
   SetUpButton();
