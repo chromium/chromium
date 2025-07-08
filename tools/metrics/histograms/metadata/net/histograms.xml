@@ -7887,6 +7887,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.URLLoader.AcceptCHFrameReceivedOnHttp2" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether an ACCEPT_CH frame was received on an HTTP/2 connection.
+    This is recorded when the URLLoader is connected.
+  </summary>
+</histogram>
+
+<histogram name="Net.URLLoader.AcceptCHFrameReceivedOnHttp3" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether an ACCEPT_CH frame was received on an HTTP/3 connection.
+    This is recorded when the URLLoader is connected.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoader.ProportionOfWritesBlockedByMojo" units="%"
     expires_after="2025-12-04">
   <owner>yoichio@chromium.org</owner>

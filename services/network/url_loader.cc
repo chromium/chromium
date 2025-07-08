@@ -898,6 +898,13 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
   TRACE_EVENT("loading", "URLLoader::ProcessAcceptCHFrameOnConnected",
               net::NetLogWithSourceToFlow(url_request_->net_log()), "url",
               url_request_->url());
+  if (info.negotiated_protocol == net::NextProto::kProtoHTTP2) {
+    base::UmaHistogramBoolean("Net.URLLoader.AcceptCHFrameReceivedOnHttp2",
+                              !info.accept_ch_frame.empty());
+  } else if (info.negotiated_protocol == net::NextProto::kProtoQUIC) {
+    base::UmaHistogramBoolean("Net.URLLoader.AcceptCHFrameReceivedOnHttp3",
+                              !info.accept_ch_frame.empty());
+  }
   if (!accept_ch_frame_interceptor_) {
     return net::OK;
   }
