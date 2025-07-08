@@ -509,6 +509,11 @@ class TabStripModel {
 
   split_tabs::SplitTabData* GetSplitData(split_tabs::SplitTabId split_id) const;
 
+  // Returns the set of SplitTabIds for the split tabs found in this
+  // TabStripModel. These ids are globally unique and randomly generated across
+  // all windows.
+  std::set<split_tabs::SplitTabId> ListSplits() const;
+
   bool ContainsSplit(split_tabs::SplitTabId split_id) const;
 
   std::optional<split_tabs::SplitTabId> GetSplitForTab(int index) const;

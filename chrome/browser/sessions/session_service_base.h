@@ -245,6 +245,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                                    content::WebContents* tab,
                                    int index_in_window,
                                    std::optional<tab_groups::TabGroupId> group,
+                                   std::optional<split_tabs::SplitTabId> split,
                                    bool is_pinned,
                                    IdToRange* tab_to_available_range);
 

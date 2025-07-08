@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -50,6 +52,8 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -70,7 +74,10 @@ using sessions::SerializedNavigationEntryTestHelper;
 
 class SessionServiceTest : public BrowserWithTestWindowTest {
  public:
-  SessionServiceTest() : window_bounds(0, 1, 2, 3) {}
+  SessionServiceTest() : window_bounds(0, 1, 2, 3) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSideBySide, features::kSideBySideSessionRestore}, {});
+  }
 
  protected:
   void SetUp() override {
@@ -214,6 +221,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SessionServiceTest, Basic) {
@@ -1250,6 +1258,85 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
     } else {
       EXPECT_EQ(std::nullopt, tab_groups[group_id]->saved_guid);
     }
+  }
+}
+
+TEST_F(SessionServiceTest, SplitTabSaved) {
+  const split_tabs::SplitTabId split_one =
+      split_tabs::SplitTabId::GenerateNew();
+  const split_tabs::SplitTabId split_two =
+      split_tabs::SplitTabId::GenerateNew();
+  constexpr int kNumTabs = 6;
+  const std::array<std::optional<split_tabs::SplitTabId>, kNumTabs> splits = {
+      std::nullopt, split_one, split_one, std::nullopt, split_two, split_two};
+
+  // Create `kNumTabs` tabs with split IDs in `splits`.
+  for (int tab_ndx = 0; tab_ndx < kNumTabs; ++tab_ndx) {
+    const SessionID tab_id =
+        CreateTabWithTestNavigationData(window_id, tab_ndx);
+    service()->SetSplitTab(window_id, tab_id, splits[tab_ndx]);
+  }
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr, nullptr, nullptr);
+
+  ASSERT_EQ(1U, windows.size());
+  ASSERT_EQ(kNumTabs, static_cast<int>(windows[0]->tabs.size()));
+  ASSERT_EQ(2U, windows[0]->split_tabs.size());
+
+  for (int tab_ndx = 0; tab_ndx < kNumTabs; ++tab_ndx) {
+    sessions::SessionTab* tab = windows[0]->tabs[tab_ndx].get();
+    EXPECT_EQ(splits[tab_ndx], tab->split_id);
+  }
+}
+
+TEST_F(SessionServiceTest, SplitTabDataSaved) {
+  constexpr int kNumSplitTabs = 2;
+  const std::array<split_tabs::SplitTabId, kNumSplitTabs> split_ids = {
+      split_tabs::SplitTabId::GenerateNew(),
+      split_tabs::SplitTabId::GenerateNew()};
+
+  const std::array<split_tabs::SplitTabVisualData, kNumSplitTabs> visual_data =
+      {split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kHorizontal,
+                                      0.2),
+       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                      0.7)};
+
+  int tab_ndx = 0;
+  // Create `kNumSplitTabs` split tabs.
+  for (int split_ndx = 0; split_ndx < kNumSplitTabs; ++split_ndx) {
+    const SessionID tab_id_one =
+        CreateTabWithTestNavigationData(window_id, tab_ndx++);
+    const SessionID tab_id_two =
+        CreateTabWithTestNavigationData(window_id, tab_ndx++);
+
+    service()->SetSplitTab(window_id, tab_id_one, split_ids[split_ndx]);
+    service()->SetSplitTab(window_id, tab_id_two, split_ids[split_ndx]);
+
+    service()->SetSplitTabData(window_id, split_ids[split_ndx],
+                               &visual_data[split_ndx]);
+  }
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr, nullptr, nullptr);
+
+  ASSERT_EQ(1U, windows.size());
+  ASSERT_EQ(4U, windows[0]->tabs.size());
+  ASSERT_EQ(2U, windows[0]->split_tabs.size());
+
+  // There's no guaranteed order in `SessionWindow::split_tabs`, so use a map.
+  base::flat_map<split_tabs::SplitTabId, sessions::SessionSplitTab*>
+      split_tab_map;
+  for (int split_ndx = 0; split_ndx < kNumSplitTabs; ++split_ndx) {
+    split_tab_map.emplace(windows[0]->split_tabs[split_ndx]->id_,
+                          windows[0]->split_tabs[split_ndx].get());
+  }
+
+  for (int split_ndx = 0; split_ndx < kNumSplitTabs; ++split_ndx) {
+    const split_tabs::SplitTabId split_id = split_ids[split_ndx];
+    ASSERT_TRUE(base::Contains(split_tab_map, split_id));
+    EXPECT_EQ(visual_data[split_ndx],
+              split_tab_map[split_id]->split_visual_data_);
   }
 }
 

@@ -91,13 +91,26 @@ class SessionService : public SessionServiceBase {
   // Deletes the last session.
   void DeleteLastSession();
 
+  // Sets a tab's split ID, if any. Note that a split can't be across
+  // multiple windows.
+  void SetSplitTab(SessionID window_id,
+                   SessionID tab_id,
+                   std::optional<split_tabs::SplitTabId> split);
+
+  // Updates the metadata associated with a split tab. `window_id` should be
+  // the window where the split currently resides. Note that a split can't be
+  // across multiple windows.
+  void SetSplitTabData(SessionID window_id,
+                       const split_tabs::SplitTabId split,
+                       const split_tabs::SplitTabVisualData* visual_data);
+
   // Sets a tab's group ID, if any. Note that a group can't be split between
   // multiple windows.
   void SetTabGroup(SessionID window_id,
                    SessionID tab_id,
                    std::optional<tab_groups::TabGroupId> group);
 
-  // Updates the metadata associated with a tab group. |window_id| should be
+  // Updates the metadata associated with a tab group. `window_id` should be
   // the window where the group currently resides. Note that a group can't be
   // split between multiple windows.
   void SetTabGroupMetadata(SessionID window_id,
@@ -194,6 +207,7 @@ class SessionService : public SessionServiceBase {
                            content::WebContents* tab,
                            int index_in_window,
                            std::optional<tab_groups::TabGroupId> group,
+                           std::optional<split_tabs::SplitTabId> split,
                            bool is_pinned,
                            IdToRange* tab_to_available_range) override;
 
