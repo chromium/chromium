@@ -991,8 +991,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 }
 
+// TODO(crbug.com/430272149): Test is consistently failing on bots from
+// different platforms. Re-enable the test when the issue is fixed.
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
-                       PrewarmPrerenderReuseThenActivate) {
+                       DISABLED_PrewarmPrerenderReuseThenActivate) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
