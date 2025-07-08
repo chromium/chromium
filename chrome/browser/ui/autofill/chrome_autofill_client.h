@@ -181,6 +181,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data) final;
+  void TriggerDeclinedSaveAddressReasonSurvey() final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;

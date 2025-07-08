@@ -217,6 +217,10 @@ void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;

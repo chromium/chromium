@@ -49,6 +49,7 @@ class AddressBubblesController
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       bool is_migration_to_account,
+      bool user_has_any_profile_saved,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   // AddressBubbleControllerDelegate:
@@ -89,6 +90,7 @@ class AddressBubblesController
   void SetUpAndShowBubble(ShowBubbleViewCallback show_bubble_view_callback,
                           std::u16string page_action_icon_tootip,
                           bool is_migration_to_account,
+                          bool user_has_any_profile_saved,
                           AutofillClient::AddressProfileSavePromptCallback
                               address_profile_save_prompt_callback);
 
@@ -118,6 +120,9 @@ class AddressBubblesController
   // update/save which asks them if they want to sign in to Chrome and move the
   // just saved address to account store.
   bool is_showing_sign_in_promo_ = false;
+
+  // Whether the user has any addresses profile saved.
+  bool user_has_any_profile_saved_ = false;
 
   // The callback to create and show the bubble. It defines the appearance of
   // the bubble and contains some specific logic. The controller doesn't take

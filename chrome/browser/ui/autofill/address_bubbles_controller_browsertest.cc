@@ -5,22 +5,32 @@
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
 
+using ::testing::_;
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
 class AddressBubblesControllerBrowserTest : public InProcessBrowserTest {
  public:
-  AddressBubblesControllerBrowserTest() = default;
+  AddressBubblesControllerBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        autofill::features::kAutofillAddressUserDeclinedSaveSurvey);
+  }
   AddressBubblesControllerBrowserTest(
       const AddressBubblesControllerBrowserTest&) = delete;
   AddressBubblesControllerBrowserTest& operator=(
@@ -35,6 +45,8 @@ class AddressBubblesControllerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_features_;
+
   raw_ptr<content::WebContents> tab_web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -55,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -77,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       side_panel_web_contents, profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -93,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
@@ -101,6 +116,78 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   tab_controller()->OnUserDecision(
       AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       DeclinedSaveTriggersSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  auto empty_profile = AutofillProfile(AddressCountryCode("US"));
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), empty_profile, /*original_profile=*/nullptr,
+      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/false,
+      callback.Get());
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillAddressUserDeclinedSave,
+          _, _, _, _, _, _, _, _, _));
+  EXPECT_CALL(
+      callback,
+      Run(AutofillClient::AddressPromptUserDecision::kDeclined, _));
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       DeclinedSaveWithProfileDoesNotTriggerSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), test::GetFullProfile(), /*original_profile=*/nullptr,
+      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/true,
+      callback.Get());
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillAddressUserDeclinedSave,
+          _, _, _, _, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(callback,
+              Run(AutofillClient::AddressPromptUserDecision::kDeclined, _));
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       AcceptedSaveDoesNotTriggerSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  auto empty_profile = AutofillProfile(AddressCountryCode("US"));
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), empty_profile, /*original_profile=*/nullptr,
+      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/false,
+      callback.Get());
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillAddressUserDeclinedSave,
+          _, _, _, _, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(
+      callback,
+      Run(AutofillClient::AddressPromptUserDecision::kAccepted, _));
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
+}
+#endif
 
 // This is testing that closing all tabs (which effectively destroys the web
 // contents) will trigger the save callback with kIgnored decions if the users
@@ -111,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   CHECK_EQ(1, tab_strip_model->count());
@@ -142,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{},
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 
   // Bubble is visible and active
@@ -159,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{},
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 
   // Second prompt should be auto declined.
@@ -169,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
 }
 
 // This is testing that when a second prompt comes while another prompt is in
@@ -182,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      callback.Get());
   tab_controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
@@ -190,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{},
+      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 }
 

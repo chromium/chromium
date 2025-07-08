@@ -779,6 +779,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, original_profile, is_migration_to_account,
+      !GetPersonalDataManager().address_data_manager().GetProfiles().empty(),
       std::move(callback));
 #endif
 }
@@ -916,6 +917,19 @@ void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
         /*timeout_ms=*/5000, /*product_specific_bits_data=*/
         {}, field_filling_stats_data);
   }
+#endif
+}
+
+void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillAddressUserDeclinedSave, web_contents(),
+      /*timeout_ms=*/5000);
 #endif
 }
 

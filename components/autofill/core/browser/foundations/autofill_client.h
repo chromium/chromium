@@ -543,6 +543,9 @@ class AutofillClient {
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data);
 
+  // Triggers a survey to ask the user why they declined saving an address.
+  virtual void TriggerDeclinedSaveAddressReasonSurvey();
+
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;
 
