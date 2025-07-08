@@ -69,7 +69,7 @@ public class ContextMenuItemViewTest {
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivity.setContentView(R.layout.context_menu_share_row);
+                    sActivity.setContentView(R.layout.context_menu_row);
                     mShareItemView = sActivity.findViewById(android.R.id.content);
                     mText = mShareItemView.findViewById(R.id.menu_row_text);
                     mIcon = mShareItemView.findViewById(R.id.menu_row_share_icon);
@@ -79,22 +79,21 @@ public class ContextMenuItemViewTest {
                                     .with(ContextMenuItemWithIconButtonProperties.TITLE, "")
                                     .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                                     .with(
-                                            ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE,
+                                            ContextMenuItemWithIconButtonProperties
+                                                    .END_BUTTON_IMAGE,
                                             null)
                                     .with(
                                             ContextMenuItemWithIconButtonProperties
-                                                    .BUTTON_CONTENT_DESC,
+                                                    .END_BUTTON_CONTENT_DESC,
                                             "")
                                     .with(
                                             ContextMenuItemWithIconButtonProperties
-                                                    .BUTTON_CLICK_LISTENER,
+                                                    .END_BUTTON_CLICK_LISTENER,
                                             null)
                                     .build();
                     mMCP =
                             PropertyModelChangeProcessor.create(
-                                    mModel,
-                                    mShareItemView,
-                                    ContextMenuItemWithIconButtonViewBinder::bind);
+                                    mModel, mShareItemView, ContextMenuItemViewBinder::bind);
                 });
     }
 
@@ -121,8 +120,9 @@ public class ContextMenuItemViewTest {
         final BitmapDrawable drawable = new BitmapDrawable(mIcon.getResources(), bitmap);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable);
-                    mModel.set(ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC, APP);
+                    mModel.set(ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE, drawable);
+                    mModel.set(
+                            ContextMenuItemWithIconButtonProperties.END_BUTTON_CONTENT_DESC, APP);
                 });
         assertThat("Incorrect icon drawable.", mIcon.getDrawable(), equalTo(drawable));
         assertThat("Incorrect icon visibility.", mIcon.getVisibility(), equalTo(View.VISIBLE));
@@ -145,7 +145,7 @@ public class ContextMenuItemViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
-                            ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER,
+                            ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER,
                             this::click);
                     mIcon.callOnClick();
                 });

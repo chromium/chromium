@@ -375,7 +375,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithCheckboxViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonProperties.java",
-  "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithRadioButtonViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuListView.java",
   "java/src/org/chromium/chrome/browser/contextmenu/LensChipDelegate.java",

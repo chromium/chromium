@@ -116,8 +116,8 @@ public class ContextMenuRenderTest {
                             ContextMenuItemViewBinder::bind);
                     mAdapter.registerType(
                             ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                            new LayoutViewBuilder(R.layout.context_menu_share_row),
-                            ContextMenuItemWithIconButtonViewBinder::bind);
+                            new LayoutViewBuilder(R.layout.context_menu_row),
+                            ContextMenuItemViewBinder::bind);
                 });
     }
 
@@ -306,7 +306,7 @@ public class ContextMenuRenderTest {
         return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                 .with(ContextMenuItemWithIconButtonProperties.TITLE, title)
                 .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
-                .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
+                .with(ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE, drawable)
                 .build();
     }
 

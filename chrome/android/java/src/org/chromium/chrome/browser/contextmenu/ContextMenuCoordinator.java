@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
@@ -386,8 +386,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ContextMenuItemViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                new LayoutViewBuilder(R.layout.context_menu_share_row),
-                ContextMenuItemWithIconButtonViewBinder::bind);
+                new LayoutViewBuilder(R.layout.context_menu_row),
+                ContextMenuItemViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
                 new LayoutViewBuilder<>(R.layout.checkbox_layout),
@@ -539,10 +539,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         for (ListItem item : itemList) {
             if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                 item.model.set(
-                        BUTTON_CLICK_LISTENER,
+                        END_BUTTON_CLICK_LISTENER,
                         (v) ->
                                 clickItem(
-                                        item.model.get(BUTTON_MENU_ID),
+                                        item.model.get(END_BUTTON_MENU_ID),
                                         activity,
                                         onItemClicked,
                                         item.model.get(ENABLED)));

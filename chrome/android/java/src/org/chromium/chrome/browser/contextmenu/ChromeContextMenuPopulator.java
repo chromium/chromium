@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CONTENT_DESC;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
@@ -1191,9 +1191,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         .with(
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(mContext, getProfile(), item, false))
-                        .with(BUTTON_IMAGE, shareInfo.first)
-                        .with(BUTTON_CONTENT_DESC, shareInfo.second)
-                        .with(BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
+                        .with(END_BUTTON_IMAGE, shareInfo.first)
+                        .with(END_BUTTON_CONTENT_DESC, shareInfo.second)
+                        .with(END_BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
                         .with(HOVER_LISTENER, mItemOnHoverListener)
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
