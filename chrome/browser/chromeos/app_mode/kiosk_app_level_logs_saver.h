@@ -36,6 +36,11 @@ class KioskAppLevelLogsSaver {
                     int line_no,
                     const std::u16string& source,
                     std::optional<std::u16string> untrusted_stack_trace);
+    KioskLogMessage(const KioskLogMessage&);
+    KioskLogMessage(KioskLogMessage&&);
+    KioskLogMessage& operator=(const KioskLogMessage&) = delete;
+    KioskLogMessage& operator=(const KioskLogMessage&&) = delete;
+
     ~KioskLogMessage();
 
     const std::u16string message;

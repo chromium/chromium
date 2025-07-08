@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -184,6 +185,15 @@ void FakeServiceWorkerContext::NotifyObserversOnNoControllees(
     const GURL& scope) {
   for (auto& observer : observers_)
     observer.OnNoControllees(version_id, scope);
+}
+
+void FakeServiceWorkerContext::NotifyObserversOnReportConsoleMessage(
+    int64_t version_id,
+    const GURL& scope,
+    const content::ConsoleMessage& message) {
+  for (auto& observer : observers_) {
+    observer.OnReportConsoleMessage(version_id, scope, message);
+  }
 }
 
 void FakeServiceWorkerContext::AddRegistrationToRegisteredStorageKeys(

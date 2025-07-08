@@ -32,6 +32,8 @@ static_library("app_mode") {
     "kiosk_metrics_service.h",
     "kiosk_policies.cc",
     "kiosk_policies.h",
+    "kiosk_service_workers_logs_collector.cc",
+    "kiosk_service_workers_logs_collector.h",
     "kiosk_settings_navigation_throttle.cc",
     "kiosk_settings_navigation_throttle.h",
     "kiosk_troubleshooting_controller.cc",
@@ -108,6 +110,7 @@ source_set("unit_tests") {
     "kiosk_app_service_launcher_unittest.cc",
     "kiosk_browser_session_unittest.cc",
     "kiosk_policies_unittest.cc",
+    "kiosk_service_workers_logs_collector_unittest.cc",
   ]
 
   if (enable_plugins) {

@@ -4,13 +4,19 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_service_workers_logs_collector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 
 namespace chromeos {
 
-KioskAppLevelLogsManager::KioskAppLevelLogsManager(Profile* profile) {}
+KioskAppLevelLogsManager::KioskAppLevelLogsManager(Profile* profile)
+    : service_workers_logs_collector_(
+          profile,
+          base::BindRepeating(&KioskAppLevelLogsManager::SaveLog,
+                              base::Unretained(this))) {}
 
 KioskAppLevelLogsManager::~KioskAppLevelLogsManager() = default;
 

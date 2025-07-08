@@ -70,6 +70,12 @@ KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(
       source(source),
       untrusted_stack_trace(untrusted_stack_trace) {}
 
+KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(
+    const KioskLogMessage&) = default;
+
+KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(KioskLogMessage&&) =
+    default;
+
 KioskAppLevelLogsSaver::KioskLogMessage::~KioskLogMessage() = default;
 
 KioskAppLevelLogsSaver::KioskAppLevelLogsSaver()
