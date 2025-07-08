@@ -5952,12 +5952,17 @@ CSSValue* ConsumeFontPalette(CSSParserTokenStream& stream,
   return ConsumeDashedIdent(stream, context);
 }
 
-CSSValueList* ConsumeFontFamily(CSSParserTokenStream& stream) {
+CSSValueList* ConsumeFontFamily(CSSParserTokenStream& stream,
+                                const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
     CSSValue* parsed_value = ConsumeGenericFamily(stream);
     if (parsed_value) {
       list->Append(*parsed_value);
+      if (IsUseCounterEnabledForMode(context.Mode()) &&
+          IsIdent(*parsed_value, CSSValueID::kMath)) {
+        context.Count(WebDXFeature::kFontFamilyMath);
+      }
     } else {
       parsed_value = ConsumeFamilyName(stream);
       if (parsed_value) {

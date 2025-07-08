@@ -531,7 +531,7 @@ CSSValue* ConsumeMathDepth(CSSParserTokenStream& stream,
 CSSValue* ConsumeFontPalette(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream&,
                                     const CSSParserContext&);
-CSSValueList* ConsumeFontFamily(CSSParserTokenStream&);
+CSSValueList* ConsumeFontFamily(CSSParserTokenStream&, const CSSParserContext&);
 CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream);
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream&);
 CSSValue* ConsumeFamilyName(CSSParserTokenStream&);

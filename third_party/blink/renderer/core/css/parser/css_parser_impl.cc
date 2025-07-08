@@ -1676,7 +1676,8 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
     CSSParserTokenStream& stream) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  CSSValueList* family_list = css_parsing_utils::ConsumeFontFamily(stream);
+  CSSValueList* family_list =
+      css_parsing_utils::ConsumeFontFamily(stream, *context_);
   if (!family_list || !family_list->length()) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFontFeatureValues);
     return nullptr;

@@ -1939,7 +1939,8 @@ bool ConsumeFont(bool important,
   }
 
   // Font family must come now.
-  CSSValue* parsed_family_value = css_parsing_utils::ConsumeFontFamily(stream);
+  CSSValue* parsed_family_value =
+      css_parsing_utils::ConsumeFontFamily(stream, context);
   if (!parsed_family_value) {
     return false;
   }
