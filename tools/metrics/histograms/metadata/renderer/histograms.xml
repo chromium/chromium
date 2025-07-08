@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ContentProduction.LifespanFromCommit" units="ms"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ContentProduction.LifespanFromUnhide" units="ms"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ContentProduction.SignalReceived" enum="Boolean"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>

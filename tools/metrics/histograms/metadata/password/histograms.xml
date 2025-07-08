@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-11-02">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.NewPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-11-02">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
@@ -1260,7 +1260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.Username"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2025-11-02">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-04">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>
