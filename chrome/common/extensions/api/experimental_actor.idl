@@ -7,6 +7,7 @@
 namespace experimentalActor {
   callback DataCallback = void(ArrayBuffer data);
   callback ClosureCallback = void();
+  callback TaskIdCallback = void(long taskId);
 
   interface Functions {
     // Creates and starts a new task. By default, opens a new tab to
@@ -16,17 +17,28 @@ namespace experimentalActor {
     // startTaskProto: encoded optimization_guide.proto.BrowserStartTask
     // startTaskcallback:
     //   encoded optimization_guide.proto.BrowserStartTaskResult
-    static void startTask(ArrayBuffer startTaskProto,
-                          DataCallback startTaskcallback);
+    [deprecated="Use createTask instead"] static void startTask(
+        ArrayBuffer startTaskProto,
+        DataCallback startTaskcallback);
     // Executes one or more actions according to request.
     // request: encoded optimization_guide.proto.BrowserAction
     // response: encoded optimization_guide.proto.BrowserActionResult
-    static void executeAction(ArrayBuffer browserActionProto,
-                              DataCallback executeActioncallback);
+    [deprecated="Use performActions instead"] static void executeAction(
+        ArrayBuffer browserActionProto,
+        DataCallback executeActioncallback);
     // Stops a task.
     // taskId: id of the task to stop.
     // stopTaskcallback: a closure that is called when the task is stopped.
     static void stopTask(long taskId,
                          ClosureCallback stopTaskcallback);
+
+    // Creates a new task. The callback will contain the task ID for the newly
+    // created task.
+    static void createTask(TaskIdCallback callback);
+
+    // Executes one or more actions according to request.
+    // actionsProto: encoded optimization_guide.proto.Actions
+    // callback: encoded optimization_guide.proto.ActionsResult
+    static void performActions(ArrayBuffer actionsProto, DataCallback callback);
   };
 };

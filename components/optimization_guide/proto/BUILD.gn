@@ -75,6 +75,11 @@ proto_library("optimization_guide_proto") {
   # Python stubs are needed at runtime for model validation tests.
   generate_py_runtime = true
 
+  # TODO(crbug.com/421441072): Once protobuf-javascript supports editions we
+  # should enable this flag, as it will allow us to more thoroughly test our
+  # APIs and production logic.
+  # generate_javascript = true
+
   # These are required to import system_profile.proto in
   # model_quality_metadata.proto.
   deps = [ "//third_party/metrics_proto:metrics_proto" ]

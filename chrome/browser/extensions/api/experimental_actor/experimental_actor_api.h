@@ -83,6 +83,39 @@ class ExperimentalActorExecuteActionFunction
                              EXPERIMENTALACTOR_EXECUTEACTION)
 };
 
+class ExperimentalActorCreateTaskFunction
+    : public ExperimentalActorApiFunction {
+ public:
+  ExperimentalActorCreateTaskFunction();
+  ExperimentalActorCreateTaskFunction(
+      const ExperimentalActorCreateTaskFunction&) = delete;
+  ExperimentalActorCreateTaskFunction& operator=(
+      const ExperimentalActorCreateTaskFunction&) = delete;
+
+ protected:
+  ~ExperimentalActorCreateTaskFunction() override;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("experimentalActor.createTask",
+                             EXPERIMENTALACTOR_CREATETASK)
+};
+
+class ExperimentalActorPerformActionsFunction
+    : public ExperimentalActorApiFunction {
+ public:
+  ExperimentalActorPerformActionsFunction();
+  ExperimentalActorPerformActionsFunction(
+      const ExperimentalActorPerformActionsFunction&) = delete;
+  ExperimentalActorPerformActionsFunction& operator=(
+      const ExperimentalActorPerformActionsFunction&) = delete;
+
+ protected:
+  ~ExperimentalActorPerformActionsFunction() override;
+  ResponseAction Run() override;
+  void OnActionsFinished(optimization_guide::proto::ActionsResult result);
+  DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",
+                             EXPERIMENTALACTOR_PERFORMACTIONS)
+};
+
 }  //  namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_

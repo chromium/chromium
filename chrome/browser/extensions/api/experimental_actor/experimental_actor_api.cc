@@ -58,6 +58,15 @@ int32_t ConvertTabHandleToSessionTabId(
   }
   return sessions::SessionTabHelper::IdForTab(tab->GetContents()).id();
 }
+
+// Helper function to convert the session tab id to a tab handle for any action
+// that has a `tab_id` field.
+template <typename T>
+void ConvertActionTabId(T* action_payload,
+                        content::BrowserContext* browser_context) {
+  action_payload->set_tab_id(ConvertSessionTabIdToTabHandle(
+      action_payload->tab_id(), browser_context));
+}
 }  // namespace
 
 ExperimentalActorApiFunction::ExperimentalActorApiFunction() = default;
@@ -65,10 +74,6 @@ ExperimentalActorApiFunction::ExperimentalActorApiFunction() = default;
 ExperimentalActorApiFunction::~ExperimentalActorApiFunction() = default;
 
 bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
-#if !BUILDFLAG(ENABLE_GLIC)
-  *error = "Actions not supported for this build configuration.";
-  return false;
-#else
   if (GetCurrentChannel() == version_info::Channel::STABLE &&
       !AiDataKeyedService::IsExtensionAllowlistedForStable(extension_id())) {
     *error = "API access not allowed on this channel.";
@@ -87,7 +92,6 @@ bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
   }
 
   return true;
-#endif
 }
 
 ExperimentalActorStartTaskFunction::ExperimentalActorStartTaskFunction() =
@@ -193,6 +197,113 @@ void ExperimentalActorExecuteActionFunction::OnResponseReceived(
     response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());
   }
   Respond(ArgumentList(api::experimental_actor::ExecuteAction::Results::Create(
+      std::move(data_buffer))));
+}
+
+ExperimentalActorCreateTaskFunction::ExperimentalActorCreateTaskFunction() =
+    default;
+ExperimentalActorCreateTaskFunction::~ExperimentalActorCreateTaskFunction() =
+    default;
+
+ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  actor::TaskId task_id = actor_service->CreateTask();
+
+  return RespondNow(ArgumentList(
+      api::experimental_actor::CreateTask::Results::Create(task_id.value())));
+}
+
+ExperimentalActorPerformActionsFunction::
+    ExperimentalActorPerformActionsFunction() = default;
+ExperimentalActorPerformActionsFunction::
+    ~ExperimentalActorPerformActionsFunction() = default;
+
+ExtensionFunction::ResponseAction
+ExperimentalActorPerformActionsFunction::Run() {
+  auto params = api::experimental_actor::PerformActions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  optimization_guide::proto::Actions actions;
+  if (!actions.ParseFromArray(params->actions_proto.data(),
+                              params->actions_proto.size())) {
+    return RespondNow(
+        Error("Parsing optimization_guide::proto::Actions failed."));
+  }
+
+  // Convert from extension tab ids to TabHandles.
+  for (auto& action : *actions.mutable_actions()) {
+    switch (action.action_case()) {
+      case optimization_guide::proto::Action::kClick:
+        ConvertActionTabId(action.mutable_click(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kType:
+        ConvertActionTabId(action.mutable_type(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kScroll:
+        ConvertActionTabId(action.mutable_scroll(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kMoveMouse:
+        ConvertActionTabId(action.mutable_move_mouse(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kDragAndRelease:
+        ConvertActionTabId(action.mutable_drag_and_release(),
+                           browser_context());
+        break;
+      case optimization_guide::proto::Action::kSelect:
+        ConvertActionTabId(action.mutable_select(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kNavigate:
+        ConvertActionTabId(action.mutable_navigate(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kBack:
+        ConvertActionTabId(action.mutable_back(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kForward:
+        ConvertActionTabId(action.mutable_forward(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kCloseTab:
+        ConvertActionTabId(action.mutable_close_tab(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kActivateTab:
+        ConvertActionTabId(action.mutable_activate_tab(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kAttemptLogin:
+        ConvertActionTabId(action.mutable_attempt_login(), browser_context());
+        break;
+      case optimization_guide::proto::Action::kWait:
+      case optimization_guide::proto::Action::kCreateTab:
+      case optimization_guide::proto::Action::kCreateWindow:
+      case optimization_guide::proto::Action::kCloseWindow:
+      case optimization_guide::proto::Action::kActivateWindow:
+      case optimization_guide::proto::Action::kYieldToUser:
+      case optimization_guide::proto::Action::ACTION_NOT_SET:
+        // No tab id to convert.
+        break;
+    }
+  }
+
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  actor_service->PerformActions(
+      std::move(actions),
+      base::BindOnce(
+          &ExperimentalActorPerformActionsFunction::OnActionsFinished, this));
+
+  return RespondLater();
+}
+
+void ExperimentalActorPerformActionsFunction::OnActionsFinished(
+    optimization_guide::proto::ActionsResult result) {
+  // Convert from tab handle to session tab id.
+  for (auto& tab_observation : *result.mutable_tabs()) {
+    tab_observation.set_id(ConvertTabHandleToSessionTabId(tab_observation.id(),
+                                                          browser_context()));
+  }
+
+  std::vector<uint8_t> data_buffer(result.ByteSizeLong());
+  if (!data_buffer.empty()) {
+    result.SerializeToArray(&data_buffer[0], result.ByteSizeLong());
+  }
+  Respond(ArgumentList(api::experimental_actor::PerformActions::Results::Create(
       std::move(data_buffer))));
 }
 

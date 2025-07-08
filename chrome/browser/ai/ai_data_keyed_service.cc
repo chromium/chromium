@@ -807,7 +807,11 @@ bool AiDataKeyedService::IsExtensionAllowlistedForActions(
   }
 
   static const base::NoDestructor<std::vector<std::string>>
-      kHardcodedAllowlistedExtensions({});
+      kHardcodedAllowlistedExtensions({
+          // For testing for
+          // api_test/experimental_actor/manifest.json
+          "kbanhggbnnaciicfpdkheonkpkeakfal",
+      });
   if (base::Contains(*kHardcodedAllowlistedExtensions, extension_id)) {
     return true;
   }

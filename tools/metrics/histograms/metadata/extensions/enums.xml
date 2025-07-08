@@ -2827,6 +2827,8 @@ Called by update_extension_histograms.py.-->
   <int value="1940" label="ENTERPRISE_LOGIN_EXITCURRENTMANAGEDGUESTSESSION"/>
   <int value="1941"
       label="PASSWORDSPRIVATE_SHOULDSHOWACCOUNTSTORAGESETTINGTOGGLE"/>
+  <int value="1942" label="EXPERIMENTALACTOR_PERFORMACTIONS"/>
+  <int value="1943" label="EXPERIMENTALACTOR_CREATETASK"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
