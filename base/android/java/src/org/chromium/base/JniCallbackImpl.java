@@ -74,7 +74,7 @@ final class JniCallbackImpl<T extends @Nullable Object>
 
     @NativeMethods
     interface Natives {
-        void onResult(boolean isRepeating, long callbackPtr, Object result);
+        void onResult(boolean isRepeating, long callbackPtr, @Nullable Object result);
 
         void destroy(boolean isRepeating, long callbackPtr);
     }
