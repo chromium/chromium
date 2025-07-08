@@ -462,6 +462,23 @@ constexpr std::string_view GetAttributeName(
   NOTREACHED();
 }
 
+enum class XStartTagAttribute {
+  kPrecise,
+  kTimeOffset,
+  kMaxValue = kTimeOffset,
+};
+
+constexpr std::string_view GetAttributeName(XStartTagAttribute attribute) {
+  switch (attribute) {
+    case XStartTagAttribute::kPrecise:
+      return "PRECISE";
+    case XStartTagAttribute::kTimeOffset:
+      return "TIME-OFFSET";
+  }
+
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -2152,6 +2169,35 @@ ParseStatus::Or<XIFrameStreamInfTag> XIFrameStreamInfTag::Parse(
       });
 }
 
+ParseStatus::Or<XStartTag> XStartTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XStartTag::kName));
+  return RequireNonEmptyMap<XStartTagAttribute>(tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XStartTag> {
+        auto time_offset = ParseField<types::DecimalFloatingPoint>(
+            XStartTagAttribute::kTimeOffset, map,
+            &types::parsing::RawFloat::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(time_offset);
+
+        auto maybe_precise = ParseField<std::optional<ResolvedSourceString>>(
+            XStartTagAttribute::kPrecise, map,
+            &types::parsing::RawStr::ParseWithSubstitution, vars, subs);
+        RETURN_IF_ERROR(maybe_precise);
+        auto precise = std::move(maybe_precise).value();
+        if (precise.has_value()) {
+          if (precise.value().Str() != "YES" && precise.value().Str() != "NO") {
+            return ParseStatus::Codes::kMalformedTag;
+          }
+        }
+
+        return XStartTag{
+            .time_offset = std::move(time_offset).value(),
+            .precise = precise.has_value() && precise.value().Str() == "YES",
+        };
+      });
+}
 #undef RETURN_IF_ERROR
 
 }  // namespace media::hls

@@ -285,7 +285,39 @@ TEST(HlsTagsTest, ParseXStartTag) {
   RunTagIdentificationTest(ToTagName(CommonTagName::kXStart),
                            "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
                            "TIME-OFFSET=30,PRECISE=YES");
-  // TODO(crbug.com/40057824): Implement the EXT-X-START tag.
+  RunTagIdentificationTest<XStartTag>(
+      "#EXT-X-START:TIME-OFFSET=5.0,PRECISE=YES\n",
+      "TIME-OFFSET=5.0,PRECISE=YES");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XStartTag>("TIME-OFFSET=5.0,PRECISE=MALFORMED", dict, subs,
+                       ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XStartTag>("TIME-OFFSET=NOT_A_NUMBER", dict, subs,
+                       ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XStartTag>("PRECISE=YES", dict, subs,
+                       ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XStartTag>("TIME-OFFSET=0.0,PRECISE=YES", dict, subs);
+    EXPECT_DOUBLE_EQ(result.tag.time_offset, 0.0);
+    EXPECT_TRUE(result.tag.precise);
+  }
+
+  {
+    auto result = OkTest<XStartTag>("TIME-OFFSET=3.5", dict, subs);
+    EXPECT_DOUBLE_EQ(result.tag.time_offset, 3.5);
+    EXPECT_FALSE(result.tag.precise);
+  }
+
+  {
+    auto result = OkTest<XStartTag>("TIME-OFFSET=10.0,PRECISE=NO", dict, subs);
+    EXPECT_DOUBLE_EQ(result.tag.time_offset, 10.0);
+    EXPECT_FALSE(result.tag.precise);
+  }
 }
 
 TEST(HlsTagsTest, ParseXVersionTag) {

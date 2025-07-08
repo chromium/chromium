@@ -718,6 +718,21 @@ struct MEDIA_EXPORT XIFrameStreamInfTag {
   std::optional<ResolvedSourceString> video;
 };
 
+// The EXT-X-START tag indicates a preferred point at which to start playing a
+// Playlist. By default, clients SHOULD start playback at this point when
+// beginning a playback session.
+struct MEDIA_EXPORT XStartTag {
+  static constexpr auto kName = CommonTagName::kXStart;
+
+  static ParseStatus::Or<XStartTag> Parse(
+      TagItem item,
+      const VariableDictionary& vars,
+      VariableDictionary::SubstitutionBuffer& subs);
+
+  types::DecimalFloatingPoint time_offset;
+  bool precise;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_
