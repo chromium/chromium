@@ -209,13 +209,13 @@ class SourceBuffer final : public EventTarget,
   double GetMediaTime();
 
   const TrackDefault* GetTrackDefault(
-      const AtomicString& track_type,
+      V8TrackDefaultType::Enum track_type,
       const AtomicString& byte_stream_track_id) const;
   AtomicString DefaultTrackLabel(
-      const AtomicString& track_type,
+      V8TrackDefaultType::Enum track_type,
       const AtomicString& byte_stream_track_id) const;
   AtomicString DefaultTrackLanguage(
-      const AtomicString& track_type,
+      V8TrackDefaultType::Enum track_type,
       const AtomicString& byte_stream_track_id) const;
 
   // TODO(https://crbug.com/878133): Remove these once worker thread track
