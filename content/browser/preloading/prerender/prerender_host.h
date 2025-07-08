@@ -460,6 +460,8 @@ class CONTENT_EXPORT PrerenderHost {
     bool ShouldPreserveAbortedURLs() override;
     void UpdateOverridingUserAgent() override {}
 
+    LoadingOutcome WaitForLoadStopForTesting();
+
     ~PrerenderFrameTreeDelegate() override;
 
    private:
@@ -469,6 +471,12 @@ class CONTENT_EXPORT PrerenderHost {
     // PrerenderFrameTreeDelegate so it is safe to store a raw_ptr.
     raw_ref<PrerenderHost> prerender_host_;
     std::unique_ptr<FrameTree> frame_tree_;
+
+    // Used for testing, this closure is only set when waiting a page to be
+    // either loaded for prerendering. |frame_tree_| provides us with a trigger
+    // for when the page is loaded.
+    base::OnceCallback<void(PrerenderHost::LoadingOutcome)>
+        on_wait_loading_finished_;
   };
 
   FrameTree* GetFrameTree() { return frame_tree_delegate_->frame_tree_.get(); }
@@ -541,12 +549,6 @@ class CONTENT_EXPORT PrerenderHost {
   // as WebContentsImpl owns PrerenderHostRegistry, which in turn owns
   // PrerenderHost.
   const raw_ref<WebContentsImpl> web_contents_;
-
-  // Used for testing, this closure is only set when waiting a page to be either
-  // loaded for prerendering. |frame_tree_delegate.frame_tree_| provides us with
-  // a trigger for when the page is loaded.
-  base::OnceCallback<void(PrerenderHost::LoadingOutcome)>
-      on_wait_loading_finished_;
 
   // Frame tree created for the prerenderer to load the page and prepare it for
   // a future activation. During activation, the prerendered page will be taken

@@ -124,9 +124,8 @@ PrerenderHost::PrerenderFrameTreeDelegate::PrerenderFrameTreeDelegate(
                                       FrameTree::Type::kPrerender)) {}
 
 void PrerenderHost::PrerenderFrameTreeDelegate::DidStopLoading() {
-  if (prerender_host_->on_wait_loading_finished_) {
-    std::move(prerender_host_->on_wait_loading_finished_)
-        .Run(LoadingOutcome::kLoadingCompleted);
+  if (on_wait_loading_finished_) {
+    std::move(on_wait_loading_finished_).Run(LoadingOutcome::kLoadingCompleted);
   }
 }
 
@@ -192,9 +191,47 @@ bool PrerenderHost::PrerenderFrameTreeDelegate::ShouldPreserveAbortedURLs() {
   return false;
 }
 
+PrerenderHost::LoadingOutcome
+PrerenderHost::PrerenderFrameTreeDelegate::WaitForLoadStopForTesting() {
+  LoadingOutcome status = LoadingOutcome::kLoadingCompleted;
+
+  if (!frame_tree_->IsLoadingIncludingInnerFrameTrees() &&
+      prerender_host_->GetInitialNavigationId().has_value()) {
+    return status;
+  }
+
+  base::RunLoop loop;
+  on_wait_loading_finished_ = base::BindOnce(
+      [](base::OnceClosure on_close, LoadingOutcome* result,
+         LoadingOutcome status) {
+        *result = status;
+        std::move(on_close).Run();
+      },
+      loop.QuitClosure(), &status);
+  loop.Run();
+  // Reset callback to null in case if loop is quit by timeout.
+  //
+  // This `if` body causes SEGV for `kPrerenderingCancelled` case because the
+  // callback is called in dtor and `this` is already destructed here.
+  //
+  // TODO(crbug.com/372691377): Split setup and wait parts and make the wait
+  // part `static`.
+  if (status != PrerenderHost::LoadingOutcome::kPrerenderingCancelled) {
+    on_wait_loading_finished_.Reset();
+  }
+  return status;
+}
+
 PrerenderHost::PrerenderFrameTreeDelegate::~PrerenderFrameTreeDelegate() {
   if (frame_tree_) {
     frame_tree_->Shutdown();
+  }
+  // If we are still waiting on test loop, we can assume the page loading step
+  // has been cancelled and the PrerenderHost is being discarded without
+  // completing loading the page.
+  if (on_wait_loading_finished_) {
+    std::move(on_wait_loading_finished_)
+        .Run(PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
   }
 }
 
@@ -340,6 +377,10 @@ PrerenderHost::PrerenderHost(
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
 
   if (reuse_host) {
+    if (reuse_host->frame_tree_delegate_->on_wait_loading_finished_) {
+      std::move(reuse_host->frame_tree_delegate_->on_wait_loading_finished_)
+          .Run(PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
+    }
     frame_tree_delegate_ = std::move(reuse_host->frame_tree_delegate_);
     // Reset the NavigationRequest if there is an on-going one in the frame tree
     // since the navigation is no longer needed. If there is no on-going
@@ -464,14 +505,6 @@ PrerenderHost::~PrerenderHost() {
   }
   for (auto& observer : observers_) {
     observer.OnHostDestroyed(final_status_.value());
-  }
-
-  // If we are still waiting on test loop, we can assume the page loading step
-  // has been cancelled and the PrerenderHost is being discarded without
-  // completing loading the page.
-  if (on_wait_loading_finished_) {
-    std::move(on_wait_loading_finished_)
-        .Run(PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
   }
 }
 
@@ -1188,33 +1221,7 @@ void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
 }
 
 PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
-  LoadingOutcome status = LoadingOutcome::kLoadingCompleted;
-
-  if (!GetFrameTree()->IsLoadingIncludingInnerFrameTrees() &&
-      GetInitialNavigationId().has_value()) {
-    return status;
-  }
-
-  base::RunLoop loop;
-  on_wait_loading_finished_ = base::BindOnce(
-      [](base::OnceClosure on_close, LoadingOutcome* result,
-         LoadingOutcome status) {
-        *result = status;
-        std::move(on_close).Run();
-      },
-      loop.QuitClosure(), &status);
-  loop.Run();
-  // Reset callback to null in case if loop is quit by timeout.
-  //
-  // This `if` body causes SEGV for `kPrerenderingCancelled` case because the
-  // callback is called in dtor and `this` is already destructed here.
-  //
-  // TODO(crbug.com/372691377): Split setup and wait parts and make the wait
-  // part `static`.
-  if (status != PrerenderHost::LoadingOutcome::kPrerenderingCancelled) {
-    on_wait_loading_finished_.Reset();
-  }
-  return status;
+  return frame_tree_delegate_->WaitForLoadStopForTesting();  // IN-TEST
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
