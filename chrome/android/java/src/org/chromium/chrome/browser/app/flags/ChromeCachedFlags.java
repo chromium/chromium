@@ -25,6 +25,7 @@ import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.CachedFlagUtils;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.ui.base.UiAndroidFeatureList;
 
 import java.util.ArrayList;
@@ -53,7 +54,10 @@ public class ChromeCachedFlags {
                     UiAndroidFeatureList.sFlagsCachedUiAndroid);
 
     static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS_FULL_BROWSER =
-            List.of(ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
+            List.of(
+                    ChromeFeatureList.sParamsCached,
+                    OmniboxFeatures.getFeatureParamsToCache(),
+                    PermissionsAndroidFeatureList.getFeatureParamsToCache());
 
     /**
      * A list of feature parameters that will be cached when starting minimal browser mode. See
@@ -63,7 +67,10 @@ public class ChromeCachedFlags {
             List.of();
 
     static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS =
-            List.of(ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
+            List.of(
+                    ChromeFeatureList.sParamsCached,
+                    OmniboxFeatures.getFeatureParamsToCache(),
+                    PermissionsAndroidFeatureList.getFeatureParamsToCache());
 
     private boolean mIsFinishedCachingNativeFlags;
 
