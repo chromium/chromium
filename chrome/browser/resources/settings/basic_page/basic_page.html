@@ -142,21 +142,5 @@
             section="search">
           <settings-search-page prefs="{{prefs}}"></settings-search-page>
         </settings-section>
-<if expr="not is_chromeos">
-        <template is="dom-if" if="[[showPage_(pageVisibility_.defaultBrowser)]]"
-            restamp>
-          <settings-section page-title="$i18n{defaultBrowser}"
-              section="defaultBrowser">
-            <settings-default-browser-page></settings-default-browser-page>
-          </settings-section>
-        </template>
-</if>
-        <template is="dom-if" if="[[showPage_(pageVisibility_.onStartup)]]"
-            restamp>
-          <settings-section page-title="$i18n{onStartup}" section="onStartup">
-            <settings-on-startup-page prefs="{{prefs}}">
-            </settings-on-startup-page>
-          </settings-section>
-        </template>
       </div>
     </template>

@@ -1,5 +1,6 @@
-    <style include="cr-shared-style settings-shared">
-    </style>
+  <style include="cr-shared-style settings-shared"></style>
+  <settings-section page-title="$i18n{defaultBrowser}"
+      class="cr-centered-card-container">
     <template is="dom-if" if="[[maySetDefaultBrowser_]]">
       <div class="cr-row first">
         <div class="flex cr-padded-text">
@@ -28,3 +29,4 @@
         </div>
       </div>
     </template>
+  </settings-section>

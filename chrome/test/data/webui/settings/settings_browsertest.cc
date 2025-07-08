@@ -681,6 +681,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
   RunTest("settings/speed_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, OnStartupPage) {
+  RunTest("settings/on_startup_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_test.js", "mocha.run()");
 }

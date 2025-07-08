@@ -255,6 +255,7 @@ function createRoutes(): SettingsRoutes {
     r.DEFAULT_BROWSER = r.BASIC.createSection(
         '/defaultBrowser', 'defaultBrowser',
         loadTimeData.getString('defaultBrowser'));
+    r.DEFAULT_BROWSER.hasMigratedToPlugin = true;
   }
   // </if>
 
@@ -263,6 +264,7 @@ function createRoutes(): SettingsRoutes {
   if (visibility.onStartup !== false) {
     r.ON_STARTUP = r.BASIC.createSection(
         '/onStartup', 'onStartup', loadTimeData.getString('onStartup'));
+    r.ON_STARTUP.hasMigratedToPlugin = true;
   }
 
   // Advanced Routes

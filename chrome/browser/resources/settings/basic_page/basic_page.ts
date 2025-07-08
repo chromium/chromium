@@ -20,7 +20,6 @@ import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
-import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
 import '../performance_page/memory_page.js';
@@ -30,10 +29,6 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
-// <if expr="not is_chromeos">
-import '../default_browser_page/default_browser_page.js';
-
-// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

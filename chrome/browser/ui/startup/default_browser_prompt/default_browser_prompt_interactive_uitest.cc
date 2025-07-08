@@ -263,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
                        RemovesAllBrowserDefaultPromptsOnSettingsChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
   const WebContentsInteractionTestUtil::DeepQuery kDefaultBrowserButton = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-default-browser-page", "cr-button"};
+      "settings-ui", "settings-main", "settings-default-browser-page",
+      "cr-button"};
 
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(RemovesAllBrowserDefaultPromptsWhen(

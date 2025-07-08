@@ -6,7 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo, SettingsDefaultBrowserPageElement} from 'chrome://settings/settings.js';
 import {DefaultBrowserBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
@@ -174,5 +174,22 @@ suite('DefaultBrowserPageTest', function() {
                             '#isSecondaryInstall')!.hidden);
     assertFalse(
         page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError')!.hidden);
+  });
+
+  test('searchContents', async function() {
+    let result = await page.searchContents('Make default');
+    assertFalse(result.canceled);
+    assertEquals(1, result.matchCount);
+    assertFalse(result.wasClearSearch);
+
+    result = await page.searchContents('non-existing-text');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertFalse(result.wasClearSearch);
+
+    result = await page.searchContents('');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertTrue(result.wasClearSearch);
   });
 });

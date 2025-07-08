@@ -12,6 +12,11 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../about_page/about_page.js';
 import '../basic_page/basic_page.js';
+import '../on_startup_page/on_startup_page.js';
+// <if expr="not is_chromeos">
+import '../default_browser_page/default_browser_page.js';
+
+// </if>
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';

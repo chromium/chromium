@@ -10,12 +10,16 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_radio_group.js';
-import './startup_urls_page.js';
 import '../i18n_setup.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
+import './startup_urls_page.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import type {NtpExtension} from './on_startup_browser_proxy.js';
 import {OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
@@ -33,7 +37,7 @@ enum PrefValues {
 const SettingsOnStartupPageElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SettingsOnStartupPageElement extends
-    SettingsOnStartupPageElementBase {
+    SettingsOnStartupPageElementBase implements SettingsPlugin {
   static get is() {
     return 'settings-on-startup-page';
   }
@@ -95,6 +99,12 @@ export class SettingsOnStartupPageElement extends
       boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED ||
         pref.enforcement === chrome.settingsPrivate.Enforcement.RECOMMENDED;
+  }
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
 }
 

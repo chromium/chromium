@@ -10,10 +10,14 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../icons.html.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_browser_proxy.js';
 import {DefaultBrowserBrowserProxyImpl} from './default_browser_browser_proxy.js';
@@ -23,7 +27,7 @@ const SettingsDefaultBrowserPageElementBase =
     WebUiListenerMixin(PolymerElement);
 
 export class SettingsDefaultBrowserPageElement extends
-    SettingsDefaultBrowserPageElementBase {
+    SettingsDefaultBrowserPageElementBase implements SettingsPlugin {
   static get is() {
     return 'settings-default-browser-page';
   }
@@ -80,6 +84,12 @@ export class SettingsDefaultBrowserPageElement extends
 
   private onSetDefaultBrowserClick_() {
     this.browserProxy_.setAsDefaultBrowser();
+  }
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
 }
 

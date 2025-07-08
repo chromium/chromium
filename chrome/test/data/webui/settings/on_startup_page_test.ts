@@ -146,4 +146,21 @@ suite('OnStartupPage', function() {
     flush();
     assertTrue(extensionControlledIndicatorExists());
   });
+
+  test('searchContents', async function() {
+    let result = await testElement.searchContents('Continue where');
+    assertFalse(result.canceled);
+    assertEquals(1, result.matchCount);
+    assertFalse(result.wasClearSearch);
+
+    result = await testElement.searchContents('non-existing-text');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertFalse(result.wasClearSearch);
+
+    result = await testElement.searchContents('');
+    assertFalse(result.canceled);
+    assertEquals(0, result.matchCount);
+    assertTrue(result.wasClearSearch);
+  });
 });
