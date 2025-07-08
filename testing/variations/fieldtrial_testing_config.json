@@ -23066,6 +23066,21 @@
             ]
         }
     ],
+    "SharedTabGroupsIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DataSharingJoinOnly"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedTabGroupsTeamfoodIPhone": [
         {
             "platforms": [
