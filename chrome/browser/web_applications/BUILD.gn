@@ -920,6 +920,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/update_manifest/update_manifest_fetcher_unittest.cc",
     "isolated_web_apps/update_manifest/update_manifest_unittest.cc",
     "jobs/install_placeholder_job_unittest.cc",
+    "jobs/manifest_to_web_app_install_info_job_unittest.cc",
     "locks/partitioned_lock_manager_unittest.cc",
     "locks/web_app_lock_manager_unittest.cc",
     "os_integration/file_handling_sub_manager_unittest.cc",
