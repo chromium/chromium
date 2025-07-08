@@ -14,12 +14,16 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "chrome/browser/vr/vr_tab_helper.h"
 
 namespace content {
 enum class WebContentsCapabilityType;
+class WebContents;
 }  // namespace content
 
 namespace tabs {
+class TabInterface;
+
 // Comparator used to determine which tab alert has a higher priority to be
 // shown.
 struct CompareAlerts {
@@ -30,7 +34,8 @@ struct CompareAlerts {
 // active alerts. Callers can subscribe and be notified when the tab alert that
 // should be shown changes.
 class TabAlertController : public tabs::ContentsObservingTabFeature,
-                           public MediaStreamCaptureIndicator::Observer {
+                           public MediaStreamCaptureIndicator::Observer,
+                           public vr::VrTabHelper::Observer {
  public:
   explicit TabAlertController(TabInterface& tab);
   TabAlertController(const TabAlertController&) = delete;
@@ -47,7 +52,10 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // to lowest priority to be shown.
   std::vector<TabAlert> GetAllActiveAlerts();
 
-  // WebContentsObserver override:
+  // WebContentsObserver:
+  void OnDiscardContents(TabInterface* tab_interface,
+                         content::WebContents* old_contents,
+                         content::WebContents* new_contents) override;
   void OnCapabilityTypesChanged(
       content::WebContentsCapabilityType capability_type,
       bool used) override;
@@ -55,7 +63,7 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void DidUpdateAudioMutingState(bool muted) override;
   void OnAudioStateChanged(bool audible) override;
 
-  // MediaStreamCaptureIndicator::Observer override:
+  // MediaStreamCaptureIndicator::Observer:
   void OnIsCapturingVideoChanged(content::WebContents* contents,
                                  bool is_capturing_video) override;
   void OnIsCapturingAudioChanged(content::WebContents* contents,
@@ -66,6 +74,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
                                   bool is_capturing_window) override;
   void OnIsCapturingDisplayChanged(content::WebContents* contents,
                                    bool is_capturing_display) override;
+
+  // VrTabHelper::Observer:
+  void OnIsContentDisplayedInHeadsetChanged(bool state) override;
 
  private:
   // Adds `alert` to the set of already active alerts for this tab if it isn't
@@ -81,9 +92,16 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // priority to lowest priority to be shown.
   base::flat_set<TabAlert, CompareAlerts> active_alerts_;
 
+  // Observes the MediaStreamCaptureIndicator so the alert controller will be
+  // notified when a media stream capture has changed.
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>
       media_stream_capture_indicator_observation_{this};
+
+  // Observes the VrTabHelper so that the controller will be notified when a tab
+  // is displaying content to a headset.
+  base::ScopedObservation<vr::VrTabHelper, vr::VrTabHelper::Observer>
+      vr_tab_helper_observation_{this};
 };
 }  // namespace tabs
 

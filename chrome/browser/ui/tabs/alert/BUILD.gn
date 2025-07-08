@@ -18,6 +18,7 @@ source_set("tab_alert") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/vr:vr",
     "//content/public/browser",
   ]
 

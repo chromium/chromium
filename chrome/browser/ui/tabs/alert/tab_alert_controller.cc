@@ -12,8 +12,10 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/vr/vr_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
 
@@ -49,6 +51,8 @@ TabAlertController::TabAlertController(TabInterface& tab)
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           .get());
+  vr_tab_helper_observation_.Observe(
+      vr::VrTabHelper::FromWebContents(web_contents()));
 }
 
 TabAlertController::~TabAlertController() = default;
@@ -69,6 +73,16 @@ std::optional<TabAlert> TabAlertController::GetAlertToShow() const {
 
 std::vector<TabAlert> TabAlertController::GetAllActiveAlerts() {
   return base::ToVector(active_alerts_);
+}
+
+void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
+                                           content::WebContents* old_contents,
+                                           content::WebContents* new_contents) {
+  tabs::ContentsObservingTabFeature::OnDiscardContents(
+      tab_interface, old_contents, new_contents);
+  vr_tab_helper_observation_.Reset();
+  vr_tab_helper_observation_.Observe(
+      vr::VrTabHelper::FromWebContents(new_contents));
 }
 
 void TabAlertController::OnCapabilityTypesChanged(
@@ -148,6 +162,10 @@ void TabAlertController::OnIsCapturingDisplayChanged(
   if (contents == web_contents()) {
     UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_capturing_display);
   }
+}
+
+void TabAlertController::OnIsContentDisplayedInHeadsetChanged(bool state) {
+  UpdateAlertState(TabAlert::VR_PRESENTING_IN_HEADSET, state);
 }
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {

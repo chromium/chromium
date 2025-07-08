@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -46,6 +47,7 @@ class TabAlertControllerTest : public testing::Test {
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     tab_interface_ =
         std::make_unique<FakeTabInterface>(std::move(web_contents));
+    vr::VrTabHelper::CreateForWebContents(tab_interface_->GetContents());
     tab_alert_controller_ =
         std::make_unique<TabAlertController>(*tab_interface_.get());
   }
@@ -53,6 +55,8 @@ class TabAlertControllerTest : public testing::Test {
   TabAlertController* tab_alert_controller() {
     return tab_alert_controller_.get();
   }
+
+  FakeTabInterface* tab_interface() { return tab_interface_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -119,5 +123,17 @@ TEST_F(TabAlertControllerTest, GetAllAlert) {
   EXPECT_EQ(active_alerts[1], TabAlert::PIP_PLAYING);
   EXPECT_EQ(active_alerts[2], TabAlert::AUDIO_MUTING);
   EXPECT_EQ(active_alerts[3], TabAlert::AUDIO_PLAYING);
+}
+
+TEST_F(TabAlertControllerTest, VrStateUpdatesAlertController) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+  vr::VrTabHelper* const vr_tab_helper =
+      vr::VrTabHelper::FromWebContents(tab_interface()->GetContents());
+  vr_tab_helper->SetIsContentDisplayedInHeadset(true);
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::VR_PRESENTING_IN_HEADSET);
+  vr_tab_helper->SetIsContentDisplayedInHeadset(false);
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
 }  // namespace tabs

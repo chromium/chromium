@@ -29,8 +29,9 @@ VrTabHelper::VrTabHelper(content::WebContents* contents)
 VrTabHelper::~VrTabHelper() = default;
 
 void VrTabHelper::SetIsInVr(bool is_in_vr) {
-  if (is_in_vr_ == is_in_vr)
+  if (is_in_vr_ == is_in_vr) {
     return;
+  }
 
   is_in_vr_ = is_in_vr;
 
@@ -103,6 +104,15 @@ void VrTabHelper::ExitVrPresentation() {
 
 void VrTabHelper::SetIsContentDisplayedInHeadset(bool state) {
   is_content_displayed_in_headset_ = state;
+  observers_.Notify(&Observer::OnIsContentDisplayedInHeadsetChanged, state);
+}
+
+void VrTabHelper::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void VrTabHelper::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VrTabHelper);
