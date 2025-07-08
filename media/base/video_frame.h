@@ -842,22 +842,20 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
-  // This method is used by ::WrapExternalGpuMemoryBuffer() as well as future
-  // apis added for MappableSI. ::WrapExternalGpuMemoryBuffer() can just pass
-  // |shared_image| param as nullptr here whereas MappableSharedImage apis will
-  // pass |gpu_memory_buffer| as nullptr. There are additional checks inside to
-  // ensure the correctness.
-  static scoped_refptr<VideoFrame>
-  CreateFrameForGpuMemoryBufferOrMappableSIInternal(
+  static scoped_refptr<VideoFrame> CreateFrameForMappableSIInternal(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
-      const bool enable_mappable_si,
       ReleaseMailboxCB mailbox_holder_release_cb,
       base::TimeDelta timestamp);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      base::TimeDelta timestamp);
+
   void MakeScopedMappingForGpuMemoryBuffer(
       base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
           result_cb,
