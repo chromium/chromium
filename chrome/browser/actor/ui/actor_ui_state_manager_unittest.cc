@@ -88,6 +88,8 @@ class ActorUiStateManagerTest : public testing::Test,
 
   TaskId task_id() { return task_id_; }
 
+  TabInterface* tab() { return &mock_tab_interface_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
@@ -100,6 +102,8 @@ class ActorUiStateManagerTest : public testing::Test,
 
 TEST_P(ActorUiStateManagerTest, OnActorTaskState_UpdateTabScopedUi) {
   auto [task_state, expected_ui_tab_state] = GetParam();
+  ActorKeyedService::Get(profile())->GetTask(task_id())->AddToTabSet(
+      tab()->GetHandle());
   actor_ui_state_manager()->OnActorTaskStateChange(task_id(), task_state);
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
 }

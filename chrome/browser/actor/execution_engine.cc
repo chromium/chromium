@@ -273,18 +273,14 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   }
 }
 
-tabs::TabInterface* ExecutionEngine::GetTabOfCurrentTask() const {
-  return tab_;
-}
-
 void ExecutionEngine::Act(const BrowserAction& action,
                           ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TaskId task_id(action.task_id());
+  CHECK_EQ(action.task_id(), task_->id().value());
 
   if (task_->IsPaused()) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "Unable to perform action: task is paused");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kTaskPaused));
@@ -294,7 +290,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
   // NOTE: Improve this API by queuing the action instead.
   if (actions_v1_ || actions_v2_) {
     journal_->Log(
-        LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+        LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
         "Unable to perform action: task already has action in progress");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
@@ -311,7 +307,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
     ui_event_dispatcher_->OnPreFirstAct(
         profile_,
         ui::UiEventDispatcher::FirstActInfo{
-            .task_id = task_id,
+            .task_id = task_->id(),
             .tab_handle =
                 tab_ ? std::make_optional(tab_->GetHandle()) : std::nullopt,
         },
@@ -330,10 +326,10 @@ void ExecutionEngine::Act(const Actions& actions,
   CHECK(!tab_scoped_actions_deprecated_);
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TaskId task_id(actions.task_id());
+  CHECK_EQ(actions.task_id(), task_->id().value());
 
   if (task_->IsPaused()) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "Unable to perform action: task is paused");
     optimization_guide::proto::ActionsResult result;
     result.set_action_result(
@@ -345,7 +341,7 @@ void ExecutionEngine::Act(const Actions& actions,
 
   if (actions_v1_ || actions_v2_) {
     journal_->Log(
-        LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+        LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
         "Unable to perform action: task already has action in progress");
     optimization_guide::proto::ActionsResult result;
     result.set_action_result(
@@ -367,7 +363,7 @@ void ExecutionEngine::Act(const Actions& actions,
     ui_event_dispatcher_->OnPreFirstAct(
         profile_,
         ui::UiEventDispatcher::FirstActInfo{
-            .task_id = task_id,
+            .task_id = task_->id(),
             .tab_handle =
                 tab_ ? std::make_optional(tab_->GetHandle()) : std::nullopt,
         },

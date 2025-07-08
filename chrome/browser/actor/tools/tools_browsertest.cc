@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_Subframe_DomNodeId) {
 // Ensure that page tools (click is arbitrary here) correctly add the acted on
 // tab to the task's tab set.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_RecordActingOnTask) {
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   // Send a click to the document body.
   std::optional<int> body_id = GetDOMNodeId(*main_frame(), "body");
@@ -512,8 +512,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_RecordActingOnTask) {
   execution_engine().Act(action, result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_TRUE(actor_task().get_tab_handles_for_testing().contains(
-      active_tab()->GetHandle().raw_value()));
+  EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
 }
 
 // ===============================================
@@ -1661,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_TargetUrlRestriction) {
 // Test that the navigate tool correctly adds the acted on tab to the task's set
 // of tabs.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_RecordActingOnTask) {
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   const GURL url_target =
       embedded_test_server()->GetURL("/actor/blank.html?target");
@@ -1673,9 +1672,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool_RecordActingOnTask) {
 
   EXPECT_EQ(web_contents()->GetURL(), url_target);
 
-  EXPECT_EQ(actor_task().get_tab_handles_for_testing().size(), 1ul);
-  EXPECT_TRUE(actor_task().get_tab_handles_for_testing().contains(
-      active_tab()->GetHandle().raw_value()));
+  EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
+  EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
 }
 
 // ===============================================
@@ -1985,18 +1983,17 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_DelaysUntilLoad) {
 // Test that the history tool correctly adds the acted on tab to the task's set
 // of tabs.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_RecordActingOnTask) {
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   TestFuture<mojom::ActionResultPtr> result_success;
   execution_engine().Act(MakeHistoryBack(), result_success.GetCallback());
   ExpectOkResult(result_success);
-  EXPECT_EQ(actor_task().get_tab_handles_for_testing().size(), 1ul);
-  EXPECT_TRUE(actor_task().get_tab_handles_for_testing().contains(
-      active_tab()->GetHandle().raw_value()));
+  EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
+  EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
 }
 
 // ===============================================
@@ -2334,14 +2331,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool) {
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool_DontRecordActOnTask) {
   WaitTool::SetNoDelayForTesting();
 
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   BrowserAction wait = MakeWait();
   TestFuture<mojom::ActionResultPtr> result;
   execution_engine().Act(wait, result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  EXPECT_TRUE(actor_task().GetTabs().empty());
 }
 
 // ===============================================
@@ -2401,7 +2398,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2,
 // Test that the history tool correctly adds the acted on tab to the task's set
 // of tabs.
 IN_PROC_BROWSER_TEST_F(ActorToolsTestV2, TabManagementTool_RecordActingOnTask) {
-  ASSERT_TRUE(actor_task().get_tab_handles_for_testing().empty());
+  ASSERT_TRUE(actor_task().GetTabs().empty());
 
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
@@ -2416,12 +2413,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2, TabManagementTool_RecordActingOnTask) {
     EXPECT_EQ(result.Get().action_result(),
               static_cast<int>(mojom::ActionResultCode::kOk));
 
-    EXPECT_EQ(actor_task().get_tab_handles_for_testing().size(), 1ul);
+    EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
 
     // Since the tab was added in the background, the current tab should not
     // have been added.
-    EXPECT_FALSE(actor_task().get_tab_handles_for_testing().contains(
-        active_tab()->GetHandle().raw_value()));
+    EXPECT_FALSE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
   }
 
   // Create a second tab, ensure it too is added to the set of acted on tabs.
@@ -2437,12 +2433,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2, TabManagementTool_RecordActingOnTask) {
     EXPECT_EQ(result.Get().action_result(),
               static_cast<int>(mojom::ActionResultCode::kOk));
 
-    EXPECT_EQ(actor_task().get_tab_handles_for_testing().size(), 2ul);
+    EXPECT_EQ(actor_task().GetTabs().size(), 2ul);
 
     // This time the tab was created in the foreground so the active tab must be
     // in the set.
-    EXPECT_TRUE(actor_task().get_tab_handles_for_testing().contains(
-        active_tab()->GetHandle().raw_value()));
+    EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
   }
 }
 

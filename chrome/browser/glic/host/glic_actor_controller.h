@@ -59,7 +59,7 @@ class GlicActorController {
 
  private:
   void OnTaskStartedForAct(
-      const optimization_guide::proto::BrowserAction& action,
+      optimization_guide::proto::BrowserAction action,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       optimization_guide::proto::BrowserStartTaskResult result);

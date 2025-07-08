@@ -234,7 +234,7 @@ void ActorKeyedService::OnActionFinished(
     actor::mojom::ActionResultPtr action_result) {
   auto* task = GetTask(actor::TaskId(task_id));
   CHECK(task);
-  tabs::TabInterface* tab = task->GetExecutionEngine()->GetTabOfCurrentTask();
+  tabs::TabInterface* tab = task->GetTabForObservation();
   if (!tab) {
     VLOG(1) << "Execute Action failed: Tab not found.";
     optimization_guide::proto::BrowserActionResult result;

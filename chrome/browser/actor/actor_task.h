@@ -77,7 +77,14 @@ class ActorTask {
   // Returns true if the given tab is part of this task's acting set.
   bool HasActedOnTab(tabs::TabHandle tab) const;
 
-  const absl::flat_hash_set<int32_t>& get_tab_handles_for_testing() const {
+  // Returns the tab to use to capture new context observations after an
+  // execution turn. In the future this will be extended to multiple tabs and
+  // windows. Currently this returns the first live tab in the set, since the
+  // actor framework doesn't yet support multi-tab.
+  // TODO(crbug.com/411462297): This will be replaced by GetTabs soon.
+  tabs::TabInterface* GetTabForObservation() const;
+
+  const absl::flat_hash_set<tabs::TabHandle>& GetTabs() const {
     return tab_handles_;
   }
 
@@ -94,7 +101,7 @@ class ActorTask {
   TaskId id_;
 
   // The set of all tabs this task has acted upon.
-  absl::flat_hash_set<int32_t> tab_handles_;
+  absl::flat_hash_set<tabs::TabHandle> tab_handles_;
 
   using TaskStateChangeCallbackList =
       base::RepeatingCallbackList<void(TaskId, ActorTask::State)>;

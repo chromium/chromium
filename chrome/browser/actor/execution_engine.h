@@ -96,9 +96,6 @@ class ExecutionEngine {
   // Cancels any in-progress actions with the reason: "kTaskPaused".
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
-  // Returns the tab associated with the current task if it exists.
-  tabs::TabInterface* GetTabOfCurrentTask() const;
-
   // Performs the next action in the current task.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);

@@ -361,6 +361,7 @@ chromium-metrics-reviews@google.com.
 <enum name="PerformActionsErrorReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Invalid actions proto"/>
+  <int value="2" label="Action is missing task_id field"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:PerformActionsErrorReason) -->

@@ -91,6 +91,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
         content::GetDOMNodeId(*main_frame(), query_selector);
     ASSERT_TRUE(dom_node_id);
     BrowserAction action = MakeClick(*main_frame(), dom_node_id.value());
+    action.set_task_id(task_id_.value());
     TestFuture<mojom::ActionResultPtr> result;
     execution_engine().Act(action, result.GetCallback());
     ExpectOkResult(result);
@@ -159,6 +160,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   click2->set_click_type(ClickAction::LEFT);
   click2->set_click_count(ClickAction::SINGLE);
 
+  action.set_task_id(actor_task().id().value());
+
   // Execute the action
   TestFuture<mojom::ActionResultPtr> result;
   execution_engine().Act(action, result.GetCallback());
@@ -216,6 +219,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
 
   optimization_guide::proto::Actions actions;
   actions.set_task_id(actor_task().id().value());
+
   ClickAction* click1 = actions.add_actions()->mutable_click();
   click1->mutable_target()->set_content_node_id(button1_id.value());
   click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
@@ -237,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
 
   // Execute the actions.
   TestFuture<optimization_guide::proto::ActionsResult> result;
-  actor_task().GetExecutionEngine()->Act(actions, result.GetCallback());
+  execution_engine().Act(actions, result.GetCallback());
 
   // Check that the action succeeded.
   EXPECT_EQ(result.Get().action_result(),

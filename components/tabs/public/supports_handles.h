@@ -224,6 +224,13 @@ class SupportsHandles<Factory>::Handle {
   static constexpr int32_t NullValue = 0;
   static Handle Null() { return Handle(NullValue); }
 
+  // Make handles usable in Abseil containers.
+  template <typename H>
+  friend H AbslHashValue(H hash_state,
+                         const SupportsHandles<Factory>::Handle& handle) {
+    return H::combine(std::move(hash_state), handle.raw_value());
+  }
+
  private:
   int32_t raw_value_ = NullValue;
 };

@@ -76,10 +76,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
   const actor::ActorTask* GetActorTask() {
     auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
-    CHECK(!actor_service->GetActiveTasks().empty())
-        << "Tests should call StartActorTaskInNewTab to ensure a task is "
-           "created.";
-    return actor_service->GetMostRecentTask();
+    return actor_service->GetTask(task_id_);
   }
 
   // Executes a BrowserAction and verifies it succeeds. Optionally takes an
@@ -176,10 +173,15 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   auto StartActorTaskInNewTab(const GURL& task_url,
                               ui::ElementIdentifier new_tab_id) {
     BrowserAction start_navigate = actor::MakeNavigate(task_url.spec());
-
     return Steps(InstrumentNextTab(new_tab_id),
                  ExecuteAction(start_navigate, AnnotationsOnlyContextOptions()),
-                 WaitForWebContentsReady(new_tab_id, task_url));
+                 WaitForWebContentsReady(new_tab_id, task_url), Do([this]() {
+                   auto* actor_service =
+                       actor::ActorKeyedService::Get(browser()->profile());
+                   actor::ActorTask* task = actor_service->GetMostRecentTask();
+                   CHECK(task);
+                   task_id_ = task->id();
+                 }));
   }
 
   // After invoking APIs that don't return promises, we round trip to both the
@@ -432,6 +434,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     NOTREACHED() << "Label [" << label << "] not found in page.";
   }
 
+  actor::TaskId task_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AnnotatedPageContent> annotated_page_content_;
 };

@@ -85,9 +85,13 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
   if (actor::ActorKeyedService* actor_service =
           actor::ActorKeyedService::Get(profile_)) {
     if (ActorTask* task = actor_service->GetTask(id)) {
-      if (ExecutionEngine* execution_engine = task->GetExecutionEngine()) {
-        return {execution_engine->GetTabOfCurrentTask()};
+      std::vector<tabs::TabInterface*> tabs;
+      for (const tabs::TabHandle& handle : task->GetTabs()) {
+        if (tabs::TabInterface* tab = handle.Get()) {
+          tabs.push_back(tab);
+        }
       }
+      return tabs;
     }
   }
   return {};

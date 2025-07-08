@@ -133,6 +133,9 @@ enum PerformActionsErrorReason {
   [Default] kUnknown = 0,
   // The serialized actions proto failed to parse.
   [MinVersion=1] kInvalidProto = 1,
+
+  // The actions proto did not set a task id.
+  [MinVersion=2] kMissingTaskId = 2,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PerformActionsErrorReason)

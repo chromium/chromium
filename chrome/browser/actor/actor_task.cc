@@ -110,11 +110,22 @@ base::CallbackListSubscription ActorTask::RegisterTaskStateChange(
 }
 
 void ActorTask::AddToTabSet(tabs::TabHandle tab_handle) {
-  tab_handles_.insert(tab_handle.raw_value());
+  tab_handles_.insert(tab_handle);
 }
 
 bool ActorTask::HasActedOnTab(tabs::TabHandle tab) const {
-  return tab_handles_.contains(tab.raw_value());
+  return tab_handles_.contains(tab);
+}
+
+tabs::TabInterface* ActorTask::GetTabForObservation() const {
+  CHECK_EQ(tab_handles_.size(), 1ul);
+  for (const tabs::TabHandle& handle : tab_handles_) {
+    if (tabs::TabInterface* tab = handle.Get()) {
+      return tab;
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace actor

@@ -142,7 +142,7 @@ void GlicActorController::Act(
 }
 
 void GlicActorController::OnTaskStartedForAct(
-    const optimization_guide::proto::BrowserAction& action,
+    optimization_guide::proto::BrowserAction action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     optimization_guide::proto::BrowserStartTaskResult result) {
@@ -156,6 +156,8 @@ void GlicActorController::OnTaskStartedForAct(
   }
 
   CHECK(GetCurrentTask());
+
+  action.set_task_id(GetCurrentTask()->id().value());
 
   ActImpl(action, options, std::move(callback));
 }
@@ -189,8 +191,7 @@ void GlicActorController::ResumeTask(
     return;
   }
   task->Resume();
-  tabs::TabInterface* tab_of_resumed_task =
-      task->GetExecutionEngine()->GetTabOfCurrentTask();
+  tabs::TabInterface* tab_of_resumed_task = task->GetTabForObservation();
   if (!tab_of_resumed_task) {
     std::move(callback).Run(glic::mojom::GetContextResult::NewErrorReason(
         std::string("tab does not exist")));
@@ -258,7 +259,11 @@ void GlicActorController::OnActionFinished(
     return;
   }
 
-  tabs::TabInterface* tab = GetExecutionEngine()->GetTabOfCurrentTask();
+  actor::ActorTask* task =
+      actor::ActorKeyedService::Get(profile_)->GetTask(task_id);
+  CHECK(task);
+
+  tabs::TabInterface* tab = task->GetTabForObservation();
   actor::AggregatedJournal& journal =
       actor::ActorKeyedService::Get(profile_)->GetJournal();
 
