@@ -57,41 +57,37 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
-namespace {
-
-inline constexpr char kOriginHost[] = "www.google.com";
-inline constexpr int kOriginPort = 443;
-inline constexpr char kProxyUrl[] = "https://myproxy:6121/";
-inline constexpr char kProxyHost[] = "myproxy";
-inline constexpr int kProxyPort = 6121;
-inline constexpr char kUserAgent[] = "Mozilla/1.0";
-inline constexpr char kRedirectUrl[] = "https://example.com/";
-
-inline constexpr auto kMsg1 = base::span_from_cstring("\0hello!\xff");
-inline constexpr auto kMsg2 = base::span_from_cstring("\0a2345678\0");
-inline constexpr auto kMsg3 = base::span_from_cstring("bye!");
-inline constexpr auto kMsg33 = base::span_from_cstring("bye!bye!");
-inline constexpr auto kMsg333 = base::span_from_cstring("bye!bye!bye!");
-
-inline constexpr auto kDatagramPayload =
-    base::span_from_cstring("youveGotMail");
-
-static inline constexpr int k0ByteConnectionId = 0;
-static inline constexpr int k8ByteConnectionId = 8;
-
-inline constexpr char kTestHeaderName[] = "Foo";
-// Note: `kTestQuicHeaderName` should be a lowercase version of
-// `kTestHeaderName`.
-inline constexpr char kTestQuicHeaderName[] = "foo";
-
-}  // anonymous namespace
-
 namespace net {
 
 class QuicProxyClientSocketTestBase
     : public ::testing::TestWithParam<quic::ParsedQuicVersion>,
       public WithTaskEnvironment {
  public:
+  static constexpr char kOriginHost[] = "www.google.com";
+  static constexpr int kOriginPort = 443;
+  static constexpr char kProxyUrl[] = "https://myproxy:6121/";
+  static constexpr char kProxyHost[] = "myproxy";
+  static constexpr int kProxyPort = 6121;
+  static constexpr char kUserAgent[] = "Mozilla/1.0";
+  static constexpr char kRedirectUrl[] = "https://example.com/";
+
+  static constexpr auto kMsg1 = base::span_from_cstring("\0hello!\xff");
+  static constexpr auto kMsg2 = base::span_from_cstring("\0a2345678\0");
+  static constexpr auto kMsg3 = base::span_from_cstring("bye!");
+  static constexpr auto kMsg33 = base::span_from_cstring("bye!bye!");
+  static constexpr auto kMsg333 = base::span_from_cstring("bye!bye!bye!");
+
+  static constexpr auto kDatagramPayload =
+      base::span_from_cstring("youveGotMail");
+
+  static constexpr int k0ByteConnectionId = 0;
+  static constexpr int k8ByteConnectionId = 8;
+
+  static constexpr char kTestHeaderName[] = "Foo";
+  // Note: `kTestQuicHeaderName` should be a lowercase version of
+  // `kTestHeaderName`.
+  static constexpr char kTestQuicHeaderName[] = "foo";
+
   QuicProxyClientSocketTestBase();
   QuicProxyClientSocketTestBase(const QuicProxyClientSocketTestBase&) = delete;
   QuicProxyClientSocketTestBase& operator=(

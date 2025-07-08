@@ -48,12 +48,6 @@ using testing::Return;
 
 namespace net::test {
 
-namespace {
-
-constexpr char kTestHeaderName[] = "Foo";
-
-}  // anonymous namespace
-
 class EstablishedCryptoStream : public quic::test::MockQuicCryptoStream {
  public:
   using quic::test::MockQuicCryptoStream::MockQuicCryptoStream;
