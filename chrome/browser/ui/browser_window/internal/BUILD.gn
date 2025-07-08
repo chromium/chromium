@@ -29,6 +29,7 @@ source_set("internal") {
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/bookmarks:bookmarks",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",

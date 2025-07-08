@@ -22,6 +22,7 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -130,6 +131,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // This is used only for the controllers which will be created on demand
   // later.
   browser_ = browser;
+
+  // Initialize bookmark bar controller for all browser types.
+  bookmark_bar_controller_ = std::make_unique<BookmarkBarController>(
+      *browser, *browser->GetTabStripModel());
 
   // Avoid passing `browser` directly to features. Instead, pass the minimum
   // necessary state or controllers necessary.

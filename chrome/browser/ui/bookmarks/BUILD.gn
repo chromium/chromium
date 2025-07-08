@@ -7,6 +7,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("bookmarks") {
   sources = [
     "bookmark_bar.h",
+    "bookmark_bar_controller.h",
     "bookmark_context_menu_controller.h",
     "bookmark_drag_drop.h",
     "bookmark_editor.h",
@@ -23,8 +24,10 @@ source_set("bookmarks") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/bookmarks/browser",
     "//components/page_load_metrics/browser",
+    "//components/prefs",
     "//components/profile_metrics",
     "//components/tab_groups",
     "//content/public/browser",
@@ -42,6 +45,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   sources = [
+    "bookmark_bar_controller.cc",
     "bookmark_context_menu_controller.cc",
     "bookmark_drag_drop.cc",
     "bookmark_editor.cc",
@@ -63,15 +67,14 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/saved_tab_groups/public:features",
     "//components/search",
     "//components/sync_preferences",
-    "//components/tab_groups",
     "//components/undo",
     "//components/user_prefs",
   ]
