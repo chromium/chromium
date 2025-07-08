@@ -10749,6 +10749,24 @@
             ]
         }
     ],
+    "GlicAssetsUpdate": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicAssetsV2",
+                        "GlicParameterizedShader",
+                        "GlicThemeSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
