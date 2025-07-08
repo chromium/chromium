@@ -7,6 +7,8 @@ source_set("keyboard_assist") {
     "omnibox_assistive_keyboard_delegate.h",
     "omnibox_assistive_keyboard_mediator.h",
     "omnibox_assistive_keyboard_mediator.mm",
+    "omnibox_assistive_keyboard_utils.h",
+    "omnibox_assistive_keyboard_utils.mm",
     "omnibox_assistive_keyboard_views.h",
     "omnibox_assistive_keyboard_views.mm",
     "omnibox_assistive_keyboard_views_utils.h",

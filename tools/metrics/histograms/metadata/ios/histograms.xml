@@ -3398,6 +3398,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.AssistiveKeyboard" enum="IOSOmniboxAssistiveKey"
+    expires_after="2026-07-03">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the assistive keyboard keys usage, when editing the omnibox.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.Copy" enum="IOSOmniboxCopyType"
     expires_after="2026-04-09">
   <owner>christianxu@chromium.org</owner>

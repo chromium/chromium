@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -73,13 +75,16 @@
     return;
   }
 
+  base::UmaHistogramEnumeration("IOS.Omnibox.AssistiveKeyboard",
+                                AssistiveKeyStringToEnumValue(title));
+
   NSString* text = [self updateTextForDotCom:title];
   [self.omniboxTextField insertTextWhileEditing:text];
 }
 
 #pragma mark - Private
 
-/// Inserts 'com' without the period if cursor is directly after a period.
+/// Returns 'com' without the period if cursor is directly after a period.
 - (NSString*)updateTextForDotCom:(NSString*)text {
   if ([text isEqualToString:kDotComTLD]) {
     UITextRange* textRange = [self.omniboxTextField selectedTextRange];
