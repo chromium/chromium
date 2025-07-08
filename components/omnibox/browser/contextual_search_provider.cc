@@ -632,7 +632,7 @@ void ContextualSearchProvider::AddToolbeltMatch(
 
   match.description = l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLBELT_LABEL);
   if (!match.description.empty()) {
-    match.description_class = {{0, ACMatchClassification::NONE}};
+    match.description_class = {{0, ACMatchClassification::TOOLBELT}};
   }
 
   match.actions = actions;

@@ -463,7 +463,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   // Note: if this is an extension icon or favicon then this can be done in
   //       SetMatch() once (rather than repeatedly, as happens here). There may
   //       be an optimization opportunity here.
-  // TODO(dschuyler): determine whether to optimize the color changes.
   auto icon = GetIcon();
   if (icon.IsEmpty()) {
     suggestion_view_->ClearIcon();
@@ -474,14 +473,16 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
   //
-  // TODO(tommycli): We should finish migrating this logic to live entirely
-  // within OmniboxTextView, which should keep track of its own OmniboxPart.
+  // TODO(crbug.com/430318151): We should finish migrating this logic to live
+  // entirely within OmniboxTextView, which should keep track of its own
+  // OmniboxPart.
   bool prefers_contrast =
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
   if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
     suggestion_view_->content()->ApplyTextColor(
-        match_.IsIphSuggestion() ? kColorOmniboxResultsTextDimmed
-                                 : kColorOmniboxText);
+        match_.IsIphSuggestion() || match_.IsToolbelt()
+            ? kColorOmniboxResultsTextDimmed
+            : kColorOmniboxText);
   } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of

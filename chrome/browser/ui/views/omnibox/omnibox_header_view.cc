@@ -43,10 +43,8 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view)
   header_label_ = AddChildView(std::make_unique<views::Label>());
   header_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  const gfx::FontList& font =
-      views::TypographyProvider::Get()
-          .GetFont(CONTEXT_OMNIBOX_SECTION_HEADER, views::style::STYLE_PRIMARY)
-          .DeriveWithWeight(gfx::Font::Weight::MEDIUM);
+  const gfx::FontList& font = views::TypographyProvider::Get().GetFont(
+      CONTEXT_OMNIBOX_SECTION_HEADER, views::style::STYLE_PRIMARY);
   header_label_->SetFontList(font);
 }
 

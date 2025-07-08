@@ -66,10 +66,12 @@ void ApplyCommonFontStyles(int context,
       if (context == CONTEXT_DEEMPHASIZED) {
         --details.size_delta;
       } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP ||
+                 context == CONTEXT_OMNIBOX_SECTION_HEADER ||
                  context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON) {
         details.size_delta -= 2;
       }
-      if (context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON) {
+      if (context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON ||
+          context == CONTEXT_OMNIBOX_SECTION_HEADER) {
         details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;

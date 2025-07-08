@@ -192,6 +192,7 @@ struct AutocompleteMatch {
       URL       = 1 << 0,  // A URL
       MATCH     = 1 << 1,  // A match for the user's search term
       DIM       = 1 << 2,  // "Helper text"
+      TOOLBELT  = 1 << 3,  // Toolbelt label
     };
     // clang-format on
 

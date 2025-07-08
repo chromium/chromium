@@ -258,6 +258,13 @@ void OmniboxTextView::ReapplyStyling() {
     // Calculate style-related data.
     if ((*cached_classifications_)[i].style & ACMatchClassification::MATCH) {
       render_text_->ApplyWeight(gfx::Font::Weight::BOLD, current_range);
+    } else if ((*cached_classifications_)[i].style &
+               ACMatchClassification::TOOLBELT) {
+      // TODO(crbug.com/430318151): Investigate whether this font weight and
+      // size handling can be done in chrome_typography.cc, like other omnibox
+      // text.
+      render_text_->ApplyWeight(gfx::Font::Weight::MEDIUM, current_range);
+      render_text_->ApplyFontSizeOverride(12, current_range);
     }
 
     const bool selected =
