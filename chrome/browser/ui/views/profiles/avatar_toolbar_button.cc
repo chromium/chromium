@@ -19,22 +19,27 @@
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -44,8 +49,11 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -73,6 +81,38 @@ constexpr int kChromeRefreshImageLabelPadding = 6;
 // Value used to enlarge the AvatarIcon to accommodate for DIP scaling.
 constexpr int kAvatarIconEnlargement = 1;
 
+void UpdateProfileThemeColors(Browser* browser,
+                              const ui::ColorProvider* color_provider) {
+  if (!color_provider) {
+    return;
+  }
+  CHECK(browser);
+  Profile* profile = browser->profile();
+  CHECK(profile);
+  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
+    return;
+  }
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
+    return;
+  }
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
+    return;
+  }
+  ThemeService* service = ThemeServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
+  // Use default profile colors only for extension and system themes.
+  entry->SetProfileThemeColors(
+      ShouldUseDefaultProfileColors(*service)
+          ? GetDefaultProfileThemeColors(color_provider)
+          : GetCurrentProfileThemeColors(*color_provider, *service));
+}
+
 }  // namespace
 
 // static
@@ -86,7 +126,20 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
       browser_(browser_view->browser()),
       creation_time_(base::TimeTicks::Now()) {
   CHECK(browser_);
-  delegate_ = std::make_unique<AvatarToolbarButtonDelegate>(this, browser_);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // On CrOS this button should only show as badging for Incognito, Guest and
+  // captivie portal signin. It's only enabled for non captive portal Incognito
+  // where a menu is available for closing all Incognito windows.
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+  SetEnabled(profile->IsOffTheRecord() && !profile->IsGuestSession() &&
+             !profile->GetOTRProfileID().IsCaptivePortal());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
   // without drag-drop actions (specifically the adjacent browser menu).
@@ -117,19 +170,21 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 AvatarToolbarButton::~AvatarToolbarButton() = default;
 
 void AvatarToolbarButton::UpdateIcon() {
-  // If the delegate state manager isn't initialized, that means the widget is
-  // not set yet and the button doesn't have access to the theme provider to set
-  // colors. Defer updating until AddedToWidget(). This may get called as a
-  // result of OnUserIdentityChanged() called from the constructor when the
-  // button is not yet added to the ToolbarView's hierarchy.
-  if (!delegate_->IsStateManagerInitialized()) {
+  // If the state manager isn't initialized, that means the widget is not set
+  // yet and the button doesn't have access to the theme provider to set colors.
+  // Defer updating until AddedToWidget(). This may get called as a result of
+  // OnUserIdentityChanged() called from the constructor when the button is not
+  // yet added to the ToolbarView's hierarchy.
+  if (!state_manager_) {
     return;
   }
 
   const int icon_size = GetIconSize();
   const ui::ColorProvider* const color_provider = GetColorProvider();
   CHECK(color_provider);
-  ui::ImageModel icon = delegate_->GetAvatarIcon(
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
+  ui::ImageModel icon = state_provider->GetAvatarIcon(
       icon_size, GetForegroundColor(ButtonState::STATE_NORMAL),
       *color_provider);
 
@@ -143,14 +198,16 @@ void AvatarToolbarButton::UpdateIcon() {
 void AvatarToolbarButton::AddedToWidget() {
   // `AddedToWidget()` can potentially be called more than once. E.g: on Mac
   // when entering/exiting fullscreen.
-  if (!delegate_->IsStateManagerInitialized()) {
-    delegate_->InitializeStateManager();
+  if (!state_manager_) {
+    state_manager_ =
+        std::make_unique<AvatarToolbarButtonStateManager>(*this, browser_);
+    state_manager_->InitializeStates();
   }
 
   ToolbarButton::AddedToWidget();
 
   // A call to `OnThemeChanged()` occurred before adding the widget, and could
-  // not be processed since the delegate was not initialized yet.
+  // not be processed since the state manager was not initialized yet.
   // This will also end up calling `UpdateIcon()`.
   OnThemeChanged();
 }
@@ -186,12 +243,15 @@ void AvatarToolbarButton::Layout(PassKey) {
 }
 
 void AvatarToolbarButton::UpdateText() {
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
 
-  SetTooltipText(delegate_->GetAvatarTooltipText());
-  auto [text, color] = delegate_->GetTextAndColor(*color_provider);
-  SetHighlight(text, color);
+  SetTooltipText(state_provider->GetAvatarTooltipText());
+  SetHighlight(state_provider->GetText(),
+               state_provider->GetHighlightColor(*color_provider));
   UpdateAccessibilityLabel();
   // Update the layout insets after `SetHighlight()` since
   // text might be updated by setting the highlight.
@@ -217,8 +277,11 @@ void AvatarToolbarButton::UpdateText() {
 }
 
 void AvatarToolbarButton::UpdateAccessibilityLabel() {
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
   std::optional<std::u16string> accessibility_label =
-      delegate_->GetAccessibilityLabel();
+      state_provider->GetAccessibilityLabel();
 
   std::u16string name;
   std::u16string description;
@@ -235,18 +298,18 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
   if (accessibility_label.has_value()) {
     if (button_content.empty()) {
       name = accessibility_label.value();
-      description = delegate_->GetAvatarTooltipText();
+      description = state_provider->GetAvatarTooltipText();
     } else {
       name = button_content;
       description = accessibility_label.value();
     }
   } else {
     if (button_content.empty()) {
-      name = delegate_->GetAvatarTooltipText();
+      name = state_provider->GetAvatarTooltipText();
       description = std::u16string();
     } else {
       name = button_content;
-      description = delegate_->GetAvatarTooltipText();
+      description = state_provider->GetAvatarTooltipText();
     }
   }
 
@@ -255,9 +318,12 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
-  return delegate_->GetHighlightTextColor(*color_provider);
+  return state_provider->GetHighlightTextColor(*color_provider);
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
@@ -267,12 +333,21 @@ std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
 }
 
 void AvatarToolbarButton::UpdateInkdrop() {
-  auto [hover_color_id, ripple_color_id] = delegate_->GetInkdropColors();
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
+  auto [hover_color_id, ripple_color_id] = state_provider->GetInkdropColors();
   ConfigureToolbarInkdropForRefresh2023(this, hover_color_id, ripple_color_id);
 }
 
 bool AvatarToolbarButton::ShouldPaintBorder() const {
-  return IsLabelPresentAndVisible() && delegate_->ShouldPaintBorder();
+  if (!IsLabelPresentAndVisible()) {
+    return false;
+  }
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
+  return state_provider->ShouldPaintBorder();
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
@@ -287,12 +362,13 @@ base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonState(
     const std::u16string& text,
     std::optional<std::u16string> accessibility_label,
     std::optional<base::RepeatingCallback<void(bool)>> explicit_action) {
-  return delegate_->SetExplicitButtonState(text, std::move(accessibility_label),
-                                           std::move(explicit_action));
+  CHECK(state_manager_);
+  return state_manager_->SetExplicitState(text, std::move(accessibility_label),
+                                          std::move(explicit_action));
 }
 
 bool AvatarToolbarButton::HasExplicitButtonState() const {
-  return delegate_->HasExplicitButtonState();
+  return state_manager_->HasExplicitButtonState();
 }
 
 void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
@@ -406,11 +482,11 @@ void AvatarToolbarButton::OnBlur() {
 
 void AvatarToolbarButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
-  if (!delegate_->IsStateManagerInitialized()) {
+  if (!state_manager_) {
     return;
   }
 
-  delegate_->OnThemeChanged(GetColorProvider());
+  UpdateProfileThemeColors(browser_, GetColorProvider());
   UpdateText();
   UpdateInkdrop();
 }
@@ -437,8 +513,90 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 #endif
+  CHECK(state_manager_);
+  StateProvider* active_state_provider =
+      state_manager_->GetActiveStateProvider();
+  CHECK(active_state_provider);
+  std::optional<base::RepeatingCallback<void(bool)>> action_override =
+      active_state_provider->GetButtonActionOverride();
+  if (action_override.has_value()) {
+    action_override->Run(is_source_accelerator);
+    return;
+  }
 
-  delegate_->OnButtonPressed(is_source_accelerator);
+  // By default, show the profile menu.
+  browser_->GetFeatures().profile_menu_coordinator()->Show(
+      is_source_accelerator);
+}
+
+void AvatarToolbarButton::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  // Try showing the IPH for signin preference remembered.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+          signin::PrimaryAccountChangeEvent::Type::kSet ||
+      event_details.GetSetPrimaryAccountAccessPoint() !=
+          signin_metrics::AccessPoint::kSigninChoiceRemembered) {
+    return;
+  }
+
+  GaiaId gaia_id = event_details.GetCurrentState().primary_account.gaia;
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+  const SigninPrefs signin_prefs(*prefs);
+  std::optional<base::Time> last_signout_time =
+      signin_prefs.GetChromeLastSignoutTime(gaia_id);
+  if (last_signout_time &&
+      base::Time::Now() - last_signout_time.value() < base::Days(14)) {
+    // Less than two weeks since the last sign out event.
+    return;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      event_details.GetCurrentState().primary_account);
+  if (!account_info.given_name.empty()) {
+    MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
+  } else {
+    gaia_id_for_signin_choice_remembered_ = account_info.gaia;
+  }
+}
+
+void AvatarToolbarButton::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (info.gaia == gaia_id_for_signin_choice_remembered_ &&
+      !info.given_name.empty()) {
+    gaia_id_for_signin_choice_remembered_ = GaiaId();
+    MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
+  }
+}
+
+void AvatarToolbarButton::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
+      account_info == identity_manager->GetPrimaryAccountInfo(
+                          signin::ConsentLevel::kSignin) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      error.state() ==
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
+      token_operation_source == signin_metrics::SourceForRefreshTokenOperation::
+                                    kDiceResponseHandler_Signout) {
+    MaybeShowWebSignoutIPH(account_info.gaia);
+  }
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
@@ -509,19 +667,22 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
 base::AutoReset<std::optional<base::TimeDelta>>
 AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
     AvatarDelayType delay_type) {
-  return AvatarToolbarButtonDelegate::
+  return AvatarToolbarButtonStateManager::
       CreateScopedInfiniteDelayOverrideForTesting(delay_type);
 }
 
 void AvatarToolbarButton::ClearActiveStateForTesting() {
-  delegate_->ClearActiveStateForTesting();  // IN-TEST
+  CHECK(state_manager_);
+  StateProvider* state_provider = state_manager_->GetActiveStateProvider();
+  CHECK(state_provider);
+  state_provider->ClearForTesting();
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
     CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
-  return AvatarToolbarButtonDelegate::
+  return AvatarToolbarButtonStateManager::
       CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
