@@ -29,8 +29,8 @@ WTF::Vector<gfx::Size> ParseSizes(const WTF::String& sizes) {
       blink::WebIconSizesParser::ParseIconSizes(
           WebString::FromASCII(sizes.Ascii()));
   WTF::HashSet<std::pair<int, int>,
-               PairHashTraits<IntWithZeroKeyHashTraits<int>,
-                              IntWithZeroKeyHashTraits<int>>>
+               blink::PairHashTraits<blink::IntWithZeroKeyHashTraits<int>,
+                                     blink::IntWithZeroKeyHashTraits<int>>>
       unique_sizes;
 
   WTF::Vector<gfx::Size> results;

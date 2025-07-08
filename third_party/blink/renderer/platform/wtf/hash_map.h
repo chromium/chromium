@@ -329,10 +329,12 @@ class HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::
 };
 
 template <typename KeyTraits, typename ValueTraits>
-struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, ValueTraits> {
-  using P = typename KeyValuePairHashTraits<KeyTraits, ValueTraits>::TraitType;
+struct HashMapValueTraits
+    : blink::KeyValuePairHashTraits<KeyTraits, ValueTraits> {
+  using P =
+      typename blink::KeyValuePairHashTraits<KeyTraits, ValueTraits>::TraitType;
   static bool IsEmptyValue(const P& value) {
-    return IsHashTraitsEmptyValue<KeyTraits>(value.key);
+    return blink::IsHashTraitsEmptyValue<KeyTraits>(value.key);
   }
   // HashTable should never use the following functions/flags of this traits
   // type. They make sense in the KeyTraits only.
@@ -557,7 +559,7 @@ auto HashMap<T, U, V, W, X>::Take(KeyPeekInType key) -> MappedType {
 template <typename T, typename U, typename V, typename W, typename X>
 template <typename IncomingKeyType>
 inline bool HashMap<T, U, V, W, X>::IsValidKey(const IncomingKeyType& key) {
-  return !IsHashTraitsEmptyOrDeletedValue<KeyTraits>(key);
+  return !blink::IsHashTraitsEmptyOrDeletedValue<KeyTraits>(key);
 }
 
 template <typename T, typename U, typename V, typename W, typename X>

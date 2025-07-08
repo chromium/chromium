@@ -364,14 +364,10 @@ struct CrossThreadCopier<KURL> : public CrossThreadCopierPassThrough<KURL> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 // Defined in kurl_hash.h.
 template <>
 struct HashTraits<blink::KURL>;
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_KURL_H_

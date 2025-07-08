@@ -172,41 +172,31 @@ class DecoderCacheEntry final : public CacheEntry {
   cc::PaintImage::GeneratorClientId client_id_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::DecoderCacheKey>
-    : GenericHashTraits<blink::DecoderCacheKey> {
+struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const blink::DecoderCacheKey& p) {
-    auto first = HashInts(
-        WTF::GetHash(const_cast<blink::ImageFrameGenerator*>(p.gen_.get())),
-        WTF::GetHash(p.size_));
-    auto second = HashInts(WTF::GetHash(static_cast<uint8_t>(p.alpha_option_)),
-                           p.client_id_);
+  static unsigned GetHash(const DecoderCacheKey& p) {
+    auto first =
+        HashInts(blink::GetHash(const_cast<ImageFrameGenerator*>(p.gen_.get())),
+                 blink::GetHash(p.size_));
+    auto second = HashInts(
+        blink::GetHash(static_cast<uint8_t>(p.alpha_option_)), p.client_id_);
     return HashInts(first, second);
   }
 
   static const bool kEmptyValueIsZero = true;
-  static blink::DecoderCacheKey EmptyValue() {
-    return blink::DecoderCacheEntry::MakeCacheKey(
-        nullptr, SkISize::Make(0, 0),
-        static_cast<blink::ImageDecoder::AlphaOption>(0),
+  static DecoderCacheKey EmptyValue() {
+    return DecoderCacheEntry::MakeCacheKey(
+        nullptr, SkISize::Make(0, 0), static_cast<ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
   }
-  static blink::DecoderCacheKey DeletedValue() {
-    return blink::DecoderCacheEntry::MakeCacheKey(
+  static DecoderCacheKey DeletedValue() {
+    return DecoderCacheEntry::MakeCacheKey(
         nullptr, SkISize::Make(-1, -1),
-        static_cast<blink::ImageDecoder::AlphaOption>(0),
+        static_cast<ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
   }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // FUNCTION
 //

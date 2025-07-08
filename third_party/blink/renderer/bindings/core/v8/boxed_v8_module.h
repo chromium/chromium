@@ -52,25 +52,20 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
   friend struct HashTraits<Member<BoxedV8Module>>;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::Member<blink::BoxedV8Module>>
-    : MemberHashTraits<blink::BoxedV8Module> {
-  static unsigned GetHash(const blink::Member<blink::BoxedV8Module>& key) {
+struct HashTraits<Member<BoxedV8Module>> : MemberHashTraits<BoxedV8Module> {
+  static unsigned GetHash(const Member<BoxedV8Module>& key) {
     return key->identity_hash_;
   }
 
-  static bool Equal(const blink::Member<blink::BoxedV8Module>& a,
-                    const blink::Member<blink::BoxedV8Module>& b) {
+  static bool Equal(const Member<BoxedV8Module>& a,
+                    const Member<BoxedV8Module>& b) {
     return a->record_ == b->record_;
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_BOXED_V8_MODULE_H_

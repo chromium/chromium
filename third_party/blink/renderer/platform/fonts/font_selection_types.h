@@ -399,19 +399,15 @@ struct PLATFORM_EXPORT FontSelectionCapabilitiesHashTraits
   static unsigned GetHash(const FontSelectionCapabilities& key);
 };
 
+template <>
+struct HashTraits<FontSelectionRequestKey> : FontSelectionRequestKeyHashTraits {
+};
+
+template <>
+struct HashTraits<FontSelectionCapabilities>
+    : FontSelectionCapabilitiesHashTraits {};
+
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct HashTraits<blink::FontSelectionRequestKey>
-    : blink::FontSelectionRequestKeyHashTraits {};
-
-template <>
-struct HashTraits<blink::FontSelectionCapabilities>
-    : blink::FontSelectionCapabilitiesHashTraits {};
-
-}  // namespace WTF
 
 // Used for ClampTo for example in StyleBuilderConverter
 template <>

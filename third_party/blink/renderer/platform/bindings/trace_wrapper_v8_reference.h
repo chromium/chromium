@@ -20,6 +20,14 @@ namespace blink {
 template <typename T>
 using TraceWrapperV8Reference = v8::TracedReference<T>;
 
+template <typename T>
+struct HashTraits<TraceWrapperV8Reference<T>>
+    : GenericHashTraits<TraceWrapperV8Reference<T>> {
+  STATIC_ONLY(HashTraits);
+  static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -57,14 +65,6 @@ struct VectorTraits<blink::TraceWrapperV8Reference<T>>
   // Wanted behavior that should not break for performance reasons.
   static_assert(!kNeedsDestruction,
                 "TraceWrapperV8Reference should be trivially destructible.");
-};
-
-template <typename T>
-struct HashTraits<blink::TraceWrapperV8Reference<T>>
-    : GenericHashTraits<blink::TraceWrapperV8Reference<T>> {
-  STATIC_ONLY(HashTraits);
-  static constexpr bool kCanTraceConcurrently = true;
-  static constexpr bool kSupportsCompaction = true;
 };
 
 }  // namespace WTF

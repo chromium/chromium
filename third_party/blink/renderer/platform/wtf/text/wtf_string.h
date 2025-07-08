@@ -710,6 +710,12 @@ inline StringView::StringView(const String& string LIFETIME_BOUND,
 inline StringView::StringView(const String& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
+template <typename T>
+struct HashTraits;
+// Defined in string_hash.h.
+template <>
+struct HashTraits<String>;
+
 }  // namespace blink
 
 namespace WTF {
@@ -723,13 +729,6 @@ using blink::g_empty_string;
 using blink::g_xmlns_with_colon;
 using blink::NewlineThenWhitespaceStringsTable;
 using blink::String;
-
-template <typename T>
-struct HashTraits;
-// Defined in string_hash.h.
-template <>
-struct HashTraits<String>;
-
 }  // namespace WTF
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String)

@@ -90,7 +90,7 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return WTF::GetHash(x_); }
+  unsigned GetHash() { return blink::GetHash(x_); }
 
   IntWrapper(int x) : x_(x) {}
 
@@ -102,7 +102,7 @@ std::atomic_int IntWrapper::destructor_calls_{0};
 
 struct IntWrapperHashTraits : GenericHashTraits<IntWrapper> {
   static unsigned GetHash(const IntWrapper& key) {
-    return WTF::HashInt(static_cast<uint32_t>(key.Value()));
+    return HashInt(static_cast<uint32_t>(key.Value()));
   }
 };
 
@@ -488,24 +488,15 @@ class ThreadMarker {
 };
 }  // namespace
 
-}  // namespace blink
-
-namespace WTF {
-
 // ThreadMarkerHash is the default hash for ThreadMarker
 template <>
-struct HashTraits<blink::ThreadMarker>
-    : SimpleClassHashTraits<blink::ThreadMarker> {
-  static unsigned GetHash(const blink::ThreadMarker& key) {
+struct HashTraits<ThreadMarker> : SimpleClassHashTraits<ThreadMarker> {
+  static unsigned GetHash(const ThreadMarker& key) {
     return static_cast<unsigned>(
         reinterpret_cast<uintptr_t>(key.creating_thread_) + key.num_);
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 namespace {
 class ThreadedWeaknessTester : public ThreadedTesterBase {
@@ -1664,7 +1655,7 @@ class ThingWithDestructor {
 
   static int live_things_with_destructor_;
 
-  unsigned GetHash() { return WTF::GetHash(x_); }
+  unsigned GetHash() { return blink::GetHash(x_); }
 
  private:
   static const int kEmptyValue = 0;
@@ -2618,7 +2609,7 @@ class OffHeapInt : public RefCounted<OffHeapInt> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return WTF::GetHash(x_); }
+  unsigned GetHash() { return blink::GetHash(x_); }
   void VoidFunction() {}
 
   OffHeapInt() = delete;
@@ -3163,17 +3154,9 @@ class KeyWithCopyingMoveConstructor final {
 };
 }  // namespace
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::KeyWithCopyingMoveConstructor>
-    : public SimpleClassHashTraits<blink::KeyWithCopyingMoveConstructor> {};
-
-}  // namespace WTF
-
-namespace blink {
+struct HashTraits<KeyWithCopyingMoveConstructor>
+    : public SimpleClassHashTraits<KeyWithCopyingMoveConstructor> {};
 
 TEST_F(HeapTest, HeapHashMapCallsDestructor) {
   String string = "string";

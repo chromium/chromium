@@ -305,17 +305,13 @@ inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
 inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
 struct HashTraits;
 // Defined in atomic_string_hash.h.
 template <>
-struct HashTraits<blink::AtomicString>;
+struct HashTraits<AtomicString>;
 
-}  // namespace WTF
+}  // namespace blink
 
 // Mark `AtomicString` and `const char*` as having a common reference type (the
 // type to which both can be converted or bound) of `String`. This makes them

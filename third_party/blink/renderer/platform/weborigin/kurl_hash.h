@@ -31,15 +31,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
-namespace WTF {
+namespace blink {
 
-// KURLHash doesn't support null KURLs.  get(), contains(), and add() on
-// HashMap<KURL,..., KURLHash> cause a null-pointer dereference when passed null
+// This HashTraits for KURL doesn't support null KURLs.  get(), contains(), and
+// add() on HashMap<KURL,...> cause a null-pointer dereference when passed null
 // KURLs.
 template <>
-struct HashTraits<blink::KURL>
-    : OneFieldHashTraits<blink::KURL, &blink::KURL::string_> {};
+struct HashTraits<KURL> : OneFieldHashTraits<KURL, &KURL::string_> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_KURL_HASH_H_

@@ -480,19 +480,15 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   const scoped_refptr<const SecurityOrigin> precursor_origin_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 // The default HashTraits of SecurityOrigin implements the "same origin"
 // equality relation between two origins. As such it ignores the domain that
 // might or might not be set on the origin. If you need "same origin-domain"
 // equality you'll need to define a custom hash traits type using a different
 // hash function.
 template <>
-struct HashTraits<scoped_refptr<const blink::SecurityOrigin>>
-    : GenericHashTraits<scoped_refptr<const blink::SecurityOrigin>> {
-  static unsigned GetHash(const blink::SecurityOrigin* origin) {
+struct HashTraits<scoped_refptr<const SecurityOrigin>>
+    : GenericHashTraits<scoped_refptr<const SecurityOrigin>> {
+  static unsigned GetHash(const SecurityOrigin* origin) {
     const base::UnguessableToken* nonce = origin->GetNonceForSerialization();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
 
@@ -511,31 +507,29 @@ struct HashTraits<scoped_refptr<const blink::SecurityOrigin>>
     };
     return StringHasher::HashMemory(base::as_byte_span(hash_codes));
   }
-  static unsigned GetHash(
-      const scoped_refptr<const blink::SecurityOrigin>& origin) {
+  static unsigned GetHash(const scoped_refptr<const SecurityOrigin>& origin) {
     return GetHash(origin.get());
   }
 
-  static bool Equal(const blink::SecurityOrigin* a,
-                    const blink::SecurityOrigin* b) {
+  static bool Equal(const SecurityOrigin* a, const SecurityOrigin* b) {
     return a->IsSameOriginWith(b);
   }
-  static bool Equal(const blink::SecurityOrigin* a,
-                    const scoped_refptr<const blink::SecurityOrigin>& b) {
+  static bool Equal(const SecurityOrigin* a,
+                    const scoped_refptr<const SecurityOrigin>& b) {
     return Equal(a, b.get());
   }
-  static bool Equal(const scoped_refptr<const blink::SecurityOrigin>& a,
-                    const blink::SecurityOrigin* b) {
+  static bool Equal(const scoped_refptr<const SecurityOrigin>& a,
+                    const SecurityOrigin* b) {
     return Equal(a.get(), b);
   }
-  static bool Equal(const scoped_refptr<const blink::SecurityOrigin>& a,
-                    const scoped_refptr<const blink::SecurityOrigin>& b) {
+  static bool Equal(const scoped_refptr<const SecurityOrigin>& a,
+                    const scoped_refptr<const SecurityOrigin>& b) {
     return Equal(a.get(), b.get());
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_SECURITY_ORIGIN_H_

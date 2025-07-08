@@ -18,14 +18,10 @@ template <>
 struct CrossThreadCopier<viz::ResourceId>
     : public CrossThreadCopierPassThrough<viz::ResourceId> {};
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
 struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {
   static uint32_t GetHash(const viz::ResourceId& id) {
-    return WTF::GetHash(id.GetUnsafeValue());
+    return blink::GetHash(id.GetUnsafeValue());
   }
   static const bool kEmptyValueIsZero = false;
   static viz::ResourceId EmptyValue() {
@@ -36,6 +32,6 @@ struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RESOURCE_ID_TRAITS_H_

@@ -114,15 +114,11 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
   scoped_refptr<const SecurityOrigin> site_as_origin_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::BlinkSchemefulSite>
-    : OneFieldHashTraits<blink::BlinkSchemefulSite,
-                         &blink::BlinkSchemefulSite::site_as_origin_> {};
+struct HashTraits<BlinkSchemefulSite>
+    : OneFieldHashTraits<BlinkSchemefulSite,
+                         &BlinkSchemefulSite::site_as_origin_> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_BLINK_SCHEMEFUL_SITE_H_

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
@@ -33,6 +33,6 @@ struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SK_IMAGE_INFO_HASH_H_

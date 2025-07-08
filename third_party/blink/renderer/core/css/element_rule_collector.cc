@@ -125,17 +125,12 @@ struct ContextWithStyleScopeFrame {
 };
 
 }  // namespace
-}  // namespace blink
 
-namespace WTF {
 template <>
-struct HashTraits<blink::CumulativeRulePerfKey>
-    : TwoFieldsHashTraits<blink::CumulativeRulePerfKey,
-                          &blink::CumulativeRulePerfKey::selector,
-                          &blink::CumulativeRulePerfKey::style_sheet_id> {};
-}  // namespace WTF
-
-namespace blink {
+struct HashTraits<CumulativeRulePerfKey>
+    : TwoFieldsHashTraits<CumulativeRulePerfKey,
+                          &CumulativeRulePerfKey::selector,
+                          &CumulativeRulePerfKey::style_sheet_id> {};
 
 template <class CSSRuleCollection>
 static CSSRule* FindStyleRule(CSSRuleCollection* css_rules,

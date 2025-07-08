@@ -33,35 +33,32 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
-struct HashTraits<blink::AtomicString>
-    : SimpleClassHashTraits<blink::AtomicString> {
-  static unsigned GetHash(const blink::AtomicString& key) { return key.Hash(); }
+struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
+  static unsigned GetHash(const AtomicString& key) { return key.Hash(); }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 
   // Unlike other types, we can return a const reference for AtomicString's
   // empty value (g_null_atom).
-  typedef const blink::AtomicString& PeekOutType;
+  typedef const AtomicString& PeekOutType;
 
-  static const blink::AtomicString& EmptyValue() { return blink::g_null_atom; }
-  static PeekOutType Peek(const blink::AtomicString& value) { return value; }
+  static const AtomicString& EmptyValue() { return g_null_atom; }
+  static PeekOutType Peek(const AtomicString& value) { return value; }
 
-  static bool IsEmptyValue(const blink::AtomicString& value) {
-    return value.IsNull();
+  static bool IsEmptyValue(const AtomicString& value) { return value.IsNull(); }
+
+  static bool IsDeletedValue(const AtomicString& value) {
+    return HashTraits<String>::IsDeletedValue(value.string_);
   }
 
-  static bool IsDeletedValue(const blink::AtomicString& value) {
-    return HashTraits<blink::String>::IsDeletedValue(value.string_);
-  }
-
-  static void ConstructDeletedValue(blink::AtomicString& slot) {
-    HashTraits<blink::String>::ConstructDeletedValue(slot.string_);
+  static void ConstructDeletedValue(AtomicString& slot) {
+    HashTraits<String>::ConstructDeletedValue(slot.string_);
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_HASH_H_

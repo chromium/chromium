@@ -42,7 +42,7 @@ struct HighlightRegistryMapEntryNameTranslator {
   STATIC_ONLY(HighlightRegistryMapEntryNameTranslator);
 
   static unsigned GetHash(const AtomicString& name) {
-    return WTF::GetHash(name);
+    return blink::GetHash(name);
   }
   static bool Equal(const HighlightRegistryMapEntry* entry,
                     const AtomicString& name) {
@@ -51,25 +51,19 @@ struct HighlightRegistryMapEntryNameTranslator {
   }
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::Member<blink::HighlightRegistryMapEntry>>
-    : MemberHashTraits<blink::HighlightRegistryMapEntry> {
+struct HashTraits<Member<HighlightRegistryMapEntry>>
+    : MemberHashTraits<HighlightRegistryMapEntry> {
   // Note that GetHash and Equal only take into account the |highlight_name|
   // because |HighlightRegistryMapEntry| is used for storing map entries
   // inside a set (i.e. there can only be one map entry in the set with the
   // same key which is |highlight_name|).
-  static inline unsigned GetHash(
-      const blink::Member<blink::HighlightRegistryMapEntry>& key) {
+  static inline unsigned GetHash(const Member<HighlightRegistryMapEntry>& key) {
     DCHECK(key);
-    return WTF::GetHash(key->highlight_name);
+    return blink::GetHash(key->highlight_name);
   }
-  static inline bool Equal(
-      const blink::Member<blink::HighlightRegistryMapEntry>& a,
-      const blink::Member<blink::HighlightRegistryMapEntry>& b) {
+  static inline bool Equal(const Member<HighlightRegistryMapEntry>& a,
+                           const Member<HighlightRegistryMapEntry>& b) {
     DCHECK(a && b);
     return HashTraits<blink::AtomicString>::Equal(a->highlight_name,
                                                   b->highlight_name);
@@ -78,6 +72,6 @@ struct HashTraits<blink::Member<blink::HighlightRegistryMapEntry>>
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_MAP_ENTRY_H_

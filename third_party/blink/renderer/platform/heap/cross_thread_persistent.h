@@ -70,10 +70,6 @@ struct CrossThreadCopier<CrossThreadWeakPersistent<T>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
@@ -82,7 +78,7 @@ template <typename T>
 struct HashTraits<blink::CrossThreadWeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace base {
 

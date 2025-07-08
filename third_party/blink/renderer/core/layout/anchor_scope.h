@@ -31,7 +31,7 @@ class CORE_EXPORT AnchorScopedName : public GarbageCollected<AnchorScopedName> {
 
   unsigned GetHash() const {
     unsigned hash = name_->GetHash();
-    WTF::AddIntToHash(hash, WTF::GetHash(anchor_scope_element_.Get()));
+    AddIntToHash(hash, blink::GetHash(anchor_scope_element_.Get()));
     return hash;
   }
 
@@ -52,10 +52,6 @@ class CORE_EXPORT AnchorScopedName : public GarbageCollected<AnchorScopedName> {
 // during lookup (PhysicalAnchorQuery::AnchorReference).
 AnchorScopedName* ToAnchorScopedName(const ScopedCSSName&, const LayoutObject&);
 
-}  // namespace blink
-
-namespace WTF {
-
 // Allows creating a hash table of Member<AnchorScopedName> that hashes the
 // AnchorScopedNames by value instead of address.
 template <typename T>
@@ -71,12 +67,12 @@ struct AnchorScopedNameHashTraits : MemberHashTraits<T> {
 };
 
 template <>
-struct HashTraits<blink::Member<blink::AnchorScopedName>>
-    : AnchorScopedNameHashTraits<blink::AnchorScopedName> {};
+struct HashTraits<Member<AnchorScopedName>>
+    : AnchorScopedNameHashTraits<AnchorScopedName> {};
 template <>
-struct HashTraits<blink::Member<const blink::AnchorScopedName>>
-    : AnchorScopedNameHashTraits<const blink::AnchorScopedName> {};
+struct HashTraits<Member<const AnchorScopedName>>
+    : AnchorScopedNameHashTraits<const AnchorScopedName> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCOPE_H_

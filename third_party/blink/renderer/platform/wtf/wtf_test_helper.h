@@ -86,6 +86,12 @@ class MoveOnlyHashValue {
   int id_;
 };
 
+}  // namespace WTF
+
+namespace blink {
+
+using WTF::MoveOnlyHashValue;
+
 struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
   // This is actually true, but we pretend that it's false to disable the
   // optimization.
@@ -101,7 +107,7 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
     return value.Value() == MoveOnlyHashValue::kDeleted;
   }
   static unsigned GetHash(const MoveOnlyHashValue& value) {
-    return WTF::GetHash(value.Value());
+    return blink::GetHash(value.Value());
   }
   static bool Equal(const MoveOnlyHashValue& left,
                     const MoveOnlyHashValue& right) {
@@ -111,6 +117,10 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
 
 template <>
 struct HashTraits<MoveOnlyHashValue> : MoveOnlyHashTraits {};
+
+}  // namespace blink
+
+namespace WTF {
 
 class CountCopy final {
  public:
@@ -136,6 +146,9 @@ class CountCopy final {
   int* counter_;
 };
 
+}  // namespace WTF
+namespace blink {
+using WTF::CountCopy;
 struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
   static const bool kEmptyValueIsZero = false;
   static bool IsEmptyValue(const CountCopy& value) { return !value.Counter(); }
@@ -146,7 +159,7 @@ struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
     return value.Counter() == CountCopy::kDeletedValue;
   }
   static unsigned GetHash(const CountCopy& value) {
-    return WTF::GetHash(value.Counter());
+    return blink::GetHash(value.Counter());
   }
   static bool Equal(const CountCopy& left, const CountCopy& right) {
     return left.Counter() == right.Counter();
@@ -155,6 +168,10 @@ struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
 
 template <>
 struct HashTraits<CountCopy> : CountCopyHashTraits {};
+
+}  // namespace blink
+
+namespace WTF {
 
 template <typename T>
 class ValueInstanceCount final {
@@ -194,6 +211,12 @@ class ValueInstanceCount final {
   T value_;
 };
 
+}  // namespace WTF
+
+namespace blink {
+
+using WTF::ValueInstanceCount;
+
 template <typename T>
 struct ValueInstanceCountHashTraits
     : public GenericHashTraits<ValueInstanceCount<T>> {
@@ -208,7 +231,7 @@ struct ValueInstanceCountHashTraits
     return value.Counter() == ValueInstanceCount<T>::kDeletedValue;
   }
   static unsigned GetHash(const ValueInstanceCount<T>& value) {
-    return WTF::GetHash(value.Counter());
+    return blink::GetHash(value.Counter());
   }
   static bool Equal(const ValueInstanceCount<T>& left,
                     const ValueInstanceCount<T>& right) {
@@ -219,6 +242,10 @@ struct ValueInstanceCountHashTraits
 template <typename T>
 struct HashTraits<ValueInstanceCount<T>>
     : public ValueInstanceCountHashTraits<T> {};
+
+}  // namespace blink
+
+namespace WTF {
 
 class DummyRefCounted : public RefCounted<DummyRefCounted> {
  public:

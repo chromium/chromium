@@ -937,13 +937,6 @@ inline void StringImpl::AppendTo(BufferType& result,
     result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
 }
 
-}  // namespace blink
-
-namespace WTF {
-
-// TODO(crbug.com/422768753): Remove this `using` directive.
-using blink::StringImpl;
-
 template <typename T>
 struct HashTraits;
 // Defined in string_hash.h.
@@ -952,6 +945,12 @@ struct HashTraits<StringImpl*>;
 template <>
 struct HashTraits<scoped_refptr<StringImpl>>;
 
+}  // namespace blink
+
+namespace WTF {
+
+// TODO(crbug.com/422768753): Remove this `using` directive.
+using blink::StringImpl;
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

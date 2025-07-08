@@ -97,33 +97,28 @@ class CORE_EXPORT PropertyHandle {
   const CSSProperty* css_property_;
   AtomicString property_name_;
 
-  friend struct ::WTF::HashTraits<blink::PropertyHandle>;
+  friend struct HashTraits<PropertyHandle>;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::PropertyHandle>
-    : SimpleClassHashTraits<blink::PropertyHandle> {
-  static unsigned GetHash(const blink::PropertyHandle& handle) {
+struct HashTraits<PropertyHandle> : SimpleClassHashTraits<PropertyHandle> {
+  static unsigned GetHash(const PropertyHandle& handle) {
     return handle.GetHash();
   }
 
-  static void ConstructDeletedValue(blink::PropertyHandle& slot) {
-    new (base::NotNullTag::kNotNull, &slot) blink::PropertyHandle(
-        blink::PropertyHandle::DeletedValueForHashTraits());
+  static void ConstructDeletedValue(PropertyHandle& slot) {
+    new (base::NotNullTag::kNotNull, &slot)
+        PropertyHandle(PropertyHandle::DeletedValueForHashTraits());
   }
-  static bool IsDeletedValue(const blink::PropertyHandle& value) {
+  static bool IsDeletedValue(const PropertyHandle& value) {
     return value.IsDeletedValueForHashTraits();
   }
 
-  static blink::PropertyHandle EmptyValue() {
-    return blink::PropertyHandle::EmptyValueForHashTraits();
+  static PropertyHandle EmptyValue() {
+    return PropertyHandle::EmptyValueForHashTraits();
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_PROPERTY_HANDLE_H_

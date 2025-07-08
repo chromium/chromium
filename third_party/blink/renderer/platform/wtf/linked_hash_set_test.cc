@@ -223,7 +223,8 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
   EXPECT_EQ(counter3, 4);
 }
 
-struct CustomHashTraitsForInt : public IntHashTraits<int, INT_MAX, INT_MIN> {};
+struct CustomHashTraitsForInt
+    : public blink::IntHashTraits<int, INT_MAX, INT_MIN> {};
 
 TEST(LinkedHashSetTest, BeginEnd) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
@@ -873,6 +874,12 @@ struct EmptyString {
   bool empty_ = false;
 };
 
+}  // namespace WTF
+
+namespace blink {
+
+using WTF::EmptyString;
+
 template <>
 struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
   static unsigned GetHash(const EmptyString&) { return 0; }
@@ -886,6 +893,10 @@ struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
     return empty;
   }
 };
+
+}  // namespace blink
+
+namespace WTF {
 
 TEST(LinkedHashSetTest, Swap) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
@@ -1036,7 +1047,7 @@ struct Complicated {
   }
 };
 
-struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
+struct ComplicatedHashTraits : blink::GenericHashTraits<Complicated> {
   static unsigned GetHash(const Complicated& key) { return key.simple_.value_; }
   static bool Equal(const Complicated& a, const Complicated& b) {
     return a.simple_.value_ == b.simple_.value_;

@@ -177,37 +177,31 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   Member<StyleRuleToStyleSheetContentsMap> style_rule_to_sheet_map_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 // These two HashTraits specializations are needed so that
 // HeapHashSet<Member<IndexedSelector>> will do value-wise comparisons instead
 // of pointer-wise comparisons.
 template <>
-struct HashTraits<blink::InvalidationSetToSelectorMap::IndexedSelector>
+struct HashTraits<InvalidationSetToSelectorMap::IndexedSelector>
     : TwoFieldsHashTraits<
-          blink::InvalidationSetToSelectorMap::IndexedSelector,
-          &blink::InvalidationSetToSelectorMap::IndexedSelector::style_rule_,
-          &blink::InvalidationSetToSelectorMap::IndexedSelector::
-              selector_index_> {};
+          InvalidationSetToSelectorMap::IndexedSelector,
+          &InvalidationSetToSelectorMap::IndexedSelector::style_rule_,
+          &InvalidationSetToSelectorMap::IndexedSelector::selector_index_> {};
 
 template <>
-struct HashTraits<
-    blink::Member<blink::InvalidationSetToSelectorMap::IndexedSelector>>
-    : MemberHashTraits<blink::InvalidationSetToSelectorMap::IndexedSelector> {
-  using IndexedSelector = blink::InvalidationSetToSelectorMap::IndexedSelector;
-  static unsigned GetHash(const blink::Member<IndexedSelector>& key) {
-    return WTF::GetHash(*key);
+struct HashTraits<Member<InvalidationSetToSelectorMap::IndexedSelector>>
+    : MemberHashTraits<InvalidationSetToSelectorMap::IndexedSelector> {
+  using IndexedSelector = InvalidationSetToSelectorMap::IndexedSelector;
+  static unsigned GetHash(const Member<IndexedSelector>& key) {
+    return blink::GetHash(*key);
   }
-  static bool Equal(const blink::Member<IndexedSelector>& a,
-                    const blink::Member<IndexedSelector>& b) {
+  static bool Equal(const Member<IndexedSelector>& a,
+                    const Member<IndexedSelector>& b) {
     return HashTraits<IndexedSelector>::Equal(*a, *b);
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_

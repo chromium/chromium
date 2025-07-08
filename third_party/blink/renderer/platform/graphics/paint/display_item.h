@@ -360,14 +360,10 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::DisplayItem::Id::HashKey>
-    : GenericHashTraits<blink::DisplayItem::Id::HashKey> {
-  using Key = blink::DisplayItem::Id::HashKey;
+struct HashTraits<DisplayItem::Id::HashKey>
+    : GenericHashTraits<DisplayItem::Id::HashKey> {
+  using Key = DisplayItem::Id::HashKey;
   static constexpr bool kEmptyValueIsZero = true;
   static void ConstructDeletedValue(Key& slot) {
     const_cast<wtf_size_t&>(slot.fragment) = kNotFound;
@@ -375,14 +371,14 @@ struct HashTraits<blink::DisplayItem::Id::HashKey>
   static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }
 
   static unsigned GetHash(const Key& id) {
-    unsigned hash = WTF::GetHash(id.client_id);
-    WTF::AddIntToHash(hash, id.type);
-    WTF::AddIntToHash(hash, id.fragment);
+    unsigned hash = blink::GetHash(id.client_id);
+    AddIntToHash(hash, id.type);
+    AddIntToHash(hash, id.fragment);
     return hash;
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_

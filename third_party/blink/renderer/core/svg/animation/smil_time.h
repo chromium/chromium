@@ -217,16 +217,11 @@ inline bool operator!=(const SMILInterval& a, const SMILInterval& b) {
   return !(a == b);
 }
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct HashTraits<blink::SMILInterval>
-    : GenericHashTraits<blink::SMILInterval> {
-  static blink::SMILInterval EmptyValue() {
-    return blink::SMILInterval::Unresolved();
-  }
+struct HashTraits<SMILInterval> : GenericHashTraits<SMILInterval> {
+  static SMILInterval EmptyValue() { return SMILInterval::Unresolved(); }
 };
-}  // namespace WTF
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_H_

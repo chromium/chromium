@@ -593,20 +593,16 @@ class PLATFORM_EXPORT FontDescription {
   static bool use_subpixel_text_positioning_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::FontDescription>
+struct HashTraits<FontDescription>
     : SimpleClassHashTraits<blink::FontDescription> {
   // FontDescription default constructor creates a regular value instead of the
   // empty value.
-  static blink::FontDescription EmptyValue() {
-    return blink::FontDescription::CreateHashTableEmptyValue();
+  static FontDescription EmptyValue() {
+    return FontDescription::CreateHashTableEmptyValue();
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DESCRIPTION_H_

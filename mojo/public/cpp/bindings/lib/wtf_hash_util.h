@@ -46,9 +46,9 @@ struct WTFHashTraits<T, false> {
 };
 
 template <>
-struct WTFHashTraits<WTF::String, false> {
-  static size_t Hash(size_t seed, const WTF::String& value) {
-    return HashCombine(seed, WTF::GetHash(value));
+struct WTFHashTraits<blink::String, false> {
+  static size_t Hash(size_t seed, const blink::String& value) {
+    return HashCombine(seed, blink::GetHash(value));
   }
 };
 
@@ -60,7 +60,7 @@ size_t WTFHash(size_t seed, const T& value) {
 }  // namespace internal
 }  // namespace mojo
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 struct HashTraits<mojo::StructPtr<T>>
@@ -108,6 +108,6 @@ struct HashTraits<mojo::InlinedStructPtr<T>>
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_WTF_HASH_UTIL_H_

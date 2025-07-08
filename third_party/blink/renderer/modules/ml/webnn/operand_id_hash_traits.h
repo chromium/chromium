@@ -8,7 +8,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
-namespace WTF {
+namespace blink {
 
 // Specialization of HashTraits for OperandId.
 template <>
@@ -32,6 +32,6 @@ struct HashTraits<webnn::OperandId> : GenericHashTraits<webnn::OperandId> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_OPERAND_ID_HASH_TRAITS_H_

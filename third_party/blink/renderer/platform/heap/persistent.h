@@ -88,11 +88,15 @@ template <typename T>
 struct VectorTraits<blink::WeakPersistent<T>>
     : PersistentVectorTraitsBase<blink::WeakPersistent<T>> {};
 
+}  // namespace WTF
+
+namespace blink {
+
 template <typename T, typename PersistentType>
 struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
   template <typename U>
   static unsigned GetHash(const U& key) {
-    return WTF::GetHash<T*>(key);
+    return blink::GetHash<T*>(key);
   }
 
   template <typename U, typename V>
@@ -134,7 +138,7 @@ template <typename T>
 struct HashTraits<blink::WeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::WeakPersistent<T>> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace base {
 

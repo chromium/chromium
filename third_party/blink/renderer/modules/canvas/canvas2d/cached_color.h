@@ -47,7 +47,7 @@ struct CachedColor final : public GarbageCollected<CachedColor> {
 
 // Allows using CachedColor in a HashMap.
 struct CachedColorTraits final
-    : public WTF::BaseMemberHashTraits<CachedColor, Member<CachedColor>> {
+    : public BaseMemberHashTraits<CachedColor, Member<CachedColor>> {
   STATIC_ONLY(CachedColorTraits);
   static unsigned GetHash(const CachedColor* cached_color) {
     return cached_color->hash_code;

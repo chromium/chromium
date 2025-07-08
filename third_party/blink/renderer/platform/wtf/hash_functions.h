@@ -28,7 +28,7 @@
 
 #include "base/bit_cast.h"
 
-namespace WTF {
+namespace blink {
 
 namespace internal {
 
@@ -151,6 +151,17 @@ constexpr void AddFloatToHash(unsigned& hash, float value) {
   AddIntToHash(hash, HashFloat(value));
 }
 
+}  // namespace blink
+
+// TODO(crbug.com/422768753): Remove these `using` directives.
+namespace WTF {
+using blink::AddFloatToHash;
+using blink::AddIntToHash;
+using blink::HashFloat;
+using blink::HashInt;
+using blink::HashInts;
+using blink::HashPointer;
+using blink::NormalizeSign;
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_

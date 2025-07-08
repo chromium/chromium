@@ -60,10 +60,14 @@ struct IsTraceable<KeyValuePair<K, V>>
     : std::integral_constant<bool,
                              IsTraceable<K>::value || IsTraceable<V>::value> {};
 
+}  // namespace WTF
+
+namespace blink {
+
 template <typename KeyTraitsArg,
           typename ValueTraitsArg,
-          typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
-                                    typename ValueTraitsArg::TraitType>>
+          typename P = WTF::KeyValuePair<typename KeyTraitsArg::TraitType,
+                                         typename ValueTraitsArg::TraitType>>
 struct KeyValuePairHashTraits
     : TwoFieldsHashTraits<P, &P::key, &P::value, KeyTraitsArg, ValueTraitsArg> {
   using TraitType = P;
@@ -76,15 +80,18 @@ struct KeyValuePairHashTraits
   static constexpr bool kCanTraceConcurrently =
       KeyTraits::kCanTraceConcurrently &&
       (ValueTraits::kCanTraceConcurrently ||
-       !IsTraceable<typename ValueTraits::TraitType>::value);
+       !WTF::IsTraceable<typename ValueTraits::TraitType>::value);
   static constexpr bool kSupportsCompaction =
       KeyTraits::kSupportsCompaction && ValueTraits::kSupportsCompaction;
 };
 
 template <typename Key, typename Value>
-struct HashTraits<KeyValuePair<Key, Value>>
+struct HashTraits<WTF::KeyValuePair<Key, Value>>
     : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
+}  // namespace blink
+
+namespace WTF {
 namespace internal {
 
 template <typename T, bool NeedsStackCheck = IsTraceable<T>::value>

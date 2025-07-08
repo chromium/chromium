@@ -131,27 +131,23 @@ String PermissionsPolicyFeatureToProtocol(
     network::mojom::PermissionsPolicyFeature,
     ExecutionContext*);
 
-}  // namespace blink
-
-namespace WTF {
-
 // A helper that defines the hash function and the invalid 'empty value' that
 // HashMap should use internally.
 template <>
-struct HashTraits<blink::FeatureNameMapCacheKey>
-    : SimpleClassHashTraits<blink::FeatureNameMapCacheKey> {
-  static unsigned GetHash(const blink::FeatureNameMapCacheKey& key) {
+struct HashTraits<FeatureNameMapCacheKey>
+    : SimpleClassHashTraits<FeatureNameMapCacheKey> {
+  static unsigned GetHash(const FeatureNameMapCacheKey& key) {
     unsigned hash = HashInt(key.IsIsolatedContext);
     AddIntToHash(hash, key.is_deleted_value);
     AddIntToHash(hash, key.is_empty_value);
     return hash;
   }
   static const bool kEmptyValueIsZero = false;
-  static blink::FeatureNameMapCacheKey EmptyValue() {
-    return blink::FeatureNameMapCacheKey();
+  static FeatureNameMapCacheKey EmptyValue() {
+    return FeatureNameMapCacheKey();
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_POLICY_HELPER_H_

@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
@@ -32,9 +32,6 @@ struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
   static std::nullptr_t EmptyValue() { return nullptr; }
   static std::nullptr_t DeletedValue() { return nullptr; }
 };
-
-}  // namespace WTF
-namespace blink {
 
 class GPUAdapter;
 class GPUBuffer;
