@@ -736,19 +736,40 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    public @Nullable String getTabGroupTitle(Token tabGroupId) {
+        return null;
+    }
+
+    @Override
     public @Nullable String getTabGroupTitle(@TabId int rootId) {
         return null;
     }
 
     @Override
+    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {}
+
+    @Override
     public void setTabGroupTitle(@TabId int rootId, @Nullable String title) {}
+
+    @Override
+    public void deleteTabGroupTitle(Token tabGroupId) {}
 
     @Override
     public void deleteTabGroupTitle(@TabId int rootId) {}
 
     @Override
+    public int getTabGroupColor(Token tabGroupId) {
+        return TabGroupColorUtils.INVALID_COLOR_ID;
+    }
+
+    @Override
     public int getTabGroupColor(@TabId int rootId) {
         return TabGroupColorUtils.INVALID_COLOR_ID;
+    }
+
+    @Override
+    public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
+        return TabGroupColorId.GREY;
     }
 
     @Override
@@ -757,10 +778,21 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {}
+
+    @Override
     public void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color) {}
 
     @Override
+    public void deleteTabGroupColor(Token tabGroupId) {}
+
+    @Override
     public void deleteTabGroupColor(@TabId int rootId) {}
+
+    @Override
+    public boolean getTabGroupCollapsed(Token tabGroupId) {
+        return false;
+    }
 
     @Override
     public boolean getTabGroupCollapsed(@TabId int rootId) {
@@ -768,10 +800,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {}
+
+    @Override
     public void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate) {}
 
     @Override
+    public void deleteTabGroupCollapsed(Token tabGroupId) {}
+
+    @Override
     public void deleteTabGroupCollapsed(@TabId int rootId) {}
+
+    @Override
+    public void deleteTabGroupVisualData(Token tabGroupId) {}
 
     @Override
     public void deleteTabGroupVisualData(@TabId int rootId) {}
