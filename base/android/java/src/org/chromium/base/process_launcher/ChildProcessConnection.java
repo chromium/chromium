@@ -32,6 +32,7 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -57,6 +58,8 @@ public class ChildProcessConnection {
     private static final boolean SUPPORT_NOT_PERCEPTIBLE_BINDING =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     private static final String HISTOGRAM_NAME = "Android.ChildProcessConectionEventCounts";
+
+    private static @Nullable Boolean sSupportNotPerceptibleBindingForTesting;
 
     /**
      * Used to notify the consumer about the process start. These callbacks will be invoked before
@@ -196,6 +199,9 @@ public class ChildProcessConnection {
 
     /** Run time check if not perceptible binding is supported. */
     public static boolean supportNotPerceptibleBinding() {
+        if (sSupportNotPerceptibleBindingForTesting != null) {
+            return sSupportNotPerceptibleBindingForTesting;
+        }
         // Note that we need to keep this in sync with IsPerceptibleImportanceSupported() in
         // content/browser/android/child_process_importance.cc
         return SUPPORT_NOT_PERCEPTIBLE_BINDING;
@@ -208,6 +214,12 @@ public class ChildProcessConnection {
         // this could still collide in theory.
         ClassLoader cl = ChildProcessConnection.class.getClassLoader();
         return cl.toString() + cl.hashCode();
+    }
+
+    @VisibleForTesting
+    public static void setSupportNotPerceptibleBindingForTesting(boolean supported) {
+        sSupportNotPerceptibleBindingForTesting = supported;
+        ResettersForTesting.register(() -> sSupportNotPerceptibleBindingForTesting = null);
     }
 
     private static boolean useBackgroundNotPerceptibleBinding() {
