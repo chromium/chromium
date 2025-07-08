@@ -26,7 +26,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "net/base/filename_util.h"
-#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
 namespace web_app {
 
@@ -282,6 +281,9 @@ void WebAppShimManagerDelegate::LaunchApp(
   std::vector<base::FilePath> launch_files = files;
   params.override_url = override_url;
 
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+
   for (const GURL& url : urls) {
     if (!url.is_valid() || !url.has_scheme()) {
       DLOG(ERROR) << "URL is not valid or does not have a scheme.";
@@ -308,8 +310,8 @@ void WebAppShimManagerDelegate::LaunchApp(
 
     // Validate that the scheme is something that could be registered by the PWA
     // via the manifest.
-    if (!blink::IsValidCustomHandlerScheme(
-            url.scheme(), blink::ProtocolHandlerSecurityLevel::kStrict)) {
+    if (!provider->registrar_unsafe().IsRegisteredLaunchProtocol(
+            app_id, url.scheme())) {
       DLOG(ERROR) << "Protocol is not a valid custom handler scheme.";
       continue;
     }
@@ -318,8 +320,6 @@ void WebAppShimManagerDelegate::LaunchApp(
     params.launch_source = apps::LaunchSource::kFromProtocolHandler;
   }
 
-  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
-  CHECK(provider);
   WebAppFileHandlerManager::LaunchInfos file_launches;
   if (!params.protocol_handler_launch_url) {
     file_launches = provider->os_integration_manager()

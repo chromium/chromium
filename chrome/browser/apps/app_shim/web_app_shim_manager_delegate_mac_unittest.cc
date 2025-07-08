@@ -130,6 +130,14 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
       web_app_info->file_handlers.push_back(std::move(entry));
     }
 
+    for (const char* protocol : {"mailto", "web+test"}) {
+      apps::ProtocolHandlerInfo protocol_handler;
+      protocol_handler.protocol = protocol;
+      protocol_handler.url =
+          GURL("https://testpwa.com/").Resolve("/index.html?params=%s");
+      web_app_info->protocol_handlers.push_back(protocol_handler);
+    }
+
     app_id_ = test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
