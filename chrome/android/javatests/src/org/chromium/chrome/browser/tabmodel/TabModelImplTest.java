@@ -11,6 +11,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -67,6 +69,8 @@ public class TabModelImplTest {
 
     @Mock
     private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
+
+    @Mock private TabModelObserver mTabModelObserver;
 
     private String mTestUrl;
     private WebPageStation mPage;
@@ -890,6 +894,171 @@ public class TabModelImplTest {
         assertEquals(incognitoTab2, incognitoTabModel.getTabAt(0));
         assertEquals(0, incognitoTabModel.index());
         assertEquals(incognitoTab2, incognitoTabModel.getCurrentTabSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void pinTab_NoExistingPinnedTabs_PinSingleTab() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    Tab tabToPin = tabModel.getTabAt(2);
+                    tabModel.pinTab(tabToPin.getId());
+
+                    assertTrue(tabToPin.getIsPinned());
+                    assertEquals(tabToPin.getId(), tabModel.getTabAt(0).getId());
+
+                    // Cleanup
+                    tabModel.unpinTab(tabToPin.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void pinTab_PinMultipleTabs() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    Tab tab0 = tabModel.getTabAt(0);
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+
+                    tabModel.pinTab(tab1.getId());
+
+                    assertEquals(tab1, tabModel.getTabAt(0));
+
+                    tabModel.pinTab(tab2.getId());
+
+                    assertEquals(tab1, tabModel.getTabAt(0));
+                    assertEquals(tab2, tabModel.getTabAt(1));
+                    assertEquals(tab0, tabModel.getTabAt(2));
+                    assertEquals(4, tabModel.getCount());
+
+                    // Cleanup
+                    tabModel.unpinTab(tab1.getId());
+                    tabModel.unpinTab(tab2.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void unpinTab_NoExistingUnpinnedTabs_UnpinSingleTab() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+
+                    // A, B, C, D.
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+                    Tab tab3 = tabModel.getTabAt(3);
+
+                    // Pin last 3 tabs.
+                    // [D], [C], [B], A.
+                    tabModel.pinTab(tab3.getId());
+                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab1.getId());
+
+                    // Unpin the middle tab (Tab2).
+                    // [D], [B], C, A.
+                    tabModel.unpinTab(tab2.getId());
+                    assertFalse(tab2.getIsPinned());
+                    assertEquals(tab3, tabModel.getTabAt(0));
+                    assertEquals(tab1, tabModel.getTabAt(1));
+                    assertEquals(tab2, tabModel.getTabAt(2));
+
+                    // Cleanup.
+                    tabModel.unpinTab(tab3.getId());
+                    tabModel.unpinTab(tab1.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void unpinTab_ExistingUnpinnedTabs_UnpinSingleTab() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+
+                    // A, B, C, D.
+                    Tab tab0 = tabModel.getTabAt(0);
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+                    Tab tab3 = tabModel.getTabAt(3);
+
+                    // Pin 2 tabs.
+                    // [B], [C], A, D.
+                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab2.getId());
+                    assertTrue(tab1.getIsPinned());
+                    assertTrue(tab2.getIsPinned());
+
+                    // Unpin the first pinned tab.
+                    tabModel.unpinTab(tab1.getId());
+                    assertFalse(tab1.getIsPinned());
+
+                    // [C], B, A, D.
+                    assertEquals(tab2, tabModel.getTabAt(0));
+                    assertEquals(tab1, tabModel.getTabAt(1));
+                    assertEquals(tab0, tabModel.getTabAt(2));
+                    assertEquals(tab3, tabModel.getTabAt(3));
+
+                    // Cleanup.
+                    tabModel.unpinTab(tab2.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void pinTab_thenUnpinTab_verifyObserverCalls() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    tabModel.addObserver(mTabModelObserver);
+
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+
+                    tabModel.pinTab(tab2.getId());
+
+                    verify(mTabModelObserver).didMoveTab(tab2, 0, 2);
+                    verify(mTabModelObserver).willChangePinState(tab2);
+                    verify(mTabModelObserver).didChangePinState(tab2);
+
+                    tabModel.pinTab(tab1.getId());
+
+                    verify(mTabModelObserver).didMoveTab(tab1, 1, 2);
+                    verify(mTabModelObserver).willChangePinState(tab1);
+                    verify(mTabModelObserver).didChangePinState(tab1);
+
+                    tabModel.unpinTab(tab2.getId());
+
+                    verify(mTabModelObserver).didMoveTab(tab2, 1, 0);
+                    verify(mTabModelObserver, times(2)).willChangePinState(tab2);
+                    verify(mTabModelObserver, times(2)).didChangePinState(tab2);
+
+                    tabModel.unpinTab(tab1.getId());
+
+                    verify(mTabModelObserver, times(2)).willChangePinState(tab1);
+                    verify(mTabModelObserver, times(2)).didChangePinState(tab1);
+
+                    // Cleanup.
+                    tabModel.removeObserver(mTabModelObserver);
+                });
     }
 
     private void assertMoveTabToIndex(
