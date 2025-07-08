@@ -13,8 +13,6 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "build/build_config.h"
-#include "third_party/boringssl/src/include/openssl/md5.h"
 
 // MD5 stands for Message Digest algorithm 5.
 //
@@ -31,46 +29,12 @@
 // NEW USES OF THIS API ARE FORBIDDEN FOR ANY PURPOSE. INSTEAD, YOU MUST USE
 // //crypto/obsolete/md5.h.
 
-// These functions perform MD5 operations. The simplest call is MD5Sum() to
-// generate the MD5 sum of the given data.
-//
-// You can also compute the MD5 sum of data incrementally by making multiple
-// calls to MD5Update():
-//   MD5Context ctx; // intermediate MD5 data: do not use
-//   MD5Init(&ctx);
-//   MD5Update(&ctx, data1, length1);
-//   MD5Update(&ctx, data2, length2);
-//   ...
-//
-//   MD5Digest digest; // the result of the computation
-//   MD5Final(&digest, &ctx);
-//
-// You can call MD5DigestToBase16() to generate a string of the digest.
-
 namespace base {
 
 // The output of an MD5 operation.
 struct MD5Digest {
-  std::array<uint8_t, MD5_DIGEST_LENGTH> a;
+  std::array<uint8_t, 16> a;
 };
-
-// Used for storing intermediate data during an MD5 computation. Callers
-// should not access the data.
-using MD5Context = MD5_CTX;
-
-// Initializes the given MD5 context structure for subsequent calls to
-// MD5Update().
-BASE_EXPORT void MD5Init(MD5Context* context);
-
-// For the given buffer of |data| as a std::string_view or span, updates the
-// given MD5 context with the sum of the data. You can call this any number of
-// times during the computation, except that MD5Init() must have been called
-// first.
-BASE_EXPORT void MD5Update(MD5Context* context, std::string_view data);
-BASE_EXPORT void MD5Update(MD5Context* context, base::span<const uint8_t> data);
-
-// Finalizes the MD5 operation and fills the buffer with the digest.
-BASE_EXPORT void MD5Final(MD5Digest* digest, MD5Context* context);
 
 // Converts a digest into human-readable hexadecimal.
 BASE_EXPORT std::string MD5DigestToBase16(const MD5Digest& digest);

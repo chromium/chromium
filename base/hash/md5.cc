@@ -15,22 +15,6 @@
 #include "third_party/boringssl/src/include/openssl/md5.h"
 
 namespace base {
-void MD5Init(MD5Context* context) {
-  MD5_Init(context);
-}
-
-void MD5Update(MD5Context* context, std::string_view data) {
-  MD5Update(context, base::as_byte_span(data));
-}
-
-void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
-  MD5_Update(context, data.data(), data.size());
-}
-
-void MD5Final(MD5Digest* digest, MD5Context* context) {
-  MD5_Final(digest->a.data(), context);
-}
-
 std::string MD5DigestToBase16(const MD5Digest& digest) {
   return ToLowerASCII(HexEncode(digest.a));
 }
