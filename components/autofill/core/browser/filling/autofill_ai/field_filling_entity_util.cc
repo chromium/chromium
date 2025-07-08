@@ -75,6 +75,8 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
       attribute.GetInfo(type, app_locale, field.format_string());
   switch (field.Type().GetStorableType()) {
     case ADDRESS_HOME_STATE:
+    case DRIVERS_LICENSE_REGION:
+    case VEHICLE_PLATE_STATE:
       // TODO(crbug.com/389625753): Support countries other than the US.
       return GetStateTextForInput(value, /*country_code=*/"US",
                                   field.max_length(),
@@ -99,9 +101,12 @@ std::u16string GetValueForSelect(const AttributeInstance& attribute,
 
   switch (type) {
     case ADDRESS_HOME_COUNTRY:
+    case PASSPORT_ISSUING_COUNTRY:
       return GetCountrySelectControlValue(fill_value, field.options(),
                                           /*failure_to_fill=*/nullptr);
     case ADDRESS_HOME_STATE:
+    case DRIVERS_LICENSE_REGION:
+    case VEHICLE_PLATE_STATE:
       // TODO(crbug.com/389625753): Support countries other than the US.
       return GetStateSelectControlValue(fill_value, field.options(),
                                         /*country_code=*/"US",

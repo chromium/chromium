@@ -282,7 +282,7 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
-    field->SetTypeTo(ADDRESS_HOME_COUNTRY,
+    field->SetTypeTo(PASSPORT_ISSUING_COUNTRY,
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
@@ -379,7 +379,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
-    field->SetTypeTo(ADDRESS_HOME_STATE,
+    field->SetTypeTo(DRIVERS_LICENSE_REGION,
                      AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
