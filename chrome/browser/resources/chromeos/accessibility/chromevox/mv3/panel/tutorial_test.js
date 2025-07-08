@@ -26,45 +26,19 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
 
   async launchAndWaitForTutorial() {
     new PanelCommand(PanelCommandType.TUTORIAL).send();
-    await this.waitForTutorial();
+    await this.waitForTutorial_();
   }
 
   /** Waits for the tutorial to load. */
-  async waitForTutorial() {
-    return new Promise(resolve => {
-      const doc = this.getPanelWindow().document;
-      if (doc.getElementById('chromevox-tutorial-container')) {
-        resolve();
-      } else {
-        /**
-         * @param {Array<MutationRecord>} mutationsList
-         * @param {MutationObserver} observer
-         */
-        const onMutation = (mutationsList, observer) => {
-          for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-              for (const node of mutation.addedNodes) {
-                if (node.id === 'chromevox-tutorial-container') {
-                  // Once the tutorial has been added to the document, we need
-                  // to wait for the lesson templates to load.
-                  const panel = this.getPanel();
-                  if (panel.instance.tutorialReadyForTesting_) {
-                    resolve();
-                  } else {
-                    panel.instance.tutorial_.addEventListener(
-                        'readyfortesting', () => resolve());
-                  }
-                  observer.disconnect();
-                }
-              }
-            }
-          }
-        };
-
-        const observer = new MutationObserver(onMutation);
-        observer.observe(
-            doc.body /* target */, {childList: true} /* options */);
-      }
+  async waitForTutorial_() {
+    return new Promise((resolve) => {
+      const intervalId = setTimeout(async () => {
+        const ready = await PanelBridge.getTutorialReadyForTest();
+        if (ready) {
+          clearTimeout(intervalId);
+          resolve();
+        }
+      }, 500);
     });
   }
 

@@ -136,6 +136,10 @@ export class Panel implements PanelInterface {
         BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.REPLACE_MENU_MANAGER,
         () => this.replaceMenuManager_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_TUTORIAL_READY,
+        () => this.tutorialReadyForTesting_);
   }
 
   /** Initialize the panel. */

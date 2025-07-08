@@ -72,6 +72,11 @@ export class PanelBridge {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.GET_ACTIVE_SEARCH_MENU_DATA);
   }
+
+  static getTutorialReadyForTest(): Promise<boolean> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_TUTORIAL_READY);
+  }
 }
 
 TestImportManager.exportForTesting(PanelBridge);
