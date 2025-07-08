@@ -6,6 +6,7 @@
 
 #include <array>
 #include <numeric>
+#include <ranges>
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,6 +75,7 @@ constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
+constexpr base::cstring_view kOpTypePad = "Pad";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
@@ -273,6 +275,33 @@ std::string GraphBuilderOrt::CreateInt64InitializerForUint32Array(
       base::checked_cast<int64_t>(array.size())};
   base::FixedArray<int64_t> array_value(array.begin(), array.end());
   return CreateInitializer<int64_t>(array_dims, array_value);
+}
+
+std::string GraphBuilderOrt::CreateScalarInitializerForFloat(
+    OperandDataType data_type,
+    float value) {
+  switch (data_type) {
+    case OperandDataType::kFloat32:
+      return CreateScalarInitializer(value);
+    case OperandDataType::kFloat16:
+      return CreateScalarInitializer(fp16_ieee_from_fp32_value(value));
+    case OperandDataType::kInt32:
+      return CreateScalarInitializer(base::saturated_cast<int32_t>(value));
+    case OperandDataType::kUint32:
+      return CreateScalarInitializer(base::saturated_cast<uint32_t>(value));
+    case OperandDataType::kInt64:
+      return CreateScalarInitializer(base::saturated_cast<int64_t>(value));
+    case OperandDataType::kUint64:
+      return CreateScalarInitializer(base::saturated_cast<uint64_t>(value));
+    case OperandDataType::kInt8:
+      return CreateScalarInitializer(base::saturated_cast<int8_t>(value));
+    case OperandDataType::kUint8:
+      return CreateScalarInitializer(base::saturated_cast<uint8_t>(value));
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4: {
+      NOTREACHED();
+    }
+  }
 }
 
 void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
@@ -890,66 +919,10 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   const OperandDataType input_data_type = input_descriptor.data_type();
 
   // Min and max are 0-D operands with the same data type of input.
-  std::string min;
-  std::string max;
-  switch (input_data_type) {
-    case OperandDataType::kFloat32: {
-      min = CreateScalarInitializer(clamp.min_value);
-      max = CreateScalarInitializer(clamp.max_value);
-      break;
-    }
-    case OperandDataType::kFloat16: {
-      min = CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.min_value));
-      max = CreateScalarInitializer(fp16_ieee_from_fp32_value(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kInt32: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<int32_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<int32_t>(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kUint32: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<uint32_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<uint32_t>(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kInt64: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<int64_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<int64_t>(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kUint64: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<uint64_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<uint64_t>(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kInt8: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<int8_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<int8_t>(clamp.max_value));
-      break;
-    }
-    case OperandDataType::kUint8: {
-      min = CreateScalarInitializer(
-          base::saturated_cast<uint8_t>(clamp.min_value));
-      max = CreateScalarInitializer(
-          base::saturated_cast<uint8_t>(clamp.max_value));
-      break;
-    }
-    default: {
-      NOTREACHED() << "[WebNN] Clamp only supports data type float32, float16, "
-                      "int32, uint32, int64, uint64, int8 and uint8.";
-    }
-  }
+  const std::string min =
+      CreateScalarInitializerForFloat(input_data_type, clamp.min_value);
+  const std::string max =
+      CreateScalarInitializerForFloat(input_data_type, clamp.max_value);
 
   std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
@@ -1371,6 +1344,54 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   model_editor_.AddNode(kOpTypeSoftmax, node_name, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
+  const std::string node_name = GenerateNodeName(pad.label);
+  const std::string input = GetOperandNameById(pad.input_operand_id);
+  const std::string output = GetOperandNameById(pad.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(pad.input_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.pad_input.Supports(
+      input_descriptor));
+
+  std::vector<const char*> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  size_t paddings_size =
+      pad.beginning_padding.size() + pad.ending_padding.size();
+  CHECK_EQ(paddings_size, input_descriptor.Rank() * 2);
+  std::vector<uint32_t> paddings_value;
+  paddings_value.reserve(paddings_size);
+  std::ranges::copy(pad.beginning_padding, std::back_inserter(paddings_value));
+  std::ranges::copy(pad.ending_padding, std::back_inserter(paddings_value));
+  const std::string paddings =
+      CreateInt64InitializerForUint32Array(paddings_value);
+  inputs.push_back(paddings.c_str());
+
+  std::string mode;
+  std::string constant;
+  switch (pad.mode->which()) {
+    case mojom::PaddingMode::Tag::kConstant: {
+      mode = "constant";
+      constant = CreateScalarInitializerForFloat(
+          input_descriptor.data_type(), pad.mode->get_constant()->value);
+      inputs.push_back(constant.c_str());
+      break;
+    }
+    case mojom::PaddingMode::Tag::kEdge:
+      mode = "edge";
+      break;
+    case mojom::PaddingMode::Tag::kReflection:
+      mode = "reflect";
+      break;
+  }
+
+  constexpr base::cstring_view kAttrMode = "mode";
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrMode, mode)};
+  model_editor_.AddNode(kOpTypePad, node_name, inputs, outputs, attributes);
+}
+
 void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
   const std::string node_name = GenerateNodeName(prelu.label);
   std::string input = GetOperandNameById(prelu.input_operand_id);
@@ -1559,12 +1580,16 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_hard_swish(), kOpTypeHardSwish);
         break;
       }
-      case mojom::Operation::Tag::kPool2d: {
-        AddPool2dOperation(*operation->get_pool2d());
-        break;
-      }
       case mojom::Operation::Tag::kLeakyRelu: {
         AddLeakyReluOperation(*operation->get_leaky_relu());
+        break;
+      }
+      case mojom::Operation::Tag::kPad: {
+        AddPadOperation(*operation->get_pad());
+        break;
+      }
+      case mojom::Operation::Tag::kPool2d: {
+        AddPool2dOperation(*operation->get_pool2d());
         break;
       }
       case mojom::Operation::Tag::kPrelu: {
@@ -1645,7 +1670,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kMatmul:
-      case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:

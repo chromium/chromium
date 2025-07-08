@@ -163,13 +163,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*lstm_cell_input=*/{},
        /*lstm_cell_bias=*/{},
        /*matmul_input=*/{},
-       /*pad_input=*/{},
-       /*average_pool2d_input=*/
-       {DataTypeConstraint::kFloat16To32, {3, 8}},
-       /*l2_pool2d_input=*/
-       {DataTypeConstraint::kFloat16To32, {3, 8}},
-       /*max_pool2d_input=*/
-       {kInts8Float16To32, {3, 8}},
+       /*pad_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*average_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*l2_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*max_pool2d_input=*/{kInts8Float16To32, {3, 8}},
        /*prelu_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},

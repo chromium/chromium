@@ -120,6 +120,13 @@ class GraphBuilderOrt {
   std::string CreateInt64InitializerForUint32Array(
       base::span<const uint32_t> array);
 
+  // A helper method wrapping the `CreateScalarInitializer` method above. It
+  // adds a scalar initializer with the given float value to the graph,
+  // returning the name of the initializer. The data type of the initializer is
+  // determined by the `data_type` parameter.
+  std::string CreateScalarInitializerForFloat(OperandDataType data_type,
+                                              float value);
+
   void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
                    base::cstring_view output,
@@ -182,6 +189,7 @@ class GraphBuilderOrt {
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
+  void AddPadOperation(const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddPreluOperation(const mojom::Prelu& prelu);
   void AddReshapeOperation(const mojom::Reshape& reshape);
