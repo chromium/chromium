@@ -556,7 +556,10 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
 
   is_printing = doc.Printing();
 
-  should_paint_image = image && image->CanRender();
+  WTF::String failing_url;
+  should_paint_image = image && image->CanRender() &&
+                       (!(paint_flags & PaintFlag::kPrivacyPreserving) ||
+                        image->IsAccessAllowed(failing_url));
   if (should_paint_image) {
     respect_image_orientation =
         image->ForceOrientationIfNecessary(respect_image_orientation);
