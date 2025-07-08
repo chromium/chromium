@@ -376,10 +376,7 @@ class BASE_EXPORT ThreadController {
 
       // non-null when recording is enabled.
       raw_ptr<HistogramBase> histogram_ = nullptr;
-      std::optional<perfetto::Track> perfetto_track_;
-
-      // True if tracing was enabled during the last pass of RecordTimeInPhase.
-      bool was_tracing_enabled_ = false;
+      std::optional<perfetto::NamedTrack> perfetto_track_;
       const raw_ref<const RunLevelTracker> outer_;
     } time_keeper_{*this};
 

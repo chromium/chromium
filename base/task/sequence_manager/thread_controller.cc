@@ -146,20 +146,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
       Phase::kLastPhase, Phase::kLastPhase + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
-  perfetto_track_.emplace(
-      reinterpret_cast<uint64_t>(this),
-      // TODO(crbug.com/42050015): Replace with ThreadTrack::Current() after SDK
-      // migration.
-      // In the non-SDK version, ThreadTrack::Current() returns a different
-      // track id on some platforms (for example Mac OS), which results in
-      // async tracks not being associated with their thread.
-      perfetto::ThreadTrack::ForThread(
-          base::PlatformThread::CurrentId().raw()));
-  // TODO(crbug.com/42050015): Use Perfetto library to name this Track.
-  // auto desc = perfetto_track_->Serialize();
-  // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));
-  // perfetto::internal::TrackEventDataSource::SetTrackDescriptor(
-  //     *perfetto_track_, desc);
+  perfetto_track_.emplace("MessagePumpPhases", 0,
+                          perfetto::ThreadTrack::Current());
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
@@ -603,28 +591,12 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
   const TimeTicks phase_end = lazy_now.Now();
   RecordTimeInPhase(phase, last_phase_end_, phase_end);
 
-  // Ugly hack to name our `perfetto_track_`.
-  bool is_tracing_enabled = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("base"),
-                                     &is_tracing_enabled);
-  if (is_tracing_enabled) {
-    if (!was_tracing_enabled_) {
-      // The first event name on the track hackily names the track...
-      // TODO(crbug.com/42050015): Use the Perfetto library to properly name
-      // this Track in EnableRecording above.
-      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("base"),
-                          "MessagePumpPhases", *perfetto_track_,
-                          last_phase_end_ - Seconds(1));
-    }
-
-    const char* event_name = PhaseToEventName(phase);
-    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
-                      perfetto::StaticString(event_name), *perfetto_track_,
-                      last_phase_end_);
-    TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
-                    phase_end);
-  }
-  was_tracing_enabled_ = is_tracing_enabled;
+  const char* event_name = PhaseToEventName(phase);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
+                    perfetto::StaticString(event_name), *perfetto_track_,
+                    last_phase_end_);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
+                  phase_end);
 
   last_phase_end_ = phase_end;
 }
