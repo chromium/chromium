@@ -174,6 +174,10 @@ class FuchsiaVideoDecoder::OutputMailbox {
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
 
+    // Set the frame to have same color space as that for underlying shared
+    // image.
+    frame->set_color_space(shared_image_->color_space());
+
     return frame;
   }
 
