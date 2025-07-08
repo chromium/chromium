@@ -44,8 +44,7 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
-      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
-      std::move(handle).dxgi_handle(),
+      size, format, std::move(callback), std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
 }
 
@@ -286,7 +285,6 @@ const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
 }
 
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,

@@ -96,7 +96,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   GpuMemoryBufferImplDXGI(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       DestructionCallback callback,
