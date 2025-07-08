@@ -29,6 +29,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/switches.h"
@@ -534,17 +535,26 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-// TODO(crbug.com/411139307): Re-enable this test on Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_FocusedWindowChange FocusedWindowChange
-#else
+// TODO(crbug.com/430097333): Wayland doesn't support programmatic window
+// activation. Re-enable when activation is supported.
+#if BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_FocusedWindowChange DISABLED_FocusedWindowChange
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#else
+#define MAYBE_FocusedWindowChange FocusedWindowChange
+#endif
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  GlicBorderView* border2 = browser2->window()->AsBrowserView()->glic_border();
+  auto* tester2 = static_cast<TesterImpl*>(border2->tester());
+
+  // Start the animation in the first browser window.
+  browser()->GetWindow()->Show();
+  views::test::WaitForWidgetActive(browser()->GetBrowserView().GetWidget(),
+                                   /*active=*/true);
   StartBorderAnimation();
   tester->WaitForAnimationStart();
   EXPECT_TRUE(border->IsShowing());
@@ -557,18 +567,10 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
-  Browser* new_browser = nullptr;
-  GlicBorderView* new_border = nullptr;
-  TesterImpl* new_tester = nullptr;
-  {
-    SCOPED_TRACE("Wait for new window to become active");
-    new_browser = CreateBrowser(browser()->GetProfile());
-    new_border = new_browser->window()->AsBrowserView()->glic_border();
-    new_tester = static_cast<TesterImpl*>(new_border->tester());
-    views::test::WaitForWidgetActive(new_browser->GetBrowserView().GetWidget(),
-                                     /*active=*/true);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, Title2()));
-  }
+  // Focus on the new window.
+  browser2->GetWindow()->Show();
+  views::test::WaitForWidgetActive(browser2->GetBrowserView().GetWidget(),
+                                   /*active=*/true);
 
   // Flush out the ramp down animation in the old browser window.
   tester->WaitForRampDownStarted();
@@ -577,32 +579,29 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
 
   // After the new window has become active, the border animation will
   // automatically play in the new window because glic window is in detach mode.
-  ASSERT_TRUE(new_border);
-  new_tester->WaitForAnimationStart();
-  EXPECT_TRUE(new_border->IsShowing());
+  ASSERT_TRUE(border2);
+  tester2->WaitForAnimationStart();
+  EXPECT_TRUE(border2->IsShowing());
 
   EXPECT_FALSE(border->IsShowing());
 
   // T=0 in the new window.
-  new_tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
-  EXPECT_NEAR(new_border->opacity_for_testing(), 0.f,
-              kFloatComparisonTolerance);
-  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.f,
-              kFloatComparisonTolerance);
+  tester2->AdvanceTimeAndTickAnimation(base::TimeDelta());
+  EXPECT_NEAR(border2->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border2->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=0.123s in the new window.
-  new_tester->AdvanceTimeAndTickAnimation(base::Seconds(0.123));
+  tester2->AdvanceTimeAndTickAnimation(base::Seconds(0.123));
   // 0.123/0.5=0.246
-  EXPECT_NEAR(new_border->opacity_for_testing(), 0.246,
-              kFloatComparisonTolerance);
+  EXPECT_NEAR(border2->opacity_for_testing(), 0.246, kFloatComparisonTolerance);
   // 0.123/0.5=0.246, 1-(1-0.246)**2=0.120
-  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.431,
+  EXPECT_NEAR(border2->emphasis_for_testing(), 0.431,
               kFloatComparisonTolerance);
 
   CloseGlicWindow();
-  new_tester->WaitForRampDownStarted();
-  new_tester->FinishRampDown();
-  EXPECT_FALSE(new_border->IsShowing());
+  tester2->WaitForRampDownStarted();
+  tester2->FinishRampDown();
+  EXPECT_FALSE(border2->IsShowing());
 }
 
 // Ensures that the border fades out before disappearing entirely during

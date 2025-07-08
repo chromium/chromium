@@ -70,6 +70,7 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:ozone_buildflags",
     "//ui/base:test_support",
     "//ui/compositor:compositor",
     "//ui/gfx",
