@@ -100,9 +100,10 @@ TEST_P(CertProvisioningInvalidationHandlerWithInvalidationListenerTest,
 TEST_P(CertProvisioningInvalidationHandlerWithInvalidationListenerTest,
        ShouldReceiveInvalidationForType) {
   EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kSuccessfullySubscribed);
 
   FireInvalidation(kListenerType);
-
   EXPECT_EQ(invalidation_events_.Take(),
             InvalidationEvent::kInvalidationReceived);
 }

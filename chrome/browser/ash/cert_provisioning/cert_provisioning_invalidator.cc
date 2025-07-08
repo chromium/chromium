@@ -198,6 +198,16 @@ bool CertProvisioningInvalidationHandler::IsPublicTopic(
 
 void CertProvisioningInvalidationHandler::OnExpectationChanged(
     invalidation::InvalidationsExpected expected) {
+  if (are_invalidations_expected_ ==
+          invalidation::InvalidationsExpected::kMaybe &&
+      expected == invalidation::InvalidationsExpected::kYes) {
+    // If an invalidation is sent from the server-side before the device uploads
+    // the token to receive it, the invalidation can get lost.
+    // Emit kSuccessfullySubscribed after all initializations are complete to
+    // cover for the potentially lost invalidations.
+    on_invalidation_event_callback_.Run(
+        InvalidationEvent::kSuccessfullySubscribed);
+  }
   are_invalidations_expected_ = expected;
 }
 
