@@ -143,8 +143,15 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   NavigateToUrlAndWaitForAccessibilityTree(embedded_test_server()->GetURL(
       "/accessibility/html/iframe-coordinates.html"));
 
+  // Eliminate test flakiness by waiting for the accessibility tree to contain
+  // both the button from the first child frame and the button from the second
+  // child frame after it has been renamed. This should ensure that the
+  // accessibility tree is fully updated prior to sending the touch exploration
+  // event.
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Ordinary Button");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Scrolled Button");
 
   // Get the BrowserAccessibilityManager for the first child frame.
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
