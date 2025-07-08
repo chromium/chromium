@@ -388,11 +388,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   virtual void RemoveProfileImpl(const std::string& guid,
                                  bool is_deduplication_initiated);
 
-  // Returns profiles of all record types in the requested `order`, but with the
-  // Home and Work addresses at the bottom.
-  std::vector<const AutofillProfile*> GetProfilesWithDeprioritizedHomeAndWork(
-      ProfileOrder order) const;
-
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<ContactInfoPreconditionChecker>
