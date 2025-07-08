@@ -341,7 +341,7 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
-    public void doesNotFinish_WhenOnAllTabsClosedDefersToOS() {
+    public void finishes_WhenOnAllTabsClosed() {
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
@@ -350,7 +350,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.getTabObserverForTesting().onAllTabsClosed();
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
-        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
+        verify(mFinishHandler).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
