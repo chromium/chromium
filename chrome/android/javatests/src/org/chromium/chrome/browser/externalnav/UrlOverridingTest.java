@@ -30,6 +30,7 @@ import android.util.Pair;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
@@ -50,7 +51,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -74,6 +78,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -447,11 +452,14 @@ public class UrlOverridingTest {
         return new Origin(origin);
     }
 
-    private Intent getCustomTabFromChromeIntent(final String url, final boolean markFromChrome) {
+    private Intent getCustomTabFromChromeIntent(final String url, final boolean targetChrome) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    if (targetChrome) {
+                        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+                    }
                     intent =
                             LaunchIntentDispatcher.createCustomTabActivityIntent(
                                     ApplicationProvider.getApplicationContext(), intent);
@@ -1592,10 +1600,8 @@ public class UrlOverridingTest {
         }
     }
 
-    @Test
-    @Feature("CustomTabFromChrome")
-    @LargeTest
-    public void testIntentWithRedirectToApp() throws Exception {
+    private void doTestIntentWithRedirectToApp(boolean targetsChrome, boolean addAllowLeaveExtra)
+            throws Exception {
         final String redirectUrl = "https://example.com/path";
         final String initialUrl =
                 mTestServer.getURL(
@@ -1622,16 +1628,60 @@ public class UrlOverridingTest {
         mTestContext.setIntentFilterForHost("example.com", filter);
 
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
-        mCustomTabActivityRule.launchActivity(getCustomTabFromChromeIntent(initialUrl, true));
+        AtomicInteger lastResultValue = new AtomicInteger();
+        final CallbackHelper redirectTaken = new CallbackHelper();
+        InterceptNavigationDelegateImpl.setResultCallbackForTesting(
+                (Pair<GURL, OverrideUrlLoadingResult> result) -> {
+                    if (!result.first.getSpec().equals(redirectUrl)) return;
+                    lastResultValue.set(result.second.getResultType());
+                    redirectTaken.notifyCalled();
+                });
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(monitor.getHits(), Matchers.is(1));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        CriteriaHelper.pollUiThread(
-                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+        Intent intent = getCustomTabFromChromeIntent(initialUrl, targetsChrome);
+
+        if (addAllowLeaveExtra) {
+            intent.putExtra(CustomTabsIntent.EXTRA_SEND_TO_EXTERNAL_DEFAULT_HANDLER, true);
+        }
+
+        mCustomTabActivityRule.launchActivity(intent);
+
+        if (!targetsChrome || addAllowLeaveExtra) {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Criteria.checkThat(monitor.getHits(), Matchers.is(1));
+                    },
+                    10000L,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+            CriteriaHelper.pollUiThread(
+                    () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+        } else {
+            redirectTaken.waitForOnly(10, TimeUnit.SECONDS);
+            Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, lastResultValue.get());
+            Assert.assertFalse(
+                    AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+            Assert.assertEquals(0, monitor.getHits());
+        }
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testIntentWithRedirectToApp_TargetsChrome() throws Exception {
+        doTestIntentWithRedirectToApp(true, false);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testIntentWithRedirectToApp_TargetsChrome_AllowedToLeave() throws Exception {
+        doTestIntentWithRedirectToApp(true, true);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testIntentWithRedirectToApp() throws Exception {
+        doTestIntentWithRedirectToApp(false, false);
     }
 
     @Test
@@ -2313,5 +2363,91 @@ public class UrlOverridingTest {
 
         Assert.assertFalse(newActivity.getActivityTab().isTabInPWA());
         Assert.assertFalse(newActivity.getActivityTab().getWebContents().hasOpener());
+    }
+
+    private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave) throws Exception {
+        final String initialUrl = "https://example.com/path";
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("example.com", null);
+        filter.addDataScheme("https");
+
+        mTestContext.setIntentFilterForHost("example.com", filter);
+
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        AtomicInteger lastResultValue = new AtomicInteger();
+        final CallbackHelper navigated = new CallbackHelper();
+        InterceptNavigationDelegateImpl.setResultCallbackForTesting(
+                (Pair<GURL, OverrideUrlLoadingResult> result) -> {
+                    Assert.assertEquals(initialUrl, result.first.getSpec());
+                    lastResultValue.set(result.second.getResultType());
+                    navigated.notifyCalled();
+                });
+
+        Intent intent = getCustomTabFromChromeIntent(initialUrl, false);
+
+        if (allowInitialIntentToLeave) {
+            intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_NAVIGATION_CAN_LEAVE_BROWSER, true);
+        }
+
+        ActivityMonitor[] monitor = new ActivityMonitor[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.registerStateListenerForAllActivities(
+                            new ActivityStateListener() {
+                                @Override
+                                public void onActivityStateChange(Activity activity, int newState) {
+                                    assert CustomTabActivity.class.isAssignableFrom(
+                                            activity.getClass());
+                                    if (newState == ActivityState.CREATED) {
+                                        // We need to add the ActivityMonitor after the activity
+                                        // starts or we'll block the intent, as the filter matches
+                                        // both the intent that starts Chrome and the one that
+                                        // Chrome sends.
+                                        monitor[0] =
+                                                InstrumentationRegistry.getInstrumentation()
+                                                        .addMonitor(
+                                                                filter,
+                                                                new Instrumentation.ActivityResult(
+                                                                        Activity.RESULT_OK, null),
+                                                                true);
+                                    }
+                                }
+                            });
+                });
+
+        mCustomTabActivityRule.launchActivity(intent);
+
+        if (allowInitialIntentToLeave) {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Criteria.checkThat(monitor[0].getHits(), Matchers.is(1));
+                    },
+                    10000L,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+            CriteriaHelper.pollUiThread(
+                    () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+        } else {
+            navigated.waitForOnly(10, TimeUnit.SECONDS);
+            Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, lastResultValue.get());
+            Assert.assertFalse(
+                    AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+            Assert.assertEquals(0, monitor[0].getHits());
+        }
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testInitialIntentToApp() throws Exception {
+        doTestInitialIntentToApp(false);
+    }
+
+    @Test
+    @Feature("CustomTabFromChrome")
+    @LargeTest
+    public void testInitialIntentToApp_allowToLeave() throws Exception {
+        doTestInitialIntentToApp(true);
     }
 }

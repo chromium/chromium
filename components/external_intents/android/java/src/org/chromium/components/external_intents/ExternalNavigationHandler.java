@@ -1105,6 +1105,8 @@ public class ExternalNavigationHandler {
         // Redirects off of intents are still allowed to launch apps (eg. URL shorteners).
         if (incomingIntentRedirect) return false;
 
+        if (params.getRedirectHandler().canInitialNavigationLeaveChrome()) return false;
+
         if (debug()) Log.i(TAG, "Initial intent navigation.");
         return true;
     }

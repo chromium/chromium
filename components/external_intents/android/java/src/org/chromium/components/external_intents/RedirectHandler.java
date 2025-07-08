@@ -51,6 +51,7 @@ public class RedirectHandler {
         final boolean mIsCustomTabIntent;
         final boolean mPreferToStayInChrome;
         final boolean mExternalIntentStartedTask;
+        final boolean mCanInitialNavigationLeaveChrome;
 
         // A resolver list which includes all resolvers of |mInitialIntent|.
         final HashSet<ComponentName> mCachedResolvers = new HashSet<>();
@@ -59,11 +60,13 @@ public class RedirectHandler {
                 Intent initialIntent,
                 boolean preferToStayInChrome,
                 boolean isCustomTabIntent,
-                boolean externalIntentStartedTask) {
+                boolean externalIntentStartedTask,
+                boolean canInitialNavigationLeaveChrome) {
             mInitialIntent = initialIntent;
             mPreferToStayInChrome = preferToStayInChrome;
             mIsCustomTabIntent = isCustomTabIntent;
             mExternalIntentStartedTask = externalIntentStartedTask;
+            mCanInitialNavigationLeaveChrome = canInitialNavigationLeaveChrome;
         }
     }
 
@@ -129,7 +132,8 @@ public class RedirectHandler {
             @Nullable Intent intent,
             boolean isCustomTabIntent,
             boolean sendToExternalApps,
-            boolean externalIntentStartedTask) {
+            boolean externalIntentStartedTask,
+            boolean canInitialNavigationLeaveChrome) {
         if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
             mIntentState = null;
             return;
@@ -150,7 +154,8 @@ public class RedirectHandler {
                         initialIntent,
                         preferToStayInChrome,
                         isCustomTabIntent,
-                        externalIntentStartedTask);
+                        externalIntentStartedTask,
+                        canInitialNavigationLeaveChrome);
     }
 
     /**
@@ -376,6 +381,10 @@ public class RedirectHandler {
 
     public boolean intentPrefersToStayInChrome() {
         return mIntentState != null && mIntentState.mPreferToStayInChrome;
+    }
+
+    public boolean canInitialNavigationLeaveChrome() {
+        return mIntentState != null && mIntentState.mCanInitialNavigationLeaveChrome;
     }
 
     public void setPerformedHiddenCrossFrameNavigation() {

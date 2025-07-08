@@ -16,7 +16,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
@@ -108,17 +107,23 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
 
     /** Wrapper around RedirectHandler#updateIntent() that supplies //chrome-level params. */
     public static void updateIntentInTab(Tab tab, @Nullable Intent intent) {
-        boolean isCustomTab = false;
         boolean sendToExternalHandler = false;
         boolean startedTabbedChromeTask = false;
+        boolean canInitialNavigationLeaveChrome = false;
         if (intent != null) {
-            isCustomTab = LaunchIntentDispatcher.isCustomTabIntent(intent);
             sendToExternalHandler = CustomTabsIntent.isSendToExternalDefaultHandlerEnabled(intent);
             startedTabbedChromeTask =
                     IntentUtils.safeGetBooleanExtra(
                             intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false);
+            canInitialNavigationLeaveChrome =
+                    CustomTabsIntent.isInitialNavigationAllowedToLeaveBrowser(intent);
         }
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab)
-                .updateIntent(intent, isCustomTab, sendToExternalHandler, startedTabbedChromeTask);
+                .updateIntent(
+                        intent,
+                        tab.isCustomTab(),
+                        sendToExternalHandler,
+                        startedTabbedChromeTask,
+                        canInitialNavigationLeaveChrome);
     }
 }

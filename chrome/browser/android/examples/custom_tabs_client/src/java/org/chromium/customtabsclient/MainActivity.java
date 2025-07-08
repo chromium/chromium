@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity
             "AdditionalLinkMenuItemButton";
     private static final String SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON =
             "OverflowMenuItemButton";
+    private static final String SHARED_PREF_CAN_LEAVE = "CanLeave";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
     private static final String CCT_OPTION_INCOGNITO = "Incognito CCT";
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mLinkContextualMenuItemCheckbox;
     private CheckBox mAdditionalLinkContextualMenuItemCheckbox;
     private CheckBox mOverflowContextualMenuItemCheckbox;
+    private CheckBox mInitialIntentCanLeaveBrowser;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -852,6 +854,9 @@ public class MainActivity extends AppCompatActivity
                         == CHECKED);
         EditText customSchemeEdit = (EditText) findViewById(R.id.custom_scheme);
         customSchemeEdit.setText(mCustomScheme, TextView.BufferType.NORMAL);
+        mInitialIntentCanLeaveBrowser = findViewById(R.id.allow_initial_navigation_to_leave);
+        mInitialIntentCanLeaveBrowser.setChecked(
+                mSharedPref.getInt(SHARED_PREF_CAN_LEAVE, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -1169,6 +1174,15 @@ public class MainActivity extends AppCompatActivity
             builder.setSendToExternalDefaultHandlerEnabled(true);
         }
 
+        if (mEphemeralCctCheckbox.isChecked()
+                && (mCctType.equals(CCT_OPTION_REGULAR) || mCctType.equals(CCT_OPTION_PARTIAL))) {
+            builder.setEphemeralBrowsingEnabled(true);
+        }
+
+        if (mInitialIntentCanLeaveBrowser.isChecked()) {
+            builder.setInitialNavigationAllowedToLeaveBrowser(true);
+        }
+
         CustomTabsIntent customTabsIntent;
         editor.putString(SHARED_PREF_CCT, mCctType);
 
@@ -1235,11 +1249,6 @@ public class MainActivity extends AppCompatActivity
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
 
-        if (mEphemeralCctCheckbox.isChecked()
-                && (mCctType.equals(CCT_OPTION_REGULAR) || mCctType.equals(CCT_OPTION_PARTIAL))) {
-            builder.setEphemeralBrowsingEnabled(true);
-        }
-
         customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
 
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
@@ -1304,6 +1313,9 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON,
                 mOverflowContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_CAN_LEAVE,
+                mInitialIntentCanLeaveBrowser.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
     }

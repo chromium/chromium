@@ -240,11 +240,14 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 isInitialNavigation(),
                 navigationHandle.isRendererInitiated());
 
-        // Initial navigation never leaves Chrome anyways and we don't want to block background
-        // navigation on waiting for a tab (or CCT pre-warming wouldn't work). Subsequent
-        // navigations and redirects can leave Chrome so they'll have to wait to be attached to an
-        // Activity.
-        if (!mHasAttachedToActivity && isInitialNavigation() && !navigationHandle.isRedirect()) {
+        // Initial navigation never leaves Chrome anyways (unless explicitly requested by a CCT
+        // client) and we don't want to block background navigation on waiting for a tab (or CCT
+        // pre-warming wouldn't work). Subsequent navigations and redirects can leave Chrome so
+        // they'll have to wait to be attached to an Activity.
+        if (!redirectHandler.canInitialNavigationLeaveChrome()
+                && !mHasAttachedToActivity
+                && isInitialNavigation()
+                && !navigationHandle.isRedirect()) {
             resultCallback.onResult(false);
             return;
         }
