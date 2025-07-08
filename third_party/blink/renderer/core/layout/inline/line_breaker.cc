@@ -3268,9 +3268,15 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
       // The block broke inside. If the block itself fits, but some content
       // inside overflowed, we now need to enter a parallel flow, i.e. resume
       // the block-in-inline in the next fragmentainer, but continue layout of
-      // any actual inline content after the block-in- inline in the current
-      // fragmentainer.
-      if (outgoing_block_break_token->IsAtBlockEnd()) {
+      // any actual inline content after the block-in-inline in the current
+      // fragmentainer. Also do this if the incoming break token was in a
+      // parallel flow. Then, by right, the outgoing break token should also be
+      // in a parallel flow, but this inconsistency may occur if a column
+      // spanner is discovered (at which point we avoid parallel flows before
+      // it) in a subsequent outer fragmentainer after having overflowed a block
+      // in a previous outer fragmentainer. See crbug.com/430249827
+      if (outgoing_block_break_token->IsAtBlockEnd() ||
+          (break_token_ && break_token_->IsInParallelFlow())) {
         const auto* parallel_token =
             InlineBreakToken::CreateForParallelBlockFlow(
                 node_, current_, *outgoing_block_break_token);
