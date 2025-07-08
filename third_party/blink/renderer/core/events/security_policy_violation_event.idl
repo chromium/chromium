@@ -48,4 +48,7 @@ enum SecurityPolicyViolationEventDisposition {
     readonly attribute long      lineNumber;
     readonly attribute long      columnNumber;
     readonly attribute DOMString sample;
+    // Contains the hashes of scripts that were blocked from being run through
+    // eval due to unsafe-eval not being set.
+    [RuntimeEnabled=CSPHashesV1] readonly attribute DOMString evalHash;
 };

@@ -67,6 +67,9 @@ SecurityPolicyViolationEvent::SecurityPolicyViolationEvent(
     status_code_ = initializer->statusCode();
   if (initializer->hasSample())
     sample_ = initializer->sample();
+  if (initializer->hasEvalHash()) {
+    eval_hash_ = initializer->evalHash();
+  }
 }
 
 V8SecurityPolicyViolationEventDisposition
