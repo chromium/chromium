@@ -1909,6 +1909,8 @@
 
 - (void)openLensViewFinder {
   [self.NTPMetricsRecorder recordLensTapped];
+  feature_engagement::TrackerFactory::GetForProfile(self.profile)
+      ->NotifyEvent(feature_engagement::events::kIOSLensButtonUsed);
   TriggerHapticFeedbackForSelectionChange();
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]

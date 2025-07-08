@@ -293,6 +293,9 @@ extern const char kHomeCustomizationMenuUsed[];
 // The user has tapped on the lens overlay entrypoint.
 extern const char kLensOverlayEntrypointUsed[];
 
+// The user has tapped the Lens button.
+extern const char kIOSLensButtonUsed[];
+
 // The user has scheduled a tab reminder.
 extern const char kIOSTabReminderScheduled[];
 

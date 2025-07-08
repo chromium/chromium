@@ -199,9 +199,8 @@ class FeatureEngagementTest : public PlatformTest {
     std::map<std::string, std::string> params;
     params["availability"] = "any";
     params["session_rate"] = "<1";
-    params["used"] =
-        "name:ios_homepage_lens_badge_used;comparator:any;window:3650;storage:"
-        "3650";
+    params["used"] = "name:ios_lens_button_used;"
+                     "comparator:==0;window:3650;storage:3650";
     params["trigger"] = "name:ios_homepage_lens_badge_trigger;comparator:<3;"
                         "window:3650;storage:3650";
     params["groups"] = "IPH_iOSHomepageNewBadgesGroup";
@@ -1342,10 +1341,10 @@ TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_OneBadgePerSession) {
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
 
   // Mark Lens badge as used so it won't be shown again.
-  tracker->NotifyEvent("ios_homepage_lens_badge_used");
+  tracker->NotifyEvent(feature_engagement::events::kIOSLensButtonUsed);
 
   // Customization badge should not be shown in the same session due to group
-  // limit.
+  // limits.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageCustomizationNewBadge));
 }
@@ -1397,4 +1396,37 @@ TEST_F(FeatureEngagementTest,
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+}
+
+// Verifies that the Homepage Lens New Badge IPH does not trigger after the Lens
+// button is used.
+TEST_F(FeatureEngagementTest,
+       TestHomepageLensNewBadge_ShouldNotTriggerAfterLensButtonUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
+  // The badge should be shown initially.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+  tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+
+  // Simulate the user using the Lens button while the badge is displayed.
+  tracker->NotifyEvent(feature_engagement::events::kIOSLensButtonUsed);
+
+  // The badge should no longer trigger.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
 }

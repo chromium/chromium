@@ -154,6 +154,7 @@ const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
+const char kIOSLensButtonUsed[] = "ios_lens_button_used";
 const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";
 const char kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger[] =
     "ios_reminder_notifications_overflow_menu_bubble_iph_trigger";
