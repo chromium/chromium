@@ -9,7 +9,6 @@ This is the concatenated contents of all files inside the placeholder srcjar.
 package org.jni_zero;
 
 public interface SampleForAnnotationProcessor {
-  public interface TestStruct {}
   public interface Natives {
     public org.jni_zero.SampleForAnnotationProcessor bar(org.jni_zero.SampleForAnnotationProcessor sample);
     public void foo();
@@ -34,6 +33,7 @@ public interface SampleForAnnotationProcessor {
     public int[] testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
     public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, org.jni_zero.SampleForAnnotationProcessor.TestStruct tStruct, org.jni_zero.SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, org.stubs.MyClass.SecondNestedInterface nestedInterface, android.view.View view, android.content.Context context, Object[] convertedObjects);
   }
+  public interface TestStruct {}
 }
 
 

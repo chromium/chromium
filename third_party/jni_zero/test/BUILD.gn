@@ -23,7 +23,6 @@ android_library("stubs_java") {
 }
 
 android_library("test_java") {
-  srcjar_deps = [ ":test_jni" ]
   sources = [
     "java/src/org/jni_zero/NullMarked.java",
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
@@ -33,6 +32,7 @@ android_library("test_java") {
 
   deps = [
     ":stubs_java",
+    ":test_jni_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }

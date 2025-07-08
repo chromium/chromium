@@ -49,6 +49,7 @@ class SampleForTests {
     }
 
     public void doStuff() {
+        class TestDuplicateClassName {}
         // This will call CPPClass::Method() using nativePtr as a pointer to the object. This must
         // be done to:
         // * avoid leaks.
@@ -60,6 +61,7 @@ class SampleForTests {
     // private native void thisShouldNotExist();
 
     public void finishExample() {
+        class TestDuplicateClassName {}
         // We're done, so let's destroy nativePtr object.
         SampleForTestsJni.get().destroy(mNativeCPPObject, this, new byte[0]);
     }
