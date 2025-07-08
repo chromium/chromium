@@ -268,7 +268,7 @@ void FormDataImporter::ImportAndProcessFormData(
   credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
       preliminary_imported_address_profiles);
 
-  bool cc_prompt_potentially_shown = false;
+  bool payments_prompt_potentially_shown = false;
   if (ShouldProcessExtractedCreditCard(client_, credit_card_import_type_)) {
     // Only check IsCreditCardUploadEnabled() if conditions that enable
     // processing of the extracted credit card are true, in order to prevent
@@ -276,7 +276,7 @@ void FormDataImporter::ImportAndProcessFormData(
     // cards should not be processed or there was no credit card to process.
     bool credit_card_upload_enabled =
         credit_card_save_manager_->IsCreditCardUploadEnabled();
-    cc_prompt_potentially_shown = ProcessExtractedCreditCard(
+    payments_prompt_potentially_shown = ProcessExtractedCreditCard(
         submitted_form, extracted_data.extracted_credit_card,
         credit_card_upload_enabled, ukm_source_id);
   }
@@ -297,22 +297,22 @@ void FormDataImporter::ImportAndProcessFormData(
   // probably not 100% reliable but that's good enough for this metric.
   bool has_full_profile_candidate =
       !preliminary_imported_address_profiles.empty();
-  if (has_full_profile_candidate && cc_prompt_potentially_shown) {
+  if (has_full_profile_candidate && payments_prompt_potentially_shown) {
     AutofillMetrics::LogAutofillPromptStatus(
         AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown);
   } else if (has_full_profile_candidate) {
     AutofillMetrics::LogAutofillPromptStatus(
         AutofillMetrics::AutofillPromptStatus::kAddressShown);
-  } else if (cc_prompt_potentially_shown) {
+  } else if (payments_prompt_potentially_shown) {
     AutofillMetrics::LogAutofillPromptStatus(
         AutofillMetrics::AutofillPromptStatus::kCreditCardShown);
   }
 
   ProcessExtractedAddressProfiles(
       extracted_data.extracted_address_profiles,
-      // If a prompt for credit cards or IBANs is potentially shown, do not
-      // allow for a second address profile import dialog.
-      /*allow_prompt=*/!cc_prompt_potentially_shown &&
+      // If a payments prompt is potentially shown, do not allow for a second
+      // address profile import dialog.
+      /*allow_prompt=*/!payments_prompt_potentially_shown &&
           !iban_prompt_potentially_shown,
       ukm_source_id);
 }
