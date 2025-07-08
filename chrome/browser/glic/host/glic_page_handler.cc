@@ -26,6 +26,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -55,6 +57,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/feedback/content/content_tracing_manager.h"
+#include "components/feedback/feedback_constants.h"
+#include "components/feedback/feedback_data.h"
+#include "components/feedback/feedback_uploader.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -350,11 +356,13 @@ class JournalHandler {
       std::move(callback).Run(glic::mojom::Journal::New());
       return;
     }
-    std::move(callback).Run(glic::mojom::Journal::New(
-        journal_serializer_->Snapshot(/*max_bytes=*/64 * 1024 * 1024)));
-    if (clear_journal) {
-      journal_serializer_->Clear();
-    }
+    std::vector<uint8_t> result_buffer = GetSnapshotInternal(clear_journal);
+    std::move(callback).Run(
+        glic::mojom::Journal::New(std::move(result_buffer)));
+  }
+
+  std::vector<uint8_t> GetSnapshot(bool clear_journal) {
+    return GetSnapshotInternal(clear_journal);
   }
 
   void Start(uint64_t max_bytes, bool capture_screenshots) {
@@ -367,6 +375,20 @@ class JournalHandler {
   void Stop() { journal_serializer_.reset(); }
 
  private:
+  inline static constexpr size_t kMaxJournalBytes = 64 * 1024 * 1024;
+
+  std::vector<uint8_t> GetSnapshotInternal(bool clear_journal) {
+    std::vector<uint8_t> result_buffer;
+    if (journal_serializer_) {
+      result_buffer =
+          journal_serializer_->Snapshot(/*max_bytes=*/kMaxJournalBytes);
+      if (clear_journal) {
+        journal_serializer_->Clear();
+      }
+    }
+    return result_buffer;
+  }
+
   absl::flat_hash_map<
       uint64_t,
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
@@ -965,6 +987,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
+    if (base::FeatureList::IsEnabled(features::kGlicRecordActorJournal) &&
+        !positive) {
+      SendResponseFeedback();
+    }
   }
 
   void OnClosedCaptionsShown() override {
@@ -1308,6 +1334,27 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void NotifyWebClientFocusedTabChanged(glic::mojom::FocusedTabDataPtr data) {
     web_client_->NotifyFocusedTabChanged(std::move(data));
+  }
+
+  void SendResponseFeedback() {
+    base::WeakPtr<feedback::FeedbackUploader> uploader =
+        feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(profile_)
+            ->AsWeakPtr();
+    scoped_refptr<::feedback::FeedbackData> feedback_data =
+        base::MakeRefCounted<feedback::FeedbackData>(
+            std::move(uploader), ContentTracingManager::Get());
+    auto journal = journal_handler_.GetSnapshot(false);
+
+    // TODO(430054430): Fetch and include system data to the feedback.
+    feedback_data->set_description("Response feedback thumbs down.");
+    feedback_data->set_product_id(feedback::kGeminiWebProductId);
+    feedback_data->set_category_tag(
+        std::string(feedback::kGeminiWebJournalCategoryTag));
+    feedback_data->set_is_offensive_or_unsafe(false);
+    feedback_data->AddFile("actor-journal", journal);
+
+    feedback_data->CompressSystemInfo();
+    feedback_data->OnFeedbackPageDataComplete();
   }
 
   glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;

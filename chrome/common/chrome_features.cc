@@ -669,6 +669,10 @@ const base::FeatureParam<int> kGlicPanelResetOnSessionTimeoutDelayH{
     &kGlicPanelResetOnSessionTimeout,
     "glic-panel-reset-session-timeout-delay-h", 4};
 
+BASE_FEATURE(kGlicRecordActorJournal,
+             "GlicRecordActorJournal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              "GlicWebClientUnresponsiveMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
