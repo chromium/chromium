@@ -21,14 +21,7 @@ BASE_FEATURE(kDeviceRemoteCommandsInvalidationWithDirectMessagesEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUserRemoteCommandsInvalidationWithDirectMessagesEnabled,
              "UserRemoteCommandsInvalidationWithDirectMessagesEnabled",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // TODO(crbug.com/407807110): Change to enabled once rollout is
-             // complete.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCbcmRemoteCommandsInvalidationWithDirectMessagesEnabled,
              "CbcmRemoteCommandsInvalidationWithDirectMessagesEnabled",
