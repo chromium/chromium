@@ -1699,6 +1699,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="25" label="kFirmwareDlcBusyError"/>
   <int value="26" label="kFirmwareDlcUnknownError"/>
   <int value="27" label="kConciergeUnavailableError"/>
+  <int value="28" label="kNotEnoughMemoryError"/>
+  <int value="29" label="kNoAdidError"/>
 </enum>
 
 <enum name="BruschettaResult">
