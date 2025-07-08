@@ -28,8 +28,7 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     priority = ci.DEFAULT_FYI_PRIORITY,
     resultdb_enable = False,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = ["builder", "remote-link"],
     siso_experiments = ["no-fallback"],
 )
