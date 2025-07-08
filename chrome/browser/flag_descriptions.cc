@@ -1768,11 +1768,6 @@ const char kEnableCanvasNoiseDescription[] =
     "Enable noising pixels when the contents of a canvas are read back by a "
     "script.";
 
-const char kEnableSuspendStateMachineName[] = "Enable suspend state machine";
-const char kEnableSuspendStateMachineDescription[] =
-    "Enables a fix for the suspend keyboard shortcut to more consistently "
-    "execute.";
-
 const char kEnableInputDeviceSettingsSplitName[] =
     "Enable input device settings split";
 const char kEnableInputDeviceSettingsSplitDescription[] =

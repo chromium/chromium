@@ -601,11 +601,8 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
         shift_disable_state_machine_.get(),
         ui::EventTarget::Priority::kAccessibility);
   }
-  if (features::IsSuspendStateMachineEnabled()) {
-    aura::Env::GetInstance()->AddPreTargetHandler(
-        suspend_state_machine_.get(),
-        ui::EventTarget::Priority::kAccessibility);
-  }
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      suspend_state_machine_.get(), ui::EventTarget::Priority::kAccessibility);
   aura::Env::GetInstance()->AddPreTargetHandler(
       top_row_key_usage_recorder_.get(),
       ui::EventTarget::Priority::kAccessibility);
@@ -635,10 +632,8 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
     aura::Env::GetInstance()->RemovePreTargetHandler(
         shift_disable_state_machine_.get());
   }
-  if (features::IsSuspendStateMachineEnabled()) {
-    aura::Env::GetInstance()->RemovePreTargetHandler(
-        suspend_state_machine_.get());
-  }
+  aura::Env::GetInstance()->RemovePreTargetHandler(
+      suspend_state_machine_.get());
   aura::Env::GetInstance()->RemovePreTargetHandler(
       top_row_key_usage_recorder_.get());
 }
@@ -1541,11 +1536,7 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kSuspend:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));
-      if (!features::IsSuspendStateMachineEnabled()) {
-        accelerators::Suspend();
-      } else {
-        suspend_state_machine_->StartObservingToTriggerSuspend(accelerator);
-      }
+      suspend_state_machine_->StartObservingToTriggerSuspend(accelerator);
       break;
     case AcceleratorAction::kSwapPrimaryDisplay:
       base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));

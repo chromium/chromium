@@ -2742,11 +2742,6 @@ BASE_FEATURE(kSunfishFeature,
              "SunfishFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the suspend state machine to better handle suspend accelerators.
-BASE_FEATURE(kSuspendStateMachine,
-             "SuspendStateMachine",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables custom Demo Mode behavior on feature-aware devices, as controlled by
 // the feature management module.
 BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,
@@ -4503,10 +4498,6 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled() {
 
 bool IsSunfishFeatureEnabled() {
   return base::FeatureList::IsEnabled(kSunfishFeature);
-}
-
-bool IsSuspendStateMachineEnabled() {
-  return base::FeatureList::IsEnabled(kSuspendStateMachine);
 }
 
 bool IsSystemNudgeMigrationEnabled() {

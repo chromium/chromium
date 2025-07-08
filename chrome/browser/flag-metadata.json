@@ -4282,14 +4282,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-suspend-state-machine",
-    "owners": [
-      "dpad@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-suspend-to-disk",
     "owners": [ "bgeffon@chromium.org", "mka@chromium.org", "chromeos-power@google.com" ],
     "expiry_milestone": 130
