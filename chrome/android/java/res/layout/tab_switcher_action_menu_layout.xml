@@ -10,6 +10,8 @@ found in the LICENSE file.
     android:id="@+id/tab_group_action_menu_list"
     android:paddingTop="@dimen/tab_switcher_menu_vertical_padding"
     android:paddingBottom="@dimen/tab_switcher_menu_vertical_padding"
+    android:defaultFocusHighlightEnabled="false"
+    android:listSelector="?attr/listChoiceBackgroundIndicator"
     android:divider="@android:color/transparent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />

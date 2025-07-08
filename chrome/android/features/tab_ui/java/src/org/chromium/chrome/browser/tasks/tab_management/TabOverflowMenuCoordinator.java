@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -99,7 +100,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 int popupWidthPx,
                 @Nullable Callback<OverflowMenuHolder<T>> onDismiss,
                 Activity activity) {
-            mContext = activity;
+            mContext = new ContextThemeWrapper(activity, R.style.Base_OverflowMenuThemeOverlay);
             mComponentCallbacks =
                     new ComponentCallbacks() {
                         @Override

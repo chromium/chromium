@@ -56,12 +56,13 @@ found in the LICENSE file.
         <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:listChoiceBackgroundIndicator">@drawable/list_item_ripple</item>
+        <item name="android:colorControlHighlight">@color/control_highlight_color</item>
+    </style>
+    <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay">
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
     </style>
-    <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
 
     <style name="AlertDialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
