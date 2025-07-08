@@ -98,7 +98,7 @@ SessionID IOSChromeSyncedTabDelegate::GetWindowId() const {
 }
 
 SessionID IOSChromeSyncedTabDelegate::GetSessionId() const {
-  return IOSChromeSessionTabHelper::FromWebState(web_state_)->session_id();
+  return web_state_->GetUniqueIdentifier().ToSessionID();
 }
 
 bool IOSChromeSyncedTabDelegate::IsBeingDestroyed() const {

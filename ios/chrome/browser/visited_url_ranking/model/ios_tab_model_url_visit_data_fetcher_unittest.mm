@@ -8,7 +8,6 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "components/visited_url_ranking/public/fetcher_config.h"
 #import "components/visited_url_ranking/public/url_visit.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -49,7 +48,6 @@ class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
     web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
-    IOSChromeSessionTabHelper::CreateForWebState(web_state.get());
     return web_state;
   }
 
@@ -195,7 +193,6 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchUnrealizedTab) {
   web_state->SetBrowserState(profile_.get());
   web_state->SetCurrentURL(GURL(url));
   web_state->SetLastActiveTime(now - base::Hours(1));
-  IOSChromeSessionTabHelper::CreateForWebState(web_state.get());
   main_browser_->GetWebStateList()->InsertWebState(
       std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
   auto fetcher =
@@ -291,10 +288,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, AggregateEntries) {
         EXPECT_EQ(key0, tab0.visit.url);
         EXPECT_TRUE(tab_data0.in_group);
         EXPECT_TRUE(tab_data0.pinned);
-        EXPECT_EQ(IOSChromeSessionTabHelper::FromWebState(web_state1)
-                      ->session_id()
-                      .id(),
-                  tab0.id);
+        EXPECT_EQ(web_state1->GetUniqueIdentifier().identifier(), tab0.id);
         EXPECT_EQ(now - base::Hours(4), tab_data0.last_active);
         EXPECT_EQ(now - base::Hours(1), tab0.visit.last_modified);
 

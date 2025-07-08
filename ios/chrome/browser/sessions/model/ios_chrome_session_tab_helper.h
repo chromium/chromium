@@ -11,14 +11,7 @@
 class IOSChromeSessionTabHelper
     : public web::WebStateUserData<IOSChromeSessionTabHelper> {
  public:
-  IOSChromeSessionTabHelper(const IOSChromeSessionTabHelper&) = delete;
-  IOSChromeSessionTabHelper& operator=(const IOSChromeSessionTabHelper&) =
-      delete;
-
   ~IOSChromeSessionTabHelper() override;
-
-  // Returns the identifier used by session restore for this tab.
-  SessionID session_id() const { return session_id_; }
 
   // Identifier of the window the tab is in.
   SessionID window_id() const { return window_id_; }
@@ -30,10 +23,6 @@ class IOSChromeSessionTabHelper
  private:
   explicit IOSChromeSessionTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<IOSChromeSessionTabHelper>;
-
-  // Unique identifier of the tab for session restore. It is stable across
-  // application restart as it is set to WebState::GetUniqueIdentifier().
-  const SessionID session_id_;
 
   // Unique identifier of the window the tab is in.
   SessionID window_id_;

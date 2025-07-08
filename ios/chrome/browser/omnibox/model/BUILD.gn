@@ -57,7 +57,6 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/ui:model_interface",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

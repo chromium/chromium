@@ -9,7 +9,6 @@
 #import "components/visited_url_ranking/public/fetcher_config.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -48,8 +47,7 @@ URLVisitAggregate::Tab MakeAggregateTabFromWebState(
   visited_url_ranking::URLVisit visit(
       url, web_state->GetTitle(), last_modification, form_factor,
       visited_url_ranking::URLVisit::Source::kLocal);
-  int32_t tab_id =
-      IOSChromeSessionTabHelper::FromWebState(web_state)->session_id().id();
+  const int32_t tab_id = web_state->GetUniqueIdentifier().identifier();
 
   URLVisitAggregate::Tab tab(tab_id, visit);
   return tab;

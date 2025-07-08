@@ -135,7 +135,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       IOSChromeSessionTabHelper::FromWebState(web_state_);
   if (session_tab_helper) {
     context_annotations.window_id = session_tab_helper->window_id();
-    context_annotations.tab_id = session_tab_helper->session_id();
+    context_annotations.tab_id =
+        web_state_->GetUniqueIdentifier().ToSessionID();
   }
 
   IOSTaskTabHelper* task_tab_helper =

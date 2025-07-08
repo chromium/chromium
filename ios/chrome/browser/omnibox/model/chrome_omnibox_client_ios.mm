@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -86,8 +85,7 @@ bool ChromeOmniboxClientIOS::IsDefaultSearchProviderEnabled() const {
 }
 
 SessionID ChromeOmniboxClientIOS::GetSessionID() const {
-  return IOSChromeSessionTabHelper::FromWebState(location_bar_->GetWebState())
-      ->session_id();
+  return location_bar_->GetWebState()->GetUniqueIdentifier().ToSessionID();
 }
 
 PrefService* ChromeOmniboxClientIOS::GetPrefs() {
