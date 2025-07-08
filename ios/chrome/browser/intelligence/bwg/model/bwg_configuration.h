@@ -61,8 +61,12 @@ class PageContext;
 // Whether to animate the presentation of the BWG UI.
 @property(nonatomic, assign) BOOL shouldAnimatePresentation;
 
-// Whether the zero-state UI should be shown.
+// Whether the zero-state UI for the input box should be shown (i.e. page
+// context information about the web page).
 @property(nonatomic, assign) BOOL shouldShowZeroState;
+
+// Whether the zero-state suggestion chips should be shown.
+@property(nonatomic, assign) BOOL shouldShowSuggestionChips;
 
 @end
 

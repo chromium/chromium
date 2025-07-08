@@ -80,15 +80,23 @@ bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
 }
 
 bool BwgTabHelper::ShouldShowZeroState() {
-  bool is_srp = google_util::IsGoogleSearchUrl(web_state_->GetVisibleURL());
-
   std::optional<std::string> last_interaction_url = GetURLOnLastInteraction();
+  // Show zero-state if no last interaction URL was found.
   if (!last_interaction_url.has_value()) {
-    return !is_srp;
+    return true;
   }
 
-  return !is_srp && !web_state_->GetVisibleURL().EqualsIgnoringRef(
-                        GURL(last_interaction_url.value()));
+  // Show zero-state if the last interaction URL is different from the current
+  // one.
+  return !web_state_->GetVisibleURL().EqualsIgnoringRef(
+      GURL(last_interaction_url.value()));
+}
+
+bool BwgTabHelper::ShouldShowSuggestionChips() {
+  // Show suggestion chips if we should show zero-state and we're not currently
+  // on a Search results page.
+  return ShouldShowZeroState() &&
+         !google_util::IsGoogleSearchUrl(web_state_->GetVisibleURL());
 }
 
 void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {

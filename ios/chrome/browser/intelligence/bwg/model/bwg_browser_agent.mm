@@ -80,6 +80,8 @@ void BwgBrowserAgent::PresentBwgOverlay(
   config.shouldAnimatePresentation =
       !bwg_tab_helper->GetIsBwgSessionActiveInBackground();
   config.shouldShowZeroState = bwg_tab_helper->ShouldShowZeroState();
+  config.shouldShowSuggestionChips =
+      bwg_tab_helper->ShouldShowSuggestionChips();
 
   // Set the page context and page state for the current web state. If the page
   // context is unavailable, the page state represents the error.

@@ -26,9 +26,13 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_bwg_session_active_in_background_`.
   bool GetIsBwgSessionActiveInBackground();
 
-  // Whether BWG should show the zero-state UI for the current Web State and
-  // visible URL.
+  // Whether BWG should show the zero-state input box UI for the current Web
+  // State and visible URL.
   bool ShouldShowZeroState();
+
+  // Whether BWG should show the suggestion chips for the current Web State and
+  // visible URL.
+  bool ShouldShowSuggestionChips();
 
   // Creates, or updates, a new BWG session in storage with the current
   // timestamp, server ID and URL for the associated WebState.
