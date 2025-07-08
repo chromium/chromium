@@ -2050,19 +2050,6 @@
     ],
     "expires": "Dec 1, 2024"
   },
-  {
-    "prefix": "network-service-task-scheduler",
-    "owners": ["hayato@chromium.org"],
-    "platforms": ["Android", "Mac", "Win", "Linux"],
-    "bases": [
-      "external/wpt/fetch/api/",
-      "external/wpt/loading/"
-    ],
-    "args": [
-      "--enable-features=NetworkServiceTaskScheduler:url_loader/true"
-    ],
-    "expires": "Jun 20, 2026"
-  },
   "This suite is incompatible with the default WPT Origin Isolation mode of ",
   "Site Isolation (see",
   "WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which",
