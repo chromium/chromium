@@ -209,6 +209,27 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // more efficient to call LoadSeed() prior to calling this method.
   const std::string& GetLatestSerialNumber();
 
+  // Returns the latest country code that was received from the server.
+  std::string GetLatestCountry();
+
+  // Returns the first country code returned by the variations server after the
+  // client upgraded to the version returned by
+  // GetPermanentConsistencyVersion().
+  std::string GetPermanentConsistencyCountry();
+
+  // Gets the version applied to studies with permanent consistency. The version
+  // at the time of storing the permanent consistency country.
+  std::string GetPermanentConsistencyVersion();
+
+  // Sets the country code and version applied to studies with permanent
+  // consistency.
+  void SetPermanentConsistencyCountryAndVersion(std::string_view country,
+                                                std::string_view version);
+
+  // Clears the country code and version applied to studies with permanent
+  // consistency.
+  void ClearPermanentConsistencyCountryAndVersion();
+
   PrefService* local_state() { return local_state_; }
   const PrefService* local_state() const { return local_state_; }
 

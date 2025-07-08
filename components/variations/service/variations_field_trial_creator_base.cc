@@ -218,7 +218,7 @@ std::string VariationsFieldTrialCreatorBase::GetLatestCountry() const {
           switches::kVariationsOverrideCountry));
   return !override_country.empty()
              ? override_country
-             : local_state()->GetString(prefs::kVariationsCountry);
+             : std::string(seed_store_->GetLatestCountry());
 }
 
 bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
@@ -409,35 +409,34 @@ std::string VariationsFieldTrialCreatorBase::LoadPermanentConsistencyCountry(
     return permanent_overridden_country;
   }
 
-  const base::Value::List& list_value =
-      local_state()->GetList(prefs::kVariationsPermanentConsistencyCountry);
-  const std::string* stored_version_string = nullptr;
-  const std::string* stored_country = nullptr;
-
-  // Determine if the saved pref value is present and valid.
-  const bool is_pref_empty = list_value.empty();
-  const bool is_pref_valid =
-      list_value.size() == 2 &&
-      (stored_version_string = list_value[0].GetIfString()) &&
-      (stored_country = list_value[1].GetIfString()) &&
-      base::Version(*stored_version_string).IsValid();
+  const std::string stored_version_string =
+      seed_store_->GetPermanentConsistencyVersion();
+  const std::string stored_country =
+      seed_store_->GetPermanentConsistencyCountry();
+  const bool is_stored_info_emtpy =
+      stored_version_string.empty() && stored_country.empty();
+  const base::Version stored_version(stored_version_string);
+  const bool is_stored_info_valid = !stored_version_string.empty() &&
+                                    !stored_country.empty() &&
+                                    stored_version.IsValid();
 
   // Determine if the version from the saved pref matches |version|.
   const bool does_version_match =
-      is_pref_valid && version == base::Version(*stored_version_string);
+      is_stored_info_valid && version == stored_version;
 
   // Determine if the country in the saved pref matches the country in
   // |latest_country|.
-  const bool does_country_match = is_pref_valid && !latest_country.empty() &&
-                                  *stored_country == latest_country;
+  const bool does_country_match = is_stored_info_valid &&
+                                  !latest_country.empty() &&
+                                  stored_country == latest_country;
 
   // Record a histogram for how the saved pref value compares to the current
   // version and the country code in the variations seed.
   LoadPermanentConsistencyCountryResult result;
-  if (is_pref_empty) {
+  if (is_stored_info_emtpy) {
     result = !latest_country.empty() ? LOAD_COUNTRY_NO_PREF_HAS_SEED
                                      : LOAD_COUNTRY_NO_PREF_NO_SEED;
-  } else if (!is_pref_valid) {
+  } else if (!is_stored_info_valid) {
     result = !latest_country.empty() ? LOAD_COUNTRY_INVALID_PREF_HAS_SEED
                                      : LOAD_COUNTRY_INVALID_PREF_NO_SEED;
   } else if (latest_country.empty()) {
@@ -456,12 +455,12 @@ std::string VariationsFieldTrialCreatorBase::LoadPermanentConsistencyCountry(
   // Use the stored country if one is available and was fetched since the last
   // time Chrome was updated.
   if (does_version_match) {
-    return *stored_country;
+    return stored_country;
   }
 
   if (latest_country.empty()) {
-    if (!is_pref_valid) {
-      local_state()->ClearPref(prefs::kVariationsPermanentConsistencyCountry);
+    if (!is_stored_info_valid) {
+      seed_store_->ClearPermanentConsistencyCountryAndVersion();
     }
     // If we've never received a country code from the server, use an empty
     // country so that it won't pass any filters that specifically include
@@ -486,11 +485,8 @@ std::string VariationsFieldTrialCreatorBase::GetPermanentConsistencyCountry()
 void VariationsFieldTrialCreatorBase::StorePermanentCountry(
     const base::Version& version,
     const std::string& country) {
-  base::Value::List new_list_value;
-  new_list_value.Append(version.GetString());
-  new_list_value.Append(country);
-  local_state()->SetList(prefs::kVariationsPermanentConsistencyCountry,
-                         std::move(new_list_value));
+  seed_store_->SetPermanentConsistencyCountryAndVersion(country,
+                                                        version.GetString());
 }
 
 void VariationsFieldTrialCreatorBase::StoreVariationsOverriddenCountry(

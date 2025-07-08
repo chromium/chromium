@@ -242,6 +242,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
       .milestone = 2,
       .seed_date = seed_date,
       .client_fetch_time = fetch_time,
+      .session_country_code = "us",
   });
 
   // Force write.
@@ -437,6 +438,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
       .milestone = 2,
       .seed_date = seed_date,
       .client_fetch_time = fetch_time,
+      .session_country_code = "us",
   });
 
   // Ensure there's no pending write.

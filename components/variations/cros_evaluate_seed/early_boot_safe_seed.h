@@ -44,11 +44,7 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;
   std::string GetPermanentConsistencyCountry() const override;
-  void SetPermanentConsistencyCountry(
-      const std::string& permanent_consistency_country) override;
   std::string GetSessionConsistencyCountry() const override;
-  void SetSessionConsistencyCountry(
-      const std::string& session_consistency_country) override;
   SeedReaderWriter* GetSeedReaderWriterForTesting() override;
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;

@@ -403,6 +403,30 @@ const std::string& VariationsSeedStore::GetLatestSerialNumber() {
   return latest_serial_number_;
 }
 
+std::string VariationsSeedStore::GetLatestCountry() {
+  return std::string(seed_reader_writer_->GetSeedData().session_country_code);
+}
+
+std::string VariationsSeedStore::GetPermanentConsistencyCountry() {
+  return std::string(seed_reader_writer_->GetSeedData().permanent_country_code);
+}
+
+std::string VariationsSeedStore::GetPermanentConsistencyVersion() {
+  return std::string(
+      seed_reader_writer_->GetSeedData().permanent_country_version);
+}
+
+void VariationsSeedStore::ClearPermanentConsistencyCountryAndVersion() {
+  seed_reader_writer_->ClearPermanentConsistencyCountryAndVersion();
+}
+
+void VariationsSeedStore::SetPermanentConsistencyCountryAndVersion(
+    const std::string_view country,
+    const std::string_view version) {
+  seed_reader_writer_->SetPermanentConsistencyCountryAndVersion(country,
+                                                                version);
+}
+
 // static
 void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
   // Regular seed prefs:
@@ -412,6 +436,9 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kVariationsSeedMilestone, 0);
   registry->RegisterTimePref(prefs::kVariationsSeedDate, base::Time());
   registry->RegisterStringPref(prefs::kVariationsSeedSignature, std::string());
+  // This preference keeps track of the country code used to filter
+  // permanent-consistency studies.
+  registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
 
   VariationsSafeSeedStoreLocalState::RegisterPrefs(registry);
 }
@@ -720,10 +747,6 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
   }
 #endif
 
-  // Update the saved country code only if one was returned from the server.
-  if (!country_code.empty())
-    local_state_->SetString(prefs::kVariationsCountry, country_code);
-
   int milestone = version_info::GetMajorVersionNumberAsInt();
 
   LogSeedDayChange(date_fetched);
@@ -738,6 +761,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .milestone = milestone,
         .seed_date = date_fetched,
         .client_fetch_time = base::Time::Now(),
+        .session_country_code = country_code,
     });
   } else {
     seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
@@ -747,6 +771,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .milestone = milestone,
         .seed_date = date_fetched,
         .client_fetch_time = base::Time::Now(),
+        .session_country_code = country_code,
     });
   }
   latest_serial_number_ = seed.parsed.serial_number();
@@ -799,13 +824,13 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
       .milestone = seed_milestone,
       .seed_date = client_state.reference_date,
       .client_fetch_time = seed_fetch_time,
+      .session_country_code = client_state.session_consistency_country,
+      .permanent_country_code = client_state.permanent_consistency_country,
+      // The permanent version is not stored in the safe seed, only the country.
+      .permanent_country_version = "",
   });
 
   safe_seed_store_->SetLocale(client_state.locale);
-  safe_seed_store_->SetPermanentConsistencyCountry(
-      client_state.permanent_consistency_country);
-  safe_seed_store_->SetSessionConsistencyCountry(
-      client_state.session_consistency_country);
 
   // As a space optimization, overwrite the stored latest seed data with an
   // alias to the safe seed, if they are identical.

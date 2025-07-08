@@ -254,6 +254,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .milestone = 1,
           .seed_date = now - delta * 1,
           .client_fetch_time = now,
+          .session_country_code = "us",
       });
 
   //  Update the safe seed in memory. This is done for the Local-State-based
@@ -267,10 +268,10 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .milestone = 90,
           .seed_date = now - delta * 2,
           .client_fetch_time = now - delta * 3,
+          .session_country_code = "gt",
+          .permanent_country_code = "mx",
       });
   prefs->SetString(prefs::kVariationsSafeSeedLocale, "en-MX");
-  prefs->SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "mx");
-  prefs->SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry, "gt");
 }
 
 // Checks whether the given pref has its default value in |prefs|.
@@ -442,6 +443,7 @@ class LoadSeedDataAllGroupsTest : public LoadSeedDataGroupTest {
             .milestone = 1,
             .seed_date = base::Time::Now(),
             .client_fetch_time = base::Time::Now(),
+            .session_country_code = "us",
         });
   }
 
@@ -471,6 +473,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ValidSeed) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
   const std::string expected_seed =
       GetParam() == kSeedFilesGroup ? compressed_seed : base64_seed;
@@ -515,6 +518,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSignature) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -545,6 +549,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -577,6 +582,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_RejectEmptySignature) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -614,6 +620,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_AcceptEmptySignature) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -674,6 +681,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
           .milestone = 2,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -683,6 +691,8 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
           .milestone = 1,
           .seed_date = base::Time::Now() - base::Days(1),
           .client_fetch_time = base::Time::Now() - base::Days(1),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -720,6 +730,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -747,6 +758,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -786,6 +798,7 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -981,11 +994,11 @@ TEST_P(StoreSeedDataAllGroupsTest, CountryCode) {
   std::string seed = SerializeSeed(CreateTestSeed());
   ASSERT_TRUE(
       StoreSeedData(seed_store, seed, {.country_code = "test_country"}));
-  EXPECT_EQ("test_country", prefs_.GetString(prefs::kVariationsCountry));
+  EXPECT_EQ("test_country", GetSeedData(seed_store).session_country_code);
 
   // Test with no country code specified - which should preserve the old value.
   ASSERT_TRUE(StoreSeedData(seed_store, seed));
-  EXPECT_EQ("test_country", prefs_.GetString(prefs::kVariationsCountry));
+  EXPECT_EQ("test_country", GetSeedData(seed_store).session_country_code);
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, GzippedSeed) {
@@ -1022,6 +1035,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressed) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   ASSERT_TRUE(StoreSeedData(seed_store, kSeedDeltaTestData.GetDeltaData(),
@@ -1042,6 +1056,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressedGzipped) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   ASSERT_TRUE(StoreSeedData(seed_store, Gzip(kSeedDeltaTestData.GetDeltaData()),
@@ -1079,6 +1094,7 @@ TEST_P(StoreSeedDataAllGroupsTest, BadDelta) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   store_success_ = true;
@@ -1102,6 +1118,8 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
   ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
 
@@ -1142,6 +1160,7 @@ TEST_P(StoreSeedDataAllGroupsTest,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
 
@@ -1190,12 +1209,10 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_ValidSeed) {
           .milestone = 1,
           .seed_date = reference_date,
           .client_fetch_time = reference_date - base::Days(3),
+          .session_country_code = session_consistency_country,
+          .permanent_country_code = permanent_consistency_country,
       });
   prefs_.SetString(prefs::kVariationsSafeSeedLocale, locale);
-  prefs_.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry,
-                   permanent_consistency_country);
-  prefs_.SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry,
-                   session_consistency_country);
   const std::string expected_seed =
       GetParam() == kSeedFilesGroup ? compressed_seed : base64_seed;
 
@@ -1253,6 +1270,8 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_InvalidSignature) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -1314,6 +1333,8 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptGzip) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -1356,6 +1377,8 @@ TEST_P(LoadSafeSeedDataAllGroupsTest,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -1405,6 +1428,8 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
 
   base::HistogramTester histogram_tester;
@@ -1523,7 +1548,7 @@ TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   client_state->locale = "pt-PT";
   prefs_.SetString(prefs::kVariationsSafeSeedLocale, expected_locale);
 
-  const std::string expected_permanent_consistency_country = "US";
+  const std::string expected_permanent_consistency_country = "us";
   client_state->permanent_consistency_country = "CA";
   prefs_.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry,
                    expected_permanent_consistency_country);
@@ -1619,7 +1644,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest, StoreSafeSeed_ValidSignature) {
   const base::Time now = base::Time::Now();
   const base::Time expected_date = now - base::Days(1);
   client_state->reference_date = expected_date;
-  const std::string expected_permanent_consistency_country = "US";
+  const std::string expected_permanent_consistency_country = "us";
   client_state->permanent_consistency_country =
       expected_permanent_consistency_country;
   const std::string expected_session_consistency_country = "CA";
@@ -1705,6 +1730,8 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
           .milestone = 1,
           .seed_date = client_state->reference_date,
           .client_fetch_time = fetch_time - base::Hours(1),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -1714,6 +1741,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
           .milestone = 1,
           .seed_date = client_state->reference_date,
           .client_fetch_time = fetch_time,
+          .session_country_code = "us",
       });
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(seed_store.StoreSafeSeed(
@@ -1767,7 +1795,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
   const base::Time now = base::Time::Now();
   const base::Time expected_date = now - base::Days(1);
   client_state->reference_date = expected_date;
-  const std::string expected_permanent_consistency_country = "US";
+  const std::string expected_permanent_consistency_country = "us";
   client_state->permanent_consistency_country =
       expected_permanent_consistency_country;
   const std::string expected_session_consistency_country = "CA";
@@ -1851,6 +1879,8 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
           .milestone = 1,
           .seed_date = client_state->reference_date,
           .client_fetch_time = fetch_time - base::Hours(1),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -1860,6 +1890,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
           .milestone = 1,
           .seed_date = client_state->reference_date,
           .client_fetch_time = fetch_time,
+          .session_country_code = "us",
       });
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(seed_store.StoreSafeSeed(
@@ -1927,6 +1958,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
           .milestone = 92,
           .seed_date = client_state->reference_date,
           .client_fetch_time = last_fetch_time,
+          .session_country_code = "us",
       });
   const std::string expected_seed =
       GetParam().field_trial_group == kSeedFilesGroup ? compressed_seed
@@ -2079,6 +2111,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = WrapTime(2),
+          .session_country_code = "us",
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -2088,6 +2121,8 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
           .milestone = 2,
           .seed_date = base::Time::Now(),
           .client_fetch_time = WrapTime(1),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
   seed_store.RecordLastFetchTime(WrapTime(11));
 
@@ -2113,6 +2148,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
           .milestone = 1,
           .seed_date = WrapTime(1),
           .client_fetch_time = WrapTime(1),
+          .session_country_code = "us",
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -2122,6 +2158,8 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
           .milestone = 1,
           .seed_date = WrapTime(1),
           .client_fetch_time = WrapTime(0),
+          .session_country_code = "us",
+          .permanent_country_code = "us",
       });
   seed_store.RecordLastFetchTime(WrapTime(11));
 
@@ -2150,6 +2188,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
 
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
@@ -2169,6 +2208,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
       });
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
   EXPECT_TRUE(PrefHasDefaultValue(prefs_, prefs::kVariationsCompressedSeed));

@@ -36,8 +36,19 @@ const char kSeedFilesGroup[] = "SeedFiles_V7";
 // seed-file-based seeds store compressed data and those using
 // local-state-based seeds store compressed, base64 encoded data.
 // It also stores other seed-related info.
-struct StoredSeed {
+struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
   enum class StorageFormat { kCompressed, kCompressedAndBase64Encoded };
+
+  StoredSeed(StorageFormat storage_format,
+             std::string_view data,
+             std::string_view signature,
+             int milestone,
+             base::Time seed_date,
+             base::Time client_fetch_time,
+             std::string_view session_country_code,
+             std::string_view permanent_country_code,
+             std::string_view permanent_country_version);
+  ~StoredSeed();
 
   // The storage format of the seed. Seed-file-based seeds are compressed while
   // local-state-based seeds are compressed and base64 encoded.
@@ -56,6 +67,13 @@ struct StoredSeed {
   // The time at which the seed was fetched. This is always a client-side
   // timestamp.
   base::Time client_fetch_time;
+  // Latest country code fetched from the server. Used for evaluating session
+  // consistency studies.
+  std::string session_country_code;
+  // Country code used for evaluating permanent consistency studies.
+  std::string permanent_country_code;
+  // Chrome version at the time `permanent_country_code` was updated.
+  std::string permanent_country_version;
 };
 
 // Groups the data from a seed and other seed-related info that is validated
@@ -68,6 +86,9 @@ struct ValidatedSeedInfo {
   int milestone = 0;
   base::Time seed_date;
   base::Time client_fetch_time;
+  std::string_view session_country_code;
+  std::string_view permanent_country_code;
+  std::string_view permanent_country_version;
 };
 
 struct SeedFieldsPrefs {
@@ -76,6 +97,8 @@ struct SeedFieldsPrefs {
   const char* milestone;
   const char* seed_date;
   const char* client_fetch_time;
+  const char* session_country_code;
+  const char* permanent_country_code_version;
 };
 
 COMPONENT_EXPORT(VARIATIONS)
@@ -119,10 +142,13 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // clients (see ShouldUseSeedFile()) and schedules a write of
   // `base64_seed_data` to local state for all other clients. Also stores other
   // seed-related info.
+  // `permanent_country_version` should be empty for the safe seed.
   void StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
   // Clears seed data and other seed-related info. The following fields are
-  // cleared: seed data, signature, milestone, and seed date.
+  // cleared: seed data, signature, milestone, seed_date, client_fetch_time and
+  // session_country_code. To clear permanent_country_code and version, use
+  // ClearPermanentConsistencyCountryAndVersion() instead.
   void ClearSeedInfo();
 
   // Returns stored seed data.
@@ -140,17 +166,30 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Returns true if a write is scheduled but has not yet completed.
   bool HasPendingWrite() const;
 
+  // Clears the permanent consistency country and version.
+  void ClearPermanentConsistencyCountryAndVersion();
+
+  // Sets the permanent consistency country and version.
+  void SetPermanentConsistencyCountryAndVersion(std::string_view country,
+                                                std::string_view version);
+
  private:
   // TODO(crbug.com/380465790): Represents the seed and other related info.
   // This info will be stored together in the SeedFile. Once all the
   // seed-related info is stored in the struct, change it to a proto and use it
   // to serialize and deserialize the data.
   struct SeedInfo {
+    SeedInfo();
+    ~SeedInfo();
+
     std::string data;
     std::string signature;
     int milestone = 0;
     base::Time seed_date;
     base::Time client_fetch_time;
+    std::string session_country_code;
+    std::string permanent_country_code;
+    std::string permanent_country_version;
   };
 
   // Returns the serialized data to be written to disk. This is done
@@ -158,8 +197,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
 
-  // Schedules `seed_info` to be written using `seed_writer_`. If you want to
-  // clear the seed file, use ScheduleSeedFileClear() instead.
+  // Schedules `seed_info` to be written using `seed_writer_`. If a field is
+  // empty, it will not be updated. If you want to clear the seed file, use
+  // ScheduleSeedFileClear() instead.
   void ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
 
   // Schedules `seed_info` to be cleared using `seed_writer_`.

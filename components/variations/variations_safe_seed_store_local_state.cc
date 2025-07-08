@@ -73,26 +73,12 @@ void VariationsSafeSeedStoreLocalState::SetLocale(const std::string& locale) {
 
 std::string VariationsSafeSeedStoreLocalState::GetPermanentConsistencyCountry()
     const {
-  return local_state_->GetString(
-      prefs::kVariationsSafeSeedPermanentConsistencyCountry);
-}
-
-void VariationsSafeSeedStoreLocalState::SetPermanentConsistencyCountry(
-    const std::string& permanent_consistency_country) {
-  local_state_->SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry,
-                          permanent_consistency_country);
+  return seed_reader_writer_->GetSeedData().permanent_country_code;
 }
 
 std::string VariationsSafeSeedStoreLocalState::GetSessionConsistencyCountry()
     const {
-  return local_state_->GetString(
-      prefs::kVariationsSafeSeedSessionConsistencyCountry);
-}
-
-void VariationsSafeSeedStoreLocalState::SetSessionConsistencyCountry(
-    const std::string& session_consistency_country) {
-  local_state_->SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry,
-                          session_consistency_country);
+  return seed_reader_writer_->GetSeedData().session_country_code;
 }
 
 SeedReaderWriter*
@@ -108,10 +94,8 @@ void VariationsSafeSeedStoreLocalState::SetSeedReaderWriterForTesting(
 void VariationsSafeSeedStoreLocalState::ClearState() {
   // Seed and other related information is cleared by the SeedReaderWriter.
   seed_reader_writer_->ClearSeedInfo();
+  seed_reader_writer_->ClearPermanentConsistencyCountryAndVersion();
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);
-  local_state_->ClearPref(
-      prefs::kVariationsSafeSeedPermanentConsistencyCountry);
-  local_state_->ClearPref(prefs::kVariationsSafeSeedSessionConsistencyCountry);
 }
 
 // static

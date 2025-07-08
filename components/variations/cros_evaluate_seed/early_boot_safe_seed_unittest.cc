@@ -55,14 +55,12 @@ TEST(EarlyBootSafeSeed, GetTimeForStudyDateChecks) {
       base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch));
   EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
   // Should not change after setting the compressed seed.
-  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
-      .compressed_seed_data = "data",
-      .base64_seed_data = "base64_data",
-      .signature = "asdf",
-      .milestone = 100,
-      .seed_date = base::Time::Now(),
-      .client_fetch_time = base::Time::Now(),
-  });
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo(
+      /*compressed_seed_data=*/"data",
+      /*base64_seed_data=*/"base64_data", /*signature=*/"asdf",
+      /*milestone=*/100, /*seed_date=*/base::Time::Now(),
+      /*client_fetch_time=*/base::Time::Now(), /*session_country_code=*/"ca",
+      /*permanent_country_code=*/"ca", /*permanent_country_version=*/""));
   EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
   // Should not change after clearing the state.
   early_boot_safe_seed.ClearState();
@@ -87,14 +85,12 @@ TEST(EarlyBootSafeSeed, GetSignature) {
   EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 
   // Should not change.
-  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
-      .compressed_seed_data = "data",
-      .base64_seed_data = "base64_data",
-      .signature = "asdf",
-      .milestone = 100,
-      .seed_date = base::Time::Now(),
-      .client_fetch_time = base::Time::Now(),
-  });
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo(
+      /*compressed_seed_data=*/"data",
+      /*base64_seed_data=*/"base64_data", /*signature=*/"asdf",
+      /*milestone=*/100, /*seed_date=*/base::Time::Now(),
+      /*client_fetch_time=*/base::Time::Now(), /*session_country_code=*/"ca",
+      /*permanent_country_code=*/"ca", /*permanent_country_version=*/""));
   EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 }
 
@@ -118,7 +114,12 @@ TEST(EarlyBootSafeSeed, GetPermanentConsistencyCountry) {
   EXPECT_EQ(early_boot_safe_seed.GetPermanentConsistencyCountry(), "us");
 
   // Should not change.
-  early_boot_safe_seed.SetPermanentConsistencyCountry("ca");
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo(
+      /*compressed_seed_data=*/"data",
+      /*base64_seed_data=*/"base64_data", /*signature=*/"asdf",
+      /*milestone=*/100, /*seed_date=*/base::Time::Now(),
+      /*client_fetch_time=*/base::Time::Now(), /*session_country_code=*/"ca",
+      /*permanent_country_code=*/"ca", /*permanent_country_version=*/""));
   EXPECT_EQ(early_boot_safe_seed.GetPermanentConsistencyCountry(), "us");
 }
 
@@ -129,7 +130,13 @@ TEST(EarlyBootSafeSeed, GetSessionConsistencyCountry) {
   EarlyBootSafeSeed early_boot_safe_seed(details);
   EXPECT_EQ(early_boot_safe_seed.GetSessionConsistencyCountry(), "us");
 
-  early_boot_safe_seed.SetSessionConsistencyCountry("ca");
+  // Should not change.
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo(
+      /*compressed_seed_data=*/"data",
+      /*base64_seed_data=*/"base64_data", /*signature=*/"asdf",
+      /*milestone=*/100, /*seed_date=*/base::Time::Now(),
+      /*client_fetch_time=*/base::Time::Now(), /*session_country_code=*/"ca",
+      /*permanent_country_code=*/"ca", /*permanent_country_version=*/""));
   EXPECT_EQ(early_boot_safe_seed.GetSessionConsistencyCountry(), "us");
 }
 
@@ -138,18 +145,13 @@ TEST(EarlyBootSafeSeed, MutatorsDontCrash) {
   featured::SeedDetails details;
   EarlyBootSafeSeed early_boot_safe_seed(details);
 
-  early_boot_safe_seed.SetFetchTime(base::Time::Now());
-  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo{
-      .compressed_seed_data = "data",
-      .base64_seed_data = "base64_data",
-      .signature = "signature",
-      .milestone = 100,
-      .seed_date = base::Time::Now(),
-      .client_fetch_time = base::Time::Now(),
-  });
+  early_boot_safe_seed.SetCompressedSeed(ValidatedSeedInfo(
+      /*compressed_seed_data=*/"data",
+      /*base64_seed_data=*/"base64_data", /*signature=*/"signature",
+      /*milestone=*/100, /*seed_date=*/base::Time::Now(),
+      /*client_fetch_time=*/base::Time::Now(), /*session_country_code=*/"ca",
+      /*permanent_country_code=*/"ca", /*permanent_country_version=*/""));
   early_boot_safe_seed.SetLocale("locale");
-  early_boot_safe_seed.SetPermanentConsistencyCountry("us");
-  early_boot_safe_seed.SetSessionConsistencyCountry("us");
   early_boot_safe_seed.ClearState();
 }
 
