@@ -216,7 +216,7 @@ void maybeShowSettingsIPH(Browser* browser) {
     return;
   }
   [self stopTrustedVaultReauthenticationCoordinator];
-  [self stopChildrenAndViewController];
+  [self stopChildrenAndViewControllerAnimated:NO];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
 
@@ -333,7 +333,7 @@ void maybeShowSettingsIPH(Browser* browser) {
                     signedIdentity:(id<SystemIdentity>)signedIdentity
                    userTappedClose:(BOOL)userTappedClose {
   CHECK_EQ(mediator, _mediator);
-  [self stopChildrenAndViewController];
+  [self stopChildrenAndViewControllerAnimated:YES];
   [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
 
   if (userTappedClose) {
@@ -534,7 +534,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 // Stops all children, then dismiss the view controller. Executes
 // `completion` synchronously.
-- (void)stopChildrenAndViewController {
+- (void)stopChildrenAndViewControllerAnimated:(BOOL)animated {
   // Stopping all potentially open children views.
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
@@ -544,7 +544,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsCoordinator];
-  [self dismissViewControllerAnimated:NO completion:nil];
+  [self dismissViewControllerAnimated:animated completion:nil];
 }
 
 // Unplugs the view and navigation controller. Dismisses the navigation
