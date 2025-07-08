@@ -646,6 +646,30 @@ struct MEDIA_EXPORT XDateRangeTag {
   base::flat_map<ResolvedSourceString, ResolvedSourceString> attributes;
 };
 
+// The EXT-X-SESSION-DATA tag allows arbitrary session data to be carried in a
+// Multivariant Playlist.
+struct MEDIA_EXPORT XSessionDataTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXSessionData;
+  static ParseStatus::Or<XSessionDataTag> Parse(
+      TagItem item,
+      const VariableDictionary& variables,
+      VariableDictionary::SubstitutionBuffer& buffer);
+
+  // Use reverse DNS naming convention.
+  ResolvedSourceString data_id;
+
+  // Must contain VALUE or URI, but not both.
+
+  // If LANGUAGE is specified, VALUE should contain a human readable string.
+  std::optional<ResolvedSourceString> value;
+  std::optional<ResolvedSourceString> language;
+
+  // FORMAT must be JSON or RAW. URI should be ignored when FORMAT is missing.
+  // if URI is present and FORMAT is not, FORMAT is implied to be JSON.
+  std::optional<ResolvedSourceString> uri;
+  bool format_is_json;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

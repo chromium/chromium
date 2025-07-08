@@ -402,6 +402,33 @@ constexpr std::string_view GetAttributeName(XDateRangeTagAttribute attribute) {
   NOTREACHED();
 }
 
+enum class XSessionDataTagAttribute {
+  kDataId,
+  kFormat,
+  kLanguage,
+  kUri,
+  kValue,
+  kMaxValue = kValue,
+};
+
+constexpr std::string_view GetAttributeName(
+    XSessionDataTagAttribute attribute) {
+  switch (attribute) {
+    case XSessionDataTagAttribute::kDataId:
+      return "DATA-ID";
+    case XSessionDataTagAttribute::kFormat:
+      return "FORMAT";
+    case XSessionDataTagAttribute::kLanguage:
+      return "LANGUAGE";
+    case XSessionDataTagAttribute::kUri:
+      return "URI";
+    case XSessionDataTagAttribute::kValue:
+      return "VALUE";
+  };
+
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -1940,6 +1967,64 @@ ParseStatus::Or<XDateRangeTag> XDateRangeTag::Parse(
             .duration = duration,
             .planned_duration = planned_duration,
             .end_on_next = end_on_next.value_or(false)});
+      });
+}
+
+ParseStatus::Or<XSessionDataTag> XSessionDataTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XSessionDataTag::kName));
+  return RequireNonEmptyMap<XSessionDataTagAttribute>(tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XSessionDataTag> {
+        auto id = ParseField<ResolvedSourceString>(
+            XSessionDataTagAttribute::kDataId, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(id);
+
+        auto value = ParseField<std::optional<ResolvedSourceString>>(
+            XSessionDataTagAttribute::kValue, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(value);
+
+        auto language = ParseField<std::optional<ResolvedSourceString>>(
+            XSessionDataTagAttribute::kLanguage, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(language);
+
+        auto uri = ParseField<std::optional<ResolvedSourceString>>(
+            XSessionDataTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto maybe_format = ParseField<std::optional<ResolvedSourceString>>(
+            XSessionDataTagAttribute::kFormat, map,
+            &types::parsing::RawStr::ParseWithSubstitution, vars, subs);
+        RETURN_IF_ERROR(maybe_format);
+        auto fmt = std::move(maybe_format).value();
+
+        if ((*value).has_value() && (*uri).has_value()) {
+          return ParseStatus::Codes::kMalformedTag;
+        }
+
+        if ((*language).has_value() && !(*value).has_value()) {
+          return ParseStatus::Codes::kMalformedTag;
+        }
+
+        return XSessionDataTag{
+            .data_id = std::move(id).value(),
+            .value = std::move(value).value(),
+            .language = std::move(language).value(),
+            .uri = std::move(uri).value(),
+            .format_is_json = fmt.has_value() && fmt.value().Str() == "JSON",
+        };
       });
 }
 

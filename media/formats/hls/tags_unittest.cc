@@ -1068,7 +1068,34 @@ TEST(HlsTagsTest, ParseXSessionDataTag) {
       ToTagName(MultivariantPlaylistTagName::kXSessionData),
       "#EXT-X-SESSION-DATA:DATA-ID=\"com.google.key\",VALUE=\"value\"\n",
       "DATA-ID=\"com.google.key\",VALUE=\"value\"");
-  // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-DATA tag.
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XSessionDataTag>(
+      "DATA-ID=\"com.google\",VALUE=\"FOO\",URI=\"google.com\"", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XSessionDataTag>("DATA-ID=\"com.google\",LANGUAGE=\"eng\"", dict,
+                             subs, ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XSessionDataTag>("VALUE=\"eng\"", dict, subs,
+                             ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XSessionDataTag>(
+        "DATA-ID=\"com.google.key\",VALUE=\"value\"", dict, subs);
+    EXPECT_EQ(result.tag.data_id.Str(), "com.google.key");
+    EXPECT_EQ(result.tag.value.value().Str(), "value");
+  }
+
+  {
+    auto result = OkTest<XSessionDataTag>(
+        "DATA-ID=\"com.google\",URI=\"google.com\",FORMAT=JSON", dict, subs);
+    EXPECT_EQ(result.tag.data_id.Str(), "com.google");
+    EXPECT_EQ(result.tag.uri.value().Str(), "google.com");
+    EXPECT_TRUE(result.tag.format_is_json);
+  }
 }
 
 TEST(HlsTagsTest, ParseXSessionKeyTag) {
