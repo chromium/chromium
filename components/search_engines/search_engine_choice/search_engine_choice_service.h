@@ -103,10 +103,8 @@ class SearchEngineChoiceService : public KeyedService {
   // such that if a non-eligible condition is returned, it would take at least a
   // restart for the state to change. So this state can be checked and cached
   // ahead of showing a choice screen.
-  // TODO(b/318801987): Remove `is_regular_profile` after fixing tests.
   SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
       const policy::PolicyService& policy_service,
-      bool is_regular_profile,
       const TemplateURLService& template_url_service);
 
   // Records the specified choice screen condition at profile initialization.

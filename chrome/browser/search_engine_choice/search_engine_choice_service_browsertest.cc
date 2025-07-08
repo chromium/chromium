@@ -46,16 +46,14 @@ class SearchEngineChoiceServiceBrowserTest : public InProcessBrowserTest {
                                     switches::kDefaultListCountryOverride);
   }
 
-  SearchEngineChoiceScreenConditions GetStaticConditions(
-      Profile* profile,
-      bool is_regular_profile = true) {
+  SearchEngineChoiceScreenConditions GetStaticConditions(Profile* profile) {
     SearchEngineChoiceService* search_engine_choice_service =
         SearchEngineChoiceServiceFactory::GetForProfile(profile);
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile);
 
     return search_engine_choice_service->GetStaticChoiceScreenConditions(
-        CHECK_DEREF(g_browser_process->policy_service()), is_regular_profile,
+        CHECK_DEREF(g_browser_process->policy_service()),
         *template_url_service);
   }
 

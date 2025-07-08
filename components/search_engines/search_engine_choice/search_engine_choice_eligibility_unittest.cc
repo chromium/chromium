@@ -177,23 +177,13 @@ class SearchEngineChoiceEligibilityTest
 
   SearchEngineChoiceScreenConditions GetStaticConditions() {
     return search_engine_choice_service().GetStaticChoiceScreenConditions(
-        policy_service(), /*is_regular_profile=*/true, template_url_service());
+        policy_service(), template_url_service());
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<KeywordsDatabaseHolder> keywords_db_holder_;
 };
-
-// Test that the choice screen doesn't get displayed if the profile is not
-// regular.
-TEST_F(SearchEngineChoiceEligibilityTest,
-       DoNotShowChoiceScreenWithNotRegularProfile) {
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/false,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
-}
 
 // Test that the choice screen does not get displayed if the provider list is
 // overridden in the intial_preferences file.

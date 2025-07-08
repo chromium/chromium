@@ -37,6 +37,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 using ::country_codes::CountryId;
+using ::search_engines::SearchEngineChoiceScreenConditions;
 
 namespace {
 
@@ -216,6 +217,36 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       ProfileEligibility_DesktopTypeChecks) {
+  auto ComputeProfileEligibility = [](Profile* profile) {
+    // TemplateURLService absence causes the profile to be unsupported.
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
+        profile,
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    return SearchEngineChoiceDialogServiceFactory::
+        ComputeProfileEligibilityForTesting(*profile);
+  };
+
+  TestingProfile* parent_guest = profile_manager()->CreateGuestProfile();
+  EXPECT_EQ(ComputeProfileEligibility(parent_guest),
+            SearchEngineChoiceScreenConditions::kEligible);
+
+  Profile* child_guest = parent_guest->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
+  EXPECT_EQ(ComputeProfileEligibility(child_guest),
+            SearchEngineChoiceScreenConditions::kEligible);
+
+  Profile* regular_profile = profile_manager()->CreateTestingProfile("Reg");
+  EXPECT_EQ(ComputeProfileEligibility(regular_profile),
+            SearchEngineChoiceScreenConditions::kEligible);
+
+  Profile* incognito_profile = regular_profile->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
+  EXPECT_EQ(ComputeProfileEligibility(incognito_profile),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+}
+
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyLearnMoreLinkClicked) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService();
@@ -279,8 +310,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
       ->set_max_dialog_size(gfx::Size(1, 1));
   EXPECT_EQ(
       search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
-      search_engines::SearchEngineChoiceScreenConditions::
-          kBrowserWindowTooSmall);
+      SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, RegisterDialog) {
@@ -419,7 +449,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
       /*created_by_policy=*/true);
   EXPECT_EQ(
       search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
-      search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy);
+      SearchEngineChoiceScreenConditions::kControlledByPolicy);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {

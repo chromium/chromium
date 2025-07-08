@@ -102,8 +102,9 @@ class MockSearchEngineChoiceDialogService
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
 
-    if (!SearchEngineChoiceDialogServiceFactory::
-            IsProfileEligibleForChoiceScreenForTesting(CHECK_DEREF(profile))) {
+    if (SearchEngineChoiceDialogServiceFactory::
+            ComputeProfileEligibilityForTesting(CHECK_DEREF(profile)) !=
+        search_engines::SearchEngineChoiceScreenConditions::kEligible) {
       return nullptr;
     }
 

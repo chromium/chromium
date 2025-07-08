@@ -1068,8 +1068,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
 
   search_engine_choice_service().RecordStaticEligibility(
       search_engine_choice_service().GetStaticChoiceScreenConditions(
-          policy_service(), /*is_regular_profile=*/true,
-          template_url_service()));
+          policy_service(), template_url_service()));
   search_engine_choice_service().RecordDynamicEligibility(
       search_engine_choice_service().GetDynamicChoiceScreenConditions(
           template_url_service()));

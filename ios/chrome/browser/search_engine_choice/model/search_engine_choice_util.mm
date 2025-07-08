@@ -63,8 +63,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   // Checking whether the user is eligible for the screen.
   auto condition =
       search_engine_choice_service->GetStaticChoiceScreenConditions(
-          policy_service, /*is_regular_profile=*/true,
-          CHECK_DEREF(template_url_service));
+          policy_service, CHECK_DEREF(template_url_service));
   if (condition ==
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     condition = search_engine_choice_service->GetDynamicChoiceScreenConditions(

@@ -297,20 +297,12 @@ SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     const policy::PolicyService& policy_service,
-    bool is_regular_profile,
     const TemplateURLService& template_url_service) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
   // TODO(b/319050536): Remove the function declaration on these platforms.
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
-  if (!is_regular_profile) {
-    // Naming not exactly accurate, but still reflect the fact that incognito,
-    // kiosk, etc. are not supported and belongs in this bucked more than in
-    // `kProfileOutOfScope` for example.
-    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
-  }
-
   base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
   // A command line argument with the option for disabling the choice screen for
