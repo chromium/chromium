@@ -388,17 +388,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-// TODO(austinzzr): Test is flaky on macOS. <https://crbug.com/394767577>, since
-// some changes are made here, will come back and monitor/investigate this issue
-// as a follow-up.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HandleLocaleNotEnUSHidden DISABLED_HandleLocaleNotEnUSHidden
-#else
-#define MAYBE_HandleLocaleNotEnUSHidden HandleLocaleNotEnUSHidden
-#endif
-
 IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
-                       MAYBE_HandleLocaleNotEnUSHidden) {
+                       HandleLocaleNotEnUSHidden) {
   // The browser's locale needs to be "en-US" to be able to see the banner.
   ScopedLocaleSetter locale_setter(kInvalidLocale);
 
