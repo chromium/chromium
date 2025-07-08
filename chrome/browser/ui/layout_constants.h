@@ -213,6 +213,9 @@ enum LayoutInset {
   // The padding around the browser app menu chip.
   BROWSER_APP_MENU_CHIP_PADDING,
 
+  // The padding around the app menu chip in a web app browser window.
+  WEB_APP_APP_MENU_CHIP_PADDING,
+
   // The padding around the profile menu chip.
   AVATAR_CHIP_PADDING,
 

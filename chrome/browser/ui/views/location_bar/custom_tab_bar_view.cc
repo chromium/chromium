@@ -109,6 +109,11 @@ class CustomTabBarAppMenuButton : public WebAppMenuButton {
   SkColor GetForegroundColor(ButtonState state) const override {
     return GetColorProvider()->GetColor(kColorPwaMenuButtonIcon);
   }
+
+  std::optional<std::u16string> GetAccessibleNameOverride() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME);
+  }
 };
 
 BEGIN_METADATA(CustomTabBarAppMenuButton)
@@ -266,9 +271,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
 #if BUILDFLAG(IS_CHROMEOS)
   if (browser_->is_type_custom_tab()) {
     web_app_menu_button_ =
-        AddChildView(std::make_unique<CustomTabBarAppMenuButton>(
-            browser_view, l10n_util::GetStringUTF16(
-                              IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME)));
+        AddChildView(std::make_unique<CustomTabBarAppMenuButton>(browser_view));
 
     // Remove the vertical portion of the interior margin here to avoid
     // increasing the height of the toolbar when |web_app_menu_button_| is drawn

@@ -23,8 +23,7 @@ class WebAppMenuButton : public AppMenuButton {
 
  public:
   static int GetMenuButtonSizeForBrowser(Browser* browser);
-  explicit WebAppMenuButton(BrowserView* browser_view,
-                            std::u16string accessible_name = std::u16string());
+  explicit WebAppMenuButton(BrowserView* browser_view);
   WebAppMenuButton(const WebAppMenuButton&) = delete;
   WebAppMenuButton& operator=(const WebAppMenuButton&) = delete;
   ~WebAppMenuButton() override;
@@ -34,14 +33,29 @@ class WebAppMenuButton : public AppMenuButton {
 
   virtual void ButtonPressed(const ui::Event& event);
 
+  bool IsLabelPresentAndVisible() const;
+
+  // Causes this button to re-evaluate if a text label should be displayed
+  // alongside the three-dot icon. Currently only exposed for tests, but
+  // eventually production code needs to trigger something like this as well
+  // when the update available state changes.
+  void UpdateStateForTesting();
+
  protected:
   BrowserView* browser_view() { return browser_view_; }
 
   // ToolbarButton:
+  void OnThemeChanged() override;
+  std::optional<SkColor> GetHighlightTextColor() const override;
+  SkColor GetForegroundColor(ButtonState state) const override;
   int GetIconSize() const override;
+
+  virtual std::optional<std::u16string> GetAccessibleNameOverride() const;
 
  private:
   void FadeHighlightOff();
+
+  void UpdateTextAndHighlightColor();
 
   // The containing browser view.
   raw_ptr<BrowserView> browser_view_;

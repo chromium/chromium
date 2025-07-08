@@ -798,12 +798,14 @@ void WebApp::SetGeneratedIconFix(
 
 void WebApp::SetPendingUpdateInfo(
     std::optional<proto::PendingUpdateInfo> pending_update_info) {
-  CHECK(pending_update_info->has_name() ||
-        pending_update_info->has_short_name() ||
-        !pending_update_info->manifest_icons().empty());
-  if (!pending_update_info->manifest_icons().empty()) {
-    for (const auto& icon : pending_update_info->manifest_icons()) {
-      CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+  if (pending_update_info.has_value()) {
+    CHECK(pending_update_info->has_name() ||
+          pending_update_info->has_short_name() ||
+          !pending_update_info->manifest_icons().empty());
+    if (!pending_update_info->manifest_icons().empty()) {
+      for (const auto& icon : pending_update_info->manifest_icons()) {
+        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+      }
     }
   }
   pending_update_info_ = std::move(pending_update_info);

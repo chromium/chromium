@@ -251,8 +251,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     web_app_menu_button_ =
         AddChildView(std::make_unique<WebAppMenuButton>(browser_view_));
     web_app_menu_button_->SetID(VIEW_ID_APP_MENU);
-    ConfigureWebAppToolbarButton(web_app_menu_button_,
-                                 toolbar_button_provider_);
+    web_app_menu_button_->SetMinSize(
+        toolbar_button_provider_->GetToolbarButtonSize());
     web_app_menu_button_->SetProperty(views::kFlexBehaviorKey,
                                       views::FlexSpecification());
   }

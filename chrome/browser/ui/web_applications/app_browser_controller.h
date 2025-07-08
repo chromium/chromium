@@ -250,6 +250,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
+  // Returns true if there is a pending update available for this app.
+  virtual bool HasPendingUpdate() const;
+
   // Returns whether prevent close is enabled.
   bool IsPreventCloseEnabled() const;
 

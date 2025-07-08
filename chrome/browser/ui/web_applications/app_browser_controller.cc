@@ -434,6 +434,10 @@ bool AppBrowserController::HasReloadButton() const {
   return true;
 }
 
+bool AppBrowserController::HasPendingUpdate() const {
+  return false;
+}
+
 bool AppBrowserController::IsPreventCloseEnabled() const {
   auto* provider = WebAppProvider::GetForWebApps(browser()->profile());
   if (!provider) {
@@ -764,6 +768,14 @@ void AppBrowserController::AddColorMixers(
       {ui::kColorSysStateDisabled}, {kColorToolbar})};
 #endif
   mixer[kColorToolbarButtonIconInactive] = {kColorToolbarButtonIconDisabled};
+
+  // App menu highlight colors in PWA window should be derived from the (active)
+  // frame color, as that is what it is drawn on top of.
+  mixer[kColorAppMenuHighlightDefault] =
+      ui::PickGoogleColor(ui::kColorFrameActiveUnthemed, kColorToolbar,
+                          color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorAppMenuExpandedForegroundDefault] =
+      ui::GetColorWithMaxContrast(kColorAppMenuHighlightDefault);
 }
 
 void AppBrowserController::OnReceivedInitialURL() {

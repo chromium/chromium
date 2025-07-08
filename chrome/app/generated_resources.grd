@@ -6801,8 +6801,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No thanks
       </message>
 
-      <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP">
+      <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP" desc="The tooltip to show for the three-dot menu in a web app window">
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
+      </message>
+      <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP_UPDATE_AVAILABLE" desc="The tooltip to show for the three-dot menu in a web app window when an update for the web app is available">
+        Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>. Update is available.
+      </message>
+      <message name="IDS_WEB_APP_MENU_BUTTON_UPDATE" desc="Short label next to three-dot menu in a web app window when an update for the web app is available">
+        App update available
       </message>
       <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
         Hide title bar

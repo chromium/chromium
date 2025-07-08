@@ -178,6 +178,9 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
         return gfx::Insets::TLBR(7, 4, 7, 6);
       }
 
+    case WEB_APP_APP_MENU_CHIP_PADDING:
+      return gfx::Insets::TLBR(0, 4, 0, 6);
+
     case AVATAR_CHIP_PADDING:
       if (touch_ui) {
         return GetLayoutInsets(TOOLBAR_BUTTON);

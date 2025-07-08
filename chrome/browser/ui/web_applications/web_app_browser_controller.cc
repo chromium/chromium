@@ -221,6 +221,15 @@ bool WebAppBrowserController::HasReloadButton() const {
   return true;
 }
 
+bool WebAppBrowserController::HasPendingUpdate() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAppEnableUpdateTokenParsing)) {
+    return false;
+  }
+  const WebApp* app = registrar().GetAppById(app_id());
+  return app && app->pending_update_info().has_value();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
 #if BUILDFLAG(IS_MAC)
