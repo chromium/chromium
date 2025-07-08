@@ -76,7 +76,9 @@ void NewTabFooterWebView::ShowCustomContextMenu(
   context_menu_model_ = std::move(menu_model);
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       context_menu_model_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+      base::BindRepeating(&NewTabFooterWebView::HideCustomContextMenu,
+                          weak_factory_.GetWeakPtr()));
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
@@ -84,9 +86,11 @@ void NewTabFooterWebView::ShowCustomContextMenu(
 }
 
 void NewTabFooterWebView::HideCustomContextMenu() {
-  if (context_menu_runner_) {
+  if (context_menu_runner_ && context_menu_runner_->IsRunning()) {
     context_menu_runner_->Cancel();
   }
+  context_menu_runner_.reset();
+  context_menu_model_.reset();
 }
 
 bool NewTabFooterWebView::HandleKeyboardEvent(
