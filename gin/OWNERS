@@ -10,8 +10,6 @@ mlippautz@chromium.org
 # For adding JS/Wasm feature kill-switches.
 
 # For ThreadIsolation related changes.
-per-file thread_isolation.*=sroettger@google.com
-per-file v8_platform_thread_isolated_allocator.*=sroettger@google.com
 
 # For PartitionAlloc related changes.
 per-file array_buffer.cc=file://base/allocator/partition_allocator/OWNERS
