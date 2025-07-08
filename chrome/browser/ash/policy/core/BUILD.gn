@@ -267,6 +267,7 @@ source_set("unit_tests") {
     "//chromeos/constants",
     "//chromeos/dbus/power",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/enterprise",
     "//components/invalidation:test_support",
     "//components/policy:generated",

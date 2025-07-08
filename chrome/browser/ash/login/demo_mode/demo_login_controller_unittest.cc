@@ -18,7 +18,6 @@
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -43,7 +42,11 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/google_api_keys.h"
@@ -128,7 +131,13 @@ class DemoLoginControllerTest : public testing::Test {
     features_.InitAndEnableFeature(features::kDemoModeSignIn);
 
     settings_helper_.InstallAttributes()->SetDemoMode();
-    fake_user_manager_->AddPublicAccountUser(auto_login_account_id_);
+    ASSERT_TRUE(
+        user_manager::TestHelper(user_manager_.Get())
+            .AddPublicAccountUser(policy::GenerateDeviceLocalAccountUserId(
+                kPublicAccountUserId,
+                policy::DeviceLocalAccountType::kPublicSession)));
+    // Emulate managed device.
+    user_manager_->SetOwnerId(EmptyAccountId());
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     chromeos::PowerManagerClient::InitializeFake();
@@ -246,15 +255,16 @@ class DemoLoginControllerTest : public testing::Test {
   }
 
   void AppendTestUserToUserList() {
-    EXPECT_EQ(1U, fake_user_manager_->GetPersistedUsers().size());
-    fake_user_manager_->AddUser(AccountId::FromNonCanonicalEmail(
-        kTestEmail, kTestGaiaId, AccountType::GOOGLE));
+    EXPECT_EQ(1U, user_manager_->GetPersistedUsers().size());
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(AccountId::FromUserEmailGaiaId(
+                        kTestEmail, kTestGaiaId)));
     // Expect 2 users: test user with `kTestGaiaId` and public account user.
-    EXPECT_EQ(2U, fake_user_manager_->GetPersistedUsers().size());
+    EXPECT_EQ(2U, user_manager_->GetPersistedUsers().size());
   }
 
   void ExpectOnlyDeviceLocalAccountInUserList() {
-    const auto user_list = fake_user_manager_->GetPersistedUsers();
+    const auto user_list = user_manager_->GetPersistedUsers();
     EXPECT_EQ(1U, user_list.size());
     EXPECT_TRUE(user_list[0]->IsDeviceLocalAccount());
   }
@@ -281,13 +291,11 @@ class DemoLoginControllerTest : public testing::Test {
   // Dependencies for `ExistingUserController`:
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
   session_manager::SessionManager session_manager_;
-  const AccountId auto_login_account_id_ =
-      AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-          kPublicAccountUserId,
-          policy::DeviceLocalAccountType::kPublicSession));
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
   std::unique_ptr<policy::MockCloudPolicyManager> cloud_policy_manager_;

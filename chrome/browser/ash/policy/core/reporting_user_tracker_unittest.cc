@@ -6,52 +6,58 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
+#include "base/check_deref.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
 class ReportingUserTrackerTest : public ::testing::Test {
  protected:
-  void SetUp() override {
-    user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
-    reporting_user_tracker_ =
-        std::make_unique<ReportingUserTracker>(user_manager_.get());
-  }
+  void SetUp() override { SetUpUserManager(); }
 
-  void TearDown() override {
-    reporting_user_tracker_.reset();
-    user_manager_.reset();
-  }
+  void TearDown() override { TearDownUserManager(); }
 
-  ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
+  user_manager::UserManager& user_manager() {
+    return CHECK_DEREF(user_manager_.get());
+  }
   ReportingUserTracker& tracker() { return *reporting_user_tracker_; }
 
-  void RecreatUserManager() {
-    reporting_user_tracker_.reset();
-    user_manager_.reset();
-    user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
-    reporting_user_tracker_ = std::make_unique<ReportingUserTracker>(
-        user_manager_.get());
+  void RecreateUserManager() {
+    TearDownUserManager();
+    SetUpUserManager();
   }
 
  private:
-  ScopedTestingLocalState scoped_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-  ash::ScopedTestingCrosSettings cros_settings_;
-  std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
+  void SetUpUserManager() {
+    user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
+    reporting_user_tracker_ = std::make_unique<ReportingUserTracker>(
+        user_manager_.get());
+  }
+  void TearDownUserManager() {
+    reporting_user_tracker_.reset();
+    user_manager_.reset();
+  }
+
+  std::unique_ptr<user_manager::UserManager> user_manager_;
   std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
 };
 
 TEST_F(ReportingUserTrackerTest, RegularUserAffiliation) {
   constexpr char kUserEmail[] = "test@test";
-  const auto account_id = AccountId::FromUserEmail(kUserEmail);
-  user_manager().AddUser(account_id);
+  const auto account_id =
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("123456789"));
+  ASSERT_TRUE(
+      user_manager::TestHelper(&user_manager()).AddRegularUser(account_id));
 
   // Only users marked as affiliated are the target for reporting.
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
@@ -65,8 +71,10 @@ TEST_F(ReportingUserTrackerTest, RegularUserAffiliation) {
 
 TEST_F(ReportingUserTrackerTest, NonRegularUserAffiliation) {
   constexpr char kUserEmail[] = "test@test";
-  const auto account_id = AccountId::FromUserEmail(kUserEmail);
-  user_manager().AddChildUser(account_id);
+  const auto account_id =
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("123456789"));
+  ASSERT_TRUE(
+      user_manager::TestHelper(&user_manager()).AddChildUser(account_id));
   EXPECT_FALSE(tracker().ShouldReportUser(kUserEmail));
   user_manager().SetUserPolicyStatus(account_id, /*is_managed=*/true,
                                      /*is_affiliated=*/true);
@@ -79,26 +87,34 @@ TEST_F(ReportingUserTrackerTest, NonRegularUserAffiliation) {
 
 TEST_F(ReportingUserTrackerTest, Persistency) {
   constexpr char kUserEmail[] = "test@test";
-  const auto account_id = AccountId::FromUserEmail(kUserEmail);
-  user_manager().AddUser(account_id);
+  const auto account_id =
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("123456789"));
+  ASSERT_TRUE(
+      user_manager::TestHelper(&user_manager()).AddRegularUser(account_id));
   user_manager().SetUserPolicyStatus(account_id, /*is_managed=*/true,
                                      /*is_affiliated=*/true);
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));
 
   // Whether or not to report is persistent.
-  RecreatUserManager();
+  RecreateUserManager();
 
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));
 }
 
 TEST_F(ReportingUserTrackerTest, UserRemoval) {
   // Add owner user to allow removing the following user.
-  user_manager().AddUser(AccountId::FromUserEmail("owner@test"));
+  const auto owner_account_id =
+      AccountId::FromUserEmailGaiaId("owner@test", GaiaId("987654321"));
+  ASSERT_TRUE(user_manager::TestHelper(&user_manager())
+                  .AddRegularUser(owner_account_id));
+  user_manager().SetOwnerId(owner_account_id);
 
   constexpr char kUserEmail[] = "test@test";
   // When user is removed, ShouldReportUser should be updated, too.
-  const auto account_id = AccountId::FromUserEmail(kUserEmail);
-  user_manager().AddUser(account_id);
+  const auto account_id =
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("123456789"));
+  ASSERT_TRUE(
+      user_manager::TestHelper(&user_manager()).AddRegularUser(account_id));
   user_manager().SetUserPolicyStatus(account_id, /*is_managed=*/true,
                                      /*is_affiliated=*/true);
   EXPECT_TRUE(tracker().ShouldReportUser(kUserEmail));

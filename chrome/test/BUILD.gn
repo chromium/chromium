@@ -6892,6 +6892,7 @@ test("unit_tests") {
     "//chrome/common/themes:unit_tests",
     "//chrome/services/file_util:unit_tests",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/assist_ranker/proto",
     "//components/autofill/content/browser:test_support",

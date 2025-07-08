@@ -276,8 +276,7 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   CHECK(session_manager_);
   auto* local_state = g_browser_process->local_state();
   user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
-      std::make_unique<ash::UserManagerDelegateImpl>(), local_state,
-      ash::CrosSettings::Get());
+      std::make_unique<ash::UserManagerDelegateImpl>(), local_state);
   profile_user_manager_controller_ =
       std::make_unique<ash::ProfileUserManagerController>(
           g_browser_process->profile_manager(), user_manager_.get());

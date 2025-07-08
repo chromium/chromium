@@ -17,8 +17,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,32 +38,37 @@ class UserRemovalManagerTest : public testing::Test {
   UserRemovalManagerTest();
   ~UserRemovalManagerTest() override;
 
-  FakeChromeUserManager* fake_user_manager() { return user_manager_.Get(); }
-
   void SetUp() override {
     testing::Test::SetUp();
-    fake_user_manager()->AddUser(
-        AccountId::FromUserEmailGaiaId("user1", GaiaId("1")));
-    fake_user_manager()->AddUser(
-        AccountId::FromUserEmailGaiaId("user2", GaiaId("2")));
-    fake_user_manager()->AddUser(
-        AccountId::FromUserEmailGaiaId("user3", GaiaId("3")));
+
+    // Emulate managed device.
+    user_manager_->SetOwnerId(EmptyAccountId());
+
+    user_manager::TestHelper test_helper(user_manager_.Get());
+    ASSERT_TRUE(test_helper.AddRegularUser(
+        AccountId::FromUserEmailGaiaId("user1", GaiaId("1"))));
+    ASSERT_TRUE(test_helper.AddRegularUser(
+        AccountId::FromUserEmailGaiaId("user2", GaiaId("2"))));
+    ASSERT_TRUE(test_helper.AddRegularUser(
+        AccountId::FromUserEmailGaiaId("user3", GaiaId("3"))));
   }
 
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  }
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  ScopedTestingLocalState local_state_;
   ash::ScopedStubInstallAttributes install_attributes_{
       ash::StubInstallAttributes::CreateCloudManaged("test.domain",
                                                      "device_id")};
-  ash::ScopedTestingCrosSettings cros_settings_;
-  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
-      std::make_unique<FakeChromeUserManager>()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
 };
 
 UserRemovalManagerTest::UserRemovalManagerTest()
     : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-          base::TestMockTimeTaskRunner::Type::kBoundToThread)),
-      local_state_(TestingBrowserProcess::GetGlobal()) {}
+          base::TestMockTimeTaskRunner::Type::kBoundToThread)) {}
 
 UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 
@@ -71,8 +79,8 @@ UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
   user_removal_manager::InitiateUserRemoval(base::OnceClosure());
   EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded());
-  EXPECT_TRUE(fake_user_manager()->GetPersistedUsers().empty());
-  EXPECT_TRUE(local_state_.Get()
+  EXPECT_TRUE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
+  EXPECT_TRUE(local_state()
                   ->FindPreference(prefs::kRemoveUsersRemoteCommand)
                   ->IsDefaultValue());
 }
@@ -82,9 +90,9 @@ TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
 TEST_F(UserRemovalManagerTest, TestUserRemovingDoNotRetryOnFailure) {
   // If explicitly set to false - it means chrome might've crashed during the
   // previous removal.
-  local_state_.Get()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
+  local_state()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
   EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded());
-  EXPECT_FALSE(fake_user_manager()->GetPersistedUsers().empty());
+  EXPECT_FALSE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
 }
 
 // Test that the failsafe timer runs LogOut after 60 seconds.

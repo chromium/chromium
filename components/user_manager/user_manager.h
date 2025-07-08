@@ -508,6 +508,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
 
+  // Sets whether guest session is allowed. This is expected to be called
+  // on device policy update.
+  virtual void SetGuestSessionAllowed(bool value) = 0;
+
   // Returns true if the |user|, which has a GAIA account is allowed according
   // to device settings and policies.
   // Accept only users who has gaia account.
@@ -529,6 +533,9 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual void SetEphemeralModeConfig(
       EphemeralModeConfig ephemeral_mode_config) = 0;
+
+  // Notifies this UserManager whether or not to show users on sign-in.
+  virtual void SetShowUsersOnSignIn(bool value) = 0;
 
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;

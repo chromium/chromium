@@ -203,8 +203,7 @@ class UserManagerTest : public testing::Test {
       user_manager_.reset();
     }
     user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<UserManagerDelegateImpl>(), local_state_->Get(),
-        CrosSettings::Get());
+        std::make_unique<UserManagerDelegateImpl>(), local_state_->Get());
     policy_user_manager_controller_ =
         std::make_unique<PolicyUserManagerController>(
             user_manager_.get(), ash::CrosSettings::Get(),

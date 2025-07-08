@@ -60,6 +60,14 @@ class PolicyUserManagerController
   void RetrieveTrustedDevicePolicies();
 
   void UpdateOwnerId();
+  void UpdateGuestSessionAllowed();
+  void UpdateShowUsersOnSignIn();
+
+  // Called when AccountsPrefAllowGuest device policy is updated.
+  void OnAccountsPrefAllowGuestUpdated();
+
+  // Called when AccountsPrefShowUserNamesOnSignIn device policy is updated.
+  void OnAccountsPrefShowUserNamesOnSignInUpdated();
 
   // Returns the display name taken from policy, expected to be used for
   // public accounts.

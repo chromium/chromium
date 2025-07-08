@@ -36,8 +36,6 @@
 #include "base/values.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_service.h"
@@ -127,17 +125,19 @@ BASE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
-                                 PrefService* local_state,
-                                 ash::CrosSettings* cros_settings)
-    : delegate_(std::move(delegate)),
-      local_state_(local_state),
-      cros_settings_(cros_settings) {
+                                 PrefService* local_state)
+    : delegate_(std::move(delegate)), local_state_(local_state) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();
   }
   UpdateNumLoggedInUsersCrashKey(0);
 }
+
+UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
+                                 PrefService* local_state,
+                                 ash::CrosSettings* /*unused*/)
+    : UserManagerImpl(std::move(delegate), local_state) {}
 
 UserManagerImpl::~UserManagerImpl() = default;
 
@@ -178,9 +178,6 @@ UserList UserManagerImpl::GetUsersAllowedForMultiUserSignIn() const {
 
 UserList UserManagerImpl::FindLoginAllowedUsersFrom(
     const UserList& users) const {
-  bool show_users_on_signin;
-  cros_settings_->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
-                             &show_users_on_signin);
   UserList found_users;
   for (User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
@@ -193,12 +190,16 @@ UserList UserManagerImpl::FindLoginAllowedUsersFrom(
         !user->HasGaiaAccount() || IsGaiaUserAllowed(*user);
     // Public session accounts are always shown on login screen.
     const bool meets_show_users_requirements =
-        show_users_on_signin || user->GetType() == UserType::kPublicAccount;
+        show_users_on_sign_in_ || user->GetType() == UserType::kPublicAccount;
     if (meets_allowlist_requirements && meets_show_users_requirements) {
       found_users.push_back(user);
     }
   }
   return found_users;
+}
+
+void UserManagerImpl::SetShowUsersOnSignIn(bool value) {
+  show_users_on_sign_in_ = value;
 }
 
 const UserList& UserManagerImpl::GetLoggedInUsers() const {
@@ -564,20 +565,17 @@ void UserManagerImpl::RemoveUser(const AccountId& account_id,
 
 void UserManagerImpl::RemoveUserInternal(const AccountId& account_id,
                                          UserRemovalReason reason) {
-  auto callback =
-      base::BindOnce(&UserManagerImpl::RemoveUserInternal,
-                     weak_factory_.GetWeakPtr(), account_id, reason);
+  // If owner is not yet set, this waits for its readiness.
+  GetOwnerAccountIdAsync(
+      base::BindOnce(&UserManagerImpl::RemoveUserInternalWithOwnerAccountId,
+                     weak_factory_.GetWeakPtr(), account_id, reason));
+}
 
-  // Ensure the value of owner email has been fetched.
-  if (cros_settings()->PrepareTrustedValues(std::move(callback)) !=
-      ash::CrosSettingsProvider::TRUSTED) {
-    // Value of owner email is not fetched yet.  RemoveUserInternal will be
-    // called again after fetch completion.
-    return;
-  }
-  std::string owner;
-  cros_settings()->GetString(ash::kDeviceOwner, &owner);
-  if (account_id == AccountId::FromUserEmail(owner)) {
+void UserManagerImpl::RemoveUserInternalWithOwnerAccountId(
+    const AccountId& account_id,
+    UserRemovalReason reason,
+    const AccountId& owner_account_id) {
+  if (account_id == owner_account_id) {
     // Owner is not allowed to be removed from the device.
     return;
   }
@@ -1202,14 +1200,11 @@ void UserManagerImpl::NotifyUserNotAllowed(const std::string& user_email) {
 }
 
 bool UserManagerImpl::IsGuestSessionAllowed() const {
-  // In tests CrosSettings might not be initialized.
-  if (!cros_settings()) {
-    return false;
-  }
+  return guest_session_allowed_;
+}
 
-  bool is_guest_allowed = false;
-  cros_settings()->GetBoolean(ash::kAccountsPrefAllowGuest, &is_guest_allowed);
-  return is_guest_allowed;
+void UserManagerImpl::SetGuestSessionAllowed(bool value) {
+  guest_session_allowed_ = value;
 }
 
 bool UserManagerImpl::IsGaiaUserAllowed(const User& user) const {

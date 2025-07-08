@@ -112,8 +112,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  bool IsGuestSessionAllowed() const override;
-  bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;

@@ -83,8 +83,14 @@ PolicyUserManagerController::PolicyUserManagerController(
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowGuest,
       base::BindRepeating(
-          &user_manager::UserManager::NotifyUsersSignInConstraintsChanged,
-          base::Unretained(user_manager_.get()))));
+          &PolicyUserManagerController::OnAccountsPrefAllowGuestUpdated,
+          weak_factory_.GetWeakPtr())));
+  cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
+      kAccountsPrefShowUserNamesOnSignIn,
+      base::BindRepeating(&PolicyUserManagerController::
+                              OnAccountsPrefShowUserNamesOnSignInUpdated,
+                          weak_factory_.GetWeakPtr())));
+
   // For user allowlist.
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefUsers,
@@ -190,6 +196,8 @@ void PolicyUserManagerController::RetrieveTrustedDevicePolicies() {
   user_manager_->SetEphemeralModeConfig(
       CreateEphemeralModeConfig(cros_settings_));
   UpdateOwnerId();
+  UpdateGuestSessionAllowed();
+  UpdateShowUsersOnSignIn();
 
   auto device_local_accounts = policy::GetDeviceLocalAccounts(cros_settings_);
   std::vector<user_manager::UserManager::DeviceLocalAccountInfo>
@@ -224,6 +232,27 @@ void PolicyUserManagerController::UpdateOwnerId() {
   const AccountId owner_account_id = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   user_manager_->SetOwnerId(owner_account_id);
+}
+
+void PolicyUserManagerController::UpdateGuestSessionAllowed() {
+  bool value = false;
+  cros_settings_->GetBoolean(kAccountsPrefAllowGuest, &value);
+  user_manager_->SetGuestSessionAllowed(value);
+}
+
+void PolicyUserManagerController::UpdateShowUsersOnSignIn() {
+  bool value = true;
+  cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn, &value);
+  user_manager_->SetShowUsersOnSignIn(value);
+}
+
+void PolicyUserManagerController::OnAccountsPrefAllowGuestUpdated() {
+  UpdateGuestSessionAllowed();
+  user_manager_->NotifyUsersSignInConstraintsChanged();
+}
+
+void PolicyUserManagerController::OnAccountsPrefShowUserNamesOnSignInUpdated() {
+  UpdateShowUsersOnSignIn();
 }
 
 std::optional<std::u16string> PolicyUserManagerController::GetDisplayName(

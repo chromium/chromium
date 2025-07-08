@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -16,14 +15,20 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kTestUserEmail[] = "test@google.com";
+
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@gmail.com",
+                                            GaiaId::Literal("123456789"));
 
 std::string GetDTCDefaultKeyName(std::string username) {
   return ash::attestation::kDeviceTrustConnectorKeyPrefix + username;
@@ -34,17 +39,27 @@ namespace enterprise_connectors {
 
 class AshAttestationCleanupManagerTest : public testing::Test {
  public:
-  AshAttestationCleanupManagerTest()
-      : account_id_(AccountId::FromUserEmail(kTestUserEmail)) {
+  AshAttestationCleanupManagerTest() = default;
+  ~AshAttestationCleanupManagerTest() override = default;
+
+  void SetUp() override {
     ash::AttestationClient::InitializeFake();
 
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+
     // To make user removable, two (or more) users are needed.
-    user_manager_->AddUser(AccountId::FromUserEmail("test2@google.com"));
-    user_manager_->AddUser(account_id_);
+    user_manager::TestHelper test_helper(user_manager_.Get());
+    constexpr auto kOwnerAccountId = AccountId::Literal::FromUserEmailGaiaId(
+        "owner@gmail.com", GaiaId::Literal("987654321"));
+    ASSERT_TRUE(test_helper.AddRegularUser(kOwnerAccountId));
+    ASSERT_TRUE(test_helper.AddRegularUser(kTestAccountId));
+
+    user_manager_->SetOwnerId(kOwnerAccountId);
   }
 
-  ~AshAttestationCleanupManagerTest() override {
+  void TearDown() override {
     user_manager_.Reset();
     ash::AttestationClient::Shutdown();
   }
@@ -61,12 +76,10 @@ class AshAttestationCleanupManagerTest : public testing::Test {
     return stub_install_attributes_.Get();
   }
 
-  AccountId account_id_;
   ash::ScopedStubInstallAttributes stub_install_attributes_;
   ash::ScopedTestingCrosSettings cros_settings_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  user_manager::ScopedUserManager user_manager_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -78,14 +91,14 @@ TEST_F(AshAttestationCleanupManagerTest, UnmanagedDeviceDeleteKeys) {
   AshAttestationCleanupManager attestation_cleanup_manager;
 
   user_manager::UserManager::Get()->RemoveUser(
-      account_id_, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
+      kTestAccountId, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
 
   auto delete_keys_history =
       ash::AttestationClient::Get()->GetTestInterface()->delete_keys_history();
 
   EXPECT_EQ(delete_keys_history.size(), 1u);
   EXPECT_EQ(delete_keys_history.front().key_label_match(),
-            GetDTCDefaultKeyName(kTestUserEmail));
+            GetDTCDefaultKeyName(std::string(kTestAccountId.GetUserEmail())));
 }
 
 TEST_F(AshAttestationCleanupManagerTest, ManagedDeviceNoCleanup) {
@@ -94,7 +107,7 @@ TEST_F(AshAttestationCleanupManagerTest, ManagedDeviceNoCleanup) {
   AshAttestationCleanupManager attestation_cleanup_manager;
 
   user_manager::UserManager::Get()->RemoveUser(
-      account_id_, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
+      kTestAccountId, user_manager::UserRemovalReason::LOCAL_USER_INITIATED);
 
   EXPECT_TRUE(ash::AttestationClient::Get()
                   ->GetTestInterface()
