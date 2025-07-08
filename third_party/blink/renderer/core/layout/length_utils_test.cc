@@ -120,7 +120,7 @@ class LengthUtilsTestWithNode : public RenderingTest {
 TEST_F(LengthUtilsTest, TestResolveInlineLength) {
   EXPECT_EQ(LayoutUnit(60), ResolveMainInlineLength(Length::Percent(30)));
   EXPECT_EQ(LayoutUnit(150), ResolveMainInlineLength(Length::Fixed(150)));
-  EXPECT_EQ(LayoutUnit(200), ResolveMainInlineLength(Length::FillAvailable()));
+  EXPECT_EQ(LayoutUnit(200), ResolveMainInlineLength(Length::Stretch()));
 
   MinMaxSizes sizes;
   sizes.min_size = LayoutUnit(30);
@@ -148,14 +148,14 @@ TEST_F(LengthUtilsTest, TestIndefiniteResolveInlineLength) {
             ResolveMinInlineLength(Length::Auto(), std::nullopt, space));
   EXPECT_EQ(LayoutUnit::Max(),
             ResolveMaxInlineLength(Length::Percent(30), std::nullopt, space));
-  EXPECT_EQ(LayoutUnit::Max(), ResolveMaxInlineLength(Length::FillAvailable(),
-                                                      std::nullopt, space));
+  EXPECT_EQ(LayoutUnit::Max(),
+            ResolveMaxInlineLength(Length::Stretch(), std::nullopt, space));
 }
 
 TEST_F(LengthUtilsTest, TestResolveBlockLength) {
   EXPECT_EQ(LayoutUnit(90), ResolveMainBlockLength(Length::Percent(30)));
   EXPECT_EQ(LayoutUnit(150), ResolveMainBlockLength(Length::Fixed(150)));
-  EXPECT_EQ(LayoutUnit(300), ResolveMainBlockLength(Length::FillAvailable()));
+  EXPECT_EQ(LayoutUnit(300), ResolveMainBlockLength(Length::Stretch()));
 }
 
 TEST_F(LengthUtilsTestWithNode, TestComputeContentContribution) {

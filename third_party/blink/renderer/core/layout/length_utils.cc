@@ -570,13 +570,13 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
       return Length::MinContent();
     }
     if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
-      return Length::FillAvailable();
+      return Length::Stretch();
     }
     if (may_apply_aspect_ratio) {
       return Length::FitContent();
     }
     if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
-      return Length::FillAvailable();
+      return Length::Stretch();
     }
     DCHECK_EQ(space.InlineAutoBehavior(), AutoSizeBehavior::kFitContent);
     return Length::FitContent();
@@ -843,13 +843,13 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       return Length::FitContent();
     }
     if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
-      return Length::FillAvailable();
+      return Length::Stretch();
     }
     if (may_apply_aspect_ratio) {
       return Length::FitContent();
     }
     if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
-      return Length::FillAvailable();
+      return Length::Stretch();
     }
     DCHECK_EQ(space.BlockAutoBehavior(), AutoSizeBehavior::kFitContent);
     return Length::FitContent();
@@ -1094,7 +1094,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
               ? Length::FitContent()
               : Length::Auto();
       const Length& auto_block_length = space.IsBlockAutoBehaviorStretch()
-                                            ? Length::FillAvailable()
+                                            ? Length::Stretch()
                                             : non_stretch_length;
       const LayoutUnit block_size =
           RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()
@@ -1188,7 +1188,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
               ? Length::FitContent()
               : Length::Auto();
       const Length& auto_length = space.IsInlineAutoBehaviorStretch()
-                                      ? Length::FillAvailable()
+                                      ? Length::Stretch()
                                       : non_stretch_length;
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
@@ -1222,7 +1222,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       size = ResolveMainInlineLength(
           space, style, border_padding,
           [](SizeType) -> MinMaxSizesResult { NOTREACHED(); },
-          Length::FillAvailable(), /* auto_length */ nullptr,
+          Length::Stretch(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
     if (RuntimeEnabledFeatures::LayoutNewReplacedLogicEnabled()) {
