@@ -1067,8 +1067,7 @@ TEST_P(OverviewSessionTest, MaximizedFullscreenHistograms) {
 }
 #endif
 
-// TODO(crbug.com/1493835): Re-enable this test. Disabled because of flakiness.
-TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
+TEST_P(OverviewSessionTest, TabletModeHistograms) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
