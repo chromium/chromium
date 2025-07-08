@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/toolbar_swipe_gesture_in_product_help_view.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -97,6 +99,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // Whether the presenter is started.
   BOOL _started;
 
+  // The fullscreen controller and disabler to block fullscreen momentarily for
+  // some bubbles while they present.
+  raw_ptr<FullscreenController> _fullscreenController;
+  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+
   // List of existing bubble view presenters.
   BubbleViewControllerPresenter* _bottomToolbarTipBubblePresenter;
   BubbleViewControllerPresenter* _discoverFeedHeaderMenuTipBubblePresenter;
@@ -126,6 +133,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                 engagementTracker:
                     (raw_ptr<feature_engagement::Tracker>)engagementTracker
                      webStateList:(raw_ptr<WebStateList>)webStateList
+             fullscreenController:
+                 (raw_ptr<FullscreenController>)fullscreenController
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
@@ -137,6 +146,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     _layoutGuideCenter = layoutGuideCenter;
     _engagementTracker = engagementTracker;
     _webStateList = webStateList;
+    _fullscreenController = fullscreenController;
 
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
@@ -745,7 +755,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (IsUrlNtp(currentWebState->GetVisibleURL())) {
+  if (currentWebState && IsUrlNtp(currentWebState->GetVisibleURL())) {
     return;
   }
 
@@ -759,6 +769,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CGPoint pageActionMenuEntrypointAnchor =
       [self anchorPointToGuide:kPageActionMenuEntrypointGuide
                      direction:arrowDirection];
+
   // To prevent the bubble from extending beyond the screen's edge, an offset is
   // added, with the anchor point positioned at the top left corner.
   // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
@@ -902,6 +913,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                       anchorPoint:anchorPoint] &&
       ([self shouldForcePresentBubbleForFeature:feature] ||
        _engagementTracker->ShouldTriggerHelpUI(feature))) {
+    if ([self shouldDisableFullscreenForFeature:feature]) {
+      [self startAnimatedFullscreenDisabler];
+    }
     [presenter presentInViewController:self.rootViewController
                            anchorPoint:anchorPoint];
     if (presentAction) {
@@ -1014,6 +1028,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         if (dismissAction) {
           dismissAction();
         }
+        [weakSelf stopAnimatedFullscreenDisabler];
         [weakSelf featureDismissed:feature];
       };
 
@@ -1026,6 +1041,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   bubbleViewControllerPresenter.customBubbleVisibilityDuration =
       [self bubbleVisibilityDurationForFeature:feature];
+  bubbleViewControllerPresenter.ignoreWebContentAreaInteractions =
+      [self shouldIgnoreWebContentAreaInteractionsForFeature:feature];
 
   BOOL shouldDisablePanRecognizer =
       base::FeatureList::IsEnabled(kLensOverlayDisableIPHPanGesture);
@@ -1118,6 +1135,18 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   return nil;
 }
 
+// Stops the animated fullscreen disabler.
+- (void)stopAnimatedFullscreenDisabler {
+  _animatedFullscreenDisabler = nullptr;
+}
+
+// Creates and starts the animated fullscreen disabler.
+- (void)startAnimatedFullscreenDisabler {
+  _animatedFullscreenDisabler =
+      std::make_unique<AnimatedScopedFullscreenDisabler>(_fullscreenController);
+  _animatedFullscreenDisabler->StartAnimation();
+}
+
 - (void)featureDismissed:(const base::Feature&)feature {
   if (!_engagementTracker) {
     return;
@@ -1130,11 +1159,33 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 - (NSTimeInterval)bubbleVisibilityDurationForFeature:
     (const base::Feature&)feature {
   // Display FollowWhileBrowsing in-product help bubble with custom duration.
-  if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name) {
+  if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name ||
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
     return kDefaultLongDurationBubbleVisibility;
   }
 
   return 0;
+}
+
+// Returns whether the web content area interactions should be ignored for the
+// given feature.
+- (BOOL)shouldIgnoreWebContentAreaInteractionsForFeature:
+    (const base::Feature&)feature {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+    return YES;
+  }
+
+  return NO;
+}
+
+// Returns whether fullscreen should be disabled before presenting the bubble
+// for a given feature.
+- (BOOL)shouldDisableFullscreenForFeature:(const base::Feature&)feature {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+    return YES;
+  }
+
+  return NO;
 }
 
 // Return YES if the bubble should always be presented. Ex. if force present

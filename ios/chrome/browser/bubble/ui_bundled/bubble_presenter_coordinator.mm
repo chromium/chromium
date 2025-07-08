@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -57,6 +58,8 @@
           initWithLayoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                   engagementTracker:engagementTracker
                        webStateList:self.browser->GetWebStateList()
+               fullscreenController:FullscreenController::FromBrowser(
+                                        self.browser)
       overlayPresenterForWebContent:webContentPresenter
                       infobarBanner:infobarBannerPresenter
                        infobarModal:infobarModalPresenter];
@@ -195,9 +198,8 @@
     }
     case InProductHelpType::kPageActionMenu: {
       CHECK(IsPageActionMenuEnabled());
-      CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-      _presenter.pageActionMenuEntryPointHandler =
-          HandlerForProtocol(dispatcher, PageActionMenuEntryPointCommands);
+      _presenter.pageActionMenuEntryPointHandler = HandlerForProtocol(
+          commandDispatcher, PageActionMenuEntryPointCommands);
       [_presenter presentPageActionMenuBubble];
       break;
     }

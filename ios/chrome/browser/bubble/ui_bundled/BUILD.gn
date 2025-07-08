@@ -31,6 +31,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics",

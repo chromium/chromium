@@ -12,6 +12,7 @@
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;
 @class FeedMetricsRecorder;
+class FullscreenController;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
@@ -40,6 +41,8 @@ class DeviceSwitcherResultDispatcher;
                 engagementTracker:
                     (raw_ptr<feature_engagement::Tracker>)engagementTracker
                      webStateList:(raw_ptr<WebStateList>)webStateList
+             fullscreenController:
+                 (raw_ptr<FullscreenController>)fullscreenController
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
