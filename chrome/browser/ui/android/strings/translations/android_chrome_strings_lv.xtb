@@ -112,6 +112,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="1435593198351412143">Automātiska PDF failu atvēršana</translation>
 <translation id="1437543266176261764">Darbojas pārlūkā <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
+<translation id="1455845192930279203">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />) no vietnes <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Ietaupiet laiku — rakstiet mazāk</translation>
 <translation id="1466383950273130737">Izvēlieties pārlūka Chrome valodu</translation>
 <translation id="1477626028522505441">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās servera problēmas.</translation>
@@ -186,6 +187,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1829244130665387512">Atrast lapā</translation>
 <translation id="1832459821645506983">Jā, labi</translation>
 <translation id="1845958458910716240">Lai aizsargātu savus datus, ļaujiet pārlūkā Chrome noņemt atļaujas vietnēm, ko pēdējā laikā neesat apmeklējis.</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Pārlūkā Chrome tika apturēti paziņojumi no šīs vietnes. Varat pārskatīt un pārvaldīt iestatījumus.}zero{Pārlūkā Chrome tika apturēti paziņojumi no šīm vietnēm. Varat pārskatīt un pārvaldīt iestatījumus.}one{Pārlūkā Chrome tika apturēti paziņojumi no šīm vietnēm. Varat pārskatīt un pārvaldīt iestatījumus.}other{Pārlūkā Chrome tika apturēti paziņojumi no šīm vietnēm. Varat pārskatīt un pārvaldīt iestatījumus.}}</translation>
 <translation id="1871098866036088250">Atvērt pārlūkā Chrome</translation>
 <translation id="1877026089748256423">Chrome versija ir novecojusi.</translation>
 <translation id="1877073879466606884">Profils, kurā esat pierakstījies, ir pārvaldīts profils. Administrators var attāli veikt izmaiņas jūsu profila iestatījumos, analizēt informāciju par pārlūku, izmantojot pārskatus, kā arī veikt citus nepieciešamos uzdevumus.</translation>
@@ -493,6 +495,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3250563604907490871">Attēlu aprakstu pievienošana tiks atsākta, kad izveidosiet savienojumu ar Wi-Fi tīklu</translation>
 <translation id="3254409185687681395">Grāmatot šo lapu</translation>
 <translation id="3265093782546847662">Visas domēna <ph name="DOMAIN" /> lapas</translation>
+<translation id="3268048651973962414">Velciet augšup, lai skatītu meklēšanas rezultātus.</translation>
 <translation id="3269093882174072735">Ielādēt attēlu</translation>
 <translation id="327204079441056603">Mēs mainījām veidu, kā paroles tiek saglabātas šajā ierīcē</translation>
 <translation id="3280562213547448728">Meklēšana ar balsi</translation>
@@ -1055,11 +1058,13 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5809361687334836369">{HOURS,plural, =1{pirms # stundas}zero{pirms # stundām}one{pirms # stundas}other{pirms # stundām}}</translation>
 <translation id="5810288467834065221">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="5814749351757353073">Sekojiet savām iecienītajām vietnēm</translation>
+<translation id="5823093032261493462">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” no vietnes <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Varat dzēst datus Chrome iestatījumos</translation>
 <translation id="5829586821381540080">Saglabāta mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5833984609253377421">Kopīgot saiti</translation>
 <translation id="5839058148541733625">Chrome dinozaurs</translation>
+<translation id="5841444063256914865">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />”?</translation>
 <translation id="5842871376175639063">Šeit tiek pārvietotas cilnes un ciļņu grupas, ko neesat izmantojis <ph name="DAYS_INACTIVE" /> dienas, <ph name="AUTODELETE_SECTION" /> Jebkurā brīdī varat to mainīt sadaļā <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Vai atvērt PDF failu lietotnē <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vai pārtraukt kopīgošanu?</translation>
@@ -1280,6 +1285,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="674388916582496364">Bieži vien piedāvāto iespēju personalizēšanai jūsu apmeklētajās vietnēs tiek saglabāta informācija par jūsu interesēm. Vietnes var arī glabāt informāciju par jūsu interesēm pārlūkā Chrome.</translation>
 <translation id="6746338529702829275">Pārskatīt konta datus</translation>
 <translation id="6751521182688001123">Ātra jaunas cilnes atvēršana. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
+<translation id="6752130751133944215">Lai atjaunotu jaunu logu, samaziniet aktīvo un neaktīvo logu kopskaitu līdz <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> vai mazākam skaitam. Neaktīvie logi tiek dzēsti pēc 6 mēnešiem.</translation>
 <translation id="6754359471209693699">Sākt jaunu meklēšanu</translation>
 <translation id="6756507620369789050">Sniegt atsauksmes</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7388615499319468910">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir izslēgts.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Citi, sarakstā ir 1 fails}zero{Citi, sarakstā ir # faili}one{Citi, sarakstā ir # fails}other{Citi, sarakstā ir # faili}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Lai atvērtu jaunu logu, samaziniet aktīvo un neaktīvo logu kopskaitu līdz <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> vai mazākam skaitam.</translation>
 <translation id="7403691278183511381">Chrome pirmās palaišanas pieredze</translation>
 <translation id="7411224099004328643">Google konta lietotājs</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
@@ -1792,6 +1799,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8816556050903368450">Ar saiti: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Priekšskatāmās cilnes saturu nevar skatīt.</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
+<translation id="8824359129672223138">Maksimālais logu skaits, ko varat atvērt, ir <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Parūpējieties, lai vienmēr varētu piekļūt saglabātajām parolēm</translation>
 <translation id="883806473910249246">Lejupielādējot saturu, radās kļūda.</translation>
 <translation id="8840953339110955557">Šī lapas versija var atšķirties no tiešsaises versijas.</translation>
@@ -1876,6 +1884,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9168847423516963845">Pārvietot adreses joslu uz apakšdaļu</translation>
 <translation id="9169507124922466868">Navigācijas vēsture ir atvērta līdz pusei.</translation>
 <translation id="918419812064856259">Chrome beta versija</translation>
+<translation id="9189607089796819144">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Jūsu vēsture būs pieejama visās sinhronizētajās ierīcēs, tāpēc varēsiet turpināt iesākto.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Pārbaudīts: pirms 1 minūtes}zero{Pārbaudīts: pirms # minūtēm}one{Pārbaudīts: pirms # minūtes}other{Pārbaudīts: pirms # minūtēm}}</translation>
 <translation id="9204021776105550328">Notiek dzēšana</translation>

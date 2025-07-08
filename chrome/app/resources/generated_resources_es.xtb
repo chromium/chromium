@@ -1942,6 +1942,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2328561734797404498">Reinicia el dispositivo para usar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Cuando navegas en modo Incógnito, los sitios solo pueden usar las cookies para ver tu actividad de navegación en su propio sitio. Las cookies se eliminan al final de la sesión de Incógnito.</translation>
 <translation id="2329597144923131178">Accede para ver marcadores, historial, contraseñas y otros en dispos.</translation>
+<translation id="2330182457402792918">Selecciona archivos que este sitio pueda leer</translation>
 <translation id="2331334586452217517">El contenido de este sitio se envía a Google y puede que lo vean revisores humanos. Más información sobre el <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="2332115969598251205">No se pueden cargar los dispositivos guardados en <ph name="PRIMARY_EMAIL" />. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="2332131598580221120">Ver en Chrome Web Store</translation>
@@ -8796,6 +8797,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
 <translation id="7222335051802562841">Finalizar actualización</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Selecciona un archivo que este sitio pueda leer</translation>
 <translation id="7223952304612664117">Esto permite que los servicios del sistema usen la precisión de la ubicación para determinar tu ubicación. La precisión de la ubicación usa información sobre las señales inalámbricas y los sensores para estimar la ubicación del dispositivo.</translation>
 <translation id="7225082563376899794">Usar Windows Hello al rellenar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
@@ -9933,6 +9935,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8000020256436988724">Barra de herramientas</translation>
 <translation id="800117767980299235">Fragmento destacado de voz</translation>
 <translation id="8002274832045662704">Configuración avanzada de la impresora</translation>
+<translation id="8002597610026749658">Chrome puede crear subtítulos en los idiomas que se muestran aquí</translation>
 <translation id="8002670234429879764">La impresora <ph name="PRINTER_NAME" /> ya no está disponible</translation>
 <translation id="8004092996156083991">Si se vulneran tus contraseñas, te avisaremos</translation>
 <translation id="8004507136466386272">Palabras</translation>

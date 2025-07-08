@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تغییر کرده است</translation>
 <translation id="1480152980057770392">نمایش «فهرست خواندن»</translation>
-<translation id="1484758781961275277">‏در iPad خود، از مرورگر رایانه‌ای که می‌شناسید و دوست دارید بیشترین بهره را ببرید.</translation>
 <translation id="1485907716209290998">رهگیری بسته</translation>
 <translation id="1486096554574027028">جستجوی گذرواژه‌ها</translation>
 <translation id="1491277525950327607">برای جابه‌جایی بین تنظیمات، دو ضربه سریع بزنید</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">محله</translation>
 <translation id="2579713773888829241">درایوهای مشترک</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
-<translation id="2597486707832946298">‏در iPhone خود، از مرورگر رایانه‌ای که می‌شناسید و دوست دارید بیشترین بهره را ببرید.</translation>
 <translation id="2601778637777010194">کاهش قیمت محصولات را پیگیری کنید</translation>
 <translation id="260378315836159338">در بالای صفحه، روی + تک‌ضرب بزنید</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">مطمئن شوید گذرواژه‌ای که ذخیره می‌کنید با گذرواژه <ph name="WEBSITE" /> مطابقت داشته باشد</translation>
 <translation id="3087734570205094154">پایین</translation>
 <translation id="309710370695886264">۱ گذرواژه دوباره‌استفاده‌شده دارید. همین‌حالا مشکل را برطرف کنید تا ایمن بمانید.</translation>
-<translation id="3102139268911534961">‏در iPhone خود، از مرورگر تلفن همراهی که می‌شناسید و دوست دارید بیشترین بهره را ببرید.</translation>
 <translation id="3102790820790869053">جستجوی برگه‌های اخیر</translation>
 <translation id="3106690631878101882">‏پنهان کردن «ترجمه Google»</translation>
 <translation id="310900540163454140">گذرواژه مربوط به <ph name="WEBSITE" /> حذف شود؟</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
 <translation id="4056223980640387499">سپیا</translation>
 <translation id="4070132839822635162">وارد سیستم نشدن</translation>
-<translation id="4094361089640885693">قیمت‌ها را به‌راحتی پیگیری کنید و اطلاعات آماری قیمت را دریافت کنید.</translation>
 <translation id="4099756562043439968">تنظیم یادآور</translation>
 <translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="4111985840824673503">علامت‌گذاری همه به‌عنوان خوانده‌شده</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4250432749243022864">{count,plural, =0{باز کردن {count} برگه}=1{باز کردن {count} برگه}one{باز کردن {count} برگه}other{باز کردن {count} برگه}}</translation>
 <translation id="4250680216510889253">نه</translation>
-<translation id="4251531167342733205">بیشترین بهره را از مرورگر محبوبتان ببرید.</translation>
 <translation id="4253168017788158739">یادداشت</translation>
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4263576668337963058">نمایش کنش‌های موجود صفحه</translation>
@@ -1465,7 +1460,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6759709389246683070">می‌توانید این زبانه را لمس کنید و نگه دارید تا برای بازدید مجدد در فرصتی دیگر یادآوری تنظیم کنید</translation>
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6770452996697898492">[رزروشده]</translation>
-<translation id="6775647281444147078">‏از گپ‌های سازمان شما برای بهبود دادن مدل‌های ما استفاده نمی‌شود. ممکن است Gemini اطلاعات نادرست، ازجمله درباره افراد، نمایش دهد، بنابراین پاسخ‌هایش را دوباره‌سنجی کنید. حریم خصوصی شما و Gemini</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>
@@ -1557,7 +1551,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7173721738069475737">{count,plural, =1{نشانک ذخیره شد}one{‫{count} نشانک ذخیره شد}other{‫{count} نشانک ذخیره شد}}</translation>
 <translation id="7176183551031110427">زوم‌پس کردن</translation>
 <translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
-<translation id="718807879214459529">‏در iPad خود، از مرورگر تلفن همراهی که می‌شناسید و دوست دارید بیشترین بهره را ببرید.</translation>
 <translation id="719133302483559673">علایق و اولویت‌هایتان را مدیریت کنید.</translation>
 <translation id="720399613139435155">ترجمه نشد</translation>
 <translation id="7204922488054642675">خبرهای شخصی‌سازی‌شده</translation>
@@ -1631,7 +1624,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>
-<translation id="7512075701202892785">‏مرورگری که دوست دارید اکنون به iPad آمده است</translation>
 <translation id="7512909159512473473">وارد کردن گذرعبارت…</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7514530647142300459">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود (<ph name="EMAIL" />) استفاده کنید</translation>
@@ -1658,7 +1650,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="760667371114328991">خاموش کردن اعلان‌های «بررسی ایمنی»</translation>
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612849887607288481">باز کردن «منو ساخت نمونه نخستین هوش مصنوعی»</translation>
-<translation id="7615581988398168124">‏«شرایط خدمات Google» و اعلامیه حریم خصوصی «برنامه‌های Gemini» اعمال می‌شود. ‫Gemini ممکن است اشتباه کند، بنابراین پاسخ‌هایش را دوباره‌سنجی کنید.</translation>
 <translation id="7620522820075868385">لغو</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{گذرواژه‌های لورفته}=1{‫{COUNT} گذرواژه لورفته}one{‫{COUNT} گذرواژه لورفته}other{‫{COUNT} گذرواژه لورفته}}</translation>
@@ -1987,7 +1978,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8822421075653507124">برای اطمینان از اینکه می‌توان به‌طور ایمن از این دستگاه استفاده کرد، شاید لازم باشد سازمانتان اطلاعاتی درباره سیستم‌عامل، مرورگر، تنظیمات خود، و نرم‌افزارهایی که در دستگاه نصب شده است ببیند.</translation>
 <translation id="8825562130641217944">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را دریافت کنید.</translation>
-<translation id="8827154289515190290">‏مرورگر محبوبتان اکنون به iOS آمده است</translation>
 <translation id="8831208860914609320">بستن همه برگه‌های غیرفعال</translation>
 <translation id="8831944931153286232">افزودن به «فهرست خواندن»</translation>
 <translation id="8837654851594567190">مرتب کردن براساس ناشر</translation>
@@ -2000,7 +1990,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8863067612494559785">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏دریافت مسیر و اطلاعات محلی از Google Maps</translation>
 <translation id="886477344907998366">نشان دادن نشانک‌ها</translation>
-<translation id="8869239474428371589">بیشترین بهره را از مرورگر محبوبتان ببرید</translation>
 <translation id="8871974300055371298">تنظیمات محتوا</translation>
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8879604564928138696">برای امتحان کردن، دو تک‌ضرب بزنید</translation>

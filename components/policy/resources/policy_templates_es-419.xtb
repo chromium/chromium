@@ -90,6 +90,15 @@ Si la inhabilitas, no se permitirá la función de autocorrección en el teclado
 
       Si se establece esta política, la pantalla de acceso mostrará siempre la configuración regional que indica su primer valor (la política se define como una lista para otras futuras configuraciones). Si no se establece esta política o se establece una lista vacía, la pantalla de acceso mostrará la configuración regional de la última sesión de usuario. Si el valor de esta política no corresponde a una configuración regional válida, la pantalla de acceso mostrará una configuración de resguardo (la actual es en-US).</translation>
 <translation id="1050158007881386475">Inhabilitar los informes de estado de la placa del dispositivo</translation>
+<translation id="1050897390688148222">Lens Overlay permite a los usuarios realizar búsquedas contextuales en Google a través de una captura de pantalla o haciendo una pregunta sobre el contenido de la página actual. Esta función requiere que el usuario final habilite la opción.
+
+Esta función está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+Si estableces la política con el valor "0" (permitir) o no la estableces, los usuarios podrán acceder a la función.
+
+Si la estableces con el valor "1" (no permitir), la función no estará disponible.
+
+A partir de la versión <ph name="PRODUCT_NAME" /> 140, si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Esta política no tendrá efecto, a menos que SamlInSessionPasswordChangeEnabled sea verdadera.
       Si esta política es verdadera y se establece como, por ejemplo, 14, los usuarios de SAML recibirán una notificación sobre el vencimiento de su contraseña 14 días antes de la fecha de caducidad.
       Los usuarios podrán ocuparse de inmediato y cambiar la contraseña en la sesión, antes de que caduque.
@@ -482,7 +491,6 @@ Si inhabilitas la política, se reducirá la seguridad de <ph name="PRODUCT_NAME
 
 Desactiva la política solo si hay problemas de compatibilidad con software de terceros que impiden que los servicios de impresión funcionen correctamente dentro de la zona de pruebas de LPAC.</translation>
 <translation id="1369698103169067223">Inhabilitar los widgets de consulta rápida para los usuarios</translation>
-<translation id="1371626834351873151">Se habilitará la reducción de usuario-agente para todos los orígenes</translation>
 <translation id="1371851989348083665">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
@@ -1416,7 +1424,6 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
 <translation id="1984934843478301531">Automatización de la ejecución de apps</translation>
 <translation id="1985545260037812875">Mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
-<translation id="1985598967415986700">Se podrá controlar la reducción de usuario-agente mediante las pruebas de campo y de origen</translation>
 <translation id="1987789058026551147">Habilitar los informes de las sesiones de kiosco del dispositivo</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
@@ -2306,6 +2313,7 @@ Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios we
 <translation id="2568488785376704318">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Inhabilitar los comentarios por voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
+<translation id="2573850437942404034">No permitir</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
 <translation id="25765864042030871">Los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> dejarán de estar disponibles. Su activación depende de la <ph name="PERMISSIONS_POLICY_NAME" /> de <ph name="UNLOAD_EVENT_NAME" />. Actualmente, la política los admite de forma predeterminada. Paulatinamente, pasarán a estar inhabilitados de forma predeterminada, y los sitios deberán habilitarlos explícitamente mediante encabezados de la <ph name="PERMISSIONS_POLICY_NAME" />. Con esta política empresarial, se puede rechazar esta baja gradual. Para ello, se debe forzar que la configuración predeterminada permanezca habilitada.
  
@@ -2981,7 +2989,6 @@ Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( http
           Esta política es opcional. Si no se establece, no se realizará ningún reemplazo de los términos de búsqueda.
 
           Esta política solo se respeta si la política "DefaultSearchProviderEnabled" está habilitada.</translation>
-<translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">No permitir el uso de Chrome for Testing</translation>
 <translation id="3059687162224942925">Habilitar el aviso de administración en el pie de página de la página Nueva pestaña</translation>
@@ -4893,6 +4900,17 @@ Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRO
 <translation id="4426986640594727372">Permitir el acceso a la ubicación geográfica del sistema</translation>
 <translation id="4427173305799125784">El lector de PDF no puede agregar anotaciones en archivos PDF</translation>
 <translation id="4432762137771104529">Habilitar el informe extendido de Navegación segura</translation>
+<translation id="4432772502174730966">Esta política define el parámetro de configuración predeterminado para todas las funciones potenciadas por IA generativa cubiertas. Por ejemplo, si estableces esta política con el valor 1, ese será el parámetro predeterminado para todas las funciones potenciadas por IA generativa cubiertas. No afectará los valores de la política establecidos de forma manual. Este parámetro de configuración definirá los valores predeterminados de las funciones potenciadas por IA generativa cubiertas en Chrome. Consulta https://support.google.com/chrome/a?p=generative_ai_settings para ver la lista de funciones cubiertas.
+
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = No permite la función.
+
+Si una función de Chrome cubierta no tiene un valor de política equivalente, se usará el valor más alto más cercano. Algunas políticas, como <ph name="GEMINI_SETTINGS_POLICY_NAME" />, solo admiten los estados Permitido y No permitido. Si estableces la política de <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> con el valor 0 o 1, se permitirá esta función. Si estableces la política con el valor 2, no se permitirá esta función. Consulta la documentación de cada función para obtener más detalles acerca de cómo interactúa con los valores de esta política.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="443454694385851356">Heredados (inseguro)</translation>
 <translation id="4435032708588431506">Permitir QUIC</translation>
 <translation id="443665821428652897">Borrar los datos del sitio al cerrar el navegador (en desuso)</translation>
@@ -6539,6 +6557,15 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 <translation id="548137908954174608">Activar el subtitulado instantáneo</translation>
 <translation id="5483012943408894695">Los orígenes o patrones de nombres de host para los cuales no deben aplicarse restricciones en los orígenes no seguros</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
+<translation id="5485491014653571963">Este parámetro de configuración permite las integraciones de la app de Gemini.
+
+0 o no establecido = La integración con Gemini estará disponible para los usuarios.
+
+1 = La integración con Gemini no estará disponible para los usuarios.
+
+Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información, consulta el artículo del Centro de ayuda https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="5486352219019836984">Si habilitas esta política, se habilitará de forma predeterminada el envío anónimo de datos sobre el uso y las fallas de <ph name="PRODUCT_NAME" /> a Google. Los usuarios aún podrán cambiar este parámetro de configuración.
 
 Si inhabilitas esta política, se desactivará el envío de informes anónimos de datos sobre el uso y los fallos a Google. Los usuarios no podrán cambiar este parámetro.
@@ -9720,12 +9747,6 @@ la lectura en voz alta estará habilitada.</translation>
 
       En el futuro, se podrá seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible en <ph name="PRODUCT_OS_NAME" /> usando el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="751071954873065775">Selecciona los DLC (contenido descargable) que deben descargarse previamente</translation>
-<translation id="7512065400265675158">Se programó la reducción del encabezado de la solicitud HTTP de <ph name="USER_AGENT_HEADER_NAME" />. A fin de facilitar las pruebas y la compatibilidad, esta política puede habilitar la función de reducción en todos los sitios web o bien, inhabilitar que las pruebas de campo o de origen habiliten la función.
-
-      Para obtener más información sobre la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> y su cronograma, consulta:
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954">Las cargas útiles de actualizaciones automáticas en <ph name="PRODUCT_OS_NAME" /> se pueden descargar a través de HTTP en lugar de HTTPS, lo que permite el almacenamiento transparente en caché HTTP de descargas HTTP.
 
 Si estableces esta política como verdadera, <ph name="PRODUCT_OS_NAME" /> intentará descargar cargas útiles de actualizaciones automáticas mediante HTTP. Si la estableces como falsa o no la estableces, se utilizará HTTPS para descargar cargas útiles de actualizaciones automáticas.</translation>

@@ -1648,7 +1648,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
 <translation id="374325029554577103">Eletrônicos para atividade física</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
-<translation id="3744212718085287312">Aumentar a segurança com um cartão virtual na próxima vez?</translation>
+<translation id="3744212718085287312">Quer ter mais segurança com um cartão virtual?</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3745599309295009257">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google, revisados por humanos e usados para melhorar esse recurso. Evite inserir informações pessoais, como detalhes médicos ou financeiros. Evite também usar essa ferramenta em sites que contenham informações particulares ou sensíveis.</translation>
 <translation id="3748009735914587286">Metal (alto brilho)</translation>
@@ -2415,6 +2415,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5043753287208271200">Amarelo 3</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5048293684454354469">Os temas são apenas um dos vários recursos que um site pode usar para personalizar anúncios. Os sites ainda podem mostrar anúncios mesmo sem esse recurso, mas talvez eles não sejam tão personalizados. Aprenda a <ph name="BEGIN_LINK" />gerenciar a privacidade de anúncios<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Pressione Tab para ver mais atalhos de pesquisa disponíveis após esta sugestão</translation>
 <translation id="5052517576853118371">Temas ativos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="505757197798929356">Informe o motivo da abertura (obrigatório)</translation>
@@ -4510,7 +4511,7 @@ Mais detalhes:
 <translation id="8596640923906423176">Formato Rich Text</translation>
 <translation id="8597726363542221027">Veículos usados</translation>
 <translation id="8600271352425265729">Apenas desta vez</translation>
-<translation id="860043288473659153">Nome do titular do cartão</translation>
+<translation id="860043288473659153">Titular</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: sua atividade em sites que você acessa usando o Chrome neste dispositivo.</translation>
 <translation id="8601456038554914806">Equipamentos de esportes aquáticos</translation>
 <translation id="8601782593888534566">Ficção científica e fantasia</translation>
@@ -4838,6 +4839,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para mudar para esta guia</translation>
 <translation id="9177283544810807743">Não é possível acessar este PDF. Extraindo texto com a tecnologia de IA do Google</translation>
 <translation id="9179703756951298733">Gerencie seus pagamentos e suas informações de cartão de crédito nas configurações do Chrome</translation>
+<translation id="9179766227052716237">Sua organização diz: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Receba alertas por e-mail se houver uma redução no preço em algum site</translation>
 <translation id="9183302530794969518">Documentos Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> usa um protocolo incompatível.</translation>
@@ -4915,7 +4917,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="991413375315957741">sensores de luz ou movimento</translation>
 <translation id="991936891556421157">Calçados</translation>
-<translation id="992110854164447044">O cartão virtual oculta o físico para proteger você contra fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="992110854164447044">Este cartão oculta o físico e protege você contra fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992432478773561401">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede:

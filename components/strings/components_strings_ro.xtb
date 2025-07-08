@@ -2415,6 +2415,7 @@
 <translation id="5043753287208271200">Galben 3</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="5048293684454354469">Subiectele anunțurilor reprezintă doar unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a personaliza anunțurile. Chiar și fără subiectele anunțurilor, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, apasă pe Tab pentru mai multe comenzi directe de căutare disponibile după această sugestie de căutare</translation>
 <translation id="5052517576853118371">Subiecte active</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
@@ -4837,6 +4838,7 @@ Detalii suplimentare:
 <translation id="9174917557437862841">Butonul Comută între file, apasă pe Enter pentru a comuta la această filă</translation>
 <translation id="9177283544810807743">Acest PDF nu se poate accesa. Extragerea textului, un produs Google AI</translation>
 <translation id="9179703756951298733">Gestionează informațiile despre plăți și carduri de credit din setările Chrome</translation>
+<translation id="9179766227052716237">Organizația ta rostește: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">Primește alerte prin e-mail dacă prețul scade pe orice site</translation>
 <translation id="9183302530794969518">Documente Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> folosește un protocol neacceptat.</translation>

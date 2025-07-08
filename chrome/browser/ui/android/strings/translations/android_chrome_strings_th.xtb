@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">เปิด PDF โดยอัตโนมัติ</translation>
 <translation id="1437543266176261764">ทำงานใน "<ph name="APP_NAME" />"</translation>
 <translation id="1448440926884431741">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์ก</translation>
+<translation id="1455845192930279203">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) จาก <ph name="DOWNLOAD_DOMAIN" /> ต่อไปไหม</translation>
 <translation id="1460751212339734034">ประหยัดเวลาด้วยการพิมพ์น้อยลง</translation>
 <translation id="1466383950273130737">เลือกภาษาของ Chrome</translation>
 <translation id="1477626028522505441">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเซิร์ฟเวอร์มีปัญหา</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">คำอธิบายรูปภาพจะกลับมาแสดงเมื่อคุณเชื่อมต่อ Wi-Fi</translation>
 <translation id="3254409185687681395">บุ๊กมาร์กหน้านี้</translation>
 <translation id="3265093782546847662">ทุกหน้าของ <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">ลากขึ้นเพื่อดูผลการค้นหา</translation>
 <translation id="3269093882174072735">โหลดภาพ</translation>
 <translation id="327204079441056603">เราเปลี่ยนวิธีบันทึกรหัสผ่านในอุปกรณ์นี้แล้ว</translation>
 <translation id="3280562213547448728">ค้นหาด้วยเสียง</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ชั่วโมงที่ผ่านมา}other{# ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="5810288467834065221">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="5814749351757353073">ติดตามเว็บไซต์ที่คุณชื่นชอบ</translation>
+<translation id="5823093032261493462">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" จาก <ph name="DOWNLOAD_DOMAIN" /> ต่อไปไหม</translation>
 <translation id="5828921839638612740">คุณลบข้อมูลได้ในการตั้งค่า Chrome</translation>
 <translation id="5829586821381540080">บันทึกใน "<ph name="FOLDER_NAME" />" แล้ว</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5833984609253377421">แชร์ลิงก์</translation>
 <translation id="5839058148541733625">ไดโนเสาร์ Chrome</translation>
+<translation id="5841444063256914865">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" ต่อไปไหม</translation>
 <translation id="5842871376175639063">แท็บและกลุ่มแท็บที่คุณไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="SETTINGS_TITLE" /></translation>
 <translation id="5848257610304005265">เปิด PDF ด้วย "<ph name="APP_NAME" />" ใช่ไหม</translation>
 <translation id="5849288995120328556">หยุดการแชร์ใช่ไหม</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">โดยทั่วไป เว็บไซต์ที่คุณเข้าชมจะจดจำสิ่งที่คุณสนใจเพื่อปรับประสบการณ์การใช้งานให้เหมาะกับคุณ เว็บไซต์ยังสามารถจัดเก็บข้อมูลเกี่ยวกับความสนใจไว้กับ Chrome ได้ด้วย</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
 <translation id="6751521182688001123">เปิดแท็บใหม่อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
+<translation id="6752130751133944215">หากต้องการกู้คืนหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างทั้งหมดทั้งหน้าต่างที่ใช้งานอยู่และหน้าต่างที่ไม่ได้ใช้งานเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น ระบบจะลบหน้าต่างที่ไม่ได้ใช้งานออกหลังจาก 6 เดือน</translation>
 <translation id="6754359471209693699">เริ่มค้นหาใหม่</translation>
 <translation id="6756507620369789050">แชร์ความคิดเห็น</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้ปิดอยู่</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{อีก 1 ไฟล์ในรายการ}other{อีก # ไฟล์ในรายการ}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">หากต้องการเปิดหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างทั้งหมดทั้งหน้าต่างที่ใช้งานอยู่และหน้าต่างที่ไม่ได้ใช้งานเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น</translation>
 <translation id="7403691278183511381">ประสบการณ์กับ First Run บน Chrome</translation>
 <translation id="7411224099004328643">ผู้ใช้บัญชี Google</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">รวมลิงก์: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ดูเนื้อหาในแท็บตัวอย่างไม่ได้</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
+<translation id="8824359129672223138">คุณมีหน้าต่างได้ไม่เกิน <ph name="MAX_WINDOW_COUNT" /> รายการ</translation>
 <translation id="8835786707922974220">ตรวจสอบว่าคุณเข้าถึงรหัสผ่านที่บันทึกไว้ได้เสมอ</translation>
 <translation id="883806473910249246">เกิดข้อผิดพลาดขณะดาวน์โหลดเนื้อหา</translation>
 <translation id="8840953339110955557">หน้าเว็บนี้อาจแตกต่างไปจากเวอร์ชันที่ออนไลน์</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">ย้ายแถบที่อยู่ไปไว้ด้านล่าง</translation>
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>
 <translation id="918419812064856259">Chrome เบต้า</translation>
+<translation id="9189607089796819144">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ต่อไปไหม</translation>
 <translation id="9190276265094487094">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชม คุณจึงทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ตรวจสอบเมื่อ 1 นาทีที่ผ่านมา}other{ตรวจสอบเมื่อ # นาทีที่ผ่านมา}}</translation>
 <translation id="9204021776105550328">กำลังลบ</translation>

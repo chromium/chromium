@@ -1956,6 +1956,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2328561734797404498">Genstart enheden for at bruge <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Når du er i inkognitotilstand, kan websites kun bruge cookies til at se din browseraktivitet på deres eget website. Cookies slettes, når inkognitosessionen afsluttes.</translation>
 <translation id="2329597144923131178">Log ind for at hente bogmærker, historik, adgangskoder og andre indstillinger på alle dine enheder.</translation>
+<translation id="2330182457402792918">Vælg filer, som dette website kan læse</translation>
 <translation id="2331334586452217517">Indhold fra dette website sendes til Google og kan blive gennemgået af menneskelige kontrollanter. Om <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Enheder, som er gemt på <ph name="PRIMARY_EMAIL" />, kan ikke indlæses. Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="2332131598580221120">Vis i Webshop</translation>
@@ -8815,6 +8816,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7222232353993864120">Mailadresse</translation>
 <translation id="7222335051802562841">Gennemfør opdatering</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Vælg en fil, som dette website kan læse</translation>
 <translation id="7223952304612664117">Dette giver systemtjenester tilladelse til at anvende Lokationsnøjagtighed til at fastslå din lokation. Lokationsnøjagtighed anvender oplysninger om trådløse signaler og sensorer til at estimere enhedens lokation.</translation>
 <translation id="7225082563376899794">Brug Windows Hello til at udfylde adgangskoder</translation>
 <translation id="7225179976675429563">Netværkstype mangler</translation>
@@ -9951,6 +9953,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8000020256436988724">Værktøjslinje</translation>
 <translation id="800117767980299235">Optagelse af højdepunkter</translation>
 <translation id="8002274832045662704">Avanceret konfiguration af printer</translation>
+<translation id="8002597610026749658">Chrome kan oprette undertekster til de sprog, der vises her</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ikke længere tilgængelig</translation>
 <translation id="8004092996156083991">Hvis dine adgangskoder kompromitteres, kontakter vi dig.</translation>
 <translation id="8004507136466386272">Ord</translation>

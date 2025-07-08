@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Automaticky otvárať súbory PDF</translation>
 <translation id="1437543266176261764">Spustené v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte svoje sledované produkty v Záložkách</translation>
+<translation id="1455845192930279203">Chcete napriek tomu súbor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) z webu <ph name="DOWNLOAD_DOMAIN" /> stiahnuť?</translation>
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
 <translation id="1477626028522505441">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so serverom.</translation>
@@ -186,7 +187,7 @@
 <translation id="1829244130665387512">Nájsť na stránke</translation>
 <translation id="1832459821645506983">Áno, súhlasím</translation>
 <translation id="1845958458910716240">Povoľte Chromu odstraňovať povolenia webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje</translation>
-<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome zastavil upozornenia z tohto webu. Môžete to skontrolovať a spravovať.}few{Chrome zastavil upozornenia z týchto webov. Môžete to skontrolovať a spravovať.}many{Chrome zastavil upozornenia z týchto webov. Môžete to skontrolovať a spravovať.}other{Chrome zastavil upozornenia z týchto webov. Môžete to skontrolovať a spravovať.}}</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome zastavil upozornenia z tohto webu. Môžete to skontrolovať a spravovať.}few{Chrome zastavil upozornenia z týchto webov. Môžete to skontrolovať a spravovať.}many{Chrome stopped notifications from these sites. You can review and manage.}other{Chrome zastavil upozornenia z týchto webov. Môžete to skontrolovať a spravovať.}}</translation>
 <translation id="1871098866036088250">Otvárať v prehliadači Chrome</translation>
 <translation id="1877026089748256423">Prehliadač Chrome je zastaraný</translation>
 <translation id="1877073879466606884">Profil, do ktorého ste sa prihlásili, je spravovaný. Správca môže vzdialene vykonávať zmeny v nastaveniach profilu, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">Popisy obrázkov sa obnovia, keď sa pripojíte k sieti Wi‑Fi</translation>
 <translation id="3254409185687681395">Vytvoriť záložku pre túto stránku</translation>
 <translation id="3265093782546847662">Všetky stránky domény <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Výsledky vyhľadávania zobrazíte presunutím nahor</translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
 <translation id="327204079441056603">Zmenili sme, ako sa heslá v tomto zariadení ukladajú</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
@@ -1056,11 +1058,13 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5809361687334836369">{HOURS,plural, =1{pred # hodinou}few{pred # hodinami}many{pred # hodinou}other{pred # hodinami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="5814749351757353073">Držte krok s novinkami na obľúbených weboch</translation>
+<translation id="5823093032261493462">Chcete napriek tomu súbor <ph name="FILE_NAME" /> z webu <ph name="DOWNLOAD_DOMAIN" /> stiahnuť?</translation>
 <translation id="5828921839638612740">Dáta môžete odstrániť v Nastaveniach Chromu</translation>
 <translation id="5829586821381540080">Uložené v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5833984609253377421">Zdieľať odkaz</translation>
 <translation id="5839058148541733625">Dinosaurus v Chrome</translation>
+<translation id="5841444063256914865">Chcete napriek tomu súbor <ph name="FILE_NAME" /> stiahnuť?</translation>
 <translation id="5842871376175639063">Karty a skupiny kariet, ktoré ste nepoužili <ph name="DAYS_INACTIVE" /> d., budú presunuté na toto miesto<ph name="AUTODELETE_SECTION" />. Môžete to kedykoľvek zmeniť v sekcii <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Chcete PDF otvoriť pomocou aplikácie <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Chcete zastaviť zdieľanie?</translation>
@@ -1281,6 +1285,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="674388916582496364">Je bežné, že navštívené weby si pamätajú veci, ktoré vás zaujímajú, aby vám mohli prispôsobiť prostredie. Weby môžu v Chrome ukladať aj údaje o vašich záujmoch.</translation>
 <translation id="6746338529702829275">Prezrite si údaje účtu</translation>
 <translation id="6751521182688001123">Skratka na rýchle otvorenie novej karty. Ak ju chcete upraviť, pridržte ju.</translation>
+<translation id="6752130751133944215">Ak chcete obnoviť nové okno, znížte celkový počet okien (aktívnych aj neaktívnych) na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej. Neaktívne okná sa po šiestich mesiacoch odstraňujú.</translation>
 <translation id="6754359471209693699">Spustenie nového vyhľadávania</translation>
 <translation id="6756507620369789050">Odoslať spätnú väzbu</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7388615499319468910">Weby a inzerenti môžu porozumieť výkonnosti reklám. Toto nastavenie je vypnuté.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Ďalší 1 súbor v zozname}few{Ďalšie # súbory v zozname}many{Other # files in list}other{Ďalších # súborov v zozname}}</translation>
 <translation id="7400418766976504921">Webová adresa</translation>
+<translation id="7400424692675800399">Ak chcete otvoriť nové okno, znížte celkový počet okien (aktívnych aj neaktívnych) na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej.</translation>
 <translation id="7403691278183511381">Skúsenosť pri prvom spustení Chromu</translation>
 <translation id="7411224099004328643">Používateľ účtu Google</translation>
 <translation id="7419565702166471774">Vždy používať zabezpečené pripojenia</translation>
@@ -1793,6 +1799,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8816556050903368450">Vrátane odkazu <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Obsah karty ukážky sa nedá zobraziť.</translation>
 <translation id="8820817407110198400">Záložky</translation>
+<translation id="8824359129672223138">Môžete mať maximálne tento počet okien: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Uistite sa, či máte neustály prístup k svojim uložený heslám</translation>
 <translation id="883806473910249246">Pri sťahovaní obsahu sa vyskytla chyba.</translation>
 <translation id="8840953339110955557">Táto stránka sa môže líšiť od online verzie.</translation>
@@ -1877,6 +1884,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9168847423516963845">Presunúť panel s adresou úplne nadol</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Chcete napriek tomu súbor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) stiahnuť?</translation>
 <translation id="9190276265094487094">Históriu budete mať vo všetkých synchronizovaných zariadeniach, takže budete môcť pokračovať v tom, čo ste robili</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrola prebehla pred minútou}few{Kontrola prebehla pred # minútami}many{Kontrola prebehla pred # minúty}other{Kontrola prebehla pred # minútami}}</translation>
 <translation id="9204021776105550328">Odstraňuje sa</translation>

@@ -112,6 +112,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1435593198351412143">Automatski otvaraj PDF-ove</translation>
 <translation id="1437543266176261764">Koristi <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
+<translation id="1455845192930279203">Ipak želite da preuzmete fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) sa domena <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Uštedite vreme, kucajte manje</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
@@ -494,6 +495,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3250563604907490871">Opisi slika će se nastaviti kada se povežete na WiFi</translation>
 <translation id="3254409185687681395">Obeležite ovu stranicu</translation>
 <translation id="3265093782546847662">Sve stranice sa <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Prevucite nagore da biste videli rezultate pretrage</translation>
 <translation id="3269093882174072735">Učitaj sliku</translation>
 <translation id="327204079441056603">Promenili smo način na koji se čuvaju lozinke na ovom uređaju</translation>
 <translation id="3280562213547448728">Glasovna pretraga</translation>
@@ -1056,11 +1058,13 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5809361687334836369">{HOURS,plural, =1{Pre # sata}one{Pre # sata}few{Pre # sata}other{Pre # sati}}</translation>
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="5814749351757353073">Budite u toku sa omiljenim sajtovima</translation>
+<translation id="5823093032261493462">Ipak želite da preuzmete fajl <ph name="FILE_NAME" /> sa domena <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Možete da izbrišete podatke u Chrome podešavanjima</translation>
 <translation id="5829586821381540080">Sačuvano u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5833984609253377421">Deli link</translation>
 <translation id="5839058148541733625">Chrome dinosaurus</translation>
+<translation id="5841444063256914865">Želite li ipak da preuzmete fajl <ph name="FILE_NAME" />?</translation>
 <translation id="5842871376175639063">Kartice i grupe kartica koje niste koristili <ph name="DAYS_INACTIVE" /> dana premeštaju se ovde<ph name="AUTODELETE_SECTION" />. To možete da promenite u bilo kom trenutku u odeljku <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Želite da otvorite PDF pomoću aplikacije <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite da zaustavite deljenje?</translation>
@@ -1281,6 +1285,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="674388916582496364">Uobičajeno je da sajtovi koje posećujete pamte stvari koje vas zanimaju radi personalizacije doživljaja. Sajtovi mogu i da čuvaju informacije o vašim interesovanjima u Chrome-u.</translation>
 <translation id="6746338529702829275">Pregledajte podatke o nalogu</translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
+<translation id="6752130751133944215">Da biste vratili novi prozor, smanjite ukupan broj aktivnih i neaktivnih prozora na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ili manje. Neaktivni prozori se brišu posle 6 meseci.</translation>
 <translation id="6754359471209693699">Započnite novu pretragu</translation>
 <translation id="6756507620369789050">Delite povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7388615499319468910">Sajtovi i oglašavači mogu da razumeju učinak oglasa. Ovo podešavanje je isključeno.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 drugi fajl na listi}one{# drugi fajl na listi}few{# druga fajla na listi}other{# drugih fajlova na listi}}</translation>
 <translation id="7400418766976504921">URL adresa</translation>
+<translation id="7400424692675800399">Da biste otvorili novi prozor, smanjite ukupan broj aktivnih i neaktivnih prozora na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ili manje.</translation>
 <translation id="7403691278183511381">Chrome doživljaj prvog pokretanja</translation>
 <translation id="7411224099004328643">Korisnik Google naloga</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
@@ -1793,6 +1799,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8816556050903368450">Link za uvršćivanje: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Sadržaj kartice za pregled ne može da se vidi.</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
+<translation id="8824359129672223138">Možete da imate najviše <ph name="MAX_WINDOW_COUNT" /> prozora.</translation>
 <translation id="8835786707922974220">Uverite se da uvek možete da pristupate sačuvanim lozinkama</translation>
 <translation id="883806473910249246">Došlo je do greške pri preuzimanju sadržaja.</translation>
 <translation id="8840953339110955557">Ova stranica može da se razlikuje od onlajn verzije.</translation>
@@ -1877,6 +1884,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9168847423516963845">Premesti traku za adresu na dno</translation>
 <translation id="9169507124922466868">Istorija navigacije je poluotvorena</translation>
 <translation id="918419812064856259">Chrome beta</translation>
+<translation id="9189607089796819144">Ipak želite da preuzmete fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Imaćete istoriju na svim sinhronizovanim uređajima, pa možete da nastavite ono što ste radili</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provereno pre 1 minut}one{Provereno pre # minut}few{Provereno pre # minuta}other{Provereno pre # minuta}}</translation>
 <translation id="9204021776105550328">Briše se</translation>

@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تم التغيير</translation>
 <translation id="1480152980057770392">إظهار قائمة القراءة</translation>
-<translation id="1484758781961275277">‏يمكنك الاستفادة إلى أقصى حد من المتصفّح المتوافق مع أجهزة الكمبيوتر المكتبي والمفضّل لديك على جهاز iPad.</translation>
 <translation id="1485907716209290998">تتبُّع الطرد</translation>
 <translation id="1486096554574027028">بحث عن كلمات المرور</translation>
 <translation id="1491277525950327607">انقر مرّتين لتبديل الإعداد</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">الحي</translation>
 <translation id="2579713773888829241">مساحات التخزين السحابي المشتركة</translation>
 <translation id="2593272815202181319">أحادي المسافة</translation>
-<translation id="2597486707832946298">‏يمكنك الاستفادة إلى أقصى حد من المتصفّح المتوافق مع أجهزة الكمبيوتر المكتبي والمفضّل لديك على هاتف iPhone.</translation>
 <translation id="2601778637777010194">تتيح لك تتبُّع انخفاض أسعار المنتجات</translation>
 <translation id="260378315836159338">في أعلى الشاشة، انقر على رمز "+"</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
-<translation id="3102139268911534961">‏يمكنك الاستفادة إلى أقصى حد من متصفّح الأجهزة الجوّالة المفضّل لديك على هاتف iPhone.</translation>
 <translation id="3102790820790869053">البحث في علامات التبويب الأخيرة</translation>
 <translation id="3106690631878101882">إخفاء الإجراء "ترجمة"</translation>
 <translation id="310900540163454140">هل تريد حذف كلمة مرور <ph name="WEBSITE" />؟</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="4056223980640387499">بني داكن</translation>
 <translation id="4070132839822635162">عدم تسجيل الدخول</translation>
-<translation id="4094361089640885693">تتبَّع الأسعار بسهولة واحصل على معلومات مفصّلة عن الأسعار.</translation>
 <translation id="4099756562043439968">ضبط تذكير</translation>
 <translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="4111985840824673503">وضع علامة "مقروءة" على الكل</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250432749243022864">{count,plural, =0{فتح {count} علامة تبويب}=1{فتح علامة تبويب واحدة ({count})}two{فتح علامتَي تبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
 <translation id="4250680216510889253">لا</translation>
-<translation id="4251531167342733205">استفِد إلى أقصى حدّ من المتصفّح الذي تفضّله.</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="4263576668337963058">عرض الإجراءات المتاحة على الصفحة</translation>
@@ -1463,7 +1458,6 @@
 <translation id="6759709389246683070">يمكنك النقر مع الاستمرار على علامة التبويب هذه لضبط تذكير بالرجوع إليها لاحقًا</translation>
 <translation id="6761393919622941301">الملفات الصوتية</translation>
 <translation id="6770452996697898492">[محجوز]</translation>
-<translation id="6775647281444147078">‏لن نستخدم محادثات مؤسستك لتحسين نماذجنا. قد يعرِض Gemini معلومات غير دقيقة، بما فيها تلك المتعلقة بالأشخاص، لذا ننصحك بالتحقّق من ردوده. خصوصيتك وGemini</translation>
 <translation id="6779455296366983087">سيتم حذف بيانات التصفُّح</translation>
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
 <translation id="6791425686608802741">النقر على "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>
@@ -1555,7 +1549,6 @@
 <translation id="7173721738069475737">{count,plural, =1{تمّ حفظ إشارة مرجعية واحدة}zero{تمّ حفظ {count} إشارة مرجعية}two{تمّ حفظ إشارتَين مرجعيتَين ({count})}few{تمّ حفظ {count} إشارات مرجعية}many{تمّ حفظ {count} إشارة مرجعية}other{تمّ حفظ {count} إشارة مرجعية}}</translation>
 <translation id="7176183551031110427">تصغير</translation>
 <translation id="7186568385131859684">‏التحكّم في كيفية استخدام سجلّ التصفّح مع بياناتك الأخرى في جميع خدمات Google</translation>
-<translation id="718807879214459529">‏يمكنك الاستفادة إلى أقصى حد من متصفّح الأجهزة الجوّالة المفضّل لديك على جهاز iPad.</translation>
 <translation id="719133302483559673">يمكنك إدارة اهتماماتك وإعداداتك المفضّلة.</translation>
 <translation id="720399613139435155">تعذَّرت ترجمة المحتوى</translation>
 <translation id="7204922488054642675">أخبار مُخَصَّصة</translation>
@@ -1629,7 +1622,6 @@
 <translation id="7506817096924591340">‎<ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="750886945254958667">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها</translation>
-<translation id="7512075701202892785">‏المتصفِّح المفضّل لك متوفّر الآن على جهاز iPad</translation>
 <translation id="7512909159512473473">إدخال عبارة المرور…</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7514530647142300459">‏يُرجى مواصلة استخدام كلمات المرور في حسابك على Google: <ph name="EMAIL" /></translation>
@@ -1656,7 +1648,6 @@
 <translation id="760667371114328991">إيقاف إشعارات ميزة "التحقّق من الأمان"</translation>
 <translation id="7612619742409846846">‏أنت مسجّل الدخول إلى Google باستخدام</translation>
 <translation id="7612849887607288481">فتح قائمة إنشاء النموذج الأوّلي للذكاء الاصطناعي</translation>
-<translation id="7615581988398168124">‏تسري بنود خدمة Google وإشعار الخصوصية في "تطبيقات Gemini". قد يعرِض Gemini معلومات خاطئة، لذا ننصحك بالتحقّق من ردوده.</translation>
 <translation id="7620522820075868385">إلغاء</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{هناك كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{هناك كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{هناك {COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
@@ -1986,7 +1977,6 @@
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8822421075653507124">للتأكُّد من إمكانية استخدام هذا الجهاز بأمان، قد تحتاج مؤسستك إلى الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة على الجهاز.</translation>
 <translation id="8825562130641217944">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى</translation>
-<translation id="8827154289515190290">‏المتصفِّح المفضّل لك متوفّر الآن على نظام التشغيل iOS</translation>
 <translation id="8831208860914609320">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="8831944931153286232">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="8837654851594567190">الترتيب حسب الناشر</translation>
@@ -1999,7 +1989,6 @@
 <translation id="8863067612494559785">جارٍ إرسال علامة التبويب إلى <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
 <translation id="886477344907998366">عرض الإشارات المرجعية</translation>
-<translation id="8869239474428371589">استفِد إلى أقصى حدّ من المتصفِّح الذي تفضّله</translation>
 <translation id="8871974300055371298">إعدادات المحتوى</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>

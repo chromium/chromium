@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">PDF-үүдийг автоматаар нээх</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />-д ажиллуулж байна</translation>
 <translation id="1448440926884431741">Хянаж буй бүтээгдэхүүнүүдээ Хавчуургад цэгцлээрэй</translation>
+<translation id="1455845192930279203">Та ямартай ч "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)-г <ph name="DOWNLOAD_DOMAIN" />-с татмаар байна уу?</translation>
 <translation id="1460751212339734034">Цаг хэмнэж, бага бичээрэй</translation>
 <translation id="1466383950273130737">Chrome-н хэл сонгоно уу</translation>
 <translation id="1477626028522505441">Серверийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
@@ -186,6 +187,7 @@
 <translation id="1829244130665387512">Хуудаснаас хайх</translation>
 <translation id="1832459821645506983">Тийм, би зөвшөөрч байна</translation>
 <translation id="1845958458910716240">Өгөгдлөө хамгаалахын тулд Chrome-д таны сүүлийн үед зочлоогүй сайтуудын зөвшөөрлийг хасахыг зөвшөөрнө үү</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome энэ сайтын мэдэгдлийг зогсоосон. Та хянах, удирдах боломжтой.}other{Chrome эдгээр сайтын мэдэгдлийг зогсоосон. Та хянах, удирдах боломжтой.}}</translation>
 <translation id="1871098866036088250">Chrome хөтөч дээр нээх</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1877073879466606884">Таны нэвтэрсэн профайл хяналттай профайл байна. Танай администратор профайлын тань тохиргоонд зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой.</translation>
@@ -493,6 +495,7 @@
 <translation id="3250563604907490871">Таныг Wi-Fi-д холбогдох үед зургийн тайлбарыг үргэлжлүүлнэ</translation>
 <translation id="3254409185687681395">Энэ хуудсыг хадгал</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-н бүх хуудас</translation>
+<translation id="3268048651973962414">Хайлтын илэрцийг харахын тулд дээш чирнэ үү</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
 <translation id="327204079441056603">Бид энэ төхөөрөмжид нууц үгнүүдийг хэрхэн хадгалдаг болохыг өөрчилсөн</translation>
 <translation id="3280562213547448728">Дуут хайлт</translation>
@@ -1055,11 +1058,13 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5809361687334836369">{HOURS,plural, =1{# цагийн өмнө}other{# цагийн өмнө}}</translation>
 <translation id="5810288467834065221">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="5814749351757353073">Дуртай сайтуудаасаа хоцрохгүй байгаарай</translation>
+<translation id="5823093032261493462">Та ямартай ч "<ph name="FILE_NAME" />"-г <ph name="DOWNLOAD_DOMAIN" />-с татмаар байна уу?</translation>
 <translation id="5828921839638612740">Та өгөгдлийг Chrome-н тохиргооноос устгаж болно</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />-д хадгаллаа</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5833984609253377421">Холбоосыг хуваалцах</translation>
 <translation id="5839058148541733625">Chrome-н Дино</translation>
+<translation id="5841444063256914865">Та ямартай ч "<ph name="FILE_NAME" />"-г татмаар байна уу?</translation>
 <translation id="5842871376175639063">Таны <ph name="DAYS_INACTIVE" /> хоногийн турш ашиглаагүй таб, табын бүлгийг ийш зөөж, <ph name="AUTODELETE_SECTION" />. Та хүссэн үедээ үүнийг <ph name="SETTINGS_TITLE" />-с өөрчилж болно.</translation>
 <translation id="5848257610304005265">PDF-г <ph name="APP_NAME" />-р нээх үү?</translation>
 <translation id="5849288995120328556">Хуваалцахыг зогсоох уу?</translation>
@@ -1280,6 +1285,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="674388916582496364">Таны зочилсон сайтууд таны хэрэглээг хувийн болгохын тулд таны сонирхдог зүйлсийг санах нь түгээмэл юм. Сайтууд мөн Chrome-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой.</translation>
 <translation id="6746338529702829275">Бүртгэлийн өгөгдлөө шалгах</translation>
 <translation id="6751521182688001123">Шинэ табыг шуурхай нээнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
+<translation id="6752130751133944215">Шинэ цонх сэргээхийн тулд идэвхтэй, идэвхгүй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу. Идэвхгүй цонхыг 6 сарын дараа устгадаг.</translation>
 <translation id="6754359471209693699">Шинээр хайж эхлэх</translation>
 <translation id="6756507620369789050">Санал хүсэлт хуваалцах</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7388615499319468910">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Бусад, жагсаалтад 1 файл байна}other{Бусад, жагсаалтад # файл байна}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Шинэ цонх нээхийн тулд идэвхтэй, идэвхгүй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу.</translation>
 <translation id="7403691278183511381">Chrome-г анх удаа ажиллуулах туршлага</translation>
 <translation id="7411224099004328643">Google Бүртгэлийн хэрэглэгч</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>
@@ -1792,6 +1799,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8816556050903368450">Холбоосыг оруулаад: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
+<translation id="8824359129672223138">Та <ph name="MAX_WINDOW_COUNT" /> хүртэлх цонхтой байж болно.</translation>
 <translation id="8835786707922974220">Хадгалсан нууц үгэндээ үргэлж хандах боломжтой эсэхээ шалгана уу</translation>
 <translation id="883806473910249246">Агуулгыг татаж байх үед алдаа гарлаа.</translation>
 <translation id="8840953339110955557">Энэ хуудас онлайн хувилбараас өөр байж болзошгүй.</translation>
@@ -1876,6 +1884,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9168847423516963845">Хаяг оруулах хэсгийг доош зөөх</translation>
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="918419812064856259">Chrome Бета</translation>
+<translation id="9189607089796819144">Та ямартай ч "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)-г татмаар байна уу?</translation>
 <translation id="9190276265094487094">Таны синк хийсэн бүх төхөөрөмж дээр таны түүхийг хадгална. Ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минутын өмнө шалгасан}other{# минутын өмнө шалгасан}}</translation>
 <translation id="9204021776105550328">Устгаж байна</translation>

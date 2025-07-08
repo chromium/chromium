@@ -2415,7 +2415,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5043753287208271200">3. žuta</translation>
 <translation id="5045550434625856497">Pogrešna lozinka</translation>
 <translation id="5048293684454354469">Teme oglasa su samo jedna od mnogih mogućnosti koje web lokacija može koristiti da personalizira oglase. Čak i bez tema oglasa, web lokacije i dalje mogu prikazivati oglase, ali će možda biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK" />upravljanju privatnošću pri izloženosti oglasima<ph name="LINK_END" />.</translation>
-<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, pritisnite Tab za više prečaca za pretraživanje koji će biti dostupni nakon ovog prijedloga za pretraživanje</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, pritisnite Tab za više prečica pretraživanja dostupnih nakon ovog prijedloga za pretraživanje</translation>
 <translation id="5052517576853118371">Aktivne teme</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da pošaljete ovaj fajl pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da pošaljete ove fajlove pomoću Dijeljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
@@ -4837,6 +4837,7 @@ Dodatni detalji:
 <translation id="9174917557437862841">Dugme za promjenu kartice. Pritisnite Enter da se prebacite na ovu karticu</translation>
 <translation id="9177283544810807743">Ovaj PDF je nedostupan. Izdvajanje teksta uz pomoć Google AI-ja</translation>
 <translation id="9179703756951298733">Upravljajte plaćanjima i informacijama o kreditnim karticama u postavkama Chromea</translation>
+<translation id="9179766227052716237">Vaša organizacija kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Primajte obavještenja putem e-pošte ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9183425211371246419">Host računar <ph name="HOST_NAME" /> koristi protokol koji nije podržan.</translation>

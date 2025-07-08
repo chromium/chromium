@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">S'ha canviat</translation>
 <translation id="1480152980057770392">Mostra la llista de lectura</translation>
-<translation id="1484758781961275277">Treu el màxim partit del navegador per a ordinador que ja coneixes i tant t'agrada a l'iPad.</translation>
 <translation id="1485907716209290998">Seguiment</translation>
 <translation id="1486096554574027028">Cerca contrasenyes</translation>
 <translation id="1491277525950327607">Fes doble toc per canviar la configuració</translation>
@@ -407,7 +406,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2577522251608256362">Veïnat</translation>
 <translation id="2579713773888829241">Unitats compartides</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2597486707832946298">Treu el màxim partit del navegador per a ordinador que ja coneixes i tant t'agrada a l'iPhone.</translation>
 <translation id="2601778637777010194">Fes un seguiment de les baixades de preu dels productes</translation>
 <translation id="260378315836159338">A la part superior de la pantalla, toca +</translation>
 <translation id="2612676031748830579">Número de targeta</translation>
@@ -528,7 +526,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3081338492074632642">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="309710370695886264">Tens 1 contrasenya reutilitzada. Corregeix el problema per protegir-te.</translation>
-<translation id="3102139268911534961">Treu el màxim partit del navegador mòbil que ja coneixes i tant t'agrada a l'iPhone.</translation>
 <translation id="3102790820790869053">Cerca pestanyes recents</translation>
 <translation id="3106690631878101882">Amaga l'opció Tradueix</translation>
 <translation id="310900540163454140">Vols suprimir la contrasenya de <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió de xarxa i torneu-ho a provar.</translation>
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4070132839822635162">No iniciïs la sessió</translation>
-<translation id="4094361089640885693">Fes un seguiment dels preus i obtén estadístiques de preus fàcilment.</translation>
 <translation id="4099756562043439968">Configura un recordatori</translation>
 <translation id="4108998448622696017">Detecta esdeveniments perillosos quan es produeixen i t'hi avisa.</translation>
 <translation id="4111985840824673503">Marca-ho tot com a llegit</translation>
@@ -795,7 +791,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4250432749243022864">{count,plural, =0{Obre {count} pestanyes}=1{Obre {count} pestanya}other{Obre {count} pestanyes}}</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4251531167342733205">Treu el màxim profit del navegador que més t'agrada.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Llicències de codi obert</translation>
 <translation id="4263576668337963058">Mostra les accions de pàgina disponibles</translation>
@@ -1465,7 +1460,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6759709389246683070">Pots mantenir premuda aquesta pestanya i configurar un recordatori per comprovar-la més tard</translation>
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6770452996697898492">[RESERVAT]</translation>
-<translation id="6775647281444147078">Els xats de la teva organització no s'utilitzen per millorar els nostres models. És possible que Gemini mostri informació imprecisa, també sobre persones, així que comprova-la. La teva privadesa i Gemini</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
 <translation id="6790502149545262384">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Toca Afegeix una pestanya al grup nou</translation>
@@ -1557,7 +1551,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7173721738069475737">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat {count} adreces d'interès}}</translation>
 <translation id="7176183551031110427">Redueix</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
-<translation id="718807879214459529">Treu el màxim partit del navegador mòbil que ja coneixes i tant t'agrada a l'iPad.</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
 <translation id="720399613139435155">Ha fallat la traducció</translation>
 <translation id="7204922488054642675">Notícies personalitzades</translation>
@@ -1631,7 +1624,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o una contrasenya.</translation>
 <translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>
-<translation id="7512075701202892785">El navegador que tant t'agrada, ara a l'iPad</translation>
 <translation id="7512909159512473473">Introdueix la frase de contrasenya…</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7514530647142300459">Continua utilitzant les contrasenyes al teu Compte de Google <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="760667371114328991">Desactiva les notificacions de Comprovació de seguretat</translation>
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7612849887607288481">Obre el menú de prototips d'IA</translation>
-<translation id="7615581988398168124">S'hi apliquen les condicions de Google i l'avís de privadesa de les aplicacions de Gemini. Gemini pot cometre errors, així que comprova'n les respostes.</translation>
 <translation id="7620522820075868385">Cancel·la</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Contrasenyes en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
@@ -1987,7 +1978,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8822421075653507124">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, és possible que la teva organització necessiti veure informació sobre el sistema operatiu, el navegador, la configuració i el programari que hi ha instal·lat al dispositiu.</translation>
 <translation id="8825562130641217944">Obtén les adreces d'interès, les contrasenyes i altres dades.</translation>
-<translation id="8827154289515190290">El navegador que tant t'agrada, ara a iOS</translation>
 <translation id="8831208860914609320">Tanca totes les inactives</translation>
 <translation id="8831944931153286232">Afegeix a la llista de lectura</translation>
 <translation id="8837654851594567190">Ordena per editor</translation>
@@ -2000,7 +1990,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8863067612494559785">S'està enviant a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén indicacions i informació local de Google Maps</translation>
 <translation id="886477344907998366">Mostra les adreces d'interès</translation>
-<translation id="8869239474428371589">Treu el màxim profit del navegador que més t'agrada</translation>
 <translation id="8871974300055371298">Configuració del contingut</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>

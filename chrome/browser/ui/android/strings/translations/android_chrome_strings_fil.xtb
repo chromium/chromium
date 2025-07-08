@@ -112,6 +112,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1435593198351412143">Awtomatikong magbubukas ang mga PDF</translation>
 <translation id="1437543266176261764">Tumatakbo sa <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Ayusin ang mga sinusubaybayan mong produkto sa Mga Bookmark</translation>
+<translation id="1455845192930279203">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) mula sa <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Makatipid ng oras, mag-type ng mas kaunti</translation>
 <translation id="1466383950273130737">Piliin ang wika ng Chrome</translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
@@ -494,6 +495,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3250563604907490871">Magpapatuloy ang mga paglalarawan ng larawan kapag kumonekta ka sa Wi-Fi</translation>
 <translation id="3254409185687681395">I-bookmark ang page na ito</translation>
 <translation id="3265093782546847662">Lahat ng page ng <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Mag-drag pataas para makita ang mga resulta ng paghahanap</translation>
 <translation id="3269093882174072735">I-load ang larawan</translation>
 <translation id="327204079441056603">Binago namin kung paano nase-save ang mga password sa device na ito</translation>
 <translation id="3280562213547448728">Paghahanap gamit ang boses</translation>
@@ -1056,11 +1058,13 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5809361687334836369">{HOURS,plural, =1{# oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="5814749351757353073">Makipagsabayan sa mga paborito mong site</translation>
+<translation id="5823093032261493462">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" mula sa <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Puwede mong i-delete ang data sa Mga Setting ng Chrome</translation>
 <translation id="5829586821381540080">Na-save sa <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5833984609253377421">Ibahagi ang link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />"?</translation>
 <translation id="5842871376175639063">Ang mga tab at grupo ng tab na hindi mo nagamit sa loob ng <ph name="DAYS_INACTIVE" /> (na) araw ay inililipat dito <ph name="AUTODELETE_SECTION" />. Puwede mo itong baguhin anumang oras sa <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Buksan ang PDF gamit ang <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Ihinto ang pag-share?</translation>
@@ -1281,6 +1285,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="674388916582496364">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na kinawiwilihan mo, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chrome ng impormasyon tungkol sa iyong mga interes.</translation>
 <translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
 <translation id="6751521182688001123">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
+<translation id="6752130751133944215">Para mag-restore ng bagong window, bawasan sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti ang kabuuang bilang ng mga window sa aktibo at hindi aktibo. Dine-delete ang mga hindi aktibong window pagkalipas ng 6 na buwan.</translation>
 <translation id="6754359471209693699">Magsimula ng bagong paghahanap</translation>
 <translation id="6756507620369789050">Magbahagi ng feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Iba pa, may 1 file sa listahan}one{Iba pa, may # file sa listahan}other{Iba pa, may # na file sa listahan}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Para magbukas ng bagong window, bawasan sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti ang kabuuang bilang ng mga window sa aktibo at hindi aktibo.</translation>
 <translation id="7403691278183511381">Unang Karanasan sa Pagtakbo ng Chrome</translation>
 <translation id="7411224099004328643">User ng Google Account</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
@@ -1793,6 +1799,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8816556050903368450">Kasama ang link na: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Hindi puwedeng tingnan ang content ng tab na preview.</translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
+<translation id="8824359129672223138">Puwede kang magkaroon ng hanggang <ph name="MAX_WINDOW_COUNT" /> (na) window.</translation>
 <translation id="8835786707922974220">Tiyaking maa-access mo anumang oras ang iyong mga naka-save na password</translation>
 <translation id="883806473910249246">Nagka-error habang dina-download ang content.</translation>
 <translation id="8840953339110955557">Maaaring iba ang page na ito sa online na bersyon.</translation>
@@ -1877,6 +1884,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9168847423516963845">Ilipat ang address bar sa ibaba</translation>
 <translation id="9169507124922466868">Nakabukas nang kalahati ang history ng pag-navigate</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Makikita mo ang iyong history sa lahat ng naka-sync mong device, para maipagpatuloy mo ang iyong ginagawa</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Nagsuri 1 minuto ang nakalipas}one{Nagsuri # minuto ang nakalipas}other{Nagsuri # na minuto ang nakalipas}}</translation>
 <translation id="9204021776105550328">Dine-delete</translation>

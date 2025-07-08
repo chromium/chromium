@@ -13,6 +13,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
+<translation id="1178015372320901893">Ark på nedre delen av skärmen för Mina genvägar</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1192844206376121885">All data och alla cookies som har sparats av <ph name="ORIGIN" /> raderas.</translation>
@@ -562,6 +563,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7681597159868843240">Åtkomst till enhetens rörelsesensorer brukar kunna behövas för funktioner som virtuell verklighet eller att hålla koll på träningen</translation>
 <translation id="7688240020069572972">Dölj kortet med tips om Chrome</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
+<translation id="775043444390799886">Återkalla behörighet</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
@@ -641,6 +643,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8549127125482561383">Så här visar du begäranden</translation>
 <translation id="8558480467877843976">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
+<translation id="8580511488901768832">arket på nedre delen av skärmen för mina genvägar har öppnats över hela skärmen</translation>
 <translation id="8593422116412089302">När detta är aktiverat kan webbplatser be om att få använda uppgifter som de har sparat om dig. När detta är inaktiverat får webbplatser inte be dig om att använda uppgifter som de har sparat om dig.</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>

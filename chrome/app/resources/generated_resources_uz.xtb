@@ -1943,6 +1943,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2328561734797404498"><ph name="APP_NAME" /> ilovasini ishlatish uchun qurilmangizni qayta ishga tushiring.</translation>
 <translation id="2328636661627946415">Inkognito rejimini yoqqaningizda, saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi Inkognito seansi tugaganda cookie fayllar oʻchirib tashlanadi.</translation>
 <translation id="2329597144923131178">Xatcho‘plar, tarix, parollar va boshqa sozlamalarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring.</translation>
+<translation id="2330182457402792918">Bu sayt oʻqiy oladigan fayllarni tanlang</translation>
 <translation id="2331334586452217517">Bu sayt kontenti Googlega yuboriladi va xodimlar tomonidan tekshirilishi mumkin. <ph name="PASSWORD_CHANGE" /> haqida.</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> hisobiga saqlangan qurilmalar yuklanmadi. Internetni tekshiring va qayta urining.</translation>
 <translation id="2332131598580221120">Internet-do‘konda ochish</translation>
@@ -8796,6 +8797,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7222232353993864120">Email manzili:</translation>
 <translation id="7222335051802562841">Yangilashni tugatish</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Bu sayt oʻqiy oladigan faylni tanlang</translation>
 <translation id="7223952304612664117">Bunda joylashuvingizni aniqlash uchun tizim xizmatlari Joylashuv aniqligidan foydalanishga ruxsat oladi. Joylashuv aniqligi qurilma joylashuvini taxmin qilishida simsiz signallar va sensorlar haqidagi axborotlardan foydalanadi.</translation>
 <translation id="7225082563376899794">Parollarni kiritishda Windows Hello ishlating</translation>
 <translation id="7225179976675429563">Tarmoq turi ko‘rsatilmagan</translation>
@@ -9932,6 +9934,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8000020256436988724">Asboblar paneli</translation>
 <translation id="800117767980299235">Ovozli urgʻu</translation>
 <translation id="8002274832045662704">Kengaytirilgan printer sozlamalari</translation>
+<translation id="8002597610026749658">Chrome quyidagi tillarda tagyozuvlar yaratishi mumkin</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> endi chiqmaydi</translation>
 <translation id="8004092996156083991">Parollar oshkor qilinsa, sizga xabar qilamiz</translation>
 <translation id="8004507136466386272">Soʻzlar</translation>

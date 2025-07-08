@@ -1945,6 +1945,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2328561734797404498">Rakenduse <ph name="APP_NAME" /> kasutamiseks taaskäivitage seade.</translation>
 <translation id="2328636661627946415">Kui olete inkognito režiimis, saavad saidi küpsisefaile kasutada ainult nende oma saidil teie sirvimistegevuste nägemiseks. Inkognito seansi lõpetamisel küpsisefailid kustutatakse.</translation>
 <translation id="2329597144923131178">Logige sisse, et tuua kõikidesse seadmetesse järjehoidjad, ajalugu, paroolid ja muud seaded.</translation>
+<translation id="2330182457402792918">Valige failid, mida see sait saab lugeda</translation>
 <translation id="2331334586452217517">Selle saidi sisu saadetakse Google'ile ja ülevaatajad võivad seda näha. Vaadake lisaks: <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Ei saa kontole <ph name="PRIMARY_EMAIL" /> salvestatud seadmeid laadida. Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="2332131598580221120">Poes kuvamine</translation>
@@ -8802,6 +8803,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7222232353993864120">E-posti aadress</translation>
 <translation id="7222335051802562841">Viige värskendamine lõpule</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Valige fail, mida see sait saab lugeda</translation>
 <translation id="7223952304612664117">See lubab süsteemiteenustel kasutada teie asukoha tuvastamiseks asukohatäpsust. Asukohatäpsus kasutab seadme asukoha määramiseks teavet juhtmeta signaalide ja andurite kohta.</translation>
 <translation id="7225082563376899794">Kasuta paroolide sisestamisel teenust Windows Hello</translation>
 <translation id="7225179976675429563">Võrgu tüüp puudub</translation>
@@ -9939,6 +9941,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8000020256436988724">Tööriistariba</translation>
 <translation id="800117767980299235">Häälega esiletõst</translation>
 <translation id="8002274832045662704">Printeri täpsem seadistus</translation>
+<translation id="8002597610026749658">Chrome saab luua subtiitreid siin kuvatavates keeltes</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ei ole enam saadaval</translation>
 <translation id="8004092996156083991">Kui teie paroolid on ohustatud, anname teile sellest teada</translation>
 <translation id="8004507136466386272">Sõnad</translation>

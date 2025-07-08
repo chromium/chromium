@@ -2415,6 +2415,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5043753287208271200">Yellow 3</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5048293684454354469">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads but they may be less personalised. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Press tab for more search shortcuts available after this search suggestion</translation>
 <translation id="5052517576853118371">Active topics</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="505757197798929356">Provide reason for opening (required)</translation>
@@ -4836,6 +4837,7 @@ Additional details:
 <translation id="9174917557437862841">Tab switch button, press Enter to switch to this tab</translation>
 <translation id="9177283544810807743">This PDF is inaccessible. Extracting text, powered by Google AI</translation>
 <translation id="9179703756951298733">Manage your payments and credit card info in Chrome settings</translation>
+<translation id="9179766227052716237">Your organisation says: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="9179907736442194268">Get email alerts if the price drops on any site</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> uses an unsupported protocol.</translation>

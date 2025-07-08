@@ -112,6 +112,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1435593198351412143">PDF-ləri avtomatik açın</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> tətbiqində işləyir</translation>
 <translation id="1448440926884431741">Əlfəcinlərdə izlədiyiniz məhsulları təşkil edin</translation>
+<translation id="1455845192930279203">Yenə də <ph name="DOWNLOAD_DOMAIN" /> domenindən "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) faylını endirmək istəyirsiniz?</translation>
 <translation id="1460751212339734034">Vaxta qənaət edin, az yazın</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> faylının endirilməsi server problemləri səbəbindən alınmadı.</translation>
@@ -494,6 +495,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3250563604907490871">Wi-Fi'a qoşulduğunuz zaman şəkil təsvirləri davam edəcək</translation>
 <translation id="3254409185687681395">Bu səhifəni əlfəcinləyin</translation>
 <translation id="3265093782546847662">Bütün <ph name="DOMAIN" /> səhifələri</translation>
+<translation id="3268048651973962414">Axtarış nəticələrini görmək üçün yuxarı sürüşdürün</translation>
 <translation id="3269093882174072735">Şəkli yükləyin</translation>
 <translation id="327204079441056603">Parolların bu cihazda yadda saxlanma qaydasını dəyişdik</translation>
 <translation id="3280562213547448728">Səsli axtarış</translation>
@@ -1056,11 +1058,13 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5809361687334836369">{HOURS,plural, =1{# saat öncə}other{# saat öncə}}</translation>
 <translation id="5810288467834065221">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
 <translation id="5814749351757353073">Sevdiyiniz saytlardan xəbərdar olun</translation>
+<translation id="5823093032261493462">Yenə də <ph name="DOWNLOAD_DOMAIN" /> domenindən "<ph name="FILE_NAME" />" faylını endirmək istəyirsiniz?</translation>
 <translation id="5828921839638612740">Chrome ayarlarında datanı silə bilərsiniz</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> qovluğunda yadda saxlandı</translation>
 <translation id="583281660410589416">Naməlum</translation>
 <translation id="5833984609253377421">Linki paylaşın</translation>
 <translation id="5839058148541733625">Chrome Dinozavr</translation>
+<translation id="5841444063256914865">Yenə də "<ph name="FILE_NAME" />" faylını endirmək istəyirsiniz?</translation>
 <translation id="5842871376175639063"><ph name="DAYS_INACTIVE" /> gün istifadə etmədiyiniz tablar və tab qrupları bura köçürüldü<ph name="AUTODELETE_SECTION" />. Bunu istənilən vaxt <ph name="SETTINGS_TITLE" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="5848257610304005265">PDF <ph name="APP_NAME" /> ilə açılsın?</translation>
 <translation id="5849288995120328556">Paylaşım dayandırılsın?</translation>
@@ -1279,6 +1283,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="674388916582496364">Ziyarət etdiyiniz saytların təcrübənizi fərdiləşdirmək üçün maraqlarınızı xatırlaması normaldır. Saytlar həmçinin maraqlarınız haqqında Chrome ilə məlumat saxlaya bilər.</translation>
 <translation id="6746338529702829275">Hesab datasını nəzərdən keçirin</translation>
 <translation id="6751521182688001123">Cəld yeni tab açın. Bu qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
+<translation id="6752130751133944215">Yeni pəncərəni bərpa etmək üçün aktiv və qeyri-aktiv pəncərələrin ümumi sayını <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> və ya daha az olacaq şəkildə azaldın. Qeyri-aktiv pəncərələr 6 aydan sonra silinir.</translation>
 <translation id="6754359471209693699">Yeni axtarışa başlayın</translation>
 <translation id="6756507620369789050">Rəy paylaşın</translation>
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
@@ -1445,6 +1450,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7388615499319468910">Saytlar və reklamçılar reklamların necə işlədiyini başa düşə bilər. Bu ayar deaktivdir.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Digər, siyahıda 1 fayl}other{Digər, siyahıda # fayl}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Yeni pəncərəni açmaq üçün aktiv və qeyri-aktiv pəncərələrin ümumi sayını <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> və ya daha az olacaq şəkildə azaldın.</translation>
 <translation id="7403691278183511381">İlkin Chrome Təcrübəsi</translation>
 <translation id="7411224099004328643">Google Hesabı istifadəçisi</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
@@ -1791,6 +1797,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8816556050903368450">Keçid daxil olmaqla: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Önizləmə tabının məzmununa baxmaq olmur.</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
+<translation id="8824359129672223138">Maksimum <ph name="MAX_WINDOW_COUNT" /> pəncərəniz ola bilər.</translation>
 <translation id="8835786707922974220">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olun</translation>
 <translation id="883806473910249246">Kontent endirilən zaman xəta baş verdi.</translation>
 <translation id="8840953339110955557">Bu səhifə onlayn versiyadan fərqli ola bilər.</translation>
@@ -1875,6 +1882,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="9168847423516963845">Ünvan panelini aşağıya köçürün</translation>
 <translation id="9169507124922466868">Naviqasiya tarixçəsi yarı açıqdır</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Yenə də "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) faylını endirmək istəyirsiniz?</translation>
 <translation id="9190276265094487094">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dəqiqə əvvəl yoxlanılıb}other{# dəqiqə əvvəl yoxlanılıb}}</translation>
 <translation id="9204021776105550328">Silinir</translation>

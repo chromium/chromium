@@ -2413,6 +2413,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5043753287208271200">Dzeltena 3</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5048293684454354469">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; nospiediet tabulēšanas taustiņu, lai skatītu citas meklēšanas saīsnes, kas pieejamas pēc šī meklēšanas ieteikuma.</translation>
 <translation id="5052517576853118371">Aktīvās tēmas</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Norādiet atvēršanas iemeslu (obligāti)</translation>
@@ -4834,6 +4835,7 @@ Papildu informācija:
 <translation id="9174917557437862841">Ciļņu pārslēgšanas poga. Nospiediet ievadīšanas taustiņu, lai pārslēgtu šo cilni.</translation>
 <translation id="9177283544810807743">Šis PDF fails nav pieejams. Notiek teksta iegūšana. Pakalpojumu nodrošina Google MI.</translation>
 <translation id="9179703756951298733">Pārvaldiet savu maksājumu un kredītkaršu informāciju Chrome iestatījumos.</translation>
+<translation id="9179766227052716237">Ziņojums no jūsu organizācijas: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">Saņemiet e-pasta brīdinājumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> izmanto neatbalstītu protokolu.</translation>

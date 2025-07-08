@@ -13,6 +13,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
+<translation id="1178015372320901893">Minu otseteede alumine leht</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1192844206376121885">See kustutab kõik saidi <ph name="ORIGIN" /> salvestatud andmed ja küpsisefailid.</translation>
@@ -562,6 +563,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="7681597159868843240">Saidid kasutavad teie seadme liikumisandureid näiteks VR-kogemuse pakkumiseks või treeningu jälgimiseks</translation>
 <translation id="7688240020069572972">Chrome'i nõuannete kaardi peitmine</translation>
 <translation id="7719367874908701697">Lehe suum</translation>
+<translation id="775043444390799886">Tühista luba</translation>
 <translation id="7759147511335618829">MIDI-seadme juhtimine ja ümberprogrammeerimine</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7791543448312431591">Lisa</translation>
@@ -641,6 +643,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="8549127125482561383">Kuidas taotlusi kuvada?</translation>
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
+<translation id="8580511488901768832">Minu otseteede alumine leht on avatud täiskõrgusel.</translation>
 <translation id="8593422116412089302">Kui see on sisse lülitatud, võivad saidid küsida luba teabe kasutamiseks, mille nad on teie kohta salvestanud. Kui see on välja lülitatud, ei saa saidid küsida luba teabe kasutamiseks, mille nad on teie kohta salvestanud.</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
 <translation id="8617611086246832542">Kui see on sisse lülitatud, kuvatakse veebisaitide arvutivaade. Kui see on välja lülitatud, kuvatakse veebisaitide mobiilivaade.</translation>

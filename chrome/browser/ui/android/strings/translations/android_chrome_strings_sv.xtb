@@ -187,6 +187,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1845958458910716240">Tillåt att Chrome tar bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppat aviseringar från denna webbplats. Du kan granska och hantera detta.}other{Chrome har stoppat aviseringar från dessa webbplatser. Du kan granska och hantera detta.}}</translation>
 <translation id="1871098866036088250">Öppna i Chrome-webbläsaren</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1877073879466606884">Profilen som du är inloggad med är en hanterad profil. Administratören kan göra ändringar i profilinställningarna på distans, analysera information om webbläsaren genom rapportering och utföra andra nödvändiga uppgifter.</translation>

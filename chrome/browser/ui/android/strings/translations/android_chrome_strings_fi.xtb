@@ -112,6 +112,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1435593198351412143">Avaa PDF-tiedostot automaattisesti</translation>
 <translation id="1437543266176261764">Käynnissä: <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Järjestele seurattuja tuotteita kirjanmerkeissä</translation>
+<translation id="1455845192930279203">Ladataanko "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) osoitteesta <ph name="DOWNLOAD_DOMAIN" /> silti?</translation>
 <translation id="1460751212339734034">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="1466383950273130737">Valitse Chromen kieli</translation>
 <translation id="1477626028522505441">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui palvelinongelman vuoksi.</translation>
@@ -186,6 +187,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1829244130665387512">Haku sivulta</translation>
 <translation id="1832459821645506983">Kyllä</translation>
 <translation id="1845958458910716240">Datasi suojaamiseksi salli Chromen poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt ilmoituksen tältä sivustolta. Voit tarkistaa ja muokata tätä.}other{Chrome on estänyt ilmoitukset näiltä sivustolta. Voit tarkistaa ja muokata tätä.}}</translation>
 <translation id="1871098866036088250">Avaa Chrome-selaimessa</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
 <translation id="1877073879466606884">Profiili, johon olet kirjautunut, on hallinnoitu profiili. Järjestelmänvalvoja voi tehdä muutoksia profiilin asetuksiin etänä, analysoida selaimen tietoja raporttien avulla ja tehdä muita tarvittavia tehtäviä.</translation>
@@ -493,6 +495,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3250563604907490871">Kuvaselityksiä jatketaan, kun muodostat Wi-Fi-yhteyden</translation>
 <translation id="3254409185687681395">Luo kirjanmerkki tälle sivulle</translation>
 <translation id="3265093782546847662">Kaikki sivut, joiden verkkotunnus on <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Katso hakutulokset vetämällä ylös</translation>
 <translation id="3269093882174072735">Lataa kuva</translation>
 <translation id="327204079441056603">Muutimme tapaa, jolla salasanat tallennetaan tällä laitteella</translation>
 <translation id="3280562213547448728">Puhehaku</translation>
@@ -1055,11 +1058,13 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5809361687334836369">{HOURS,plural, =1{# tunti sitten}other{# tuntia sitten}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="5814749351757353073">Pysy ajan tasalla lempisivustojesi tapahtumista</translation>
+<translation id="5823093032261493462">Ladataanko "<ph name="FILE_NAME" />" osoitteesta <ph name="DOWNLOAD_DOMAIN" /> silti?</translation>
 <translation id="5828921839638612740">Voit poistaa datan Chromen asetuksissa</translation>
 <translation id="5829586821381540080">Tallennettu tänne: <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5833984609253377421">Jaa linkki</translation>
 <translation id="5839058148541733625">Chromen Dino</translation>
+<translation id="5841444063256914865">Ladataanko "<ph name="FILE_NAME" />" silti?</translation>
 <translation id="5842871376175639063">Välilehdet ja välilehtiryhmät, joita et ole käyttänyt <ph name="DAYS_INACTIVE" /> päivään, siirretään tänne<ph name="AUTODELETE_SECTION" />. Voit vaihtaa valintasi milloin tahansa täältä: <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Avataanko PDF sovelluksella <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Lopetetaanko jakaminen?</translation>
@@ -1280,6 +1285,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="674388916582496364">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromeen tietoja kiinnostuksen kohteistasi.</translation>
 <translation id="6746338529702829275">Tarkista tilin data</translation>
 <translation id="6751521182688001123">Avaa uusi välilehti nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
+<translation id="6752130751133944215">Jos haluat palauttaa uuden ikkunan, vähennä aktiivisten ja ei-aktiivisten ikkunoiden kokonaismäärää niin, että niitä on enintään <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ei-aktiiviset ikkunat poistetaan kuuden kuukauden kuluttua.</translation>
 <translation id="6754359471209693699">Aloita uusi haku</translation>
 <translation id="6756507620369789050">Anna palautetta</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7388615499319468910">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on poissa päältä.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, 1 tiedosto listassa}other{Muu, # tiedostoa listalla}}</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
+<translation id="7400424692675800399">Jos haluat avata uuden ikkunan, vähennä aktiivisten ja ei-aktiivisten ikkunoiden kokonaismäärää niin, että niitä on enintään <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Chromen ensimmäinen käyttökerta</translation>
 <translation id="7411224099004328643">Google-tilin käyttäjä</translation>
 <translation id="7419565702166471774">Käytä aina suojattuja yhteyksiä</translation>
@@ -1792,6 +1799,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8816556050903368450">Sisältää linkin: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Esikatseluvälilehden sisältö ei ole katsottavissa.</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
+<translation id="8824359129672223138">Sinulla voi olla enintään <ph name="MAX_WINDOW_COUNT" /> ikkunaa.</translation>
 <translation id="8835786707922974220">Varmista, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>
 <translation id="883806473910249246">Sisältöä ladattaessa tapahtui virhe.</translation>
 <translation id="8840953339110955557">Tämä sivu saattaa poiketa verkossa olevasta versiosta.</translation>
@@ -1876,6 +1884,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9168847423516963845">Siirrä osoitepalkki alareunaan</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Ladataanko "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tarkistettu 1 minuutti sitten}other{Tarkistettu # minuuttia sitten}}</translation>
 <translation id="9204021776105550328">Poistetaan</translation>

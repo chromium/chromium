@@ -1939,6 +1939,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2328561734797404498">Restartujte uređaj da biste koristili aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kada ste u režimu bez arhiviranja, sajtovi mogu da koriste kolačiće samo da bi videli aktivnosti pregledanja kod njih. Kolačići se brišu na kraju sesije bez arhiviranja.</translation>
 <translation id="2329597144923131178">Prijavite se da bi vam obeleživači, istorija, lozinke i druga podešavanja bili dostupni na svim uređajima.</translation>
+<translation id="2330182457402792918">Izaberite fajlove koje ovaj sajt može da čita</translation>
 <translation id="2331334586452217517">Sadržaj sa ovog sajta se šalje Google-u i mogu da ga vide osobe koje pregledaju. Više o: <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Učitavanje uređaja sačuvanih na <ph name="PRIMARY_EMAIL" /> nije uspelo. Proverite internet vezu i probajte ponovo.</translation>
 <translation id="2332131598580221120">Prikaži u prodavnici</translation>
@@ -8799,6 +8800,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7222232353993864120">Imejl adresa</translation>
 <translation id="7222335051802562841">Završi ažuriranje</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Izaberite fajl koji ovaj sajt može da čita</translation>
 <translation id="7223952304612664117">Ovo omogućava sistemskim uslugama da koriste preciznost lokacije za utvrđivanje lokacije. Preciznost lokacije koristi informacije o bežičnim signalima i senzorima za procenu lokacije uređaja.</translation>
 <translation id="7225082563376899794">Koristi Windows Hello pri popunjavanju lozinki</translation>
 <translation id="7225179976675429563">Nedostaje tip mreže</translation>
@@ -9936,6 +9938,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8000020256436988724">Traka s alatkama</translation>
 <translation id="800117767980299235">Važni audio delovi</translation>
 <translation id="8002274832045662704">Napredna konfiguracija štampača</translation>
+<translation id="8002597610026749658">Chrome može da pravi titlove za jezike prikazane ovde</translation>
 <translation id="8002670234429879764">Štampač <ph name="PRINTER_NAME" /> više nije dostupan</translation>
 <translation id="8004092996156083991">Ako su vam lozinke ugrožene, obavestićemo vas o tome.</translation>
 <translation id="8004507136466386272">Reči</translation>

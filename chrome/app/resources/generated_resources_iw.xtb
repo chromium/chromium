@@ -1953,6 +1953,7 @@
 <translation id="2328561734797404498">יש להפעיל מחדש את המכשיר כדי להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">‏במצב פרטי, אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה שלך באתר שלהם בלבד. קובצי cookie נמחקים בסיום הסשן הפרטי.</translation>
 <translation id="2329597144923131178">יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך.</translation>
+<translation id="2330182457402792918">בחירת קבצים שהאתר הזה יכול לקרוא</translation>
 <translation id="2331334586452217517">‏התוכן מהאתר הזה נשלח אל Google ויכול להיות שבודקים אנושיים יראו אותו. אפשר לקרוא על <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">לא ניתן לטעון מכשירים שנשמרו בחשבון <ph name="PRIMARY_EMAIL" />. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="2332131598580221120">הצגה בחנות</translation>
@@ -8815,6 +8816,7 @@
 <translation id="7222232353993864120">כתובת אימייל</translation>
 <translation id="7222335051802562841">סיום העדכון</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">בחירת קובץ שהאתר הזה יכול לקרוא</translation>
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
@@ -9951,6 +9953,7 @@
 <translation id="8000020256436988724">סרגל כלים</translation>
 <translation id="800117767980299235">הקראת ההדגשה</translation>
 <translation id="8002274832045662704">הגדרה מתקדמת של המדפסת</translation>
+<translation id="8002597610026749658">‏‫Chrome יכול ליצור כתוביות בשפות שמוצגות כאן</translation>
 <translation id="8002670234429879764">המדפסת <ph name="PRINTER_NAME" /> לא זמינה יותר</translation>
 <translation id="8004092996156083991">אם הסיסמאות שלך ייחשפו לאחרים, אנחנו נודיע לך.</translation>
 <translation id="8004507136466386272">מילים</translation>

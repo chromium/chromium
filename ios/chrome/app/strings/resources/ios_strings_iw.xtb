@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">השתנתה</translation>
 <translation id="1480152980057770392">הצגת רשימת הקריאה</translation>
-<translation id="1484758781961275277">מפיקים את המרב מדפדפן המחשב המוכר והאהוב גם באייפד.</translation>
 <translation id="1485907716209290998">מעקב אחר חבילה</translation>
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">שכונה</translation>
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
-<translation id="2597486707832946298">מפיקים את המרב מדפדפן המחשב המוכר והאהוב גם באייפון.</translation>
 <translation id="2601778637777010194">מעקב אחר ירידות במחירים של מוצרים</translation>
 <translation id="260378315836159338">בחלק העליון של המסך, לוחצים על +</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="309710370695886264">יש לך סיסמה אחת בשימוש חוזר. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.</translation>
-<translation id="3102139268911534961">מפיקים את המרב מהדפדפן המוכר והאהוב לנייד גם באייפון.</translation>
 <translation id="3102790820790869053">חיפוש בכרטיסיות האחרונות</translation>
 <translation id="3106690631878101882">‏הסתרה של Translate</translation>
 <translation id="310900540163454140">למחוק את הסיסמה של <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4070132839822635162">אני לא רוצה להיכנס</translation>
-<translation id="4094361089640885693">קל לעקוב אחר מחירים ולקבל מדדי מחירים.</translation>
 <translation id="4099756562043439968">הגדרת תזכורת</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
 <translation id="4111985840824673503">סימון הכול כ'נקרא'</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4250432749243022864">{count,plural, =0{פתיחת {count} כרטיסיות}=1{פתיחת הכרטיסייה ({count})}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
 <translation id="4250680216510889253">לא</translation>
-<translation id="4251531167342733205">מפיקים את המרב מהדפדפן האהוב.</translation>
 <translation id="4253168017788158739">הערה</translation>
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4263576668337963058">הצגה של פעולות זמינות בדף</translation>
@@ -1465,7 +1460,6 @@
 <translation id="6759709389246683070">אפשר ללחוץ לחיצה ארוכה על הכרטיסייה הזו כדי להגדיר תזכורת לחזור אליה מאוחר יותר</translation>
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6770452996697898492">[בוצעה הזמנה]</translation>
-<translation id="6775647281444147078">‏השיחות במסגרת הארגון לא משמשות לשיפור המודלים שלנו. ‫Gemini עלול לתת מידע לא מדויק, גם בנוגע לאנשים, אז כדאי לבדוק היטב את התשובות. הפרטיות שלך ו-Gemini</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
 <translation id="6791425686608802741">לוחצים על "הוספת הכרטיסייה לקבוצה חדשה"</translation>
@@ -1557,7 +1551,6 @@
 <translation id="7173721738069475737">{count,plural, =1{הסימנייה נשמרה}one{‫{count} סימניות נשמרו}two{‫{count} סימניות נשמרו}other{‫{count} סימניות נשמרו}}</translation>
 <translation id="7176183551031110427">התרחקות</translation>
 <translation id="7186568385131859684">‏יש לך אפשרות לשלוט בדרכים שבהן נשתמש בהיסטוריית הגלישה ביחד עם שאר הנתונים שלך בשירותי Google</translation>
-<translation id="718807879214459529">מפיקים את המרב מהדפדפן המוכר והאהוב לנייד גם באייפד.</translation>
 <translation id="719133302483559673">אפשר לנהל את תחומי העניין וההעדפות.</translation>
 <translation id="720399613139435155">התרגום נכשל</translation>
 <translation id="7204922488054642675">חדשות מותאמות אישית</translation>
@@ -1631,7 +1624,6 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏כדי לנעול את כרטיסיות המצב האנונימי, יש להגדיר Touch ID,‏ Face ID או קוד גישה.</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
-<translation id="7512075701202892785">הדפדפן האהוב זמין עכשיו באייפד</translation>
 <translation id="7512909159512473473">הזנת ביטוי סיסמה…</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7514530647142300459">‏המשך השימוש בסיסמאות בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@
 <translation id="760667371114328991">השבתת ההתראות של הטיימר לדיווח על מצב מסוכן</translation>
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612849887607288481">‏פתיחת תפריט אב הטיפוס של ה-AI</translation>
-<translation id="7615581988398168124">‏השימוש כפוף לתנאים של Google ולהודעת הפרטיות של ממשקי Gemini. ‫Gemini עלול לטעות, לכן חשוב לבדוק היטב את התשובות שלו.</translation>
 <translation id="7620522820075868385">ביטול</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{‫{COUNT} סיסמאות שנחשפו}two{‫{COUNT} סיסמאות שנחשפו}other{‫{COUNT} סיסמאות שנחשפו}}</translation>
@@ -1987,7 +1978,6 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8822421075653507124">כדי לוודא שאפשר להשתמש במכשיר באופן בטוח, האדמין של הארגון צריך לקבל מידע על מערכת ההפעלה, הדפדפן וההגדרות של המכשיר, וגם על התוכנה שמותקנת במכשיר.</translation>
 <translation id="8825562130641217944">גישה לסימניות, לסיסמאות ועוד.</translation>
-<translation id="8827154289515190290">‏הדפדפן האהוב זמין עכשיו ב-iOS</translation>
 <translation id="8831208860914609320">סגירת כל הכרטיסיות הלא פעילות</translation>
 <translation id="8831944931153286232">הוספה לרשימת הקריאה</translation>
 <translation id="8837654851594567190">מיון לפי המקור</translation>
@@ -2000,7 +1990,6 @@
 <translation id="8863067612494559785">מתבצעת העברה אל <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">‏קבלת מסלול הגעה ומידע מקומי ממפות Google</translation>
 <translation id="886477344907998366">הצגת הסימניות</translation>
-<translation id="8869239474428371589">נהנים מהמיטב של הדפדפן האהוב</translation>
 <translation id="8871974300055371298">הגדרות תוכן</translation>
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8879604564928138696">אפשר ללחוץ לחיצה כפולה כדי לנסות</translation>

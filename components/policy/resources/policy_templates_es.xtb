@@ -486,7 +486,6 @@ Si se inhabilita esta política, se reducirá la seguridad de <ph name="PRODUCT_
 
 Por ello, esta política solo debe inhabilitarse si hay problemas de compatibilidad con un software de terceros que impida que los servicios de impresión funcionen correctamente dentro del entorno aislado de LPAC.</translation>
 <translation id="1369698103169067223">Los widgets Glanceables no están habilitados para los usuarios.</translation>
-<translation id="1371626834351873151">La reducción de user-agent se habilitará para todos los orígenes.</translation>
 <translation id="1371851989348083665">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilita el modo Avanzado de carga de la batería</translation>
@@ -1357,7 +1356,6 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 <translation id="1977581177449752640">Si se le asigna un valor a esta política, el host de acceso remoto utilizará un certificado de cliente con el CN de emisor especificado para autenticarse en <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para usar cualquier certificado de cliente disponible, asígnale el valor <ph name="WILDCARD_VALUE" />. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.</translation>
 <translation id="1984934843478301531">Automatización del inicio de aplicaciones</translation>
 <translation id="1985545260037812875">Mostrar pantalla de configuración del tamaño de visualización durante el inicio de sesión</translation>
-<translation id="1985598967415986700">La reducción de user-agent se podrá controlar mediante pruebas de campo y de origen.</translation>
 <translation id="1987789058026551147">Habilitar los informes sobre las sesiones de kiosco del dispositivo</translation>
 <translation id="1988345404999458987">Proporciona la configuración de los servidores de impresión disponibles.
 
@@ -2861,7 +2859,6 @@ Nota: Puedes consultar más ejemplos detallados en The Chromium Projects: https:
           Esta política es opcional. Si no se establece, no se realizará ninguna sustitución de los términos de búsqueda.
 
           Solo se respetará esta política si la política "DefaultSearchProviderEnabled" está habilitada.</translation>
-<translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">No permitir el uso de Chrome for Testing</translation>
 <translation id="3059687162224942925">Habilitar aviso de gestión en el pie de página de la NTP</translation>
@@ -9380,12 +9377,6 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 
       En el futuro, con el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> se podrá establecer que <ph name="LACROS_NAME" /> sea el único navegador disponible en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="751071954873065775">Seleccionar DLCs (contenido descargable) que deben descargarse previamente</translation>
-<translation id="7512065400265675158">Se ha programado que el encabezado de solicitud HTTP <ph name="USER_AGENT_HEADER_NAME" /> se reduzca. Para facilitar las pruebas y la compatibilidad, esta política puede habilitar la función de reducción para todos los sitios web o impedir que las pruebas de origen o de campo puedan habilitarla.
-
-      Para obtener más información sobre <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> y su cronología, consulta este enlace:
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954">Las cargas útiles de actualizaciones automáticas de <ph name="PRODUCT_OS_NAME" /> se pueden descargar a través de HTTP en lugar de HTTPS, lo que permite el almacenamiento en caché HTTP transparente de las descargas HTTP.
 
 Si a esta política se le asigna el valor true, <ph name="PRODUCT_OS_NAME" /> intentará descargar cargas útiles de actualizaciones automáticas a través de HTTP. Si se le asigna el valor false o no se establece, se utilizará HTTPS para descargar cargas útiles de actualizaciones automáticas.</translation>

@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">自动打开 PDF 文件</translation>
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
+<translation id="1455845192930279203">您仍要从 <ph name="DOWNLOAD_DOMAIN" /> 下载“<ph name="FILE_NAME" />”(<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="1460751212339734034">减少输入，节省时间</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">当您连接到 Wi-Fi 后，“图片说明”功能将会恢复运作</translation>
 <translation id="3254409185687681395">为此页添加书签</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> 的所有网页</translation>
+<translation id="3268048651973962414">向上拖动即可查看搜索结果</translation>
 <translation id="3269093882174072735">加载图片</translation>
 <translation id="327204079441056603">我们更改了此设备上的密码保存方式</translation>
 <translation id="3280562213547448728">语音搜索</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小时前}other{# 小时前}}</translation>
 <translation id="5810288467834065221">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="5814749351757353073">随时掌握您最喜爱的网站的最新动态</translation>
+<translation id="5823093032261493462">您仍要从 <ph name="DOWNLOAD_DOMAIN" /> 下载“<ph name="FILE_NAME" />”吗？</translation>
 <translation id="5828921839638612740">您可以在 Chrome 的“设置”页面中删除数据</translation>
 <translation id="5829586821381540080">已保存至“<ph name="FOLDER_NAME" />”</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5839058148541733625">Chrome 恐龙</translation>
+<translation id="5841444063256914865">您仍要下载“<ph name="FILE_NAME" />”吗？</translation>
 <translation id="5842871376175639063">连续 <ph name="DAYS_INACTIVE" /> 天未使用的标签页和标签页分组会移至此处<ph name="AUTODELETE_SECTION" />。您随时可在“<ph name="SETTINGS_TITLE" />”中更改此设置。</translation>
 <translation id="5848257610304005265">要使用“<ph name="APP_NAME" />”打开 PDF 文件吗？</translation>
 <translation id="5849288995120328556">停止分享？</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还能将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
+<translation id="6752130751133944215">如需恢复新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。非活跃窗口在 6 个月后会被删除。</translation>
 <translation id="6754359471209693699">开始新的搜索</translation>
 <translation id="6756507620369789050">分享反馈</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
@@ -1445,6 +1450,7 @@
 <translation id="7388615499319468910">网站和广告主可以了解广告效果。此设置已关闭。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{其他，列表中有 1 个文件}other{其他，列表中有 # 个文件}}</translation>
 <translation id="7400418766976504921">网址</translation>
+<translation id="7400424692675800399">如需打开新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。</translation>
 <translation id="7403691278183511381">Chrome 首次运行体验</translation>
 <translation id="7411224099004328643">Google 账号用户</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
@@ -1791,6 +1797,7 @@
 <translation id="8816556050903368450">包含链接：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
+<translation id="8824359129672223138">您最多只能打开 <ph name="MAX_WINDOW_COUNT" /> 个窗口。</translation>
 <translation id="8835786707922974220">确保您可以随时访问自己的已保存密码</translation>
 <translation id="883806473910249246">下载此内容时出错。</translation>
 <translation id="8840953339110955557">此网页可能与在线版本有所不同。</translation>
@@ -1875,6 +1882,7 @@
 <translation id="9168847423516963845">将地址栏移到底部</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="918419812064856259">Chrome Beta 版</translation>
+<translation id="9189607089796819144">您仍要下载“<ph name="FILE_NAME" />”(<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204021776105550328">正在删除</translation>

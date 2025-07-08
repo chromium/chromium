@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Отворај ги PDF-датотеките автоматски</translation>
 <translation id="1437543266176261764">Се извршува во <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
+<translation id="1455845192930279203">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) од <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Штедете време, пишувајте помалку</translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">Описите на сликите ќе продолжат кога ќе се поврзете на Wi-Fi</translation>
 <translation id="3254409185687681395">Обележи ја страницата</translation>
 <translation id="3265093782546847662">Сите страници од <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Повлечете нагоре за да ги видите резултатите од пребарување</translation>
 <translation id="3269093882174072735">Вчитај слика</translation>
 <translation id="327204079441056603">Променивме како се зачувуваат лозинките на уредов</translation>
 <translation id="3280562213547448728">Гласовно пребарување</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{Пред # час}one{Пред # час}other{Пред # часа}}</translation>
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="5814749351757353073">Следете ги новостите на омилените сајтови</translation>
+<translation id="5823093032261493462">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ од <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Податоците може да ги избришете во „Поставки за Chrome“</translation>
 <translation id="5829586821381540080">Зачувано во <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5833984609253377421">Сподели го линкот</translation>
 <translation id="5839058148541733625">Диносаурус на Chrome</translation>
+<translation id="5841444063256914865">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“?</translation>
 <translation id="5842871376175639063">Картичките и групите картички што не сте ги користеле <ph name="DAYS_INACTIVE" /> дена се преместуваат овде<ph name="AUTODELETE_SECTION" />. Ова може да го промените кога сакате во <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Да се отвори PDF-датотеката со <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Да се сопре споделувањето?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">Нормално е сајтовите што ги посетувате да ги помнат работите што ве интересираат за да го персонализираат вашето доживување. Сајтовите можат и да зачувуваат податоци со Chrome за вашите интереси.</translation>
 <translation id="6746338529702829275">Прегледајте ги податоците на вашата сметка</translation>
 <translation id="6751521182688001123">Брзо отворете нова картичка. За да ја измените сликава од екранот, допрете и задржете.</translation>
+<translation id="6752130751133944215">За да вратите нов прозорец, намалете го вкупниот број активни и неактивни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку. Неактивните прозорци се бришат по 6 месеци.</translation>
 <translation id="6754359471209693699">Започни ново пребарување</translation>
 <translation id="6756507620369789050">Споделете повратни информации</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е исклучена.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Друго, 1 датотека во список}one{Друго, # датотека во список}other{Друго, # датотеки во список}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">За да отворите нов прозорец, намалете го вкупниот број активни и неактивни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку.</translation>
 <translation id="7403691278183511381">Искуство при првото извршување на Chrome</translation>
 <translation id="7411224099004328643">Корисник на сметка на Google</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">Со линкот: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
+<translation id="8824359129672223138">Може да имате најмногу <ph name="MAX_WINDOW_COUNT" /> прозорци.</translation>
 <translation id="8835786707922974220">Погрижете се секогаш да имате пристап до зачуваните лозинки</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>
 <translation id="8840953339110955557">Страницава може да се разликува од онлајн верзијата.</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">Премести ја лентата за адреса најдолу</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Историјата ќе ви биде достапна на сите ваши синхронизирани уреди за да може да продолжите со она што сте го правеле</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>
 <translation id="9204021776105550328">Се брише</translation>

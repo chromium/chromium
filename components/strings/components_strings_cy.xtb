@@ -2415,6 +2415,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5043753287208271200">Melyn 3</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5048293684454354469">Mae pynciau hysbysebion yn un o lawer o bethau y gall gwefan eu defnyddio i bersonoleiddio hysbysebion. Hyd yn oed heb bynciau hysbysebion, gall gwefannau ddangos hysbysebion i chi o hyd ond mae'n bosib y byddant yn llai personol. Dysgu rhagor am <ph name="BEGIN_LINK" />reoli eich preifatrwydd hysbysebion<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Pwyswch Tab am fwy o lwybrau byr chwilio sydd ar gael ar ôl yr awgrym chwilio hwn</translation>
 <translation id="5052517576853118371">Pynciau gweithredol</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{I anfon y ffeil hon drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}zero{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}two{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}few{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}many{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}other{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}}</translation>
 <translation id="505757197798929356">Rhowch reswm dros agor (gofynnol)</translation>
@@ -4835,6 +4836,7 @@ Manylion ychwanegol:
 <translation id="9174917557437862841">Botwm newid tab, pwyswch Enter i newid i'r tab hwn</translation>
 <translation id="9177283544810807743">Mae'r PDF hwn yn anhygyrch. Echdynnu testun, wedi'i bweru gan Google AI</translation>
 <translation id="9179703756951298733">Rheoli eich taliadau a gwybodaeth cerdyn credyd yn Gosodiadau Chrome</translation>
+<translation id="9179766227052716237">Mae eich sefydliad yn dweud: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Cael hysbysiadau e-bost os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="9183302530794969518">Dogfennau Google</translation>
 <translation id="9183425211371246419">Mae <ph name="HOST_NAME" /> yn defnyddio protocol na chefnogir.</translation>

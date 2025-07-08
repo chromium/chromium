@@ -1955,6 +1955,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2328561734797404498">Endurræstu tækið til að nota <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Þegar þú notar huliðsstillingu geta vefsvæði aðeins notað fótspor til að sjá vafranotkun þína á sínu eigin vefsvæði. Fótsporum er eytt við lok hverrar huliðslotu.</translation>
 <translation id="2329597144923131178">Skráðu þig inn til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín.</translation>
+<translation id="2330182457402792918">Veldu skrár sem vefsvæðið getur lesið</translation>
 <translation id="2331334586452217517">Efni þessarar síðu er sent til Google og mannlegir yfirlesarar kunna að fara yfir það. Um <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Ekki tókst að hlaða tækjum sem eru vistuð á <ph name="PRIMARY_EMAIL" />. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="2332131598580221120">Skoða í verslun</translation>
@@ -8813,6 +8814,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7222232353993864120">Netfang</translation>
 <translation id="7222335051802562841">Ljúka uppfærslu</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Veldu skrá sem vefsvæðið getur lesið</translation>
 <translation id="7223952304612664117">Þetta gerir kerfisþjónustunni kleift að nota staðsetningarnákvæmni til að finna staðsetninguna þína. Staðsetningarnákvæmni notar upplýsingar um þráðlaus merki og skynjara til að meta staðsetningu tækisins.</translation>
 <translation id="7225082563376899794">Nota Windows Hello við útfyllingu aðgangsorða</translation>
 <translation id="7225179976675429563">Tegund nets vantar</translation>
@@ -9950,6 +9952,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8000020256436988724">Tækjastika</translation>
 <translation id="800117767980299235">Raddmerking</translation>
 <translation id="8002274832045662704">Ítarlegar stillingar prentara</translation>
+<translation id="8002597610026749658">Chrome getur búið til skjátexta á eftirfarandi tungumálum</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ekki lengur til staðar</translation>
 <translation id="8004092996156083991">Við látum þig vita ef aðgangsorðin þín eru í hættu.</translation>
 <translation id="8004507136466386272">Orð</translation>

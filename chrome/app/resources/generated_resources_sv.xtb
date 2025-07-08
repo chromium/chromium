@@ -1954,6 +1954,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2328561734797404498">Starta om enheten om du vill använda <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">När du surfar i inkognitoläge kan webbplatser bara använda cookies för att se webbaktivitet på den egna webbplatsen. Cookies raderas när inkognitosessionen avslutas.</translation>
 <translation id="2329597144923131178">Logga in så blir bokmärken, historik, lösenord med mera tillgängligt på alla dina enheter.</translation>
+<translation id="2330182457402792918">Välj filer som webbplatsen kan läsa</translation>
 <translation id="2331334586452217517">Innehåll från den här webbplatsen skickas till Google och kan ses av mänskliga granskare. Om <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Det gick inte att läsa in enheterna som har sparats i <ph name="PRIMARY_EMAIL" />. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="2332131598580221120">Visa i butik</translation>
@@ -8811,6 +8812,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7222232353993864120">E-postadress</translation>
 <translation id="7222335051802562841">Slutför uppdatering</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Välj en fil som webbplatsen kan läsa</translation>
 <translation id="7223952304612664117">Detta gör att systemtjänster kan använda Platsangivelsens exakthet för att fastställa din plats. Platsangivelsens exakthet använder information om trådlösa signaler och sensorer för att beräkna enhetens plats.</translation>
 <translation id="7225082563376899794">Fyll i lösenord med Windows Hello</translation>
 <translation id="7225179976675429563">Nätverkstyp saknas</translation>
@@ -9948,6 +9950,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8000020256436988724">Verktygsfält</translation>
 <translation id="800117767980299235">Ljudinspelning av mötespunkter</translation>
 <translation id="8002274832045662704">Avancerad skrivarkonfiguration</translation>
+<translation id="8002597610026749658">Chrome kan skapa textning för de språk som visas här</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> är inte längre tillgänglig</translation>
 <translation id="8004092996156083991">Vi meddelar dig om dina lösenord är utsatta.</translation>
 <translation id="8004507136466386272">Ord</translation>

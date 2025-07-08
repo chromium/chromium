@@ -112,6 +112,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1435593198351412143">Hap automatikisht skedarët PDF</translation>
 <translation id="1437543266176261764">Po ekzekutohet në <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
+<translation id="1455845192930279203">Dëshiron që ta shkarkosh "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) nga <ph name="DOWNLOAD_DOMAIN" /> gjithsesi?</translation>
 <translation id="1460751212339734034">Kurse kohë, shkruaj më pak</translation>
 <translation id="1466383950273130737">Zgjidh gjuhën e Chrome</translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
@@ -186,6 +187,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1829244130665387512">Gjej në faqe</translation>
 <translation id="1832459821645506983">Po, jam dakord</translation>
 <translation id="1845958458910716240">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ndaloi njoftimet nga ky sajt. Mund ta rishikosh dhe menaxhosh.}other{Chrome ndaloi njoftimet nga këto sajte. Mund ta rishikosh dhe menaxhosh.}}</translation>
 <translation id="1871098866036088250">Hapi në shfletuesin Chrome</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1877073879466606884">Profili në të cilin je identifikuar është një profil i menaxhuar. Administratori yt mund të bëjë ndryshime në cilësimet e profilit tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme.</translation>
@@ -493,6 +495,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3250563604907490871">Përshkrimet e imazheve do të vazhdojnë kur të lidhesh me Wi-Fi</translation>
 <translation id="3254409185687681395">Regjistroje këtë faqe në faqeshënues</translation>
 <translation id="3265093782546847662">Të gjitha faqet e <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Zvarrit lart për të shikuar rezultatet e kërkimit</translation>
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="327204079441056603">Ne e kemi ndryshuar mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="3280562213547448728">Kërkimi me zë</translation>
@@ -1055,11 +1058,13 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5809361687334836369">{HOURS,plural, =1{# orë më parë}other{# orë më parë}}</translation>
 <translation id="5810288467834065221">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="5814749351757353073">Ndiq sajtet e tua të preferuara</translation>
+<translation id="5823093032261493462">Dëshiron që ta shkarkosh "<ph name="FILE_NAME" />" nga <ph name="DOWNLOAD_DOMAIN" /> gjithsesi?</translation>
 <translation id="5828921839638612740">Mund t'i fshish të dhënat në "Cilësimet" e Chrome</translation>
 <translation id="5829586821381540080">Ruajtur në: <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5833984609253377421">Ndaj lidhjen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Dëshiron ta shkarkosh "<ph name="FILE_NAME" />" gjithsesi?</translation>
 <translation id="5842871376175639063">Skedat dhe grupet e skedave që nuk ke përdorur për <ph name="DAYS_INACTIVE" /> ditë zhvendosen këtu<ph name="AUTODELETE_SECTION" />. Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="5848257610304005265">Të hapet skedari PDF me aplikacionin "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Të ndalohet ndarja?</translation>
@@ -1280,6 +1285,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="674388916582496364">Zakonisht, sajtet që ti viziton i kujtojnë gjërat që të interesojnë për të personalizuar përvojën tënde. Sajtet mund të ruajnë po ashtu informacione në Chrome për interesat e tu.</translation>
 <translation id="6746338529702829275">Rishiko të dhënat e llogarisë sate</translation>
 <translation id="6751521182688001123">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
+<translation id="6752130751133944215">Për të restauruar një dritare të re, zvogëlo numrin total të dritareve aktive dhe joaktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak. Dritaret joaktive fshihen pas 6 muajsh.</translation>
 <translation id="6754359471209693699">Fillo një kërkim të ri</translation>
 <translation id="6756507620369789050">Ndaj komente</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7388615499319468910">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është joaktiv.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Tjetër, 1 skedar në listë}other{Tjetër, # skedarë në listë}}</translation>
 <translation id="7400418766976504921">URL-ja</translation>
+<translation id="7400424692675800399">Për të hapur një dritare të re, zvogëlo numrin total të dritareve aktive dhe joaktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak.</translation>
 <translation id="7403691278183511381">Përvoja e ekzekutimit të parë të Chrome</translation>
 <translation id="7411224099004328643">Përdorues i "Llogarisë së Google"</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
@@ -1792,6 +1799,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8816556050903368450">Duke përfshirë lidhjen: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Përmbajtja e skedës së shikimit paraprak nuk është e shikueshme.</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
+<translation id="8824359129672223138">Mund të kesh deri në <ph name="MAX_WINDOW_COUNT" /> dritare.</translation>
 <translation id="8835786707922974220">Sigurohu që gjithmonë të mund të qasesh në fjalëkalimet e tua të ruajtura</translation>
 <translation id="883806473910249246">Ndodhi një gabim gjatë shkarkimit të përmbajtjes.</translation>
 <translation id="8840953339110955557">Kjo faqe mund të ndryshojë nga versioni online.</translation>
@@ -1876,6 +1884,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9168847423516963845">Zhvendose shiritin e adresave në fund</translation>
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Dëshiron ta shkarkosh "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) gjithsesi?</translation>
 <translation id="9190276265094487094">Do të kesh historikun në të gjitha pajisjet e sinkronizuara, në mënyrë që të vazhdosh atë që po bëje</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolluar 1 minutë më parë}other{Kontrolluar # minuta më parë}}</translation>
 <translation id="9204021776105550328">Po fshihen</translation>

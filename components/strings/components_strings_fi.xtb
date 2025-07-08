@@ -2416,6 +2416,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5043753287208271200">Keltainen 3</translation>
 <translation id="5045550434625856497">Väärä salasana</translation>
 <translation id="5048293684454354469">Mainosten aiheet ovat vain yksi monista asioista, joita sivusto voi käyttää mainosten personointiin. Sivustot voivat näyttää sinulle mainoksia myös ilman mainosaiheita, mutta ne voivat olla vähemmän personoituja. Lue lisää <ph name="BEGIN_LINK" />mainosyksityisyyden ylläpidosta<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, paina sarkainta, niin näet lisää hakupikanäppäimiä tämän hakuehdotuksen jälkeen</translation>
 <translation id="5052517576853118371">Aktiiviset aiheet</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jos haluat lähettää tiedoston käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}other{Jos haluat lähettää tiedostot käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}}</translation>
 <translation id="505757197798929356">Lisää avaamisen syy (pakollinen)</translation>
@@ -4838,6 +4839,7 @@ Lisätietoja:
 <translation id="9174917557437862841">Välilehden vaihtopainike, paina Enter siirtyäksesi tälle välilehdelle</translation>
 <translation id="9177283544810807743">PDF-tiedosto ei ole käytettävissä. Tekstiä poimitaan Googlen tekoälyn avulla.</translation>
 <translation id="9179703756951298733">Muuta maksu- ja credit-korttitietojasi Chromen asetuksissa</translation>
+<translation id="9179766227052716237">Organisaatiosi sanoo: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Voit saada sähköposti-ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> käyttää protokollaa, jota ei tueta.</translation>

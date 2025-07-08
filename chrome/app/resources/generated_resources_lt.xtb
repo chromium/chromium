@@ -1957,6 +1957,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2328561734797404498">Paleiskite įrenginį iš naujo, kad galėtumėte naudoti programą „<ph name="APP_NAME" />“.</translation>
 <translation id="2328636661627946415">Kai naršote inkognito režimu, svetainės gali naudoti slapukus, kad peržiūrėtų jūsų naršymo veiklą tik savo svetainėje. Pasibaigus inkognito režimo seansui slapukai ištrinami.</translation>
 <translation id="2329597144923131178">Pris. ir pas. žymių, ist., slapt. bei kitų nust. duom. visuose įreng.</translation>
+<translation id="2330182457402792918">Pasirinkite failus, kuriuos ši svetainė gali skaityti</translation>
 <translation id="2331334586452217517">Turinys iš šios svetainės siunčiamas „Google“ ir gali būti peržiūrimas tikrinančių žmonių. Apie <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="2332115969598251205">Nepavyko įkelti įrenginių, išsaugotų paskyroje <ph name="PRIMARY_EMAIL" />. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="2332131598580221120">Žiūrėti parduotuvėje</translation>
@@ -8821,6 +8822,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7222232353993864120">El. pašto adresas</translation>
 <translation id="7222335051802562841">Baigti atnaujinimą</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Pasirinkite failą, kurį ši svetainė gali skaityti</translation>
 <translation id="7223952304612664117">Tai leidžia sistemos paslaugoms naudoti Vietovės nustatymo tikslumo nustatymą, kad būtų nustatyta jūsų vietovė. Siekiant aptikti įrenginio vietovę, Vietovės nustatymo tikslumui naudojama informacija apie belaidžius signalus ir jutiklius.</translation>
 <translation id="7225082563376899794">Naudoti „Windows Hello“ pildant slaptažodžius</translation>
 <translation id="7225179976675429563">Trūksta tinklo tipo</translation>
@@ -9958,6 +9960,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8000020256436988724">Įrankių juosta</translation>
 <translation id="800117767980299235">Svarbiausia informacija balsu</translation>
 <translation id="8002274832045662704">Išplėstinė spausdintuvo konfigūracija</translation>
+<translation id="8002597610026749658">„Chrome“ gali kurti subtitrus čia nurodytomis kalbomis</translation>
 <translation id="8002670234429879764">Spausdintuvas „<ph name="PRINTER_NAME" />“ nebepasiekiamas.</translation>
 <translation id="8004092996156083991">Jei jūsų slaptažodžiai bus pažeisti, informuosime jus apie tai.</translation>
 <translation id="8004507136466386272">Žodžiai</translation>

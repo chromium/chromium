@@ -13,6 +13,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puwede mong hilinging makita ang desktop na bersyon ng mga site</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
+<translation id="1178015372320901893">Bottom sheet ng aking mga shortcut</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1192844206376121885">Ide-delete nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7681597159868843240">Karaniwang ginagamit ng mga site ang mga sensor ng paggalaw ng iyong device para sa mga feature na tulad ng virtual reality o pag-track sa fitness</translation>
 <translation id="7688240020069572972">Itago ang card ng mga tip sa Chrome</translation>
 <translation id="7719367874908701697">Pag-zoom ng page</translation>
+<translation id="775043444390799886">Bawiin ang pahintulot</translation>
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7791543448312431591">Idagdag</translation>
@@ -641,6 +643,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="8549127125482561383">Paano ipapakita ang mga request</translation>
 <translation id="8558480467877843976">Magagamit mo na ngayon ang Chrome sa tuwing magbo-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
+<translation id="8580511488901768832">binuksan nang buo ang bottom sheet ng aking mga shortcut</translation>
 <translation id="8593422116412089302">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo. Kapag naka-off, hindi puwedeng hilingin sa iyo ng mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo.</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>

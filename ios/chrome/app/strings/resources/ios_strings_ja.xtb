@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">変更</translation>
 <translation id="1480152980057770392">リーディング リストを表示</translation>
-<translation id="1484758781961275277">使い慣れたパソコンのブラウザを iPad で最大限に活用できます。</translation>
 <translation id="1485907716209290998">荷物追跡</translation>
 <translation id="1486096554574027028">パスワードを検索</translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2579713773888829241">共有ドライブ</translation>
 <translation id="2593272815202181319">等幅</translation>
-<translation id="2597486707832946298">使い慣れたパソコンのブラウザを iPhone で最大限に活用できます。</translation>
 <translation id="2601778637777010194">商品の値下げを追跡</translation>
 <translation id="260378315836159338">画面上部の [+] をタップ</translation>
 <translation id="2612676031748830579">カード番号</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
 <translation id="3087734570205094154">下</translation>
 <translation id="309710370695886264">使い回しのパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
-<translation id="3102139268911534961">使い慣れたモバイル ブラウザを iPhone で最大限に活用できます。</translation>
 <translation id="3102790820790869053">最近使ったタブを検索</translation>
 <translation id="3106690631878101882">[翻訳] を非表示</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> のパスワードを削除しますか？</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4070132839822635162">ログインしない</translation>
-<translation id="4094361089640885693">簡単に価格をトラッキングして検討できます。</translation>
 <translation id="4099756562043439968">リマインダーを設定</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="4111985840824673503">すべて既読にする</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} 個のタブを開く}=1{{count} 個のタブを開く}other{{count} 個のタブを開く}}</translation>
 <translation id="4250680216510889253">いいえ</translation>
-<translation id="4251531167342733205">お気に入りのブラウザを最大限にご活用ください。</translation>
 <translation id="4253168017788158739">メモ</translation>
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4263576668337963058">利用可能なページ操作を表示</translation>
@@ -1465,7 +1460,6 @@
 <translation id="6759709389246683070">このタブを長押しすると、後で再度アクセスするようリマインダーを設定できます</translation>
 <translation id="6761393919622941301">音声</translation>
 <translation id="6770452996697898492">[予約済み]</translation>
-<translation id="6775647281444147078">組織のチャットがモデルの改善に使用されることはありません。Gemini は不正確な情報（人物に関する情報など）を表示することがあるため、生成された内容を再確認するようにしてください。プライバシーと Gemini</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6790502149545262384">まもなく、新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
 <translation id="6791425686608802741">[タブを新しいグループに追加] をタップします</translation>
@@ -1557,7 +1551,6 @@
 <translation id="7173721738069475737">{count,plural, =1{ブックマークを保存しました}other{{count} 件のブックマークを保存しました}}</translation>
 <translation id="7176183551031110427">縮小</translation>
 <translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
-<translation id="718807879214459529">使い慣れたモバイル ブラウザを iPad で最大限に活用できます。</translation>
 <translation id="719133302483559673">あなたの興味や好みに関する情報を管理します。</translation>
 <translation id="720399613139435155">翻訳できませんでした</translation>
 <translation id="7204922488054642675">パーソナライズされたニュース</translation>
@@ -1631,7 +1624,6 @@
 <translation id="7506817096924591340"><ph name="FILENAME" />（<ph name="FILESIZE" />）。</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>
-<translation id="7512075701202892785">お気に入りのブラウザを iPad で</translation>
 <translation id="7512909159512473473">パスフレーズを入力…</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514530647142300459">Google アカウント（<ph name="EMAIL" />）のパスワードを引き続き使用してください</translation>
@@ -1658,7 +1650,6 @@
 <translation id="760667371114328991">安全チェックの通知をオフにする</translation>
 <translation id="7612619742409846846">Google にログイン済みのユーザー</translation>
 <translation id="7612849887607288481">AI プロトタイプのメニューを開く</translation>
-<translation id="7615581988398168124">Google 利用規約と Gemini アプリのプライバシーに関するお知らせが適用されます。Gemini は不正確な情報を表示することがあるため、生成された回答を再確認するようにしてください。</translation>
 <translation id="7620522820075868385">キャンセル</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{不正使用されたパスワード}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
@@ -1987,7 +1978,6 @@
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8822421075653507124">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
 <translation id="8825562130641217944">ブックマークやパスワードなどを使用できます。</translation>
-<translation id="8827154289515190290">お気に入りのブラウザを iOS で</translation>
 <translation id="8831208860914609320">アクティブでないタブをすべて閉じる</translation>
 <translation id="8831944931153286232">リーディング リストに追加</translation>
 <translation id="8837654851594567190">パブリッシャーで並べ替え</translation>
@@ -2000,7 +1990,6 @@
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> に送信しています…</translation>
 <translation id="8863431381414769983">Google マップから経路とローカル情報を取得します</translation>
 <translation id="886477344907998366">ブックマークを表示する</translation>
-<translation id="8869239474428371589">お気に入りのブラウザを最大限に活用</translation>
 <translation id="8871974300055371298">コンテンツの設定</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8879604564928138696">試すにはダブルタップします</translation>

@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">બદલવામાં આવ્યું</translation>
 <translation id="1480152980057770392">વાંચન સૂચિ બતાવો</translation>
-<translation id="1484758781961275277">તમે જાણતા હો અને તમને પસંદ હોય તેવા ડેસ્કટૉપ બ્રાઉઝરની મહત્તમ સુવિધા તમારા iPad પર મેળવો.</translation>
 <translation id="1485907716209290998">પૅકેજ ટ્રૅકિંગ</translation>
 <translation id="1486096554574027028">પાસવર્ડ શોધો</translation>
 <translation id="1491277525950327607">સેટિંગ ટૉગલ કરવા માટે બે વાર ટૅપ કરો</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">પડોશ</translation>
 <translation id="2579713773888829241">શેર કરેલી ડ્રાઇવ</translation>
 <translation id="2593272815202181319">મોનોસ્પેસ</translation>
-<translation id="2597486707832946298">તમે જાણતા હો અને તમને પસંદ હોય તેવા ડેસ્કટૉપ બ્રાઉઝરની મહત્તમ સુવિધા તમારા iPhone પર મેળવો.</translation>
 <translation id="2601778637777010194">પ્રોડક્ટની કિંમતમાંના ઘટાડા ટ્રૅક કરો</translation>
 <translation id="260378315836159338">સ્ક્રીનમાં સૌથી ઉપર, + ટૅપ કરો</translation>
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="309710370695886264">તમારી પાસે 1 એવો પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
-<translation id="3102139268911534961">તમે જાણતા હો અને તમને પસંદ હોય તેવા મોબાઇલ બ્રાઉઝરની મહત્તમ સુવિધા તમારા iPhone પર મેળવો.</translation>
 <translation id="3102790820790869053">તાજેતરના ટૅબમાં શોધો</translation>
 <translation id="3106690631878101882">'અનુવાદ કરો' છુપાવો</translation>
 <translation id="310900540163454140">શું <ph name="WEBSITE" /> માટેનો પાસવર્ડ ડિલીટ કરીએ?</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">સાઇન ઇન કરશો નહીં</translation>
-<translation id="4094361089640885693">કિંમતો સરળતાથી ટ્રૅક કરો અને કિંમત સંબંધી જાણકારીઓ મેળવો.</translation>
 <translation id="4099756562043439968">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="4108998448622696017">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તે શોધીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
 <translation id="4111985840824673503">બધી વાંચ્યા વગરની તરીકે માર્ક કરો</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ટૅબ ખોલો}=1{{count} ટૅબ ખોલો}one{{count} ટૅબ ખોલો}other{{count} ટૅબ ખોલો}}</translation>
 <translation id="4250680216510889253">નહીં</translation>
-<translation id="4251531167342733205">તમારા મનપસંદ બ્રાઉઝરમાંથી વધુમાં વધુ મેળવો.</translation>
 <translation id="4253168017788158739">નોંધ</translation>
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="4263576668337963058">પેજ માટે ઉપલબ્ધ ક્રિયાઓ બતાવો</translation>
@@ -1465,7 +1460,6 @@
 <translation id="6759709389246683070">પછીથી ફરી મુલાકાત લેવા માટે રિમાઇન્ડર સેટ કરવા માટે તમે આ ટૅબને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો</translation>
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6770452996697898492">[બુક કરવામાં આવી]</translation>
-<translation id="6775647281444147078">અમારા મૉડલને બહેતર બનાવવા માટે, તમારી સંસ્થાની ચૅટનો ઉપયોગ કરવામાં આવતો નથી. Gemini અચોક્કસ માહિતી બતાવી શકે છે, જેમાં લોકો વિશેની અચોક્કસ માહિતી શામેલ છે, તેથી તેને બે વાર ચેક કરો. તમારી પ્રાઇવસી અને Gemini</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
@@ -1557,7 +1551,6 @@
 <translation id="7173721738069475737">{count,plural, =1{બુકમાર્ક સાચવ્યું}one{{count} બુકમાર્ક સાચવ્યું}other{{count} બુકમાર્ક સાચવ્યા}}</translation>
 <translation id="7176183551031110427">નાનું કરો</translation>
 <translation id="7186568385131859684">Googleની તમામ સેવાઓમાં તમારા અન્ય ડેટા સાથે બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કેવી રીતે થાય તે નિયંત્રિત કરો</translation>
-<translation id="718807879214459529">તમે જાણતા હો અને તમને પસંદ હોય તેવા મોબાઇલ બ્રાઉઝરની મહત્તમ સુવિધા તમારા iPad પર મેળવો.</translation>
 <translation id="719133302483559673">તમારી રુચિઓ અમે પસંદગીઓ મેનેજ કરો.</translation>
 <translation id="720399613139435155">અનુવાદ કરવાનું નિષ્ફળ થયું</translation>
 <translation id="7204922488054642675">તમારી પસંદના ન્યૂઝ</translation>
@@ -1631,7 +1624,6 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
-<translation id="7512075701202892785">તમને ગમતું બ્રાઉઝર હવે iPad પર છે</translation>
 <translation id="7512909159512473473">પાસફ્રેઝ દાખલ કરો…</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514530647142300459">તમારા Google એકાઉન્ટ <ph name="EMAIL" />માં પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
@@ -1658,7 +1650,6 @@
 <translation id="760667371114328991">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન બંધ કરો</translation>
 <translation id="7612619742409846846">Google પર આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="7612849887607288481">AI પ્રોટોટાઇપિંગ મેનૂ ખોલો</translation>
-<translation id="7615581988398168124">Google સેવાની શરતો અને Gemini ઍપ પ્રાઇવસી નોટિસ લાગુ થાય છે. Geminiથી ભૂલો થઈ શકે છે, તેથી બે વાર ચેક કરો.</translation>
 <translation id="7620522820075868385">રદ કરો</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ચેડાં કરાયેલા પાસવર્ડ}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
@@ -1987,7 +1978,6 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8822421075653507124">આ ડિવાઇસનો સલામત રીતે ઉપયોગ કરી શકાય તેની ખાતરી કરવા માટે, તમારી સંસ્થાને તેની ઑપરેટિંગ સિસ્ટમ, બ્રાઉઝર, સેટિંગ અને ડિવાઇસ પર કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે તે વિશેની માહિતી જોવાની કદાચ જરૂર પડી શકે છે.</translation>
 <translation id="8825562130641217944">તમારા બુકમાર્ક, પાસવર્ડ અને બીજી ઘણી બાબતો મેળવો.</translation>
-<translation id="8827154289515190290">તમને ગમતું બ્રાઉઝર હવે iOS પર છે</translation>
 <translation id="8831208860914609320">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="8831944931153286232">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8837654851594567190">પબ્લિશર મુજબ સૉર્ટ કરો</translation>
@@ -2000,7 +1990,6 @@
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ…</translation>
 <translation id="8863431381414769983">Google Maps દ્વારા દિશાનિર્દેશો અને સ્થાન માહિતી મેળવો</translation>
 <translation id="886477344907998366">બુકમાર્ક બતાવો</translation>
-<translation id="8869239474428371589">તમારા મનપસંદ બ્રાઉઝરમાંથી વધુમાં વધુ મેળવો</translation>
 <translation id="8871974300055371298">કન્ટેન્ટ સેટિંગ</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8879604564928138696">અજમાવવા માટે બે વાર ટૅપ કરો</translation>

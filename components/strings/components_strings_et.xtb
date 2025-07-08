@@ -2415,6 +2415,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5043753287208271200">Kollane 3</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="5048293684454354469">Reklaamiteemad on vaid üks paljudest asjadest, mida sait võib kasutada reklaamide isikupärastamiseks. Saidid võivad teile reklaame näidata ka ilma reklaamiteemadeta, kuid need ei pruugi olla nii isikupärastatud. Vaadake lisateavet <ph name="BEGIN_LINK" />oma reklaamide privaatsuse haldamise kohta<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, vajutage tabulaatorit, et pärast seda otsingusoovitust teisi saadaval otsingu otseteid näha</translation>
 <translation id="5052517576853118371">Aktiivsed teemad</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Selle faili saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}other{Nende failide saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Esitage avamise põhjus (nõutav)</translation>
@@ -4836,6 +4837,7 @@ Lisateave:
 <translation id="9174917557437862841">Vahelehe vahetamise nupp, vajutage selle vahelehe aktiveerimiseks sisestusklahvi</translation>
 <translation id="9177283544810807743">Sellele PDF-ile ei saa juurde pääseda. Teksti ekstraktimine, toimib Google'i AI platvormil.</translation>
 <translation id="9179703756951298733">Hallake oma maksete ja krediitkaardi teavet Chrome'i seadetes</translation>
+<translation id="9179766227052716237">Teie organisatsioon ütleb: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">Saadetakse meiliteavitus, kui hind mõnel saidil langeb</translation>
 <translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> kasutab toetamata protokolli.</translation>

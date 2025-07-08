@@ -16,7 +16,6 @@
 <translation id="1352919863522755794">Google Salasanat ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
 <translation id="1394995526009609883">Voit muuttaa valintoja milloin tahansa Chromen asetuksista.</translation>
 <translation id="1407843355326180937">Kirjaudu tälle sivustolle ja Chromeen, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
-<translation id="1426599484714342603">Hyödynnä Chrome Shoppingia</translation>
 <translation id="1462727070346936664">Saat eniten irti Chromesta kirjautumalla sisään.</translation>
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
@@ -33,7 +32,6 @@ Huomioitavaa:
 <translation id="1554731936187952550">Käytössäsi on Chromen vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="155816064895200734">Valitse Chrome oletusselaimeksi</translation>
 <translation id="1580570086594302477">Avaa uuden incognito-välilehden Chromessa.</translation>
-<translation id="1634522710245925681">Käytä Chromea oletuksena, niin näet hintatiedot helposti</translation>
 <translation id="1646463005043273333">Avaa asetuksen, jolla voi valita Chromen oletusselaimeksi.</translation>
 <translation id="1670609221633730681">Chrome-vinkki: Valitse osoitepalkin sijainti</translation>
 <translation id="1683863426423719967">Jos haluat saada Chromen välilehtimuistutuksia, laita ilmoitukset päälle iOS-asetuksista.</translation>
@@ -288,7 +286,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="8018153653741938705">Pysy turvassa Google Chromen avulla</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
-<translation id="804756029368067824">Aseta Chrome oletusselaimeksi, niin voit helposti seurata haluamiesi tuotteiden hintoja ja saada hintatilastoja.</translation>
 <translation id="8065292699993359127">Avaa URL-osoitteet Chromen incognito-tilassa</translation>
 <translation id="8069507567842347179">Tätä pakettia seurataan jo Chromessa.</translation>
 <translation id="8136856065410661948">Käytetään Apple-kalenterin tapahtumien luomiseen Chromesta ja Google Lensistä.</translation>

@@ -2415,6 +2415,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5043753287208271200">Kuning 3</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
 <translation id="5048293684454354469">Topik iklan hanyalah salah satu dari banyak hal yang dapat digunakan situs untuk mempersonalisasi iklan. Bahkan tanpa topik iklan, situs tetap dapat menampilkan iklan kepada Anda, tetapi iklan tersebut mungkin kurang dipersonalisasi. Pelajari lebih lanjut cara <ph name="BEGIN_LINK" />mengelola privasi iklan<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Tekan tab untuk mendapatkan pintasan penelusuran lainnya yang tersedia setelah saran penelusuran ini</translation>
 <translation id="5052517576853118371">Topik aktif</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}other{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}}</translation>
 <translation id="505757197798929356">Berikan alasan membuka (wajib)</translation>
@@ -4832,6 +4833,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9174917557437862841">Tombol beralih tab, tekan Enter untuk beralih ke tab ini</translation>
 <translation id="9177283544810807743">PDF ini tidak dapat diakses. Mengekstrak teks, didukung oleh Google AI</translation>
 <translation id="9179703756951298733">Kelola informasi pembayaran dan kartu kredit Anda di setelan Chrome</translation>
+<translation id="9179766227052716237">Organisasi Anda menyatakan: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Dapatkan peringatan email jika ada diskon di situs mana pun</translation>
 <translation id="9183302530794969518">Google Dokumen</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> menggunakan protokol yang tidak didukung.</translation>

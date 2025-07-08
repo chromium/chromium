@@ -1936,6 +1936,7 @@
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
 <translation id="2328636661627946415">シークレット モードの間、各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。シークレット モード セッションが終了すると、Cookie は削除されます。</translation>
 <translation id="2329597144923131178">ログインすると、お使いのどのデバイスでも同じブックマーク、履歴、パスワード、その他の設定を利用できるようになります。</translation>
+<translation id="2330182457402792918">このサイトに読み取りを許可するファイルを選択してください</translation>
 <translation id="2331334586452217517">このサイトのコンテンツは Google に送信され、人間のレビュアーによる確認が行われる場合があります。<ph name="PASSWORD_CHANGE" /> について</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> に保存されているデバイスを読み込めません。インターネット接続を確認してから、もう一度お試しください。</translation>
 <translation id="2332131598580221120">ストアで見る</translation>
@@ -8780,6 +8781,7 @@
 <translation id="7222232353993864120">メール アドレス</translation>
 <translation id="7222335051802562841">更新を完了</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">このサイトに読み取りを許可するファイルを選択してください</translation>
 <translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
 <translation id="7225082563376899794">Windows Hello を使用してパスワードを入力する</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
@@ -9916,6 +9918,7 @@
 <translation id="8000020256436988724">ツールバー</translation>
 <translation id="800117767980299235">音声ハイライト</translation>
 <translation id="8002274832045662704">プリンタの詳細設定</translation>
+<translation id="8002597610026749658">ここに表示されている言語の字幕を自動で作成できます</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004092996156083991">パスワードが不正使用された場合はお知らせします。</translation>
 <translation id="8004507136466386272">1 つの数値として</translation>

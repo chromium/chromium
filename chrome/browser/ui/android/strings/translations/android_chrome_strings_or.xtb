@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">ସ୍ୱତଃ PDFଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />ରେ ଚାଲୁଛି</translation>
 <translation id="1448440926884431741">ଆପଣଙ୍କ ଟ୍ରାକ କରାଯାଇଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକୁ ବୁକମାର୍କରେ ବ୍ୟବସ୍ଥିତ କରନ୍ତୁ</translation>
+<translation id="1455845192930279203">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ <ph name="DOWNLOAD_DOMAIN" />ରୁ "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="1460751212339734034">ସମୟ ବଞ୍ଚାନ୍ତୁ, କମ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="1466383950273130737">Chromeର ଭାଷା ବାଛନ୍ତୁ</translation>
 <translation id="1477626028522505441">ସର୍ଭର୍ ସମସ୍ୟା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">ଯେତେବେଳେ ଆପଣ ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରନ୍ତି ଛବିର ବର୍ଣ୍ଣନା ପୁଣି ଆରମ୍ଭ ହେବ</translation>
 <translation id="3254409185687681395">ଏହି ପୃଷ୍ଠା ବୁକମାର୍କ କରନ୍ତୁ</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />ର ସମସ୍ତ ପୃଷ୍ଠା</translation>
+<translation id="3268048651973962414">ସର୍ଚ୍ଚ ଫଳାଫଳ ଦେଖିବାକୁ ଉପରକୁ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="3269093882174072735">ଛବିକୁ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="327204079441056603">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ କିପରି ସେଭ ହୁଏ ତାହା ଆମେ ପରିବର୍ତ୍ତନ କରିଛୁ</translation>
 <translation id="3280562213547448728">ଭଏସ୍ ସନ୍ଧାନ</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ଘଣ୍ଟା ପୂର୍ବେ}other{# ଘଣ୍ଟା ପୂର୍ବେ}}</translation>
 <translation id="5810288467834065221">କପିରାଇଟ୍ <ph name="YEAR" /> Google LLC। ସର୍ବସ୍ୱତ୍ୱ ସଂରକ୍ଷିତ।</translation>
 <translation id="5814749351757353073">ଆପଣଙ୍କ ପସନ୍ଦର ସାଇଟଗୁଡ଼ିକ ସହ ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="5823093032261493462">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ <ph name="DOWNLOAD_DOMAIN" />ରୁ "<ph name="FILE_NAME" />"କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="5828921839638612740">ଆପଣ Chrome ସେଟିଂସରେ ଡାଟାକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />ରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5833984609253377421">ଲିଙ୍କ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ "<ph name="FILE_NAME" />"କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="5842871376175639063">ଆପଣ <ph name="DAYS_INACTIVE" /> ଦିନ ପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାର କରିନଥିବା ଟାବ ଏବଂ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ଏଠାକୁ<ph name="AUTODELETE_SECTION" /> ମୁଭ କରାଯାଏ। ଆପଣ ଯେ କୌଣସି ସମୟରେ <ph name="SETTINGS_TITLE" />ରେ ଏହାକୁ ବଦଳାଇପାରିବେ।</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ PDF ଖୋଲିବେ?</translation>
 <translation id="5849288995120328556">ସେୟାର କରିବା ବନ୍ଦ କରିବେ?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">ଆପଣଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ, ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ରୁଚି ଥିବା ଜିନିଷଗୁଡ଼ିକୁ ମନେ ରଖେ। ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକ ବିଷୟରେ Chromeରେ ସୂଚନା ଷ୍ଟୋର କରିପାରିବ।</translation>
 <translation id="6746338529702829275">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡାଟାକୁ ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="6751521182688001123">ଶୀଘ୍ର ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ୍ କରିବା ପାଇଁ, ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
+<translation id="6752130751133944215">ଏକ ନୂଆ ୱିଣ୍ଡୋ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ସକ୍ରିୟ ଏବଂ ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋର ମୋଟ ସଂଖ୍ୟାକୁ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> କିମ୍ବା ତାଠାରୁ କମ କରନ୍ତୁ। 6 ମାସ ପରେ ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଡିଲିଟ କରାଯାଏ।</translation>
 <translation id="6754359471209693699">ନୂଆ ସର୍ଚ୍ଚ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6756507620369789050">ମତାମତ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">ବିଜ୍ଞାପନଗୁଡ଼ିକ କିପରି ପରଫର୍ମ କରେ ତାହା ସାଇଟଗୁଡ଼ିକ ଏବଂ ବିଜ୍ଞାପନଦାତାମାନେ ବୁଝିପାରିବେ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{ତାଲିକାରେ ଅନ୍ୟ 1 ଫାଇଲ}other{ତାଲିକାରେ ଅନ୍ୟ # ଫାଇଲ}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲିବା ପାଇଁ, ସକ୍ରିୟ ଏବଂ ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋର ମୋଟ ସଂଖ୍ୟାକୁ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> କିମ୍ବା ତାଠାରୁ କମ କରନ୍ତୁ।</translation>
 <translation id="7403691278183511381">Chrome ପ୍ରଥମଥର ଚଲାଇବାର ଅନୁଭବ</translation>
 <translation id="7411224099004328643">Google ଆକାଉଣ୍ଟ ୟୁଜର</translation>
 <translation id="7419565702166471774">ସର୍ବଦା ସୁରକ୍ଷିତ ସଂଯୋଗ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">ଲିଙ୍କ ସମେତ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ପ୍ରିଭ୍ୟୁ ଟାବର ବିଷୟବସ୍ତୁକୁ ଦେଖି ହେବ ନାହିଁ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8824359129672223138">ଆପଣ <ph name="MAX_WINDOW_COUNT" /> ପର୍ଯ୍ୟନ୍ତ ୱିଣ୍ଡୋକୁ ରଖିପାରିବେ।</translation>
 <translation id="8835786707922974220">ଆପଣ ଆପଣଙ୍କ ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସର୍ବଦା ଆକ୍ସେସ୍ କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="883806473910249246">ବିଷୟବସ୍ତୁ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଗଲା।</translation>
 <translation id="8840953339110955557">ଏହି ପୃଷ୍ଠା ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">ଠିକଣା ବାରକୁ ତଳକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="9169507124922466868">ନାଭିଗେସନ୍ ଇତିହାସ ଅଧା ଖୋଲା ଅଛି</translation>
 <translation id="918419812064856259">Chrome ବିଟା</translation>
+<translation id="9189607089796819144">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="9190276265094487094">ଆପଣଙ୍କର ସିଙ୍କ ହୋଇଥିବା ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଇତିହାସ ରହିବ ଯାହା ଫଳରେ ଆପଣ ଯାହା କରୁଛନ୍ତି ତାହା ଜାରି ରଖିପାରିବେ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
 <translation id="9204021776105550328">ଡିଲିଟ କରାଯାଉଛି</translation>

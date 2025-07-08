@@ -2415,6 +2415,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5043753287208271200">Gul 3</translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="5048293684454354469">Annonseemner er bare én av mange måter nettsteder kan levere personlig tilpassede annonser på. Selv uten annonseemner kan nettsteder vise deg annonser, men de er kanskje mindre personlig tilpasset. Finn ut mer om hvordan du <ph name="BEGIN_LINK" />administrerer annonsepersonvernet ditt<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" /> – trykk på fanen for å se flere søkehurtigtaster som er tilgjengelige etter dette søkeforslaget</translation>
 <translation id="5052517576853118371">Aktive emner</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="505757197798929356">Oppgi årsaken til åpningen (obligatorisk)</translation>
@@ -4835,6 +4836,7 @@ Mer informasjon:
 <translation id="9174917557437862841">Knappen for å bytte fane – trykk på Enter for å bytte til denne fanen</translation>
 <translation id="9177283544810807743">Denne PDF-en er ikke tilgjengelig. Henter ut tekst – drevet av Google AI</translation>
 <translation id="9179703756951298733">Administrer betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
+<translation id="9179766227052716237">Organisasjonen din sier: «<ph name="CUSTOM_MESSAGE" />».</translation>
 <translation id="9179907736442194268">Få e-postvarsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> bruker en protokoll som ikke støttes.</translation>

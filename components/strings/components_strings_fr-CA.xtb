@@ -2415,6 +2415,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5043753287208271200">Jaune 3</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5048293684454354469">Les sujets d'annonces ne sont qu'un des nombreux moyens qu'un site peut utiliser pour personnaliser les annonces. Même sans sujets d'annonces, les sites peuvent toujours vous montrer des annonces. Celles-ci pourraient toutefois moins vous intéresser. Apprenez-en davantage sur la <ph name="BEGIN_LINK" />gestion de la confidentialité de vos annonces<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, appuyez sur la touche Tabulation pour afficher d'autres raccourcis de recherche accessibles après cette suggestion de recherche</translation>
 <translation id="5052517576853118371">Sujets actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Fournir la raison de l'ouverture (obligatoire)</translation>
@@ -4834,6 +4835,7 @@ Détails supplémentaires :
 <translation id="9174917557437862841">Bouton de commutation d'onglet, appuyez sur Entrée pour basculer vers cet onglet</translation>
 <translation id="9177283544810807743">Ce fichier PDF est inaccessible. Extraction de texte, optimisée par l'IA de Google</translation>
 <translation id="9179703756951298733">Gérez vos données de paiement et vos cartes de crédit dans les paramètres de Chrome</translation>
+<translation id="9179766227052716237">Votre organisation indique : « <ph name="CUSTOM_MESSAGE" /> »</translation>
 <translation id="9179907736442194268">Obtenez des alertes par courriel si le prix est réduit sur un site.</translation>
 <translation id="9183302530794969518">Google Documents</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole non pris en charge.</translation>

@@ -3951,7 +3951,7 @@
 <translation id="7631072086707140121">‏يجب أن يستخدم عنوان URL مخطط HTTPS</translation>
 <translation id="7631527008834753063">برامج مسابقات تلفزيونية</translation>
 <translation id="7633909222644580952">تقارير الأعطال وبيانات الأداء</translation>
-<translation id="7636346903338549690">المواقع الإلكترونية التي يُسمح لها باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
+<translation id="7636346903338549690">المواقع الإلكترونية التي يُسمح لها باستخدام ملفات تعريف الارتباط الخارجية</translation>
 <translation id="7637571805876720304">‏هل تريد إزالة بطاقة الائتمان من Chromium؟</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ما مِن كلمات مرور}=1{لديك كلمة مرور واحدة في حسابك (ضمن <ph name="DOMAIN_LIST" />)}two{لديك كلمتا مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}few{لديك # كلمات مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}many{لديك # كلمة مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}other{لديك # كلمة مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">المنافذ التسلسلية</translation>

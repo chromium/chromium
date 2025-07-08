@@ -2415,6 +2415,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5043753287208271200">Gulur 3</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="5048293684454354469">Umfjöllunarefni auglýsinga er aðeins einn þáttur af mörgum sem vefsvæði geta notað til að sérsníða auglýsingar. Vefsvæði geta birt þér auglýsingar jafnvel þótt lokað sé fyrir umfjöllunarefni auglýsinga, en þær munu hugsanlega eiga síður við þig. Kynntu þér hvernig þú <ph name="BEGIN_LINK" />stjórnar persónuvernd auglýsinga<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ýttu á flipann til að fá fleiri tiltækar leitarflýtileiðir eftir þessa leitartillögu</translation>
 <translation id="5052517576853118371">Virk umfjöllunarefni</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}one{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessa skrá með nærdeilingu}other{Losaðu um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu til að senda þessar skrár með nærdeilingu}}</translation>
 <translation id="505757197798929356">Gefðu upp ástæðu opnunar (áskilið)</translation>
@@ -4835,6 +4836,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9174917557437862841">Hnappur til að skipta um flipa; ýttu á færslulykilinn til að skipta yfir í þennan flipa</translation>
 <translation id="9177283544810807743">Ekki er hægt að opna þetta PDF-skjal. Dregur út texta í krafti gervigreindar Google</translation>
 <translation id="9179703756951298733">Stjórnaðu greiðslunum þínum og kreditkortaupplýsingum í stillingum Chrome</translation>
+<translation id="9179766227052716237">Fyrirtækið þitt / stofnunin þín segir: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="9179907736442194268">Fáðu tilkynningar í tölvupósti ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> notast við óstuddar samskiptareglur.</translation>

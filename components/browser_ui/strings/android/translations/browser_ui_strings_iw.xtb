@@ -13,6 +13,7 @@
 <translation id="1073417869336441572">‏רוצה לעזור לנו לשפר את Chrome? אפשר לשתף אותנו בסיבה לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">אפשר לבקש לראות את הגרסה למחשב של אתרים</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
+<translation id="1178015372320901893">הגיליון התחתון של מקשי הקיצור שלי</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1192844206376121885">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי <ph name="ORIGIN" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="7681597159868843240">בדרך כלל, אתרים משתמשים בחיישני התנועה של המכשיר כדי לתמוך בתכונות כמו מציאות מדומה או מעקב אחר כושר</translation>
 <translation id="7688240020069572972">‏הסתרת כרטיס הטיפים של Chrome</translation>
 <translation id="7719367874908701697">מרחק מתצוגה בדף</translation>
+<translation id="775043444390799886">ביטול ההרשאה</translation>
 <translation id="7759147511335618829">‏שליטה במכשירי MIDI ותכנות מחדש</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
@@ -642,6 +644,7 @@
 <translation id="8549127125482561383">איך להציג בקשות</translation>
 <translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או לוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
+<translation id="8580511488901768832">הגיליון התחתון של מקשי הקיצור שלי נפתח בגובה מלא</translation>
 <translation id="8593422116412089302">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במידע שנשמר עליך. כשהאפשרות מושבתת, אתרים לא יכולים לבקש הרשאה להשתמש במידע שנשמר עליך.</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8617611086246832542">כשהאפשרות מופעלת, אפשר לראות אתרים בתצוגה למחשב. כשהאפשרות מושבתת, אפשר לראות אתרים בתצוגה לנייד.</translation>

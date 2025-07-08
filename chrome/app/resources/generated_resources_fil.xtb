@@ -1955,6 +1955,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2328561734797404498">Paki-restart ang iyong device para magamit ang <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kapag nasa Incognito mode ka, puwede lang gumamit ng mga cookie ang mga site para tingnan ang iyong aktibidad sa pag-browse sa sarili nilang site. Ide-delete ang mga cookie sa pagtatapos ng Incognito session.</translation>
 <translation id="2329597144923131178">Mag-sign in upang makuha ang iyong mga bookmark, history, password at ibang mga setting sa lahat ng iyong device.</translation>
+<translation id="2330182457402792918">Pumili ng mga file na mababasa ng site na ito</translation>
 <translation id="2331334586452217517">Ipinapadala sa Google ang content mula sa site na ito at puwedeng makita ito ng mga taong tagasuri. Tungkol sa <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Hindi ma-load ang mga device na naka-save sa <ph name="PRIMARY_EMAIL" />. Tingnan ang iyong koneksyon sa internet at subukan ulit.</translation>
 <translation id="2332131598580221120">Tingnan sa store</translation>
@@ -8814,6 +8815,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7222232353993864120">Email Address</translation>
 <translation id="7222335051802562841">Tapusin ang pag-update</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Pumili ng file na mababasa ng site na ito</translation>
 <translation id="7223952304612664117">Pinapayagan nito ang mga serbisyo ng system na gamitin ang Katumpakan ng Lokasyon para matukoy ang iyong lokasyon. Gumagamit ang Katumpakan ng Lokasyon ng impormasyon tungkol sa mga wireless na signal at sensor para matantya ang lokasyon ng device.</translation>
 <translation id="7225082563376899794">Gamitin ang Windows Hello kapag pinupunan ang mga password</translation>
 <translation id="7225179976675429563">Nawawala ang uri ng network</translation>
@@ -9951,6 +9953,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8000020256436988724">Toolbar</translation>
 <translation id="800117767980299235">Pag-highlight ng boses</translation>
 <translation id="8002274832045662704">Advanced na configuration ng printer</translation>
+<translation id="8002597610026749658">Puwedeng gumawa ang Chrome ng mga caption para sa mga wikang ipinapakita rito</translation>
 <translation id="8002670234429879764">Hindi na available ang <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ipapaalam namin sa iyo kung nakompromiso ang mga password mo.</translation>
 <translation id="8004507136466386272">Mga Salita</translation>

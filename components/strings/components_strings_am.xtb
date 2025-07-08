@@ -2414,6 +2414,7 @@
 <translation id="5043753287208271200">ቢጫ 3</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
 <translation id="5048293684454354469">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ነው። የማስታወቂያ ርዕሶች ባይኖሩም እንኳ ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ግላዊነት የተላበሱ ላይሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="LINK_END" /> የበለጠ ይወቁ።</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />፣ ከዚህ የፍለጋ አስተያየት ጥቆማ በኋላ ለሚገኙ ለተጨማሪ የፍለጋ አቋራጮች ትርን ይጫኑ</translation>
 <translation id="5052517576853118371">ንቁ ርዕሶች</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{አቅራቢያ አጋራን በመጠቀም ይህንን ፋይል ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}other{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}}</translation>
 <translation id="505757197798929356">የመክፈቻ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
@@ -4836,6 +4837,7 @@
 <translation id="9174917557437862841">የማብሪያ ማጥፊያ አዝራር ትር፣ ወደዚህ ትር ለመቀየር Enter ይጫኑ</translation>
 <translation id="9177283544810807743">ይህ PDF ተደራሽ አይደለም። ጽሁፍን በማውጣት ላይ፣ በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ</translation>
 <translation id="9179703756951298733">በChrome ቅንብሮች ውስጥ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ ያስተዳድሩ</translation>
+<translation id="9179766227052716237">ድርጅትዎ የሚከተለውን ይላል፦ «<ph name="CUSTOM_MESSAGE" />»</translation>
 <translation id="9179907736442194268">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ የኢሜይል ማንቂያዎችን ያግኙ</translation>
 <translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> የማይጠቀም ፕሮቶኮል ይጠቀማል።</translation>

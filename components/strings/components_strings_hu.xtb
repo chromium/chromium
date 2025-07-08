@@ -2412,6 +2412,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5043753287208271200">Sárga 3</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="5048293684454354469">A hirdetéstéma csupán egy azon számos dolog közül, amelyet a webhelyek a hirdetések személyre szabásához használhatnak. A webhelyek a hirdetéstémák nélkül is megjeleníthetnek Önnek hirdetéseket, de előfordulhat, hogy ezek a hirdetések kevésbé lesznek személyre szabottak. További információ a <ph name="BEGIN_LINK" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, a Tab billentyű lenyomásával további keresési parancsikonok jelennek meg a keresési javaslat után</translation>
 <translation id="5052517576853118371">Aktív témák</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
@@ -4835,6 +4836,7 @@ További részletek:
 <translation id="9174917557437862841">Lapváltó gomb. Az Enter billentyűvel erre a lapra válthat.</translation>
 <translation id="9177283544810807743">A PDF nem áll rendelkezésre. Szöveg kinyerése folyamatban; a Google AI által.</translation>
 <translation id="9179703756951298733">A fizetéssel és a hitelkártyával kapcsolatos adatait a Chrome-beállítások között kezelheti</translation>
+<translation id="9179766227052716237">Szervezete üzenete: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="9179907736442194268">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9183425211371246419">A(z) <ph name="HOST_NAME" /> egy nem támogatott protokollt használ.</translation>

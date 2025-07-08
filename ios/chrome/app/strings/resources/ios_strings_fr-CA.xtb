@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Modifié</translation>
 <translation id="1480152980057770392">Afficher la Liste de lecture</translation>
-<translation id="1484758781961275277">Tirez le meilleur parti du navigateur de bureau que vous connaissez et que vous aimez sur votre iPad.</translation>
 <translation id="1485907716209290998">Suivi de livraison</translation>
 <translation id="1486096554574027028">Recherche de mots de passe</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
@@ -407,7 +406,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2579713773888829241">Disques partagés</translation>
 <translation id="2593272815202181319">Espace simple</translation>
-<translation id="2597486707832946298">Tirez le meilleur parti du navigateur de bureau que vous connaissez et que vous aimez sur votre iPhone.</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix des produits</translation>
 <translation id="260378315836159338">En haut de l'écran, touchez +</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
@@ -444,6 +442,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2708051474374549906">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
 <translation id="2709516037105925701">Remplissage automatique</translation>
 <translation id="271033894570825754">Nouveau</translation>
+<translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2721190673959776287">Exemple d'aide détaillée sur le produit pour le panneau contextuel, qui devrait s'afficher plusieurs fois par jour.</translation>
 <translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
@@ -527,7 +526,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="309710370695886264">Vous avez 1 mot de passe réutilisé. Réglez ce problème maintenant pour rester en sécurité.</translation>
-<translation id="3102139268911534961">Tirez le meilleur parti du navigateur mobile que vous connaissez et que vous aimez sur votre iPhone.</translation>
 <translation id="3102790820790869053">Rechercher dans les onglets récents</translation>
 <translation id="3106690631878101882">Masquer Traduction</translation>
 <translation id="310900540163454140">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
@@ -749,7 +747,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
-<translation id="4094361089640885693">Suivez facilement les prix et obtenez des statistiques sur ceux-ci.</translation>
 <translation id="4099756562043439968">Créer un rappel</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4111985840824673503">Tout marquer comme lu</translation>
@@ -794,7 +791,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="4250680216510889253">Non</translation>
-<translation id="4251531167342733205">Tirez le meilleur parti du navigateur que vous aimez.</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
@@ -913,6 +909,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4717844083556844785">La page Web actuelle est ouverte en mode Navigation privée</translation>
 <translation id="4719927025381752090">Proposer une traduction</translation>
 <translation id="4720530280568305198">Votre sélection s'est ouverte dans un nouvel onglet</translation>
+<translation id="4720782081196952026">Réduire la taille du texte</translation>
 <translation id="472259426228234149">Prix : 100 $ à 180 $</translation>
 <translation id="4735849923335729414">Se connecter en tant que <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="473775607612524610">Mise à jour</translation>
@@ -1045,6 +1042,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5217329997012062137">Lorsque vous utilisez Lentille Google, une capture d'écran de la page est envoyée à Google.</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
+<translation id="5225388483876575107">A</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5234094073825090254">{count,plural, =1{Le favori a été enregistré dans votre compte Google, {email}}one{Le favori a été enregistré dans votre compte Google, {email}}other{Les favoris ont été enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="5234764350956374838">Fermer</translation>
@@ -1072,6 +1070,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5343472494710226394">Actualités, sports et contenu en fonction de vos champs d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
+<translation id="5371112366564891538">Augmenter la taille du texte</translation>
 <translation id="537853552771686272">Gérez les sujets et les sites qui vous intéressent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} onglet fermé}one{{count} onglet fermé}other{{count} onglets fermés}}</translation>
 <translation id="5394975111793637642">Masquer les avis sur le produit pour votre carte</translation>
@@ -1316,6 +1315,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6295751040240588413">Pseudo de carte incorrect</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
+<translation id="6301767200000930965">Aa</translation>
 <translation id="6307241780749477694">Confirmez qu'il s'agit bien de vous pour obtenir tous vos mots de passe sur cet appareil</translation>
 <translation id="6316141353357700666">Choisissez le mot de passe que vous souhaitez utiliser dans la liste qui s'affiche.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
@@ -1460,7 +1460,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6759709389246683070">Vous pouvez maintenir le doigt sur cet onglet pour définir un rappel à revoir plus tard</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
-<translation id="6775647281444147078">Les clavardages de votre organisation ne sont pas utilisés pour améliorer nos modèles. Gemini peut afficher des renseignements inexacts, y compris sur des personnes, alors vérifiez ses réponses. Gemini et votre confidentialité</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6791425686608802741">Cliquez sur « Ajouter un onglet au nouveau groupe »</translation>
@@ -1552,7 +1551,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7173721738069475737">{count,plural, =1{Favori enregistré}one{{count} favori enregistré}other{{count} favoris enregistrés}}</translation>
 <translation id="7176183551031110427">Dézoomer</translation>
 <translation id="7186568385131859684">Contrôlez la manière dont l'historique de navigation est utilisé avec vos autres données dans les services Google</translation>
-<translation id="718807879214459529">Tirez le meilleur parti du navigateur mobile que vous connaissez et que vous aimez sur votre iPad.</translation>
 <translation id="719133302483559673">Gérez vos centres d'intérêt et vos préférences.</translation>
 <translation id="720399613139435155">Échec de la traduction</translation>
 <translation id="7204922488054642675">Actualités personnalisées</translation>
@@ -1626,7 +1624,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un mot de passe.</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
-<translation id="7512075701202892785">Le navigateur que vous aimez, maintenant sur iPad</translation>
 <translation id="7512909159512473473">Entrer la phrase de passe…</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514530647142300459">Continuez à utiliser les mots de passe de votre compte Google <ph name="EMAIL" /></translation>
@@ -1653,7 +1650,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="760667371114328991">Désactiver les notifications de Vérification de sécurité</translation>
 <translation id="7612619742409846846">Connecté(e) à Google en tant que</translation>
 <translation id="7612849887607288481">Ouvrir le menu de prototypage d'IA</translation>
-<translation id="7615581988398168124">Les conditions de Google et l'avis de confidentialité des applis Gemini s'appliquent. Gemini peut se tromper. Veuillez donc vérifier ses réponses.</translation>
 <translation id="7620522820075868385">Annuler</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
@@ -1982,7 +1978,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8822421075653507124">Pour veiller à ce que cet appareil puisse être utilisé en toute sécurité, votre organisation pourrait avoir besoin de consulter des renseignements sur son système d'exploitation, son navigateur, ses paramètres ainsi que sur les logiciels qui y sont installés.</translation>
 <translation id="8825562130641217944">Accédez à vos favoris, à vos mots de passe et autres.</translation>
-<translation id="8827154289515190290">Le navigateur que vous aimez, maintenant sur iOS</translation>
 <translation id="8831208860914609320">Fermer tous les onglets inactifs</translation>
 <translation id="8831944931153286232">Ajouter à la Liste de lecture</translation>
 <translation id="8837654851594567190">Trier par éditeur</translation>
@@ -1995,7 +1990,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8863067612494559785">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="8863431381414769983">Obtenez des itinéraires et des informations locales à partir de Google Maps</translation>
 <translation id="886477344907998366">Afficher les favoris</translation>
-<translation id="8869239474428371589">Tirer le meilleur parti du navigateur que vous aimez</translation>
 <translation id="8871974300055371298">Paramètres de contenu</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8879604564928138696">Touchez deux fois pour essayer</translation>
@@ -2070,6 +2064,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9130317582644834675">Masquer Zoomer sur le texte</translation>
 <translation id="913036870884277353">Ouvrez facilement des liens dans d'autres applications.</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
+<translation id="9140888637198815199">A</translation>
 <translation id="9144230693397287797">Recevez des mises à jour pour les rappels que vous définissez ainsi que des onglets d'autres appareils</translation>
 <translation id="914781932147356857">Tout marquer…</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>

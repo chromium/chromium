@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Автоматично отваряне на PDF файловете</translation>
 <translation id="1437543266176261764">Изпълнява се в(ъв) <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Организирайте проследяваните от вас продукти в „Отметки“</translation>
+<translation id="1455845192930279203">Искате ли да изтеглите „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) от <ph name="DOWNLOAD_DOMAIN" /> въпреки това?</translation>
 <translation id="1460751212339734034">Пестете време, въвеждайте по-малко</translation>
 <translation id="1466383950273130737">Изберете език за Chrome</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">Описанията на изображенията ще продължат да се изтеглят, когато се свържете с Wi-Fi</translation>
 <translation id="3254409185687681395">Запазване на отметка към тази страница</translation>
 <translation id="3265093782546847662">Всички страници на <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Плъзнете нагоре, за да видите резултатите от търсенето</translation>
 <translation id="3269093882174072735">Зареждане на изображението</translation>
 <translation id="327204079441056603">Променихме начина, по който паролите се запазват на това устройство</translation>
 <translation id="3280562213547448728">Гласово търсене</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{преди # час}other{преди # часа}}</translation>
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="5814749351757353073">Получавайте актуална информация от любимите си сайтове</translation>
+<translation id="5823093032261493462">Искате ли да изтеглите „<ph name="FILE_NAME" />“ от <ph name="DOWNLOAD_DOMAIN" /> въпреки това?</translation>
 <translation id="5828921839638612740">Можете да изтриете данните в настройките на Chrome</translation>
 <translation id="5829586821381540080">Запазено в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Споделяне на връзката</translation>
 <translation id="5839058148541733625">Динозавърът в Chrome</translation>
+<translation id="5841444063256914865">Искате ли да изтеглите „<ph name="FILE_NAME" />“ въпреки това?</translation>
 <translation id="5842871376175639063">Разделите и групите раздели, които не сте използвали от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="SETTINGS_TITLE" />“.</translation>
 <translation id="5848257610304005265">Да се отвори ли PDF файлът чрез <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Да се спре ли споделянето?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">Посещаваните от вас сайтове обикновено запомнят нещата, които ви интересуват, за да персонализират практическата ви работа. Те също така могат да съхраняват в Chrome информация за интересите ви.</translation>
 <translation id="6746338529702829275">Преглед на данните за профила ви</translation>
 <translation id="6751521182688001123">Бързо отваряне на нов раздел. За да редактирате този пряк път, докоснете и задръжте.</translation>
+<translation id="6752130751133944215">За да възстановите нов прозорец, намалете общия брой на активните и неактивните прозорци до не повече от <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Неактивните прозорци се изтриват след 6 месеца.</translation>
 <translation id="6754359471209693699">Стартиране на ново търсене</translation>
 <translation id="6756507620369789050">Споделяне на отзиви</translation>
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">Сайтовете и рекламодателите могат да разберат ефективността на рекламите. Тази настройка е изключена.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Други, 1 файл в списъка}other{Други, # файла в списъка}}</translation>
 <translation id="7400418766976504921">URL адрес</translation>
+<translation id="7400424692675800399">За да отворите нов прозорец, намалете общия брой на активните и неактивните прозорци до не повече от <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Представяне при първо стартиране на Chrome</translation>
 <translation id="7411224099004328643">Потребител на профила в Google</translation>
 <translation id="7419565702166471774">Винаги да се използват сигурни връзки</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">Включително връзката: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Не е възможна визуализация на съдържанието на раздела.</translation>
 <translation id="8820817407110198400">Отметки</translation>
+<translation id="8824359129672223138">Можете да отворите най-много <ph name="MAX_WINDOW_COUNT" /> прозореца.</translation>
 <translation id="8835786707922974220">Обезпечете си непрекъснат достъп до запазените си пароли</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">Преместване на адресната лента в долната част</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="918419812064856259">Chrome бета</translation>
+<translation id="9189607089796819144">Искате ли да изтеглите „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) въпреки това?</translation>
 <translation id="9190276265094487094">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства, за да можете да продължавате това, което сте правили</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204021776105550328">Изтрива се</translation>

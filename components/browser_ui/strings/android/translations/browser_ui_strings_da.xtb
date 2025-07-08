@@ -13,6 +13,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan anmode om at se computerversionen af websites</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
+<translation id="1178015372320901893">Feltet i bunden, der viser Mine genveje</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Denne handling sletter alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7681597159868843240">Websites bruger normalt din enheds bevægelsessensorer til funktioner som f.eks. virtual reality eller registrering af motion</translation>
 <translation id="7688240020069572972">Skjul kort med Chrome-tips</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
+<translation id="775043444390799886">Tilbagekald tilladelse</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
@@ -641,6 +643,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8549127125482561383">Visning af anmodninger</translation>
 <translation id="8558480467877843976">Du kan nu bruge Chrome, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
+<translation id="8580511488901768832">feltet i bunden, der viser Mine genveje, er åbnet i fuld højde</translation>
 <translation id="8593422116412089302">Når indstillingen er aktiveret, kan websites anmode om tilladelse til at bruge de oplysninger, de har gemt om dig. Når indstillingen er deaktiveret, kan websites ikke anmode om tilladelse til at bruge de oplysninger, de har gemt om dig.</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8617611086246832542">Når dette er slået til, anvendes computervenlig visning af websites. Når dette er slået fra, anvendes mobilvenlig visning af websites.</translation>

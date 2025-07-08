@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Ավտոմատ բացել PDF ֆայլերը</translation>
 <translation id="1437543266176261764">Կատարվում է <ph name="APP_NAME" />-ում</translation>
 <translation id="1448440926884431741">Էջանիշներում դասավորեք ապրանքները, որոնց հետևում եք</translation>
+<translation id="1455845192930279203">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը (<ph name="FILE_SIZE" />) <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
 <translation id="1460751212339734034">Տնտեսեք ժամանակը, մուտքագրեք ավելի քիչ</translation>
 <translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
@@ -186,6 +187,7 @@
 <translation id="1829244130665387512">Գտնել էջում</translation>
 <translation id="1832459821645506983">Այո, թույլատրել</translation>
 <translation id="1845958458910716240">Ձեր տվյալները պաշտպանելու համար թույլ տվեք Chrome-ին հեռացնել թույլտվություններն այն կայքերից, որոնք վերջին ժամանակահատվածում չեք այցելել</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome-ը դադարեցրել է ծանուցումներ ուղարկել այս կայքից։ Դիտեք և կառավարեք կարգավորումները։}one{Chrome-ը դադարեցրել է ծանուցումներ ուղարկել այս կայքից։ Դիտեք և կառավարեք կարգավորումները։}other{Chrome-ը դադարեցրել է ծանուցումներ ուղարկել այս կայքերից։ Դիտեք և կառավարեք կարգավորումները։}}</translation>
 <translation id="1871098866036088250">Բացել Chrome դիտարկիչում</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1877073879466606884">Պրոֆիլը, որը մուտք եք գործել, կառավարվող է։ Ձեր ադմինիստրատորը կարող է հեռակա կարգով փոխել պրոֆիլի կարգավորումները, վերլուծել դիտարկիչի մասին տեղեկությունները հաշվետվությունների միջոցով և կատարել այլ անհրաժեշտ առաջադրանքներ։</translation>
@@ -493,6 +495,7 @@
 <translation id="3250563604907490871">Պատկերի նկարագրությունները կցուցադրվեն, երբ միանաք Wi-Fi-ին</translation>
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> տիրույթի բոլոր էջերը</translation>
+<translation id="3268048651973962414">Քաշեք վերև՝ որոնման արդյունքներ տեսնելու համար</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="327204079441056603">Մենք փոխել ենք այս սարքում գաղտնաբառերի պահման եղանակը</translation>
 <translation id="3280562213547448728">Ձայնային որոնում</translation>
@@ -1055,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="5814749351757353073">Բաժանորդագրվեք ձեր սիրած կայքերին</translation>
+<translation id="5823093032261493462">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
 <translation id="5828921839638612740">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>
 <translation id="5829586821381540080">Պահվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5833984609253377421">Կիսվել հղումով</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը</translation>
 <translation id="5842871376175639063">Ներդիրներն ու ներդիրների խմբերը, որոնք <ph name="DAYS_INACTIVE" /> օր չեք օգտագործել, տեղափոխվում են այստեղ<ph name="AUTODELETE_SECTION" />։ Սա ցանկացած ժամանակ կարող եք փոխել <ph name="SETTINGS_TITLE" />ում։</translation>
 <translation id="5848257610304005265">Բացե՞լ PDF ֆայլը <ph name="APP_NAME" /> հավելվածի միջոցով</translation>
 <translation id="5849288995120328556">Չեղարկե՞լ հասանելիությունը</translation>
@@ -1280,6 +1285,7 @@
 <translation id="674388916582496364">Սովորաբար կայքերը, որոնք դուք այցելում եք, հիշում են, թե ձեզ ինչն է հետաքրքրում, որպեսզի անհատականացնեն գովազդը ձեզ համար։ Կայքերը կարող են նաև ձեր հետաքրքրությունների մասին տեղեկություններ պահել Chrome-ում։</translation>
 <translation id="6746338529702829275">Ստուգեք ձեր հաշվի տվյալները</translation>
 <translation id="6751521182688001123">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
+<translation id="6752130751133944215">Նոր պատուհան վերականգնելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։ Ոչ ակտիվ պատուհանները 6 ամիս հետո ջնջվում են։</translation>
 <translation id="6754359471209693699">Սկսել նոր որոնում</translation>
 <translation id="6756507620369789050">Կարծիք հայտնել</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />։</translation>
@@ -1446,6 +1452,7 @@
 <translation id="7388615499319468910">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումն անջատված է։</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Եվս 1 ֆայլ ցանկում}one{Եվս # ֆայլ ցանկում}other{Եվս # ֆայլ ցանկում}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Նոր պատուհան բացելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։</translation>
 <translation id="7403691278183511381">Chrome-ի առաջին գործարկում</translation>
 <translation id="7411224099004328643">Google հաշվի օգտատեր</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>
@@ -1792,6 +1799,7 @@
 <translation id="8816556050903368450">Ներառյալ հղումը՝ <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
+<translation id="8824359129672223138">Դուք կարող եք բացել մինչև <ph name="MAX_WINDOW_COUNT" /> պատուհան։</translation>
 <translation id="8835786707922974220">Համոզվեք, որ ձեր պահված գաղտնաբառերը միշտ հասանելի են ձեզ</translation>
 <translation id="883806473910249246">Բովանդակությունը ներբեռնելիս սխալ առաջացավ:</translation>
 <translation id="8840953339110955557">Այս էջը կարող է տարբերվել առցանց տարբերակից։</translation>
@@ -1876,6 +1884,7 @@
 <translation id="9168847423516963845">Հասցեագոտին տեղափոխել ներքև</translation>
 <translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը (<ph name="FILE_SIZE" />)</translation>
 <translation id="9190276265094487094">Ձեր գործողությունների պատմությունը հասանելի կլինի բոլոր համաժամացված սարքերում, և դուք կկարողանաք շարունակել այն, ինչ անում էիք</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204021776105550328">Ջնջում</translation>

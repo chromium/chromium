@@ -1941,6 +1941,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2328561734797404498">Riavvia il dispositivo per utilizzare <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando sei in modalità di navigazione in incognito, i siti possono usare i cookie solo per vedere la tua attività di navigazione su di essi. I cookie vengono eliminati al termine della sessione in incognito.</translation>
 <translation id="2329597144923131178">Accedi per visualizzare i tuoi Preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
+<translation id="2330182457402792918">Seleziona i file che questo sito può leggere</translation>
 <translation id="2331334586452217517">I contenuti di questo sito vengono inviati a Google e potrebbero essere esaminati da revisori. Informazioni sulla <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Impossibile caricare i dispositivi salvati in <ph name="PRIMARY_EMAIL" />. Controlla la connessione a Internet e riprova.</translation>
 <translation id="2332131598580221120">Visualizza nello store</translation>
@@ -8794,6 +8795,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7222232353993864120">Indirizzo email</translation>
 <translation id="7222335051802562841">Termina aggiornamento</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Seleziona un file che questo sito può leggere</translation>
 <translation id="7223952304612664117">Questo consente ai servizi di sistema di utilizzare la precisione della localizzazione per determinare la tua posizione. La precisione della localizzazione utilizza informazioni su segnali wireless e sensori per stimare la posizione del dispositivo.</translation>
 <translation id="7225082563376899794">Usa Windows Hello in fase di inserimento delle password</translation>
 <translation id="7225179976675429563">Tipo di rete mancante</translation>
@@ -9931,6 +9933,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8000020256436988724">Barra degli strumenti</translation>
 <translation id="800117767980299235">Punto saliente vocale</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
+<translation id="8002597610026749658">Chrome può creare sottotitoli codificati per le lingue mostrate qui</translation>
 <translation id="8002670234429879764">La stampante <ph name="PRINTER_NAME" /> non è più disponibile</translation>
 <translation id="8004092996156083991">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="8004507136466386272">Parole</translation>

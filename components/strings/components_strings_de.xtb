@@ -2413,6 +2413,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5043753287208271200">Gelb 3</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="5048293684454354469">Werbethemen sind nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne Werbethemen Werbung zeigen. Diese ist aber möglicherweise weniger interessant für dich. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="LINK_END" /></translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, drücke die Tabulatortaste, um weitere Kürzel für die Suche zu sehen, die nach diesem Suchvorschlag verfügbar sind</translation>
 <translation id="5052517576853118371">Aktive Themen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
 <translation id="505757197798929356">Gib den Grund für das Öffnen an (erforderlich)</translation>
@@ -4835,6 +4836,7 @@ Weitere Details:
 <translation id="9174917557437862841">Schaltfläche zum Wechseln des Tabs, Eingabetaste drücken, um zu diesem Tab zu wechseln</translation>
 <translation id="9177283544810807743">Auf diese PDF-Datei kann nicht zugegriffen werden. Text wird extrahiert mit Google AI.</translation>
 <translation id="9179703756951298733">Zahlungsmethoden und Kreditkartendaten in den Chrome-Einstellungen verwalten</translation>
+<translation id="9179766227052716237">Die Fehlermeldung deiner Organisation lautet: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="9179907736442194268">Du wirst bei einem Preisnachlass auf einer Website per E-Mail benachrichtigt</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> verwendet ein nicht unterstütztes Protokoll.</translation>

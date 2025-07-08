@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Zmieniono</translation>
 <translation id="1480152980057770392">Pokaż listę Do przeczytania</translation>
-<translation id="1484758781961275277">Korzystaj na iPadzie z najlepszych funkcji przeglądarki na komputery, którą znasz i lubisz.</translation>
 <translation id="1485907716209290998">Śledzenie przesyłki</translation>
 <translation id="1486096554574027028">Szukaj haseł</translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
@@ -407,7 +406,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2577522251608256362">Dzielnica</translation>
 <translation id="2579713773888829241">Dyski współdzielone</translation>
 <translation id="2593272815202181319">Stała szerokość znaków</translation>
-<translation id="2597486707832946298">Korzystaj na iPhonie z najlepszych funkcji przeglądarki na komputery, którą znasz i lubisz.</translation>
 <translation id="2601778637777010194">Śledź obniżki cen produktów</translation>
 <translation id="260378315836159338">U góry ekranu kliknij +</translation>
 <translation id="2612676031748830579">Numer karty</translation>
@@ -528,7 +526,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3081338492074632642">Upewnij się, że zapisujesz hasło do witryny <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Na dół</translation>
 <translation id="309710370695886264">Masz 1 ponownie użyte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
-<translation id="3102139268911534961">Korzystaj na iPhonie z najlepszych funkcji przeglądarki mobilnej, którą znasz i lubisz.</translation>
 <translation id="3102790820790869053">Szukaj w ostatnio przeglądanych kartach</translation>
 <translation id="3106690631878101882">Ukryj opcję Tłumacz</translation>
 <translation id="310900540163454140">Usunąć hasło użytkownika w aplikacji <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">Nie loguj się</translation>
-<translation id="4094361089640885693">Łatwo śledź ceny i otrzymuj statystyki dotyczące cen.</translation>
 <translation id="4099756562043439968">Ustaw przypomnienie</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4111985840824673503">Oznacz wszystkie jako przeczytane</translation>
@@ -795,7 +791,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4250432749243022864">{count,plural, =0{Otwórz {count} kartę}=1{Otwórz {count} kartę}few{Otwórz {count} karty}many{Otwórz {count} kart}other{Otwórz {count} karty}}</translation>
 <translation id="4250680216510889253">Nie</translation>
-<translation id="4251531167342733205">Wykorzystaj pełnię możliwości swojej ulubionej przeglądarki.</translation>
 <translation id="4253168017788158739">Notatka</translation>
 <translation id="4256782883801055595">Licencje open source</translation>
 <translation id="4263576668337963058">Pokaż dostępne działania dotyczące strony</translation>
@@ -1465,7 +1460,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6759709389246683070">Możesz nacisnąć i przytrzymać tę kartę, aby ustawić przypomnienie, że chcesz wyświetlić ją później</translation>
 <translation id="6761393919622941301">Dźwięk</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
-<translation id="6775647281444147078">Czatów Twojej organizacji nie używamy do ulepszania naszych modeli. Gemini może wyświetlać niedokładne informacje, także na temat osób, dlatego sprawdzaj odpowiedzi. Twoja prywatność i Gemini</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6790502149545262384">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Kliknij „Dodaj kartę do nowej grupy”</translation>
@@ -1557,7 +1551,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7173721738069475737">{count,plural, =1{Zakładka została zapisana}few{{count} zakładki zostały zapisane}many{{count} zakładek zostało zapisanych}other{{count} zakładki zostało zapisane}}</translation>
 <translation id="7176183551031110427">Pomniejsz</translation>
 <translation id="7186568385131859684">Określ sposób wykorzystywania historii przeglądania w połączeniu z innymi danymi w usługach Google</translation>
-<translation id="718807879214459529">Korzystaj na iPadzie z najlepszych funkcji przeglądarki mobilnej, którą znasz i lubisz.</translation>
 <translation id="719133302483559673">Zarządzaj zainteresowaniami i preferencjami.</translation>
 <translation id="720399613139435155">Nie udało się przetłumaczyć</translation>
 <translation id="7204922488054642675">Spersonalizowane wiadomości</translation>
@@ -1631,7 +1624,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Aby zablokować karty incognito, skonfiguruj Touch ID, Face ID lub hasło.</translation>
 <translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>
-<translation id="7512075701202892785">Twoja ulubiona przeglądarka teraz na iPadzie</translation>
 <translation id="7512909159512473473">Wpisz hasło wielowyrazowe…</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7514530647142300459">Nadal używaj haseł na swoim koncie Google <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="760667371114328991">Wyłącz powiadomienia dotyczące kontroli zabezpieczeń</translation>
 <translation id="7612619742409846846">Jesteś zalogowany w Google jako</translation>
 <translation id="7612849887607288481">Otwórz menu prototypowania AI</translation>
-<translation id="7615581988398168124">Obowiązują Warunki usług Google oraz Informacje na temat ochrony prywatności w aplikacjach z Gemini. Gemini może popełniać błędy, dlatego sprawdzaj odpowiedzi.</translation>
 <translation id="7620522820075868385">Anuluj</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło wielowyrazowe</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Przejęte hasła}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
@@ -1987,7 +1978,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8822421075653507124">Aby można było bezpiecznie używać tego urządzenia, Twoja organizacja może potrzebować informacji o systemie operacyjnym, przeglądarce i ustawieniach, a także o zainstalowanym na nim oprogramowaniu.</translation>
 <translation id="8825562130641217944">Korzystaj ze swoich zakładek, haseł i innych ustawień.</translation>
-<translation id="8827154289515190290">Twoja ulubiona przeglądarka teraz w systemie iOS</translation>
 <translation id="8831208860914609320">Zamknij wszystkie nieaktywne</translation>
 <translation id="8831944931153286232">Dodaj do listy Do przeczytania</translation>
 <translation id="8837654851594567190">Sortuj według wydawcy</translation>
@@ -2000,7 +1990,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8863067612494559785">Przesyłam (<ph name="DEVICE_NAME" />)…</translation>
 <translation id="8863431381414769983">Uzyskiwanie wskazówek dojazdu i informacji lokalnych z Map Google</translation>
 <translation id="886477344907998366">Pokaż zakładki</translation>
-<translation id="8869239474428371589">Wykorzystaj pełnię możliwości swojej ulubionej przeglądarki</translation>
 <translation id="8871974300055371298">Ustawienia treści</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8879604564928138696">Kliknij dwukrotnie, aby spróbować</translation>

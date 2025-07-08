@@ -90,6 +90,15 @@ Si elle est désactivée, la fonctionnalité de correction automatique est désa
 
       Si cette règle est définie, l'écran de connexion est toujours affiché dans les paramètres régionaux indiqués par la première valeur de cette règle (cette dernière est définie en tant que liste pour la compatibilité ascendante). Si cette règle n'est pas définie, ou si elle est définie sur une liste vide, l'écran de connexion est affiché dans les paramètres régionaux de la dernière session de l'utilisateur. Si cette règle est définie sur une valeur qui ne constitue pas des paramètres régionaux valides, l'écran de connexion est affiché dans des paramètres régionaux de remplacement (actuellement "en-US").</translation>
 <translation id="1050158007881386475">Désactiver les rapports sur l'état de la carte d'appareil</translation>
+<translation id="1050897390688148222">Lens Overlay permet aux utilisateurs d'effectuer des recherches Google contextuelles à partir d'une capture d'écran ou en posant une question sur le contenu de la page actuelle. Cette fonctionnalité nécessite l'activation par l'utilisateur final.
+
+Elle est disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
+
+Si cette règle est définie sur 0 (Autorisé) ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
+
+Si la règle est définie sur 1 (Ne pas autoriser), la fonctionnalité n'est pas disponible.
+
+À partir de <ph name="PRODUCT_NAME" /> 140, si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Cette règle n'a aucune incidence, sauf si la règle SamlInSessionPasswordChangeEnabled est définie sur "True".
       Si cette règle est définie sur "True" avec une valeur de 14, par exemple, les utilisateurs SAML sont alors avertis 14 jours avant l'expiration de leur mot de passe.
       Ils peuvent alors le modifier directement durant une session.
@@ -477,7 +486,6 @@ Si cette règle est désactivée, cela nuit à la sécurité de <ph name="PRODUC
 
 Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers qui empêchent les services d'impression de fonctionner correctement dans le bac à sable LPAC.</translation>
 <translation id="1369698103169067223">Les Glanceables ne sont pas activés pour les utilisateurs.</translation>
-<translation id="1371626834351873151">La réduction user-agent sera activée pour toutes les origines.</translation>
 <translation id="1371851989348083665">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1372618949173323717">Désactiver JavaScript</translation>
 <translation id="1376119291123231789">Activer le mode avancé de recharge de la batterie</translation>
@@ -1347,7 +1355,6 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1977581177449752640">Si cette règle est configurée, l'hôte d'accès à distance utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />". Pour permettre à cet hôte d'utiliser n'importe quel certificat client disponible, définissez cette règle sur "<ph name="WILDCARD_VALUE" />". Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.</translation>
 <translation id="1984934843478301531">Automatisation du lancement des applis</translation>
 <translation id="1985545260037812875">Afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
-<translation id="1985598967415986700">La réduction user-agent pourra être contrôlée via les essais Field-Trials et Origin-Trials.</translation>
 <translation id="1987789058026551147">Activer les rapports sur les sessions kiosque de l'appareil</translation>
 <translation id="1988345404999458987">Fournit les configurations des serveurs d'impression disponibles.
 
@@ -2195,6 +2202,7 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2568488785376704318">Cette règle est obsolète. Veuillez utiliser la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> à la place.</translation>
 <translation id="2570059561924004903">Désactiver la lecture vocale</translation>
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
+<translation id="2573850437942404034">Ne pas autoriser</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
 <translation id="25765864042030871">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
  
@@ -2849,7 +2857,6 @@ Remarque : Pour voir des exemples détaillés, accédez à The Chromium Projec
           Cette règle est facultative. Si vous ne la définissez pas, aucun remplacement des termes de recherche n'est effectué.
 
           Cette règle ne s'applique que si la règle 'DefaultSearchProviderEnabled' est activée.</translation>
-<translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les essais Field-Trials et Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Ne pas autoriser l'utilisation de Chrome for Testing</translation>
 <translation id="3059687162224942925">Activer l'avis de gestion dans le pied de la page "Nouvel onglet"</translation>
@@ -4691,6 +4698,17 @@ Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dan
 <translation id="4426986640594727372">Autoriser l'accès à la géolocalisation du système</translation>
 <translation id="4427173305799125784">La visionneuse de PDF ne peut pas annoter les PDF</translation>
 <translation id="4432762137771104529">Autoriser la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
+<translation id="4432772502174730966">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Ce paramètre définira les valeurs par défaut pour les fonctionnalités d'IA générative couvertes dans Chrome. Pour voir la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront aussi être examinées par des réviseurs humains dans le but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la valeur de la règle correspondante de l'une des fonctionnalités Chrome couverte est différente, la valeur la plus élevée la plus proche sera utilisée. Certaines règles, comme <ph name="GEMINI_SETTINGS_POLICY_NAME" />, n'acceptent que les états "Autorisé" et "Non autorisé". Si la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> est définie sur 0 ou 1, cette fonctionnalité est autorisée. Si la règle est définie sur 2, cette fonctionnalité n'est pas autorisée. Veuillez consulter la documentation de chaque fonctionnalité pour en savoir plus sur son interaction avec les valeurs de cette règle.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="443454694385851356">Anciens types de chiffrement (option non sécurisée)</translation>
 <translation id="4435032708588431506">Autoriser le protocole QUIC</translation>
 <translation id="443665821428652897">Effacer les données des sites à la fermeture du navigateur (obsolète)</translation>
@@ -6279,6 +6297,15 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="548137908954174608">Activer les Sous-titres instantanés</translation>
 <translation id="5483012943408894695">Origines ou modèles de nom d'hôte non soumis aux restrictions applicables aux origines non sécurisées</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
+<translation id="5485491014653571963">Ce paramètre autorise les intégrations de l'appli Gemini.
+
+0/non défini = l'intégration de Gemini sera disponible pour les utilisateurs.
+
+1 = l'intégration de Gemini ne sera pas disponible pour les utilisateurs.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus, veuillez consulter l'article du centre d'aide https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="5486352219019836984">Si cette règle est activée, il est recommandé d'activer par défaut l'envoi à Google de rapports anonymes sur les données liées à l'utilisation et aux plantages de <ph name="PRODUCT_NAME" />. Les utilisateurs pourront toujours modifier ce paramètre.
 
 Si cette règle est désactivée, l'envoi de rapports anonymes est désactivé, et aucune donnée liée à l'utilisation ou aux plantages n'est envoyée à Google. Les utilisateurs ne pourront pas modifier ce paramètre.
@@ -9306,11 +9333,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 
       À l'avenir, la valeur "<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />" permettra de faire de <ph name="LACROS_NAME" /> le seul navigateur disponible dans <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="751071954873065775">Sélectionner les contenus téléchargeables qui doivent être prétéléchargés</translation>
-<translation id="7512065400265675158">Il est prévu de réduire l'en-tête de requête HTTP <ph name="USER_AGENT_HEADER_NAME" />. Afin de faciliter les tests et la compatibilité, cette règle permet d'activer la fonctionnalité de réduction de tous les sites Web ou d'empêcher les essais "origin trials" ou "field trials" d'activer la fonctionnalité.
-
-      Pour en savoir plus sur <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> et le calendrier associé, consultez la page :
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html</translation>
 <translation id="7512514325152952954">Il est possible de télécharger les charges utiles de mise à jour automatique pour <ph name="PRODUCT_OS_NAME" /> via HTTP plutôt que HTTPS. Cela permet une mise en cache transparente lors des téléchargements via HTTP.
 
 Si cette règle est définie sur "True", le téléchargement des charges utiles de mise à jour automatique est effectué par <ph name="PRODUCT_OS_NAME" /> via HTTP. Si cette règle est définie sur "False", ou si elle n'est pas configurée, HTTPS est utilisé pour le téléchargement des charges utiles de mise à jour automatique.</translation>

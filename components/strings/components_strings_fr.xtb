@@ -2415,6 +2415,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5043753287208271200">Jaune 3</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5048293684454354469">Les thèmes des annonces ne sont que l'une des nombreuses options qu'un site peut utiliser pour personnaliser les annonces. Même sans ces thèmes, les sites peuvent toujours vous présenter des annonces, lesquelles pourraient toutefois être moins intéressantes. Découvrez comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, appuyer sur Tabulation pour afficher d'autres raccourcis de recherche disponibles après cette suggestion de recherche</translation>
 <translation id="5052517576853118371">Thèmes actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour partager ces fichiers à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Indiquez le motif de l'ouverture (obligatoire)</translation>
@@ -4836,6 +4837,7 @@ Informations supplémentaires :
 <translation id="9174917557437862841">Bouton pour changer d'onglet, appuyez sur Entrée pour passer à cet onglet</translation>
 <translation id="9177283544810807743">Impossible d'accéder à ce PDF. Extraction du texte, optimisée par l'IA de Google…</translation>
 <translation id="9179703756951298733">Gérez vos informations de paiement et de cartes de crédit dans les paramètres Chrome</translation>
+<translation id="9179766227052716237">Message de votre organisation : "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Recevez des alertes par e-mail si le prix baisse sur un site</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole incompatible.</translation>

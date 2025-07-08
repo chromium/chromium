@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">PDFዎችን በራስ-ሰር ክፈት</translation>
 <translation id="1437543266176261764">በ<ph name="APP_NAME" /> በመሄድ ላይ</translation>
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
+<translation id="1455845192930279203">ለማንኛውም «<ph name="FILE_NAME" />»ን (<ph name="FILE_SIZE" />) ከ<ph name="DOWNLOAD_DOMAIN" /> ማውረድ ይፈልጋሉ?</translation>
 <translation id="1460751212339734034">ጊዜ ያትርፉ፣ ያነሰ ይተይቡ</translation>
 <translation id="1466383950273130737">የChromeን ቋንቋ ይምረጡ</translation>
 <translation id="1477626028522505441">በአገልጋይ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
@@ -186,6 +187,7 @@
 <translation id="1829244130665387512">በዚህ ገፅ ውስጥ የተገኘ</translation>
 <translation id="1832459821645506983">አዎ፣ ገብቼበታለሁ</translation>
 <translation id="1845958458910716240">ውሂብዎን ለመጠበቅ Chrome በቅርቡ ካልጎበኟቸው ጣቢያዎች ፈቃዶችን እንዲያስወግድ ይፍቀዱ</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ከዚህ ጣቢያ ላይ ማሳወቂያዎችን አቁሟል። መገምገም እና ማስተዳደር ይችላሉ።}one{Chrome ከዚህ ጣቢያ ላይ ማሳወቂያዎችን አቁሟል። መገምገም እና ማስተዳደር ይችላሉ።}other{Chrome ከእነዚህ ጣቢያዎች ላይ ማሳወቂያዎችን አቁሟል። መገምገም እና ማስተዳደር ይችላሉ።}}</translation>
 <translation id="1871098866036088250">በChrome አሳሽ ውስጥ ይክፈቱ</translation>
 <translation id="1877026089748256423">Chrome ጊዜው አልፎበታል</translation>
 <translation id="1877073879466606884">እርስዎ የገቡበት መገለጫ የሚተዳደር መገለጫ ነው። አስተዳዳሪዎ በመገለጫዎ ቅንብሮች ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል።</translation>
@@ -493,6 +495,7 @@
 <translation id="3250563604907490871">ከWi-Fi ጋር ሲገናኙ የምስል መግለጫዎች ከቆሙበት ይቀጥላሉ</translation>
 <translation id="3254409185687681395">ለእዚህ ገፅ ዕልባት አብጅ</translation>
 <translation id="3265093782546847662">የ<ph name="DOMAIN" /> ሁሉም ገጾች</translation>
+<translation id="3268048651973962414">የፍለጋ ውጤቶችን ለመመልከት ወደላይ ይጎትቱ</translation>
 <translation id="3269093882174072735">ምስል ጫን</translation>
 <translation id="327204079441056603">የይለፍ ቃላት በዚህ መሣሪያ ላይ እንዴት እንደሚቀመጡ ቀይረናል</translation>
 <translation id="3280562213547448728">የድምፅ ፍለጋ</translation>
@@ -1055,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{ከ# ሰዓት በፊት}one{ከ# ሰዓቶች በፊት}other{ከ# ሰዓቶች በፊት}}</translation>
 <translation id="5810288467834065221">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
 <translation id="5814749351757353073">የሚወዷቸው ጣቢያዎችን በቅርበት ይከታተሉ</translation>
+<translation id="5823093032261493462">ለማንኛውም «<ph name="FILE_NAME" />»ን ከ<ph name="DOWNLOAD_DOMAIN" /> ማውረድ ይፈልጋሉ?</translation>
 <translation id="5828921839638612740">ውሂቡን በChrome ቅንብሮች ውስጥ መሰረዝ ይችላሉ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ውስጥ ተቀምጧል</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5833984609253377421">አገናኝ አጋራ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">ለማንኛውም «<ph name="FILE_NAME" />»ን ማውረድ ይፈልጋሉ?</translation>
 <translation id="5842871376175639063">ለ<ph name="DAYS_INACTIVE" /> ቀናት ያልተጠቀሙባቸው ትሮች እና የትር ቡድኖች ወደዚህ<ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="5848257610304005265">PDF በ<ph name="APP_NAME" /> ይከፈት?</translation>
 <translation id="5849288995120328556">ማጋራት ይቁም?</translation>
@@ -1280,6 +1285,7 @@
 <translation id="674388916582496364">የሚጎበኟቸው ጣቢያዎች ልምድዎን ግላዊነት እንዲያላብሱ እርስዎ የሚፈልጓቸውን ነገሮች ማስታወስ የተለመደ ነው። እንዲሁም ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChrome አማካኝነት ማከማቸት ይችላሉ።</translation>
 <translation id="6746338529702829275">የመለያ ውሂብዎን ይገምግሙ</translation>
 <translation id="6751521182688001123">አዲስ ትርን በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
+<translation id="6752130751133944215">አዲስ መስኮትን ወደነበረበት ለመመለስ በመላው ገቢር የሆኑ እና ገቢር ያልሆኑ ላይ የመስኮቶቹን ጠቅላላ ብዛት ወደ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ወይም ከዚያ በታች ይቀንሱ። ገቢር ያልሆኑ መስኮቶች ከ6 ወራት በኋላ ይሰረዛሉ።</translation>
 <translation id="6754359471209693699">አዲስ ፍለጋ ጀምር</translation>
 <translation id="6756507620369789050">ግብረመልስ ያጋሩ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />፣ <ph name="EMAIL" />።</translation>
@@ -1446,6 +1452,7 @@
 <translation id="7388615499319468910">ጣቢያዎች እና አስተዋዋቂዎች የማስታወቂያዎች አፈጻጸም እንዴት እንደሆነ መረዳት ይችላሉ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{በዝርዝር ውስጥ ሌላ 1 ፋይል}one{በዝርዝር ውስጥ ሌላ # ፋይል}other{በዝርዝር ውስጥ ሌሎች # ፋይሎች}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">አዲስ መስኮትን ለመክፈት በመላው ገቢር የሆኑ እና ገቢር ያልሆኑ ላይ የመስኮቶቹን ጠቅላላ ብዛት ወደ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ወይም ከዚያ በታች ይቀንሱ።</translation>
 <translation id="7403691278183511381">Chrome የመጀመሪያ አሂድ ተሞክሮ</translation>
 <translation id="7411224099004328643">የGoogle መለያ ተጠቃሚ</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
@@ -1792,6 +1799,7 @@
 <translation id="8816556050903368450">አገናኝን ጨምሮ፦ <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">የቅድመ-ዕይታ ትር ይዘት ሊታይ የሚችል አይደለም።</translation>
 <translation id="8820817407110198400">ዕልባቶች</translation>
+<translation id="8824359129672223138">እስከ <ph name="MAX_WINDOW_COUNT" /> መስኮቶች ሊኖሩዎት ይችላሉ።</translation>
 <translation id="8835786707922974220">የተቀመጡ የይለፍ ቃላትዎን ሁልጊዜ መድረስ እንደሚችሉ ያረጋግጡ</translation>
 <translation id="883806473910249246">ይዘቱን በማውረድ ላይ ሳለ አንድ ስህተት ተከስቷል።</translation>
 <translation id="8840953339110955557">ይህ ገፅ ከመስመር ላይ ስሪቱ የተለየ ሊሆን ይችላል።</translation>
@@ -1876,6 +1884,7 @@
 <translation id="9168847423516963845">አድራሻ አሞሌን ወደታች አንቀሳቅስ</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
 <translation id="918419812064856259">Chrome ቅድመ-ይሁንታ</translation>
+<translation id="9189607089796819144">ለማንኛውም «<ph name="FILE_NAME" />»ን (<ph name="FILE_SIZE" />) ማውረድ ይፈልጋሉ?</translation>
 <translation id="9190276265094487094">ሲያደርጉት የነበረውን እንገር መቀጠል እንዲችሉ ታሪክዎ በሁሉም የሰመሩ መሣሪያዎችዎ ላይ ይኖረዎታል</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ከ1 ደቂቃ በፊት ተፈትሿል}one{ከ# ደቂቃዎች በፊት ተፈትሿል}other{ከ# ደቂቃዎች በፊት ተፈትሿል}}</translation>
 <translation id="9204021776105550328">በመሰረዝ ላይ</translation>

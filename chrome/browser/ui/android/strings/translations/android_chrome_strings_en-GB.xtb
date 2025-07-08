@@ -112,6 +112,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1435593198351412143">Automatically open PDFs</translation>
 <translation id="1437543266176261764">Running in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
+<translation id="1455845192930279203">Do you want to download '<ph name="FILE_NAME" />' (<ph name="FILE_SIZE" />) from <ph name="DOWNLOAD_DOMAIN" /> anyway?</translation>
 <translation id="1460751212339734034">Save time, type less</translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
@@ -186,6 +187,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
 <translation id="1845958458910716240">To protect your data, let Chrome remove permissions from sites that you haven't visited recently</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped notifications from this site. You can review and manage.}other{Chrome stopped notifications from these sites. You can review and manage.}}</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1877073879466606884">The profile that you're signed in to is a managed profile. Your administrator can make changes to your profile settings remotely, analyse information about the browser through reporting and perform other necessary tasks.</translation>
@@ -493,6 +495,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3250563604907490871">Image descriptions will resume when you connect to Wi-Fi</translation>
 <translation id="3254409185687681395">Bookmark this page</translation>
 <translation id="3265093782546847662">All pages of <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Drag up to see search results</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="327204079441056603">We changed how passwords on this device are saved</translation>
 <translation id="3280562213547448728">Voice search</translation>
@@ -1055,11 +1058,13 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5809361687334836369">{HOURS,plural, =1{# hour ago}other{# hours ago}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="5814749351757353073">Keep up with your favourite sites</translation>
+<translation id="5823093032261493462">Do you want to download '<ph name="FILE_NAME" />' from <ph name="DOWNLOAD_DOMAIN" /> anyway?</translation>
 <translation id="5828921839638612740">You can delete the data in Chrome settings</translation>
 <translation id="5829586821381540080">Saved in <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
+<translation id="5841444063256914865">Do you want to download '<ph name="FILE_NAME" />' anyway?</translation>
 <translation id="5842871376175639063">Tabs and tab groups that you haven't used for <ph name="DAYS_INACTIVE" /> days are moved here<ph name="AUTODELETE_SECTION" />. You can change this at any time in <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Open PDF with <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stop sharing?</translation>
@@ -1280,6 +1285,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="674388916582496364">It’s common for sites that you visit to remember things that you’re interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="6746338529702829275">Review your account data</translation>
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
+<translation id="6752130751133944215">To restore a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer. Inactive windows are deleted after 6 months.</translation>
 <translation id="6754359471209693699">Start new search</translation>
 <translation id="6756507620369789050">Share feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Other 1 file in list}other{Other # files in list}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">To open a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer.</translation>
 <translation id="7403691278183511381">Chrome First Run Experience</translation>
 <translation id="7411224099004328643">Google Account user</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
@@ -1792,6 +1799,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8816556050903368450">Including link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8824359129672223138">You can have up to <ph name="MAX_WINDOW_COUNT" /> windows.</translation>
 <translation id="8835786707922974220">Make sure that you can always access your saved passwords</translation>
 <translation id="883806473910249246">An error occurred while downloading the content.</translation>
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
@@ -1876,6 +1884,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9168847423516963845">Move address bar to the bottom</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Do you want to download '<ph name="FILE_NAME" />' (<ph name="FILE_SIZE" />) anyway?</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204021776105550328">Deleting</translation>

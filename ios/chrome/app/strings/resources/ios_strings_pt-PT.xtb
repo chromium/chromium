@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Alterado</translation>
 <translation id="1480152980057770392">Mostrar Lista de leitura</translation>
-<translation id="1484758781961275277">Tire o máximo partido do navegador de computador que conhece e adora no seu iPad.</translation>
 <translation id="1485907716209290998">Acompanhamento de encomendas</translation>
 <translation id="1486096554574027028">Pesquisar palavras-passe</translation>
 <translation id="1491277525950327607">Toque duas vezes para ativar ou desativar a definição</translation>
@@ -407,7 +406,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="2579713773888829241">Discos partilhados</translation>
 <translation id="2593272815202181319">Monoespaço</translation>
-<translation id="2597486707832946298">Tire o máximo partido do navegador de computador que conhece e adora no seu iPhone.</translation>
 <translation id="2601778637777010194">Acompanhe as quedas de preços de produtos</translation>
 <translation id="260378315836159338">Na parte superior do ecrã, toque em +</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
@@ -528,7 +526,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3081338492074632642">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
-<translation id="3102139268911534961">Tire o máximo partido do navegador para dispositivos móveis que conhece e adora no seu iPhone.</translation>
 <translation id="3102790820790869053">Pesquise separadores recentes</translation>
 <translation id="3106690631878101882">Ocultar Traduzir</translation>
 <translation id="310900540163454140">Eliminar a palavra-passe de <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4070132839822635162">Não iniciar sessão</translation>
-<translation id="4094361089640885693">Monitorize os preços e veja facilmente estatísticas de preço.</translation>
 <translation id="4099756562043439968">Definir lembrete</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>
@@ -795,7 +791,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} separador}=1{Abrir {count} separador}other{Abrir {count} separadores}}</translation>
 <translation id="4250680216510889253">Não</translation>
-<translation id="4251531167342733205">Desfrute do melhor do navegador que adora.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
@@ -1465,7 +1460,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6759709389246683070">Pode tocar sem soltar neste separador para definir um lembrete para consultar mais tarde</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
-<translation id="6775647281444147078">Os chats da sua organização não são usados para melhorar os nossos modelos. O Gemini pode apresentar informações incorretas, inclusive sobre pessoas, por isso, verifique-as. A sua privacidade e o Gemini</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
 <translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>
@@ -1557,7 +1551,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7173721738069475737">{count,plural, =1{Marcador guardado}other{{count} marcadores guardados}}</translation>
 <translation id="7176183551031110427">Diminuir zoom</translation>
 <translation id="7186568385131859684">Controle a forma como o histórico de navegação é usado com os seus outros dados nos serviços Google</translation>
-<translation id="718807879214459529">Tire o máximo partido do navegador para dispositivos móveis que conhece e adora no seu iPad.</translation>
 <translation id="719133302483559673">Faça a gestão dos seus interesses e preferências.</translation>
 <translation id="720399613139435155">Falha ao traduzir</translation>
 <translation id="7204922488054642675">Notícias personalizadas</translation>
@@ -1631,7 +1624,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear os separadores de navegação anónima, configure o Touch ID, o Face ID ou um código secreto.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>
-<translation id="7512075701202892785">O navegador que adora agora no iPad</translation>
 <translation id="7512909159512473473">Introduzir frase de acesso…</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7514530647142300459">Continue a usar as palavras-passe na sua Conta Google <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="760667371114328991">Desative as notificações da verificação de segurança</translation>
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612849887607288481">Abrir menu Criar protótipo de IA</translation>
-<translation id="7615581988398168124">Aplicam-se os Termos de Utilização da Google e o Aviso de Privacidade das Apps Gemini. O Gemini pode cometer erros, por isso verifique as informações.</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Palavras-passe comprometidas}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
@@ -1987,7 +1978,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8822421075653507124">Para garantir que este dispositivo pode ser usado em segurança, a sua organização pode ter de ver informações sobre o sistema operativo, o navegador, as definições e que software está instalado no dispositivo.</translation>
 <translation id="8825562130641217944">Obtenha os seus marcadores, palavras-passe e muito mais.</translation>
-<translation id="8827154289515190290">O navegador que adora agora no iOS</translation>
 <translation id="8831208860914609320">Fechar todos os inativos</translation>
 <translation id="8831944931153286232">Adicionar à Lista de leitura</translation>
 <translation id="8837654851594567190">Ordenar por publicador</translation>
@@ -2000,7 +1990,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8863067612494559785">A enviar para <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
 <translation id="886477344907998366">Mostrar marcadores</translation>
-<translation id="8869239474428371589">Desfrute do melhor do navegador que adora</translation>
 <translation id="8871974300055371298">Definições de conteúdo</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8879604564928138696">Toque duas vezes para experimentar</translation>

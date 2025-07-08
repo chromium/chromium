@@ -112,6 +112,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1435593198351412143">Automatycznie otwieraj pliki PDF</translation>
 <translation id="1437543266176261764">Działa w <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Porządkuj obserwowane produkty w Zakładkach</translation>
+<translation id="1455845192930279203">Czy mimo to chcesz pobrać plik „<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />) z <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Oszczędzaj czas, pisz mniej</translation>
 <translation id="1466383950273130737">Wybierz język Chrome</translation>
 <translation id="1477626028522505441">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z serwerem.</translation>
@@ -494,6 +495,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3250563604907490871">Opisy do obrazów zostaną wznowione, gdy połączysz się z Wi-Fi</translation>
 <translation id="3254409185687681395">Dodaj stronę do zakładek</translation>
 <translation id="3265093782546847662">Wszystkie strony w domenie <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Przeciągnij w górę, aby zobaczyć wyniki wyszukiwania</translation>
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="327204079441056603">Zmieniliśmy sposób zapisywania haseł na tym urządzeniu</translation>
 <translation id="3280562213547448728">Wyszukiwanie głosowe</translation>
@@ -1056,11 +1058,13 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5809361687334836369">{HOURS,plural, =1{# godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="5814749351757353073">Bądź na bieżąco ze swoimi ulubionymi stronami</translation>
+<translation id="5823093032261493462">Czy mimo to chcesz pobrać plik „<ph name="FILE_NAME" />” z <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Dane możesz usunąć w Ustawieniach Chrome</translation>
 <translation id="5829586821381540080">Zapisano w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5833984609253377421">Udostępnij link</translation>
 <translation id="5839058148541733625">Dinozaur w Chrome</translation>
+<translation id="5841444063256914865">Czy mimo to chcesz pobrać plik „<ph name="FILE_NAME" />”?</translation>
 <translation id="5842871376175639063">Tutaj są przenoszone karty i grupy kart, których nie używasz od <ph name="DAYS_INACTIVE" /> dni<ph name="AUTODELETE_SECTION" />. Możesz to zmienić w dowolnym momencie, klikając <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Chcesz otwierać pliki PDF w aplikacji <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Zatrzymać udostępnianie?</translation>
@@ -1281,6 +1285,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="674388916582496364">Odwiedzane witryny często zapamiętują rzeczy, które Cię interesują, żeby spersonalizować sposób działania. Informacje o Twoich zainteresowaniach witryny mogą również przechowywać w Chrome.</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
+<translation id="6752130751133944215">Aby przywrócić nowe okno, zmniejsz łączną liczbę okien aktywnych i nieaktywnych do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Nieaktywne okna są usuwane po 6 miesiącach.</translation>
 <translation id="6754359471209693699">Rozpocznij nowe wyszukiwanie</translation>
 <translation id="6756507620369789050">Prześlij opinię</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7388615499319468910">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest wyłączone.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 inny plik na liście}few{# inne pliki na liście}many{# innych plików na liście}other{# innego pliku na liście}}</translation>
 <translation id="7400418766976504921">Adres URL</translation>
+<translation id="7400424692675800399">Aby otworzyć nowe okno, zmniejsz łączną liczbę okien aktywnych i nieaktywnych do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Pierwsze uruchomienie Chrome</translation>
 <translation id="7411224099004328643">Użytkownik konta Google</translation>
 <translation id="7419565702166471774">Zawsze używaj bezpiecznych połączeń</translation>
@@ -1793,6 +1799,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8816556050903368450">W tym link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
+<translation id="8824359129672223138">Maksymalna dozwolona liczba okien: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Zadbaj o to, by nigdy nie stracić dostępu do zapisanych haseł</translation>
 <translation id="883806473910249246">Podczas pobierania treści wystąpił błąd.</translation>
 <translation id="8840953339110955557">Ta strona może różnić się od wersji online.</translation>
@@ -1877,6 +1884,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="9168847423516963845">Przenieś pasek adresu na dół</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Czy mimo to chcesz pobrać plik „<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204021776105550328">Usuwam</translation>

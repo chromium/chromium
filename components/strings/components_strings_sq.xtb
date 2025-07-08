@@ -2415,6 +2415,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5043753287208271200">E verdhë 3</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5048293684454354469">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak të personalizuara. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, shtyp "Tab" për më shumë shkurtore kërkimi që ofrohen pas këtij sugjerimi kërkimi</translation>
 <translation id="5052517576853118371">Temat aktive</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="505757197798929356">Jep arsyen për hapjen (e detyrueshme)</translation>
@@ -4834,6 +4835,7 @@ Detaje shtesë:
 <translation id="9174917557437862841">Butoni i ndërrimit të skedës, shtyp "Enter" për të kaluar te kjo skedë</translation>
 <translation id="9177283544810807743">Kjo PDF është e paarritshme. Teksti po nxirret, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="9179703756951298733">Menaxho informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
+<translation id="9179766227052716237">Organizata jote thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Merr sinjalizime me email nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> përdor një protokoll të pambështetur.</translation>

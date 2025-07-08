@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Сазнај више<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Промењено</translation>
 <translation id="1480152980057770392">Приказивање листе за читање</translation>
-<translation id="1484758781961275277">Искористите све предности прегледача за рачунаре који знате и волите на iPad-у.</translation>
 <translation id="1485907716209290998">Праћење пакета</translation>
 <translation id="1486096554574027028">Претражите лозинке</translation>
 <translation id="1491277525950327607">Двапут додирните да бисте укључили/искључили подешавање</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">Део града</translation>
 <translation id="2579713773888829241">Дељени Дискови</translation>
 <translation id="2593272815202181319">Фиксне ширине</translation>
-<translation id="2597486707832946298">Искористите све предности прегледача за рачунаре који знате и волите на iPhone-у.</translation>
 <translation id="2601778637777010194">Пратите пад цена производа</translation>
 <translation id="260378315836159338">У врху екрана додирните +</translation>
 <translation id="2612676031748830579">Број картице</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="309710370695886264">Имате 1 лозинку коју користите за више налога. Решите проблем одмах да бисте били безбедни.</translation>
-<translation id="3102139268911534961">Искористите све предности мобилног прегледача који знате и волите на iPhone-у.</translation>
 <translation id="3102790820790869053">Претражите недавне картице</translation>
 <translation id="3106690631878101882">Сакриј опцију Преведи</translation>
 <translation id="310900540163454140">Желите да избришите лозинку за апликацију <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4070132839822635162">Не пријављуј ме</translation>
-<translation id="4094361089640885693">Лако пратите цене и стекните увид у њих.</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="4111985840824673503">Означи све као прочитано</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4250432749243022864">{count,plural, =0{Отвори {count} картица}=1{Отвори {count} картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
 <translation id="4250680216510889253">Не</translation>
-<translation id="4251531167342733205">Користите прегледач који волите на најбољи начин.</translation>
 <translation id="4253168017788158739">Напомена</translation>
 <translation id="4256782883801055595">Лиценце отвореног кода</translation>
 <translation id="4263576668337963058">Прикажи доступне радње за страницу</translation>
@@ -1465,7 +1460,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6759709389246683070">Можете да додирнете и задржите ову картицу да бисте подесили подсетник који ћете поново погледати касније</translation>
 <translation id="6761393919622941301">Звук</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИСАНО]</translation>
-<translation id="6775647281444147078">Конверзације ваше организације не користимо за побољшавање модела. Gemini може да прикаже нетачне информације, укључујући информације о људима, па их проверите. Ваша приватност и Gemini</translation>
 <translation id="6779455296366983087">Подаци прегледања ће бити избрисани</translation>
 <translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="6791425686608802741">Додирните Додај картицу у нову групу</translation>
@@ -1557,7 +1551,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7173721738069475737">{count,plural, =1{Обележивач је сачуван}one{{count} обележивач је сачуван}few{{count} обележивача су сачувана}other{{count} обележивача је сачувано}}</translation>
 <translation id="7176183551031110427">Умањите</translation>
 <translation id="7186568385131859684">Контролишите како се историја прегледања користи са другим подацима у свим Google услугама</translation>
-<translation id="718807879214459529">Искористите све предности мобилног прегледача који знате и волите на iPad-у.</translation>
 <translation id="719133302483559673">Управљајте интересовањима и подешавањима.</translation>
 <translation id="720399613139435155">Превођење није успело</translation>
 <translation id="7204922488054642675">Персонализоване вести</translation>
@@ -1631,7 +1624,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Да бисте закључали картице без архивирања, подесите Touch ID, Face ID или шифру.</translation>
 <translation id="750886945254958667">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате</translation>
-<translation id="7512075701202892785">Прегледач који волите сада и на iPad-у</translation>
 <translation id="7512909159512473473">Унеси приступну фразу…</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7514530647142300459">Наставите да користите лозинке на Google налогу <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="760667371114328991">Искључи обавештења за Проверу безбедности</translation>
 <translation id="7612619742409846846">Пријављени сте у Google као</translation>
 <translation id="7612849887607288481">Отвори мени за AI прототип</translation>
-<translation id="7615581988398168124">Важе Google услови и Обавештење о приватности Gemini апликација. Gemini може да погреши, зато проверите одговоре.</translation>
 <translation id="7620522820075868385">Откажи</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Угрожене лозинке}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
@@ -1987,7 +1978,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8822421075653507124">Да би се уверила да овај уређај може безбедно да се користи, организација ће можда морати да види информације о оперативном систему, прегледачу и подешавањима, као и о софтверу који је инсталиран на уређају.</translation>
 <translation id="8825562130641217944">Приступајте обележивачима, лозинкама и другом садржају.</translation>
-<translation id="8827154289515190290">Прегледач који волите сада и на iOS-у</translation>
 <translation id="8831208860914609320">Затвори све неактивне</translation>
 <translation id="8831944931153286232">Додавање на листу за читање</translation>
 <translation id="8837654851594567190">Сортирај према објављивачу</translation>
@@ -2000,7 +1990,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8863067612494559785">Шаље се кориснику <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Добијајте упутства и локалне информације од Google мапа</translation>
 <translation id="886477344907998366">Приказивање обележивача</translation>
-<translation id="8869239474428371589">Користите прегледач који волите на најбољи начин</translation>
 <translation id="8871974300055371298">Подешавања садржаја</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8879604564928138696">Двапут додирните да бисте пробали</translation>

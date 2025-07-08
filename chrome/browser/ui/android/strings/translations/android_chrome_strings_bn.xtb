@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">পিডিএফ অটোমেটিক খোলার সুবিধা</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />-এ চলছে</translation>
 <translation id="1448440926884431741">Bookmarks-এ আপনার ট্র্যাক করা সমস্ত প্রোডাক্ট সাজিয়ে রাখুন</translation>
+<translation id="1455845192930279203">আপনি কি তবুও <ph name="DOWNLOAD_DOMAIN" /> থেকে "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="1460751212339734034">সময় বাঁচান, কম টাইপ করুন</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
@@ -186,6 +187,7 @@
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
 <translation id="1832459821645506983">হ্যাঁ, আমি রাজি</translation>
 <translation id="1845958458910716240">আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি দেখেননি এমন সাইট থেকে Chrome-কে অনুমতি সরাতে দিন</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome এই সাইট থেকে বিজ্ঞপ্তি বন্ধ করে দিয়েছে। আপনি পর্যালোচনা ও ম্যানেজ করতে পারবেন।}one{Chrome এইসব সাইট থেকে বিজ্ঞপ্তি বন্ধ করে দিয়েছে। আপনি পর্যালোচনা ও ম্যানেজ করতে পারবেন।}other{Chrome এইসব সাইট থেকে বিজ্ঞপ্তি বন্ধ করে দিয়েছে। আপনি পর্যালোচনা ও ম্যানেজ করতে পারবেন।}}</translation>
 <translation id="1871098866036088250">Chrome ব্রাউজারে খুলুন</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="1877073879466606884">আপনি ম্যানেজ করা প্রোফাইলে সাইন-ইন করেছেন। আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন, রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ এবং অন্যান্য প্রয়োজনীয় কাজ করতে পারবে।</translation>
@@ -493,6 +495,7 @@
 <translation id="3250563604907490871">আপনি ওয়াই-ফাইতে কানেক্ট করলে, ছবির বিবরণ আবার দেখা যাবে</translation>
 <translation id="3254409185687681395">এই পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-এর সব পৃষ্ঠা</translation>
+<translation id="3268048651973962414">সার্চ ফলাফল দেখতে, উপরের দিকে টানুন</translation>
 <translation id="3269093882174072735">ছবি লোড করুন</translation>
 <translation id="327204079441056603">কীভাবে এই ডিভাইসে পাসওয়ার্ড সেভ করা হবে, আমরা তা পরিবর্তন করেছি</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
@@ -1055,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# ঘণ্টা আগে}one{# ঘণ্টা আগে}other{# ঘণ্টা আগে}}</translation>
 <translation id="5810288467834065221">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="5814749351757353073">আপনার পছন্দসই সাইটগুলি দেখতে থাকুন</translation>
+<translation id="5823093032261493462">আপনি কি তবুও <ph name="DOWNLOAD_DOMAIN" /> থেকে "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
 <translation id="5828921839638612740">Chrome 'সেটিংস'-এ গিয়ে আপনি ডেটা মুছে ফেলতে পারবেন</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />-এ সেভ করা হয়েছে</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
+<translation id="5841444063256914865">আপনি কি তবুও "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
 <translation id="5842871376175639063">আপনি যেসব ট্যাব ও ট্যাব গ্রুপ <ph name="DAYS_INACTIVE" /> দিন ব্যবহার করেননি সেগুলি সরিয়ে দেওয়া হবে এখানে <ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্য়ে পিডিএফ ফাইল খুলতে চান?</translation>
 <translation id="5849288995120328556">শেয়ার করা বন্ধ করতে চান?</translation>
@@ -1280,6 +1285,7 @@
 <translation id="674388916582496364">সাধারণত আপনার অভিজ্ঞতাকে পছন্দমতো করতে, আপনি যেসব সাইট ভিজিট করেন, সেগুলিতে আপনার আগ্রহের বিষয়গুলি মনে রাখা হয়। এছাড়া Chrome-এর মাধ্যমে আপনার আগ্রহের বিষয়ে তথ্যগুলি সাইট স্টোর করতে পারে।</translation>
 <translation id="6746338529702829275">আপনার অ্যাকাউন্ট ডেটা পর্যালোচনা করুন</translation>
 <translation id="6751521182688001123">দ্রুত একটি নতুন ট্যাব খুলুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
+<translation id="6752130751133944215">কোনও নতুন উইন্ডো ফিরিয়ে আনতে, অ্যাক্টিভ এবং ইনঅ্যাক্টিভ উইন্ডোর মোট সংখ্যা <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম রাখুন। ইনঅ্যাক্টিভ উইন্ডো ৬ মাস পরে মুছে দেওয়া হয়।</translation>
 <translation id="6754359471209693699">নতুন সার্চ শুরু করুন</translation>
 <translation id="6756507620369789050">মতামত জানান</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
@@ -1446,6 +1452,7 @@
 <translation id="7388615499319468910">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{তালিকাতে অন্য ১টি ফাইল আছে}one{তালিকাতে অন্য #টি ফাইল আছে}other{তালিকাতে অন্য #টি ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">কোনও নতুন উইন্ডো খুলতে, অ্যাক্টিভ এবং ইনঅ্যাক্টিভ উইন্ডোর মোট সংখ্যা <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম রাখুন।</translation>
 <translation id="7403691278183511381">Chrome প্রথম চালানোর অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google অ্যাকাউন্ট ব্যবহারকারী</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
@@ -1792,6 +1799,7 @@
 <translation id="8816556050903368450">এই লিঙ্কটি সহ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ট্যাব কন্টেন্ট প্রিভিউ করার বিকল্প উপলভ্য নেই।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8824359129672223138">আপনি <ph name="MAX_WINDOW_COUNT" />টির বেশি উইন্ডো খুলতে পারবেন না।</translation>
 <translation id="8835786707922974220">আপনার সেভ করা পাসওয়ার্ড সবসময় অ্যাক্সেস করতে পারবেন কিনা তা দেখে নিন</translation>
 <translation id="883806473910249246">কন্টেন্ট ডাউনলোড করার সময় একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="8840953339110955557">এই পৃষ্ঠাটি হয়ত অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
@@ -1876,6 +1884,7 @@
 <translation id="9168847423516963845">অ্যাড্রেস বার নিচে সরান</translation>
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">আপনি কি তবুও "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="9190276265094487094">আপনার সিঙ্ক করা সব ডিভাইসে ইতিহাস সেভ হবে, তাই আপনার আগের করা কাজ চালিয়ে যেতে পারবেন</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204021776105550328">মোছা হচ্ছে</translation>

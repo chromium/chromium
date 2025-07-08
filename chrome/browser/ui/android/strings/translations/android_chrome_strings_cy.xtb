@@ -112,6 +112,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1435593198351412143">Agor ffeiliau PDF yn awtomatig</translation>
 <translation id="1437543266176261764">Yn rhedeg yn <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
+<translation id="1455845192930279203">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) o <ph name="DOWNLOAD_DOMAIN" /> beth bynnag?</translation>
 <translation id="1460751212339734034">Arbed amser, teipio llai</translation>
 <translation id="1466383950273130737">Dewiswch iaith Chrome</translation>
 <translation id="1477626028522505441">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd problemau gweinydd.</translation>
@@ -186,6 +187,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
 <translation id="1832459821645506983">Iawn, rwy'n cydsynio</translation>
 <translation id="1845958458910716240">I ddiogelu eich data, gadewch i Chrome dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Mae Chrome wedi stopio hysbysiadau o'r wefan hon. Gallwch adolygu a rheoli.}zero{Mae Chrome wedi stopio hysbysiadau o'r gwefannau hyn. Gallwch adolygu a rheoli.}two{Mae Chrome wedi stopio hysbysiadau o'r gwefannau hyn. Gallwch adolygu a rheoli.}few{Mae Chrome wedi stopio hysbysiadau o'r gwefannau hyn. Gallwch adolygu a rheoli.}many{Mae Chrome wedi stopio hysbysiadau o'r gwefannau hyn. Gallwch adolygu a rheoli.}other{Mae Chrome wedi stopio hysbysiadau o'r gwefannau hyn. Gallwch adolygu a rheoli.}}</translation>
 <translation id="1871098866036088250">Agor mewn porwr Chrome</translation>
 <translation id="1877026089748256423">Rydych yn defnyddio hen fersiwn o Chrome</translation>
 <translation id="1877073879466606884">Mae'r proffil rydych wedi mewngofnodi iddo yn broffil a reolir. Gall eich gweinyddwr wneud newidiadau i'ch gosodiadau proffil o bell, dadansoddi gwybodaeth am y porwr trwy adrodd, a chyflawni tasgau angenrheidiol eraill.</translation>
@@ -494,6 +496,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3250563604907490871">Bydd disgrifiadau lluniau'n dechrau eto pan fyddwch yn cysylltu â Wi-Fi</translation>
 <translation id="3254409185687681395">Creu nod tudalen ar gyfer y dudalen hon</translation>
 <translation id="3265093782546847662">Pob tudalen o <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Llusgwch i fyny i weld canlyniadau chwilio</translation>
 <translation id="3269093882174072735">Llwytho llun</translation>
 <translation id="327204079441056603">Rydym wedi newid sut mae cyfrineiriau ar y ddyfais hon yn cael eu cadw</translation>
 <translation id="3280562213547448728">Chwilio â llais</translation>
@@ -1056,11 +1059,13 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5809361687334836369">{HOURS,plural, =1{# awr yn ôl}zero{# awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="5810288467834065221">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir Pob Hawl.</translation>
 <translation id="5814749351757353073">Cadwch i fyny â'ch hoff wefannau</translation>
+<translation id="5823093032261493462">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" o <ph name="DOWNLOAD_DOMAIN" /> beth bynnag?</translation>
 <translation id="5828921839638612740">Gallwch ddileu'r data yng Ngosodiadau Chrome</translation>
 <translation id="5829586821381540080">Wedi'i gadw yn <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Anhysbys</translation>
 <translation id="5833984609253377421">Rhannu'r ddolen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" beth bynnag?</translation>
 <translation id="5842871376175639063">Mae tabiau a grwpiau tabiau nad ydych wedi'u defnyddio ers <ph name="DAYS_INACTIVE" /> o ddiwrnodau yn cael eu symud yma<ph name="AUTODELETE_SECTION" />. Gallwch newid hyn unrhyw bryd yn <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Agor y PDF gyda <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stopio rhannu?</translation>
@@ -1281,6 +1286,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="674388916582496364">Mae'n gyffredin i wefannau y byddwch yn ymweld â nhw gofio pethau y mae gennych ddiddordeb ynddynt, i bersonoleiddio'ch profiad. Gall gwefannau hefyd storio gwybodaeth am eich diddordebau gyda Chrome.</translation>
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
 <translation id="6751521182688001123">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
+<translation id="6752130751133944215">I adfer ffenestr newydd, lleihewch gyfanswm y ffenestri ar draws y rhai gweithredol ac anweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai. Mae ffenestri anweithredol yn cael eu dileu ar ôl 6 mis.</translation>
 <translation id="6754359471209693699">Dechrau chwiliad newydd</translation>
 <translation id="6756507620369789050">Rhannu adborth</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1453,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7388615499319468910">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 ffeil arall yn y rhestr}zero{# ffeiliau eraill yn y rhestr}two{# ffeil arall yn y rhestr}few{# ffeil arall yn y rhestr}many{# ffeil arall yn y rhestr}other{# ffeil arall yn y rhestr}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">I agor ffenestr newydd, lleihewch gyfanswm y ffenestri ar draws y rhai gweithredol ac anweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai.</translation>
 <translation id="7403691278183511381">Profiad Rhedeg Chrome am y tro Cyntaf</translation>
 <translation id="7411224099004328643">Defnyddiwr Cyfrif Google</translation>
 <translation id="7419565702166471774">Defnyddio cysylltiadau diogel bob tro</translation>
@@ -1793,6 +1800,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8816556050903368450">Cynnwys y ddolen: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Nid oes modd gweld cynnwys y tab rhagweld.</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
+<translation id="8824359129672223138">Gallwch gael hyd at <ph name="MAX_WINDOW_COUNT" /> ffenestr.</translation>
 <translation id="8835786707922974220">Gwnewch yn siŵr eich bod bob amser yn gallu cael mynediad at eich cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="883806473910249246">Bu gwall wrth lawrlwytho'r cynnwys.</translation>
 <translation id="8840953339110955557">Gall y dudalen hon fod yn wahanol i'r fersiwn ar-lein.</translation>
@@ -1877,6 +1885,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9168847423516963845">Symud y bar cyfeiriad i'r gwaelod</translation>
 <translation id="9169507124922466868">Mae hanes llywio wedi'i hanner agor</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) beth bynnag?</translation>
 <translation id="9190276265094487094">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Gwiriwyd 1 funud yn ôl}zero{Gwiriwyd # munud yn ôl}two{Gwiriwyd # funud yn ôl}few{Gwiriwyd # munud yn ôl}many{Gwiriwyd # munud yn ôl}other{Gwiriwyd # munud yn ôl}}</translation>
 <translation id="9204021776105550328">Wrthi'n dileu</translation>

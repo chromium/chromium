@@ -13,6 +13,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes pedir ver la versión para ordenadores de los sitios</translation>
 <translation id="1085696779717592361">Usar Chrome por defecto</translation>
+<translation id="1178015372320901893">Hoja inferior de mis accesos directos</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1192844206376121885">Esta acción eliminará todos los datos y las cookies almacenados por <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7681597159868843240">Los sitios suelen usar los sensores de movimiento del dispositivo en funciones como la realidad virtual o el seguimiento de actividad física</translation>
 <translation id="7688240020069572972">Ocultar tarjeta de consejos de Chrome</translation>
 <translation id="7719367874908701697">Zoom de la página</translation>
+<translation id="775043444390799886">Revocar permiso</translation>
 <translation id="7759147511335618829">Controlar y reprogramar MIDI</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7791543448312431591">Añadir</translation>
@@ -641,6 +643,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8549127125482561383">Cómo mostrar solicitudes</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
+<translation id="8580511488901768832">hoja inferior de mis accesos directos abierta a altura completa</translation>
 <translation id="8593422116412089302">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar la información que hayan guardado sobre ti. Si está desactivada, los sitios no pueden solicitar permiso para usar la información que hayan guardado sobre ti.</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8617611086246832542">Cuando esta opción está activada, se muestra la vista para ordenador de los sitios web. Si está desactivada, se muestra la vista para móvil de los sitios web.</translation>

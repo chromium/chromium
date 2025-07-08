@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">已更改</translation>
 <translation id="1480152980057770392">显示阅读清单</translation>
-<translation id="1484758781961275277">在 iPad 上使用您熟悉且喜爱的桌面浏览器畅享精彩功能。</translation>
 <translation id="1485907716209290998">包裹跟踪</translation>
 <translation id="1486096554574027028">搜索密码</translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">街区</translation>
 <translation id="2579713773888829241">共享云端硬盘</translation>
 <translation id="2593272815202181319">等宽</translation>
-<translation id="2597486707832946298">在 iPhone 上使用您熟悉且喜爱的桌面浏览器畅享精彩功能。</translation>
 <translation id="2601778637777010194">跟踪商品降价情况</translation>
 <translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2612676031748830579">卡号</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
-<translation id="3102139268911534961">在 iPhone 上使用您熟悉且喜爱的移动浏览器畅享精彩功能。</translation>
 <translation id="3102790820790869053">在最近打开的标签页中搜索</translation>
 <translation id="3106690631878101882">隐藏“翻译”</translation>
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4070132839822635162">不登录</translation>
-<translation id="4094361089640885693">轻松跟踪价格并获取价格分析。</translation>
 <translation id="4099756562043439968">设置提醒</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="4111985840824673503">全部标为已读</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4250432749243022864">{count,plural, =0{打开 {count} 个标签页}=1{打开 {count} 个标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4251531167342733205">充分利用您喜爱的浏览器。</translation>
 <translation id="4253168017788158739">备注</translation>
 <translation id="4256782883801055595">开放源代码许可</translation>
 <translation id="4263576668337963058">显示可用的网页操作</translation>
@@ -1465,7 +1460,6 @@
 <translation id="6759709389246683070">您可以轻触并按住此标签页，设置提醒以便日后再次访问</translation>
 <translation id="6761393919622941301">音频</translation>
 <translation id="6770452996697898492">[已预订]</translation>
-<translation id="6775647281444147078">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。您的隐私权与 Gemini</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
@@ -1557,7 +1551,6 @@
 <translation id="7173721738069475737">{count,plural, =1{书签已保存}other{{count} 个书签已保存}}</translation>
 <translation id="7176183551031110427">缩小</translation>
 <translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
-<translation id="718807879214459529">在 iPad 上使用您熟悉且喜爱的移动浏览器畅享精彩功能。</translation>
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
 <translation id="720399613139435155">翻译失败</translation>
 <translation id="7204922488054642675">个性化新闻</translation>
@@ -1631,7 +1624,6 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置触控 ID、面容 ID 或密码。</translation>
 <translation id="750886945254958667">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组</translation>
-<translation id="7512075701202892785">您喜爱的浏览器现已登陆 iPad</translation>
 <translation id="7512909159512473473">输入口令…</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514530647142300459">继续使用 Google 账号 <ph name="EMAIL" /> 中的密码</translation>
@@ -1658,7 +1650,6 @@
 <translation id="760667371114328991">关闭安全检查通知</translation>
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612849887607288481">打开 AI 原型设计菜单</translation>
-<translation id="7615581988398168124">须遵守《Google 条款》和《Gemini 应用隐私权声明》。Gemini 的回答未必正确无误，请注意核查。</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{有密码遭泄露}=1{有 {COUNT} 个密码遭泄露}other{有 {COUNT} 个密码遭泄露}}</translation>
@@ -1987,7 +1978,6 @@
 <translation id="8820817407110198400">书签</translation>
 <translation id="8822421075653507124">为确保您可以安全地使用此设备，您的组织可能需要查看设备操作系统、浏览器、设置以及设备上安装的软件等相关信息。</translation>
 <translation id="8825562130641217944">获取您保存的书签、密码等信息。</translation>
-<translation id="8827154289515190290">您喜爱的浏览器现已登陆 iOS</translation>
 <translation id="8831208860914609320">关闭所有闲置标签页</translation>
 <translation id="8831944931153286232">添加到阅读清单</translation>
 <translation id="8837654851594567190">按发布者排序</translation>
@@ -2000,7 +1990,6 @@
 <translation id="8863067612494559785">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
 <translation id="886477344907998366">显示书签</translation>
-<translation id="8869239474428371589">充分利用您喜爱的浏览器</translation>
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8879604564928138696">点按两次即可试用</translation>

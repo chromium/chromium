@@ -112,6 +112,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1435593198351412143">Apri automaticamente i PDF</translation>
 <translation id="1437543266176261764">Esecuzione in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
+<translation id="1455845192930279203">Scaricare comunque "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) da <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Risparmia tempo e digita meno</translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
@@ -186,6 +187,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1829244130665387512">Trova nella pagina</translation>
 <translation id="1832459821645506983">Ok</translation>
 <translation id="1845958458910716240">Per proteggere i tuoi dati, consenti a Chrome di rimuovere le autorizzazioni dai siti che non hai visitato di recente</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha interrotto la ricezione di notifiche da questo sito. Puoi esaminare e gestire questa impostazione.}other{Chrome ha interrotto la ricezione di notifiche da questi siti. Puoi esaminare e gestire questa impostazione.}}</translation>
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1877073879466606884">Il profilo a cui hai eseguito l'accesso è un profilo gestito. L'amministratore può apportare modifiche alle impostazioni del profilo da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie.</translation>
@@ -493,6 +495,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3250563604907490871">Le descrizioni delle immagini verranno ripristinate quando avrai effettuato la connessione alla rete Wi-Fi</translation>
 <translation id="3254409185687681395">Aggiungi ai Preferiti</translation>
 <translation id="3265093782546847662">Tutte le pagine di <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Trascina verso l'alto per visualizzare i risultati di ricerca</translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="327204079441056603">Abbiamo cambiato la modalità di salvataggio delle password su questo dispositivo</translation>
 <translation id="3280562213547448728">Ricerca vocale</translation>
@@ -1055,11 +1058,13 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
 <translation id="5814749351757353073">Rimani al passo con i tuoi siti preferiti</translation>
+<translation id="5823093032261493462">Scaricare comunque "<ph name="FILE_NAME" />" da <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Puoi eliminare i dati nelle Impostazioni di Chrome</translation>
 <translation id="5829586821381540080">Salvato in <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5833984609253377421">Condividi link</translation>
 <translation id="5839058148541733625">Dino di Chrome</translation>
+<translation id="5841444063256914865">Scaricare comunque "<ph name="FILE_NAME" />"?</translation>
 <translation id="5842871376175639063">Le schede e i gruppi di schede che non hai usato per <ph name="DAYS_INACTIVE" /> giorni vengono spostati qui<ph name="AUTODELETE_SECTION" />. Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Aprire il PDF con <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Interrompere la condivisione?</translation>
@@ -1280,6 +1285,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="674388916582496364">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
+<translation id="6752130751133944215">Per ripristinare una nuova finestra, riduci il numero totale di finestre attive e inattive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno. Le finestre inattive vengono eliminate dopo 6 mesi.</translation>
 <translation id="6754359471209693699">Inizia una nuova ricerca</translation>
 <translation id="6756507620369789050">Condividi feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7388615499319468910">Siti e inserzionisti possono conoscere il rendimento degli annunci. Questa impostazione non è attiva.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altro, 1 file nell'elenco}other{Altro, # file nell'elenco}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Per aprire una nuova finestra, riduci il numero totale di finestre attive e inattive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno.</translation>
 <translation id="7403691278183511381">Esperienza prima esecuzione di Chrome</translation>
 <translation id="7411224099004328643">Utente dell'Account Google</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
@@ -1792,6 +1799,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8816556050903368450">Link incluso: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">I contenuti della scheda di anteprima non sono visualizzabili.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
+<translation id="8824359129672223138">Puoi avere fino a <ph name="MAX_WINDOW_COUNT" /> finestre.</translation>
 <translation id="8835786707922974220">Assicurati di poter accedere sempre alle password salvate</translation>
 <translation id="883806473910249246">Si è verificato un errore durante il download dei contenuti.</translation>
 <translation id="8840953339110955557">Questa pagina potrebbe essere diversa dalla versione online.</translation>
@@ -1876,6 +1884,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9168847423516963845">Sposta la barra degli indirizzi in basso</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Scaricare comunque "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati per poter continuare ciò che stavi facendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204021776105550328">Eliminazione in corso…</translation>

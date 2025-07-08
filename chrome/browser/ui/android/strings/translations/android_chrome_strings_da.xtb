@@ -187,6 +187,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1832459821645506983">Ja tak</translation>
 <translation id="1845958458910716240">Du kan beskytte dine data ved at lade Chrome fjerne tilladelser fra websites, du ikke har besøgt for nylig</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppet notifikationer fra dette website. Du kan gennemgå og administrere dette.}one{Chrome har stoppet notifikationer fra dette website. Du kan gennemgå og administrere dette.}other{Chrome har stoppet notifikationer fra disse websites. Du kan gennemgå og administrere dette.}}</translation>
 <translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1877073879466606884">Den profil, du er logget ind på, er en administreret profil. Din administrator kan foretage ændringer i dine profilindstillinger via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver.</translation>

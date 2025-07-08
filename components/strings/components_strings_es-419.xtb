@@ -2416,6 +2416,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5043753287208271200">Amarillo 3</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="5048293684454354469">Los temas de anuncios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin estos temas, los sitios pueden seguir mostrándote anuncios, pero es posible que estén menos personalizados. Obtén más información para <ph name="BEGIN_LINK" />administrar tu privacidad en los anuncios<ph name="LINK_END" />.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, presiona Tab para ver más atajos de búsqueda disponibles después de esta sugerencia de búsqueda</translation>
 <translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
 <translation id="505757197798929356">Proporciona el motivo de la apertura (obligatorio)</translation>
@@ -4838,6 +4839,7 @@ Detalles adicionales:
 <translation id="9174917557437862841">Botón para cambiar de pestaña; presiona Intro para cambiar a esta pestaña</translation>
 <translation id="9177283544810807743">El PDF es inaccesible. Extrayendo texto con la tecnología de IA de Google</translation>
 <translation id="9179703756951298733">Administra tus pagos y la información de las tarjetas de crédito en la configuración de Chrome</translation>
+<translation id="9179766227052716237">Tu organización dice: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Recibe alertas por correo electrónico si baja el precio en algún sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utiliza un protocolo no compatible.</translation>

@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">ປ່ຽນແປງແລ້ວ</translation>
 <translation id="1480152980057770392">ສະແດງລາຍຊື່ການອ່ານ</translation>
-<translation id="1484758781961275277">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບເດັສທັອບທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="1485907716209290998">ການຕິດຕາມພັດສະດຸ</translation>
 <translation id="1486096554574027028">ລະຫັດຜ່ານຄົ້ນຫາ</translation>
 <translation id="1491277525950327607">ແຕະສອງຄັ້ງເພື່ອສັບປ່ຽນການຕັ້ງຄ່າ</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">ຄຸ້ມບ້ານ</translation>
 <translation id="2579713773888829241">ໄດຣຟ໌ທີ່ແບ່ງປັນ</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2597486707832946298">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບເດັສທັອບທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="2601778637777010194">ຕິດຕາມລາຄາທີ່ຫຼຸດລົງຂອງຜະລິດຕະພັນ</translation>
 <translation id="260378315836159338">ຢູ່ເທິງສຸດຂອງໜ້າຈໍ, ໃຫ້ແຕະ +</translation>
 <translation id="2612676031748830579">ເລກບັດ</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">ກວດໃຫ້ແນ່ໃຈວ່າລະຫັດຜ່ານທີ່ທ່ານກຳລັງບັນທຶກກົງກັບລະຫັດຜ່ານຂອງທ່ານສຳລັບ <ph name="WEBSITE" /> ຫຼືບໍ່.</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="309710370695886264">ທ່ານມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
-<translation id="3102139268911534961">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບມືຖືທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="3102790820790869053">ຊອກຫາແຖບຫຼ້າສຸດ</translation>
 <translation id="3106690631878101882">ເຊື່ອງ ແປພາສາ</translation>
 <translation id="310900540163454140">ລຶບລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" /> ບໍ?</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">ກະລຸນາກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ເຄືອຂ່າຍ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
 <translation id="4070132839822635162">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
-<translation id="4094361089640885693">ຕິດຕາມລາຄາ ແລະ ຮັບຂໍ້ມູນເຈາະເລິກດ້ານລາຄາໄດ້ຢ່າງງ່າຍດາຍ.</translation>
 <translation id="4099756562043439968">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="4108998448622696017">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ.</translation>
 <translation id="4111985840824673503">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4250432749243022864">{count,plural, =0{ເປີດ {count} ແຖບ}=1{ເປີດ {count} ແຖບ}other{ເປີດ {count} ແຖບ}}</translation>
 <translation id="4250680216510889253">ບໍ່ແມ່ນ</translation>
-<translation id="4251531167342733205">ໃຊ້ປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບທີ່ທ່ານມັກ.</translation>
 <translation id="4253168017788158739">ບັນທຶກ</translation>
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="4263576668337963058">ສະແດງຄຳສັ່ງໃນໜ້າທີ່ໃຊ້ໄດ້</translation>
@@ -1465,7 +1460,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6759709389246683070">ທ່ານສາມາດແຕະແຖບນີ້ຄ້າງໄວ້ເພື່ອຕັ້ງການແຈ້ງເຕືອນໃຫ້ກັບຄືນມາເບິ່ງໃນພາຍຫຼັງໄດ້</translation>
 <translation id="6761393919622941301">ສຽງ</translation>
 <translation id="6770452996697898492">[ຈອງແລ້ວ]</translation>
-<translation id="6775647281444147078">ລະບົບບໍ່ໄດ້ໃຊ້ການສົນທະນາຂອງອົງກອນທ່ານໃນການປັບປຸງໂມເດວຂອງພວກເຮົາ. Gemini ອາດສະແດງຂໍ້ມູນທີ່ບໍ່ຖືກຕ້ອງ, ເຊິ່ງຮວມທັງການໃຫ້ຂໍ້ມູນກ່ຽວກັບບຸກຄົນ, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ. ຄວາມເປັນສ່ວນຕົວຂອງທ່ານ ແລະ Gemini</translation>
 <translation id="6779455296366983087">ຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານຈະຖືກລຶບ</translation>
 <translation id="6790502149545262384">ໃນອີກບໍ່ດົນ, ທ່ານຈະເຫັນຂ່າວຈາກ <ph name="CHANNEL_NAME" /> ເມື່ອທ່ານເປີດແຖບໃໝ່.</translation>
 <translation id="6791425686608802741">ແຕະ "ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່"</translation>
@@ -1557,7 +1551,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7173721738069475737">{count,plural, =1{ບັນທຶກບຸກມາກແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການແລ້ວ}}</translation>
 <translation id="7176183551031110427">ຊູມອອກ</translation>
 <translation id="7186568385131859684">ຄວບຄຸມການໃຊ້ປະຫວັດການທ່ອງເວັບກັບຂໍ້ມູນອື່ນໆຂອງທ່ານໃນບໍລິການຕ່າງໆຂອງ Google</translation>
-<translation id="718807879214459529">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບມືຖືທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="719133302483559673">ຈັດການຄວາມສົນໃຈ ແລະ ການຕັ້ງຄ່າຂອງທ່ານ.</translation>
 <translation id="720399613139435155">ແປພາສາບໍ່ສຳເລັດ</translation>
 <translation id="7204922488054642675">ຂ່າວປັບແຕ່ງສະເພາະໂຕ</translation>
@@ -1631,7 +1624,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ເພື່ອລັອກ incognito tab ຂອງທ່ານ, ໃຫ້ຕັ້ງຄ່າ Touch ID, Face ID ຫຼື ລະຫັດກ່ອນ.</translation>
 <translation id="750886945254958667">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກຈາກກຸ່ມຫາກທ່ານບໍ່ຕ້ອງການເຂົ້າເຖິງກຸ່ມແລ້ວ</translation>
-<translation id="7512075701202892785">ຕອນນີ້ໂປຣແກຣມທ່ອງເວັບທີ່ທ່ານມັກພ້ອມໃຫ້ໃຊ້ໃນ iPad ແລ້ວ</translation>
 <translation id="7512909159512473473">ລະບຸລະຫັດຜ່ານ…</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7514530647142300459">ໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google <ph name="EMAIL" /> ຂອງທ່ານຕໍ່ໄປ</translation>
@@ -1658,7 +1650,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="760667371114328991">ປິດການແຈ້ງເຕືອນສຳລັບການກວດສອບຄວາມປອດໄພ</translation>
 <translation id="7612619742409846846">ເຂົ້າສູ່ລະບົບ Google ເປັນ</translation>
 <translation id="7612849887607288481">ເປີດເມນູ AI ຕົ້ນແບບ</translation>
-<translation id="7615581988398168124">ໂດຍເປັນໄປຕາມຂໍ້ກຳນົດ Google ແລະ ປະກາດຄວາມເປັນສ່ວນຕົວແອັບ Gemini. Gemini ອາດເຮັດຜິດພາດໄດ້, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ.</translation>
 <translation id="7620522820075868385">ຍົກເລີກ</translation>
 <translation id="7638584964844754484">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}}</translation>
@@ -1987,7 +1978,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="8822421075653507124">ເພື່ອໃຫ້ແນ່ໃຈວ່າອຸປະກອນນີ້ສາມາດຖືກນໍາໃຊ້ຢ່າງປອດໄພ, ອົງກອນຂອງທ່ານອາດຈະຕ້ອງເບິ່ງຂໍ້ມູນກ່ຽວກັບລະບົບປະຕິບັດການ, ໂປຣແກຣມທ່ອງເວັບ ແລະ ການຕັ້ງຄ່າຂອງຕົນ ຕະຫຼອດຈົນເຖິງຊອບແວທີ່ຖືກຕິດຕັ້ງຢູ່ອຸປະກອນ.</translation>
 <translation id="8825562130641217944">ຮັບບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານ.</translation>
-<translation id="8827154289515190290">ຕອນນີ້ໂປຣແກຣມທ່ອງເວັບທີ່ທ່ານມັກພ້ອມໃຫ້ໃຊ້ໃນ iOS ແລ້ວ</translation>
 <translation id="8831208860914609320">ປິດແຖບທີ່ບໍ່ມີການນຳໃຊ້ທັງໝົດ</translation>
 <translation id="8831944931153286232">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="8837654851594567190">ຈັດຮຽງຕາມຜູ້ເຜີຍແຜ່</translation>
@@ -2000,7 +1990,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8863067612494559785">ກຳລັງສົ່ງຫາ <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">ຂໍເສັ້ນທາງ ແລະ ຂໍ້ມູນໃນທ້ອງຖິ່ນຈາກ Google ແຜນທີ່</translation>
 <translation id="886477344907998366">ສະແດງບຸກມາກ</translation>
-<translation id="8869239474428371589">ໃຊ້ປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບທີ່ທ່ານມັກ</translation>
 <translation id="8871974300055371298">ການ​ຕັ້ງ​ຄ່າ​ເນື້ອ​ໃນ</translation>
 <translation id="8877788021141246043">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="8879604564928138696">ແຕະສອງເທື່ອເພື່ອລອງໃຊ້</translation>

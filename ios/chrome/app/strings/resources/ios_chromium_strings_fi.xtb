@@ -7,7 +7,6 @@
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
 <translation id="1091252999271033193">Tämä tarkoittaa, että Chromium pyytää aina mobiilisivustoa.</translation>
 <translation id="1115463765356382667">Näillä ehdotuksilla saat Chromiumista parhaan hyödyn.</translation>
-<translation id="1140315115515116765">Käytä Chromiumia oletuksena, niin näet hintatiedot helposti</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1229234641991056119">Käytä Safarin salasanoja, historiaa, kirjanmerkkejä ja credit-kortteja Chromiumissa</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
@@ -122,7 +121,6 @@ Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä d
 <translation id="3855938650519180865">Uutta Chromiumissa</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="3949514465204582407">Chromium-vinkki: Käytä salasanoja missä tahansa sovelluksessa</translation>
-<translation id="3983291422281996849">Aseta Chromium oletusselaimeksi, niin voit helposti seurata haluamiesi tuotteiden hintoja ja saada hintatilastoja.</translation>
 <translation id="4005283307739974863">Avaa ja suorittaa turvatarkistuksen Chromiumissa.</translation>
 <translation id="4043291146360695975">Salasanat tallennetaan Salasanojen ylläpitoon vain tällä laitteella.</translation>
 <translation id="4066426933127344530">Käytä Chromiumia oletuksena</translation>
@@ -251,7 +249,6 @@ Huomioitavaa:
 <translation id="7018284295775193585">Chromiumin päivitys ei onnistu</translation>
 <translation id="7055269218854630176">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromiumin käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
-<translation id="7129379408282555630">Hyödynnä Chromium Shoppingia</translation>
 <translation id="7165402419892018581">Chromiumin valinta automaattiseen täyttöön</translation>
 <translation id="7175400662502680481">Salasanasi vaarantui tietosuojaloukkauksessa. Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
 <translation id="7185731475720473450">Maksutapoja ja osoitteita ei salata. Chromiumin selaushistoriaa ei synkronoida.

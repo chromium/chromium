@@ -485,7 +485,6 @@ Als je het beleid uitzet, heeft dit een nadelige invloed op de beveiliging van <
 
 Zet het beleid alleen uit als er compatibiliteitsproblemen zijn met software van derden die voorkomen dat afdrukservices correct werken in de LPAC-sandbox.</translation>
 <translation id="1369698103169067223">Glanceables staan niet aan voor gebruikers.</translation>
-<translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
 <translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
@@ -1357,7 +1356,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
 <translation id="1984934843478301531">Automatisering om apps te starten</translation>
 <translation id="1985545260037812875">Instellingenscherm voor weergavegrootte tonen tijdens inloggen</translation>
-<translation id="1985598967415986700">Inkorting van user-agent kan worden beheerd via field trials en origin trials.</translation>
 <translation id="1987789058026551147">Rapportage voor kiosksessies op apparaat aanzetten</translation>
 <translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
 
@@ -2856,7 +2854,6 @@ Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( 
           Dit beleid is optioneel. Als het niet wordt ingesteld, wordt er geen vervanging van zoektermen uitgevoerd.
 
           Dit beleid wordt alleen gerespecteerd als het beleid DefaultSearchProviderEnabled is toegepast.</translation>
-<translation id="305106159605171619">Inkorting van user-agent uitgezet en kan niet worden aangezet door field trials of origin trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Gebruik van Chrome for Testing niet toestaan</translation>
 <translation id="3059687162224942925">Beheermelding aanzetten in NTP-voettekst</translation>
@@ -9287,12 +9284,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 
       In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="751071954873065775">DLC's (downloadbare content) selecteren die vooraf moeten worden gedownload</translation>
-<translation id="7512065400265675158">De <ph name="USER_AGENT_HEADER_NAME" /> HTTP-verzoekheader wordt volgens planning ingekort. Dit beleid kan de inkortfunctie voor alle websites aanzetten of de mogelijkheid uitzetten dat origin trials of field trials de functie aanzetten. Dit wordt gedaan om tests en compatibiliteit mogelijk te maken.
-
-      Lees het volgende voor meer informatie over <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> en de bijbehorende tijdlijn:
-
-https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954">Payloads voor automatische updates voor <ph name="PRODUCT_OS_NAME" /> kunnen worden gedownload via HTTP in plaats van HTTPS. Hierdoor kunnen HTTP-downloads transparant in het HTTP-cachegeheugen worden opgeslagen.
 
 Als je dit beleid instelt op True, probeert <ph name="PRODUCT_OS_NAME" /> payloads voor automatische updates te downloaden via HTTP. Als je het beleid instelt op False of niet instelt, wordt HTTPS gebruikt om payloads voor automatische updates te downloaden.</translation>

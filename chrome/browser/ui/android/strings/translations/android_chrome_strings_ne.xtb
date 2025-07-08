@@ -112,6 +112,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1435593198351412143">PDF हरू स्वतः खोलियोस्</translation>
 <translation id="1437543266176261764">यो क्रियाकलाप <ph name="APP_NAME" /> मार्फत गरिँदै छ</translation>
 <translation id="1448440926884431741">"बुकमार्कहरू" मा गई आफूले ट्रयाक गरेका उत्पादनहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1455845192930279203">तपाईं जे भए पनि <ph name="DOWNLOAD_DOMAIN" /> बाट "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="1460751212339734034">कम टाइप गरी समय बचत गर्नुहोस्</translation>
 <translation id="1466383950273130737">Chrome मा प्रयोग गरिने भाषा छान्नुहोस्</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
@@ -186,6 +187,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
 <translation id="1845958458910716240">तपाईंको जानकारीको सुरक्षार्थ Chrome लाई तपाईंले हालसालै नखोलेका साइटहरूलाई दिइएका अनुमति रद्द गर्न दिनुहोस्</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ले यो साइटबाट नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गरेको छ। तपाईं ती नोटिफिकेसनहरू हेर्न र व्यवस्थापन गर्न सक्नुहुन्छ।}other{Chrome ले यी साइटबाट नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गरेको छ। तपाईं ती नोटिफिकेसनहरू हेर्न र व्यवस्थापन गर्न सक्नुहुन्छ।}}</translation>
 <translation id="1871098866036088250">Chrome ब्राउजरमा खोलियोस्</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
 <translation id="1877073879466606884">तपाईंले साइन इन गर्नुभएको प्रोफाइल व्यवस्थापन गरिएको प्रोफाइल हो। तपाईंका एड्मिन टाढैबाट तपाईंको प्रोफाइलका सेटिङ मिलाउन, रिपोर्टिङमार्फत ब्राउजरको जानकारी विश्लेषण गर्न र अन्य आवश्यक कार्यहरू गर्न सक्छन्।</translation>
@@ -493,6 +495,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3250563604907490871">Wi-Fi मा कनेक्ट हुँदा 'फोटो वर्णन गर्ने' सुविधा सुचारु हुने छ</translation>
 <translation id="3254409185687681395">यो पृष्ठलाई बुकमार्क गर्नुहोस्</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> का सबै पेजहरू</translation>
+<translation id="3268048651973962414">खोज परिणामहरू हेर्न माथितिर ड्र्याग गर्नुहोस्</translation>
 <translation id="3269093882174072735">फोटो लोड गर्नुहोस्</translation>
 <translation id="327204079441056603">हामीले यो डिभाइसमा पासवर्ड सेभ गरिने तरिका परिवर्तन गरेका छौँ</translation>
 <translation id="3280562213547448728">भ्वाइस सर्च</translation>
@@ -1054,11 +1057,13 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5809361687334836369">{HOURS,plural, =1{# घन्टा अघि}other{# घन्टा अघि}}</translation>
 <translation id="5810288467834065221">प्रतिलिपि अधिकार <ph name="YEAR" /> Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>
+<translation id="5823093032261493462">तपाईं जे भए पनि <ph name="DOWNLOAD_DOMAIN" /> बाट "<ph name="FILE_NAME" />" डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="5828921839638612740">तपाईं Chrome का सेटिङमा गई यो डेटा मेटाउन सक्नुहुन्छ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> मा सेभ गरियो</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक सेयर गर्नुहोस्</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">तपाईं जे भए पनि "<ph name="FILE_NAME" />" डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="5842871376175639063">तपाईंले <ph name="DAYS_INACTIVE" /> दिनदेखि प्रयोग नगरेका ट्याब र ट्याब समूहहरू सारेर यहाँ लगिन्छन्<ph name="AUTODELETE_SECTION" />। तपाईं जुनसुकै बेला <ph name="SETTINGS_TITLE" /> मा गई यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> मार्फत PDF खोल्ने हो?</translation>
 <translation id="5849288995120328556">सेयर गर्न छाड्ने हो?</translation>
@@ -1279,6 +1284,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="674388916582496364">तपाईंले खोल्ने साइटहरूले तपाईंलाई उपलब्ध गराइने सुविधा पर्सनलाइज गर्ने प्रयोजनका लागि तपाईंको रुचि भएका कुराहरू याद राख्नु सामान्य कुरा हो। साइटहरूले Chrome मा तपाईंका रुचिसम्बन्धी जानकारी भण्डारण गर्न पनि सक्छन्।</translation>
 <translation id="6746338529702829275">आफ्नो खातामा भएको जानकारीको समीक्षा गर्नुहोस्</translation>
 <translation id="6751521182688001123">छिटोछरितो रूपमा नयाँ ट्याब खोल्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
+<translation id="6752130751133944215">नयाँ विन्डो रिस्टोर गर्न सक्रिय वा निष्क्रिय विन्डोहरूको कुल सङ्ख्या घटाएर <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> वा सोभन्दा कम बनाउनुहोस्। निष्क्रिय विन्डोहरू ६ महिनापछि मेटाइन्छन्।</translation>
 <translation id="6754359471209693699">नयाँ कुरा खोज्न थाल्नुहोस्</translation>
 <translation id="6756507620369789050">प्रतिक्रिया दिनुहोस्</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
@@ -1445,6 +1451,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7388615499319468910">साइट तथा विज्ञापनदाताहरू विज्ञापनको पर्फर्मेन्स कस्तो छ भन्ने कुरा बुझ्न सक्छन्। यो सेटिङ अफ छ।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{अन्य, सूचीमा एउटा फाइल छ}other{अन्य, सूचीमा # वटा फाइल छन्}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">नयाँ विन्डो खोल्न सक्रिय वा निष्क्रिय विन्डोहरूको कुल सङ्ख्या घटाएर <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> वा सोभन्दा कम बनाउनुहोस्।</translation>
 <translation id="7403691278183511381">पहिलोपटक Chrome चलाउँदाको अनुभव</translation>
 <translation id="7411224099004328643">Google खाता प्रयोगकर्ता</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
@@ -1791,6 +1798,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8816556050903368450">लिंकसहित: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
+<translation id="8824359129672223138">तपाईं बढीमा <ph name="MAX_WINDOW_COUNT" /> वटा विन्डो खुला राख्न सक्नुहुन्छ।</translation>
 <translation id="8835786707922974220">तपाईं आफूले सुरक्षित गरेका पासवर्डहरू जुनसुकै बेला प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
@@ -1875,6 +1883,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9168847423516963845">एड्रेस बार सारेर पुछारमा लैजानुहोस्</translation>
 <translation id="9169507124922466868">नेभिगेसनको इतिहास आधा खुला छ</translation>
 <translation id="918419812064856259">Chrome बिटा</translation>
+<translation id="9189607089796819144">तपाईं जे भए पनि "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="9190276265094487094">तपाईंका सबै डिभाइसमा तपाईंको ब्राउजिङ इतिहास सिंक गरिने भएकाले तपाईं जुनसुकै डिभाइसबाट आफूले गर्दै गरेको कार्य जारी राख्न सक्नुहुन्छ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{१ मिनेटअघि जाँच गरिएको}other{# मिनेटअघि जाँच गरिएको}}</translation>
 <translation id="9204021776105550328">मेटाइँदै छ</translation>

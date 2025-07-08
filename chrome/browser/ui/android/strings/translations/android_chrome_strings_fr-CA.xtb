@@ -112,6 +112,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1435593198351412143">Ouvrir automatiquement les fichiers PDF</translation>
 <translation id="1437543266176261764">En cours d'exécution dans <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans vos favoris</translation>
+<translation id="1455845192930279203">Voulez-vous quand même télécharger « <ph name="FILE_NAME" /> » (<ph name="FILE_SIZE" />) à partir de <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Gagnez du temps, tapez moins</translation>
 <translation id="1466383950273130737">Choisir la langue de Chrome</translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
@@ -186,6 +187,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1845958458910716240">Pour protéger vos données, laissez Chrome retirer les autorisations des sites que vous n'avez pas consultés récemment</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a arrêté les notifications de ce site. Vous pouvez les consulter et les gérer.}one{Chrome a arrêté les notifications de ce site. Vous pouvez les consulter et les gérer.}other{Chrome a arrêté les notifications de ces sites. Vous pouvez les consulter et les gérer.}}</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier les paramètres de votre profil à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires.</translation>
@@ -493,6 +495,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3250563604907490871">Les descriptions d'images reprendront lorsque vous serez connecté au Wi-Fi</translation>
 <translation id="3254409185687681395">Ajouter cette page aux favoris</translation>
 <translation id="3265093782546847662">Toutes les pages de <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Faites glisser le panneau vers le haut pour afficher les résultats de recherche</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="327204079441056603">Nous avons modifié la façon dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
@@ -1055,11 +1058,13 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="5814749351757353073">Suivez l'actualité de vos sites favoris</translation>
+<translation id="5823093032261493462">Voulez-vous quand même télécharger « <ph name="FILE_NAME" /> » à partir de <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Vous pouvez supprimer les données dans les paramètres de Chrome</translation>
 <translation id="5829586821381540080">Enregistré dans <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5833984609253377421">Partager le lien</translation>
 <translation id="5839058148541733625">Jeu de dinosaures de Chrome</translation>
+<translation id="5841444063256914865">Voulez-vous quand même télécharger « <ph name="FILE_NAME" /> »?</translation>
 <translation id="5842871376175639063">Les onglets et les groupes d'onglets que vous n'avez pas utilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cette option en tout temps dans <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Ouvrir un fichier PDF avec <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Arrêter le partage?</translation>
@@ -1280,6 +1285,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="674388916582496364">Les sites que vous visitez mémorisent couramment les sujets qui vous intéressent afin de personnaliser votre expérience. Les sites peuvent également stocker des renseignements sur vos centres d’intérêt dans Chrome.</translation>
 <translation id="6746338529702829275">Vérifiez les données de votre compte</translation>
 <translation id="6751521182688001123">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
+<translation id="6752130751133944215">Pour restaurer une nouvelle fenêtre, réduisez le nombre total de fenêtres actives et inactives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins. Les fenêtres inactives sont supprimées après six mois.</translation>
 <translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
 <translation id="6756507620369789050">Partager vos commentaires</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autre, 1 fichier dans la liste}one{Autre, # fichier dans la liste}other{Autre, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives et inactives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="7411224099004328643">Utilisateur du compte Google</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
@@ -1792,6 +1799,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8816556050903368450">Y compris le lien : <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Impossible d'afficher l'aperçu du contenu dans un onglet.</translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="8824359129672223138">Vous pouvez ouvrir jusqu'à <ph name="MAX_WINDOW_COUNT" /> fenêtres.</translation>
 <translation id="8835786707922974220">Assurez-vous de toujours pouvoir accéder à vos mots de passe enregistrés</translation>
 <translation id="883806473910249246">Une erreur s'est produite lors du téléchargement du contenu.</translation>
 <translation id="8840953339110955557">Cette page peut différer de la version en ligne.</translation>
@@ -1876,6 +1884,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9168847423516963845">Déplacer la barre d'adresse vers le bas</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="918419812064856259">Version bêta de Chrome</translation>
+<translation id="9189607089796819144">Voulez-vous quand même télécharger « <ph name="FILE_NAME" /> » (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Vous aurez accès à votre historique sur tous vos appareils synchronisés pour reprendre le cours de vos activités</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Dernière vérification : il y a 1 minute}one{Dernière vérification : il y a # minute}other{Dernière vérification : il y a # minutes}}</translation>
 <translation id="9204021776105550328">Suppression en cours…</translation>

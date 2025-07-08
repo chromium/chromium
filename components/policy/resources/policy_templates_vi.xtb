@@ -488,7 +488,6 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt), thì tính bảo m
 
 Bạn chỉ nên tắt chính sách này nếu gặp vấn đề về khả năng tương thích với phần mềm bên thứ ba khiến các dịch vụ in hoạt động không bình thường trong Hộp cát LPAC.</translation>
 <translation id="1369698103169067223">Tiện ích xem nhanh không được bật cho người dùng.</translation>
-<translation id="1371626834351873151">Tính năng Giảm thiểu tác nhân người dùng sẽ được bật cho mọi bản dùng thử theo nguyên gốc.</translation>
 <translation id="1371851989348083665">Cho phép dùng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web</translation>
 <translation id="1372618949173323717">Tắt JavaScript</translation>
 <translation id="1376119291123231789">Bật chế độ sạc pin nâng cao</translation>
@@ -1382,7 +1381,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="1977581177449752640">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ dùng một chứng chỉ máy khách có tên thường gọi (CN) của nhà phát hành cụ thể để xác thực theo <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Để dùng chứng chỉ máy khách có sẵn, hãy đặt chính sách này thành <ph name="WILDCARD_VALUE" />. Tính năng này sẽ bị tắt nếu bạn để trống hoặc không đặt chính sách này.</translation>
 <translation id="1984934843478301531">Tự động khởi chạy ứng dụng</translation>
 <translation id="1985545260037812875">Hiện màn hình cài đặt kích thước hiển thị trong quá trình đăng nhập</translation>
-<translation id="1985598967415986700">Có thể kiểm soát được Tính năng Giảm thiểu tác nhân người dùng qua Field-Trials và Origin-Trials.</translation>
 <translation id="1987789058026551147">Bật tính năng báo cáo phiên kiosk của thiết bị</translation>
 <translation id="1988345404999458987">Cung cấp cấu hình của các máy chủ máy in hiện có.
 
@@ -2880,7 +2878,6 @@ Lưu ý: Để xem thêm ví dụ cụ thể, hãy truy cập vào trang The Chr
           Chính sách này là tùy chọn. Nếu không được đặt, sẽ không có thay thế cụm từ tìm kiếm nào được thực hiện.
 
           Chính sách này chỉ được lưu tâm nếu chính sách 'DefaultSearchProviderEnabled' được bật.</translation>
-<translation id="305106159605171619">Đã tắt chế độ giảm thiểu Tác nhân người dùng (User-Agent Reduction) và không dùng Bản dùng thử thử nghiệm (Field-Trials) hay Bản dùng thử theo nguyên gốc (Origin-Trials) để bật tính năng này.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Không cho phép sử dụng Chrome for Testing</translation>
 <translation id="3059687162224942925">Bật thông báo quản lý trong phần chân trang của NTP</translation>
@@ -9518,12 +9515,6 @@ thì hệ thống sẽ bật tính năng đọc to.</translation>
 
       Trong tương lai, bạn có thể dùng giá trị <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> để đặt <ph name="LACROS_NAME" /> làm trình duyệt duy nhất sử dụng được trên <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="751071954873065775">Chọn DLC (Nội dung tải xuống được) cần tải xuống trước</translation>
-<translation id="7512065400265675158">Tiêu đề của yêu cầu HTTP <ph name="USER_AGENT_HEADER_NAME" /> được lên lịch để giảm bớt. Để tạo điều kiện cho hoạt động thử nghiệm và khả năng tương thích, chính sách này có thể bật tính năng giảm thiểu cho mọi trang web hoặc tắt tính năng bản dùng thử theo nguyên gốc hoặc bản thử nghiệm để bật tính năng này.
-
-      Để tìm hiểu thêm về <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> và tiến trình của tác nhân này, hãy đọc tại đây:
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954">Các phần tải dữ liệu tự động cập nhật trên <ph name="PRODUCT_OS_NAME" /> có thể được tải xuống qua HTTP thay vì HTTPS. Điều này cho phép lưu các tài nguyên đã tải xuống qua HTTP vào bộ nhớ đệm HTTP thông suốt.
 
 Nếu bạn đặt chính sách này thành true, <ph name="PRODUCT_OS_NAME" /> sẽ cố gắng tải xuống các phần tải dữ liệu tự động cập nhật qua HTTP. Nếu bạn đặt chính sách này thành false hoặc không đặt, HTTPS sẽ được dùng để tải xuống các phần tải dữ liệu tự động cập nhật.</translation>

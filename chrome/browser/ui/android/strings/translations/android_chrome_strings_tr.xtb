@@ -112,6 +112,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1435593198351412143">PDF'leri otomatik olarak aç</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> uygulamasında çalışıyor</translation>
 <translation id="1448440926884431741">Takip edilen ürünlerinizi yer işaretlerinde düzenleyin</translation>
+<translation id="1455845192930279203">"<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) dosyasını <ph name="DOWNLOAD_DOMAIN" /> kaynağından yine de indirmek istiyor musunuz?</translation>
 <translation id="1460751212339734034">Daha az yazarak zaman kazanın</translation>
 <translation id="1466383950273130737">Chrome’un dilini seçin</translation>
 <translation id="1477626028522505441">Sunucu sorunları nedeniyle <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
@@ -186,6 +187,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1829244130665387512">Sayfada bul</translation>
 <translation id="1832459821645506983">Evet, kabul ediyorum</translation>
 <translation id="1845958458910716240">Verilerinizin korunması için Chrome'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome, bu siteden gelen bildirimleri durdurdu. Bunları inceleyip yönetebilirsiniz.}other{Chrome, bu sitelerden gelen bildirimleri durdurdu. Bunları inceleyip yönetebilirsiniz.}}</translation>
 <translation id="1871098866036088250">Chrome tarayıcıda aç</translation>
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1877073879466606884">Oturum açtığınız profil, yönetilen bir profildir. Yöneticiniz profil ayarlarınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir.</translation>
@@ -493,6 +495,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3250563604907490871">Resim açıklamaları özelliği, kablosuz ağa bağlandığınızda devam ettirilecek</translation>
 <translation id="3254409185687681395">Bu sayfaya yer işareti koy</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> alanının tüm sayfaları</translation>
+<translation id="3268048651973962414">Arama sonuçlarını görmek için yukarı sürükleyin</translation>
 <translation id="3269093882174072735">Resim yükle</translation>
 <translation id="327204079441056603">Bu cihazda şifrelerin kaydedilme şeklini değiştirdik</translation>
 <translation id="3280562213547448728">Sesli arama</translation>
@@ -1055,11 +1058,13 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5809361687334836369">{HOURS,plural, =1{# saat önce}other{# saat önce}}</translation>
 <translation id="5810288467834065221">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="5814749351757353073">Favori sitelerinizi takip edin</translation>
+<translation id="5823093032261493462">"<ph name="FILE_NAME" />" dosyasını <ph name="DOWNLOAD_DOMAIN" /> kaynağından yine de indirmek istiyor musunuz?</translation>
 <translation id="5828921839638612740">Verileri Chrome'da Ayarlar'dan silebilirsiniz</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> klasörüne kaydedildi</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5833984609253377421">Bağlantıyı paylaş</translation>
 <translation id="5839058148541733625">Chrome Dinozor</translation>
+<translation id="5841444063256914865">"<ph name="FILE_NAME" />" dosyasını yine de indirmek istiyor musunuz?</translation>
 <translation id="5842871376175639063"><ph name="DAYS_INACTIVE" /> gündür kullanmadığınız sekmeler ve sekme grupları buraya taşınır<ph name="AUTODELETE_SECTION" />. Bunu istediğiniz zaman <ph name="SETTINGS_TITLE" /> bölümünde değiştirebilirsiniz.</translation>
 <translation id="5848257610304005265">PDF, <ph name="APP_NAME" /> ile açılsın mı?</translation>
 <translation id="5849288995120328556">Paylaşım durdurulsun mu?</translation>
@@ -1280,6 +1285,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="674388916582496364">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da da saklayabilir.</translation>
 <translation id="6746338529702829275">Hesap verilerinizi inceleyin</translation>
 <translation id="6751521182688001123">Hızlıca yeni bir sekme açın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
+<translation id="6752130751133944215">Yeni bir pencereyi geri yüklemek için etkin ve etkin olmayan toplam pencere sayısını en fazla <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> olacak şekilde azaltın. Etkin olmayan pencereler 6 ay sonra silinir.</translation>
 <translation id="6754359471209693699">Yeni arama başlat</translation>
 <translation id="6756507620369789050">Geri bildiriminizi paylaşın</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1446,6 +1452,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7388615499319468910">Siteler ve reklamverenler, reklamların nasıl performans gösterdiğini anlayabilir. Bu ayar kapalı.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Listede 1 dosya daha var}other{Listede # dosya daha var}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Yeni bir pencere açmak için etkin ve etkin olmayan toplam pencere sayısını en fazla <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> olacak şekilde azaltın.</translation>
 <translation id="7403691278183511381">Chrome İlk Çalıştırma Deneyimi</translation>
 <translation id="7411224099004328643">Google Hesabı kullanıcısı</translation>
 <translation id="7419565702166471774">Her zaman güvenli bağlantılar kullan</translation>
@@ -1792,6 +1799,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8816556050903368450">Bağlantı dahil: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Önizleme sekmesinin içeriği görüntülenemiyor.</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>
+<translation id="8824359129672223138">En fazla <ph name="MAX_WINDOW_COUNT" /> pencere açabilirsiniz.</translation>
 <translation id="8835786707922974220">Kayıtlı şifrelerinize her zaman erişebildiğinizden emin olun</translation>
 <translation id="883806473910249246">İçerik indirilirken bir hata oluştu.</translation>
 <translation id="8840953339110955557">Bu sayfa, web'deki sürümden farklı olabilir.</translation>
@@ -1876,6 +1884,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9168847423516963845">Adres çubuğunu en alta taşı</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">"<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) dosyasını yine de indirmek istiyor musunuz?</translation>
 <translation id="9190276265094487094">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabilirsiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dakika önce kontrol edildi}other{# dakika önce kontrol edildi}}</translation>
 <translation id="9204021776105550328">Siliniyor</translation>

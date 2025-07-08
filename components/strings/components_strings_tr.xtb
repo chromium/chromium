@@ -2415,6 +2415,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5043753287208271200">Sarı 3</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="5048293684454354469">Reklam konuları, bir sitenin reklamları kişiselleştirmek için kullanabileceği pek çok şeyden yalnızca biridir. Reklam konuları olmasa bile siteler size reklam göstermeye devam edebilir, ancak bu reklamlar daha az kişiselleştirilmiş olabilir. <ph name="BEGIN_LINK" />Reklam gizliliğinizi yönetme<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, bu arama önerisinden sonra kullanılabilen diğer arama kısayolları için sekme tuşuna basın</translation>
 <translation id="5052517576853118371">Etkin konular</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Bu dosyayı Yakındakilerle Paylaş özelliğini kullanarak göndermek için cihazınızda yer açın (<ph name="DISK_SPACE_SIZE" />)}other{Bu dosyaları Yakındakilerle Paylaş özelliğini kullanarak göndermek için cihazınızda yer açın (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Açma nedenini belirtin (zorunlu)</translation>
@@ -4836,6 +4837,7 @@ Ek ayrıntılar:
 <translation id="9174917557437862841">Sekme değiştirme düğmesi, bu sekmeye geçmek için Enter tuşuna basın</translation>
 <translation id="9177283544810807743">Bu PDF'ye erişilemiyor. Google Yapay Zeka desteğiyle metin çıkarılıyor</translation>
 <translation id="9179703756951298733">Chrome ayarlarından ödemelerinizi ve kredi kartı bilgilerini yönetin</translation>
+<translation id="9179766227052716237">Kuruluşunuzun mesajı: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="9179907736442194268">Herhangi bir sitede fiyatı düştüğünde uyarı alın</translation>
 <translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> desteklenmeyen bir protokol kullanıyor.</translation>

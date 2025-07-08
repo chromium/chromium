@@ -13,6 +13,7 @@
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
+<translation id="1178015372320901893">カスタム ショートカットのボトムシート</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> により保存されたデータと Cookie がすべて削除されます。</translation>
@@ -562,6 +563,7 @@
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
 <translation id="7688240020069572972">Chrome のヒントカードを非表示にする</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
+<translation id="775043444390799886">権限を取り消す</translation>
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -641,6 +643,7 @@
 <translation id="8549127125482561383">リクエストの表示方法</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
+<translation id="8580511488901768832">カスタム ショートカットのボトムシートが画面全体に表示されています</translation>
 <translation id="8593422116412089302">オンにすると、サイトはあなたに関する保存済みの情報の使用を要求できます。オフにすると、サイトはあなたに関する保存済みの情報の使用を要求できません。</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8617611086246832542">オンにすると、ウェブサイトのデスクトップ ビューが表示されます。オフにすると、ウェブサイトのモバイルビューが表示されます。</translation>

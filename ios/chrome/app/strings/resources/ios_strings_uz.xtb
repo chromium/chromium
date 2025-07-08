@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Oʻzgardi</translation>
 <translation id="1480152980057770392">Saqlangan sahifalarni koʻratish</translation>
-<translation id="1484758781961275277">Kompyuter brauzeridagi barcha tanish funksiyalardan iPad orqali foydalaning.</translation>
 <translation id="1485907716209290998">Paketlarni kuzatish</translation>
 <translation id="1486096554574027028">Parollarni qidirish</translation>
 <translation id="1491277525950327607">Almashtirish uchun ikki marta bosing</translation>
@@ -407,7 +406,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2577522251608256362">Mahalla</translation>
 <translation id="2579713773888829241">Umumiy disklar</translation>
 <translation id="2593272815202181319">Bir xil kenglikdagi</translation>
-<translation id="2597486707832946298">Kompyuter brauzeridagi barcha tanish funksiyalardan iPhone orqali foydalaning.</translation>
 <translation id="2601778637777010194">Mahsulotlar narxi pasayishini kuzating</translation>
 <translation id="260378315836159338">Ekrannign yuqori qismida + belgisini bosing</translation>
 <translation id="2612676031748830579">Karta raqami</translation>
@@ -528,7 +526,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3081338492074632642">Saqlayotgan parolingiz <ph name="WEBSITE" /> uchun mos kelishini tekshiring</translation>
 <translation id="3087734570205094154">Pastga</translation>
 <translation id="309710370695886264">1 ta qayta ishlatilgan parol bor. Xavfsiz qolish uchun uni tuzating.</translation>
-<translation id="3102139268911534961">Mobil brauzerdagi barcha tanish funksiyalardan iPhone orqali foydalaning.</translation>
 <translation id="3102790820790869053">Oxirgi varaqlar ichidan qidirish</translation>
 <translation id="3106690631878101882">Tarjimani berkitish</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> paroli olib tashlansinmi?</translation>
@@ -750,7 +747,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4049507953662678203">Internet yoniqligini tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="4056223980640387499">Sepiya</translation>
 <translation id="4070132839822635162">Bekor qilish</translation>
-<translation id="4094361089640885693">Narxlarni oson kuzatish va narxlarni bilish.</translation>
 <translation id="4099756562043439968">Eslatma belgilash</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="4111985840824673503">Hammasi ochilgan</translation>
@@ -795,7 +791,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ta varaqni ochish}=1{{count} ta varaqni ochish}other{{count} ta varaqni ochish}}</translation>
 <translation id="4250680216510889253">Yo‘q</translation>
-<translation id="4251531167342733205">Sevimli brauzerdan unumli foydalaning.</translation>
 <translation id="4253168017788158739">Eslatma</translation>
 <translation id="4256782883801055595">Ochiq kodli DT litsenziyalari</translation>
 <translation id="4263576668337963058">Sahifa amallarini chiqarish</translation>
@@ -1465,7 +1460,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6759709389246683070">Sahifaga tashrif haqida eslatma yaratish uchun bu varaqni biroz bosib turing</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BANDQILINGAN]</translation>
-<translation id="6775647281444147078">Tashkilot doirasidagi suhbatlar modellarni yaxshilashda ishlatilmaydi. Gemini odamlar haqida ham xato maʼlumotlarni berishi mumkin, shuning uchun javoblarini qayta tekshiring. Maxfiyligingiz va Gemini</translation>
 <translation id="6779455296366983087">Brauzer tarixi tozalanadi</translation>
 <translation id="6790502149545262384">Tez orada yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="6791425686608802741">“Varaqni yangi guruhga kiritish” bandini tanlang</translation>
@@ -1557,7 +1551,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7173721738069475737">{count,plural, =1{Bukmark saqlandi}other{{count} ta bukmark saqlandi}}</translation>
 <translation id="7176183551031110427">Uzoqlatish</translation>
 <translation id="7186568385131859684">Brauzer tarixi va boshqa maʼlumotlaringiz Google xizmatlarida qanday ishlatilishini boshqaring</translation>
-<translation id="718807879214459529">Mobil brauzerdagi barcha tanish funksiyalardan iPad orqali foydalaning.</translation>
 <translation id="719133302483559673">Qiziqish va sozlamalaringizni boshqaring</translation>
 <translation id="720399613139435155">Tarjima qilinmadi</translation>
 <translation id="7204922488054642675">Siz uchun moslangan yangiliklar</translation>
@@ -1631,7 +1624,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">inkognito varaqlarni qulflash uchun Touch ID, Face ID yoki kirish kodini sozlang.</translation>
 <translation id="750886945254958667">Undan foydalanish va unga varaqlar kiritish mumkin. Guruh kerak boʻlmasa, uni tark eting.</translation>
-<translation id="7512075701202892785">Sevimli brauzeringiz endi iPad qurilmasida</translation>
 <translation id="7512909159512473473">Kodli iborani kiriting…</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514530647142300459">Parollarni Google hisobingizda (<ph name="EMAIL" />) saqlashda davom eting</translation>
@@ -1658,7 +1650,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="760667371114328991">Xavfsizlik tekshiruvi bildirishomalarini faolsizlantiring</translation>
 <translation id="7612619742409846846">Siz bu hisobdan kirgansiz</translation>
 <translation id="7612849887607288481">AI menyusini ochish</translation>
-<translation id="7615581988398168124">Google xizmat shartlari va Gemini ilovalari maxfiylik eslatmasi amal qiladi. Gemini xato qilishi mumkin, takroran tekshiring.</translation>
 <translation id="7620522820075868385">Bekor qilish</translation>
 <translation id="7638584964844754484">Noto‘g‘ri kodli ibora</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Oshkor etilgan parollar}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
@@ -1987,7 +1978,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8822421075653507124">Qurilmadan foydalanish xavfsizligini taʼminlash muhim. Buning uchun tashkilotingiz operatsion tizim, brauzer, sozlamalar va bu qurilmada oʻrnatilgan dasturiy taʼminot haqidagi axborotga kirishni talab qilishi mumkin.</translation>
 <translation id="8825562130641217944">Bukmarklar, parollar va boshqalarni oling.</translation>
-<translation id="8827154289515190290">Sevimli brauzeringiz endi iOS qurilmasida</translation>
 <translation id="8831208860914609320">Barcha nofaol varaqlarni yopish</translation>
 <translation id="8831944931153286232">Saqlangan sahifalarga kiritish</translation>
 <translation id="8837654851594567190">Noshir asosida saralash</translation>
@@ -2000,7 +1990,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8863067612494559785">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Google Xaritalar orqali navigatsiya va mahalliy axborot oling</translation>
 <translation id="886477344907998366">Bukmarklarni chiqarish</translation>
-<translation id="8869239474428371589">Sevimli brauzerdan unumli foydalaning</translation>
 <translation id="8871974300055371298">Kontent sozlamalari</translation>
 <translation id="8877788021141246043">Eslatma belgilash</translation>
 <translation id="8879604564928138696">Sinab koʻrish uchun ikki marta bosing</translation>

@@ -1941,6 +1941,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2328561734797404498">Reinicie o dispositivo para utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando está no Modo de navegação anónima, os sites apenas podem ver a sua atividade de navegação no site deles. Os cookies são eliminados no final da sessão de Navegação anónima.</translation>
 <translation id="2329597144923131178">Inicie sessão para aceder aos marcadores, ao histórico, às palavras-passe e a outras definições em todos os dispositivos.</translation>
+<translation id="2330182457402792918">Selecione os ficheiros que este site pode ler</translation>
 <translation id="2331334586452217517">O conteúdo deste site é enviado para a Google e pode ser visto por revisores humanos. Acerca da <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Não é possível carregar os dispositivos guardados em <ph name="PRIMARY_EMAIL" />. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="2332131598580221120">Ver na loja</translation>
@@ -8800,6 +8801,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7222232353993864120">Endereço de email</translation>
 <translation id="7222335051802562841">Concluir atualização</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Selecione um ficheiro que este site possa ler</translation>
 <translation id="7223952304612664117">Isto permite que os serviços do sistema usem a Precisão da localização para determinar a sua localização. A Precisão da localização usa informações sobre sensores e sinais sem fios para estimar a localização do dispositivo.</translation>
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher palavras-passe</translation>
 <translation id="7225179976675429563">Tipo de rede em falta</translation>
@@ -9937,6 +9939,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8000020256436988724">Barra de ferramentas</translation>
 <translation id="800117767980299235">Destaque de voz</translation>
 <translation id="8002274832045662704">Configuração avançada da impressora</translation>
+<translation id="8002597610026749658">O Chrome pode criar legendas para os idiomas apresentados aqui</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> já não está disponível.</translation>
 <translation id="8004092996156083991">Informamos se as suas palavras-passe estiverem comprometidas.</translation>
 <translation id="8004507136466386272">Palavras</translation>

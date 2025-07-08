@@ -112,6 +112,7 @@ Kwa mipangilio zaidi inayotumia data ili kuboresha hali yako ya utumiaji wa Chro
 <translation id="1435593198351412143">Kufungua PDF kitomatiki</translation>
 <translation id="1437543266176261764">Inatumika kwenye programu ya <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Panga bidhaa unazofuatilia kwenye Alamisho</translation>
+<translation id="1455845192930279203">Je, ungependa kupakua "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) kutoka kwenye <ph name="DOWNLOAD_DOMAIN" /> licha ya hayo?</translation>
 <translation id="1460751212339734034">Okoa muda, andika kidogo</translation>
 <translation id="1466383950273130737">Chagua lugha ya Chrome</translation>
 <translation id="1477626028522505441">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya matatizo ya seva.</translation>
@@ -494,6 +495,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3250563604907490871">Maelezo ya picha yataendelea kuonyeshwa ukiunganisha kwenye Wi-Fi</translation>
 <translation id="3254409185687681395">Alamisha ukurasa huu</translation>
 <translation id="3265093782546847662">Kurasa zote za <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Buruta juu ili uone matokeo ya utafutaji</translation>
 <translation id="3269093882174072735">Pakia picha</translation>
 <translation id="327204079441056603">Tumebadilisha jinsi manenosiri yanavyohifadhiwa kwenye kifaa hiki</translation>
 <translation id="3280562213547448728">Kutafuta kwa kutamka</translation>
@@ -1056,11 +1058,13 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5809361687334836369">{HOURS,plural, =1{Saa # iliyopita}other{Saa # zilizopita}}</translation>
 <translation id="5810288467834065221">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>
 <translation id="5814749351757353073">Endelea kufuatilia tovuti uzipendazo</translation>
+<translation id="5823093032261493462">Je, ungependa kupakua "<ph name="FILE_NAME" />" kutoka kwenye <ph name="DOWNLOAD_DOMAIN" /> licha ya hayo?</translation>
 <translation id="5828921839638612740">Unaweza kufuta data katika Mipangilio ya Chrome</translation>
 <translation id="5829586821381540080">Limehifadhiwa katika <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5833984609253377421">Shiriki kiungo</translation>
 <translation id="5839058148541733625">Mchezo wa Dinosau wa Chrome</translation>
+<translation id="5841444063256914865">Je, ungependa kupakua "<ph name="FILE_NAME" />" licha ya hayo?</translation>
 <translation id="5842871376175639063">Vichupo na vikundi vya vichupo ambavyo hujatumia kwa siku <ph name="DAYS_INACTIVE" /> vitahamishiwa hapa <ph name="AUTODELETE_SECTION" />. Unaweza kubadilisha mipangilio hii wakati wowote katika <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Ungependa kufungua PDF ukitumia <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Ungependa kuacha kuruhusu ufikiaji?</translation>
@@ -1281,6 +1285,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="674388916582496364">Ni kawaida kwa tovuti unazotembelea kukumbuka mambo yanayokuvutia, ili kuweka mapendeleo kwenye matumizi yako. Tovuti zinaweza pia kuhifadhi maelezo kuhusu mambo yanayokuvutia kwa kutumia Chrome.</translation>
 <translation id="6746338529702829275">Kagua data ya akaunti yako</translation>
 <translation id="6751521182688001123">Fungua kichupo kipya kwa haraka. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
+<translation id="6752130751133944215">Ili urejeshe dirisha jipya, punguza idadi ya jumla ya madirisha yanayotumika na yasiyotumika yasizidi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Madirisha yasiyotumika hufutwa baada ya miezi 6.</translation>
 <translation id="6754359471209693699">Anzisha utafutaji mpya</translation>
 <translation id="6756507620369789050">Shiriki maoni</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7388615499319468910">Tovuti na watangazaji wanaweza kuelewa utendaji wa matangazo. Mipangilio hii imezimwa.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Nyingine, faili 1 kwenye orodha}other{Nyingine, faili # kwenye orodha}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Ili ufungue dirisha jipya, punguza idadi ya jumla ya madirisha yanayotumika na yasiyotumika yasizidi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Hali ya Utekelezaji wa Kwanza wa Chrome</translation>
 <translation id="7411224099004328643">Mtumiaji wa Akaunti ya Google</translation>
 <translation id="7419565702166471774">Tumia miunganisho salama kila wakati</translation>
@@ -1793,6 +1799,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8816556050903368450">Ikiwa ni pamoja na kiungo cha: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Maudhui ya kichupo cha kukagua kwanza hayawezi kuangaliwa.</translation>
 <translation id="8820817407110198400">Alamisho</translation>
+<translation id="8824359129672223138">Unaweza kuwa na hadi madirisha <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Hakikisha kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati</translation>
 <translation id="883806473910249246">Hitilafu imetokea wakati wa kupakua maudhui.</translation>
 <translation id="8840953339110955557">Ukurasa huu huenda ukatofautiana na toleo la mtandaoni.</translation>
@@ -1877,6 +1884,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9168847423516963845">Hamishia sehemu ya anwani upande wa chini</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
 <translation id="918419812064856259">Chrome - toleo la Beta</translation>
+<translation id="9189607089796819144">Je, ungependa kupakua "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) licha ya hayo?</translation>
 <translation id="9190276265094487094">Utaona historia yako kwenye vifaa vyako vyote vilivyosawazishwa ili uweze kuendelea na shughuli uliyokuwa ukifanya</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Imekaguliwa dakika moja iliyopita}other{Imekaguliwa dakika # zilizopita}}</translation>
 <translation id="9204021776105550328">Inafuta</translation>

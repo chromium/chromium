@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">Открывать PDF-файлы автоматически</translation>
 <translation id="1437543266176261764">Выполняется в <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
+<translation id="1455845192930279203">Все равно скачать файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) на странице <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="1460751212339734034">Экономьте время</translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">Описания изображений станут доступны при подключении к сети Wi-Fi.</translation>
 <translation id="3254409185687681395">Добавить страницу в закладки</translation>
 <translation id="3265093782546847662">Все страницы <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Перетащите вверх, чтобы увидеть результаты поиска.</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="327204079441056603">Пароли на этом устройстве теперь хранятся по-другому</translation>
 <translation id="3280562213547448728">Голосовой поиск</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# час назад}one{# час назад}few{# часа назад}many{# часов назад}other{# часа назад}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="5814749351757353073">Подпишитесь на любимые сайты</translation>
+<translation id="5823093032261493462">Все равно скачать файл <ph name="FILE_NAME" /> на странице <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Удалить данные можно в настройках Chrome.</translation>
 <translation id="5829586821381540080">Сохранено в папке <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Поделиться ссылкой</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Все равно скачать файл <ph name="FILE_NAME" />?</translation>
 <translation id="5842871376175639063">Вкладки и группы вкладок, которые вы не открывали в течение нескольких дней (<ph name="DAYS_INACTIVE" />), попадают в этот список,<ph name="AUTODELETE_SECTION" />. Этот параметр можно в любой момент изменить в разделе "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="5848257610304005265">Открыть PDF-файл в приложении "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Закрыть доступ?</translation>
@@ -1281,6 +1285,7 @@
 <translation id="674388916582496364">Обычно сайты, которые вы посещаете, запоминают ваши интересы, чтобы показывать персонализированную рекламу. В том числе они могут хранить об этом информацию в Chrome.</translation>
 <translation id="6746338529702829275">Проверьте данные аккаунта</translation>
 <translation id="6751521182688001123">Открыть новую вкладку. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
+<translation id="6752130751133944215">Чтобы восстановить новое окно, убедитесь, что число активных и неактивных не превышает <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Неактивные окна удаляются через шесть месяцев.</translation>
 <translation id="6754359471209693699">Начать новый поиск</translation>
 <translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1447,6 +1452,7 @@
 <translation id="7388615499319468910">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр отключен.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Другое, 1 файл в списке}one{Другое, # файл в списке}few{Другое, # файла в списке}many{Другое, # файлов в списке}other{Другое, # файла в списке}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">Чтобы создать новое окно, убедитесь, что число активных и неактивных не превышает <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Первый запуск Chrome</translation>
 <translation id="7411224099004328643">Пользователь аккаунта Google</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>
@@ -1793,6 +1799,7 @@
 <translation id="8816556050903368450">Добавить ссылку: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="8824359129672223138">Максимальное количество открытых окон: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Не теряйте доступ к сохраненным паролям</translation>
 <translation id="883806473910249246">При скачивании контента произошла ошибка.</translation>
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
@@ -1877,6 +1884,7 @@
 <translation id="9168847423516963845">Разместить адресную строку внизу</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="918419812064856259">Бета-версия Chrome</translation>
+<translation id="9189607089796819144">Все равно скачать файл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">История будет доступна на всех синхронизируемых устройствах, чтобы на любом из них вы могли продолжать то, что начали на другом.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204021776105550328">Удаление…</translation>

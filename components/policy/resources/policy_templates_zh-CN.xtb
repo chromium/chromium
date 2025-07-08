@@ -90,6 +90,15 @@
 
       如果此政策已设置，登录屏幕将会始终以此政策的第一个值指定的语言区域显示（为便于向前兼容，此政策会以列表的形式进行指定）。如果此政策未设置或设为空列表，登录屏幕则会以最后一次用户会话所采用的语言区域显示。如果此政策设为无效的语言区域值，登录屏幕便会以相应的后备语言区域显示（当前的后备语言区域是“en-US”）。</translation>
 <translation id="1050158007881386475">停用设备主板状态报告功能</translation>
+<translation id="1050897390688148222">智能镜头叠加功能允许用户通过屏幕截图或针对当前页面内容提问，执行上下文相关的 Google 搜索。此功能需要最终用户选择启用。
+
+此功能面向所有将 Google 设为默认搜索引擎的用户提供，除非此政策已将其停用。
+
+如果此政策设为 0 - 允许或未设置，用户将可以使用此功能。
+
+如果此政策设为 1 - 不允许，此功能将不可用。
+
+从 <ph name="PRODUCT_NAME" /> 140 开始，如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。</translation>
 <translation id="1052499923181221200">除非 SamlInSessionPasswordChangeEnabled 设为 true，否则此政策不会生效。
       如果上述政策设为 true，并且此政策设为（例如）14，则表示系统会比到期日提前 14 天向 SAML 用户发送通知，让他们知道自己的密码即将在某一天到期。
       然后，SAML 用户可立即采取应对措施，方法是：通过执行会话期间密码更改，在密码到期前更新密码。
@@ -476,7 +485,6 @@
 
 仅当第三方软件存在兼容性问题，导致打印服务无法在 LPAC 沙盒中正常运行时，才应停用此政策。</translation>
 <translation id="1369698103169067223">未为用户启用 Glanceables。</translation>
-<translation id="1371626834351873151">系统将为所有来源启用“用户代理字符串缩短”功能。</translation>
 <translation id="1371851989348083665">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
@@ -1336,7 +1344,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="1984934843478301531">应用启动自动化设置</translation>
 <translation id="1985545260037812875">在用户登录期间显示“显示大小”设置界面</translation>
-<translation id="1985598967415986700">“用户代理字符串缩短”功能将可通过现场试验和源试用进行控制。</translation>
 <translation id="1987789058026551147">启用设备自助服务终端会话报告功能</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
@@ -2184,6 +2191,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2568488785376704318">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="2570059561924004903">停用语音反馈</translation>
 <translation id="2570181623957732921">为一系列第三方网域启用 <ph name="DESK_API_NAME" /></translation>
+<translation id="2573850437942404034">不允许</translation>
 <translation id="2575198840408498393">禁止创建漫游个人资料</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本即将被弃用。这类脚本是否会触发取决于 <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />。目前，政策默认允许触发，但后续会逐步更改为默认禁止触发，而且网站必须使用 <ph name="PERMISSIONS_POLICY_NAME" /> 标头明确启用此类脚本。这项企业政策可用于将默认设置强制保留为启用状态，这样就可以避免脚本被逐步弃用。
 
@@ -2837,7 +2845,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
           此为可选政策。如果未设置此政策，系统将不会替换搜索字词。
 
           此政策只在启用了“DefaultSearchProviderEnabled”政策的前提下才会生效。</translation>
-<translation id="305106159605171619">“用户代理字符串缩短”功能已停用，且未通过现场试验或源试用启用。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">不允许运行 Chrome for Testing</translation>
 <translation id="3059687162224942925">在 NTP 页脚上启用管理通知</translation>
@@ -4662,6 +4669,17 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4426986640594727372">允许访问系统地理定位</translation>
 <translation id="4427173305799125784">PDF 查看器无法在 PDF 文件中添加注释</translation>
 <translation id="4432762137771104529">启用安全浏览扩展报告功能</translation>
+<translation id="4432772502174730966">此政策用于为其涵盖的所有生成式 AI 功能定义默认设置。例如，如果此政策的值设为 1，则 1 将是其涵盖的所有生成式 AI 功能的默认设置。这不会影响任何手动设置的政策值。此设置将为 Chrome 中涵盖的生成式 AI 功能定义默认值。如需查看此政策涵盖的功能列表，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策涵盖的 Chrome 功能没有对应的政策值，系统将使用最接近的较高值。某些政策（例如 <ph name="GEMINI_SETTINGS_POLICY_NAME" />）仅支持“允许”和“不允许”状态。如果 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策设为 0 或 1，系统将允许使用此功能。如果此政策设为 2，系统将禁止使用此功能。请查看各功能的文档，详细了解各功能如何与此政策中的值相互作用。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="443454694385851356">旧版（不安全）</translation>
 <translation id="4435032708588431506">允许使用 QUIC</translation>
 <translation id="443665821428652897">在浏览器关闭时清除网站数据（已弃用）</translation>
@@ -6222,11 +6240,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="5483065054530244863">允许使用由本地信任锚颁发的 SHA-1 签名证书</translation>
 <translation id="5485491014653571963">此设置会控制 Gemini 应用集成。
 
-0/未设置表示用户可以集成 Gemini。
+“0/未设置”表示用户可以集成 Gemini。
 
-1 表示用户无法集成 Gemini。
+“1”表示用户无法集成 Gemini。
 
-如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+如果未设置此政策，其行为将由“<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />”政策决定。
 
 如需了解详情，请参阅帮助中心文章 https://support.google.com/chrome/a?p=gemini_in_chrome。</translation>
 <translation id="5486352219019836984">如果已启用此政策，匿名报告功能会默认处于启用状态（推荐），自动向 Google 报告与 <ph name="PRODUCT_NAME" /> 的使用情况和崩溃情况相关的数据。用户将仍能更改此设置。
@@ -9241,12 +9259,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
 <translation id="751071954873065775">选择需要预先下载的 DLC（可下载的内容）</translation>
-<translation id="7512065400265675158">我们已排定缩短<ph name="USER_AGENT_HEADER_NAME" /> HTTP 请求标头的时间。为方便测试和提高兼容性，此政策可为所有网站启用缩短功能，也可禁止通过源试用或现场试验启用该功能。
-
-      如需详细了解“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能及其发布阶段时间安排，请参阅：
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954"><ph name="PRODUCT_OS_NAME" /> 上的自动更新载荷可通过 HTTP 而非 HTTPS 下载。这允许对 HTTP 下载内容进行透明 HTTP 缓存。
 
 如果此政策设置为 True，<ph name="PRODUCT_OS_NAME" /> 将尝试通过 HTTP 下载自动更新载荷。如果此政策设置为 False 或未设置，操作系统将使用 HTTPS 下载自动更新载荷。</translation>

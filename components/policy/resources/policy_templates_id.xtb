@@ -90,6 +90,15 @@ Jika kebijakan ini disetel ke Nonaktif, fitur koreksi otomatis tidak akan diizin
 
       Jika kebijakan ini disetel, layar login akan selalu ditampilkan dalam lokal yang diberikan oleh nilai pertama dari kebijakan ini (kebijakan didefinisikan sebagai daftar untuk kompatibilitas yang diteruskan).  Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, layar login akan ditampilkan dalam lokal sesi pengguna terakhir.  Jika kebijakan ini disetel ke nilai lokal yang tidak valid, layar login akan ditampilkan di lokal alternatif (saat ini, en-US).</translation>
 <translation id="1050158007881386475">Nonaktifkan pelaporan status board perangkat</translation>
+<translation id="1050897390688148222">Overlay Lens memungkinkan pengguna melakukan penelusuran Google yang kontekstual, baik melalui screenshot atau dengan mengajukan pertanyaan tentang konten halaman saat ini. Fitur ini memerlukan keikutsertaan pengguna akhir.
+
+Fitur ini tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
+
+Jika kebijakan disetel ke 0 - Izinkan atau tidak disetel, fitur tersebut akan tersedia bagi pengguna.
+
+Jika kebijakan disetel ke 1 - Jangan izinkan, fitur tersebut tidak akan tersedia.
+
+Mulai <ph name="PRODUCT_NAME" /> 140, jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Kebijakan ini tidak berpengaruh kecuali jika SamlInSessionPasswordChangeEnabled ditetapkan ke true.
       Jika kebijakan tersebut ditetapkan ke true, dan kebijakan ini ditetapkan ke (misalnya) 14, berarti pengguna SAML akan diberi tahu 14 hari sebelumnya bahwa sandi mereka akan habis masa berlakunya pada tanggal tertentu.
       Selanjutnya mereka dapat segera menangani hal tersebut dengan melakukan pengubahan sandi dalam-sesi dan memperbarui sandi sebelum habis masa berlakunya.
@@ -482,7 +491,6 @@ Jika kebijakan ini disetel ke Nonaktif, keamanan <ph name="PRODUCT_NAME" /> akan
 
 Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang mencegah layanan pencetakan beroperasi dengan benar di dalam LPAC Sandbox.</translation>
 <translation id="1369698103169067223">Widget Sekilas Info tidak diaktifkan untuk pengguna.</translation>
-<translation id="1371626834351873151">Pengurangan Agen Pengguna akan diaktifkan untuk semua asal.</translation>
 <translation id="1371851989348083665">Izinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web</translation>
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
@@ -1420,7 +1428,6 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
 <translation id="1977581177449752640">Jika kebijakan disetel, host akses jarak jauh akan menggunakan sertifikat klien dengan CN penerbit tertentu untuk melakukan autentikasi ke <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Untuk menggunakan sertifikat klien yang tersedia, setel kebijakan ke <ph name="WILDCARD_VALUE" />. Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
 <translation id="1984934843478301531">Otomatisasi Peluncuran Aplikasi</translation>
 <translation id="1985545260037812875">Tampilkan layar setelan ukuran tampilan selama login</translation>
-<translation id="1985598967415986700">Pengurangan Agen Pengguna akan dapat dikontrol melalui Uji Coba Kolom dan Uji Coba Asal.</translation>
 <translation id="1987789058026551147">Aktifkan pelaporan sesi kios perangkat</translation>
 <translation id="1988345404999458987">Memberikan konfigurasi server cetak yang tersedia.
 
@@ -2313,6 +2320,7 @@ Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinona
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
+<translation id="2573850437942404034">Jangan izinkan</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
 <translation id="25765864042030871">Pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> tidak digunakan lagi. Diaktifkan atau tidaknya pengendali tersebut bergantung pada <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Saat ini, pengendali tersebut diizinkan oleh kebijakan secara default. Pada masa mendatang, pengendali peristiwa akan secara bertahap tidak lagi diizinkan secara default, dan situs harus secara eksplisit mengaktifkannya menggunakan header <ph name="PERMISSIONS_POLICY_NAME" />. Kebijakan perusahaan ini dapat digunakan untuk memilih tidak mengikuti penghentian bertahap ini dengan memaksa setelan default tetap aktif.
  
@@ -2990,7 +2998,6 @@ Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.
           Kebijakan ini adalah opsional. Jika tidak disetel, penggantian istilah penelusuran tidak akan dilakukan.
 
           Kebijakan ini hanya akan ditaati jika kebijakan 'DefaultSearchProviderEnabled' diaktifkan.</translation>
-<translation id="305106159605171619">Pengurangan Agen Pengguna dinonaktifkan, dan tidak diaktifkan oleh Uji Coba Kolom atau Uji Coba Asal.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Jangan izinkan penggunaan Chrome for Testing</translation>
 <translation id="3059687162224942925">Aktifkan notifikasi pengelolaan di Footer NTP</translation>
@@ -4903,6 +4910,17 @@ Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PROD
 <translation id="4426986640594727372">Izinkan akses geolokasi sistem</translation>
 <translation id="4427173305799125784">Penampil PDF tidak dapat menganotasi PDF</translation>
 <translation id="4432762137771104529">Aktifkan Pelaporan Lengkap Safe Browsing</translation>
+<translation id="4432772502174730966">Kebijakan ini menentukan setelan default untuk semua fitur AI generatif yang tercakup. Misalnya, jika kebijakan ini disetel ke nilai 1, nilai 1 akan menjadi setelan default untuk semua fitur AI generatif yang tercakup. Kebijakan ini tidak akan memengaruhi nilai kebijakan yang disetel secara manual. Setelan ini akan menentukan setelan default untuk fitur AI generatif yang tercakup di Chrome. Buka https://support.google.com/chrome/a?p=generative_ai_settings untuk melihat daftar fitur yang tercakup.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika fitur Chrome yang tercakup tidak memiliki nilai kebijakan yang setara, nilai terdekat yang lebih tinggi akan digunakan. Beberapa kebijakan, misalnya <ph name="GEMINI_SETTINGS_POLICY_NAME" />, hanya mendukung status Diizinkan dan Tidak Diizinkan. Jika kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> disetel ke 0 atau 1, fitur ini akan diizinkan. Jika kebijakan disetel ke 2, fitur ini tidak akan diizinkan. Tinjau dokumentasi masing-masing fitur untuk mengetahui detail selengkapnya tentang nilai kebijakan untuk setiap fitur yang mungkin setara dengan nilai kebijakan ini.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="443454694385851356">Lama (tidak aman)</translation>
 <translation id="4435032708588431506">Izinkan QUIC</translation>
 <translation id="443665821428652897">Hapus data situs saat browser ditutup (tidak digunakan lagi)</translation>
@@ -6549,6 +6567,15 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 <translation id="548137908954174608">Aktifkan Teks Otomatis</translation>
 <translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
+<translation id="5485491014653571963">Setelan ini mengizinkan integrasi aplikasi Gemini.
+
+Nilai 0/tidak disetel = Integrasi Gemini akan tersedia untuk pengguna.
+
+Nilai 1 = Integrasi Gemini tidak akan tersedia untuk pengguna.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya, buka artikel Pusat Bantuan https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="5486352219019836984">Jika kebijakan ini Diaktifkan, pelaporan anonim terkait data penggunaan dan data terkait error <ph name="PRODUCT_NAME" /> ke Google direkomendasikan untuk diaktifkan secara default. Pengguna tetap dapat mengubah setelan ini.
 
 Jika kebijakan ini Dinonaktifkan, pelaporan anonim akan dinonaktifkan dan tidak ada data penggunaan atau data terkait error yang akan dikirim ke Google. Pengguna tidak akan dapat mengubah setelan ini.
@@ -9730,12 +9757,6 @@ baca lisan akan diaktifkan.</translation>
 
       Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="751071954873065775">Memilih DLC (Konten yang Dapat Didownload) yang perlu didownload terlebih dahulu</translation>
-<translation id="7512065400265675158">Header permintaan HTTP <ph name="USER_AGENT_HEADER_NAME" /> dijadwalkan akan dikurangi. Untuk memudahkan pengujian dan kompatibilitas, kebijakan ini dapat mengaktifkan fitur pengurangan untuk semua situs, atau menonaktifkan kemampuan uji coba asal atau uji coba kolom untuk mengaktifkan fitur tersebut.
-
-      Untuk mempelajari <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> dan linimasanya lebih lanjut, baca di sini:
-
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
 <translation id="7512514325152952954">Payload update otomatis di <ph name="PRODUCT_OS_NAME" /> dapat didownload melalui HTTP, bukan HTTPS. Cara ini memungkinkan penyimpanan cache HTTP yang transparan dari download HTTP.
 
 Jika kebijakan ini disetel ke benar (true), <ph name="PRODUCT_OS_NAME" /> akan berupaya mendownload payload update otomatis melalui HTTP. Jika kebijakan ini disetel ke salah (false) atau tidak disetel, HTTPS akan digunakan untuk mendownload payload update otomatis.</translation>

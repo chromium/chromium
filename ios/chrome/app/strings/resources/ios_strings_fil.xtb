@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Binago</translation>
 <translation id="1480152980057770392">Ipakita ang listahan ng babasahin</translation>
-<translation id="1484758781961275277">Masulit ang desktop browser na alam at gusto mo sa iyong iPad.</translation>
 <translation id="1485907716209290998">Pag-track sa package</translation>
 <translation id="1486096554574027028">Maghanap ng mga password</translation>
 <translation id="1491277525950327607">I-double tap upang i-toggle ang setting</translation>
@@ -407,7 +406,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2579713773888829241">Mga Shared Drive</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2597486707832946298">Masulit ang desktop browser na alam at gusto mo sa iyong iPhone.</translation>
 <translation id="2601778637777010194">Subaybayan ang mga pagbaba ng presyo ng mga produkto</translation>
 <translation id="260378315836159338">Sa itaas ng screen, i-tap ang +</translation>
 <translation id="2612676031748830579">Numero ng card</translation>
@@ -528,7 +526,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3081338492074632642">Tiyaking tumutugma ang password na sine-save mo sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="309710370695886264">Mayroon kang 1 password na ginamit ulit. Ayusin ito ngayon para manatiling ligtas.</translation>
-<translation id="3102139268911534961">Masulit ang mobile browser na alam at gusto mo sa iyong iPhone.</translation>
 <translation id="3102790820790869053">Maghanap sa mga kamakailang tab</translation>
 <translation id="3106690631878101882">I-hide ang Isalin</translation>
 <translation id="310900540163454140">I-delete ang password para sa <ph name="WEBSITE" />?</translation>
@@ -750,7 +747,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4049507953662678203">Tiyaking mayroon kang koneksyon sa network, at subukan ulit.</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">Huwag mag-sign in</translation>
-<translation id="4094361089640885693">Madaling masubaybayan ang mga presyo at makakuha ng mga insight sa presyo.</translation>
 <translation id="4099756562043439968">Magtakda ng Paalala</translation>
 <translation id="4108998448622696017">Nagde-detect ng mga mapanganib na event at nagbibigay sa iyo ng babala tungkol sa mga ito kapag nangyari ang mga ito.</translation>
 <translation id="4111985840824673503">Markahan ang lahat bilang nabasa na</translation>
@@ -795,7 +791,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4250432749243022864">{count,plural, =0{Buksan ang {count} tab}=1{Buksan ang {count} tab}one{Buksan ang {count} tab}other{Buksan ang {count} na tab}}</translation>
 <translation id="4250680216510889253">Hindi</translation>
-<translation id="4251531167342733205">Masulit ang browser na gusto mo.</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="4256782883801055595">Mga lisensya ng open source</translation>
 <translation id="4263576668337963058">Ipakita ang mga available na pagkilos sa page</translation>
@@ -1465,7 +1460,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6759709389246683070">Puwede mong pindutin nang matagal ang tab na ito para magtakda ng paalala na bumisita ulit sa ibang pagkakataon</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[NA-BOOK]</translation>
-<translation id="6775647281444147078">Hindi ginagamit ang mga chat ng iyong organisayon para mapahusay ang aming mga modelo. Maaaring magpakita ng hindi tumpak na impormasyon ang Gemini, kabilang ang tungkol sa mga tao, kaya i-double check ito. Ang iyong privacy at Gemini</translation>
 <translation id="6779455296366983087">Ide-delete ang iyong data mula sa pag-browse</translation>
 <translation id="6790502149545262384">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
 <translation id="6791425686608802741">I-tap ang "Idagdag ang Tab sa Bagong Grupo"</translation>
@@ -1557,7 +1551,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7173721738069475737">{count,plural, =1{Na-save ang bookmark}one{Na-save ang {count} bookmark}other{Na-save ang {count} na bookmark}}</translation>
 <translation id="7176183551031110427">Mag-zoom out</translation>
 <translation id="7186568385131859684">Kontrolin kung paano ginagamit ang history ng pag-browse kasama ng iba mo pang data sa mga serbisyo ng Google</translation>
-<translation id="718807879214459529">Masulit ang mobile browser na alam at gusto mo sa iyong iPad.</translation>
 <translation id="719133302483559673">Pamahalaan ang iyong mga interes at preference.</translation>
 <translation id="720399613139435155">Hindi na-translate</translation>
 <translation id="7204922488054642675">Naka-personalize na balita</translation>
@@ -1631,7 +1624,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para ma-lock ang iyong mga tab na Incognito, ma-set up ang Touch ID, Face ID, o Passcode.</translation>
 <translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>
-<translation id="7512075701202892785">Nasa iPad na ngayon ang browser na gusto mo</translation>
 <translation id="7512909159512473473">Ilagay ang passphrase…</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514530647142300459">Patuloy na gamitin ang mga password sa iyong Google Account na <ph name="EMAIL" /></translation>
@@ -1658,7 +1650,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="760667371114328991">I-off ang Mga Notification para sa Pag-check sa Kaligtasan</translation>
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
 <translation id="7612849887607288481">Buksan ang Menu ng Pag-prototype ng AI</translation>
-<translation id="7615581988398168124">Nalalapat ang Mga Tuntunin ng Google at ang Notification ng Privacy sa Mga Gemini App. Puwedeng magkamali ang Gemini, kaya i-double check ito.</translation>
 <translation id="7620522820075868385">Kanselahin</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Mga nakompromisong password}=1{{COUNT} nakompromisong password}one{{COUNT} nakompromisong password}other{{COUNT} na nakompromisong password}}</translation>
@@ -1987,7 +1978,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8822421075653507124">Para matiyak na magagamit nang ligtas ang device na ito, posibleng kailanganing tingnan ng iyong organisasyon ang impormasyon tungkol sa operating system, browser, at mga setting nito, at kung anong software ang naka-install sa device.</translation>
 <translation id="8825562130641217944">Makuha ang iyong mga bookmark, password, at higit pa.</translation>
-<translation id="8827154289515190290">Nasa iOS na ngayon ang browser na gusto mo</translation>
 <translation id="8831208860914609320">Isara ang lahat ng hindi aktibo</translation>
 <translation id="8831944931153286232">Idagdag sa listahan ng babasahin</translation>
 <translation id="8837654851594567190">Pagbukud-bukurin ayon sa publisher</translation>
@@ -2000,7 +1990,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8863067612494559785">Ipinapadala kay/sa <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Makakuha ng mga direksyon at lokal na impormasyon mula sa Google Maps</translation>
 <translation id="886477344907998366">Ipakita ang mga bookmark</translation>
-<translation id="8869239474428371589">Masulit ang Browser na gusto mo</translation>
 <translation id="8871974300055371298">Mga setting ng content 
 </translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>

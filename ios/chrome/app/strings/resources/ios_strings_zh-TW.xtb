@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">已變更</translation>
 <translation id="1480152980057770392">顯示閱讀清單</translation>
-<translation id="1484758781961275277">在 iPad 上就能使用你熟悉愛用的電腦版瀏覽器，盡情享受最佳體驗。</translation>
 <translation id="1485907716209290998">包裹追蹤</translation>
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1491277525950327607">輕觸兩下即可切換設定</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">鄰</translation>
 <translation id="2579713773888829241">共用雲端硬碟</translation>
 <translation id="2593272815202181319">等寬</translation>
-<translation id="2597486707832946298">在 iPhone 上就能使用你熟悉愛用的電腦版瀏覽器，盡情享受最佳體驗。</translation>
 <translation id="2601778637777010194">追蹤產品降價資訊</translation>
 <translation id="260378315836159338">輕觸畫面頂端的「+」圖示</translation>
 <translation id="2612676031748830579">卡號</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">置底</translation>
 <translation id="309710370695886264">你有 1 組密碼重複使用，請立即修正以確保安全。</translation>
-<translation id="3102139268911534961">在 iPhone 上使用你熟悉愛用的行動瀏覽器，盡情享受最佳體驗。</translation>
 <translation id="3102790820790869053">搜尋最近開啟的分頁</translation>
 <translation id="3106690631878101882">隱藏「翻譯」</translation>
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4070132839822635162">不登入</translation>
-<translation id="4094361089640885693">輕鬆追蹤價格並取得價格分析。</translation>
 <translation id="4099756562043439968">設定提醒</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
 <translation id="4111985840824673503">全部標示為已讀取</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4250432749243022864">{count,plural, =0{開啟 {count} 個分頁}=1{開啟 {count} 個分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4251531167342733205">充分運用你喜愛的瀏覽器。</translation>
 <translation id="4253168017788158739">附註</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4263576668337963058">顯示可用的網頁動作</translation>
@@ -1465,7 +1460,6 @@
 <translation id="6759709389246683070">按住這個分頁即可設定提醒，通知自己之後再回來查看</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6770452996697898492">[已預約]</translation>
-<translation id="6775647281444147078">貴組織的對話內容不會用於改良我們的模型。Gemini 提供的資訊可能不準確 (包括人物介紹)，因此請務必查證。個人隱私權與 Gemini</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，你就會在開啟新分頁時看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>
@@ -1557,7 +1551,6 @@
 <translation id="7173721738069475737">{count,plural, =1{已儲存書籤}other{已儲存 {count} 個書籤}}</translation>
 <translation id="7176183551031110427">縮小</translation>
 <translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
-<translation id="718807879214459529">在 iPad 上使用你熟悉愛用的行動瀏覽器，盡情享受最佳體驗。</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="720399613139435155">無法翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
@@ -1631,7 +1624,6 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如要鎖定無痕分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="750886945254958667">如果保留，之後可以新增分頁；如果不會再使用，可以退出群組</translation>
-<translation id="7512075701202892785">現在可將最愛的瀏覽器設為 iPad 預設瀏覽器</translation>
 <translation id="7512909159512473473">輸入通關密語…</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514530647142300459">請繼續使用 Google 帳戶 (<ph name="EMAIL" />) 中的密碼</translation>
@@ -1658,7 +1650,6 @@
 <translation id="760667371114328991">關閉安全檢查通知</translation>
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612849887607288481">開啟 AI 原型設計選單</translation>
-<translation id="7615581988398168124">適用《Google 條款》和《Gemini 系列應用程式隱私權聲明》。Gemini 可能會出錯，因此請務必查證。</translation>
 <translation id="7620522820075868385">取消</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{遭外洩的密碼}=1{有 {COUNT} 組遭外洩的密碼}other{有 {COUNT} 組遭外洩的密碼}}</translation>
@@ -1987,7 +1978,6 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8822421075653507124">貴機構可能需要查看這部裝置的作業系統、瀏覽器、設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用。</translation>
 <translation id="8825562130641217944">取得書籤、密碼等內容。</translation>
-<translation id="8827154289515190290">現在可將最愛的瀏覽器設為 iOS 預設瀏覽器</translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>
 <translation id="8831944931153286232">加入閱讀清單</translation>
 <translation id="8837654851594567190">依發布者排序</translation>
@@ -2000,7 +1990,6 @@
 <translation id="8863067612494559785">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">透過 Google 地圖規劃路線及取得當地資訊</translation>
 <translation id="886477344907998366">顯示書籤</translation>
-<translation id="8869239474428371589">充分運用你喜愛的瀏覽器</translation>
 <translation id="8871974300055371298">內容設定</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8879604564928138696">輕觸兩下即可試用</translation>

@@ -2415,6 +2415,7 @@
 <translation id="5043753287208271200">노란색 3</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5048293684454354469">광고 주제는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 광고 주제가 없어도 사이트에서 광고를 계속 표시할 수는 있지만, 관련성이 적을 수도 있습니다. <ph name="BEGIN_LINK" />광고 개인 정보 보호 관리<ph name="LINK_END" />에 관해 자세히 알아보세요.</translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, 이 추천 검색어 이후에 사용할 수 있는 더 많은 검색 바로가기를 보려면 Tab 키를 누르세요</translation>
 <translation id="5052517576853118371">활성 주제</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>

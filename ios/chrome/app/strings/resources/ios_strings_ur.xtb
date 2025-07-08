@@ -122,7 +122,6 @@
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تبدیل کر دیا گیا</translation>
 <translation id="1480152980057770392">پڑھنے کی فہرست دکھائیں</translation>
-<translation id="1484758781961275277">‏اپنے iPad فون پر، اپنے پسندیدہ ڈیسک ٹاپ براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="1485907716209290998">پیکیج ٹریکنگ</translation>
 <translation id="1486096554574027028">پاس ورڈز تلاش کریں</translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
@@ -407,7 +406,6 @@
 <translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2579713773888829241">مشترکہ ڈرائیوز</translation>
 <translation id="2593272815202181319">مونو اسپیس</translation>
-<translation id="2597486707832946298">‏اپنے iPhone فون پر، اپنے پسندیدہ ڈیسک ٹاپ براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="2601778637777010194">پروڈکٹس کی قیمتوں میں کمی کو ٹریک کریں</translation>
 <translation id="260378315836159338">اسکرین کے اوپری حصے پر، + پر تھپتھپائیں</translation>
 <translation id="2612676031748830579">کارڈ نمبر</translation>
@@ -528,7 +526,6 @@
 <translation id="3081338492074632642">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="309710370695886264">آپ کے پاس 1 دوبارہ استعمال کردہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
-<translation id="3102139268911534961">‏اپنے iPhone فون پر، اپنے پسندیدہ موبائل براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="3102790820790869053">حالیہ ٹیبز تلاش کریں</translation>
 <translation id="3106690631878101882">ترجمہ کریں کو چھپائیں</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
@@ -750,7 +747,6 @@
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="4056223980640387499">سیپیا</translation>
 <translation id="4070132839822635162">سائن ان نہ کریں</translation>
-<translation id="4094361089640885693">آسانی سے قیمتیں ٹریک کریں اور قیمت سے متعلق حقائق جانیں۔</translation>
 <translation id="4099756562043439968">ایک یاد دہانی سیٹ کریں</translation>
 <translation id="4108998448622696017">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="4111985840824673503">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
@@ -795,7 +791,6 @@
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} ٹیب کھولیں}=1{{count} ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
 <translation id="4250680216510889253">نہیں</translation>
-<translation id="4251531167342733205">اپنے پسندیدہ براؤزر سے بہترین چیزیں حاصل کریں۔</translation>
 <translation id="4253168017788158739">نوٹ</translation>
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="4263576668337963058">دستیاب صفحہ کی کارروائیاں دکھائیں</translation>
@@ -1465,7 +1460,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6759709389246683070">آپ بعد میں ملاحظہ کرنے کی یاد دہانی سیٹ کرنے کیلئے اس ٹیب کو ٹچ کر کے اور دبا کر رکھ سکتے ہیں</translation>
 <translation id="6761393919622941301">آڈیو</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
-<translation id="6775647281444147078">‏آپ کی تنظیم کی چیٹس کا استعمال ہمارے ماڈلز کو بہتر بنانے کے لیے نہیں کیا جاتا ہے۔ ‫Gemini غلط معلومات ظاہر کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔ آپ کی رازداری اور Gemini</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6791425686608802741">"نئے گروپ میں ٹیب شامل کریں" پر تھپتھپائیں</translation>
@@ -1557,7 +1551,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7173721738069475737">{count,plural, =1{بُک مارک محفوظ ہو گیا}other{‫{count} بُک مارکس محفوظ ہو گئے}}</translation>
 <translation id="7176183551031110427">زوم آؤٹ کریں</translation>
 <translation id="7186568385131859684">‏کنٹرول کریں کہ براؤزنگ کی سرگزشت آپ کے دوسرے ڈیٹا کے ساتھ Google سروسز پر کیسے استعمال کی جائے</translation>
-<translation id="718807879214459529">‏اپنے iPad فون پر، اپنے پسندیدہ موبائل براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="719133302483559673">اپنی دلچسپیوں اور ترجیحات کا نظم کریں۔</translation>
 <translation id="720399613139435155">ترجمہ نہیں ہو سکا</translation>
 <translation id="7204922488054642675">ذاتی نوعیت کی خبریں</translation>
@@ -1631,7 +1624,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)۔</translation>
 <translation id="7508728395076009983">‏اپنے پوشیدگی ٹیبز کو مقفل کرنے کے لئے ٹچ ID، چہرے کی ID یا پاس کوڈ سیٹ اپ کریں۔</translation>
 <translation id="750886945254958667">اس گروپ کو بعد میں ٹیبز شامل کرنے کے لیے رکھیں، یا اگر آپ اس تک مزید رسائی نہیں چاہتے ہیں تو اسے چھوڑ دیں</translation>
-<translation id="7512075701202892785">‏وہ براؤزر جسے اب آپ iPad پر پسند کرتے ہیں</translation>
 <translation id="7512909159512473473">پاس فریز درج کریں…</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7514530647142300459">‏اپنے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈز استعمال کرتے رہیں</translation>
@@ -1658,7 +1650,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="760667371114328991">سیفٹی چیک کی اطلاعات کو آف کریں</translation>
 <translation id="7612619742409846846">‏Google میں سائن ان ہے بطور</translation>
 <translation id="7612849887607288481">‏‫AI پروٹو ٹائپنگ مینو کھولیں</translation>
-<translation id="7615581988398168124">‏‫Google کی شرائط اور Gemini ایپس کی رازداری کا نوٹس لاگو ہوتا ہے۔ ‫Gemini غلطیاں کر سکتا ہے، لہذا اسے دو بار چیک کریں۔</translation>
 <translation id="7620522820075868385">منسوخ کریں</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{متاثرہ پاس ورڈز}=1{‫{COUNT} متاثرہ پاس ورڈ}other{‫{COUNT} متاثرہ پاس ورڈز}}</translation>
@@ -1987,7 +1978,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="8822421075653507124">اس بات کو یقینی بنانے کے لیے کہ اس آلہ کو محفوظ طریقے سے استعمال کیا جا سکتا ہے، آپ کی تنظیم کو اس کے آپریٹنگ سسٹم، براؤزر، ترتیبات اور آلے پر کون سا سافٹ ویئر انسٹال ہے کے بارے میں معلومات دیکھنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="8825562130641217944">اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
-<translation id="8827154289515190290">‏وہ براؤزر جسے اب آپ iOS پر پسند کرتے ہیں</translation>
 <translation id="8831208860914609320">سبھی غیر فعال بند کریں</translation>
 <translation id="8831944931153286232">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="8837654851594567190">ناشر کے لحاظ سے ترتیب دیں</translation>
@@ -2000,7 +1990,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8863067612494559785"><ph name="DEVICE_NAME" /> پر بھیجا رہا ہے…</translation>
 <translation id="8863431381414769983">‏Google Maps سے ڈائریکشنز اور مقامی معلومات حاصل کریں</translation>
 <translation id="886477344907998366">بُک مارکس دکھائیں</translation>
-<translation id="8869239474428371589">اپنے پسندیدہ براؤزر سے بہترین چیزیں حاصل کریں</translation>
 <translation id="8871974300055371298">مواد کی ترتیبات</translation>
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8879604564928138696">کوشش کرنے کے لیے دو بار تھپتھپائیں</translation>

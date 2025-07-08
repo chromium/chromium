@@ -112,6 +112,7 @@
 <translation id="1435593198351412143">PDFలను ఆటోమేటిక్‌గా తెరవండి</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />‌లో రన్ అవుతోంది</translation>
 <translation id="1448440926884431741">ట్రాక్ చేసిన మీ ప్రోడక్ట్‌లను బుక్‌మార్క్‌లలో ఆర్గనైజ్ చేయండి</translation>
+<translation id="1455845192930279203">అయినా సరే మీరు <ph name="DOWNLOAD_DOMAIN" /> నుండి "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="1460751212339734034">సమయాన్ని ఆదా చేసుకోండి, తక్కువ టైప్ చేయండి</translation>
 <translation id="1466383950273130737">Chrome భాషను ఎంపిక చేయండి</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
@@ -494,6 +495,7 @@
 <translation id="3250563604907490871">మీరు Wi-Fiకి కనెక్ట్ అయిన తర్వాత ఇమేజ్ వివరణలు కొనసాగించబడతాయి</translation>
 <translation id="3254409185687681395">ఈ పేజీని బుక్‌మార్క్ చేయండి</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />‌లోని అన్ని పేజీలు</translation>
+<translation id="3268048651973962414">సెర్చ్ ఫలితాలను చూడటానికి పైకి లాగండి</translation>
 <translation id="3269093882174072735">చిత్రాన్ని లోడ్ చేయి</translation>
 <translation id="327204079441056603">మేము ఈ పరికరంలో పాస్‌వర్డ్‌లను సేవ్ చేసే విధానాన్ని మార్చాము</translation>
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
@@ -1056,11 +1058,13 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# గంట క్రితం}other{# గంటల క్రితం}}</translation>
 <translation id="5810288467834065221">కాపీరైట్ <ph name="YEAR" /> సర్వ హక్కులు Google LLCకి రిజర్వ్ అయ్యాయి.</translation>
 <translation id="5814749351757353073">మీకు ఇష్టమైన సైట్‌ల గురించి తెలుసుకోండి</translation>
+<translation id="5823093032261493462">అయినా సరే మీరు <ph name="DOWNLOAD_DOMAIN" /> నుండి "<ph name="FILE_NAME" />"ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="5828921839638612740">మీరు Chrome సెట్టింగ్‌లలో డేటాను తొలగించవచ్చు</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />లో సేవ్ చేయబడింది</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయండి</translation>
 <translation id="5839058148541733625">Chrome డినో</translation>
+<translation id="5841444063256914865">అయినా సరే మీరు "<ph name="FILE_NAME" />"ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="5842871376175639063">మీరు <ph name="DAYS_INACTIVE" /> రోజులుగా ఉపయోగించని ట్యాబ్‌లు, ట్యాబ్ గ్రూప్‌లు ఇక్కడికి తరలించబడతాయి<ph name="AUTODELETE_SECTION" />. మీరు దీన్ని ఏ సమయంలోనైనా <ph name="SETTINGS_TITLE" />‌లో మార్చవచ్చు.</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" />‌తో PDFను తెరవాలా?</translation>
 <translation id="5849288995120328556">షేర్ చేయడాన్ని ఆపివేయాలా?</translation>
@@ -1279,6 +1283,7 @@
 <translation id="674388916582496364">మీకు వ్యక్తిగతీకరించిన అనుభవాన్ని అందించడం కోసం, మీరు చూసే సైట్‌లు మీకు ఆసక్తి ఉన్న విషయాలను గుర్తుంచుకోవడం సర్వసాధారణం. మీ ఆసక్తులకు సంబంధించిన సమాచారాన్ని కూడా సైట్‌లు Chromeతో స్టోర్ చేయగలవు.</translation>
 <translation id="6746338529702829275">మీ ఖాతా డేటాను రివ్యూ చేయండి</translation>
 <translation id="6751521182688001123">త్వరగా కొత్త ట్యాబ్‌ను తెరవండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
+<translation id="6752130751133944215">కొత్త విండోను రీస్టోర్ చేయడానికి, యాక్టివ్‌గా, ఇన్‌యాక్టివ్‌గా ఉన్న విండోల మొత్తం సంఖ్యను <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />‌కు లేదా అంతకంటే తక్కువకు తగ్గించండి. ఇన్‌యాక్టివ్ విండోలు 6 నెలల తర్వాత తొలగించబడతాయి.</translation>
 <translation id="6754359471209693699">కొత్త సెర్చ్‌ను ప్రారంభించండి</translation>
 <translation id="6756507620369789050">ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1445,6 +1450,7 @@
 <translation id="7388615499319468910">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{లిస్ట్‌లో మరో 1 ఫైల్ ఉంది}other{లిస్ట్‌లో మరో # ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7400424692675800399">కొత్త విండోను తెరవడానికి, యాక్టివ్‌గా, ఇన్‌యాక్టివ్‌గా ఉన్న విండోల మొత్తం సంఖ్యను <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />‌కు లేదా అంతకంటే తక్కువకు తగ్గించండి.</translation>
 <translation id="7403691278183511381">Chrome మొదటి అమలు అనుభవం</translation>
 <translation id="7411224099004328643">Google ఖాతా యూజర్</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
@@ -1791,6 +1797,7 @@
 <translation id="8816556050903368450">చేర్చిన లింక్: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ప్రివ్యూ ట్యాబ్‌లో ఉన్న కంటెంట్‌ను చూడటం సాధ్యం కాదు.</translation>
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
+<translation id="8824359129672223138">మీరు గరిష్ఠంగా <ph name="MAX_WINDOW_COUNT" /> విండోలను మాత్రమే ఉపయోగించగలరు.</translation>
 <translation id="8835786707922974220">మీరు మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోండి</translation>
 <translation id="883806473910249246">కంటెంట్‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="8840953339110955557">ఈ పేజీ మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
@@ -1875,6 +1882,7 @@
 <translation id="9168847423516963845">అడ్రస్ బార్‌ను కిందికి తరలించండి</translation>
 <translation id="9169507124922466868">నావిగేషన్ హిస్టరీ సగం తెరిచి ఉంది</translation>
 <translation id="918419812064856259">బీటా Chrome</translation>
+<translation id="9189607089796819144">అయినా సరే మీరు "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="9190276265094487094">సింక్ చేసిన మీ పరికరాలన్నింటిలో మీ హిస్టరీ ఉంటుంది, కాబట్టి మీరు ఏదైతే చేస్తున్నారో, దానిని కొనసాగించవచ్చు</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 నిమిషం క్రితం చెక్ చేసింది}other{# నిమిషాల క్రితం చెక్ చేసింది}}</translation>
 <translation id="9204021776105550328">తొలగించబడుతున్నాయి</translation>

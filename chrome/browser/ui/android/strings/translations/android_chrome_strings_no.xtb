@@ -112,6 +112,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1435593198351412143">Åpne PDF-filer automatisk</translation>
 <translation id="1437543266176261764">Kjører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
+<translation id="1455845192930279203">Vil du laste ned «<ph name="FILE_NAME" />» (<ph name="FILE_SIZE" />) fra <ph name="DOWNLOAD_DOMAIN" /> likevel?</translation>
 <translation id="1460751212339734034">Spar tid – skriv mindre</translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
@@ -186,6 +187,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="1832459821645506983">Ja, den er grei</translation>
 <translation id="1845958458910716240">For å beskytte dataene dine, la Chrome fjerne tillatelser fra nettsteder du ikke har besøkt i det siste</translation>
+<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppet varsler fra dette nettstedet. Du kan gjennomgå og administrere dem.}other{Chrome har stoppet varsler fra disse nettstedene. Du kan gjennomgå og administrere dem.}}</translation>
 <translation id="1871098866036088250">Åpne i Chrome-nettleseren</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
 <translation id="1877073879466606884">Profilen du er logget på, er en administrert profil. Administratoren din kan gjøre endringer i profilinnstillingene dine eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver.</translation>
@@ -493,6 +495,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til wifi</translation>
 <translation id="3254409185687681395">Legg til bokmerke for denne siden</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
+<translation id="3268048651973962414">Dra opp for å se søkeresultater</translation>
 <translation id="3269093882174072735">Last inn bildet</translation>
 <translation id="327204079441056603">Vi har endret hvordan passord på denne enheten lagres</translation>
 <translation id="3280562213547448728">Talesøk</translation>
@@ -1055,11 +1058,13 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5809361687334836369">{HOURS,plural, =1{for # time siden}other{for # timer siden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="5814749351757353073">Hold tritt med favorittnettstedene dine</translation>
+<translation id="5823093032261493462">Vil du laste ned «<ph name="FILE_NAME" />» fra <ph name="DOWNLOAD_DOMAIN" /> likevel?</translation>
 <translation id="5828921839638612740">Du kan slette dataene i Chrome-innstillingene</translation>
 <translation id="5829586821381540080">Lagret i <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5833984609253377421">Del en link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5841444063256914865">Vil du laste ned «<ph name="FILE_NAME" />» likevel?</translation>
 <translation id="5842871376175639063">Faner og fanegrupper du ikke har brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Vil du åpne PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vil du slutte å dele?</translation>
@@ -1280,6 +1285,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="674388916582496364">Det er vanlig at nettsteder du besøker, husker ting du er interessert i, for å gi opplevelsen din personlig preg. Nettsteder kan også lagre informasjon om interessene dine i Chrome.</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
+<translation id="6752130751133944215">For å gjenopprette et nytt vindu må du redusere det totale antallet vinduer, både aktive og inaktive, til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes etter 6 måneder.</translation>
 <translation id="6754359471209693699">Start et nytt søk</translation>
 <translation id="6756507620369789050">Gi tilbakemelding</translation>
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
@@ -1446,6 +1452,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annet, 1 fil på listen}other{Annet, # filer på listen}}</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
+<translation id="7400424692675800399">For å åpne et nytt vindu må du redusere det totale antallet vinduer (aktive og inaktive) til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
 <translation id="7403691278183511381">Førsteinntrykk ved bruk av Chrome</translation>
 <translation id="7411224099004328643">Google-kontobruker</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
@@ -1792,6 +1799,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8816556050903368450">Inkludert link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Innholdet på forhåndsvisningsfanen kan ikke vises.</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
+<translation id="8824359129672223138">Du kan ha opptil <ph name="MAX_WINDOW_COUNT" /> vinduer.</translation>
 <translation id="8835786707922974220">Sørg for at du alltid har tilgang til de lagrede passordene dine</translation>
 <translation id="883806473910249246">Det oppsto en feil under nedlastingen av innholdet.</translation>
 <translation id="8840953339110955557">Denne siden kan avvike fra nettversjonen.</translation>
@@ -1876,6 +1884,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9168847423516963845">Flytt adressefeltet til bunnen</translation>
 <translation id="9169507124922466868">Navigasjonshistorikken er halvveis åpnet</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
+<translation id="9189607089796819144">Vil du laste ned «<ph name="FILE_NAME" />» (<ph name="FILE_SIZE" />) likevel?</translation>
 <translation id="9190276265094487094">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sjekket for ett minutt siden}other{Sjekket for # minutter siden}}</translation>
 <translation id="9204021776105550328">Sletter</translation>

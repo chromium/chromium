@@ -372,7 +372,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1615402009686901181">Zásady administrátora zakazují záznam obrazovky, když je viditelný důvěrný obsah</translation>
 <translation id="161612500287664753">Zeptat se Vyhledávání Google na tuto stránku</translation>
 <translation id="1617276713587758852">Crossovery</translation>
-<translation id="1619007254056372606">Spravovat dat webů na zařízení</translation>
+<translation id="1619007254056372606">Spravovat data webů na zařízení</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> odstranil(a) kartu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Obchod/finance</translation>
@@ -2411,6 +2411,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5043753287208271200">Žlutá 3</translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
 <translation id="5048293684454354469">Témata reklam jsou jen jednou z mnoha věcí, které web může použít k personalizaci reklam. Weby vám mohou reklamy zobrazovat i bez témat reklam, ale mohou být méně přizpůsobené. <ph name="BEGIN_LINK" />Další informace o správě ochrany soukromí v reklamách<ph name="LINK_END" /></translation>
+<translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, stisknutím tabulátoru zobrazíte další zkratky vyhledávání dostupné po tomto návrhu ve vyhledávání</translation>
 <translation id="5052517576853118371">Aktivní témata</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Uveďte důvod otevření (povinné)</translation>
@@ -4830,6 +4831,7 @@ Další podrobnosti:
 <translation id="9174917557437862841">Tlačítko přepínání karet. Stisknutím klávesy Enter přejdete na tuto kartu</translation>
 <translation id="9177283544810807743">Tento soubor PDF není přístupný. Extrahování textu pomocí technologie Google AI</translation>
 <translation id="9179703756951298733">Spravujte své platební údaje a informace o platebních kartách v nastavení Chromu</translation>
+<translation id="9179766227052716237">Zpráva od vaší organizace: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="9179907736442194268">Pokud cena na některém webu klesne, odeslat e-mailové upozornění</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> používá nepodporovaný protokol.</translation>

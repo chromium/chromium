@@ -13,6 +13,7 @@
 <translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Þú getur beðið um að sjá borðtölvuútgáfu vefsvæða</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
+<translation id="1178015372320901893">Blað neðst í flýtileiðunum mínum</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1192844206376121885">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> hefur vistað.</translation>
@@ -562,6 +563,7 @@
 <translation id="7681597159868843240">Yfirleitt nota vefsvæði hreyfiskynjara tækisins fyrir eiginleika á borð við sýndarveruleika eða hreystimælingar</translation>
 <translation id="7688240020069572972">Fela ábendingarspjald Chrome</translation>
 <translation id="7719367874908701697">Síðuaðdráttur</translation>
+<translation id="775043444390799886">Afturkalla heimild</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7791543448312431591">Bæta við</translation>
@@ -641,6 +643,7 @@
 <translation id="8549127125482561383">Hvernig á að sýna beiðnir</translation>
 <translation id="8558480467877843976">Núna geturðu notað Chrome hvenær sem þú skoðar eða ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>
+<translation id="8580511488901768832">blað neðst í flýtileiðunum mínum opnað í fullri hæð</translation>
 <translation id="8593422116412089302">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota upplýsingar sem þau hafa vistað um þig. Þegar slökkt er á þessu geta vefsvæði ekki beðið þig um að fá að nota upplýsingar sem þau hafa vistað um þig.</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
