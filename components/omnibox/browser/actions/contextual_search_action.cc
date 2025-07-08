@@ -38,12 +38,24 @@ ContextualSearchFulfillmentAction::ContextualSearchFulfillmentAction(
     const GURL& url,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion)
-    : OmniboxAction(LabelStrings(), url),
+    : OmniboxAction(
+          LabelStrings(
+              IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT,
+              IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS,
+              IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX,
+              IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION),
+          url),
       match_type_(match_type),
       is_zero_prefix_suggestion_(is_zero_prefix_suggestion) {}
 
 OmniboxActionId ContextualSearchFulfillmentAction::ActionId() const {
   return OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT;
+}
+
+void ContextualSearchFulfillmentAction::RecordActionShown(size_t position,
+                                                          bool executed) const {
+  base::UmaHistogramBoolean("Omnibox.ContextualSearchFulfillmentAction.Ctr",
+                            executed);
 }
 
 void ContextualSearchFulfillmentAction::Execute(
@@ -52,6 +64,16 @@ void ContextualSearchFulfillmentAction::Execute(
   context.client_->IssueContextualSearchRequest(url_, match_type_,
                                                 is_zero_prefix_suggestion_);
 }
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& ContextualSearchFulfillmentAction::GetVectorIcon()
+    const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+  return vector_icons::kSearchChromeRefreshIcon;
+#endif
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
 ContextualSearchFulfillmentAction::~ContextualSearchFulfillmentAction() =
     default;

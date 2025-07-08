@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -42,6 +43,7 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -50,11 +52,41 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace {
 
 // The internal default verbatim match relevance.
 constexpr int kDefaultVerbatimMatchRelevance = 1500;
+
+// Creates a URL to drive the lens API to open the side panel lens for 'whole
+// page mode' with the given `query`.
+GURL ComputeDestinationUrlForLensQueryText(
+    const std::u16string& query,
+    const TemplateURLService* turl_service) {
+  CHECK(!query.empty());
+  // This algorithm was reverse engineered as there's no documentation. So it's
+  // very possible some of this is unnecessary or even wrong. Used these as
+  // references:
+  // - `ContextualSearchProvider::AddDefaultVerbatimMatch()`
+  // - `SearchSuggestionParser::SuggestResult::SuggestResult()`
+  // - `BaseSearchProvider::CreateSearchSuggestion()`.
+  // TODO(b/403629222): Once we have a lens API that accepts a query string
+  //   instead of codifying it within a GURL, we may be able to bypass
+  //   `ComputeDestinationUrlForLensQueryText()`.
+  auto search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
+  search_terms_args->request_source = SearchTermsData::RequestSource::SEARCHBOX;
+  search_terms_args->original_query = query;
+  // 0 isn't even one of the valid enum value. Valid enum values are -2 and -1.
+  search_terms_args->accepted_suggestion = 0;
+  search_terms_args->append_extra_query_params_from_command_line = true;
+  const TemplateURLRef& search_url =
+      turl_service->GetDefaultSearchProvider()->url_ref();
+  const SearchTermsData& search_terms_data = turl_service->search_terms_data();
+  return GURL(
+      search_url.ReplaceSearchTerms(*search_terms_args, search_terms_data));
+}
 
 // Populates |results| with the response if it can be successfully parsed for
 // |input|. Returns true if the response can be successfully parsed.
@@ -239,12 +271,29 @@ struct EligibleMatchesAndActions {
   }
 
   // Return the toolbelt actions that are eligible.
-  std::vector<scoped_refptr<OmniboxAction>> GetToolbeltActions() const {
+  std::vector<scoped_refptr<OmniboxAction>> GetToolbeltActions(
+      const AutocompleteInput& input,
+      const TemplateURLService* turl_service) const {
     CHECK(toolbelt);
     std::vector<scoped_refptr<OmniboxAction>> actions = {};
 
     if (toolbelt_lens) {
-      actions.push_back(base::MakeRefCounted<ContextualSearchOpenLensAction>());
+      // If there is no query yet, trigger the overlay CSB so the user can start
+      // creating their input (text & page selection). Otherwise, if the user
+      // has already formed a textual input, bypass the overlay CSB and trigger
+      // the lens side panel directly. This will unfortunately prevent the user
+      // from making a page selection. Treat on focus inputs like empty inputs;
+      // it's unlikely the user wants to query with the page URL.
+      if (input.IsZeroSuggest() || input.text().empty()) {
+        actions.push_back(
+            base::MakeRefCounted<ContextualSearchOpenLensAction>());
+      } else {
+        GURL url =
+            ComputeDestinationUrlForLensQueryText(input.text(), turl_service);
+        actions.push_back(
+            base::MakeRefCounted<ContextualSearchFulfillmentAction>(
+                url, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, false));
+      }
     }
     if (toolbelt_ai_mode) {
       actions.push_back(base::MakeRefCounted<StarterPackAiModeAction>());
@@ -292,7 +341,9 @@ void ContextualSearchProvider::Start(const AutocompleteInput& input,
                                               starter_pack_engine, client());
 
   if (eligibility.toolbelt) {
-    AddToolbeltMatch(adjusted_input, eligibility.GetToolbeltActions());
+    AddToolbeltMatch(adjusted_input,
+                     eligibility.GetToolbeltActions(
+                         adjusted_input, client()->GetTemplateURLService()));
   }
 
   if (eligibility.lens_entry_match) {

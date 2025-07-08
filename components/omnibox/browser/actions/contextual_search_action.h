@@ -11,7 +11,7 @@
 
 // An action that fulfills a contextual search via the Lens CSB flow.
 // This action is specified as the `takeover_action` for contextual search
-// matches in order to trigger fullfilment via the Lens CSB flow.
+// matches in order to trigger fulfillment via the Lens CSB flow.
 class ContextualSearchFulfillmentAction : public OmniboxAction {
  public:
   ContextualSearchFulfillmentAction(const GURL& url,
@@ -20,9 +20,13 @@ class ContextualSearchFulfillmentAction : public OmniboxAction {
 
   // OmniboxAction:
   OmniboxActionId ActionId() const override;
+  void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
 
- private:
+ protected:
   ~ContextualSearchFulfillmentAction() override;
 
   AutocompleteMatchType::Type match_type_;
