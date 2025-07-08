@@ -35,4 +35,10 @@ PermissionSetting PermissionSettingsInfo::GetInitialDefaultSetting() const {
   return *default_setting;
 }
 
+PermissionSetting PermissionSettingsInfo::Delegate::CoalesceEphemeralState(
+    const PermissionSetting& persistent_permission_setting,
+    const PermissionSetting& ephemeral_permission_setting) const {
+  NOTREACHED();
+}
+
 }  // namespace content_settings

@@ -37,8 +37,15 @@ bool GeolocationSettingDelegate::IsValid(
 // should not be inherited.
 std::optional<PermissionSetting> GeolocationSettingDelegate::InheritInIncognito(
     const PermissionSetting& setting) const {
-  return std::nullopt;  // TODO(crbug.com/425642101): Implement inheritance
-                        // logic.
+  GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
+
+  // Only BLOCK should be inherited to incognito
+  return GeolocationSetting{geo_setting.approximate == PermissionOption::kDenied
+                                ? PermissionOption::kDenied
+                                : PermissionOption::kAsk,
+                            geo_setting.precise == PermissionOption::kDenied
+                                ? PermissionOption::kDenied
+                                : PermissionOption::kAsk};
 }
 
 // Parsing and conversion methods.
@@ -83,6 +90,30 @@ bool GeolocationSettingDelegate::CanBeAutoRevoked(PermissionSetting setting,
   auto* geolocation_setting = std::get_if<GeolocationSetting>(&setting);
   return !is_one_time && geolocation_setting &&
          (*geolocation_setting).approximate == PermissionOption::kAllowed;
+}
+
+bool GeolocationSettingDelegate::ShouldCoalesceEphemeralState() const {
+  return true;
+}
+
+PermissionSetting GeolocationSettingDelegate::CoalesceEphemeralState(
+    const PermissionSetting& persistent_permission_setting,
+    const PermissionSetting& ephemeral_permission_setting) const {
+  GeolocationSetting persistent_geo_setting =
+      std::get<GeolocationSetting>(persistent_permission_setting);
+  GeolocationSetting ephemeral_geo_setting =
+      std::get<GeolocationSetting>(ephemeral_permission_setting);
+
+  PermissionOption approximate =
+      ephemeral_geo_setting.approximate == PermissionOption::kAsk
+          ? persistent_geo_setting.approximate
+          : ephemeral_geo_setting.approximate;
+  PermissionOption precise =
+      ephemeral_geo_setting.precise == PermissionOption::kAsk
+          ? persistent_geo_setting.precise
+          : ephemeral_geo_setting.precise;
+
+  return GeolocationSetting{approximate, precise};
 }
 
 }  // namespace content_settings

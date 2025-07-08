@@ -45,6 +45,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/geolocation_setting_delegate.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
@@ -1096,23 +1097,66 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
     metadata = &info->metadata;
   }
 
+  const content_settings::PermissionSettingsInfo* permission_setting_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_type);
+
+  std::optional<PermissionSetting> ephemeral_setting;
+  std::optional<PermissionSetting> first_persistent_setting;
+  bool found_value = false;
+
   // The list of |content_settings_providers_| is ordered according to their
   // precedence.
-  for (const auto& [provider_type, provider] : content_settings_providers_) {
+  for (const auto& [current_provider_type, provider] :
+       content_settings_providers_) {
     if (provider_filter == ProviderFilter::kUserModifiable &&
-        !IsUserModifiableProvider(provider_type)) {
+        !IsUserModifiableProvider(current_provider_type)) {
       continue;
     }
-    base::Value value = GetContentSettingValueAndPatterns(
+
+    base::Value current_value = GetContentSettingValueAndPatterns(
         provider.get(), primary_url, secondary_url, content_type,
         is_off_the_record_, primary_pattern, secondary_pattern, metadata);
-    if (!value.is_none()) {
-      if (info) {
-        info->source =
-            content_settings::GetSettingSourceFromProviderType(provider_type);
+
+    if (!current_value.is_none()) {
+      if (!found_value && info) {
+        info->source = content_settings::GetSettingSourceFromProviderType(
+            current_provider_type);
       }
-      return value;
+      found_value = true;
+
+      if (permission_setting_info &&
+          permission_setting_info->delegate().ShouldCoalesceEphemeralState()) {
+        auto current_setting =
+            permission_setting_info->delegate().FromValue(current_value);
+        // Coalesce the first ephemeral value with the first non-ephemeral
+        // value.
+        if (current_provider_type == ProviderType::kOneTimePermissionProvider) {
+          ephemeral_setting =
+              permission_setting_info->delegate().FromValue(current_value);
+        } else if (!first_persistent_setting.has_value()) {
+          first_persistent_setting = current_setting;
+        }
+
+        if (ephemeral_setting.has_value() &&
+            first_persistent_setting.has_value()) {
+          return permission_setting_info->delegate().ToValue(
+              permission_setting_info->delegate().CoalesceEphemeralState(
+                  first_persistent_setting.value(), ephemeral_setting.value()));
+        }
+      } else {
+        return current_value;
+      }
     }
+  }
+
+  if (ephemeral_setting.has_value() || first_persistent_setting.has_value()) {
+    // If we found an ephemeral or a persistent state and land here, it means
+    // that we wanted to coalesce ephemeral and persistent state, but only found
+    // a setting for one of the two states.
+    auto result = ephemeral_setting.has_value() ? ephemeral_setting
+                                                : first_persistent_setting;
+    return permission_setting_info->delegate().ToValue(result.value());
   }
 
   if (info) {

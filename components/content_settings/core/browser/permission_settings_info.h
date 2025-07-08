@@ -41,6 +41,16 @@ class PermissionSettingsInfo {
     virtual bool CanBeAutoRevoked(PermissionSetting setting,
                                   bool is_one_time) const = 0;
 
+    // Returns true if any existing persistent state should be coalesced with
+    // ephemeral state from the OneTimePermissionProvider.
+    virtual bool ShouldCoalesceEphemeralState() const = 0;
+
+    // Returns the coalesced PermissionSetting based on the passed in persistent
+    // and ephemeral state.
+    virtual PermissionSetting CoalesceEphemeralState(
+        const PermissionSetting& persistent_permission_setting,
+        const PermissionSetting& ephemeral_permission_setting) const;
+
     // Parsing and conversion methods.
     virtual base::Value ToValue(const PermissionSetting& setting) const = 0;
     virtual std::optional<PermissionSetting> FromValue(
