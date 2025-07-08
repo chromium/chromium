@@ -54,7 +54,6 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -462,8 +461,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
                          base::Unretained(this)));
 
   DCHECK(prefetch_request);
-  blink::UserAgentOverride ua_override = web_contents->GetUserAgentOverride();
-  if (!prefetch_request->StartPrefetchRequest(profile_, ua_override)) {
+  if (!prefetch_request->StartPrefetchRequest(profile_)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
     // We don't consider Throttled as an ineligibility reason is because we
     // can't replicate this behaviour in our other experiment group. To prevent

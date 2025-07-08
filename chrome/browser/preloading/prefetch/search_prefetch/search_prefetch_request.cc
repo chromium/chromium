@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,7 +47,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -86,6 +84,11 @@ class CheckForCancelledOrPausedDelegate
  private:
   bool cancelled_ = false;
 };
+
+// Computes the user agent value that should set for the User-Agent header.
+std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
+  return embedder_support::GetUserAgent();
+}
 
 // Used for StateTransitions matching.
 const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
@@ -194,9 +197,7 @@ SearchPrefetchRequest::NetworkAnnotationForPrefetch() {
         })");
 }
 
-bool SearchPrefetchRequest::StartPrefetchRequest(
-    Profile* profile,
-    blink::UserAgentOverride ua_override) {
+bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   TRACE_EVENT0("loading", "SearchPrefetchRequest::StartPrefetchRequest");
   time_start_prefetch_request_ = base::TimeTicks::Now();
 
@@ -242,19 +243,9 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
   // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
   resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
-  // TODO(crbug.com/427866914): Unify the logic with `ComputeUserAgentValue()`
-  // in `content/browser/renderer_host/navigation_request.cc`.
-  std::string user_agent = embedder_support::GetUserAgent();
-  if (!ua_override.ua_string_override.empty()) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kRespectUserAgentOverrideInSearchPrefetch)) {
-      // TODO(crbug.com/427866914): client hints should also be updated
-      // according to `ua_override.ua_metadata_override`.
-      user_agent = ua_override.ua_string_override;
-    }
-  }
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                      user_agent);
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kUserAgent,
+      GetUserAgentValue(resource_request->headers));
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
     resource_request->headers.SetHeader(blink::kPurposeHeaderName,
