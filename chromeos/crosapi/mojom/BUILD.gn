@@ -28,7 +28,6 @@ mojom("mojom") {
     "local_printer.mojom",
     "magic_boost.mojom",
     "mahi.mojom",
-    "media_ui.mojom",
     "network_change.mojom",
     "networking_private.mojom",
     "nullable_primitives.mojom",

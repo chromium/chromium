@@ -93,6 +93,11 @@ class MediaSessionData : public base::SupportsUserData::Data {
     return data;
   }
 
+  static MediaSessionData* Get(BrowserContext* context) {
+    return static_cast<MediaSessionData*>(
+        context->GetUserData(kMediaSessionDataName));
+  }
+
   const base::UnguessableToken& source_id() const { return source_id_; }
 
  private:
@@ -172,6 +177,12 @@ MediaSession* MediaSession::GetIfExists(WebContents* contents) {
 const base::UnguessableToken& MediaSession::GetSourceId(
     BrowserContext* browser_context) {
   return MediaSessionData::GetOrCreate(browser_context)->source_id();
+}
+
+const base::UnguessableToken* MediaSession::MaybeGetSourceId(
+    BrowserContext* browser_context) {
+  auto* data = MediaSessionData::Get(browser_context);
+  return data ? &data->source_id() : nullptr;
 }
 
 // static

@@ -53,9 +53,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -99,17 +96,6 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
   }
   return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-crosapi::mojom::MediaUI* GetMediaUI() {
-  // TODO(crbug.com/373971535): Figure how to call `media_ui_ash()` once crosapi
-  // is gone.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
-  }
-  return nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool ShouldInitializeWithRemotePlaybackSource(
     content::WebContents* web_contents,
@@ -213,15 +199,6 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
     item_manager->AddItemProducer(supplemental_device_picker_producer_.get());
     SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // The Ash instance manages Casting from System Web Apps.
-  if (GetMediaUI()) {
-    GetMediaUI()->RegisterDeviceService(
-        content::MediaSession::GetSourceId(profile),
-        receiver_.BindNewPipeAndPassRemote());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -39,8 +39,6 @@ static_library("crosapi") {
     "keystore_service_factory_ash.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
-    "media_ui_ash.cc",
-    "media_ui_ash.h",
     "parent_access_ash.cc",
     "parent_access_ash.h",
     "primary_profile_creation_waiter.cc",
@@ -398,7 +396,6 @@ source_set("browser_tests") {
 
   sources = [
     "magic_boost_ash_browsertest.cc",
-    "media_ui_ash_browsertest.cc",
     "power_ash_apitest.cc",
     "print_preview_ash_browsertest.cc",
     "video_conference_ash_browsertest.cc",

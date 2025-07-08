@@ -39,6 +39,11 @@ class MediaSession : public media_session::mojom::MediaSession {
   CONTENT_EXPORT static const base::UnguessableToken& GetSourceId(
       BrowserContext* browser_context);
 
+  // Similar to GetSourceId, returns the source identity, but iff it is
+  // already set by GetSourceId. Otherwise, nullptr.
+  CONTENT_EXPORT static const base::UnguessableToken* MaybeGetSourceId(
+      BrowserContext* browser_context);
+
   CONTENT_EXPORT static WebContents* GetWebContentsFromRequestId(
       const base::UnguessableToken& request_id);
 

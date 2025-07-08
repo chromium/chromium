@@ -49,7 +49,6 @@ class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
 class KeystoreServiceAsh;
 class LocalPrinterAsh;
-class MediaUIAsh;
 class ParentAccessAsh;
 class VpnServiceAsh;
 
@@ -98,7 +97,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
       override;
-  void BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) override;
   void BindMediaSessionAudioFocus(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
       override;
@@ -159,8 +157,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
-  MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
-
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
 
   ash::printing::PrintPreviewWebcontentsAdapterAsh*
@@ -189,7 +185,6 @@ class CrosapiAsh : public mojom::Crosapi {
       file_system_provider_service_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
-  std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;

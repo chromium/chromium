@@ -38,7 +38,6 @@ import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
-import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
@@ -190,11 +189,7 @@ interface Crosapi {
 
   // BindMagicBoostController@144 was removed.
   // BindMahiBrowserDelegate@134 was removed.
-
-  // Binds the MediaUI interface for the Global Media Controls UI.
-  // Added in M113.
-  [MinVersion=105] BindMediaUI@108(pending_receiver<MediaUI> receiver);
-
+  // BindMediaUI@108 was removed.
   // BindNativeThemeService@38 was removed.
   // BindMetrics@106 was removed.
   // BindMultiCaptureService@104 was removed.

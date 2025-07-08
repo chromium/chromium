@@ -20,6 +20,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "media_notification_provider_impl\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+
   # Allow access for tests.
   "media_notification_provider_impl_unittest\\.cc": [
     "+chrome/browser/ui/views/chrome_layout_provider.h",

@@ -13,21 +13,23 @@
 #include "ash/system/status_area_widget.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/media_ui_ash.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/supplemental_device_picker_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "content/public/browser/media_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/views/view.h"
@@ -282,10 +284,17 @@ MediaNotificationProviderImpl::GetDeviceService(
   if (device_service_for_testing_) {
     return device_service_for_testing_;
   }
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->media_ui_ash()
-      ->GetDeviceService(*item->GetSourceId());
+
+  // TODO(crbug.com/354842935): Consider to share the found profile with the one
+  // for GetProfile(). Or, move the code out from this class.
+  for (Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    const auto* source_id = content::MediaSession::MaybeGetSourceId(profile);
+    if (source_id && *source_id == *item->GetSourceId()) {
+      return MediaNotificationServiceFactory::GetForProfile(profile);
+    }
+  }
+  return nullptr;
 }
 
 Profile* MediaNotificationProviderImpl::GetProfile() {
