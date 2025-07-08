@@ -10,13 +10,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "chrome/browser/extensions/window_controller.h"
 
 // TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
-// gn check doesn't understand this conditional, hence the nogncheck directives
-// below.
-#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -58,11 +56,9 @@ class ExtensionTabUtil {
  public:
   static constexpr char kTabNotFoundError[] = "No tab with id: *.";
 
-#if !BUILDFLAG(IS_ANDROID)
-  // This file is slowly being ported to Android. For now, most of it is
-  // ifdef'd out.
   static constexpr char kNoCrashBrowserError[] =
       "I'm sorry. I'm afraid I can't do that.";
+#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kCanOnlyMoveTabsWithinNormalWindowsError[] =
       "Tabs can only be moved to and from normal windows.";
   static constexpr char kCanOnlyMoveTabsWithinSameProfileError[] =
@@ -75,21 +71,25 @@ class ExtensionTabUtil {
       "Tabs cannot be edited right now (user may be dragging a tab).";
   static constexpr char kTabStripDoesNotSupportTabGroupsError[] =
       "Grouping is not supported by tabs in this window.";
+#endif
   static constexpr char kJavaScriptUrlsNotAllowedInExtensionNavigations[] =
       "JavaScript URLs are not allowed in API based extension navigations. Use "
       "chrome.scripting.executeScript instead.";
+#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kBrowserWindowNotAllowed[] =
       "Browser windows not allowed.";
+#endif  // !BUILDFLAG(IS_ANDROID)
   static constexpr char kCannotNavigateToDevtools[] =
       "Cannot navigate to a devtools:// page without either the devtools or "
       "debugger permission.";
+#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kLockedFullscreenModeNewTabError[] =
       "You cannot create new tabs while in locked fullscreen mode.";
+#endif  // !BUILDFLAG(IS_ANDROID)
   static constexpr char kCannotNavigateToChromeUntrusted[] =
       "Cannot navigate to a chrome-untrusted:// page.";
   static constexpr char kFileUrlsNotAllowedInExtensionNavigations[] =
       "Cannot navigate to a file URL without local file access.";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   static constexpr char kTabsKey[] = "tabs";
 
@@ -293,7 +293,6 @@ class ExtensionTabUtil {
                                      content::BrowserContext* browser_context,
                                      bool include_incognito);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Takes `url_string` and returns a GURL which is either valid and absolute
   // or invalid. If `url_string` is not directly interpretable as a valid (it is
   // likely a relative URL) an attempt is made to resolve it. When `extension`
@@ -320,6 +319,7 @@ class ExtensionTabUtil {
       const Extension* extension,
       content::BrowserContext* browser_context);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Opens a tab for the specified `web_contents`.
   static void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                         const std::string& extension_id,
@@ -359,12 +359,12 @@ class ExtensionTabUtil {
   // Returns true if the given Browser can report tabs to extensions.
   // Example of Browsers which don't support tabs include apps and devtools.
   static bool BrowserSupportsTabs(Browser* browser);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Determines the loading status of the given `contents`. This needs to access
   // some non-const member functions of `contents`, but actually leaves it
   // unmodified.
   static api::tabs::TabStatus GetLoadingStatus(content::WebContents* contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Clears the back-forward cache for all active tabs across all browser
   // contexts.
