@@ -1454,11 +1454,7 @@ void WindowPerformance::PageVisibilityChangedWithTimestamp(
   // invisible.
   if (!GetPage()->IsPageVisible()) {
     last_hidden_timestamp_ = visibility_change_timestamp;
-
-    if (RuntimeEnabledFeaturesBase::
-            ReportEventTimingAtVisibilityChangeEnabled()) {
-      FlushEventTimingsOnPageHidden();
-    }
+    FlushEventTimingsOnPageHidden();
   }
   AddVisibilityStateEntry(GetPage()->IsPageVisible(),
                           visibility_change_timestamp);

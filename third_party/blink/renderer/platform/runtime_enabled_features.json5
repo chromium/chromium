@@ -3922,10 +3922,6 @@
       status: "stable",
     },
     {
-      name: "ReportEventTimingAtVisibilityChange",
-      status: "stable",
-    },
-    {
       name: "ReportFirstFrameTimeAsRenderTime",
       status: "test",
     },

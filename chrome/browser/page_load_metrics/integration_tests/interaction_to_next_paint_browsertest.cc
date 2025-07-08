@@ -32,12 +32,6 @@ using trace_analyzer::TraceEventVector;
 using ukm::builders::PageLoad;
 
 class InteractionToNextPaintTest : public MetricIntegrationTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "ReportEventTimingAtVisibilityChange");
-  }
-
  protected:
   // This function will extract the target UKM value from ukm_recorder
   // by the given metric_name in PageLoad.

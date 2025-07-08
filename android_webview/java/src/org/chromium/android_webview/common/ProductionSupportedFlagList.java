@@ -453,9 +453,6 @@ public final class ProductionSupportedFlagList {
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
         Flag.baseFeature(
-                BlinkFeatures.REPORT_EVENT_TIMING_AT_VISIBILITY_CHANGE,
-                "Report event timing to UKM at visibility change."),
-        Flag.baseFeature(
                 CcFeatures.USE_DMSAA_FOR_TILES,
                 "Switches skia to use DMSAA instead of MSAA for tile raster"),
         Flag.baseFeature(
