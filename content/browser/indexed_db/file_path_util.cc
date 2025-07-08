@@ -111,7 +111,8 @@ base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
 bool IsPathTooLong(const base::FilePath& leveldb_dir) {
   int limit = base::GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (limit < 0) {
-    DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
+    DPLOG(WARNING) << "GetMaximumPathComponentLength returned -1 for "
+                   << leveldb_dir.DirName();
 // In limited testing, ChromeOS returns 143, other OSes 255.
 #if BUILDFLAG(IS_CHROMEOS)
     limit = 143;
