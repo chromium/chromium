@@ -59,6 +59,11 @@ base::FilePath HeadlessModeProtocolBrowserTest::GetScriptPath() {
       .AppendASCII(GetScriptName());
 }
 
+base::FilePath HeadlessModeProtocolBrowserTest::GetTestExpectationFilePath() {
+  return headless::GetTestExpectationFilePath(GetScriptPath(), test_meta_info_,
+                                              HeadlessType::kHeadlessMode);
+}
+
 bool HeadlessModeProtocolBrowserTest::IsSharedTestScript() {
   return headless::IsSharedTestScript(GetScriptName());
 }
@@ -187,7 +192,7 @@ void HeadlessModeProtocolBrowserTest::OnEvaluateResult(
 void HeadlessModeProtocolBrowserTest::ProcessTestResult(
     const std::string& test_result) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath expectation_path = GetTestExpectationFilePath(GetScriptPath());
+  base::FilePath expectation_path = GetTestExpectationFilePath();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetResults)) {
@@ -373,7 +378,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_MoveWindowBetweenScreens,
                             "shared/move-window-between-screens.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
-                            "sanity/window-open-on-secondary-screen.js")
+                            "shared/window-open-on-secondary-screen.js")
 
 // TODO(crbug.com/40283476): CreateTargetSecondaryScreen is failing on Mac
 #if !BUILDFLAG(IS_MAC)
@@ -385,13 +390,13 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_CreateTargetSecondaryScreen,
                             "shared/create-target-secondary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowOpenPopupPlacement,
-                            "sanity/window-open-popup-placement.js")
+                            "shared/window-open-popup-placement.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowSizeSwitchHandling,
-                            "sanity/window-size-switch-handling.js")
+                            "shared/window-size-switch-handling.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowSizeSwitchLargerThanScreen,
-                            "sanity/window-size-switch-larger-than-screen.js")
+                            "shared/window-size-switch-larger-than-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 
@@ -414,5 +419,26 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitch,
 
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitchScaled,
                             "sanity/start-fullscreen-switch-scaled.js")
+
+// TODO(crbug.com/430156442): These fail on Mac 13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowStateTransitions DISABLED_WindowStateTransitions
+#define MAYBE_WindowZoomOnSecondaryScreen DISABLED_WindowZoomOnSecondaryScreen
+#define MAYBE_WindowZoomSizeMatchesWorkArea \
+  DISABLED_WindowZoomSizeMatchesWorkArea
+#else
+#define MAYBE_WindowStateTransitions WindowStateTransitions
+#define MAYBE_WindowZoomOnSecondaryScreen WindowZoomOnSecondaryScreen
+#define MAYBE_WindowZoomSizeMatchesWorkArea WindowZoomSizeMatchesWorkArea
+#endif
+
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowStateTransitions,
+                            "shared/window-state-transitions.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomOnSecondaryScreen,
+                            "shared/window-zoom-on-secondary-screen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomSizeMatchesWorkArea,
+                            "shared/window-zoom-size-matches-work-area.js")
 
 }  // namespace headless

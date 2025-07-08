@@ -35,6 +35,9 @@ class HeadlessModeProtocolBrowserTest
   // Returns absolute script file path.
   base::FilePath GetScriptPath();
 
+  // Returns absolute expectations file path.
+  base::FilePath GetTestExpectationFilePath();
+
   bool IsSharedTestScript();
 
   void SetUp() override;

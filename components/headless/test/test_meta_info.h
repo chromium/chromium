@@ -30,6 +30,12 @@ struct TestMetaInfo {
   // META: --screen-info={1600x1200}
   base::flat_map<std::string, std::string> command_line_switches;
 
+  // If true, Chrome Headless Mode and Headless Shell test expectations will be
+  // maintained in '<script_name>-headless-mode-expected.txt' and
+  // '<script_name>-headless-shell-expected.txt' respectively.
+  bool fork_headless_mode_expectations = false;
+  bool fork_headless_shell_expectations = false;
+
   static base::expected<TestMetaInfo, std::string> FromString(
       std::string_view test_body);
 

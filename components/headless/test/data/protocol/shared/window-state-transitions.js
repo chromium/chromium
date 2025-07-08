@@ -4,11 +4,19 @@
 //
 // META: --screen-info={1600x1200}
 //
+// Chrome Headless Mode ignores maximize/minimize window requests while the
+// window is in full screen mode. Headless Shell should do the same, see
+// http://crbug.com/429423225
+// META: fork_headless_shell_expectations
+
 (async function(testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests window state transitions.');
 
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
+
+  dp.Browser.setWindowBounds(
+      {windowId, bounds: {left: 0, top: 0, width: 800, height: 600}});
 
   const windowStates = [
     'maximized',
@@ -37,4 +45,4 @@
   }
 
   testRunner.completeTest();
-})
+});
