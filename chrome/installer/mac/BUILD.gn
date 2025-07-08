@@ -113,6 +113,10 @@ copy("copies") {
   if (is_chrome_branded) {
     deps += [ ":copy_widevine_signing" ]
     sources += [
+      "//chrome/app/theme/google_chrome/mac/Assets.car",
+      "//chrome/app/theme/google_chrome/mac/Assets_beta.car",
+      "//chrome/app/theme/google_chrome/mac/Assets_canary.car",
+      "//chrome/app/theme/google_chrome/mac/Assets_dev.car",
       "//chrome/app/theme/google_chrome/mac/app_beta.icns",
       "//chrome/app/theme/google_chrome/mac/app_canary.icns",
       "//chrome/app/theme/google_chrome/mac/app_dev.icns",
