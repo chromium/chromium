@@ -30,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
@@ -128,6 +129,15 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
   SetHandler(ScriptProcessorHandler::Create(
       *this, sample_rate, buffer_size, number_of_input_channels,
       number_of_output_channels, input_buffers_, output_buffers_));
+
+  if (auto* window = To<LocalDOMWindow>(GetExecutionContext())) {
+    auto* frame = window->GetFrame();
+    if (frame && frame->IsMainFrame()) {
+      ukm::builders::Media_WebAudio_ScriptProcessorNode(window->UkmSourceID())
+          .SetCreation(true)
+          .Record(window->UkmRecorder());
+    }
+  }
 }
 
 ScriptProcessorNode* ScriptProcessorNode::Create(

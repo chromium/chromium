@@ -14547,6 +14547,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.WebAudio.ScriptProcessorNode">
+  <owner>hongchan@chromium.org</owner>
+  <owner>mjwilson@chromium.org</owner>
+  <owner>webaudio-dev@chromium.org</owner>
+  <summary>
+    Records the creation of a ScriptProcessorNode to monitor usage of this
+    deprecated API. ScriptProcessorNode has been deprecated and developers are
+    strongly encouraged to use AudioWorklet instead. This data helps gauge
+    migration progress and the impact if it were to be removed.
+  </summary>
+  <metric name="Creation" enum="Boolean">
+    <summary>
+      Fired and set to true when a ScriptProcessorNode is constructed.
+    </summary>
+  </metric>
+</event>
+
 <event name="Media.WebMediaPlayerState">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
