@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
@@ -50,6 +49,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -826,8 +826,8 @@ class Browser : public TabStripModelObserver,
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
   const BrowserWindowFeatures& GetFeatures() const override;
-  UnownedUserDataHost& GetUnownedUserDataHost() override;
-  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
   bool IsActive() const override;
@@ -1481,7 +1481,7 @@ class Browser : public TabStripModelObserver,
   // Tracks whether a modal UI is showing.
   bool showing_call_to_action_ = false;
 
-  UnownedUserDataHost unowned_user_data_host_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -28,6 +27,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
@@ -121,7 +121,7 @@ class PowerBookmarkBubbleViewBrowserTest
   ~PowerBookmarkBubbleViewBrowserTest() override = default;
 
  private:
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(PowerBookmarkBubbleViewBrowserTest,

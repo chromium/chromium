@@ -759,11 +759,11 @@ void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
   }
 }
 
-UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() {
+ui::UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() {
   NOTREACHED();
 }
 
-const UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() const {
+const ui::UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() const {
   NOTREACHED();
 }
 

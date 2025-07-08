@@ -113,7 +113,7 @@ class ProductSpecificationsIconViewIntegrationTest
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       shopping_service_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_P(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace ui {
 
 namespace {
 
@@ -95,3 +97,5 @@ TEST(UnownedUserDataTest, CannotSetATypeTwiceOnTheSameHost) {
   // Constructing another data of the same type should cause a CHECK failure.
   EXPECT_DEATH(test_data2.emplace(host), "");
 }
+
+}  // namespace ui

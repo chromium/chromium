@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
-#define CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
+#ifndef UI_BASE_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
+#define UI_BASE_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
 
 #include <concepts>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace ui {
 
 // A scoped class to set and unset an UnownedUserData entry on an
 // UnownedUserDataHost.
@@ -58,20 +60,22 @@ class ScopedUnownedUserData {
   raw_ref<T> data_;
 };
 
+}  // namespace ui
+
 // Helper macros. See above for usage.
 
 #define DECLARE_USER_DATA(ClassName)                         \
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, kDataKey); \
-  static ClassName* Get(UnownedUserDataHost& host);          \
-  static const ClassName* Get(const UnownedUserDataHost& host)
+  static ClassName* Get(::ui::UnownedUserDataHost& host);    \
+  static const ClassName* Get(const ::ui::UnownedUserDataHost& host)
 
-#define DEFINE_USER_DATA(ClassName)                                  \
-  ClassName* ClassName::Get(UnownedUserDataHost& host) {             \
-    return ScopedUnownedUserData<ClassName>::Get(host);              \
-  }                                                                  \
-  const ClassName* ClassName::Get(const UnownedUserDataHost& host) { \
-    return ScopedUnownedUserData<ClassName>::Get(host);              \
-  }                                                                  \
+#define DEFINE_USER_DATA(ClassName)                                        \
+  ClassName* ClassName::Get(::ui::UnownedUserDataHost& host) {             \
+    return ::ui::ScopedUnownedUserData<ClassName>::Get(host);              \
+  }                                                                        \
+  const ClassName* ClassName::Get(const ::ui::UnownedUserDataHost& host) { \
+    return ::ui::ScopedUnownedUserData<ClassName>::Get(host);              \
+  }                                                                        \
   DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, ClassName, kDataKey)
 
-#endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
+#endif  // UI_BASE_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_

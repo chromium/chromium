@@ -563,15 +563,16 @@ bool BrowserWindowFeatures::HasFindBarController() const {
 }
 
 // static
-UserDataFactoryWithOwner<BrowserWindowInterface>&
+ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
 BrowserWindowFeatures::GetUserDataFactoryForTesting() {
   return GetUserDataFactory();
 }
 
 // static
-UserDataFactoryWithOwner<BrowserWindowInterface>&
+ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
 BrowserWindowFeatures::GetUserDataFactory() {
-  static base::NoDestructor<UserDataFactoryWithOwner<BrowserWindowInterface>>
+  static base::NoDestructor<
+      ui::UserDataFactoryWithOwner<BrowserWindowInterface>>
       factory;
   return *factory;
 }

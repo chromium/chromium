@@ -10,7 +10,7 @@
 DEFINE_USER_DATA(TabListBridge);
 
 TabListBridge::TabListBridge(TabStripModel& tab_strip_model,
-                             UnownedUserDataHost& unowned_user_data_host)
+                             ui::UnownedUserDataHost& unowned_user_data_host)
     : tab_strip_(tab_strip_model),
       scoped_data_holder_(unowned_user_data_host, *this) {}
 
@@ -19,7 +19,7 @@ TabListBridge::~TabListBridge() = default;
 // static
 TabListInterface* TabListBridge::From(
     BrowserWindowInterface* browser_window_interface) {
-  return ScopedUnownedUserData<TabListBridge>::Get(
+  return ui::ScopedUnownedUserData<TabListBridge>::Get(
       browser_window_interface->GetUnownedUserDataHost());
 }
 

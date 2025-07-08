@@ -130,7 +130,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     mock_shopping_service->SetIsSubscribedCallbackValue(true);
   }
 
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
   base::WeakPtrFactory<PriceTrackingEmailDialogConsentViewInteractiveTest>
       weak_ptr_factory_{this};
 };

@@ -4,9 +4,12 @@
 
 # Technically, this could be supported on more platforms, but these are the only
 # ones where it's needed today.
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
-source_set("unowned_user_data") {
+component("unowned_user_data") {
+  defines = [ "IS_UNOWNED_USER_DATA_IMPL" ]
+
   public = [
     "scoped_unowned_user_data.h",
     "unowned_user_data_host.h",
@@ -21,5 +24,20 @@ source_set("unowned_user_data") {
   public_deps = [
     "//base",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "unowned_user_data_unittest.cc",
+    "user_data_factory_unittest.cc",
+  ]
+
+  deps = [
+    ":unowned_user_data",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

@@ -21,7 +21,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
  public:
   // Anytime a CommerceUiTabHelper would be created, a MockCommerceUiTabHelper
   // is created instead, until the return value goes out of scope.
-  static UserDataFactory::ScopedOverride ReplaceFactory();
+  static ui::UserDataFactory::ScopedOverride ReplaceFactory();
 
   MockCommerceUiTabHelper(tabs::TabInterface& tab, SidePanelRegistry* registry);
   ~MockCommerceUiTabHelper() override;

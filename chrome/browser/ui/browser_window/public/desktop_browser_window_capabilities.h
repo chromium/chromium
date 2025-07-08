@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_DESKTOP_BROWSER_WINDOW_CAPABILITIES_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class BrowserWindow;
 class DesktopBrowserWindowCapabilitiesDelegate;
+
+namespace ui {
 class UnownedUserDataHost;
+}
 
 namespace content {
 class WebContents;
@@ -27,7 +30,7 @@ class DesktopBrowserWindowCapabilities {
   DesktopBrowserWindowCapabilities(
       DesktopBrowserWindowCapabilitiesDelegate* delegate,
       BrowserWindow* browser_window,
-      UnownedUserDataHost& host);
+      ui::UnownedUserDataHost& host);
   ~DesktopBrowserWindowCapabilities();
 
   static DesktopBrowserWindowCapabilities* From(
@@ -60,7 +63,8 @@ class DesktopBrowserWindowCapabilities {
   // Browser creation and destroyed before Browser teardown.
   raw_ptr<BrowserWindow> browser_window_ = nullptr;
 
-  ScopedUnownedUserData<DesktopBrowserWindowCapabilities> scoped_data_holder_;
+  ui::ScopedUnownedUserData<DesktopBrowserWindowCapabilities>
+      scoped_data_holder_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_DESKTOP_BROWSER_WINDOW_CAPABILITIES_H_

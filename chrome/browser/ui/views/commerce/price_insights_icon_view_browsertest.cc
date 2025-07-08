@@ -127,7 +127,7 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
   }
 
   bool is_migration_enabled_;
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 class PriceInsightsIconViewBrowserTest

@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
-#define CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
+#ifndef UI_BASE_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
+#define UI_BASE_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
 
 #include <map>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/typed_identifier.h"
+
+namespace ui {
 
 template <typename T>
 class ScopedUnownedUserData;
@@ -19,9 +22,11 @@ class ScopedUnownedUserData;
 // per key, per host. The host must outlive the UnownedUserData. The methods on
 // this class should not be used directly, since features should instead be
 // retrieved via getters on the individual feature classes.
-class UnownedUserDataHost {
+class COMPONENT_EXPORT(UNOWNED_USER_DATA) UnownedUserDataHost {
  public:
   UnownedUserDataHost();
+  UnownedUserDataHost(const UnownedUserDataHost&) = delete;
+  void operator=(const UnownedUserDataHost&) = delete;
   ~UnownedUserDataHost();
 
   template <typename T>
@@ -65,4 +70,6 @@ class UnownedUserDataHost {
   std::map<UntypedKey, raw_ptr<void>> map_;
 };
 
-#endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
+}  // namespace ui
+
+#endif  // UI_BASE_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_

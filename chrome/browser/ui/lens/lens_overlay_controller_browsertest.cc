@@ -79,7 +79,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -142,6 +141,7 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/events/base_event_utils.h"
@@ -701,7 +701,7 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
 
 namespace {
 
-UserDataFactory::ScopedOverride UseFakeLensSearchController() {
+ui::UserDataFactory::ScopedOverride UseFakeLensSearchController() {
   return tabs::TabFeatures::GetUserDataFactoryForTesting()
       .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
         return std::make_unique<LensSearchControllerFake>(&tab);
@@ -973,7 +973,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
-  UserDataFactory::ScopedOverride lens_search_controller_override_;
+  ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 }  // namespace
@@ -5381,7 +5381,7 @@ class LensOverlayControllerBrowserPDFTest
   }
 
  private:
-  UserDataFactory::ScopedOverride lens_search_controller_override_;
+  ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 // Regression test for crbug.com/360710001. Asserts the overlay lens page will

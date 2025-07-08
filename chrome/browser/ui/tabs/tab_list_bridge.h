@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class TabStripModel;
@@ -17,7 +17,7 @@ class TabListBridge : public TabListInterface {
   DECLARE_USER_DATA(TabListBridge);
 
   TabListBridge(TabStripModel& tab_strip_model,
-                UnownedUserDataHost& unowned_data_host);
+                ui::UnownedUserDataHost& unowned_data_host);
   TabListBridge(const TabListBridge&) = delete;
   TabListBridge& operator=(const TabListBridge&) = delete;
   ~TabListBridge() override;
@@ -47,7 +47,7 @@ class TabListBridge : public TabListInterface {
 
  private:
   raw_ref<TabStripModel> tab_strip_;
-  ScopedUnownedUserData<TabListBridge> scoped_data_holder_;
+  ui::ScopedUnownedUserData<TabListBridge> scoped_data_holder_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_BRIDGE_H_

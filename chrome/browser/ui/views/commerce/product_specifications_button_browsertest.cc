@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -30,6 +29,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
@@ -127,7 +127,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
  private:
   base::CallbackListSubscription dependency_manager_subscription_;
   base::test::ScopedFeatureList feature_list_;
-  UserDataFactory::ScopedOverride factory_override_;
+  ui::UserDataFactory::ScopedOverride factory_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,

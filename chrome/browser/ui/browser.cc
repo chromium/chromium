@@ -1219,11 +1219,11 @@ const BrowserWindowFeatures& Browser::GetFeatures() const {
   return *features_.get();
 }
 
-UnownedUserDataHost& Browser::GetUnownedUserDataHost() {
+ui::UnownedUserDataHost& Browser::GetUnownedUserDataHost() {
   return unowned_user_data_host_;
 }
 
-const UnownedUserDataHost& Browser::GetUnownedUserDataHost() const {
+const ui::UnownedUserDataHost& Browser::GetUnownedUserDataHost() const {
   return unowned_user_data_host_;
 }
 

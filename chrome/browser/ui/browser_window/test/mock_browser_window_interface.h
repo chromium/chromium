@@ -42,8 +42,8 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(const BrowserWindowFeatures&, GetFeatures, (), (const, override));
   // The non-const version should never return something different from the
   // const version, so implement one in terms of th other.
-  UnownedUserDataHost& GetUnownedUserDataHost() override;
-  MOCK_METHOD(const UnownedUserDataHost&,
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
+  MOCK_METHOD(const ui::UnownedUserDataHost&,
               GetUnownedUserDataHost,
               (),
               (const, override));

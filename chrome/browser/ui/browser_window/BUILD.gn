@@ -15,7 +15,7 @@ source_set("browser_window") {
     "public/browser_window_interface_iterator.h",
   ]
   public_deps = [ "//content/public/browser" ]
-  deps = [ "//chrome/browser/ui/unowned_user_data" ]
+  deps = [ "//ui/base/unowned_user_data" ]
 
   if (!is_android) {
     sources += [

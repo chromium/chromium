@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -39,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -158,7 +158,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   // Must outlive `web_contents_`.
   content::TestWebContentsFactory test_web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
-  UnownedUserDataHost data_host_;
+  ui::UnownedUserDataHost data_host_;
   tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;

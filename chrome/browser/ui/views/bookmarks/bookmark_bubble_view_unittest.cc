@@ -293,7 +293,7 @@ class PriceTrackingViewFeatureFlagTest
   }
 
  private:
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

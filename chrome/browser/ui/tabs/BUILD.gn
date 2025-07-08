@@ -23,8 +23,8 @@ source_set("tabs_public") {
     "//components/tabs:public",
   ]
   deps = [
-    "//chrome/browser/ui/unowned_user_data",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 }
 
@@ -74,7 +74,7 @@ if (!is_android) {
       ":tab_strip",
       "//base",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/unowned_user_data",
+      "//ui/base/unowned_user_data",
     ]
   }
 
@@ -172,7 +172,7 @@ if (!is_android) {
       "tab_model.h",
     ]
 
-    deps = [ "//chrome/browser/ui/unowned_user_data" ]
+    deps = [ "//ui/base/unowned_user_data" ]
 
     public_deps = [
       ":tab_strip_model_observer",
@@ -411,7 +411,6 @@ if (!is_android) {
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
-      "//chrome/browser/ui/unowned_user_data",
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
@@ -438,6 +437,7 @@ if (!is_android) {
       "//components/tab_groups",
       "//components/tabs",
       "//net",
+      "//ui/base/unowned_user_data",
       "//ui/webui",
     ]
 

@@ -9,11 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class AppMenuButton;
 class BrowserHelpBubble;
@@ -187,7 +187,7 @@ class BrowserUserEducationInterface {
   user_education::FeaturePromoController* GetFeaturePromoControllerImpl();
 
  private:
-  ScopedUnownedUserData<BrowserUserEducationInterface>
+  ui::ScopedUnownedUserData<BrowserUserEducationInterface>
       scoped_unowned_user_data_;
 };
 

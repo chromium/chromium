@@ -135,7 +135,7 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
   }
 
   std::vector<commerce::DiscountInfo> discount_infos_;
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiscountsIconViewBrowserTest,

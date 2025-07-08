@@ -161,7 +161,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList test_features_;
-  UserDataFactory::ScopedOverride commerce_ui_override_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_F(PriceTrackingIconViewIntegrationTest,

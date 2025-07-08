@@ -218,7 +218,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  UserDataFactory::ScopedOverride lens_search_controller_override_;
+  ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 // This tests the following CUJ:

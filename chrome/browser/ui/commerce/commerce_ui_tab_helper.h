@@ -13,11 +13,11 @@
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/image/image.h"
 
 // TODO(https://crbug.com/362675963): Once //c/b/ui/views/commerce/ gets
@@ -312,7 +312,7 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   // Coordinates the creation and the display of the discounts bubble view.
   std::unique_ptr<DiscountsBubbleCoordinator> discounts_bubble_coordinator_;
 
-  ScopedUnownedUserData<CommerceUiTabHelper> scoped_unowned_user_data_;
+  ui::ScopedUnownedUserData<CommerceUiTabHelper> scoped_unowned_user_data_;
   base::WeakPtrFactory<CommerceUiTabHelper> weak_ptr_factory_{this};
 };
 

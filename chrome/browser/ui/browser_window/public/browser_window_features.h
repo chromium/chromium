@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
@@ -367,11 +367,12 @@ class BrowserWindowFeatures {
     return content_setting_bubble_model_delegate_.get();
   }
 
-  static UserDataFactoryWithOwner<BrowserWindowInterface>&
+  static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
  private:
-  static UserDataFactoryWithOwner<BrowserWindowInterface>& GetUserDataFactory();
+  static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
+  GetUserDataFactory();
 
   // A collection of features specific to desktop versions of Chrome.
   std::unique_ptr<DesktopBrowserWindowCapabilities>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
-#define CHROME_BROWSER_UI_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
+#ifndef UI_BASE_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
+#define UI_BASE_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
 
 #include <concepts>
 #include <memory>
@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/typed_identifier.h"
+
+namespace ui {
 
 // -----------------
 //  UserDataFactory
@@ -119,7 +121,7 @@ class UserDataFactoryWithOwner;
 
 // Base class for all factories. See `UserDataFactoryWithOwner` for
 // public API.
-class UserDataFactory {
+class COMPONENT_EXPORT(UNOWNED_USER_DATA) UserDataFactory {
  public:
   UserDataFactory();
   UserDataFactory(const UserDataFactory&) = delete;
@@ -132,7 +134,7 @@ class UserDataFactory {
 
   // Object that is held while the factory method for a specific type is
   // overridden.
-  class [[nodiscard]] ScopedOverride {
+  class [[nodiscard]] COMPONENT_EXPORT(UNOWNED_USER_DATA) ScopedOverride {
    public:
     ScopedOverride();
     ScopedOverride(ScopedOverride&&) noexcept;
@@ -244,4 +246,6 @@ class UserDataFactoryWithOwner : public UserDataFactory {
   }
 };
 
-#endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_
+}  // namespace ui
+
+#endif  // UI_BASE_UNOWNED_USER_DATA_USER_DATA_FACTORY_H_

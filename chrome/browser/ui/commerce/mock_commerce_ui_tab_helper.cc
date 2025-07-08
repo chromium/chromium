@@ -14,7 +14,7 @@
 #include "ui/views/view.h"
 
 // static
-UserDataFactory::ScopedOverride MockCommerceUiTabHelper::ReplaceFactory() {
+ui::UserDataFactory::ScopedOverride MockCommerceUiTabHelper::ReplaceFactory() {
   return tabs::TabFeatures::GetUserDataFactoryForTesting()
       .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
         return std::make_unique<MockCommerceUiTabHelper>(

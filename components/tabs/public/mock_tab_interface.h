@@ -100,8 +100,8 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (base::PassKey<TabCollection>),
               (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
-  MOCK_METHOD(UnownedUserDataHost&, GetUnownedUserDataHost, (), (override));
-  MOCK_METHOD(const UnownedUserDataHost&,
+  MOCK_METHOD(ui::UnownedUserDataHost&, GetUnownedUserDataHost, (), (override));
+  MOCK_METHOD(const ui::UnownedUserDataHost&,
               GetUnownedUserDataHost,
               (),
               (const, override));

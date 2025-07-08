@@ -13,11 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace content {
 class WebContents;
@@ -77,8 +77,8 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // Returns the UnownedUserDataHost associated with this tab. This is used to
   // retrieve arbitrary features from the tab without requiring TabModel to have
   // knowledge of them.
-  UnownedUserDataHost& GetUnownedUserDataHost() override;
-  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -276,7 +276,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   bool showing_modal_ui_ = false;
 
   // The unowned user data host that can be used by `tab_features_`.
-  UnownedUserDataHost unowned_user_data_host_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

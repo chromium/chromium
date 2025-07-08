@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "content/public/browser/render_process_host.h"
@@ -33,6 +32,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
 
@@ -161,7 +161,7 @@ class TabOrganizationTest : public testing::Test {
   TestingProfile profile_;
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_{&delegate_, &profile_};
-  UnownedUserDataHost user_data_host_;
+  ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };

@@ -62,10 +62,10 @@ class TabStripModel;
 
 namespace ui {
 class BaseWindow;
+class UnownedUserDataHost;
 }  // namespace ui
 
 class SessionID;
-class UnownedUserDataHost;
 
 #if !BUILDFLAG(IS_ANDROID)
 // A feature which wants to show window level call to action UI  should call
@@ -83,8 +83,8 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns the UnownedUserDataHost associated with this browser window. This
   // is used to retrieve arbitrary features from the browser window without
   // requiring BrowserWindowInterface to have knowledge of them.
-  virtual UnownedUserDataHost& GetUnownedUserDataHost() = 0;
-  virtual const UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
+  virtual ui::UnownedUserDataHost& GetUnownedUserDataHost() = 0;
+  virtual const ui::UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
 
   // Returns the ui::BaseWindow for this browser window. This allows for
   // generic window actions, such as activation, querying minimize/maximized

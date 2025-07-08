@@ -35,7 +35,7 @@ source_set("commerce") {
     "//content/public/browser",
     "//ui/gfx",
   ]
-  deps = [ "//chrome/browser/ui/unowned_user_data" ]
+  deps = [ "//ui/base/unowned_user_data" ]
 }
 
 source_set("impl") {
@@ -113,7 +113,6 @@ source_set("unit_tests") {
     ":commerce",
     "//base/test:test_support",
     "//chrome/browser/ui/toasts:toasts",
-    "//chrome/browser/ui/unowned_user_data",
     "//chrome/test:test_support",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:feature_list",
@@ -122,6 +121,7 @@ source_set("unit_tests") {
     "//components/image_fetcher/core:test_support",
     "//components/image_fetcher/core:test_support",
     "//components/tabs:test_support",
+    "//ui/base/unowned_user_data",
   ]
 }
 

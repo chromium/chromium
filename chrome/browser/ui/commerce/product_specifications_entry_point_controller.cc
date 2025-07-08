@@ -144,8 +144,8 @@ ProductSpecificationsEntryPointController::
 ProductSpecificationsEntryPointController*
 ProductSpecificationsEntryPointController::From(
     BrowserWindowInterface* browser_window_interface) {
-  return ScopedUnownedUserData<ProductSpecificationsEntryPointController>::Get(
-      browser_window_interface->GetUnownedUserDataHost());
+  return ui::ScopedUnownedUserData<ProductSpecificationsEntryPointController>::
+      Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
 void ProductSpecificationsEntryPointController::OnTabStripModelChanged(

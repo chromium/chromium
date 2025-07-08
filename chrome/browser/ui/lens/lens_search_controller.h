@@ -12,13 +12,13 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
 
 class LensOverlayController;
@@ -455,7 +455,7 @@ class LensSearchController {
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
-  ScopedUnownedUserData<LensSearchController> scoped_unowned_user_data_;
+  ui::ScopedUnownedUserData<LensSearchController> scoped_unowned_user_data_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensSearchController> weak_ptr_factory_{this};

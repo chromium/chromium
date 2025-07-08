@@ -100,7 +100,7 @@ BrowserExtensionWindowController::~BrowserExtensionWindowController() {
 
 BrowserExtensionWindowController* BrowserExtensionWindowController::From(
     BrowserWindowInterface* browser_window_interface) {
-  return ScopedUnownedUserData<BrowserExtensionWindowController>::Get(
+  return ui::ScopedUnownedUserData<BrowserExtensionWindowController>::Get(
       browser_window_interface->GetUnownedUserDataHost());
 }
 

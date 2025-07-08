@@ -6,9 +6,9 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 DEFINE_USER_DATA(BrowserUserEducationInterface);
 

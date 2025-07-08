@@ -10,8 +10,8 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/buildflags.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
@@ -264,13 +264,14 @@ class TabFeatures {
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
-  static UserDataFactoryWithOwner<TabInterface>& GetUserDataFactoryForTesting();
+  static ui::UserDataFactoryWithOwner<TabInterface>&
+  GetUserDataFactoryForTesting();
 
  private:
   bool initialized_ = false;
 
   // Returns the factory used to create owned components.
-  static UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
+  static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
 
   // TODO(https://crbug.com/347770670): Delete this code when tab-discarding no
   // longer swizzles WebContents.

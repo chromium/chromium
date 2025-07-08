@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 #include <utility>
 
 #include "base/check_op.h"
+
+namespace ui {
 
 UserDataFactory::ScopedOverride::ScopedOverride() = default;
 UserDataFactory::ScopedOverride::~ScopedOverride() {
@@ -55,3 +57,5 @@ void UserDataFactory::AddEntry(UntypedKey key, std::unique_ptr<Entry> entry) {
       << "Attempted to add duplicate factory override for user data type "
       << key;
 }
+
+}  // namespace ui

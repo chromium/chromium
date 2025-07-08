@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "gmock/gmock.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/gurl.h"
 
 namespace {
@@ -98,7 +98,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
 
  private:
   content::TestStoragePartition storage_partition_;
-  UserDataFactory::ScopedOverride lens_search_controller_override_;
+  ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,

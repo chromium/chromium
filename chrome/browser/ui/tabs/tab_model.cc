@@ -391,10 +391,10 @@ TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
   }
 }
 
-UnownedUserDataHost& TabModel::GetUnownedUserDataHost() {
+ui::UnownedUserDataHost& TabModel::GetUnownedUserDataHost() {
   return unowned_user_data_host_;
 }
-const UnownedUserDataHost& TabModel::GetUnownedUserDataHost() const {
+const ui::UnownedUserDataHost& TabModel::GetUnownedUserDataHost() const {
   return unowned_user_data_host_;
 }
 

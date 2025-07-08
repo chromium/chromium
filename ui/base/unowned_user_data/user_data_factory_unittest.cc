@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 #include <sstream>
 #include <string>
 #include <string_view>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace ui {
 
 namespace {
 
@@ -271,3 +273,5 @@ TEST(UserDataFactoryTest, OverrideBoth) {
   EXPECT_EQ(TestScopedUserData1::kTestValue, data1->value());
   EXPECT_EQ(kExpected, data2->value());
 }
+
+}  // namespace ui

@@ -1079,6 +1079,10 @@ test("ui_base_unittests") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
+    deps += [ "//ui/base/unowned_user_data:unit_tests" ]
+  }
+
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
   }

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #include "base/check.h"
+
+namespace ui {
 
 UnownedUserDataHost::UnownedUserDataHost() = default;
 
@@ -40,3 +42,5 @@ void* UnownedUserDataHost::GetImpl(UntypedKey key) {
   auto iter = map_.find(key);
   return iter == map_.end() ? nullptr : iter->second;
 }
+
+}  // namespace ui

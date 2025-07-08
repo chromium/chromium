@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
@@ -84,6 +83,7 @@
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
@@ -433,13 +433,13 @@ TabFeatures::SetCustomizeChromeSidePanelControllerForTesting(
 }
 
 // static
-UserDataFactoryWithOwner<TabInterface>& TabFeatures::GetUserDataFactory() {
-  static base::NoDestructor<UserDataFactoryWithOwner<TabInterface>> factory;
+ui::UserDataFactoryWithOwner<TabInterface>& TabFeatures::GetUserDataFactory() {
+  static base::NoDestructor<ui::UserDataFactoryWithOwner<TabInterface>> factory;
   return *factory;
 }
 
 // static
-UserDataFactoryWithOwner<TabInterface>&
+ui::UserDataFactoryWithOwner<TabInterface>&
 TabFeatures::GetUserDataFactoryForTesting() {
   return GetUserDataFactory();
 }
