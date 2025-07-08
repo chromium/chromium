@@ -1052,6 +1052,8 @@ source_set("browser") {
     "fenced_frame/fenced_frame_reporter.h",
     "fenced_frame/fenced_frame_url_mapping.cc",
     "fenced_frame/fenced_frame_url_mapping.h",
+    "fenced_frame/fenced_frame_viewport_observer.cc",
+    "fenced_frame/fenced_frame_viewport_observer.h",
     "field_trial_recorder.cc",
     "field_trial_recorder.h",
     "field_trial_synchronizer.cc",

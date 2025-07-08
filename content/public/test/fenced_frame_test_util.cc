@@ -14,6 +14,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -365,6 +366,112 @@ gfx::PointF GetTopLeftCoordinatesOfElementWithId(
                  .ExtractDouble();
 
   return gfx::PointF(x, y);
+}
+
+FencedFrameTestHelper::FencedFrameVisibilityObserver::
+    FencedFrameVisibilityObserver(WebContents* web_contents,
+                                  blink::mojom::FrameVisibility visibility,
+                                  RenderFrameHost* fenced_frame_root)
+    : WebContentsObserver(web_contents),
+      target_visibility_(visibility),
+      fenced_frame_root_(fenced_frame_root) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (fenced_frame_root_) {
+    CHECK(fenced_frame_root_->IsFencedFrameRoot());
+  }
+}
+
+void FencedFrameTestHelper::FencedFrameVisibilityObserver::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsFencedFrameRoot()) {
+    return;
+  }
+
+  // If no fenced frame root node was provided at construction time, grab
+  // this first newly-created fenced frame root, and wait for this one to
+  // have `visibility_` instead.
+  if (!fenced_frame_root_) {
+    fenced_frame_root_ = render_frame_host;
+  }
+}
+
+void FencedFrameTestHelper::FencedFrameVisibilityObserver::
+    RenderFrameHostChanged(RenderFrameHost* old_host,
+                           RenderFrameHost* new_host) {
+  // The original host may be nullptr, but the new host replacing it should
+  // always be a fenced frame root.
+  if (!new_host->IsFencedFrameRoot()) {
+    return;
+  }
+
+  if (old_host == fenced_frame_root_) {
+    fenced_frame_root_ = new_host;
+  }
+}
+
+void FencedFrameTestHelper::FencedFrameVisibilityObserver::
+    OnFrameVisibilityChanged(RenderFrameHost* rfh,
+                             blink::mojom::FrameVisibility visibility) {
+  if (rfh != fenced_frame_root_) {
+    return;
+  }
+
+  if (visibility == target_visibility_) {
+    run_loop_.Quit();
+  }
+}
+
+void FencedFrameTestHelper::FencedFrameVisibilityObserver::Wait() {
+  if (static_cast<RenderFrameHostImpl*>(fenced_frame_root_.get())
+          ->visibility() == target_visibility_) {
+    return;
+  }
+
+  run_loop_.Run();
+}
+
+RenderFrameHost*
+FencedFrameTestHelper::CreateFencedFrameAndWaitUntilRenderedInViewport(
+    RenderFrameHost* parent_rfh,
+    base::optional_ref<const GURL> url) {
+  auto* parent_impl = static_cast<RenderFrameHostImpl*>(parent_rfh);
+  const char* ff_create_script =
+      R"({
+          let fenced_frame = document.createElement('fencedframe');
+          document.body.appendChild(fenced_frame);
+        })";
+  FencedFrameVisibilityObserver visibility_observer(
+      WebContentsImpl::FromRenderFrameHostImpl(parent_impl),
+      blink::mojom::FrameVisibility::kRenderedInViewport,
+      /*fenced_frame_root=*/nullptr);
+  EXPECT_TRUE(ExecJs(parent_impl, ff_create_script));
+  visibility_observer.Wait();
+  FrameTreeNode* ff_root_node = GetFencedFrameRootNode(
+      parent_impl->child_at(parent_impl->child_count() - 1));
+  EXPECT_TRUE(ff_root_node->IsFencedFrameRoot());
+  EXPECT_EQ(ff_root_node->current_frame_host()->visibility(),
+            blink::mojom::FrameVisibility::kRenderedInViewport);
+
+  if (url) {
+    const char* ff_navigate_script =
+        R"({
+            let fenced_frames =
+                document.getElementsByTagName('fencedframe');
+            let last_frame = fenced_frames[fenced_frames.length - 1];
+            last_frame.config = new FencedFrameConfig($1);
+          })";
+    TestFrameNavigationObserver navigation_observer(
+        ff_root_node->current_frame_host());
+    EXPECT_TRUE(ExecJs(parent_impl, JsReplace(ff_navigate_script, *url)));
+    navigation_observer.Wait();
+    EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+    EXPECT_EQ(ff_root_node->current_frame_host()->GetLastCommittedURL(), *url);
+    // The frame should not change visibility after navigating.
+    EXPECT_EQ(ff_root_node->current_frame_host()->visibility(),
+              blink::mojom::FrameVisibility::kRenderedInViewport);
+  }
+
+  return ff_root_node->current_frame_host();
 }
 
 }  // namespace test

@@ -6296,6 +6296,19 @@ void NavigationRequest::CommitErrorPage(
     commit_params_->force_new_document_sequence_number = true;
   }
 
+  // If the outermost main frame is performing an error navigation, capture the
+  // state of fenced frames rendered in the viewport before the entire FrameTree
+  // is torn down. We have to do this now, because the renderer will change the
+  // visibility of its frames after receiving the commit.
+  if (previous_rfh->IsOutermostMainFrame() && !IsSameDocument()) {
+    auto* monitor =
+        PageUserData<FencedFrameViewportMonitor>::GetOrCreateForPage(
+            previous_rfh->GetPage());
+    if (monitor) {
+      monitor->ComputeSameSiteFencedFrameMaximumBeforePrimaryPageChange();
+    }
+  }
+
   PopulateDocumentTokenForCrossDocumentNavigation();
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ =
@@ -6446,6 +6459,20 @@ void NavigationRequest::CommitNavigation() {
     // We want to record this for the frame that we are navigating away from.
     old_frame_host->RecordNavigationSuddenTerminationHandlers();
   }
+
+  // If the outermost main frame is being navigated, capture the state of fenced
+  // frames rendered in the viewport before the entire FrameTree is torn down.
+  // We have to do this now, because the renderer will change the visibility of
+  // its frames after receiving the commit.
+  if (old_frame_host->IsOutermostMainFrame() && !IsSameDocument()) {
+    auto* monitor =
+        PageUserData<FencedFrameViewportMonitor>::GetOrCreateForPage(
+            old_frame_host->GetPage());
+    if (monitor) {
+      monitor->ComputeSameSiteFencedFrameMaximumBeforePrimaryPageChange();
+    }
+  }
+
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
     return;

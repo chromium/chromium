@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/fenced_frame/fenced_frame_viewport_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/process_reuse_policy.h"
@@ -1269,6 +1270,17 @@ void RenderFrameHostManager::UnloadOldFrame(
                                     ->GetRelatedActiveContentsCount());
         SCOPED_CRASH_KEY_BOOL("rvh-double", "is_same_process", is_same_process);
         base::debug::DumpWithoutCrashing();
+      }
+
+      // If the outermost main frame is about to enter bfcache, log UMA metrics
+      // about how many same-site fenced frames are in the viewport.
+      if (old_render_frame_host->IsOutermostMainFrame()) {
+        auto* monitor =
+            PageUserData<FencedFrameViewportMonitor>::GetOrCreateForPage(
+                old_render_frame_host->GetPage());
+        if (monitor) {
+          monitor->OnPrimaryPageEnteringBFCache();
+        }
       }
 
       auto stored_page = CollectPage(std::move(old_render_frame_host));

@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "content/browser/fenced_frame/fenced_frame_viewport_observer.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
@@ -2744,6 +2745,11 @@ class CONTENT_EXPORT WebContentsImpl
   // no popin can open a popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   base::WeakPtr<WebContents> opened_partitioned_popin_;
+
+  // Tracks the number of same-site fenced frames in the viewport per top-level
+  // page load and stores it in the primary main frame's PageUserData. Metrics
+  // are logged via UMA every time the PageUserData is destroyed.
+  std::unique_ptr<FencedFrameViewportObserver> fenced_frame_viewport_observer_;
 
 #if BUILDFLAG(IS_ANDROID)
   bool supports_forward_transition_animation_ = true;

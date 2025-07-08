@@ -72,6 +72,12 @@ inline constexpr char kSharedStorageGetInFencedFrameOutcome[] =
 inline constexpr char kNotifyEventOutcome[] =
     "Blink.FencedFrame.NotifyEventOutcome";
 
+inline constexpr char kMaxSameSiteFencedFramesInViewportPerPageLoad[] =
+    "Blink.FencedFrame.MaxSameSiteFencedFramesInViewportPerPageLoad";
+
+inline constexpr char kMaxSameSiteFencedFramesInViewportAtUnload[] =
+    "Blink.FencedFrame.MaxSameSiteFencedFramesInViewportAtUnload";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/metadata/blink/enums.xml.
 //

@@ -5640,6 +5640,22 @@ void RenderFrameHostImpl::ResetChildren() {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::ResetChildren",
               ChromeTrackEvent::kRenderFrameHost, this);
   base::ScopedUmaHistogramTimer histogram_timer("Navigation.ResetChildren");
+
+  // If the outermost main frame is tearing down its FrameTree state, then we
+  // need to monitor how many of its child fenced frames were in the viewport
+  // right before they all unload. This may have already occurred prior to a
+  // navigation commit, in which case this block is a no-op. However, for
+  // non-navigation cases that close the primary page, like frames detaching,
+  // tabs closing, or renderer processes disappearing, we still need to monitor
+  // the correct metrics.
+  if (IsOutermostMainFrame()) {
+    auto* monitor =
+        PageUserData<FencedFrameViewportMonitor>::GetOrCreateForPage(GetPage());
+    if (monitor) {
+      monitor->ComputeSameSiteFencedFrameMaximumBeforePrimaryPageChange();
+    }
+  }
+
   // Remove child nodes from the tree, then delete them. This destruction
   // operation will notify observers. See https://crbug.com/612450 for
   // explanation why we don't just call the std::vector::clear method.

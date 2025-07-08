@@ -2357,6 +2357,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FencedFrame.MaxSameSiteFencedFramesInViewportAtUnload"
+    units="FrameCount" expires_after="2025-12-20">
+  <owner>averge@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
+  <summary>
+    The maximum number of fenced frames that are visible in the viewport at once
+    for any single eTLD+1, at the moment the page unloads. This is distinct from
+    the &quot;PerPageLoad&quot; version of this metric, which may be higher than
+    this one if a site unloads some of its frames before the page unloads. Only
+    logged if the number of fenced frames in the viewport has exceeded zero at
+    some point during the page load.
+
+    Recorded when the primary content::Page enters BFCache or is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.FencedFrame.MaxSameSiteFencedFramesInViewportPerPageLoad"
+    units="FrameCount" expires_after="2025-12-20">
+  <owner>averge@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
+  <summary>
+    The maximum number of fenced frames that were visible in the viewport at
+    once for any single eTLD+1, across the entire lifetime of the primary page.
+    Only logged if the number of fenced frames in the viewport has exceeded zero
+    at some point during the page load.
+
+    Recorded when the primary content::Page enters BFCache or is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FencedFrame.NotifyEventOutcome"
     enum="FencedFrameNotifyEventOutcome" expires_after="2025-09-12">
   <owner>lbrady@google.com</owner>

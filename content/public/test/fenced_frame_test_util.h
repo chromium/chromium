@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_ref.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -94,6 +97,44 @@ class FencedFrameTestHelper {
   // need to get their inner root RenderFrameHosts.
   static std::vector<RenderFrameHost*> GetChildFencedFrameHosts(
       RenderFrameHost* rfh);
+
+  // Class for observing visibility changes in fenced frame roots, such as when
+  // they enter or leave the viewport.
+  class FencedFrameVisibilityObserver : public WebContentsObserver {
+   public:
+    // If `fenced_frame_root` is nullptr, `Wait()` will terminate when a
+    // newly-created fenced frame root has `visibility`. Otherwise, `Wait()`
+    // will terminate when the node specified by `fenced_frame_root` has
+    // `visibility`.
+    explicit FencedFrameVisibilityObserver(
+        WebContents* web_contents,
+        blink::mojom::FrameVisibility visibility,
+        RenderFrameHost* fenced_frame_root);
+
+    // WebContentsObserver implementation.
+    void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+    void RenderFrameHostChanged(RenderFrameHost* old_host,
+                                RenderFrameHost* new_host) override;
+    void OnFrameVisibilityChanged(
+        RenderFrameHost* rfh,
+        blink::mojom::FrameVisibility visibility) override;
+
+    void Wait();
+
+   private:
+    blink::mojom::FrameVisibility target_visibility_ =
+        blink::mojom::FrameVisibility::kNotRendered;
+    raw_ptr<RenderFrameHost> fenced_frame_root_;
+    base::RunLoop run_loop_;
+  };
+
+  // Creates a fenced frame and waits for it to be rendered in the viewport.
+  // If `url` is provided, also navigates the fenced frame to the provided URL,
+  // and waits for it to load successfully. Returns the root RenderFrameHost of
+  // the fenced frame's inner FrameTree.
+  RenderFrameHost* CreateFencedFrameAndWaitUntilRenderedInViewport(
+      RenderFrameHost* parent_rfh,
+      base::optional_ref<const GURL> url);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
