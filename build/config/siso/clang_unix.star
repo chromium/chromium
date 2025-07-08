@@ -419,6 +419,7 @@ def __rules(ctx):
             "exclude_input_patterns": [
                 "*.cc",
                 "*.h",
+                "*.info",
                 "*.js",
                 "*.pak",
                 "*.py",
