@@ -122,7 +122,7 @@ void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save) {
   std::string base_histogram_name = base::StrCat(
-      {"Autofill.SaveIbanPromptResult.", is_upload_save ? "Upload" : "Local",
+      {"Autofill.SaveIbanPromptResult2.", is_upload_save ? "Upload" : "Local",
        is_reshow ? ".Reshows" : ".FirstShow"});
   base::UmaHistogramEnumeration(base_histogram_name, metric);
 }

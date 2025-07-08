@@ -129,7 +129,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Accepted) {
   CloseBubble(PaymentsUiClosedReason::kAccepted);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Local.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kAccepted, 1);
 }
 
@@ -139,7 +139,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Cancelled) {
   CloseBubble(PaymentsUiClosedReason::kCancelled);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Local.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kCancelled, 1);
 }
 
@@ -149,7 +149,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_NotInteracted) {
   CloseBubble(PaymentsUiClosedReason::kNotInteracted);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Local.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kNotInteracted, 1);
 }
 
@@ -159,7 +159,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_LostFocus) {
   CloseBubble(PaymentsUiClosedReason::kLostFocus);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Local.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kLostFocus, 1);
 }
 
@@ -196,7 +196,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_UploadIbanResult_Accepted) {
   CloseBubble(PaymentsUiClosedReason::kAccepted);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Upload.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Upload.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kAccepted, 1);
 }
 
@@ -206,7 +206,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_UploadIbanResult_Cancelled) {
   CloseBubble(PaymentsUiClosedReason::kCancelled);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Upload.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Upload.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kCancelled, 1);
 }
 
@@ -216,7 +216,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_UploadIbanResult_NotInteracted) {
   CloseBubble(PaymentsUiClosedReason::kNotInteracted);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Upload.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Upload.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kNotInteracted, 1);
 }
 
@@ -226,7 +226,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_UploadIbanResult_LostFocus) {
   CloseBubble(PaymentsUiClosedReason::kLostFocus);
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.SaveIbanPromptResult.Upload.FirstShow",
+      "Autofill.SaveIbanPromptResult2.Upload.FirstShow",
       autofill_metrics::SaveIbanPromptResult::kLostFocus, 1);
 }
 

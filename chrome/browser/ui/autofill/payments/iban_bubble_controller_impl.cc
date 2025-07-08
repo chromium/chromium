@@ -251,6 +251,13 @@ void IbanBubbleControllerImpl::OnAcceptButton(std::u16string_view nickname) {
       CHECK(!save_iban_prompt_callback_.is_null());
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/true);
+      // Log metrics now for the upload save IBAN. The upload case is special
+      // because we don't immediately close the bubble (at which time the other
+      // metrics are logged) after OnAcceptButton() and logging now aligns the
+      // timing of the log with the other cases.
+      autofill_metrics::LogSaveIbanPromptResultMetric(
+          autofill_metrics::SaveIbanPromptResult::kAccepted, is_reshow_,
+          /*is_upload_save=*/true);
       iban_.set_nickname(std::u16string(nickname));
       current_bubble_type_ = IbanBubbleType::kUploadInProgress;
       std::move(save_iban_prompt_callback_)
@@ -301,35 +308,41 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 
   set_bubble_view(nullptr);
 
+  auto get_metric = [](PaymentsUiClosedReason reason) {
+    switch (reason) {
+      case PaymentsUiClosedReason::kAccepted:
+        return autofill_metrics::SaveIbanPromptResult::kAccepted;
+      case PaymentsUiClosedReason::kCancelled:
+        return autofill_metrics::SaveIbanPromptResult::kCancelled;
+      case PaymentsUiClosedReason::kClosed:
+        return autofill_metrics::SaveIbanPromptResult::kClosed;
+      case PaymentsUiClosedReason::kNotInteracted:
+        return autofill_metrics::SaveIbanPromptResult::kNotInteracted;
+      case PaymentsUiClosedReason::kLostFocus:
+        return autofill_metrics::SaveIbanPromptResult::kLostFocus;
+      case PaymentsUiClosedReason::kUnknown:
+        return autofill_metrics::SaveIbanPromptResult::kUnknown;
+    }
+  };
+
   // Log save IBAN prompt result according to the closed reason.
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
       current_bubble_type_ == IbanBubbleType::kUploadSave ||
       current_bubble_type_ == IbanBubbleType::kUploadInProgress) {
-    autofill_metrics::SaveIbanPromptResult metric;
-    switch (closed_reason) {
-      case PaymentsUiClosedReason::kAccepted:
-        metric = autofill_metrics::SaveIbanPromptResult::kAccepted;
+    switch (current_bubble_type_) {
+      case IbanBubbleType::kLocalSave:
+      case IbanBubbleType::kUploadSave:
+        autofill_metrics::LogSaveIbanPromptResultMetric(
+            get_metric(closed_reason), is_reshow_,
+            /*is_upload_save=*/
+            (current_bubble_type_ == IbanBubbleType::kUploadSave));
         break;
-      case PaymentsUiClosedReason::kCancelled:
-        metric = autofill_metrics::SaveIbanPromptResult::kCancelled;
+      case IbanBubbleType::kInactive:
+      case IbanBubbleType::kManageSavedIban:
+      case IbanBubbleType::kUploadCompleted:
+      case IbanBubbleType::kUploadInProgress:
         break;
-      case PaymentsUiClosedReason::kClosed:
-        metric = autofill_metrics::SaveIbanPromptResult::kClosed;
-        break;
-      case PaymentsUiClosedReason::kNotInteracted:
-        metric = autofill_metrics::SaveIbanPromptResult::kNotInteracted;
-        break;
-      case PaymentsUiClosedReason::kLostFocus:
-        metric = autofill_metrics::SaveIbanPromptResult::kLostFocus;
-        break;
-      case PaymentsUiClosedReason::kUnknown:
-        NOTREACHED();
     }
-    autofill_metrics::LogSaveIbanPromptResultMetric(
-        metric, is_reshow_,
-        /*is_upload_save=*/
-        (current_bubble_type_ == IbanBubbleType::kUploadSave ||
-         current_bubble_type_ == IbanBubbleType::kUploadInProgress));
   }
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {

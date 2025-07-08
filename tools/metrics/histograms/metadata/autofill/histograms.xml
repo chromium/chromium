@@ -6037,7 +6037,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.SaveIbanPromptResult.{IbanTypeToBeSaved}.{ShowType}"
+<histogram name="Autofill.SaveIbanPromptResult2.{IbanTypeToBeSaved}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-06-01">
   <owner>osaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
