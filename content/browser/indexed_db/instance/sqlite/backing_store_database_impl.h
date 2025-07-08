@@ -33,11 +33,8 @@ class BackingStoreDatabaseImpl : public BackingStore::Database {
                         base::OnceClosure on_complete) override;
 
  private:
-  // This is used when `db_` is null, which can happen if the DB has been
-  // deleted. This will be read if the database is deleted a second time, i.e.
-  // if two deleteDatabase requests are enqueued at the same time.
-  const blink::IndexedDBDatabaseMetadata placeholder_metadata_;
-
+  // Note that this will be null after calling `DeleteDatabase()`, so `this`
+  // should generally not be used after calling `DeleteDatabase()`.
   base::WeakPtr<DatabaseConnection> db_;
 };
 

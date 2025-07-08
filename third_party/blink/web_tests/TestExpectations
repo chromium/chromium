@@ -6625,24 +6625,8 @@ crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unha
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
 # To-be-fixed tests from the IndexedDB SQLite virtual suite.
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbfactory_open.any.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbfactory_open.any.serviceworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbfactory_open.any.sharedworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbfactory_open.any.worker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/keyorder.any.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/keyorder.any.serviceworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/keyorder.any.sharedworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/keyorder.any.worker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/open-request-queue.any.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/open-request-queue.any.serviceworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/open-request-queue.any.sharedworker.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/open-request-queue.any.worker.html [ Crash Failure ]
-
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/cursor-key-order.html [ Crash Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/database-deletepending-flag.html [ Crash ]
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/deletedatabase-delayed-by-versionchange.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/exceptions.html [ Crash ]
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-gated-on-delete.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-long-queue.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/open-ordering.html [ Crash ]
 # Gardener 2025-07-01
