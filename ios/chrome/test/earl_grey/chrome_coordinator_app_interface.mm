@@ -157,8 +157,7 @@
 // Inserts a webstate into the browser since many coordinators do not expect
 // an empty WebStateList.
 - (void)insertInitialWebstate {
-  web::WebState::CreateParams params(
-      (web::BrowserState*)(_browser->GetProfile()));
+  web::WebState::CreateParams params(_browser->GetProfile());
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
   _browser->GetWebStateList()->InsertWebState(
       std::move(webState),
