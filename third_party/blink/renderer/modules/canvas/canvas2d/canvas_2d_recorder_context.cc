@@ -1058,10 +1058,13 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
   }
 
   if (parse_result == ColorParseResult::kColorFunction) {
-    const CSSValue* color_mix_value = CSSParser::ParseSingleValue(
+    const CSSValue* color_value = CSSParser::ParseSingleValue(
         CSSPropertyID::kColor, color_string,
         StrictCSSParserContext(SecureContextMode::kInsecureContext));
 
+    if (!color_value) {
+      return ColorParseResult::kParseFailed;
+    }
     static const TextLinkColors kDefaultTextLinkColors{};
     auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext());
     const TextLinkColors& text_link_colors =
@@ -1074,7 +1077,7 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
         .used_color_scheme = color_scheme_,
         .color_provider = GetColorProvider(),
         .is_in_web_app_scope = IsInWebAppScope()};
-    const StyleColor style_color = ResolveColorValue(*color_mix_value, context);
+    const StyleColor style_color = ResolveColorValue(*color_value, context);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }
