@@ -25,6 +25,13 @@ enum class ServiceDisconnectReason : uint32_t {
   kFailedToLoadLibrary = 2,
 };
 
+enum class ModelDisconnectReason : uint32_t {
+  // No reason provided, likely a service crash or similar error.
+  kUnspecified = 0,
+  // The model was disconnected due to an idle timeout.
+  kIdleShutdown = 1,
+};
+
 // Manages a remote that can timeout and reconnect on-demand.
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ServiceClient final {
  public:

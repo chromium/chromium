@@ -403,10 +403,6 @@ void FakeOnDeviceModelService::LoadModel(
     mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-  if (settings_->drop_connection_request) {
-    std::move(callback).Run(mojom::LoadModelResult::kSuccess);
-    return;
-  }
   FakeOnDeviceModel::Data data;
   data.base_weight = ReadFile(params->assets.weights.file());
   if (params->assets.cache.IsValid()) {
@@ -415,6 +411,13 @@ void FakeOnDeviceModelService::LoadModel(
   data.adaptation_ranks = params->adaptation_ranks;
   auto test_model = std::make_unique<FakeOnDeviceModel>(
       settings_, std::move(data), params->performance_hint);
+  if (settings_->drop_connection_request) {
+    mojo::Receiver<mojom::OnDeviceModel>(test_model.get(), std::move(model))
+        .ResetWithReason(
+            static_cast<uint32_t>(*settings_->drop_connection_request), "");
+    std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+    return;
+  }
   auto* raw_model = test_model.get();
   model_receivers_.Add(std::move(test_model), std::move(model), raw_model);
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);

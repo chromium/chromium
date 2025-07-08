@@ -263,7 +263,7 @@ class OnDeviceModelServiceController
         on_device_model::ModelAssets assets);
 
     // Called when the base model is disconnected unexpectedly.
-    void OnDisconnect();
+    void OnDisconnect(uint32_t reason, const std::string& description);
 
     // Begins the on-device model validation flow.
     void StartValidation();
