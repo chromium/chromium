@@ -834,6 +834,7 @@ chromium-metrics-reviews@google.com.
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Histogram of the time, in milliseconds, it took for the NTP to load all of
     its tiles since navigation start. {NewTabPageTimings}

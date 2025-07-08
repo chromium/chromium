@@ -626,6 +626,7 @@ features through Chrome Labs. -->
     expires_after="2025-12-14">
   <owner>kerenzhu@chromium.org</owner>
   <owner>chrome-webui-for-features@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time elapsed from the initiation of a WebUI request to its
     first contentful paint. This metric applies to the main frame documents of
@@ -639,6 +640,7 @@ features through Chrome Labs. -->
     expires_after="2025-12-14">
   <owner>kerenzhu@chromium.org</owner>
   <owner>chrome-webui-for-features@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time elapsed from the initiation of a WebUI request to its
     largest contentful paint. This metric applies to the main frame documents of
