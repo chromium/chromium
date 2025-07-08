@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -75,6 +76,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bandwidth/bandwidth_management_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/enhanced_safe_browsing_inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
@@ -172,6 +174,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
+// Returns the branded version of the Gemini symbol.
+UIImage* GetBrandedGeminiSymbol() {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return CustomSettingsRootSymbol(kGeminiBrandedLogoImage);
+#else
+  return DefaultSettingsRootSymbol(kGeminiNonBrandedLogoImage);
+#endif
+}
+
 // Struct used to count and store the number of active Enhanced Safe Browsing
 // promos, as the FET does not support showing multiple badges for the same FET
 // feature at the same time.
@@ -191,6 +202,7 @@ struct EnhancedSafeBrowsingActivePromoData
 @interface SettingsTableViewController () <
     AddressBarPreferenceCoordinatorDelegate,
     BooleanObserver,
+    BWGSettingsCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     DiscoverFeedVisibilityObserver,
     DownloadsSettingsCoordinatorDelegate,
@@ -236,6 +248,9 @@ struct EnhancedSafeBrowsingActivePromoData
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
   SigninCoordinator* _signinAndHistorySyncCoordinator;
+
+  // BWG settings coordinator.
+  BWGSettingsCoordinator* _BWGSettingsCoordinator;
 
   // Content settings coordinator.
   ContentSettingsCoordinator* _contentSettingsCoordinator;
@@ -495,6 +510,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  if (IsPageActionMenuEnabled()) {
+    [model addItem:[self BWGSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  }
   if ([self shouldShowNotificationsSettings]) {
     _notificationsItem = [self notificationsItem];
     [self updateNotificationsDetailText];
@@ -1041,6 +1060,19 @@ struct EnhancedSafeBrowsingActivePromoData
   return item;
 }
 
+- (TableViewItem*)BWGSettingsDetailItem {
+  UIImage* geminiLogo = [self createGeminiLogo];
+  TableViewDetailIconItem* BWGSettingsDetailItem = [self
+           detailItemWithType:SettingsItemTypeBWGSettings
+                         text:l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE)
+                   detailText:nil
+                       symbol:geminiLogo
+        symbolBackgroundColor:nil
+      accessibilityIdentifier:kSettingsBWGSettingsCellId];
+
+  return BWGSettingsDetailItem;
+}
+
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 - (TableViewSwitchItem*)viewSourceSwitchItem {
@@ -1371,6 +1403,10 @@ struct EnhancedSafeBrowsingActivePromoData
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
+    case SettingsItemTypeBWGSettings:
+      base::RecordAction(base::UserMetricsAction("Settings.BWGSettings"));
+      [self showBWGSettings];
+      break;
     default:
       break;
   }
@@ -1493,6 +1529,17 @@ struct EnhancedSafeBrowsingActivePromoData
   [_tabsCoordinator stop];
   _tabsCoordinator.delegate = nil;
   _tabsCoordinator = nil;
+}
+
+// Show BWG settings.
+- (void)showBWGSettings {
+  // Stop the coordinator before restarting it, if it exists.
+  [_BWGSettingsCoordinator stop];
+  _BWGSettingsCoordinator = [[BWGSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _BWGSettingsCoordinator.delegate = self;
+  [_BWGSettingsCoordinator start];
 }
 
 - (void)showContentSettings {
@@ -2042,6 +2089,39 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 }
 
+// Creates a gradient gemini logo.
+- (UIImage*)createGeminiLogo {
+  NSArray<UIColor*>* colors = @[
+    [UIColor colorNamed:kBlue700Color], [UIColor colorNamed:kBlue300Color]
+  ];
+
+  NSMutableArray<id>* gradientColorArray = [[NSMutableArray alloc] init];
+  for (UIColor* color in colors) {
+    [gradientColorArray addObject:static_cast<id>(color.CGColor)];
+  }
+
+  UIImage* geminiIcon = GetBrandedGeminiSymbol();
+  CGSize iconSize = [geminiIcon size];
+  CGRect iconFrame = CGRectMake(0, 0, iconSize.width, iconSize.height);
+
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.colors = gradientColorArray;
+  gradientLayer.startPoint = CGPointMake(0, 0.5);
+  gradientLayer.endPoint = CGPointMake(0.5, 0.0);
+  gradientLayer.frame = iconFrame;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:iconSize];
+  UIImage* gradientImage = [renderer
+      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        CGContextClipToMask(rendererContext.CGContext, iconFrame,
+                            geminiIcon.CGImage);
+        [gradientLayer renderInContext:rendererContext.CGContext];
+      }];
+
+  return gradientImage;
+}
+
 #pragma mark - Sign in
 
 - (void)showSignIn {
@@ -2116,6 +2196,9 @@ struct EnhancedSafeBrowsingActivePromoData
   [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 
   // Stop children coordinators.
+  [_BWGSettingsCoordinator stop];
+  _BWGSettingsCoordinator = nil;
+
   [_contentSettingsCoordinator stop];
   _contentSettingsCoordinator = nil;
 
@@ -2380,6 +2463,15 @@ struct EnhancedSafeBrowsingActivePromoData
     // changing.
     [self reloadData];
   }
+}
+
+#pragma mark - BWGSettingsCoordinatorDelegate
+
+- (void)BWGSettingsCoordinatorViewControllerWasRemoved:
+    (BWGSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_BWGSettingsCoordinator, coordinator);
+  [_BWGSettingsCoordinator stop];
+  _BWGSettingsCoordinator = nil;
 }
 
 #pragma mark - ContentSettingsCoordinatorDelegate

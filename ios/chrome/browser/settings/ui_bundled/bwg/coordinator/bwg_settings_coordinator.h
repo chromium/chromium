@@ -7,6 +7,17 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class BWGSettingsCoordinator;
+
+// Delegate that allows to dereference the PrivacyCoordinator.
+@protocol BWGSettingsCoordinatorDelegate
+
+// Called when the view controller is removed from navigation controller.
+- (void)BWGSettingsCoordinatorViewControllerWasRemoved:
+    (BWGSettingsCoordinator*)coordinator;
+
+@end
+
 // Coordinator for the BWG settings view.
 @interface BWGSettingsCoordinator : ChromeCoordinator
 
@@ -20,6 +31,8 @@
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
+
+@property(nonatomic, weak) id<BWGSettingsCoordinatorDelegate> delegate;
 
 @end
 

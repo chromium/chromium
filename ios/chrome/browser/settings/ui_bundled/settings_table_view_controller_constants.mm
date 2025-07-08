@@ -32,6 +32,7 @@ NSString* const kSettingsArticleSuggestionsCellId =
 NSString* const kSettingsLanguagesCellId = @"kSettingsLanguagesCellId";
 NSString* const kSettingsContentSettingsCellId =
     @"kSettingsContentSettingsCellId";
+NSString* const kSettingsBWGSettingsCellId = @"kSettingsBWGSettingsCellId";
 NSString* const kSettingsDownloadsSettingsCellId =
     @"kSettingsDownloadsSettingsCellId";
 NSString* const kSettingsSafariDataImportSettingsCellId =

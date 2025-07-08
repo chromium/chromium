@@ -19,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/history/model/web_history_service_factory.h",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/keyboard/ui_bundled",
   "+ios/chrome/browser/language/model/language_model_manager_factory.h",
