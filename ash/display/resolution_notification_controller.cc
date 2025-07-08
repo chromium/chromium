@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/screen_layout_observer.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -79,8 +78,6 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
     const display::ManagedDisplayMode& new_resolution,
     crosapi::mojom::DisplayConfigSource source,
     base::OnceClosure accept_callback) {
-  Shell::Get()->screen_layout_observer()->SetDisplayChangedFromSettingsUI(
-      display_id);
   display::DisplayManager* const display_manager =
       Shell::Get()->display_manager();
   if (source == crosapi::mojom::DisplayConfigSource::kPolicy ||
@@ -220,8 +217,6 @@ void ResolutionNotificationController::RevertResolutionChange(
   const int64_t display_id = change_info_->display_id;
   display::ManagedDisplayMode old_resolution = change_info_->old_resolution;
   change_info_.reset();
-  Shell::Get()->screen_layout_observer()->SetDisplayChangedFromSettingsUI(
-      display_id);
   if (display_was_removed) {
     // If display was removed then we are inside the stack of
     // DisplayManager::UpdateDisplaysWith(), and we need to update the selected

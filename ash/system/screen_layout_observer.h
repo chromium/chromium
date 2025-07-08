@@ -34,11 +34,6 @@ class ASH_EXPORT ScreenLayoutObserver : public display::DisplayManagerObserver {
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
 
-  // No notification will be shown only for the next ui scale change for the
-  // display with |display_id|. This state will be consumed and subsequent
-  // changes won't be affected.
-  void SetDisplayChangedFromSettingsUI(int64_t display_id);
-
   // Notifications are shown in production and are not shown in unit tests.
   // Allow individual unit tests to show notifications.
   void set_show_notifications_for_testing(bool show) {
@@ -90,10 +85,6 @@ class ASH_EXPORT ScreenLayoutObserver : public display::DisplayManagerObserver {
   DisplayMode current_display_mode_ = DisplayMode::SINGLE;
 
   bool has_unassociated_display_ = false;
-
-  // When the UI scale of a display is modified from the Settings UI, we should
-  // ignore this change and avoid showing a notification for it.
-  std::set<int64_t> displays_changed_from_settings_ui_;
 
   bool show_notifications_for_testing_ = true;
 };

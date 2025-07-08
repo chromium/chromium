@@ -193,10 +193,6 @@ ScreenLayoutObserver::~ScreenLayoutObserver() {
   Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 }
 
-void ScreenLayoutObserver::SetDisplayChangedFromSettingsUI(int64_t display_id) {
-  displays_changed_from_settings_ui_.insert(display_id);
-}
-
 void ScreenLayoutObserver::UpdateDisplayInfo(
     ScreenLayoutObserver::DisplayInfoMap* old_info) {
   if (old_info)

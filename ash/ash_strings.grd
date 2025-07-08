@@ -3754,9 +3754,6 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT" desc="The label used in the tray to show that mirror mode is exiting.">
         Exiting mirror mode
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED" desc="The label used in the tray to show that the current status is extended.">
-        Extending screen to <ph name="DISPLAY_NAME">$1</ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED" desc="The text of the notification to show when a display is disconnected from the device.">
         Removed display <ph name="DISPLAY_NAME">$1</ph>
       </message>
@@ -3765,15 +3762,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING_NO_INTERNAL" desc="The label used in the tray to show that the current status is mirroring and the device doesn't have the internal display.">
         Mirroring
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL" desc="The label used in the tray to show that the current status is extended and the device doesn't have the internal display.">
-        Extending screen
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE" desc="The title used in the notification to notify that the display resolution settings has changed.">
-        Resolution changed
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED" desc="The label used in the tray to notify that the display resolution settings has changed.">
-        <ph name="DISPLAY_NAME">$1<ex>Built-in display</ex></ph>: <ph name="RESOLUTION">$2<ex>2560x1600</ex></ph>
       </message>
       <message name="IDS_ASH_RESOLUTION_CHANGE_DIALOG_TITLE" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution.">
         Confirm Resolution
@@ -3795,9 +3783,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW" desc="The label used in the dialog to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution. Hz is the SI unit Hertz.">
         "<ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph>" was changed to <ph name="FALLBACK_RESOLUTION">$2<ex>1920x1080</ex></ph> (<ph name="FALLBACK_REFRESH_RATE">$3<ex>60</ex></ph> Hz) resolution. Due to port bandwidth limitations, your display can't support a <ph name="SPECIFIED_RESOLUTION">$4<ex>3840x2160</ex></ph> (<ph name="SPECIFIED_REFRESH_RATE">$5<ex>60</ex></ph> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS">$6</ph>.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TO_UNSUPPORTED" desc="The label used in the tray to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution.">
-        <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>2560x1600</ex></ph>. The resolution was changed to <ph name="FALLBACK_RESOLUTION">$3<ex>1920x1200</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ANNOTATED_NAME" desc="Label used to show a display name with annotation (like screen resolution or overscan info).">
         <ph name="DISPLAY_NAME">$1</ph> (<ph name="ANNOTATION">$2</ph>)
