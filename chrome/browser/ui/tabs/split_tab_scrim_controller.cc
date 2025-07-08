@@ -11,25 +11,49 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_scrim_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
-SplitTabScrimController::SplitTabScrimController(
-    std::unique_ptr<SplitTabScrimDelegate> split_tab_scrim_delegate,
-    BrowserWindowInterface* browser_window_interface)
-    : split_tab_scrim_delegate_(std::move(split_tab_scrim_delegate)),
-      browser_window_interface_(browser_window_interface) {
+SplitTabScrimController::SplitTabScrimController(BrowserView* browser_view)
+    : split_tab_scrim_delegate_(
+          std::make_unique<split_tabs::SplitTabScrimDelegateImpl>(
+              browser_view)),
+      browser_window_interface_(browser_view->browser()) {
   active_tab_change_subscription_ =
       browser_window_interface_->RegisterActiveTabDidChange(base::BindRepeating(
           &SplitTabScrimController::OnActiveTabChange, base::Unretained(this)));
+  chip_controller_observation_.Observe(
+      browser_view->toolbar()->location_bar()->GetChipController());
 }
 
 SplitTabScrimController::~SplitTabScrimController() = default;
 
+bool SplitTabScrimController::ShouldShowScrim() {
+  tabs::TabInterface* const active_tab =
+      browser_window_interface_->GetActiveTabInterface();
+  return (active_tab &&
+          (OmniboxTabHelper::FromWebContents(active_tab->GetContents())
+               ->focus_state() != OmniboxFocusState::OMNIBOX_FOCUS_NONE)) ||
+         is_permission_prompt_showing_;
+}
+
 void SplitTabScrimController::OnOmniboxFocusChanged(
     OmniboxFocusState state,
     OmniboxFocusChangeReason reason) {
+  UpdateScrimVisibility();
+}
+
+void SplitTabScrimController::OnPermissionPromptShown() {
+  is_permission_prompt_showing_ = true;
+  UpdateScrimVisibility();
+}
+
+void SplitTabScrimController::OnPermissionPromptHidden() {
+  is_permission_prompt_showing_ = false;
   UpdateScrimVisibility();
 }
 
@@ -62,11 +86,7 @@ void SplitTabScrimController::OnTabWillDetach(
 }
 
 void SplitTabScrimController::UpdateScrimVisibility() {
-  tabs::TabInterface* const active_tab =
-      browser_window_interface_->GetActiveTabInterface();
-  if (active_tab &&
-      (OmniboxTabHelper::FromWebContents(active_tab->GetContents())
-           ->focus_state() != OmniboxFocusState::OMNIBOX_FOCUS_NONE)) {
+  if (ShouldShowScrim()) {
     split_tab_scrim_delegate_->ShowScrim();
   } else {
     split_tab_scrim_delegate_->HideScrim();

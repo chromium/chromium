@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_scrim_controller.h"
-#include "chrome/browser/ui/tabs/split_tab_scrim_delegate.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
@@ -356,6 +355,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         shared_tab_group_feedback_controller_->Init();
       }
     }
+
+    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+      if (browser_view) {
+        split_tab_scrim_controller_ =
+            std::make_unique<split_tabs::SplitTabScrimController>(browser_view);
+      }
+    }
   }
 
   synced_window_delegate_ =
@@ -440,14 +446,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     if (media_router::MediaRouterEnabled(browser_view->browser()->profile())) {
       cast_browser_controller_ =
           std::make_unique<media_router::CastBrowserController>(
-              browser_view->browser());
-    }
-
-    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-      split_tab_scrim_controller_ =
-          std::make_unique<split_tabs::SplitTabScrimController>(
-              std::make_unique<split_tabs::SplitTabScrimDelegateImpl>(
-                  browser_view),
               browser_view->browser());
     }
   }
