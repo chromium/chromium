@@ -9,6 +9,8 @@ has_proguard_flags = true
 has_r_text_file = false
 is_manifest_empty = true
 manifest_package = "androidx.compose.runtime.saveable"
-resources = []
+resources = [
+  "res/values/values.xml"
+]
 subjar_tuples = []
 subjars = []
