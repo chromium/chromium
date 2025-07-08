@@ -9503,10 +9503,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava event(env, obj.obj(),
-                                   1.f / root_view->GetDipScale(), 0.f, 0.f,
-                                   0.f, base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0,
-                                   0, 0, 0, false, &pointer0, nullptr);
+  ui::MotionEventAndroidJava event(env, obj, 1.f / root_view->GetDipScale(),
+                                   0.f, 0.f, 0.f, base::TimeTicks(), 0, 1, 0, 0,
+                                   0, 0, 0, 0, 0, false, &pointer0, nullptr);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9849,10 +9848,9 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
             env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
             /*y=*/0, /*metaState=*/0);
     ui::MotionEventAndroidJava touch(
-        env, obj.obj(), 1.f, 0, 0, 0,
-        base::TimeTicks::FromJavaNanoTime(time_ns),
+        env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
         ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
-        0, 0, false, &p, nullptr);
+        0, false, &p, nullptr);
     view->OnTouchEvent(touch);
   }
 

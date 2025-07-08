@@ -91,9 +91,9 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   ui::MotionEventAndroidJava touch(
-      env, obj.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, false, &p, nullptr);
+      false, &p, nullptr);
 
   int successfully_transferred =
       static_cast<int>(TransferInputToVizResult::kSuccessfullyTransferred);

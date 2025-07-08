@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
@@ -27,7 +28,7 @@ namespace ui {
 
 MotionEventAndroidJava::MotionEventAndroidJava(
     JNIEnv* env,
-    jobject event,
+    const base::android::JavaRef<jobject>& event,
     jfloat pix_to_dip,
     jfloat ticks_x,
     jfloat ticks_y,
@@ -42,36 +43,36 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jint android_action_button,
     jint android_gesture_classification,
     jint android_button_state,
-    jint android_meta_state,
     jfloat raw_offset_x_pixels,
     jfloat raw_offset_y_pixels,
     jboolean for_touch_handle,
     const Pointer* const pointer0,
     const Pointer* const pointer1,
     bool is_latest_event_time_resampled)
-    : MotionEventAndroid(pix_to_dip,
-                         ticks_x,
-                         ticks_y,
-                         tick_multiplier,
-                         oldest_event_time,
-                         latest_event_time,
-                         down_time_ms,
-                         android_action,
-                         pointer_count,
-                         history_size,
-                         action_index,
-                         android_action_button,
-                         android_gesture_classification,
-                         android_button_state,
-                         android_meta_state,
-                         raw_offset_x_pixels,
-                         raw_offset_y_pixels,
-                         for_touch_handle,
-                         pointer0,
-                         pointer1),
+    : MotionEventAndroid(
+          pix_to_dip,
+          ticks_x,
+          ticks_y,
+          tick_multiplier,
+          oldest_event_time,
+          latest_event_time,
+          down_time_ms,
+          android_action,
+          pointer_count,
+          history_size,
+          action_index,
+          android_action_button,
+          android_gesture_classification,
+          android_button_state,
+          JNI_MotionEvent::Java_MotionEvent_getMetaState(env, event),
+          raw_offset_x_pixels,
+          raw_offset_y_pixels,
+          for_touch_handle,
+          pointer0,
+          pointer1),
       is_latest_event_time_resampled_(is_latest_event_time_resampled) {
-  CHECK(event);
-  event_.Reset(env, event);
+  CHECK(!event.is_null());
+  event_.Reset(event);
   if (GetPointerCount() > MAX_POINTERS_TO_CACHE || GetHistorySize() > 0) {
     DCHECK(event_.obj());
   }
@@ -79,7 +80,7 @@ MotionEventAndroidJava::MotionEventAndroidJava(
 
 MotionEventAndroidJava::MotionEventAndroidJava(
     JNIEnv* env,
-    jobject event,
+    const base::android::JavaRef<jobject>& event,
     jfloat pix_to_dip,
     jfloat ticks_x,
     jfloat ticks_y,
@@ -92,7 +93,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jint android_action_button,
     jint android_gesture_classification,
     jint android_button_state,
-    jint android_meta_state,
     jfloat raw_offset_x_pixels,
     jfloat raw_offset_y_pixels,
     jboolean for_touch_handle,
@@ -114,7 +114,6 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                              android_action_button,
                              android_gesture_classification,
                              android_button_state,
-                             android_meta_state,
                              raw_offset_x_pixels,
                              raw_offset_y_pixels,
                              for_touch_handle,

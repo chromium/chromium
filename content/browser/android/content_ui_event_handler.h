@@ -45,8 +45,7 @@ class ContentUiEventHandler {
                            jfloat x,
                            jfloat y,
                            jfloat ticks_x,
-                           jfloat ticks_y,
-                           jint meta_state);
+                           jfloat ticks_y);
   void SendMouseEvent(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& event,
                       jlong time_ns,
@@ -59,7 +58,6 @@ class ContentUiEventHandler {
                       jfloat tilt,
                       jint android_action_button,
                       jint android_button_state,
-                      jint android_meta_state,
                       jint android_tool_type);
   void SendScrollEvent(JNIEnv* env,
                        jlong time_ms,

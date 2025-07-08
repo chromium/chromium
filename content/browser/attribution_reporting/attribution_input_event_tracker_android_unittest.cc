@@ -27,12 +27,13 @@ namespace {
 std::unique_ptr<ui::MotionEventAndroid> CreateTouchEventAt(
     float x,
     float y,
-    jobject event,
+    const base::android::JavaRef<jobject>& event,
     base::TimeTicks event_time = base::TimeTicks()) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
   return std::unique_ptr<ui::MotionEventAndroid>(new ui::MotionEventAndroidJava(
-      nullptr, event, 1.f, 0, 0, 0, event_time, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-      false, &pointer0, nullptr));
+      env, event, 1.f, 0, 0, 0, event_time, 0, 1, 0, 0, 0, 0, 0, 0, 0, false,
+      &pointer0, nullptr));
 }
 
 }  // namespace
@@ -88,7 +89,7 @@ TEST_F(AttributionInputEventTrackerAndroidTest, EventExpiryApplied) {
           /*metaState=*/0);
 
   std::unique_ptr<ui::MotionEventAndroid> event =
-      CreateTouchEventAt(100.f, 100.f, obj.obj());
+      CreateTouchEventAt(100.f, 100.f, obj);
   OnTouchEvent(*event);
   AttributionInputEventTrackerAndroid::InputEvent input2 =
       input_event_tracker_->GetMostRecentEvent();

@@ -483,9 +483,9 @@ TEST_F(RenderWidgetHostViewAndroidTest,
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down(
-      env, obj.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, false, &p, nullptr);
+      false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
@@ -511,9 +511,9 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down(
-      env, obj.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, false, &p, nullptr);
+      false, &p, nullptr);
   rwhva->OnTouchEvent(touch_down);
 
   auto& gesture_provider = rwhva->GetGestureProvider();
@@ -580,9 +580,9 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down1(
-      env, obj1.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj1, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, false, &p, nullptr);
+      false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   rwhva->OnTouchEvent(touch_down1);
@@ -594,9 +594,9 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   ui::MotionEventAndroidJava touch_down2(
-      env, obj2.obj(), 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      env, obj2, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
       ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      0, false, &p, nullptr);
+      false, &p, nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down2);

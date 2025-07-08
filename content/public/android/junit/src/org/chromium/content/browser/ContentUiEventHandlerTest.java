@@ -109,7 +109,6 @@ public class ContentUiEventHandlerTest {
                         eq(event.getAxisValue(MotionEvent.AXIS_TILT, 0)),
                         eq(EventForwarder.getMouseEventActionButton(event)),
                         eq(event.getButtonState()),
-                        eq(event.getMetaState()),
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
         MotionEventTestUtils.assertEquals(captor.getValue(), event);
     }

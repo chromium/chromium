@@ -86,9 +86,9 @@ class ViewAndroidBoundsTest : public testing::Test {
             env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
             /*y=*/0, /*metaState=*/0);
 
-    ui::MotionEventAndroidJava event(env, obj.obj(), 1.f, 0, 0, 0,
-                                     base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0, 0,
-                                     0, 0, false, &pointer0, nullptr);
+    ui::MotionEventAndroidJava event(env, obj, 1.f, 0, 0, 0, base::TimeTicks(),
+                                     0, 1, 0, 0, 0, 0, 0, 0, 0, false,
+                                     &pointer0, nullptr);
     root_.OnTouchEvent(event);
   }
 

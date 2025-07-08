@@ -68,9 +68,9 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
           /*metaState=*/0);
 
   return ui::MotionEventAndroidJava(
-      env, obj.obj(), pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
-      down_time, ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0,
-      0, 0, 0, 0, 0, false, &pointer, nullptr, false);
+      env, obj, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time, down_time,
+      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
+      false, &pointer, nullptr, false);
 }
 
 }  // namespace

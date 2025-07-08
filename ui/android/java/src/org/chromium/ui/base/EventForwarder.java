@@ -335,7 +335,6 @@ public class EventForwarder {
                                             : MotionEvent.TOOL_TYPE_UNKNOWN,
                                     gestureClassification,
                                     event.getButtonState(),
-                                    event.getMetaState(),
                                     isTouchHandleEvent,
                                     isLatestEventTimeResampled);
 
@@ -433,7 +432,6 @@ public class EventForwarder {
                                     event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                                     MotionEvent.BUTTON_PRIMARY,
                                     event.getButtonState(),
-                                    event.getMetaState(),
                                     event.getToolType(0));
                 }
                 mLastMouseButtonState = 0;
@@ -510,7 +508,6 @@ public class EventForwarder {
                         event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         getMouseEventActionButton(event),
                         event.getButtonState(),
-                        event.getMetaState(),
                         shouldConvertToMouseEvent
                                 ? MotionEvent.TOOL_TYPE_MOUSE
                                 : event.getToolType(0));
@@ -768,7 +765,6 @@ public class EventForwarder {
                             event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                             getMouseEventActionButton(event),
                             event.getButtonState(),
-                            event.getMetaState(),
                             shouldConvertToMouseEvent
                                     ? MotionEvent.TOOL_TYPE_MOUSE
                                     : event.getToolType(0));
@@ -889,7 +885,6 @@ public class EventForwarder {
                 int androidToolType1,
                 int gestureClassification,
                 int androidButtonState,
-                int androidMetaState,
                 boolean isTouchHandleEvent,
                 boolean isLatestEventTimeResampled);
 
@@ -906,7 +901,6 @@ public class EventForwarder {
                 float tilt,
                 int changedButton,
                 int buttonState,
-                int metaState,
                 int toolType);
 
         void onDragEvent(

@@ -28,7 +28,7 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
   // Forcing the caller to provide all cached values upon construction
   // eliminates the need to perform a JNI call to retrieve values individually.
   MotionEventAndroidJava(JNIEnv* env,
-                         jobject event,
+                         const base::android::JavaRef<jobject>& event,
                          jfloat pix_to_dip,
                          jfloat ticks_x,
                          jfloat ticks_y,
@@ -41,7 +41,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_action_button,
                          jint android_gesture_classification,
                          jint android_button_state,
-                         jint meta_state,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,
@@ -49,7 +48,7 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          const Pointer* const pointer1);
 
   MotionEventAndroidJava(JNIEnv* env,
-                         jobject event,
+                         const base::android::JavaRef<jobject>& event,
                          jfloat pix_to_dip,
                          jfloat ticks_x,
                          jfloat ticks_y,
@@ -64,7 +63,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_action_button,
                          jint android_gesture_classification,
                          jint android_button_state,
-                         jint meta_state,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,

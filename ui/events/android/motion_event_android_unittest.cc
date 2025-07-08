@@ -94,14 +94,13 @@ TEST(MotionEventAndroidTest, Constructor) {
   base::android::ScopedJavaLocalRef<jobject> obj =
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
-          /*metaState=*/0);
+          /*metaState=*/kAndroidAltKeyDown);
 
-  MotionEventAndroidJava event(env, obj.obj(), kPixToDip, 0.f, 0.f, 0.f,
-                               oldest_event_time, latest_event_time,
-                               down_time_ms, kAndroidActionDown, pointer_count,
-                               history_size, action_index, kAndroidActionButton,
-                               0, kAndroidButtonPrimary, kAndroidAltKeyDown,
-                               raw_offset, -raw_offset, false, &p0, &p1, false);
+  MotionEventAndroidJava event(
+      env, obj, kPixToDip, 0.f, 0.f, 0.f, oldest_event_time, latest_event_time,
+      down_time_ms, kAndroidActionDown, pointer_count, history_size,
+      action_index, kAndroidActionButton, 0, kAndroidButtonPrimary, raw_offset,
+      -raw_offset, false, &p0, &p1, false);
 
   EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
   EXPECT_EQ(oldest_event_time, event.GetEventTime());
@@ -152,9 +151,9 @@ TEST(MotionEventAndroidTest, ZeroPressureOnActionUpEvent) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  MotionEventAndroidJava event(env, obj.obj(), kPixToDip, 0, 0, 0,
-                               base::TimeTicks(), kAndroidActionUp, 1, 0, 0, 0,
-                               0, 0, 0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroidJava event(env, obj, kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               kAndroidActionUp, 1, 0, 0, 0, 0, 0, 0, 0, false,
+                               &p0, nullptr);
 
   EXPECT_EQ(event.GetPressure(0), 0.f);
 }
@@ -171,9 +170,9 @@ TEST(MotionEventAndroidTest, Clone) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  MotionEventAndroidJava event(
-      env, obj.obj(), kPixToDip, 0, 0, 0, base::TimeTicks(), kAndroidActionDown,
-      pointer_count, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroidJava event(env, obj, kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0,
+                               0, 0, false, &p0, nullptr);
 
   std::unique_ptr<MotionEvent> clone = event.Clone();
   EXPECT_EQ(ui::test::ToString(event), ui::test::ToString(*clone));
@@ -196,9 +195,9 @@ TEST(MotionEventAndroidTest, Cancel) {
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
   MotionEventAndroidJava event(
-      env, obj.obj(), kPixToDip, 0, 0, 0,
+      env, obj, kPixToDip, 0, 0, 0,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNS), kAndroidActionDown,
-      pointer_count, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
+      pointer_count, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
 
   std::unique_ptr<MotionEvent> cancel_event = event.Cancel();
   EXPECT_EQ(MotionEvent::Action::CANCEL, cancel_event->GetAction());
@@ -225,9 +224,9 @@ TEST(MotionEventAndroidTest, InvalidOrientationsSanitized) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  MotionEventAndroidJava event(
-      env, obj.obj(), kPixToDip, 0, 0, 0, base::TimeTicks(), kAndroidActionDown,
-      pointer_count, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, &p1);
+  MotionEventAndroidJava event(env, obj, kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0,
+                               0, 0, false, &p0, &p1);
 
   EXPECT_EQ(0.f, event.GetOrientation(0));
   EXPECT_EQ(0.f, event.GetOrientation(1));
@@ -246,10 +245,10 @@ TEST(MotionEventAndroidTest, NonEmptyHistoryForNonMoveEventsSanitized) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  MotionEventAndroidJava event(
-      env, obj.obj(), kPixToDip, 0, 0, 0, base::TimeTicks(), base::TimeTicks(),
-      base::TimeTicks(), kAndroidActionDown, pointer_count, history_size, 0, 0,
-      0, 0, 0, 0, 0, false, &p0, nullptr, false);
+  MotionEventAndroidJava event(env, obj, kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               base::TimeTicks(), base::TimeTicks(),
+                               kAndroidActionDown, pointer_count, history_size,
+                               0, 0, 0, 0, 0, 0, false, &p0, nullptr, false);
 
   EXPECT_EQ(0U, event.GetHistorySize());
 }
@@ -271,10 +270,10 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  MotionEventAndroidJava event(env, obj.obj(), kPixToDip, 0, 0, 0,
-                               base::TimeTicks(), kAndroidActionPointerDown,
-                               pointer_count, history_size, action_index, 0, 0,
-                               0, 0, 0, 0, false, &p0, &p1);
+  MotionEventAndroidJava event(env, obj, kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               kAndroidActionPointerDown, pointer_count,
+                               history_size, action_index, 0, 0, 0, 0, 0, false,
+                               &p0, &p1);
 
   EXPECT_EQ(MotionEvent::Action::POINTER_DOWN, event.GetAction());
   EXPECT_EQ(action_index, event.GetActionIndex());

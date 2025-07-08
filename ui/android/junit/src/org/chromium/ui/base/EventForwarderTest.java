@@ -173,7 +173,6 @@ public class EventForwarderTest {
                         MotionEvent.TOOL_TYPE_UNKNOWN,
                         0,
                         dragEvent.getButtonState(),
-                        dragEvent.getMetaState(),
                         false,
                         false);
     }
@@ -237,7 +236,6 @@ public class EventForwarderTest {
                         MotionEvent.TOOL_TYPE_UNKNOWN,
                         0,
                         dragEvent.getButtonState(),
-                        dragEvent.getMetaState(),
                         false,
                         true);
     }
@@ -282,7 +280,6 @@ public class EventForwarderTest {
                         anyInt(),
                         anyInt(),
                         anyInt(),
-                        anyInt(),
                         anyBoolean(),
                         anyBoolean());
         verify(mNativeMock, never())
@@ -297,7 +294,6 @@ public class EventForwarderTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
-                        anyInt(),
                         anyInt(),
                         anyInt(),
                         anyInt());
@@ -321,7 +317,6 @@ public class EventForwarderTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
-                        anyInt(),
                         anyInt(),
                         anyInt(),
                         anyInt());
@@ -391,7 +386,6 @@ public class EventForwarderTest {
                         anyFloat(),
                         anyInt(),
                         anyInt(),
-                        anyInt(),
                         anyInt());
     }
 
@@ -452,7 +446,6 @@ public class EventForwarderTest {
                         eq(expectedEvent.getAxisValue(MotionEvent.AXIS_TILT, 0)),
                         eq(EventForwarder.getMouseEventActionButton(expectedEvent)),
                         eq(expectedEvent.getButtonState()),
-                        eq(expectedEvent.getMetaState()),
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
         MotionEventTestUtils.assertEquals(captor.getValue(), expectedEvent);
     }
@@ -531,7 +524,6 @@ public class EventForwarderTest {
                         eq(transformed.getAxisValue(MotionEvent.AXIS_TILT, 0)),
                         eq(EventForwarder.getMouseEventActionButton(transformed)),
                         eq(transformed.getButtonState()),
-                        eq(transformed.getMetaState()),
                         eq(MotionEvent.TOOL_TYPE_MOUSE));
 
         MotionEventTestUtils.assertEquals(captor.getValue(), transformed);
@@ -580,7 +572,6 @@ public class EventForwarderTest {
                         eq(moveEvent.getAxisValue(MotionEvent.AXIS_TILT, 0)),
                         eq(EventForwarder.getMouseEventActionButton(moveEvent)),
                         eq(moveEvent.getButtonState()),
-                        eq(moveEvent.getMetaState()),
                         eq(moveEvent.getToolType(0)));
         MotionEventTestUtils.assertEquals(captor1.getValue(), expectedEvent1);
 
@@ -610,7 +601,6 @@ public class EventForwarderTest {
                         eq(moveEvent.getAxisValue(MotionEvent.AXIS_TILT, 0)),
                         eq(EventForwarder.getMouseEventActionButton(moveEvent)),
                         eq(moveEvent.getButtonState()),
-                        eq(moveEvent.getMetaState()),
                         eq(moveEvent.getToolType(0)));
         MotionEventTestUtils.assertEquals(captor2.getValue(), expectedEvent2);
     }
@@ -656,7 +646,6 @@ public class EventForwarderTest {
                         event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         EventForwarder.getMouseEventActionButton(event),
                         event.getButtonState(),
-                        event.getMetaState(),
                         MotionEvent.TOOL_TYPE_MOUSE);
     }
 

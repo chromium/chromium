@@ -109,8 +109,7 @@ public class ContentUiEventHandler implements UserData {
                         event.getX(),
                         event.getY(),
                         event.getAxisValue(MotionEvent.AXIS_HSCROLL),
-                        event.getAxisValue(MotionEvent.AXIS_VSCROLL),
-                        event.getMetaState());
+                        event.getAxisValue(MotionEvent.AXIS_VSCROLL));
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
@@ -136,7 +135,6 @@ public class ContentUiEventHandler implements UserData {
                         event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         EventForwarder.getMouseEventActionButton(event),
                         event.getButtonState(),
-                        event.getMetaState(),
                         shouldConvertToMouseEvent
                                 ? MotionEvent.TOOL_TYPE_MOUSE
                                 : event.getToolType(0));
@@ -238,8 +236,7 @@ public class ContentUiEventHandler implements UserData {
                 float x,
                 float y,
                 float ticksX,
-                float ticksY,
-                int metaState);
+                float ticksY);
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,
@@ -254,7 +251,6 @@ public class ContentUiEventHandler implements UserData {
                 float tilt,
                 int changedButton,
                 int buttonState,
-                int metaState,
                 int toolType);
 
         void sendScrollEvent(

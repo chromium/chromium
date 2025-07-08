@@ -75,7 +75,6 @@ class UI_ANDROID_EXPORT EventForwarder {
       jint android_tool_type_1,
       jint android_gesture_classification,
       jint android_button_state,
-      jint android_meta_state,
       jboolean is_touch_handle_event,
       jboolean is_latest_event_time_resampled);
 
@@ -91,7 +90,6 @@ class UI_ANDROID_EXPORT EventForwarder {
                     jfloat tilt,
                     jint android_changed_button,
                     jint android_button_state,
-                    jint android_meta_state,
                     jint tool_type);
 
   void OnDragEvent(JNIEnv* env,
