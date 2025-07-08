@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//base",
     "//crypto",
     "//crypto:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
