@@ -306,11 +306,13 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Called when the login was considered unsuccessful. Takes care of logging
   // and reporting metrics and resets the submitted manager data.
-  void OnLoginFailed(BrowserSavePasswordProgressLogger* logger);
+  void OnLoginFailed(PasswordManagerDriver* driver,
+                     BrowserSavePasswordProgressLogger* logger);
 
   // Similar to OnLoginFailed() but doesn't report metrics and doesn't reset the
   // submitted manager data.
-  void OnLoginPotentiallyFailed(BrowserSavePasswordProgressLogger* logger);
+  void OnLoginPotentiallyFailed(PasswordManagerDriver* driver,
+                                BrowserSavePasswordProgressLogger* logger);
 
   // Checks for every form in |forms_data| whether |pending_login_managers_|
   // already contain a manager for that form. If not, adds a manager for each

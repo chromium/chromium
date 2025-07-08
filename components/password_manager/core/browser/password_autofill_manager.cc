@@ -181,6 +181,7 @@ void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {}
 
 void PasswordAutofillManager::OnSuggestionsHidden() {
+  undo_password_change_controller_.OnSuggestionsHidden();
   metrics_util::LogPasswordDropdownHidden();
 }
 
@@ -407,8 +408,7 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   if (!autofill_client_ || autofill_client_->GetAutofillSuggestions().empty()) {
     return;
   }
-  UpdatePopup(suggestion_generator_.GetSuggestionsForDomain(
-      undo_password_change_controller_, fill_data, page_favicon_,
+  UpdatePopup(GetSuggestions(
       std::u16string(), OffersGeneration(false), ShowPasswordSuggestions(true),
       ShowWebAuthnCredentials(false), ShowIdentityCredentials(false)));
 }
@@ -515,14 +515,12 @@ void PasswordAutofillManager::ContinueShowingPasswordSuggestions(
     ShowWebAuthnCredentials show_webauthn_credentials,
     ShowIdentityCredentials show_identity_credentials,
     const gfx::RectF& bounds) {
-  bool autofill_available =
-      ShowPopup(bounds, text_direction,
-                suggestion_generator_.GetSuggestionsForDomain(
-                    undo_password_change_controller_, fill_data_.get(),
-                    page_favicon_, typed_username, OffersGeneration(false),
-                    ShowPasswordSuggestions(true), show_webauthn_credentials,
-                    show_identity_credentials),
-                show_webauthn_credentials.value());
+  bool autofill_available = ShowPopup(
+      bounds, text_direction,
+      GetSuggestions(typed_username, OffersGeneration(false),
+                     ShowPasswordSuggestions(true), show_webauthn_credentials,
+                     show_identity_credentials),
+      show_webauthn_credentials.value());
 
   password_manager_driver_->SetSuggestionAvailability(
       element_id,
@@ -534,14 +532,12 @@ void PasswordAutofillManager::ContinueShowingPasswordSuggestions(
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
-  return ShowPopup(
-      bounds, text_direction,
-      suggestion_generator_.GetSuggestionsForDomain(
-          undo_password_change_controller_, fill_data_.get(), page_favicon_,
-          std::u16string(), OffersGeneration(false),
-          ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
-          ShowIdentityCredentials(false)),
-      /*is_for_webauthn_request=*/false);
+  return ShowPopup(bounds, text_direction,
+                   GetSuggestions(std::u16string(), OffersGeneration(false),
+                                  ShowPasswordSuggestions(true),
+                                  ShowWebAuthnCredentials(false),
+                                  ShowIdentityCredentials(false)),
+                   /*is_for_webauthn_request=*/false);
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
@@ -550,11 +546,10 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
     bool show_password_suggestions) {
   return ShowPopup(
       bounds, text_direction,
-      suggestion_generator_.GetSuggestionsForDomain(
-          undo_password_change_controller_, fill_data_.get(), page_favicon_,
-          std::u16string(), OffersGeneration(true),
-          ShowPasswordSuggestions(show_password_suggestions),
-          ShowWebAuthnCredentials(false), ShowIdentityCredentials(false)),
+      GetSuggestions(std::u16string(), OffersGeneration(true),
+                     ShowPasswordSuggestions(show_password_suggestions),
+                     ShowWebAuthnCredentials(false),
+                     ShowIdentityCredentials(false)),
       /*is_for_webauthn_request=*/false);
 }
 
@@ -584,6 +579,11 @@ base::WeakPtr<PasswordAutofillManager> PasswordAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void PasswordAutofillManager::OnLoginPotentiallyFailed(
+    const PasswordForm& login_form) {
+  undo_password_change_controller_.OnLoginPotentiallyFailed(
+      password_manager_driver_, login_form);
+}
 ////////////////////////////////////////////////////////////////////////////////
 // PasswordAutofillManager, private:
 
@@ -800,6 +800,31 @@ void PasswordAutofillManager::HidePopup() {
 
 void PasswordAutofillManager::FocusedInputChanged() {
   wait_for_passkeys_timer_.Stop();
+}
+
+std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
+    const std::u16string& username_filter,
+    OffersGeneration offers_generation,
+    ShowPasswordSuggestions show_password_suggestions,
+    ShowWebAuthnCredentials show_webauthn_credentials,
+    ShowIdentityCredentials show_identity_credentials) {
+  std::optional<autofill::PasswordAndMetadata> proactive_recovery_login =
+      undo_password_change_controller_.FindLoginWithProactiveRecoveryState(
+          fill_data_.get());
+  if (proactive_recovery_login) {
+    CHECK(proactive_recovery_login->backup_password_value);
+
+    const auto suggestion_details = Suggestion::PasswordSuggestionDetails(
+        proactive_recovery_login->username_value,
+        proactive_recovery_login->password_value,
+        proactive_recovery_login->backup_password_value.value());
+    return suggestion_generator_.GetProactiveRecoverySuggestions(
+        suggestion_details);
+  }
+  return suggestion_generator_.GetSuggestionsForDomain(
+      undo_password_change_controller_, fill_data_.get(), page_favicon_,
+      username_filter, offers_generation, show_password_suggestions,
+      show_webauthn_credentials, show_identity_credentials);
 }
 
 }  //  namespace password_manager
