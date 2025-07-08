@@ -123,21 +123,28 @@ void SetUpButtonWithNewFeatureBadge(UIButton* button) {
   button.layer.shadowOpacity = kButtonShadowOpacity;
   button.layer.shadowRadius = kButtonShadowRadius;
 
+  // Remove any possible badge view created as part a previous configuration.
+  for (UIView* subview in button.subviews) {
+    if ([subview isKindOfClass:[NewFeatureBadgeView class]]) {
+      [subview removeFromSuperview];
+    }
+  }
+
   NewFeatureBadgeView* badgeView =
       [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
                                             fontSize:kNewFeatureFontSize];
   badgeView.translatesAutoresizingMaskIntoConstraints = NO;
   badgeView.accessibilityElementsHidden = YES;
-  [button.imageView addSubview:badgeView];
+  [button addSubview:badgeView];
 
   [NSLayoutConstraint activateConstraints:@[
     [button.widthAnchor constraintEqualToConstant:kSymbolButtonSize],
     [button.heightAnchor constraintEqualToConstant:kSymbolButtonSize],
     [badgeView.centerXAnchor
-        constraintEqualToAnchor:button.imageView.centerXAnchor
+        constraintEqualToAnchor:button.centerXAnchor
                        constant:kNewBadgeOffsetFromButtonCenter],
     [badgeView.centerYAnchor
-        constraintEqualToAnchor:button.imageView.centerYAnchor
+        constraintEqualToAnchor:button.centerYAnchor
                        constant:-kNewBadgeOffsetFromButtonCenter],
   ]];
 }
@@ -383,7 +390,19 @@ void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
           colorWithAlphaComponent:new_badge_alpha];
   lens_button.layer.shadowOpacity = kButtonShadowOpacity * new_badge_alpha;
 
+  UIView* attachedBadgeView = nil;
+  for (UIView* subview in lens_button.subviews) {
+    if ([subview isKindOfClass:[NewFeatureBadgeView class]]) {
+      attachedBadgeView = subview;
+      break;
+    }
+  }
+
   // Scale the N badge.
+  attachedBadgeView.alpha = new_badge_alpha;
+  attachedBadgeView.transform = CGAffineTransformScale(
+      CGAffineTransformIdentity, new_badge_alpha, new_badge_alpha);
+
   for (UIView* subview in lens_button.imageView.subviews) {
     subview.alpha = new_badge_alpha;
     subview.transform = CGAffineTransformScale(
