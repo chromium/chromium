@@ -1482,4 +1482,45 @@ TEST_F(NewTabPageHandlerManagedTest,
   mock_page_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&mock_page_);
 }
+
+TEST_F(NewTabPageHandlerManagedTest,
+       FooterVisibilityUpdatedForNoticeCustomizationPolicy) {
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  bool is_visible;
+  EXPECT_CALL(mock_page_, FooterVisibilityUpdated)
+      .Times(5)
+      .WillRepeatedly(testing::Invoke(
+          [&is_visible](bool is_visible_arg) { is_visible = is_visible_arg; }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(is_visible);
+
+  testing_local_state_.Get()->SetString(prefs::kEnterpriseCustomLabelForBrowser,
+                                        "CustomLabel");
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(is_visible);
+
+  testing_local_state_.Get()->SetString(prefs::kEnterpriseCustomLabelForBrowser,
+                                        "");
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(is_visible);
+
+  testing_local_state_.Get()->SetString(prefs::kEnterpriseLogoUrlForBrowser,
+                                        "logo_url");
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(is_visible);
+
+  testing_local_state_.Get()->SetString(prefs::kEnterpriseLogoUrlForBrowser,
+                                        "");
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(is_visible);
+
+  mock_page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

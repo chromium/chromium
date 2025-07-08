@@ -345,23 +345,26 @@ bool CanShowEnterpriseProfileUI(Profile* profile) {
 
 bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  auto* management_service =
-      policy::ManagementServiceFactory::GetForProfile(profile);
-  // Return false if the browser is not managed or managed by a low trusted
-  // authority (i.e. EnterpriseManagementAuthority::COMPUTER_LOCAL).
-  if (!management_service->IsBrowserManaged() ||
-      management_service->GetManagementAuthorityTrustworthiness() <=
-          policy::ManagementAuthorityTrustworthiness::LOW) {
+  if (!policy::ManagementServiceFactory::GetForProfile(profile)
+           ->IsBrowserManaged()) {
     return false;
   }
   if (!g_browser_process->local_state()->GetBoolean(
           prefs::kNTPFooterManagementNoticeEnabled)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(features::kEnterpriseBadgingForNtpFooter)) {
+  if (IsCustomEnterpriseBadgingForNTPFooter(profile)) {
     return true;
   }
+  return base::FeatureList::IsEnabled(
+             features::kEnterpriseBadgingForNtpFooter) &&
+         profile->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+bool IsCustomEnterpriseBadgingForNTPFooter(Profile* profile) {
   if (!base::FeatureList::IsEnabled(features::kNTPFooterBadgingPolicies)) {
     return false;
   }
@@ -372,9 +375,6 @@ bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
          !g_browser_process->local_state()
               ->GetString(prefs::kEnterpriseLogoUrlForBrowser)
               .empty();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {
