@@ -81,6 +81,19 @@ const CGFloat kLogoStackViewHeight = 62.0;
   [self configureNavigationController];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  __weak BWGNavigationController* weakSelf = self;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [weakSelf.sheetPresentationController invalidateDetents];
+      }
+                      completion:nil];
+}
+
 #pragma mark - Private
 
 // Height of the content of the presented UI.
