@@ -340,6 +340,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.FileMetricsProvider.FRELimitResult"
+    enum="FileMetricsProviderFRELimitResult" expires_after="2026-02-28">
+  <owner>rcanoaparicio@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records how the number of files in the metrics directory relates to the FRE
+    amount of files limit. This is used to determine whether the metrics
+    directory is being polluted with too many files on FRE.
+  </summary>
+</histogram>
+
 <histogram name="UMA.FileMetricsProvider.InitialAccessResult"
     enum="FileMetricsProviderAccessResult" expires_after="2026-02-28">
   <owner>asvitkine@chromium.org</owner>

@@ -103,6 +103,12 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="File was not writable when it should be."/>
 </enum>
 
+<enum name="FileMetricsProviderFRELimitResult">
+  <int value="0" label="Only contains one file."/>
+  <int value="1" label="Contains multiple files."/>
+  <int value="2" label="Exceeds the limit."/>
+</enum>
+
 <enum name="HistogramNameHash">
   <summary>
     These numbers are the lower 32 bits of the hash of the metric name.

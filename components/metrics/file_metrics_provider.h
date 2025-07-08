@@ -162,6 +162,10 @@ class FileMetricsProvider : public MetricsProvider,
     size_t max_dir_files = 100;  // Maximum files in a directory (0=inf).
   };
 
+  // Max amount of pma files that a source of type
+  // FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR can have.
+  static const size_t kMaxSourceFilesInFRE = 5;
+
   // `is_fre` is true if the current run is in the First Run Experience (FRE).
   // If true, the provider may not delete the sources of type
   // SOURCE_HISTOGRAMS_ATOMIC_DIR and SOURCE_HISTOGRAMS_ATOMIC_FILE. See
