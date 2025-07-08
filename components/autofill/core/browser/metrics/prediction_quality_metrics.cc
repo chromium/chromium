@@ -416,6 +416,10 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case DRIVERS_LICENSE_EXPIRATION_DATE:
         case DRIVERS_LICENSE_ISSUE_DATE:
         case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+        case NATIONAL_ID_CARD_NUMBER:
+        case NATIONAL_ID_CARD_EXPIRATION_DATE:
+        case NATIONAL_ID_CARD_ISSUE_DATE:
+        case NATIONAL_ID_CARD_ISSUING_COUNTRY:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

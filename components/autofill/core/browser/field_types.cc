@@ -168,6 +168,10 @@ static constexpr auto kTypeNameToFieldType =
          {"DRIVERS_LICENSE_NUMBER", DRIVERS_LICENSE_NUMBER},
          {"DRIVERS_LICENSE_EXPIRATION_DATE", DRIVERS_LICENSE_EXPIRATION_DATE},
          {"DRIVERS_LICENSE_ISSUE_DATE", DRIVERS_LICENSE_ISSUE_DATE},
+         {"NATIONAL_ID_CARD_NUMBER", NATIONAL_ID_CARD_NUMBER},
+         {"NATIONAL_ID_CARD_EXPIRATION_DATE", NATIONAL_ID_CARD_EXPIRATION_DATE},
+         {"NATIONAL_ID_CARD_ISSUE_DATE", NATIONAL_ID_CARD_ISSUE_DATE},
+         {"NATIONAL_ID_CARD_ISSUING_COUNTRY", NATIONAL_ID_CARD_ISSUING_COUNTRY},
          {"EMAIL_OR_LOYALTY_MEMBERSHIP_ID", EMAIL_OR_LOYALTY_MEMBERSHIP_ID}});
 
 bool IsFillableFieldType(FieldType field_type) {
@@ -292,6 +296,10 @@ bool IsFillableFieldType(FieldType field_type) {
     case VEHICLE_PLATE_STATE:
     case VEHICLE_VIN:
     case VEHICLE_YEAR:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
       return true;
 
     // Not fillable credential fields.
@@ -381,6 +389,10 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
       return "";
     case NUMERIC_QUANTITY:
       return "Numeric quantity";
@@ -891,6 +903,8 @@ bool IsDateFieldType(FieldType field_type) {
     case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
     case MAX_VALID_FIELD_TYPE:
       return false;
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
@@ -899,6 +913,8 @@ bool IsDateFieldType(FieldType field_type) {
     case PASSPORT_ISSUE_DATE:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
       return true;
   }
   NOTREACHED();

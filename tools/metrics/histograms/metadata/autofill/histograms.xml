@@ -501,6 +501,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NAME_MIDDLE"/>
   <variant name="NAME_MIDDLE_INITIAL"/>
   <variant name="NAME_SUFFIX"/>
+  <variant name="NATIONAL_ID_CARD_EXPIRATION_DATE"/>
+  <variant name="NATIONAL_ID_CARD_ISSUE_DATE"/>
+  <variant name="NATIONAL_ID_CARD_ISSUING_COUNTRY"/>
+  <variant name="NATIONAL_ID_CARD_NUMBER"/>
   <variant name="NEW_PASSWORD"/>
   <variant name="NO_SERVER_DATA"/>
   <variant name="NOT_ACCOUNT_CREATION_PASSWORD"/>

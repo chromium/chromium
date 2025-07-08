@@ -869,6 +869,26 @@ Called by update_autofill_enums.py.-->
              value edited"/>
   <int value="12097"
       label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Autofilled value accepted"/>
+  <int value="12160"
+      label="NATIONAL_ID_CARD_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="12161"
+      label="NATIONAL_ID_CARD_NUMBER: Autofilled value accepted"/>
+  <int value="12224"
+      label="NATIONAL_ID_CARD_EXPIRATION_DATE: Not autofilled or autofilled
+             value edited"/>
+  <int value="12225"
+      label="NATIONAL_ID_CARD_EXPIRATION_DATE: Autofilled value accepted"/>
+  <int value="12288"
+      label="NATIONAL_ID_CARD_ISSUE_DATE: Not autofilled or autofilled value
+             edited"/>
+  <int value="12289"
+      label="NATIONAL_ID_CARD_ISSUE_DATE: Autofilled value accepted"/>
+  <int value="12352"
+      label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Not autofilled or autofilled
+             value edited"/>
+  <int value="12353"
+      label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Autofilled value accepted"/>
   <int value="12864"
       label="ADDRESS_HOME_ZIP_PREFIX: Not autofilled or autofilled value
              edited"/>
@@ -1190,6 +1210,14 @@ Called by update_autofill_enums.py.-->
   <int value="2977" label="VEHICLE_PLATE_STATE: accepted"/>
   <int value="3024" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: edited"/>
   <int value="3025" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: accepted"/>
+  <int value="3040" label="NATIONAL_ID_CARD_NUMBER: edited"/>
+  <int value="3041" label="NATIONAL_ID_CARD_NUMBER: accepted"/>
+  <int value="3056" label="NATIONAL_ID_CARD_EXPIRATION_DATE: edited"/>
+  <int value="3057" label="NATIONAL_ID_CARD_EXPIRATION_DATE: accepted"/>
+  <int value="3072" label="NATIONAL_ID_CARD_ISSUE_DATE: edited"/>
+  <int value="3073" label="NATIONAL_ID_CARD_ISSUE_DATE: accepted"/>
+  <int value="3088" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: edited"/>
+  <int value="3089" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: accepted"/>
   <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
   <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
   <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
@@ -2037,6 +2065,10 @@ Called by update_autofill_enums.py.-->
   <int value="185" label="VEHICLE_YEAR"/>
   <int value="186" label="VEHICLE_PLATE_STATE"/>
   <int value="189" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID"/>
+  <int value="190" label="NATIONAL_ID_CARD_NUMBER"/>
+  <int value="191" label="NATIONAL_ID_CARD_EXPIRATION_DATE"/>
+  <int value="192" label="NATIONAL_ID_CARD_ISSUE_DATE"/>
+  <int value="193" label="NATIONAL_ID_CARD_ISSUING_COUNTRY"/>
   <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
   <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
 </enum>
@@ -3704,6 +3736,14 @@ Called by update_autofill_enums.py.-->
   <int value="745" label="VEHICLE_PLATE_STATE: Accepted"/>
   <int value="756" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Ignored"/>
   <int value="757" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Accepted"/>
+  <int value="760" label="NATIONAL_ID_CARD_NUMBER: Ignored"/>
+  <int value="761" label="NATIONAL_ID_CARD_NUMBER: Accepted"/>
+  <int value="764" label="NATIONAL_ID_CARD_EXPIRATION_DATE: Ignored"/>
+  <int value="765" label="NATIONAL_ID_CARD_EXPIRATION_DATE: Accepted"/>
+  <int value="768" label="NATIONAL_ID_CARD_ISSUE_DATE: Ignored"/>
+  <int value="769" label="NATIONAL_ID_CARD_ISSUE_DATE: Accepted"/>
+  <int value="772" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Ignored"/>
+  <int value="773" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Accepted"/>
   <int value="804" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
   <int value="805" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
   <int value="808" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>

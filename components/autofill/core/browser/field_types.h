@@ -519,7 +519,14 @@ enum FieldType {
   // the client.
   EMAIL_OR_LOYALTY_MEMBERSHIP_ID = 189,
 
-  // Types 190 to 200 are not used on the client yet, but will likely be added
+  // Types corresponding to the "National Id Card" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  NATIONAL_ID_CARD_NUMBER = 190,
+  NATIONAL_ID_CARD_EXPIRATION_DATE = 191,
+  NATIONAL_ID_CARD_ISSUE_DATE = 192,
+  NATIONAL_ID_CARD_ISSUING_COUNTRY = 193,
+
+  // Types 194 to 200 are not used on the client yet, but will likely be added
   // in the future.
 
   // ADDRESS_HOME_ZIP = ADDRESS_HOME_ZIP_PREFIX + separator +
@@ -638,8 +645,9 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            (187 <= t && t <= 188) ||
-           // Values from 190 to 200 are reserved for the future.
-           (190 <= t && t <= 200);
+           // Types for date of birth, gender, and flight reservation are not
+           // used yet, but will likely be added in the future.
+           (194 <= t && t <= 200);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);
@@ -810,6 +818,10 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:
