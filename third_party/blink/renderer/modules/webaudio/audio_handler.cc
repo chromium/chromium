@@ -191,7 +191,7 @@ const AudioNodeOutput& AudioHandler::Output(unsigned i) const {
   return *outputs_[i];
 }
 
-unsigned AudioHandler::ChannelCount() {
+unsigned AudioHandler::ChannelCount() const {
   return channel_count_;
 }
 
@@ -230,7 +230,7 @@ void AudioHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-V8ChannelCountMode::Enum AudioHandler::GetChannelCountMode() {
+V8ChannelCountMode::Enum AudioHandler::GetChannelCountMode() const {
   // Because we delay the actual setting of the mode to the pre or post
   // rendering phase, we want to return the value that was set, not the actual
   // current mode.
@@ -248,7 +248,7 @@ void AudioHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
   }
 }
 
-V8ChannelInterpretation::Enum AudioHandler::ChannelInterpretation() {
+V8ChannelInterpretation::Enum AudioHandler::ChannelInterpretation() const {
   // Because we delay the actual setting of the interpretation to the pre or
   // post rendering phase, we want to return the value that was set, not the
   // actual current interpretation.
@@ -374,7 +374,7 @@ void AudioHandler::PullInputs(uint32_t frames_to_process) {
   }
 }
 
-bool AudioHandler::InputsAreSilent() {
+bool AudioHandler::InputsAreSilent() const {
   for (auto& input : inputs_) {
     if (!input->Bus()->IsSilent()) {
       return false;

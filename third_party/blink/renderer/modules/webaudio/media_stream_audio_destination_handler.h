@@ -57,8 +57,6 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   void PullInputs(uint32_t frames_to_process) override;
   void UpdatePullStatusIfNeeded() override;
 
-  uint32_t MaxChannelCount() const;
-
   // Sets the WebAudioDestinationConsumer that receives audio data from this
   // handler. The consumer is then responsible for providing this data to the
   // MediaStream infrastructure.
@@ -73,7 +71,7 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
 
   // Pushes rendered WebAudio data to the WebAudioDestinationConsumer.
   // Must be called on the WebAudio rendering thread.
-  void ConsumeAudio(AudioBus* bus, int number_of_frames);
+  void ConsumeAudio(const AudioBus* const bus, int number_of_frames);
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const char* const function_name, const String& message);

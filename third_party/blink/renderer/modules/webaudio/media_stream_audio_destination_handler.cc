@@ -100,12 +100,12 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   // which is constrained by source_ (WebAudioMediaStreamSource). Although
   // it has its own safety check for the excessive channels, throwing an
   // exception here is useful to developers.
-  if (channel_count < 1 || channel_count > MaxChannelCount()) {
+  if (channel_count < 1 || channel_count > kMaxChannelCountSupported) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         ExceptionMessages::IndexOutsideRange<unsigned>(
             "channel count", channel_count, 1,
-            ExceptionMessages::kInclusiveBound, MaxChannelCount(),
+            ExceptionMessages::kInclusiveBound, kMaxChannelCountSupported,
             ExceptionMessages::kInclusiveBound));
     return;
   }
@@ -115,10 +115,6 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   base::AutoLock locker(process_lock_);
 
   AudioHandler::SetChannelCount(channel_count, exception_state);
-}
-
-uint32_t MediaStreamAudioDestinationHandler::MaxChannelCount() const {
-  return kMaxChannelCountSupported;
 }
 
 void MediaStreamAudioDestinationHandler::PullInputs(
@@ -203,7 +199,8 @@ void MediaStreamAudioDestinationHandler::SetConsumerFormat(
 }
 
 void MediaStreamAudioDestinationHandler::ConsumeAudio(
-    AudioBus* input_bus, int number_of_frames) {
+    const AudioBus* const input_bus,
+    int number_of_frames) {
   if (!input_bus) {
     return;
   }

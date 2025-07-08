@@ -220,7 +220,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // and LatencyTime() into account when determining whether the node will
   // propagate silence.
   virtual bool PropagatesSilence() const;
-  bool InputsAreSilent();
+  bool InputsAreSilent() const;
   void SilenceOutputs();
   void UnsilenceOutputs();
 
@@ -228,13 +228,13 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   void DisableOutputsIfNecessary();
   void DisableOutputs();
 
-  unsigned ChannelCount();
+  unsigned ChannelCount() const;
   virtual void SetChannelCount(unsigned, ExceptionState&);
 
-  V8ChannelCountMode::Enum GetChannelCountMode();
+  V8ChannelCountMode::Enum GetChannelCountMode() const;
   virtual void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&);
 
-  V8ChannelInterpretation::Enum ChannelInterpretation();
+  V8ChannelInterpretation::Enum ChannelInterpretation() const;
   virtual void SetChannelInterpretation(V8ChannelInterpretation::Enum,
                                         ExceptionState&);
 
