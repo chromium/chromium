@@ -207,6 +207,7 @@ source_set("model_execution") {
     ":core_util",
     ":features",
     "//base",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom",
     "//components/prefs",

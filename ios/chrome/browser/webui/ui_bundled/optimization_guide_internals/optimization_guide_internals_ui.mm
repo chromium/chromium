@@ -98,3 +98,10 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
   std::move(callback).Run({});
   return;
 }
+
+void OptimizationGuideInternalsUI::RequestMqlsLogs(
+    RequestMqlsLogsCallback callback) {
+  // MQLS is not enabled on iOS. There will be no MQLS logs.
+  std::move(callback).Run({});
+  return;
+}

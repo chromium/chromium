@@ -4,9 +4,28 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
+#include "base/base64.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
+
+namespace {
+
+void SetMqlsLogForWebUI(
+    base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService> uploader,
+    std::string feature,
+    std::string proto,
+    std::string status) {
+  if (!uploader) {
+    return;
+  }
+
+  auto mqls_log_ptr =
+      optimization_guide_internals::mojom::MqlsLog::New(feature, proto, status);
+  uploader->SetMqlsLogForWebUI(std::move(mqls_log_ptr));
+}
+
+}  // namespace
 
 namespace optimization_guide {
 
@@ -29,14 +48,24 @@ ModelQualityLogEntry::~ModelQualityLogEntry() {
   const MqlsFeatureMetadata* metadata =
       MqlsFeatureRegistry::GetInstance().GetFeature(
           log_ai_data_request_->feature_case());
+  std::string serialized_proto =
+      base::Base64Encode(log_ai_data_request_->SerializeAsString());
   if (!metadata) {
     // The feature is not configured to use MQLS, don't upload anything.
+    SetMqlsLogForWebUI(uploader_,
+                       absl::StrFormat("Feature case: %d",
+                                       log_ai_data_request_->feature_case()),
+                       serialized_proto, "Feature not configured to use MQLS");
     return;
   }
   if (!uploader_ || !uploader_->CanUploadLogs(metadata)) {
+    SetMqlsLogForWebUI(uploader_, metadata->name(), serialized_proto,
+                       "Not allowed to upload");
     return;
   }
 
+  SetMqlsLogForWebUI(uploader_, metadata->name(), serialized_proto,
+                     "Sent for upload");
   uploader_->UploadModelQualityLogs(std::move(log_ai_data_request_));
 }
 

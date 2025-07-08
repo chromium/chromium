@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import type {DownloadedModelInfo, LoggedClientIds} from './optimization_guide_internals.mojom-webui.js';
+import type {DownloadedModelInfo, LoggedClientIds, MqlsLog} from './optimization_guide_internals.mojom-webui.js';
 import {PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
@@ -362,6 +362,27 @@ async function onClientIDsPageOpen() {
   }
 }
 
+async function onMqlsLogsPageOpen() {
+  const mqlsLogsContainer =
+      getRequiredElement<HTMLTableElement>('mqls-logs-container');
+  try {
+    const response: {mqlsLogs: MqlsLog[]} =
+        await PageHandlerFactory.getRemote().requestMqlsLogs();
+    const mqlsLogs = response.mqlsLogs;
+    for (const {feature, proto, status} of mqlsLogs) {
+      const row = mqlsLogsContainer.insertRow();
+      const featureStr = feature.toString();
+      const protoStr = proto.toString();
+      const statusStr = status.toString();
+      appendTD(row, featureStr, 'mqls-logs-feature');
+      appendTD(row, protoStr, 'mqls-logs-proto');
+      appendTD(row, statusStr, 'mqls-logs-status');
+    }
+  } catch (err) {
+    throw new Error(`Error resolving promise from requestMqlsLogs, ${err}`);
+  }
+}
+
 /**
  * Appends a new TD element to the specified |parent| element, and returns the
  * newly created element.
@@ -401,6 +422,9 @@ function initialize() {
 
   getRequiredElement('log-messages-dump')
       .addEventListener('click', onLogMessagesDump);
+
+  getRequiredElement('mqls-logs-refresh')
+      .addEventListener('click', onMqlsLogsPageOpen);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
       (eventTime: Time, logSource: number, sourceFile: string,
@@ -454,6 +478,8 @@ function initialize() {
       onModelsPageOpen();
     } else if (hash === 'client-ids') {
       onClientIDsPageOpen();
+    } else if (hash === 'mqls-logs') {
+      onMqlsLogsPageOpen();
     }
   };
 

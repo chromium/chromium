@@ -299,4 +299,14 @@ void ModelQualityLogsUploaderService::UploadFinalizedLog(
                      feature));
 }
 
+void ModelQualityLogsUploaderService::SetMqlsLogForWebUI(
+    optimization_guide_internals::mojom::MqlsLogPtr log) {
+  mqls_logs_for_web_ui_.push_back(std::move(log));
+}
+
+std::vector<optimization_guide_internals::mojom::MqlsLogPtr>
+ModelQualityLogsUploaderService::GetMqlsLogsForWebUI() {
+  return std::move(mqls_logs_for_web_ui_);
+}
+
 }  // namespace optimization_guide

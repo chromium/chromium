@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
 
@@ -59,6 +59,13 @@ class ModelQualityLogsUploaderService {
   void SetUrlLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // Sets an MQLS log to be displayed on WebUI page for debugging purposes.
+  void SetMqlsLogForWebUI(optimization_guide_internals::mojom::MqlsLogPtr log);
+
+  // Gets all MQLS logs to be displayed on WebUI page for debugging purposes.
+  std::vector<optimization_guide_internals::mojom::MqlsLogPtr>
+  GetMqlsLogsForWebUI();
+
  protected:
   virtual void UploadFinalizedLog(std::unique_ptr<proto::LogAiDataRequest> log,
                                   proto::LogAiDataRequest::FeatureCase feature);
@@ -78,6 +85,10 @@ class ModelQualityLogsUploaderService {
 
   // Used for creating an active_url_loader when needed for request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // MQLS logs to be displayed on WebUI page for debugging purposes.
+  std::vector<optimization_guide_internals::mojom::MqlsLogPtr>
+      mqls_logs_for_web_ui_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
