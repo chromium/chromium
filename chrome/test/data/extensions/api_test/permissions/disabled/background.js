@@ -34,19 +34,25 @@ chrome.test.runTests([
   function tabs() {
     // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
     // is available.
-    if (/Android/.test(navigator.userAgent)) {
-      chrome.test.succeed();
-      return;
-    }
-    try {
-      chrome.tabs.create({'url': '1'}, function(tab) {
-        // Tabs strip sensitive data without permissions.
-        chrome.test.assertFalse('url' in tab);
+    const getPlatformInfo = new Promise((resolve) => {
+      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+    });
+    getPlatformInfo.then(isAndroid => {
+      if (isAndroid) {
         chrome.test.succeed();
-      });
-    } catch (e) {
-      chrome.test.fail();
-    }
+        return;
+      } else {
+        try {
+          chrome.tabs.create({'url': '1'}, function(tab) {
+            // Tabs strip sensitive data without permissions.
+            chrome.test.assertFalse('url' in tab);
+            chrome.test.succeed();
+          });
+        } catch (e) {
+          chrome.test.fail();
+        }
+      }
+    });
   },
 
   function idle() {

@@ -84,7 +84,10 @@ chrome.test.runTests([
   async function invalidPattern() {
     // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
     // is available.
-    if (/Android/.test(navigator.userAgent)) {
+    const isAndroid = await new Promise((resolve) => {
+      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+    });
+    if (isAndroid) {
       chrome.test.succeed();
       return;
     }
