@@ -13,6 +13,13 @@ id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label) {
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
+id<GREYMatcher> AlertItemWithAccessibilityLabel(NSString* label) {
+  return grey_allOf(ButtonWithAccessibilityLabel(label),
+                    grey_ancestor(grey_kindOfClassName(
+                        @"_UIInterfaceActionCustomViewRepresentationView")),
+                    grey_minimumVisiblePercent(0.5), nil);
+}
+
 id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text) {
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom == UIUserInterfaceIdiomPad) {
@@ -21,7 +28,7 @@ id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text) {
     return grey_accessibilityID(@"PopoverDismissRegion");
   } else {
     // On iPhone the context menu is dismissed by tapping on the "Cancel" item.
-    return ButtonWithAccessibilityLabel(cancel_text);
+    return AlertItemWithAccessibilityLabel(cancel_text);
   }
 }
 

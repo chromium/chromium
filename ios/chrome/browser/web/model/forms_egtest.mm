@@ -155,7 +155,7 @@ id<GREYMatcher> GoButtonMatcher() {
 
 // Matcher for the resend POST button in the repost warning dialog.
 id<GREYMatcher> ResendPostButtonMatcher() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
+  return chrome_test_util::AlertItemWithAccessibilityLabelId(
       IDS_HTTP_POST_WARNING_RESEND);
 }
 
