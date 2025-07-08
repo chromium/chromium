@@ -33,6 +33,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -227,7 +228,7 @@ template <typename Key,
           typename KeyTraits,
           typename Allocator>
 class HashTableConstIterator final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  private:
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -414,7 +415,7 @@ template <typename Key,
           typename KeyTraits,
           typename Allocator>
 class HashTableIterator final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  private:
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>

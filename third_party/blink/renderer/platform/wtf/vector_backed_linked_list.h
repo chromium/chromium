@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
@@ -347,7 +348,7 @@ class VectorBackedLinkedList {
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
   using const_iterator =
       VectorBackedLinkedListConstIterator<VectorBackedLinkedListType>;
@@ -423,7 +424,8 @@ class VectorBackedLinkedListIterator {
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListConstIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
+
  public:
   using value_type = typename VectorBackedLinkedListType::Value;
   using size_type = wtf_size_t;
@@ -508,7 +510,7 @@ class VectorBackedLinkedListConstIterator {
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListReverseIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
   using const_reverse_iterator =
       VectorBackedLinkedListConstReverseIterator<VectorBackedLinkedListType>;

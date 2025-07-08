@@ -101,7 +101,7 @@ struct IsTraceable<blink::WeakMember<T>> {
 // directly with any of those types.
 template <typename T>
 class ValuePeeker final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   // NOLINTNEXTLINE

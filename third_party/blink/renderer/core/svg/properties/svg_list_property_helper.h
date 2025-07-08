@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -47,6 +48,8 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
   ~SVGListPropertyHelper() override = default;
 
   class const_iterator {
+    STACK_ALLOCATED();
+
    public:
     explicit const_iterator(SVGListPropertyBase::const_iterator wrapped)
         : wrapped_(wrapped) {}
