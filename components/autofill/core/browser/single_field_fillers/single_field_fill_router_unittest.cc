@@ -122,7 +122,7 @@ TEST_F(SingleFieldFillRouterTest, RouteToAllFillers_OnWillSubmitForm) {
 
 // Ensure that the router routes to fillers for this CancelPendingQueries call.
 TEST_F(SingleFieldFillRouterTest, RouteToAllFillers_CancelPendingQueries) {
-  EXPECT_CALL(history_manager(), CancelPendingQueries);
+  EXPECT_CALL(history_manager(), CancelPendingQuery);
   router().CancelPendingQueries();
 }
 

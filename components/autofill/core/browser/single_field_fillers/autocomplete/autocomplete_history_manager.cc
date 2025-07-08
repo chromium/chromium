@@ -52,7 +52,7 @@ bool IsMeaningfulFieldName(const std::u16string& name) {
 AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() {
-  CancelPendingQueries();
+  CancelPendingQuery();
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
@@ -64,7 +64,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  CancelPendingQueries();
+  CancelPendingQuery();
 
   if (!IsMeaningfulFieldName(field.name()) || !client.IsAutocompleteEnabled() ||
       field.form_control_type() == FormControlType::kTextArea ||
@@ -81,10 +81,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
         base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    // We can simply insert, since |query_handle| is always unique.
-    pending_queries_.insert(
-        {query_handle, QueryHandler(field.global_id(), field.value(),
-                                    std::move(on_suggestions_returned))});
+    pending_query_.emplace(query_handle,
+                           QueryHandler(field.global_id(), field.value(),
+                                        std::move(on_suggestions_returned)));
     return true;
   }
   return false;
@@ -108,13 +107,11 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
   }
 }
 
-void AutocompleteHistoryManager::CancelPendingQueries() {
-  if (profile_database_) {
-    for (const auto& [handle, query_handler] : pending_queries_) {
-      profile_database_->CancelRequest(handle);
-    }
+void AutocompleteHistoryManager::CancelPendingQuery() {
+  if (profile_database_ && pending_query_) {
+      profile_database_->CancelRequest(pending_query_->handle);
   }
-  pending_queries_.clear();
+  pending_query_.reset();
 }
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
@@ -223,6 +220,13 @@ AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
 
 AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
 
+AutocompleteHistoryManager::PendingQuery::PendingQuery(
+    WebDataServiceBase::Handle handle,
+    QueryHandler query_handler)
+    : handle(handle), query_handler(std::move(query_handler)) {}
+
+AutocompleteHistoryManager::PendingQuery::~PendingQuery() = default;
+
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutocompleteEntry>& entries,
     QueryHandler query_handler) {
@@ -251,17 +255,16 @@ void AutocompleteHistoryManager::OnAutofillValuesReturned(
   DCHECK(result);
   DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
 
-  auto pending_queries_iter = pending_queries_.find(current_handle);
-  if (pending_queries_iter == pending_queries_.end()) {
+  if (!pending_query_ || pending_query_->handle != current_handle) {
     // There's no handler for this query, hence nothing to do.
     return;
   }
 
   // Moving the handler since we're erasing the entry.
-  auto query_handler = std::move(pending_queries_iter->second);
+  auto query_handler = std::move(pending_query_->query_handler);
 
   // Removing the query, as it is no longer pending.
-  pending_queries_.erase(pending_queries_iter);
+  pending_query_.reset();
 
   const WDResult<std::vector<AutocompleteEntry>>* autocomplete_result =
       static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(

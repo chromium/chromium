@@ -58,8 +58,7 @@ class AutocompleteHistoryManager : public KeyedService {
       const std::vector<FormFieldData>& fields,
       bool is_autocomplete_enabled);
 
-  // Cancels all outstanding queries and clears out the `pending_queries_` map.
-  virtual void CancelPendingQueries();
+  virtual void CancelPendingQuery();
 
   virtual void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
@@ -104,6 +103,18 @@ class AutocompleteHistoryManager : public KeyedService {
         on_suggestions_returned_;
   };
 
+  // Internal data object used to keep a request's handle and it's context.
+  // Used to keep track of the pending query and cancel it if needed.
+  struct PendingQuery {
+    PendingQuery(WebDataServiceBase::Handle handle,
+                 QueryHandler query_handler);
+    PendingQuery(const PendingQuery&) = delete;
+    ~PendingQuery();
+
+    WebDataServiceBase::Handle handle;
+    QueryHandler query_handler;
+  };
+
   // Sends the autocomplete `entries` to the `query_handler` for display in the
   // associated Autofill popup. The parameter may be empty if there are no new
   // autocomplete additions.
@@ -139,8 +150,8 @@ class AutocompleteHistoryManager : public KeyedService {
   // queried asynchronously. We associate the query handle to the requestor
   // (with some context parameters) and store the association here until we get
   // called back. Then we update the initial requestor, and deleting the
-  // no-longer-pending query from this map.
-  std::map<WebDataServiceBase::Handle, QueryHandler> pending_queries_;
+  // no-longer-pending query.
+  std::optional<PendingQuery> pending_query_;
 
   // Cached results of the last batch of autocomplete suggestions.
   // Key are the suggestions' values, and values are the associated

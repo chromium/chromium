@@ -97,14 +97,14 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 
   void TearDown() override {
     // Ensure there are no left-over entries in the map (leak check).
-    EXPECT_TRUE(PendingQueriesEmpty());
+    EXPECT_TRUE(PendingQueryEmpty());
 
     autocomplete_manager_.reset();
   }
 
-  bool PendingQueriesEmpty() {
+  bool PendingQueryEmpty() {
     return !autocomplete_manager_ ||
-           autocomplete_manager_->pending_queries_.empty();
+           !autocomplete_manager_->pending_query_;
   }
 
   static bool IsEmptySuggestionVector(
@@ -799,8 +799,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mocked_db_query_id_first, std::move(mocked_results_first));
 }
 
-TEST_F(AutocompleteHistoryManagerTest,
-       SuggestionsReturned_CancelPendingQueries) {
+TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
   int mocked_db_query_id = 100;
   std::vector<AutocompleteEntry> expected_values_one = {
       GetAutocompleteEntry(test_field_.name(), u"SomePrefixOne")};
@@ -819,7 +818,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate cancelling the request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id));
-  autocomplete_manager_->CancelPendingQueries();
+  autocomplete_manager_->CancelPendingQuery();
 
   // Make sure the handler is not called when the DB responds.
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _)).Times(0);
@@ -863,7 +862,7 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
 
   autocomplete_manager_.reset();
 
-  EXPECT_TRUE(PendingQueriesEmpty());
+  EXPECT_TRUE(PendingQueryEmpty());
 }
 
 // Tests that a successful Autocomplete Retention Policy cleanup will

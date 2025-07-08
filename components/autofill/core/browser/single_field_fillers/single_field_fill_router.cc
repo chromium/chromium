@@ -53,7 +53,7 @@ void SingleFieldFillRouter::OnWillSubmitForm(
 }
 
 void SingleFieldFillRouter::CancelPendingQueries() {
-  autocomplete_history_manager_->CancelPendingQueries();
+  autocomplete_history_manager_->CancelPendingQuery();
 }
 
 void SingleFieldFillRouter::OnRemoveCurrentSingleFieldSuggestion(

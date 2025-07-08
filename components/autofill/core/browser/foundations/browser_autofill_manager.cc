@@ -1521,7 +1521,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       return;
     }
 
-    client().GetAutocompleteHistoryManager()->CancelPendingQueries();
+    client().GetAutocompleteHistoryManager()->CancelPendingQuery();
     std::move(on_suggestions_returned).Run(field.global_id(), {});
   } else {
     std::move(on_single_field_suggestions_callback)
