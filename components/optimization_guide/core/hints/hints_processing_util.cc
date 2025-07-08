@@ -188,6 +188,8 @@ std::string GetStringNameForOptimizationType(
     case proto::OptimizationType::
         SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST:
       return "SharedCreditCardFlatRateBenefitBlocklist";
+    case proto::OptimizationType::WALLETABLE_PASS_DETECTION_ALLOWLIST:
+      return "WalletablePassDetectionAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

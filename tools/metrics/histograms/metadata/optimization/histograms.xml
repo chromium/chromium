@@ -466,6 +466,9 @@ chromium-metrics-reviews@google.com.
   <variant name="VcnMerchantOptOutVisa"
       summary="This optimization provides information about whether a
                merchant is opted-out of Visa virtual cards for a URL."/>
+  <variant name="WalletablePassDetectionAllowlist"
+      summary="This optimization provides information about whether a URL is
+               eligible for walletable pass detection."/>
 </variants>
 
 <variants name="PageContentAnnotationsStorageType">

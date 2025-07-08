@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95, 96, 98, 99, 101;
+  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95, 96, 98, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -325,6 +325,9 @@ enum OptimizationType {
   // Provides information about whether the page is eligible for Digital
   // Credentials low friction.
   DIGITAL_CREDENTIALS_LOW_FRICTION = 97;
+  // Provides information about whether a page is eligible for walletable pass
+  // detection.
+  WALLETABLE_PASS_DETECTION_ALLOWLIST = 99;
   // Merchant blocklist for card flat rate benefits.
   SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST = 100;
 

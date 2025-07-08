@@ -385,6 +385,7 @@ test("components_unittests") {
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
     "//components/vector_icons:unit_tests",
+    "//components/wallet/core/browser:unit_tests",
     "//components/web_resource:unit_tests",
     "//components/webauthn/core/browser:unit_tests",
     "//components/webdata/common:unit_tests",

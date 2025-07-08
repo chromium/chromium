@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "walletable_pass_service.cc",
+    "walletable_pass_service.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "walletable_pass_service_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:hints_test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

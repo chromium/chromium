@@ -766,6 +766,7 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="92" label="GLIC_ACTION_PAGE_BLOCK"/>
   <int value="93" label="FEDCM_CLICKTHROUGH_RATE"/>
   <int value="97" label="DIGITAL_CREDENTIALS_LOW_FRICTION"/>
+  <int value="99" label="WALLETABLE_PASS_DETECTION_ALLOWLIST"/>
   <int value="100" label="SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST"/>
   <int value="102" label="BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA"/>
 </enum>
