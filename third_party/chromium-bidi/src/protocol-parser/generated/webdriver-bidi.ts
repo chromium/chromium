@@ -459,6 +459,7 @@ export namespace Browser {
     z.object({
       acceptInsecureCerts: z.boolean().optional(),
       proxy: Session.ProxyConfigurationSchema.optional(),
+      unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
     }),
   );
 }

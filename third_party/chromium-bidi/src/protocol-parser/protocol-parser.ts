@@ -52,10 +52,11 @@ export namespace Browser {
   export function parseCreateUserContextParameters(
     params: unknown,
   ): Protocol.Browser.CreateUserContextParameters {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
       params,
       WebDriverBidi.Browser.CreateUserContextParametersSchema,
-    );
+    ) as Protocol.Browser.CreateUserContextParameters;
   }
   export function parseRemoveUserContextParameters(
     params: unknown,
