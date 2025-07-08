@@ -102,7 +102,7 @@ const ComponentExtensionContentSettingsAllowlist::
 
 void ComponentExtensionContentSettingsAllowlist::
     SetContentSettingsForComponentExtension(const Extension* extension,
-                                            ContentSetting contentSetting) {
+                                            ContentSetting content_setting) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const auto& component_extensions_content_settings_types =
@@ -117,7 +117,7 @@ void ComponentExtensionContentSettingsAllowlist::
        component_extensions_content_settings_types->second) {
     SetContentSettingsAndNotifySubscribers(
         ContentSettingsPattern::FromURLNoWildcard(extension->url()),
-        ContentSettingsPattern::Wildcard(), content_type, contentSetting);
+        ContentSettingsPattern::Wildcard(), content_type, content_setting);
   }
 }
 

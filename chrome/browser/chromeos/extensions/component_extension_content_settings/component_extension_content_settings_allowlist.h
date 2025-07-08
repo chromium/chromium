@@ -94,7 +94,7 @@ class ComponentExtensionContentSettingsAllowlist final
   GetComponentExtensionsContentSettingsTypes();
 
   void SetContentSettingsForComponentExtension(const Extension* extension,
-                                               ContentSetting contentSetting);
+                                               ContentSetting content_setting);
   void SetContentSettingsAndNotifySubscribers(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
