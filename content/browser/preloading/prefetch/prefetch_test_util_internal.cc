@@ -41,12 +41,31 @@ net::RedirectInfo SyntheticRedirect(const GURL& new_url) {
   return redirect_info;
 }
 
+OnPrefetchResponseCompletedCallback
+CreatePrefetchResponseCompletedCallbackForTest(
+    PrefetchContainer* prefetch_container,
+    base::RunLoop* on_response_complete_loop) {
+  return base::BindOnce(
+      [](base::WeakPtr<PrefetchContainer> prefetch_container,
+         base::RunLoop* on_response_complete_loop,
+         const network::URLLoaderCompletionStatus& completion_status) {
+        if (prefetch_container) {
+          prefetch_container->OnPrefetchComplete(completion_status);
+        }
+        if (on_response_complete_loop) {
+          on_response_complete_loop->Quit();
+        }
+      },
+      prefetch_container->GetWeakPtr(), on_response_complete_loop);
+}
+
 }  // namespace
 
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,
-    const std::string body) {
+    const std::string body,
+    network::URLLoaderCompletionStatus status) {
   prefetch_container->SimulatePrefetchStartedForTest();
 
   const GURL kTestUrl = GURL("https://test.com");
@@ -74,12 +93,8 @@ void MakeServableStreamingURLLoaderForTest(
             return std::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
-      base::BindOnce(
-          [](base::RunLoop* on_response_complete_loop,
-             const network::URLLoaderCompletionStatus& completion_status) {
-            on_response_complete_loop->Quit();
-          },
-          &on_response_complete_loop),
+      CreatePrefetchResponseCompletedCallbackForTest(
+          prefetch_container, &on_response_complete_loop),
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
@@ -89,8 +104,6 @@ void MakeServableStreamingURLLoaderForTest(
       weak_response_reader);
 
   prefetch_container->SetStreamingURLLoader(weak_streaming_loader);
-
-  network::URLLoaderCompletionStatus status(net::OK);
 
   test_url_loader_factory.AddResponse(
       kTestUrl, std::move(head), body, status,
@@ -125,8 +138,8 @@ MakeManuallyServableStreamingURLLoaderForTest(
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         return std::optional<PrefetchErrorOnResponseReceived>();
       }),
-      base::BindOnce(&PrefetchContainer::OnPrefetchComplete,
-                     prefetch_container->GetWeakPtr()),
+      CreatePrefetchResponseCompletedCallbackForTest(
+          prefetch_container, /*on_response_complete_loop=*/nullptr),
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
@@ -191,12 +204,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
             return std::optional<PrefetchErrorOnResponseReceived>();
           },
           &on_response_received_loop),
-      base::BindOnce(
-          [](base::RunLoop* on_response_complete_loop,
-             const network::URLLoaderCompletionStatus& completion_status) {
-            on_response_complete_loop->Quit();
-          },
-          &on_response_complete_loop),
+      CreatePrefetchResponseCompletedCallbackForTest(
+          prefetch_container, &on_response_complete_loop),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
       base::BindOnce(&PrefetchContainer::OnDeterminedHead,
@@ -328,12 +337,8 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
                 return std::optional<PrefetchErrorOnResponseReceived>();
               },
               &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
+          CreatePrefetchResponseCompletedCallbackForTest(
+              prefetch_container, &on_response_complete_loop),
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
                  network::mojom::URLResponseHeadPtr response_head) {

@@ -155,14 +155,6 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
     return result;
   }
 
-  void UpdatePrefetchRequestMetrics(
-      PrefetchContainer* prefetch_container,
-      const std::optional<network::URLLoaderCompletionStatus>&
-          completion_status,
-      const network::mojom::URLResponseHead* head) {
-    prefetch_container->UpdatePrefetchRequestMetrics(completion_status, head);
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -688,12 +680,9 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
       network::mojom::URLResponseHead::New();
   head->load_timing.request_start = base::TimeTicks();
 
-  UpdatePrefetchRequestMetrics(prefetch_container.get(), completion_status,
-                               head.get());
-
   MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+                                        std::move(head), "test body",
+                                        std::move(completion_status));
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.

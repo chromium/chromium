@@ -815,8 +815,6 @@ class CONTENT_EXPORT PrefetchContainer {
   }
 
  protected:
-  friend class PrefetchContainerTestBase;
-
   // Updates metrics based on the result of the prefetch request.
   void UpdatePrefetchRequestMetrics(
       const std::optional<network::URLLoaderCompletionStatus>&

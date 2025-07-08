@@ -37,7 +37,9 @@ namespace content {
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,
-    const std::string body);
+    const std::string body,
+    network::URLLoaderCompletionStatus status =
+        network::URLLoaderCompletionStatus(net::OK));
 
 network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
