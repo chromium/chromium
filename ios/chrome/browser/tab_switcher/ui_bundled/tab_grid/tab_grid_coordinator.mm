@@ -106,6 +106,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/chrome_app_bar_prototype.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -301,6 +302,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   ProceduralBlock _guidedTourCompletionBlock;
   // The coordinator to sign-in from recent tabs.
   SigninCoordinator* _signinCoordinator;
+  // App bar for the prototype.
+  ChromeAppBarPrototype* _appBar;
 }
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
@@ -908,6 +911,25 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
+- (void)prototypeGeminiCallback {
+  CHECK(IsDiamondPrototypeEnabled());
+}
+
+- (void)prototypeNewTabCallback {
+  CHECK(IsDiamondPrototypeEnabled());
+}
+
+- (void)prototypeTabGridCallback {
+  CHECK(IsDiamondPrototypeEnabled());
+  if (self.bvcContainer) {
+    id<ApplicationCommands> applicationHandler =
+        HandlerForProtocol(self.dispatcher, ApplicationCommands);
+    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  } else {
+    [self exitTabGrid];
+  }
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -954,6 +976,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
+
+  if (IsDiamondPrototypeEnabled()) {
+    _appBar = [[ChromeAppBarPrototype alloc] init];
+    [_appBar.askGeminiButton addTarget:self
+                                action:@selector(prototypeGeminiCallback)
+                      forControlEvents:UIControlEventTouchUpInside];
+    [_appBar.openNewTabButton addTarget:self
+                                 action:@selector(prototypeNewTabCallback)
+                       forControlEvents:UIControlEventTouchUpInside];
+    [_appBar.tabGridButton addTarget:self
+                              action:@selector(prototypeTabGridCallback)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [self.baseViewController setAppBar:_appBar];
+  }
 
   _regularGridCoordinator = [[RegularGridCoordinator alloc]
       initWithBaseViewController:self.baseViewController

@@ -51,6 +51,9 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    if (IsDiamondPrototypeEnabled()) {
+      return self;
+    }
     [self setupViews];
     [self updateLayout];
     if (@available(iOS 17, *)) {
@@ -401,6 +404,9 @@
 }
 
 - (void)updateLayout {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
   if (self.mode == TabGridMode::kSearch) {

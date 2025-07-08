@@ -209,6 +209,9 @@ enum class TabGridPageConfiguration {
 // Updates the active page to be the current page.
 - (void)updateActivePageToCurrent;
 
+// Sets the app bar.
+- (void)setAppBar:(UIView*)appBar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_VIEW_CONTROLLER_H_

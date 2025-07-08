@@ -177,6 +177,8 @@ source_set("tab_grid_mode") {
 
 source_set("tab_grid_ui") {
   sources = [
+    "chrome_app_bar_prototype.h",
+    "chrome_app_bar_prototype.mm",
     "tab_grid_consumer.h",
     "tab_grid_mutator.h",
     "tab_grid_view_controller.h",
@@ -201,7 +203,9 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:diamond_prototype",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",

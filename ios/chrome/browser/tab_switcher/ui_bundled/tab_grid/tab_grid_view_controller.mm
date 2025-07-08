@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/features/diamond_prototype_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -187,6 +188,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL _backgroundedSinceEntering;
   // Current mode of the TabGrid.
   TabGridMode _mode;
+  // The app bar, for diamond prototype.
+  UIView* _appBar;
 }
 
 - (instancetype)initWithPageConfiguration:
@@ -229,6 +232,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self setupSearchUI];
   [self setupTopToolbar];
+  if (IsDiamondPrototypeEnabled()) {
+    [self setupAppBar];
+  }
   [self setupBottomToolbar];
 
   if (IsPinnedTabsEnabled()) {
@@ -537,6 +543,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator pageChanged:newActivePage
                 interaction:TabSwitcherPageChangeInteraction::kNone];
   self.activePage = newActivePage;
+}
+
+- (void)setAppBar:(UIView*)appBar {
+  CHECK(IsDiamondPrototypeEnabled());
+  _appBar = appBar;
 }
 
 #pragma mark - Public Properties
@@ -987,20 +998,45 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #endif
 }
 
+// Adds the app bar.
+- (void)setupAppBar {
+  CHECK(IsDiamondPrototypeEnabled());
+  _appBar.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_appBar];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.leadingAnchor constraintEqualToAnchor:_appBar.leadingAnchor],
+    [self.view.trailingAnchor constraintEqualToAnchor:_appBar.trailingAnchor],
+    [self.view.bottomAnchor constraintEqualToAnchor:_appBar.bottomAnchor],
+  ]];
+}
+
 // Adds the bottom toolbar and sets constraints.
 - (void)setupBottomToolbar {
   UIView* bottomToolbar = self.bottomToolbar;
   CHECK(bottomToolbar);
 
-  [self.view addSubview:bottomToolbar];
+  if (IsDiamondPrototypeEnabled()) {
+    [self.view insertSubview:bottomToolbar belowSubview:_appBar];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [bottomToolbar.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-    [bottomToolbar.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [bottomToolbar.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-  ]];
+    [NSLayoutConstraint activateConstraints:@[
+      [bottomToolbar.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [bottomToolbar.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [bottomToolbar.topAnchor constraintEqualToAnchor:_appBar.topAnchor],
+    ]];
+  } else {
+    [self.view addSubview:bottomToolbar];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [bottomToolbar.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+      [bottomToolbar.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [bottomToolbar.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+    ]];
+  }
 
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
@@ -1584,6 +1620,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
+  if (IsDiamondPrototypeEnabled()) {
+    bottomInset = kChromeAppBarPrototypeHeight;
+  }
 
   CGFloat topInset = self.topToolbar.intrinsicContentSize.height;
   UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);

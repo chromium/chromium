@@ -42,3 +42,11 @@ source_set("system_flags") {
     "//ios/chrome/browser/shared/public/features",
   ]
 }
+
+source_set("diamond_prototype") {
+  sources = [
+    "diamond_prototype_utils.h",
+    "diamond_prototype_utils.mm",
+  ]
+  deps = [ ":features" ]
+}

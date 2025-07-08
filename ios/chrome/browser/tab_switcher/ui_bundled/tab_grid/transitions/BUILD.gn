@@ -25,6 +25,8 @@ source_set("transitions") {
   deps = [
     "//base",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:diamond_prototype",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",

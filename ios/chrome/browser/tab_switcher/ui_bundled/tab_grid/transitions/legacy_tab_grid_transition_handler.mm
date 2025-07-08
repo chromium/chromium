@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 
+#import "ios/chrome/browser/shared/public/features/diamond_prototype_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_animation.h"
@@ -129,7 +131,15 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
                withCompletion:(void (^)(void))completion {
   [tabGrid addChildViewController:browser];
 
-  browser.view.frame = tabGrid.view.bounds;
+  if (IsDiamondPrototypeEnabled()) {
+    CGRect frame = tabGrid.view.bounds;
+    CGFloat bottomInset =
+        tabGrid.view.safeAreaInsets.bottom + kChromeAppBarPrototypeHeight;
+    frame.size.height -= bottomInset;
+    browser.view.frame = frame;
+  } else {
+    browser.view.frame = tabGrid.view.bounds;
+  }
   [tabGrid.view addSubview:browser.view];
 
   browser.view.accessibilityViewIsModal = YES;
