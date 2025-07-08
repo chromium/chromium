@@ -1055,10 +1055,6 @@
       status: "experimental",
     },
     {
-      name: "ContinueEventTimingRecordingWhenBufferIsFull",
-      status: "stable",
-    },
-    {
       // Enable support for Controlled Frame, providing the Controlled
       // Frame tag to IWA apps and other contexts. See
       // https://github.com/WICG/controlled-frame/blob/main/README.md for more

@@ -36,14 +36,6 @@ bool ShouldLogEvent(const Event& event) {
          event.type() == event_type_names::kMouseup;
 }
 
-bool ShouldReportForEventTiming(WindowPerformance* performance) {
-  if (!performance->FirstInputDetected())
-    return true;
-
-  return (!performance->IsEventTimingBufferFull() ||
-          performance->HasObserverFor(PerformanceEntry::kEvent));
-}
-
 }  // namespace
 
 EventTiming::EventTiming(base::TimeTicks processing_start,
@@ -113,26 +105,6 @@ std::optional<EventTiming> EventTiming::TryCreate(
   // two EventTiming objects for the same Event.
   if (performance->GetCurrentEventTimingEvent() == &event)
     return std::nullopt;
-
-  if (!RuntimeEnabledFeatures::
-          ContinueEventTimingRecordingWhenBufferIsFullEnabled()) {
-    bool should_report_for_event_timing =
-        ShouldReportForEventTiming(performance);
-
-    bool should_log_event = ShouldLogEvent(event);
-
-    if (!should_report_for_event_timing && !should_log_event) {
-      return std::nullopt;
-    }
-
-    base::TimeTicks processing_start = Now();
-    HandleInputDelay(window, event, processing_start);
-
-    if (!should_report_for_event_timing && !should_log_event) {
-      return std::nullopt;
-    }
-    return EventTiming(processing_start, performance, event, hit_test_target);
-  }
 
   base::TimeTicks processing_start = Now();
 
