@@ -91,13 +91,13 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
 
   {
     auto* buffer_config = config.add_buffers();
-    buffer_config->set_size_kb(tracing::GetDefaultTraceBufferSize());
+    buffer_config->set_size_kb(tracing::GetDefaultTraceBufferSize().InKiB());
     buffer_config->set_fill_policy(
         perfetto::TraceConfig::BufferConfig::RING_BUFFER);
   }
   {
     auto* buffer_config = config.add_buffers();
-    buffer_config->set_size_kb(kMetadataBufferSizeKb);
+    buffer_config->set_size_kb(kMetadataBufferSize.InKiB());
     buffer_config->set_fill_policy(
         perfetto::TraceConfig::BufferConfig::DISCARD);
   }

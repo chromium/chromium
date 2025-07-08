@@ -413,12 +413,12 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   // TODO(khokhlov): Avoid duplication between this code and
   // services/tracing/public/cpp/perfetto/perfetto_config.cc.
   perfetto::TraceConfig perfetto_config;
-  size_t size_limit = trace_config.GetTraceBufferSizeInKb();
-  if (size_limit == 0) {
-    size_limit = 200 * 1024;
+  ByteCount size_limit = trace_config.GetTraceBufferSizeInBytes();
+  if (size_limit.is_zero()) {
+    size_limit = MiB(200);
   }
   auto* buffer_config = perfetto_config.add_buffers();
-  buffer_config->set_size_kb(checked_cast<uint32_t>(size_limit));
+  buffer_config->set_size_kb(checked_cast<uint32_t>(size_limit.InKiB()));
   switch (trace_config.GetTraceRecordMode()) {
     case base::trace_event::RECORD_UNTIL_FULL:
     case base::trace_event::RECORD_AS_MUCH_AS_POSSIBLE:

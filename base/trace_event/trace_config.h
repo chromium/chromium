@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/byte_count.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -246,7 +247,9 @@ class BASE_EXPORT TraceConfig {
   size_t GetTraceBufferSizeInEvents() const {
     return trace_buffer_size_in_events_;
   }
-  size_t GetTraceBufferSizeInKb() const { return trace_buffer_size_in_kb_; }
+  ByteCount GetTraceBufferSizeInBytes() const {
+    return trace_buffer_size_in_bytes_;
+  }
   bool IsSystraceEnabled() const { return enable_systrace_; }
   bool IsArgumentFilterEnabled() const { return enable_argument_filter_; }
 
@@ -254,7 +257,9 @@ class BASE_EXPORT TraceConfig {
   void SetTraceBufferSizeInEvents(size_t size) {
     trace_buffer_size_in_events_ = size;
   }
-  void SetTraceBufferSizeInKb(size_t size) { trace_buffer_size_in_kb_ = size; }
+  void SetTraceBufferSizeInBytes(ByteCount bytes) {
+    trace_buffer_size_in_bytes_ = bytes;
+  }
   void EnableSystrace() { enable_systrace_ = true; }
   void EnableSystraceEvent(const std::string& systrace_event);
   void EnableArgumentFilter() { enable_argument_filter_ = true; }
@@ -361,7 +366,7 @@ class BASE_EXPORT TraceConfig {
 
   TraceRecordMode record_mode_;
   size_t trace_buffer_size_in_events_ = 0;  // 0 specifies default size
-  size_t trace_buffer_size_in_kb_ = 0;      // 0 specifies default size
+  ByteCount trace_buffer_size_in_bytes_;
   bool enable_systrace_ : 1;
   bool enable_argument_filter_ : 1;
 

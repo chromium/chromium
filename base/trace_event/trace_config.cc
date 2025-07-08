@@ -317,7 +317,7 @@ TraceConfig& TraceConfig::operator=(const TraceConfig& rhs) {
 
   record_mode_ = rhs.record_mode_;
   trace_buffer_size_in_events_ = rhs.trace_buffer_size_in_events_;
-  trace_buffer_size_in_kb_ = rhs.trace_buffer_size_in_kb_;
+  trace_buffer_size_in_bytes_ = rhs.trace_buffer_size_in_bytes_;
   enable_systrace_ = rhs.enable_systrace_;
   enable_argument_filter_ = rhs.enable_argument_filter_;
   category_filter_ = rhs.category_filter_;
@@ -410,7 +410,7 @@ void TraceConfig::Merge(const TraceConfig& config) {
 void TraceConfig::Clear() {
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_kb_ = 0;
+  trace_buffer_size_in_bytes_ = ByteCount(0);
   enable_systrace_ = false;
   enable_argument_filter_ = false;
   enable_event_package_name_filter_ = false;
@@ -425,7 +425,7 @@ void TraceConfig::Clear() {
 void TraceConfig::InitializeDefault() {
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_kb_ = 0;
+  trace_buffer_size_in_bytes_ = ByteCount(0);
   enable_systrace_ = false;
   enable_argument_filter_ = false;
   enable_event_package_name_filter_ = false;
@@ -447,8 +447,8 @@ void TraceConfig::InitializeFromConfigDict(const Value::Dict& dict) {
   }
   trace_buffer_size_in_events_ = base::saturated_cast<size_t>(
       dict.FindInt(kTraceBufferSizeInEvents).value_or(0));
-  trace_buffer_size_in_kb_ = base::saturated_cast<size_t>(
-      dict.FindInt(kTraceBufferSizeInKb).value_or(0));
+  trace_buffer_size_in_bytes_ =
+      KiB(dict.FindInt(kTraceBufferSizeInKb).value_or(0));
 
   enable_systrace_ = dict.FindBool(kEnableSystraceParam).value_or(false);
   enable_argument_filter_ =
@@ -508,7 +508,7 @@ void TraceConfig::InitializeFromStrings(std::string_view category_filter_string,
 
   record_mode_ = RECORD_UNTIL_FULL;
   trace_buffer_size_in_events_ = 0;
-  trace_buffer_size_in_kb_ = 0;
+  trace_buffer_size_in_bytes_ = ByteCount(0);
   enable_systrace_ = false;
   systrace_events_.clear();
   enable_argument_filter_ = false;
@@ -674,9 +674,9 @@ Value TraceConfig::ToValue() const {
     dict.Set(kTraceBufferSizeInEvents,
              base::checked_cast<int>(trace_buffer_size_in_events_));
   }
-  if (trace_buffer_size_in_kb_ > 0) {
+  if (trace_buffer_size_in_bytes_.InBytes() > 0) {
     dict.Set(kTraceBufferSizeInKb,
-             base::checked_cast<int>(trace_buffer_size_in_kb_));
+             base::checked_cast<int>(trace_buffer_size_in_bytes_.InKiB()));
   }
 
   dict.Set(kEnableEventPackageNameFilterParam,
