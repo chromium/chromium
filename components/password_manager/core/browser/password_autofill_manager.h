@@ -137,11 +137,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
-  // Called when password manager thinks the login attempt failed.
-  // This might trigger a proactive recovery flow if credential has a backup
-  // password.
-  void OnLoginPotentiallyFailed(const PasswordForm& login_form);
-
 #if defined(UNIT_TEST)
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username) {
@@ -239,13 +234,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials,
       const gfx::RectF& bounds);
-
-  std::vector<autofill::Suggestion> GetSuggestions(
-      const std::u16string& username_filter,
-      OffersGeneration offers_generation,
-      ShowPasswordSuggestions show_password_suggestions,
-      ShowWebAuthnCredentials show_webauthn_credentials,
-      ShowIdentityCredentials show_identity_credentials);
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 

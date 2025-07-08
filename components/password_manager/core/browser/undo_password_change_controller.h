@@ -9,12 +9,10 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
@@ -26,9 +24,6 @@ enum class PasswordRecoveryState {
   // Append a "Trouble signing in" suggestion at the end of the suggestions
   // list.
   kTroubleSigningIn,
-  // Instead of the regular suggestions popup, create a custom one with a single
-  // backup password.
-  kShowProactiveRecovery,
   // Append a backup credential next to the primary credential.
   kIncludeBackup,
 };
@@ -38,10 +33,10 @@ enum class PasswordRecoveryState {
 // filled suggestion. All credentials start with an implicit
 // `kRegularFlowState`. Only credentials with a backup password can change this
 // state.
-class UndoPasswordChangeController : public PasswordFormManagerObserver {
+class UndoPasswordChangeController {
  public:
-  explicit UndoPasswordChangeController();
-  ~UndoPasswordChangeController() override;
+  UndoPasswordChangeController();
+  ~UndoPasswordChangeController();
 
   // Updates the state of the filled `credential`:
   // - If credential doesn't have a backup password, resets the flow and ignores
@@ -63,44 +58,11 @@ class UndoPasswordChangeController : public PasswordFormManagerObserver {
   // Returns `kRegularFlow` otherwise.
   PasswordRecoveryState GetState(const std::u16string& username) const;
 
-  // Called when PasswordManager detected a potentially failed login on
-  // `login_form`.
-  // This will simply store the `driver` and `login_form` and subscribe to form
-  // parsing events. The actual logic of handling failed login is in
-  // `OnPasswordFormParsed`.
-  void OnLoginPotentiallyFailed(PasswordManagerDriver* driver,
-                                const PasswordForm& login_form);
-
-  // If the current state is `kShowProactiveRecovery`, goes through all
-  // credentials in `fill_data` and finds the first one to match
-  // `current_username_`
-  // If nothing is found, returns empty optional.
-  std::optional<autofill::PasswordAndMetadata>
-  FindLoginWithProactiveRecoveryState(
-      const autofill::PasswordFormFillData* fill_data) const;
-
-  void OnSuggestionsHidden();
-
  private:
-  // PasswordFormManagerObserver:
-
-  // If form_manager manages `failed_login_form_`, this will call renderer to
-  // open a suggestions popup attached to the password field and at the same
-  // time set the current state to `kShowProactiveRecovery` so that when
-  // `PasswordAutofillManager` creates the suggestions, it will create a
-  // proactive popup instead of the usual one.
-  void OnPasswordFormParsed(PasswordFormManager* form_manager) override;
-
   void ResetFlow();
-
-  void FinishObserving();
 
   std::u16string current_username_;
   PasswordRecoveryState current_state_;
-  std::optional<PasswordForm> failed_login_form_;
-  raw_ptr<PasswordManagerDriver> driver_;
-  // Keep the pointer to the cache to unsubsribe at destruction
-  raw_ptr<PasswordFormCache> password_form_cache_;
 };
 
 }  // namespace password_manager

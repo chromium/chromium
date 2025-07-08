@@ -406,7 +406,6 @@ void RecordProvisionalSaveFailure(
 }
 
 void HandleFailedLoginDetectionForPasswordChange(
-    PasswordManagerDriver* driver,
     PasswordFormManager* submitted_manager,
     ukm::SourceId ukm_id) {
   CHECK(submitted_manager);
@@ -418,13 +417,6 @@ void HandleFailedLoginDetectionForPasswordChange(
         .SetLogInWithPasswordChangeSubmission(false)
         .Record(ukm::UkmRecorder::Get());
   }
-
-  // Proactive recovery on mobile will be implemented via touch to fill instead.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Create a copy of the submitted form because it will soon be destroyed.
-  driver->GetPasswordAutofillManager()->OnLoginPotentiallyFailed(
-      *submitted_manager->GetSubmittedForm());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -851,7 +843,7 @@ void PasswordManager::OnPasswordFormCleared(
   // form. Check if login should be considered failed in this case.
   if (relevant_field_cleared(
           manager->GetSubmittedForm()->password_element_renderer_id)) {
-    OnLoginPotentiallyFailed(driver, logger.get());
+    OnLoginPotentiallyFailed(logger.get());
   }
 }
 
@@ -976,7 +968,7 @@ void PasswordManager::OnResourceLoadingFailed(PasswordManagerDriver* driver,
     logger->LogMessage(Logger::STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED);
   }
 
-  OnLoginPotentiallyFailed(driver, logger.get());
+  OnLoginPotentiallyFailed(logger.get());
 }
 
 void PasswordManager::OnPasswordFormsParsed(
@@ -1398,7 +1390,7 @@ void PasswordManager::OnPasswordFormsRendered(
   // If the server throws an internal error, access denied page, page not
   // found etc. after a login attempt, we do not save the credentials.
   if (client_->WasLastNavigationHTTPError()) {
-    OnLoginFailed(driver, logger.get());
+    OnLoginFailed(logger.get());
     return;
   }
 
@@ -1436,7 +1428,7 @@ void PasswordManager::OnPasswordFormsRendered(
           logger->LogFormData(Logger::STRING_PASSWORD_FORM_REAPPEARED,
                               form_data);
         }
-        OnLoginFailed(driver, logger.get());
+        OnLoginFailed(logger.get());
         return;
       }
     }
@@ -1582,8 +1574,7 @@ void PasswordManager::OnLoginSuccessful() {
   ResetSubmittedManager();
 }
 
-void PasswordManager::OnLoginFailed(PasswordManagerDriver* driver,
-                                    BrowserSavePasswordProgressLogger* logger) {
+void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
   if (logger) {
     logger->LogMessage(Logger::STRING_DECISION_DROP);
   }
@@ -1595,7 +1586,8 @@ void PasswordManager::OnLoginFailed(PasswordManagerDriver* driver,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  HandleFailedLoginDetectionForPasswordChange(driver, submitted_manager,
+
+  HandleFailedLoginDetectionForPasswordChange(submitted_manager,
                                               client_->GetUkmSourceId());
 
   ResetSubmittedManager();
@@ -1603,13 +1595,12 @@ void PasswordManager::OnLoginFailed(PasswordManagerDriver* driver,
 }
 
 void PasswordManager::OnLoginPotentiallyFailed(
-    PasswordManagerDriver* driver,
     BrowserSavePasswordProgressLogger* logger) {
   if (logger) {
     logger->LogMessage(Logger::STRING_PASSWORD_POTENTIALLY_FAILED_LOGIN);
   }
 
-  HandleFailedLoginDetectionForPasswordChange(driver, GetSubmittedManager(),
+  HandleFailedLoginDetectionForPasswordChange(GetSubmittedManager(),
                                               client_->GetUkmSourceId());
 
   base::UmaHistogramBoolean("PasswordManager.FailedLoginDetected", true);

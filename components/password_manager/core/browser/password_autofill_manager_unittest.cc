@@ -2219,7 +2219,7 @@ TEST_F(PasswordAutofillManagerTest,
 
 TEST_F(PasswordAutofillManagerTest,
        PasswordRecoveryFlow_SuccessfulFillRecoverySuggestion) {
-  fill_data().preferred_login.backup_password_value = kAliceBackupPassword;
+  fill_data().preferred_login.backup_password_value = u"backup_password";
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -2262,7 +2262,7 @@ TEST_F(PasswordAutofillManagerTest,
 
 TEST_F(PasswordAutofillManagerTest,
        PasswordRecoveryFlow_ClickTroubleSigningInSuggestion) {
-  fill_data().preferred_login.backup_password_value = kAliceBackupPassword;
+  fill_data().preferred_login.backup_password_value = u"backup_password";
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
