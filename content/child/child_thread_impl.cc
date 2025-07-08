@@ -229,22 +229,6 @@ void TerminateSelfOnDisconnect(
 #endif
 }
 
-class SuicideOnChannelErrorFilter : public IPC::MessageFilter {
- public:
-  explicit SuicideOnChannelErrorFilter(
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-      : io_task_runner_(std::move(io_task_runner)) {}
-
-  // IPC::MessageFilter
-  void OnChannelError() override { TerminateSelfOnDisconnect(io_task_runner_); }
-
- protected:
-  ~SuicideOnChannelErrorFilter() override = default;
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-};
-
 #endif  // OS(POSIX)
 
 mojo::IncomingInvitation InitializeMojoIPCChannel() {
@@ -743,13 +727,9 @@ void ChildThreadImpl::Init(const Options& options) {
   // and single-process mode.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kProcessType)) {
-    if (options.with_legacy_ipc_channel) {
-      channel_->AddFilter(new SuicideOnChannelErrorFilter(GetIOTaskRunner()));
-    } else {
-      child_process_host_.set_disconnect_handler(
-          base::BindOnce(&TerminateSelfOnDisconnect, GetIOTaskRunner()),
-          GetIOTaskRunner());
-    }
+    child_process_host_.set_disconnect_handler(
+        base::BindOnce(&TerminateSelfOnDisconnect, GetIOTaskRunner()),
+        GetIOTaskRunner());
   }
 #endif
 
