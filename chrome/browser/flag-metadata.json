@@ -2100,7 +2100,7 @@
       "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "deprecate-unload",
