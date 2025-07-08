@@ -110,7 +110,7 @@ void ComposeboxQueryController::NotifySessionStarted() {
   DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   session_state_ = SessionState::kSessionStarted;
   session_start_time_ = base::Time::Now();
-  FetchClusterInfoRequest();
+  FetchClusterInfo();
 }
 
 void ComposeboxQueryController::NotifySessionAbandoned() {
@@ -132,14 +132,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
     std::unique_ptr<FileInfo> file_info,
     scoped_refptr<base::RefCountedBytes> file_data) {
   CHECK_EQ(file_info->upload_status_, FileUploadStatus::kNotUploaded);
-  const base::UnguessableToken& client_token = file_info->client_token_;
+  const base::UnguessableToken& file_token = file_info->file_token_;
 
-  auto [it, inserted] =
-      active_files_.emplace(client_token, std::move(file_info));
+  auto [it, inserted] = active_files_.emplace(file_token, std::move(file_info));
   DCHECK(inserted);
   FileInfo& current_file_info = *it->second;
 
-  UpdateFileUploadStatus(client_token, FileUploadStatus::kClientProcessing,
+  UpdateFileUploadStatus(file_token, FileUploadStatus::kProcessing,
                          std::nullopt);
   // Increment the request id sequence and image sequence id, regardless of
   // whether this is an image or pdf upload.
@@ -150,29 +149,23 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
   // Preparing for the file upload request requires multiple async flows to
   // complete before the request is ready to be send to the server. Start the
-  // required flows here, and each flow completes by calling a ready method,
-  // e.g. UploadFileRequestDataReady() with its data. The ready methods will
-  // handle waiting for all necessary flows to complete before performing the
-  // request.
+  // required flows here, and each flow completes by calling the ready method,
+  // i.e., OnUploadFileRequestBodyReady(). The ready method will handle waiting
+  // for all the necessary flows to complete before performing the request.
   // Async Flow 1: Fetching the cluster info, which is shared across.
   // This flow only occurs once per session and occurs in
   // NotifySessionStarted().
   // Async Flow 2: Creating the file upload request.
-  CreateFileUploadRequestAndContinue(
-      client_token, std::move(file_data),
-      base::BindOnce(
-          static_cast<void (ComposeboxQueryController::*)(
-              const base::UnguessableToken&, lens::LensOverlayServerRequest)>(
-              &ComposeboxQueryController::UploadFileRequestDataReady),
-          weak_ptr_factory_.GetWeakPtr(), client_token));
+  CreateFileUploadRequestBodyAndContinue(
+      file_token, std::move(file_data),
+      base::BindOnce(&ComposeboxQueryController::OnUploadFileRequestBodyReady,
+                     weak_ptr_factory_.GetWeakPtr(), file_token));
 
   // Async Flow 3: Retrieve the OAuth headers.
   current_file_info.file_upload_access_token_fetcher_ =
       CreateOAuthHeadersAndContinue(base::BindOnce(
-          static_cast<void (ComposeboxQueryController::*)(
-              const base::UnguessableToken&, std::vector<std::string>)>(
-              &ComposeboxQueryController::UploadFileRequestHeadersReady),
-          weak_ptr_factory_.GetWeakPtr(), client_token));
+          &ComposeboxQueryController::OnUploadFileRequestHeadersReady,
+          weak_ptr_factory_.GetWeakPtr(), file_token));
 }
 
 std::unique_ptr<EndpointFetcher>
@@ -234,17 +227,17 @@ ComposeboxQueryController::CreateClientContext() {
   return context;
 }
 
-void ComposeboxQueryController::FetchClusterInfoRequest() {
+void ComposeboxQueryController::FetchClusterInfo() {
   SetQueryControllerState(QueryControllerState::kAwaitingClusterInfoResponse);
 
   // There should not be any in-flight cluster info access token request.
   CHECK(!cluster_info_access_token_fetcher_);
   cluster_info_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
-      base::BindOnce(&ComposeboxQueryController::PerformClusterInfoFetchRequest,
+      base::BindOnce(&ComposeboxQueryController::SendClusterInfoNetworkRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ComposeboxQueryController::PerformClusterInfoFetchRequest(
+void ComposeboxQueryController::SendClusterInfoNetworkRequest(
     std::vector<std::string> request_headers) {
   cluster_info_access_token_fetcher_.reset();
 
@@ -277,13 +270,12 @@ void ComposeboxQueryController::PerformClusterInfoFetchRequest(
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
-      base::BindOnce(
-          &ComposeboxQueryController::ClusterInfoFetchResponseHandler,
-          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ComposeboxQueryController::HandleClusterInfoResponse,
+                     weak_ptr_factory_.GetWeakPtr()),
       google_apis::GetAPIKey().c_str());
 }
 
-void ComposeboxQueryController::ClusterInfoFetchResponseHandler(
+void ComposeboxQueryController::HandleClusterInfoResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   cluster_info_endpoint_fetcher_.reset();
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
@@ -308,8 +300,8 @@ void ComposeboxQueryController::ClusterInfoFetchResponseHandler(
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
   // Iterate through any existing files and send the upload requests if ready.
-  for (const auto& [client_token, file_info] : active_files_) {
-    MaybeSendFileUploadNetworkRequest(client_token);
+  for (const auto& [file_token, file_info] : active_files_) {
+    MaybeSendFileUploadNetworkRequest(file_token);
   }
 }
 
@@ -324,86 +316,80 @@ void ComposeboxQueryController::SetQueryControllerState(
 }
 
 void ComposeboxQueryController::UpdateFileUploadStatus(
-    const base::UnguessableToken& client_token,
+    const base::UnguessableToken& file_token,
     FileUploadStatus status,
-    const std::optional<std::string>& error_message) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+    std::optional<FileUploadErrorType> error_type) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
 
-  FileInfo& file_info = *it->second;
-  file_info.upload_status_ = status;
+  file_info->upload_status_ = status;
   for (auto& observer : observers_) {
-    observer.OnFileUploadStatusChanged(client_token, status, error_message);
+    observer.OnFileUploadStatusChanged(file_token, status, error_type);
   }
 }
 
-void ComposeboxQueryController::CreateFileUploadRequestAndContinue(
-    const base::UnguessableToken& client_token,
+void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
+    const base::UnguessableToken& file_token,
     scoped_refptr<base::RefCountedBytes> file_data,
     RequestBodyProtoCreatedCallback callback) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
-  FileInfo& file_info = *it->second;
 
   // Call CreateFileUploadRequestProto off the main thread to avoid blocking
   // the main thread on compression or image processing.
   create_request_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CreateFileUploadRequestProto, *file_info.request_id_,
-                     file_info.mime_type_, std::move(file_data)),
-      base::BindOnce(std::move(callback)));
+      base::BindOnce(&CreateFileUploadRequestProto, *file_info->request_id_,
+                     file_info->mime_type_, std::move(file_data)),
+      std::move(callback));
 }
 
-void ComposeboxQueryController::UploadFileRequestDataReady(
-    const base::UnguessableToken& client_token,
+void ComposeboxQueryController::OnUploadFileRequestBodyReady(
+    const base::UnguessableToken& file_token,
     lens::LensOverlayServerRequest request) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
 
-  FileInfo& file_info = *it->second;
-  file_info.request_body_ =
+  file_info->request_body_ =
       std::make_unique<lens::LensOverlayServerRequest>(request);
-  MaybeSendFileUploadNetworkRequest(client_token);
+  MaybeSendFileUploadNetworkRequest(file_token);
 }
 
-void ComposeboxQueryController::UploadFileRequestHeadersReady(
-    const base::UnguessableToken& client_token,
+void ComposeboxQueryController::OnUploadFileRequestHeadersReady(
+    const base::UnguessableToken& file_token,
     std::vector<std::string> headers) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
 
-  FileInfo& file_info = *it->second;
-  file_info.file_upload_access_token_fetcher_.reset();
-  file_info.request_headers_ =
+  file_info->file_upload_access_token_fetcher_.reset();
+  file_info->request_headers_ =
       std::make_unique<std::vector<std::string>>(headers);
-  MaybeSendFileUploadNetworkRequest(client_token);
+  MaybeSendFileUploadNetworkRequest(file_token);
 }
 
 void ComposeboxQueryController::MaybeSendFileUploadNetworkRequest(
-    const base::UnguessableToken& client_token) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+    const base::UnguessableToken& file_token) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
 
-  FileInfo& file_info = *it->second;
-  if (file_info.request_headers_ && file_info.request_body_ &&
+  if (file_info->request_headers_ && file_info->request_body_ &&
       cluster_info_.has_value()) {
-    SendFileUploadNetworkRequest(&file_info);
+    SendFileUploadNetworkRequest(file_info);
   }
 }
 
 void ComposeboxQueryController::SendFileUploadNetworkRequest(
     FileInfo* file_info) {
-  CHECK(file_info);
   CHECK(file_info->request_body_);
   CHECK(file_info->request_headers_);
   CHECK_EQ(query_controller_state_, QueryControllerState::kClusterInfoReceived);
@@ -433,36 +419,44 @@ void ComposeboxQueryController::SendFileUploadNetworkRequest(
       *file_info->request_headers_, cors_exempt_headers,
       /*upload_progress_callback=*/base::DoNothing());
   file_info->upload_network_request_start_time_ = base::Time::Now();
-  UpdateFileUploadStatus(file_info->client_token_,
+  UpdateFileUploadStatus(file_info->file_token_,
                          FileUploadStatus::kUploadStarted, std::nullopt);
 
   // Finally, perform the request.
   file_info->file_upload_endpoint_fetcher_->PerformRequest(
       base::BindOnce(&ComposeboxQueryController::HandleFileUploadResponse,
-                     weak_ptr_factory_.GetWeakPtr(), file_info->client_token_),
+                     weak_ptr_factory_.GetWeakPtr(), file_info->file_token_),
       google_apis::GetAPIKey().c_str());
 }
 
 void ComposeboxQueryController::HandleFileUploadResponse(
-    const base::UnguessableToken& client_token,
+    const base::UnguessableToken& file_token,
     std::unique_ptr<EndpointResponse> response) {
-  auto it = active_files_.find(client_token);
-  if (it == active_files_.end()) {
+  FileInfo* file_info = GetFileInfo(file_token);
+  if (!file_info) {
     return;
   }
 
-  FileInfo& file_info = *it->second;
-  file_info.server_response_time_ = base::Time::Now();
-  file_info.response_code_ = response->http_status_code;
-  file_info.file_upload_endpoint_fetcher_.reset();
+  file_info->server_response_time_ = base::Time::Now();
+  file_info->response_code_ = response->http_status_code;
+  file_info->file_upload_endpoint_fetcher_.reset();
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    file_info.upload_error_type_ = FileUploadErrorType::kServerError;
-    UpdateFileUploadStatus(client_token, FileUploadStatus::kUploadFailed,
-                           response->response);
+    file_info->upload_error_type_ = FileUploadErrorType::kServerError;
+    UpdateFileUploadStatus(file_token, FileUploadStatus::kUploadFailed,
+                           FileUploadErrorType::kServerError);
     return;
   }
 
-  UpdateFileUploadStatus(client_token, FileUploadStatus::kUploadSuccessful,
+  UpdateFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful,
                          std::nullopt);
+}
+
+ComposeboxQueryController::FileInfo* ComposeboxQueryController::GetFileInfo(
+    const base::UnguessableToken& file_token) {
+  auto it = active_files_.find(file_token);
+  if (it == active_files_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
