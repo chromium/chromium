@@ -389,10 +389,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(ButtonWithAccessibilityLabelId(
-                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
-                            grey_userInteractionEnabled(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -577,10 +575,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(ButtonWithAccessibilityLabelId(
-                                IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON),
-                            grey_userInteractionEnabled(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
