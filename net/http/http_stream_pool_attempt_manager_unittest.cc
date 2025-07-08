@@ -7752,4 +7752,35 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, GroupAlive) {
   EXPECT_EQ(requester3.negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
+// Test that after a SPDY session is established, a preconnect request with
+// available QUIC alternative service should establish a QUIC session.
+TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
+       PreconnectWithExistingSpdySession) {
+  resolver()
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder(kDefaultDestination).Build();
+
+  // First stream request completes with SpdySession.
+  RequestStreamToCreateSpdySession(stream_key);
+
+  // Set up QUIC Alt-Svc and QUIC data for preconnect.
+  SetQuicAlternativeService(stream_key);
+  AddQuicData();
+
+  Preconnector preconnector(stream_key);
+  preconnector.set_quic_version(quic_version());
+
+  EXPECT_EQ(preconnector.Preconnect(pool()), ERR_IO_PENDING);
+  EXPECT_THAT(preconnector.WaitForResult(), IsOk());
+  QuicSessionAliasKey quic_key = stream_key.CalculateQuicSessionAliasKey();
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_key.session_key(),
+                                               quic_key.destination());
+  EXPECT_TRUE(quic_session);
+}
+
 }  // namespace net

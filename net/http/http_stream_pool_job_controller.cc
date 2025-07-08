@@ -229,8 +229,13 @@ int HttpStreamPool::JobController::Preconnect(
     return OK;
   }
 
-  // TODO(crbug.com/429404814): Try preconnecting QUIC if `quic_version_` is
-  // known.
+  // If the preconnect explicitly requests QUIC, start preconnecting before
+  // checking existing SpdySession and idle streams.
+  if (origin_quic_version_.IsKnown()) {
+    preconnect_callback_ = std::move(callback);
+    StartAltSvcQuicPreconnect();
+    return ERR_IO_PENDING;
+  }
 
   SpdySessionKey spdy_session_key =
       origin_stream_key_.CalculateSpdySessionKey();
@@ -549,7 +554,9 @@ bool HttpStreamPool::JobController::CanUseExistingQuicSession() {
 
 void HttpStreamPool::JobController::StartAltSvcQuicPreconnect() {
   Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
-  preconnect_callback_ = pool_->GetAltSvcQuicPreconnectCallback();
+  if (preconnect_callback_.is_null()) {
+    preconnect_callback_ = pool_->GetAltSvcQuicPreconnectCallback();
+  }
   origin_job_ = std::make_unique<Job>(this, JobType::kAltSvcQuicPreconnect,
                                       &group, origin_quic_version_,
                                       NextProto::kProtoQUIC, net_log_,
