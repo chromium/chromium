@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -180,9 +181,21 @@ bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
 }
 
 void IdentityLaunchWebAuthFlowFunction::OnBrowserContextShutdown() {
-  if (auth_flow_) {
-    auth_flow_->Stop();
+  // auth_flow_ internally observes profile destruction. It may have already
+  // notified us if the navigation got cancelled prematurely because of profile
+  // destruction. Do not attempt to respond again in this case.
+  //
+  // This should only happen in tests because they keep an external reference to
+  // this ExtensionFunction instance. This prevents the refcount from going to
+  // zero and the function from being destroyed after the response is sent.
+  //
+  // In production code, the ExtensionFunction is destroyed after the response
+  // is sent.
+  if (did_respond()) {
+    CHECK_IS_TEST();
+    return;
   }
+
   RecordHistogramFunctionResult(Error::kBrowserContextShutDown);
   CompleteAsyncRun(
       ExtensionFunction::Error(ErrorToString(Error::kBrowserContextShutDown)));

@@ -11,7 +11,10 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -44,7 +47,8 @@ class WebAuthFlowInfoBarDelegate;
 //
 // A WebAuthFlow can be started in Mode::SILENT, which never displays
 // a window. If a window would be required, the flow fails.
-class WebAuthFlow : public content::WebContentsObserver {
+class WebAuthFlow : public content::WebContentsObserver,
+                    public ProfileObserver {
  public:
   enum Mode {
     INTERACTIVE,  // Show UI to the user if necessary.
@@ -114,10 +118,6 @@ class WebAuthFlow : public content::WebContentsObserver {
   // Prevents further calls to the delegate and deletes the flow.
   void DetachDelegateAndDelete();
 
-  // Immediately closes the webview and prevents further delegate calls. Can be
-  // called before `DetachDelegateAndDelete()` to release resources immediately.
-  void Stop();
-
   // This call will make the interactive mode, that opens up a browser tab for
   // auth, display an Infobar that shows the extension name.
   void SetShouldShowInfoBar(const std::string& extension_display_name);
@@ -136,6 +136,9 @@ class WebAuthFlow : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // ProfileObserver
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   void BeforeUrlLoaded(const GURL& url);
   void AfterUrlLoaded();
@@ -180,6 +183,7 @@ class WebAuthFlow : public content::WebContentsObserver {
   // Flag indicating that the initial URL was successfully loaded. Influences
   // the error code when the flow times out.
   bool initial_url_loaded_ = false;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace extensions

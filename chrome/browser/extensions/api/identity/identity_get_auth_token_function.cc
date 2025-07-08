@@ -772,9 +772,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
 #if BUILDFLAG(IS_CHROMEOS)
   device_oauth2_token_fetcher_.reset();
 #endif
-  if (gaia_remote_consent_flow_) {
-    gaia_remote_consent_flow_->Stop();
-  }
+  gaia_remote_consent_flow_.reset();
   token_key_account_access_token_fetcher_.reset();
   refresh_tokens_loaded_waiter_.reset();
   scoped_identity_manager_observation_.Reset();
