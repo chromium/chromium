@@ -385,9 +385,10 @@ IDBTransaction* IDBDatabase::transaction(
   mojom::blink::IDBTransactionDurability durability =
       mojom::blink::IDBTransactionDurability::Default;
   DCHECK(options);
-  if (options->durability() == indexed_db_names::kRelaxed) {
+  if (options->durability() == V8IDBTransactionDurability::Enum::kRelaxed) {
     durability = mojom::blink::IDBTransactionDurability::Relaxed;
-  } else if (options->durability() == indexed_db_names::kStrict) {
+  } else if (options->durability() ==
+             V8IDBTransactionDurability::Enum::kStrict) {
     durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 

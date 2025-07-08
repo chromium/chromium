@@ -52,7 +52,7 @@ IDBVersionChangeEvent::IDBVersionChangeEvent(
       data_loss_(mojom::blink::IDBDataLoss::None) {
   if (initializer->hasNewVersion())
     new_version_ = initializer->newVersion();
-  if (initializer->dataLoss() == "total") {
+  if (initializer->dataLoss() == V8IDBDataLossAmount::Enum::kTotal) {
     data_loss_ = mojom::blink::IDBDataLoss::Total;
   }
 }
