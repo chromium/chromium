@@ -1199,6 +1199,7 @@ crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-nestin
 crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-001.html [ Failure ]
 crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-001.html [ Failure ]
 crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of-line-001.html [ Failure ]
+crbug.com/429929881 external/wpt/css/css-text/line-breaking/line-breaking-019.html [ Failure ]
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
 # CSS Inline `initial-letter` property.

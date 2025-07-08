@@ -2852,6 +2852,7 @@
       // Stop emitting U+FFFC Object Replacement Character for out-of-flow
       // objects such as floating or out-of-flow positioned. crbgu.com/40658609
       name: "LineBreakOofNoOrc",
+      status: "stable",
     },
     {
       name: "ListItemWithCounterSetNotSetExplicitValue",
