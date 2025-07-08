@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
@@ -173,8 +175,15 @@ TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
-  handler().AddFile(std::move(file_info), std::move(file_data));
+  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
+  std::unique_ptr<ComposeboxQueryController::FileInfo> controller_file_info;
+  base::UnguessableToken callback_token;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce(MoveArg<0>(&controller_file_info));
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+  handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
+
+  EXPECT_EQ(callback_token, controller_file_info->file_token_);
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Image) {
@@ -188,6 +197,13 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
-  handler().AddFile(std::move(file_info), std::move(file_data));
+  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
+  std::unique_ptr<ComposeboxQueryController::FileInfo> controller_file_info;
+  base::UnguessableToken callback_token;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce(MoveArg<0>(&controller_file_info));
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+  handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
+
+  EXPECT_EQ(callback_token, controller_file_info->file_token_);
 }

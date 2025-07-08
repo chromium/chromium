@@ -45,7 +45,8 @@ void ComposeboxHandler::OpenUrl(GURL url,
 
 void ComposeboxHandler::AddFile(
     composebox::mojom::SelectedFileInfoPtr file_info_mojom,
-    mojo_base::BigBuffer file_bytes) {
+    mojo_base::BigBuffer file_bytes,
+    AddFileCallback callback) {
   scoped_refptr<base::RefCountedBytes> file_data =
       base::MakeRefCounted<base::RefCountedBytes>(file_bytes);
 
@@ -64,6 +65,7 @@ void ComposeboxHandler::AddFile(
     NOTREACHED();
   }
 
+  std::move(callback).Run(file_info_metadata->file_token_);
   query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
                                          std::move(file_data));
 }

@@ -10,6 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
@@ -50,7 +51,7 @@ export class ComposeboxElement extends CrLitElement {
   static override get properties() {
     return {
       attachmentFileTypes_: {type: String},
-      files_: {type: Array},
+      files_: {type: Object},
       imageFileTypes_: {type: String},
       inputsDisabled_: {type: Boolean},
       submitEnabled_: {
@@ -66,7 +67,7 @@ export class ComposeboxElement extends CrLitElement {
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
-  protected accessor files_: ComposeboxFile[] = [];
+  protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor inputsDisabled_: boolean = false;
@@ -114,24 +115,28 @@ export class ComposeboxElement extends CrLitElement {
   }
 
   private computeInputsDisabled_() {
-    this.inputsDisabled_ = this.files_.length >= this.maxFileCount_;
+    this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
   }
 
   protected onDeleteFile_(e: CustomEvent) {
-    if (!e.detail.uuid) {
+    if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
     }
-    this.files_ = this.files_.filter((file) => file.uuid !== e.detail.uuid);
+    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
+        new Map(this.files_.entries());
+    newFileMap.delete(e.detail.uuid);
+    this.files_ = newFileMap;
   }
 
   protected async onFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
     const files = input.files;
     if (!files || files.length === 0 ||
-        this.files_.length >= this.maxFileCount_) {
+        this.files_.size >= this.maxFileCount_) {
       return;
     }
-    const newFiles: ComposeboxFile[] = [];
+    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
+        new Map(this.files_.entries());
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i)!;
       if (file.size === 0 || file.size > this.maxFileSize_) {
@@ -145,15 +150,15 @@ export class ComposeboxElement extends CrLitElement {
         const bigBuffer:
             BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
 
-        this.pageHandler_.addFile(
+        const {token} = await this.pageHandler_.addFile(
             {
               fileName: file.name,
               mimeType: file.type,
               selectionTime: new Date(),
             },
             bigBuffer);
-        newFiles.push({
-          uuid: this.createUuid(),
+        newFileMap.set(token, {
+          uuid: token,
           name: file.name,
           objectUrl:
               e.target === this.$.imageInput ? URL.createObjectURL(file) : null,
@@ -161,7 +166,7 @@ export class ComposeboxElement extends CrLitElement {
         });
       }
     }
-    this.files_ = this.files_.concat(newFiles);
+    this.files_ = newFileMap;
     // Clear the file input.
     input.value = '';
   }
@@ -174,20 +179,11 @@ export class ComposeboxElement extends CrLitElement {
     this.$.fileInput.click();
   }
 
-  private createUuid(): string {
-    return BigInt
-        .asUintN(
-            64,
-            BigInt(`0x${crypto.randomUUID().replace(/-/g, '')}`),
-            )
-        .toString();
-  }
-
   protected onCancelClick_() {
     if (this.$.input.value.trim().length > 0) {
       this.$.input.value = '';
       // TODO(rtatum@): Send request to handler to clear file cache.
-      this.files_ = [];
+      this.files_ = new Map();
       this.submitEnabled_ = false;
     } else {
       this.notifySessionAbandoned_();

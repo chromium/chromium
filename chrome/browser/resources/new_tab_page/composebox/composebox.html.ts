@@ -54,7 +54,7 @@ export function getHtml(this: ComposeboxElement) {
   </div>
   <ntp-composebox-file-carousel
       id="carousel"
-      .files=${this.files_}
+      .files=${Array.from(this.files_.values())}
       @delete-file=${this.onDeleteFile_}>
   </ntp-composebox-file-carousel>
   <input type="file"
