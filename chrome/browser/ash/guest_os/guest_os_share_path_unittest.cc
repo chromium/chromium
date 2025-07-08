@@ -437,20 +437,9 @@ TEST_F(GuestOsSharePathTest, SuccessDriveFsTeamDrives) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/40607763): Enable when DriveFS enforces allowed write paths.
-TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputersGrandRoot) {
-  guest_os_share_path_->SharePath(
-      "vm-running", 0, drivefs_.Append("Computers"),
-      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
-                     base::Unretained(this), "vm-running",
-                     SeneschalClientCalled::YES,
-                     &vm_tools::seneschal::SharePathRequest::DRIVEFS_COMPUTERS,
-                     "pc", Success::YES, ""));
-  run_loop()->Run();
-}
-
-// TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
-TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputersGrandRoot) {
+// Sharing the root of /Computers is not allowed. This test used to be disabled
+// in https://crbug.com/40607763.
+TEST_F(GuestOsSharePathTest, FailDriveFsComputersGrandRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers"),
       base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
@@ -460,20 +449,9 @@ TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputersGrandRoot) {
   run_loop()->Run();
 }
 
-// TODO(crbug.com/40607763): Enable when DriveFS enforces allowed write paths.
-TEST_F(GuestOsSharePathTest, DISABLED_SuccessDriveFsComputerRoot) {
-  guest_os_share_path_->SharePath(
-      "vm-running", 0, drivefs_.Append("Computers").Append("pc"),
-      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
-                     base::Unretained(this), "vm-running",
-                     SeneschalClientCalled::YES,
-                     &vm_tools::seneschal::SharePathRequest::DRIVEFS_COMPUTERS,
-                     "pc", Success::YES, ""));
-  run_loop()->Run();
-}
-
-// TODO(crbug.com/40607763): Remove when DriveFS enforces allowed write paths.
-TEST_F(GuestOsSharePathTest, Bug917920DriveFsComputerRoot) {
+// Sharing the root of an individual computer (e.g. .../Computers/My-PC) is
+// not allowed. This test used to be disabled in https://crbug.com/40607763.
+TEST_F(GuestOsSharePathTest, FailDriveFsComputerRoot) {
   guest_os_share_path_->SharePath(
       "vm-running", 0, drivefs_.Append("Computers").Append("pc"),
       base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
