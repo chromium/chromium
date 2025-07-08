@@ -6,7 +6,6 @@
 
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -130,17 +129,6 @@ void NavigationThrottleRunner::ProcessNavigationEvent(
 
 void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
-  if (GetDeferringThrottle() != deferring_throttle) {
-    // TODO(https://crbug.com/411238078): Upgrade to CHECK_EQ once remaining
-    // known cases are fixed. Until then, collect dump data and ignore the
-    // resume request to avoid bypassing required throttle checks.
-    SCOPED_CRASH_KEY_STRING32("Bug411238078", "expected_throttle",
-                              GetDeferringThrottle()->GetNameForLogging());
-    SCOPED_CRASH_KEY_STRING32("Bug411238078", "actual_throttle",
-                              deferring_throttle->GetNameForLogging());
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
   base::TimeDelta defer_time =
       RecordDeferTimeHistogram(current_event_, defer_start_time_);
   total_defer_duration_time_ += defer_time;
@@ -154,18 +142,6 @@ void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
                                 current_event_);
   RecordDeferTimeUKM();
   ProcessInternal();
-}
-
-void NavigationThrottleRunner::CallResumeForTesting() {
-  RecordDeferTimeUKM();
-  ProcessInternal();
-}
-
-NavigationThrottle* NavigationThrottleRunner::GetDeferringThrottle() const {
-  if (next_index_ == 0) {
-    return nullptr;
-  }
-  return &registry_->GetThrottleAtIndex(next_index_ - 1);
 }
 
 void NavigationThrottleRunner::ProcessInternal() {
@@ -221,6 +197,7 @@ void NavigationThrottleRunner::ProcessInternal() {
         return;
 
       case NavigationThrottle::DEFER:
+        registry_->OnDeferProcessingNavigationEvent(throttles[i].get());
         next_index_ = i + 1;
         defer_start_time_ = base::Time::Now();
         if (first_deferral_callback_for_testing_) {
@@ -260,7 +237,7 @@ void NavigationThrottleRunner::InformRegistry(
 }
 
 void NavigationThrottleRunner::RecordDeferTimeUKM() {
-  if (!is_primary_main_frame_ || !GetDeferringThrottle()) {
+  if (!is_primary_main_frame_ || registry_->GetDeferringThrottles().empty()) {
     return;
   }
   ukm::builders::NavigationThrottleDeferredTime builder(
@@ -272,8 +249,8 @@ void NavigationThrottleRunner::RecordDeferTimeUKM() {
   // UKM. The possible values are sparse, and analyses should hash the values
   // returned by NavigationThrottle::GetNameForLogging to determine which
   // throttle deferred the navigation.
-  builder.SetNavigationThrottleNameHash(
-      base::HashMetricName(GetDeferringThrottle()->GetNameForLogging()));
+  builder.SetNavigationThrottleNameHash(base::HashMetricName(
+      (*registry_->GetDeferringThrottles().cbegin())->GetNameForLogging()));
   builder.Record(ukm::UkmRecorder::Get());
 }
 

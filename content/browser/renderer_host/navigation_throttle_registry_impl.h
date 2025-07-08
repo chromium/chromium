@@ -39,7 +39,6 @@ enum class NavigationThrottleEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationThrottleEvent)
 
-
 class CONTENT_EXPORT NavigationThrottleRegistryBase
     : public NavigationThrottleRegistry {
  public:
@@ -52,12 +51,21 @@ class CONTENT_EXPORT NavigationThrottleRegistryBase
       NavigationThrottleEvent event,
       NavigationThrottle::ThrottleCheckResult result) = 0;
 
+  // Called when the NavigationThrottleRunner is about to defer the navigation
+  // per a request from the given `deferring_throttle`.
+  virtual void OnDeferProcessingNavigationEvent(
+      NavigationThrottle* deferring_throttle) = 0;
+
   // Returns the list of NavigationThrottles registered for this navigation.
   virtual std::vector<std::unique_ptr<NavigationThrottle>>& GetThrottles() = 0;
 
   // Returns the NavigationThrottle at the given `index`. The `index` should
   // be in a valid range.
   virtual NavigationThrottle& GetThrottleAtIndex(size_t index) = 0;
+
+  // Returns the throttles that are currently deferring the navigation.
+  virtual const std::set<NavigationThrottle*>& GetDeferringThrottles()
+      const = 0;
 };
 
 class CONTENT_EXPORT NavigationThrottleRegistryImpl
@@ -96,9 +104,6 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // deferred the navigation have unblocked the navigation.
   void ResumeProcessingNavigationEvent(NavigationThrottle* resuiming_throttle);
 
-  // Returns the throttles that are currently deferring the navigation.
-  const std::set<NavigationThrottle*>& GetDeferringThrottles();
-
   // Returns the underlying NavigationThrottleRunner for tests to manipulate.
   // TODO(https://crbug.com/422003056): Remove this method, and hide the runner
   // interfaces from general code to decouple the runner. Once it is hidden,
@@ -118,7 +123,10 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
       NavigationThrottleEvent event,
       NavigationThrottle::ThrottleCheckResult result) override;
   std::vector<std::unique_ptr<NavigationThrottle>>& GetThrottles() override;
+  void OnDeferProcessingNavigationEvent(
+      NavigationThrottle* deferring_throttle) override;
   NavigationThrottle& GetThrottleAtIndex(size_t index) override;
+  const std::set<NavigationThrottle*>& GetDeferringThrottles() const override;
 
  private:
   // Holds a reference to the NavigationRequest that owns this instance.
@@ -131,13 +139,8 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // A list of Throttles registered for this navigation.
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;
 
-  // The throttles that are currently deferring the navigation if it runs with
-  // the v1 runner. This is needed to adopt the v1 interface to the registry's
-  // GetDeferringThrottles(). This is lazily initialized on every
-  // GetDeferringThrottles() call.
-  // TODO(https://crbug.com/.422003056): Explore more efficient approach, i.e.
-  // the runner notifies the registry to update this set.
-  std::set<NavigationThrottle*> deferring_throttles_in_v1_runner_;
+  // The throttles that are currently deferring the navigation.
+  std::set<NavigationThrottle*> deferring_throttles_;
 
   // This is used in an experiment to cache frequently used navigation
   // attributes.

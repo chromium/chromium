@@ -5973,17 +5973,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
     auto* request =
         NavigationRequest::From(prerender_manager.GetNavigationHandle());
     ASSERT_TRUE(request->IsDeferredForTesting());
-    ASSERT_EQ(1u, request->GetNavigationThrottleRegistryForTesting()
-                      ->GetDeferringThrottles()
-                      .size());
-    EXPECT_TRUE(request->GetNavigationThrottleRegistryForTesting()
-                    ->GetDeferringThrottles()
-                    .contains(throttle));
+    auto* registry = request->GetNavigationThrottleRegistryForTesting();
+    ASSERT_EQ(1u, registry->GetDeferringThrottles().size());
+    EXPECT_TRUE(registry->GetDeferringThrottles().contains(throttle));
+    registry->ResumeProcessingNavigationEvent(throttle);
     throttle = nullptr;
-
-    request->GetNavigationThrottleRegistryForTesting()
-        ->GetNavigationThrottleRunnerForTesting()
-        .CallResumeForTesting();
     ASSERT_TRUE(prerender_manager.WaitForNavigationFinished());
 
     FrameTreeNodeId host_id = GetHostForUrl(kPrerenderingUrl);

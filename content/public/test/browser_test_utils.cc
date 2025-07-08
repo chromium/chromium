@@ -3509,9 +3509,10 @@ void TestNavigationManager::ResumeIfPaused() {
 
   navigation_paused_ = false;
 
-  request_->GetNavigationThrottleRegistryForTesting()
-      ->GetNavigationThrottleRunnerForTesting()
-      .CallResumeForTesting();
+  auto* registry = request_->GetNavigationThrottleRegistryForTesting();
+  ASSERT_EQ(1u, registry->GetDeferringThrottles().size());
+  registry->ResumeProcessingNavigationEvent(
+      *registry->GetDeferringThrottles().cbegin());
 }
 
 bool TestNavigationManager::ShouldMonitorNavigation(NavigationHandle* handle) {

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include <optional>
+#include <set>
 
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
@@ -75,7 +76,11 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     runner_ = std::make_unique<NavigationThrottleRunner>(this, 1, true);
   }
 
-  void Resume() { runner_->CallResumeForTesting(); }
+  void Resume() {
+    ASSERT_EQ(1u, deferring_throttles_.size());
+    runner_->ResumeProcessingNavigationEvent(*deferring_throttles_.begin());
+    deferring_throttles_.clear();
+  }
 
   void SimulateEvent(NavigationThrottleEvent event) {
     was_delegate_notified_ = false;
@@ -96,7 +101,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     return observer_last_event_;
   }
 
-  bool is_deferring() { return runner_->GetDeferringThrottle() != nullptr; }
+  bool is_deferring() { return !deferring_throttles_.empty(); }
 
   NavigationThrottleRunner* runner() { return runner_.get(); }
 
@@ -208,6 +213,10 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     was_delegate_notified_ = true;
     observer_last_event_ = event;
   }
+  void OnDeferProcessingNavigationEvent(
+      NavigationThrottle* deferring_throttle) override {
+    deferring_throttles_.insert(deferring_throttle);
+  }
   std::vector<std::unique_ptr<NavigationThrottle>>& GetThrottles() override {
     return throttles_;
   }
@@ -215,11 +224,15 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     EXPECT_LT(index, throttles_.size());
     return *throttles_[index];
   }
+  const std::set<NavigationThrottle*>& GetDeferringThrottles() const override {
+    return deferring_throttles_;
+  }
 
   void ResetNavigationThrottleRunner() { runner_.reset(); }
 
   MockNavigationHandle handle_;
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;
+  std::set<NavigationThrottle*> deferring_throttles_;
   std::unique_ptr<NavigationThrottleRunner> runner_;
   NavigationThrottleEvent observer_last_event_ =
       NavigationThrottleEvent::kNoEvent;

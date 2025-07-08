@@ -625,10 +625,11 @@ TEST_F(NavigationRequestTest, WillFailRequestCanAccessRenderFrameHost) {
       NavigationRequest::WILL_FAIL_REQUEST,
       NavigationRequest::From(navigation->GetNavigationHandle())->state());
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
-  NavigationRequest::From(navigation->GetNavigationHandle())
-      ->GetNavigationThrottleRegistryForTesting()
-      ->GetNavigationThrottleRunnerForTesting()
-      .CallResumeForTesting();
+  auto* registry = NavigationRequest::From(navigation->GetNavigationHandle())
+                       ->GetNavigationThrottleRegistryForTesting();
+  ASSERT_EQ(1u, registry->GetDeferringThrottles().size());
+  registry->ResumeProcessingNavigationEvent(
+      *registry->GetDeferringThrottles().cbegin());
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetRenderFrameHost());
 
   SetBrowserClientForTesting(old_browser_client);
@@ -1318,8 +1319,7 @@ class ResponseBodyNavigationThrottle : public NavigationThrottle {
     std::move(callback_).Run(response_body);
     NavigationRequest::From(navigation_handle())
         ->GetNavigationThrottleRegistryForTesting()
-        ->GetNavigationThrottleRunnerForTesting()
-        .CallResumeForTesting();
+        ->ResumeProcessingNavigationEvent(this);
   }
 
   ResponseBodyCallback callback_;

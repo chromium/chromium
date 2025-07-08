@@ -21601,8 +21601,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 
   // Check that the deferral is caused by RendererCancellationThrottle.
   EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(request->GetNavigationThrottleRegistryForTesting()
+                ->GetDeferringThrottles()
+                .size(),
+            1u);
   EXPECT_STREQ("RendererCancellationThrottle",
-               throttle_runner.GetDeferringThrottle()->GetNameForLogging());
+               (*request->GetNavigationThrottleRegistryForTesting()
+                     ->GetDeferringThrottles()
+                     .begin())
+                   ->GetNameForLogging());
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Unblock the JS task in the renderer by sending the response for the sync
@@ -21671,8 +21678,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 
   // Check that the deferral is caused by RendererCancellationThrottle.
   EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(request->GetNavigationThrottleRegistryForTesting()
+                ->GetDeferringThrottles()
+                .size(),
+            1u);
   EXPECT_STREQ("RendererCancellationThrottle",
-               throttle_runner.GetDeferringThrottle()->GetNameForLogging());
+               (*request->GetNavigationThrottleRegistryForTesting()
+                     ->GetDeferringThrottles()
+                     .begin())
+                   ->GetNameForLogging());
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Kill the renderer process that started the navigation.
@@ -21750,8 +21764,15 @@ IN_PROC_BROWSER_TEST_P(
 
   // Check that the deferral is caused by RendererCancellationThrottle.
   EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(request->GetNavigationThrottleRegistryForTesting()
+                ->GetDeferringThrottles()
+                .size(),
+            1u);
   EXPECT_STREQ("RendererCancellationThrottle",
-               throttle_runner.GetDeferringThrottle()->GetNameForLogging());
+               (*request->GetNavigationThrottleRegistryForTesting()
+                     ->GetDeferringThrottles()
+                     .begin())
+                   ->GetNameForLogging());
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Verify that we will be notified about the unresponsive renderer.

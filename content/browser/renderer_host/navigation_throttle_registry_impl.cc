@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -174,18 +175,37 @@ void NavigationThrottleRegistryImpl::ProcessNavigationEvent(
 
 void NavigationThrottleRegistryImpl::ResumeProcessingNavigationEvent(
     NavigationThrottle* resuming_throttle) {
+  if (!deferring_throttles_.contains(resuming_throttle)) {
+    // TODO(https://crbug.com/411238078): Upgrade to CHECK_EQ once remaining
+    // known cases are fixed. Until then, collect dump data and ignore the
+    // resume request to avoid bypassing required throttle checks.
+    const char* deferring_throttle_name =
+        deferring_throttles_.empty()
+            ? "null"
+            : (*deferring_throttles_.begin())->GetNameForLogging();
+    SCOPED_CRASH_KEY_STRING32("Bug411238078", "expected_throttle",
+                              deferring_throttle_name);
+    SCOPED_CRASH_KEY_STRING32("Bug411238078", "actual_throttle",
+                              resuming_throttle->GetNameForLogging());
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  CHECK_EQ(1u, deferring_throttles_.erase(resuming_throttle));
+
   navigation_throttle_runner_->ResumeProcessingNavigationEvent(
       resuming_throttle);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
 
+void NavigationThrottleRegistryImpl::OnDeferProcessingNavigationEvent(
+    NavigationThrottle* deferring_throttle) {
+  deferring_throttles_.insert(deferring_throttle);
+}
+
 const std::set<NavigationThrottle*>&
-NavigationThrottleRegistryImpl::GetDeferringThrottles() {
-  deferring_throttles_in_v1_runner_.clear();
-  deferring_throttles_in_v1_runner_.insert(
-      navigation_throttle_runner_->GetDeferringThrottle());
-  return deferring_throttles_in_v1_runner_;
+NavigationThrottleRegistryImpl::GetDeferringThrottles() const {
+  return deferring_throttles_;
 }
 
 NavigationThrottleRunner&

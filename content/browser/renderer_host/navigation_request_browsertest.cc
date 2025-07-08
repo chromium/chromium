@@ -2701,23 +2701,24 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   TestNavigationManager manager(shell()->web_contents(), simple_url);
   shell()->LoadURL(simple_url);
   auto* handle = manager.GetNavigationHandle();
-  auto& runner = NavigationRequest::From(handle)
-                     ->GetNavigationThrottleRegistryForTesting()
-                     ->GetNavigationThrottleRunnerForTesting();
+  auto* registry = NavigationRequest::From(handle)
+                     ->GetNavigationThrottleRegistryForTesting();
 
   // The navigation should have been deferred by one of our throttles. Ensure
   // it's the client throttle since we explicitly want test throttles to
   // execute after all others.
   ASSERT_TRUE(handle->IsDeferredForTesting());
   ASSERT_NE(client_throttle, nullptr);
-  EXPECT_EQ(runner.GetDeferringThrottle(), client_throttle);
+  EXPECT_EQ(registry->GetDeferringThrottles().size(), 1u);
+  EXPECT_TRUE(registry->GetDeferringThrottles().contains(client_throttle));
 
   // Now when we resume we should get deferred by the other throttle. This
   // should be the throttle installed via RegisterThrottleForTesting.
   client_throttle->ResumeNavigation();
   ASSERT_TRUE(handle->IsDeferredForTesting());
-  EXPECT_EQ(runner.GetDeferringThrottle(),
-            test_throttle_installer.navigation_throttle());
+  EXPECT_EQ(registry->GetDeferringThrottles().size(), 1u);
+  EXPECT_TRUE(registry->GetDeferringThrottles().contains(
+      test_throttle_installer.navigation_throttle()));
 
   // Finish the navigation.
   test_throttle_installer.navigation_throttle()->ResumeNavigation();
