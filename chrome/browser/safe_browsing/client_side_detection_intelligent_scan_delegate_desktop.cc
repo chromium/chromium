@@ -213,6 +213,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::ModelExecutionCallback(
 
   LogOnDeviceModelExecutionParse(true);
 
+  // Reset session immediately so that future inference is not affected by the
+  // old context.
   ResetOnDeviceSession(/*inquiry_complete=*/true);
 
   LogOnDeviceModelCallbackStateOnSuccessfulResponse(
@@ -228,15 +230,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::ModelExecutionCallback(
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::ResetOnDeviceSession(
     bool inquiry_complete) {
-  // Because of the use of DeleteSoon below, we can't guarantee that session_
-  // is still available when the callback is invoked.
   if (session_) {
-    // Reset session immediately so that future inference is not affected by the
-    // old context.
-    // TODO(crbug.com/380928557): Call session_.reset() directly once
-    // crbug.com/384774788 is fixed.
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   std::move(session_));
+    session_.reset();
     if (!inquiry_complete) {
       LogOnDeviceModelSessionAliveOnNewRequest(true);
     }
