@@ -454,26 +454,14 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
                                               : &AlwaysReturnFalse;
 }
 
-bool IsActorExecutionEngineActingOnTab(Profile* profile,
-                                       const content::WebContents* tab) {
-  // TODO(crbug.com/411462297): Delete this code.
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsEnabledByFlags()) {
-    if (const auto* glic_service = glic::GlicKeyedService::Get(profile);
-        glic_service && glic_service->IsExecutionEngineActingOnTab(tab)) {
-      return true;
-    }
-  }
-#endif
+bool IsActorOperatingOnWebContents(Profile* profile, content::WebContents* wc) {
   auto* actor_service = actor::ActorKeyedService::Get(profile);
-  if (actor_service) {
-    for (auto& [task_id, task] : actor_service->GetActiveTasks()) {
-      if (task->GetExecutionEngine()->HasTaskForTab(tab)) {
-        return true;
-      }
-    }
+  if (!actor_service) {
+    return false;
   }
-  return false;
+
+  const auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(wc);
+  return tab_interface && actor_service->IsAnyTaskActingOnTab(*tab_interface);
 }
 
 // TODO(crbug.com/382494946): Similar bespoke checks are used throughout the
@@ -2356,7 +2344,7 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  if (IsActorExecutionEngineActingOnTab(
+  if (IsActorOperatingOnWebContents(
           profile(), content::WebContents::FromRenderFrameHost(opener))) {
     // If an ExecutionEngine is acting on the opener, prevent it from creating
     // a new WebContents. We'll instead force the navigation to happen in the
@@ -2380,7 +2368,7 @@ WebContents* Browser::CreateCustomWebContents(
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
-      IsActorExecutionEngineActingOnTab(profile(), opener_contents)) {
+      IsActorOperatingOnWebContents(profile(), opener_contents)) {
     // If an ExecutionEngine is acting on the opener, we force the navigation
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);

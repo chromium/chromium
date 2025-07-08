@@ -383,7 +383,7 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
   return std::make_unique<ObservationDelayController>(*frame);
 }
 
-void PageTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+void PageTool::UpdateTaskBeforeInvoke(ActorTask& task) const {
   task.AddToTabSet(request_->GetTabHandle());
 }
 

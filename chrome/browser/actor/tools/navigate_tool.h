@@ -35,7 +35,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
-  void UpdateTaskAfterInvoke(ActorTask& task) const override;
+  void UpdateTaskBeforeInvoke(ActorTask& task) const override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(

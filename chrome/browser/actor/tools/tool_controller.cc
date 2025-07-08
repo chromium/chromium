@@ -91,6 +91,8 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
   // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e. alive
   // and focused), return error otherwise.
 
+  active_state_->tool->UpdateTaskBeforeInvoke(*task_);
+
   observation_delayer_ = active_state_->tool->GetObservationDelayer();
 
   active_state_->tool->Invoke(base::BindOnce(

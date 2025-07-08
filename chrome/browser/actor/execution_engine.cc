@@ -277,14 +277,6 @@ tabs::TabInterface* ExecutionEngine::GetTabOfCurrentTask() const {
   return tab_;
 }
 
-bool ExecutionEngine::HasTask() const {
-  return !!actions_v1_ || !!actions_v2_;
-}
-
-bool ExecutionEngine::HasTaskForTab(const content::WebContents* tab) const {
-  return HasTask() && tab_ && tab_->GetContents() == tab;
-}
-
 void ExecutionEngine::Act(const BrowserAction& action,
                           ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));

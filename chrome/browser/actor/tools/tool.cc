@@ -23,4 +23,8 @@ GURL Tool::JournalURL() const {
   return GURL::EmptyGURL();
 }
 
+void Tool::UpdateTaskBeforeInvoke(ActorTask& task) const {}
+
+void Tool::UpdateTaskAfterInvoke(ActorTask& task) const {}
+
 }  // namespace actor

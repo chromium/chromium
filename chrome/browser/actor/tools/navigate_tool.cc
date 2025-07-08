@@ -89,7 +89,7 @@ NavigateTool::GetObservationDelayer() const {
       *web_contents()->GetPrimaryMainFrame());
 }
 
-void NavigateTool::UpdateTaskAfterInvoke(ActorTask& task) const {
+void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task) const {
   task.AddToTabSet(tab_handle_);
 }
 

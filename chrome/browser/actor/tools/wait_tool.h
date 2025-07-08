@@ -28,7 +28,6 @@ class WaitTool : public Tool {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
-  void UpdateTaskAfterInvoke(ActorTask& task) const override;
 
   static void SetNoDelayForTesting();
 

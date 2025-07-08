@@ -30,10 +30,6 @@ namespace mojo_base {
 class ProtoWrapper;
 }
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -102,12 +98,6 @@ class ExecutionEngine {
 
   // Returns the tab associated with the current task if it exists.
   tabs::TabInterface* GetTabOfCurrentTask() const;
-
-  // Returns true if a task is currently active.
-  bool HasTask() const;
-
-  // Returns true if a task is currently active in `tab`.
-  bool HasTaskForTab(const content::WebContents* tab) const;
 
   // Performs the next action in the current task.
   void Act(const optimization_guide::proto::BrowserAction& action,
