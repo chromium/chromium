@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -373,16 +374,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     }));
   }
 
-  auto CheckHasTaskForTab(ui::ElementIdentifier tab, bool expected) {
+  auto CheckIsActingOnTab(ui::ElementIdentifier tab, bool expected) {
     return Steps(InAnyContext(CheckElement(
         tab,
         [](ui::TrackedElement* el) {
           content::WebContents* tab_contents =
               AsInstrumentedWebContents(el)->web_contents();
-          const auto* glic_service =
-              GlicKeyedService::Get(tab_contents->GetBrowserContext());
-          return glic_service &&
-                 glic_service->IsExecutionEngineActingOnTab(tab_contents);
+          auto* actor_service =
+              actor::ActorKeyedService::Get(tab_contents->GetBrowserContext());
+          return actor_service &&
+                 actor_service->IsAnyTaskActingOnTab(
+                     *tabs::TabInterface::GetFromContents(tab_contents));
         },
         expected)));
   }
@@ -593,14 +595,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
-      CheckHasTaskForTab(kNewActorTabId, true), StopActorTask(),
+      CheckIsActingOnTab(kNewActorTabId, true), StopActorTask(),
       // TODO(crbug.com/409558980): Expect kTargetNotFound since that's
       // currently the error returned anytime a tool fails but in the future we
       // should add an error code for "NoActiveTask".
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions(),
                     glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound),
-      CheckHasTaskForTab(kNewActorTabId, false));
+      CheckIsActingOnTab(kNewActorTabId, false));
 }
 
 // Ensure that a task can be started after a previous task was stopped.
@@ -648,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
-      CheckHasTaskForTab(kNewActorTabId, true), PauseActorTask(),
+      CheckIsActingOnTab(kNewActorTabId, true), PauseActorTask(),
       // TODO(crbug.com/409558980): Expect kTargetNotFound since that's
       // currently the error returned anytime a tool fails but in the future we
       // should add an error code for "NoActiveTask".
@@ -656,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
                     UpdatedContextOptions(),
                     glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound),
       // Unlike stopping, pausing keeps the task.
-      CheckHasTaskForTab(kNewActorTabId, true));
+      CheckIsActingOnTab(kNewActorTabId, true));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
@@ -672,8 +674,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
                   ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                                 UpdatedContextOptions()),
                   WaitForJsResult(kNewActorTabId, "() => button_clicked"),
-                  PauseActorTask(), CheckHasTaskForTab(kNewActorTabId, true),
-                  StopActorTask(), CheckHasTaskForTab(kNewActorTabId, false));
+                  PauseActorTask(), CheckIsActingOnTab(kNewActorTabId, true),
+                  StopActorTask(), CheckIsActingOnTab(kNewActorTabId, false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseAlreadyPausedActorTask) {
@@ -690,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseAlreadyPausedActorTask) {
                                 UpdatedContextOptions()),
                   WaitForJsResult(kNewActorTabId, "() => button_clicked"),
                   PauseActorTask(), PauseActorTask(),
-                  CheckHasTaskForTab(kNewActorTabId, true));
+                  CheckIsActingOnTab(kNewActorTabId, true));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenResumeActorTask) {
@@ -709,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenResumeActorTask) {
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
       ExecuteJs(kNewActorTabId, "() => { button_clicked = false; }"),
       PauseActorTask(), ResumeActorTask(UpdatedContextOptions(), true),
-      CheckHasTaskForTab(kNewActorTabId, true),
+      CheckIsActingOnTab(kNewActorTabId, true),
       ExecuteAction(ClickActionProvider(kClickableButtonLabel),
                     UpdatedContextOptions()),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"));
@@ -723,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ResumeActorTaskWithoutATask) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  StopActorTask(), CheckHasTaskForTab(kNewActorTabId, false),
+                  StopActorTask(), CheckIsActingOnTab(kNewActorTabId, false),
                   // Once a task is stopped, it can't be resumed.
                   ResumeActorTask(UpdatedContextOptions(), false));
 }

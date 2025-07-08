@@ -483,21 +483,6 @@ void GlicKeyedService::OnResponseStopped() {
   }
 }
 
-bool GlicKeyedService::IsExecutionEngineActingOnTab(
-    const content::WebContents* tab) const {
-  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
-    return false;
-  }
-
-  auto* actor_service = actor::ActorKeyedService::Get(profile_);
-  CHECK(actor_service);
-
-  auto* tab_interface = tabs::TabInterface::GetFromContents(tab);
-  CHECK(tab_interface);
-
-  return actor_service->IsAnyTaskActingOnTab(*tab_interface);
-}
-
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
