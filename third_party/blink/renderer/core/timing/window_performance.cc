@@ -1222,6 +1222,12 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
                           enqueued_to_main_thread_time, flow_id);
     }
 
+    // Add EventTimingMeasurementComplete trace event to report when Event
+    // Timing was measured and reported to the Performance Timeline. This helps
+    // track the delay between frame presentation and timeline reporting.
+    TRACE_EVENT_INSTANT("latency", "EventTimingMeasurementComplete", track_id,
+                        base::TimeTicks::Now(), flow_id);
+
     TRACE_EVENT_BEGIN(
         "latency", "EventProcessing", track_id,
         entry->GetEventTimingReportingInfo()->processing_start_time, flow_id,
