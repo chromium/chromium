@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -69,7 +70,7 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
     mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
         session_client,
     const SpeechGrammarList& grammars,
-    const SpeechRecognitionPhraseList* phrases,
+    const V8ObservableArraySpeechRecognitionPhrase* phrases,
     const String& lang,
     bool continuous,
     bool interim_results,
@@ -87,11 +88,10 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
         media::mojom::blink::SpeechRecognitionGrammar::New(grammar->src(),
                                                            grammar->weight()));
   }
-  if (phrases && phrases->length() > 0) {
+  if (!phrases->empty()) {
     params->recognition_context =
         media::mojom::blink::SpeechRecognitionRecognitionContext::New();
-    for (unsigned i = 0; i < phrases->length(); i++) {
-      SpeechRecognitionPhrase* phrase = phrases->item(i);
+    for (const auto& phrase : *phrases) {
       params->recognition_context->phrases.push_back(
           media::mojom::blink::SpeechRecognitionPhrase::New(phrase->phrase(),
                                                             phrase->boost()));

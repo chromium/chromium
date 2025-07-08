@@ -2882,8 +2882,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_phrase.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_phrase.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_phrase_list.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_phrase_list.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_result.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_result_list.cc",
@@ -3238,7 +3236,10 @@ if (enable_compute_pressure) {
   ]
 }
 
-generated_observable_array_sources_in_modules = []
+generated_observable_array_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.cc",
+]
 
 generated_sync_iterator_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_audio_param_map.cc",

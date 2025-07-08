@@ -9837,13 +9837,6 @@ interface SpeechRecognitionPhrase
     getter boost
     getter phrase
     method constructor
-interface SpeechRecognitionPhraseList
-    attribute @@toStringTag
-    getter length
-    method addItem
-    method constructor
-    method item
-    method removeItem
 interface SpeechSynthesis : EventTarget
     attribute @@toStringTag
     getter onvoiceschanged

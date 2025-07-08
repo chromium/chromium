@@ -34,12 +34,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase_list.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -58,6 +59,7 @@ class LocalDOMWindow;
 class MediaStreamTrack;
 class SpeechRecognitionOptions;
 class SpeechRecognitionController;
+class V8ObservableArraySpeechRecognitionPhrase;
 
 class MODULES_EXPORT SpeechRecognition final
     : public EventTarget,
@@ -76,8 +78,7 @@ class MODULES_EXPORT SpeechRecognition final
   // SpeechRecognition.idl attributes implementation.
   SpeechGrammarList* grammars() const { return grammars_.Get(); }
   void setGrammars(SpeechGrammarList* grammars) { grammars_ = grammars; }
-  SpeechRecognitionPhraseList* phrases() const { return phrases_.Get(); }
-  void setPhrases(SpeechRecognitionPhraseList* phrases);
+  V8ObservableArraySpeechRecognitionPhrase* phrases() const { return phrases_; }
   String lang() const { return lang_; }
   void setLang(const String& lang) { lang_ = lang; }
   bool continuous() const { return continuous_; }
@@ -134,6 +135,8 @@ class MODULES_EXPORT SpeechRecognition final
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
 
+  void OnPhrasesChanged();
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(audiostart, kAudiostart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(soundstart, kSoundstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(speechstart, kSpeechstart)
@@ -149,7 +152,18 @@ class MODULES_EXPORT SpeechRecognition final
   void Trace(Visitor*) const override;
 
  private:
+  static void OnPhrasesSet(GarbageCollectedMixin*,
+                           ScriptState*,
+                           V8ObservableArraySpeechRecognitionPhrase&,
+                           uint32_t,
+                           Member<SpeechRecognitionPhrase>&);
+  static void OnPhrasesDelete(GarbageCollectedMixin*,
+                              ScriptState*,
+                              V8ObservableArraySpeechRecognitionPhrase&,
+                              uint32_t);
+
   void OnConnectionError();
+  void SchedulePhrasesUpdate();
   void CheckAvailabilityAndStart(ExceptionState* exception_state);
   void StartInternal();
   void StartController(
@@ -162,7 +176,7 @@ class MODULES_EXPORT SpeechRecognition final
 
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
-  Member<SpeechRecognitionPhraseList> phrases_;
+  Member<V8ObservableArraySpeechRecognitionPhrase> phrases_;
   String lang_;
   bool continuous_ = false;
   bool interim_results_ = false;
@@ -170,6 +184,7 @@ class MODULES_EXPORT SpeechRecognition final
   bool process_locally_ = false;
 
   Member<SpeechRecognitionController> controller_;
+  bool phrases_update_scheduled_ = false;
   bool started_ = false;
   bool stopping_ = false;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;

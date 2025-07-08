@@ -23,8 +23,6 @@ blink_modules_sources("speech") {
     "speech_recognition_event.h",
     "speech_recognition_phrase.cc",
     "speech_recognition_phrase.h",
-    "speech_recognition_phrase_list.cc",
-    "speech_recognition_phrase_list.h",
     "speech_recognition_result.cc",
     "speech_recognition_result.h",
     "speech_recognition_result_list.cc",

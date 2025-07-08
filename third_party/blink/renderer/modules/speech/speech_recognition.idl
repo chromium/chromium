@@ -59,7 +59,7 @@ dictionary SpeechRecognitionOptions {
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
     [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute boolean processLocally;
-    [RuntimeEnabled=WebSpeechRecognitionContext] attribute SpeechRecognitionPhraseList phrases;
+    [RuntimeEnabled=WebSpeechRecognitionContext] attribute ObservableArray<SpeechRecognitionPhrase> phrases;
 
     // methods to drive the speech interaction
     [RaisesException, Measure] void start();

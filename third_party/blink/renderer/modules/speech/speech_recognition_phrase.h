@@ -25,8 +25,8 @@ class MODULES_EXPORT SpeechRecognitionPhrase final : public ScriptWrappable {
                                    float boost = 1.0);
   ~SpeechRecognitionPhrase() override = default;
 
-  WTF::String& phrase() { return phrase_; }
-  float boost() { return boost_; }
+  const WTF::String& phrase() const { return phrase_; }
+  float boost() const { return boost_; }
 
  private:
   WTF::String phrase_;
