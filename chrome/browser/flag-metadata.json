@@ -3388,7 +3388,7 @@
   {
     "name": "enable-fast-ink-for-software-cursor",
     "owners": ["yichenz@chromium.org", "cros-sw-perf@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "enable-fast-touchpad-click",
