@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
@@ -398,16 +399,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ContextMenuItemWithRadioButtonViewBinder::bind);
         mListView.setAdapter(adapter);
 
-        mListView.setOnItemClickListener(
-                (p, v, pos, id) -> {
-                    assert id != INVALID_ITEM_ID;
-                    ListItem item = findItem((int) id);
-                    clickItem(
-                            (int) id,
-                            activity,
-                            onItemClicked,
-                            item == null ? true : item.model.get(ENABLED));
-                });
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
         // ideally this could be enabled for all forms of context menu.
         if (isDragDropEnabled) {
@@ -537,6 +528,18 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         }
 
         for (ListItem item : itemList) {
+            if (item.type == ListItemType.CONTEXT_MENU_ITEM
+                    || item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+                item.model.set(
+                        CLICK_LISTENER,
+                        (v) -> {
+                            clickItem(
+                                    item.model.get(MENU_ITEM_ID),
+                                    activity,
+                                    onItemClicked,
+                                    item.model.get(ENABLED));
+                        });
+            }
             if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                 item.model.set(
                         END_BUTTON_CLICK_LISTENER,
@@ -623,7 +626,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     }
 
     public void clickListItemForTesting(int id) {
-        mListView.performItemClick(null, -1, id);
+        ListItem item = findItem(id);
+        assert item != null;
+        item.model.get(CLICK_LISTENER).onClick(null);
     }
 
     @VisibleForTesting

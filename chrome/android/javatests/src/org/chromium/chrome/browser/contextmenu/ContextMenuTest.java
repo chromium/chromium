@@ -1231,7 +1231,7 @@ public class ContextMenuTest {
                 InstrumentationRegistry.getInstrumentation(),
                 sDownloadTestRule.getActivity(),
                 tab,
-                "testImage",
+                "testLink",
                 R.id.contextmenu_share_link);
 
         verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.CONTEXT_MENU));
