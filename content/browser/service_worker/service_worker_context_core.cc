@@ -948,7 +948,7 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
       const std::optional<ServiceWorkerRunningInfo> running_info =
           wrapper_->GetRunningServiceWorkerInfo(id);
       if (running_info.has_value()) {
-        observer.OnStopped(id, /*worker_info=*/running_info.value());
+        observer.OnStopped(id, version->scope());
       }
     }
   }
@@ -1021,8 +1021,7 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
       const std::optional<ServiceWorkerRunningInfo> running_info =
           wrapper_->GetRunningServiceWorkerInfo(live_version->version_id());
       if (running_info.has_value()) {
-        observer.OnStopped(live_version->version_id(),
-                           /*worker_info=*/running_info.value());
+        observer.OnStopped(live_version->version_id(), live_version->scope());
       }
     }
   }
@@ -1239,8 +1238,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
         const std::optional<ServiceWorkerRunningInfo> running_info =
             wrapper_->GetRunningServiceWorkerInfo(version->version_id());
         if (running_info.has_value()) {
-          observer.OnStopped(version->version_id(),
-                             /*worker_info=*/running_info.value());
+          observer.OnStopped(version->version_id(), version->scope());
         }
       }
       break;
@@ -1264,8 +1262,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
         const std::optional<ServiceWorkerRunningInfo> running_info =
             wrapper_->GetRunningServiceWorkerInfo(version->version_id());
         if (running_info.has_value()) {
-          observer.OnStopping(version->version_id(),
-                              /*worker_info=*/running_info.value());
+          observer.OnStopping(version->version_id(), version->scope());
         }
       }
       break;

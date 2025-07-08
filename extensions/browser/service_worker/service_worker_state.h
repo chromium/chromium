@@ -61,9 +61,7 @@ class ServiceWorkerState
                                    base::Time start_time,
                                    content::StatusCodeResponse status) {}
     // Called when an extension service worker is stopping or has stopped.
-    virtual void OnWorkerStop(
-        int64_t version_id,
-        const content::ServiceWorkerRunningInfo& worker_info) {}
+    virtual void OnWorkerStop(int64_t version_id, const GURL& scope) {}
   };
 
   void AddObserver(Observer* observer);
@@ -114,12 +112,9 @@ class ServiceWorkerState
 
   // content::ServiceWorkerContextObserverSynchronous:
   // Called when an extension service worker has stopped.
-  void OnStopped(int64_t version_id,
-                 const content::ServiceWorkerRunningInfo& worker_info) override;
+  void OnStopped(int64_t version_id, const GURL& scope) override;
   // Called when an extension service worker is stopping.
-  void OnStopping(
-      int64_t version_id,
-      const content::ServiceWorkerRunningInfo& worker_info) override;
+  void OnStopping(int64_t version_id, const GURL& scope) override;
 
  private:
   void SetWorkerId(const WorkerId& worker_id);

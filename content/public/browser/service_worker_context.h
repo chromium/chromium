@@ -97,11 +97,9 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
   virtual void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) {
   }
   // Called when the service worker with id `version_id` will be stopped.
-  virtual void OnStopping(int64_t version_id,
-                          const ServiceWorkerRunningInfo& worker_info) {}
+  virtual void OnStopping(int64_t version_id, const GURL& scope) {}
   // Called when the service worker with id `version_id` has stopped running.
-  virtual void OnStopped(int64_t version_id,
-                         const ServiceWorkerRunningInfo& worker_info) {}
+  virtual void OnStopped(int64_t version_id, const GURL& scope) {}
   // Called before the URLLoaderFactory used to fetch the worker script is
   // constructed.
   virtual void OnWillCreateURLLoaderFactory(const GURL& scope) {}

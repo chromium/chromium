@@ -173,9 +173,7 @@ void ServiceWorkerState::NotifyObserversIfReady(
   }
 }
 
-void ServiceWorkerState::OnStopping(
-    int64_t version_id,
-    const content::ServiceWorkerRunningInfo& worker_info) {
+void ServiceWorkerState::OnStopping(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -194,16 +192,14 @@ void ServiceWorkerState::OnStopping(
   }
 
   for (auto& observer : observers_) {
-    observer.OnWorkerStop(version_id, worker_info);
+    observer.OnWorkerStop(version_id, scope);
   }
 }
 
-void ServiceWorkerState::OnStopped(
-    int64_t version_id,
-    const content::ServiceWorkerRunningInfo& worker_info) {
+void ServiceWorkerState::OnStopped(int64_t version_id, const GURL& scope) {
   // If `OnStopping` was not called for some reason, try again here.
   if (browser_state_ != BrowserState::kNotActive) {
-    OnStopping(version_id, worker_info);
+    OnStopping(version_id, scope);
   }
 }
 

@@ -222,9 +222,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void OnWorkerStartFail(const SequencedContextId& context_id,
                          base::Time start_time,
                          content::StatusCodeResponse status) override;
-  void OnWorkerStop(
-      int64_t version_id,
-      const content::ServiceWorkerRunningInfo& worker_info) override;
+  void OnWorkerStop(int64_t version_id, const GURL& scope) override;
 
   // TODO(crbug.com/334940006): Convert these completely to
   // ServiceWorkerContextObserverSynchronous.
