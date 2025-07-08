@@ -548,6 +548,7 @@ chrome_java_resources = [
   "java/res/layout/password_no_result.xml",
   "java/res/layout/powered_by_chrome_footer.xml",
   "java/res/layout/radio_button_group_homepage_preference.xml",
+  "java/res/layout/reader_mode_bottom_sheet.xml",
   "java/res/layout/recent_tabs_group_item.xml",
   "java/res/layout/recent_tabs_group_separator_invisible.xml",
   "java/res/layout/recent_tabs_group_separator_visible.xml",
