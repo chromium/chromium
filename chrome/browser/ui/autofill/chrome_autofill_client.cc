@@ -757,7 +757,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
         CHECK(base::FeatureList::IsEnabled(
             features::kAutofillEnableLoyaltyCardsFilling));
         static constexpr std::string_view kValuableManagementUrl =
-            "https://wallet.google.com/wallet/passes";
+            "https://wallet.google.com/"
+            "wallet?p=loyalty&utm_source=chrome&utm_medium=redirect&utm_"
+            "campaign=loyalty";
         ShowSingletonTab(browser, GURL(kValuableManagementUrl));
         return;
       default:
