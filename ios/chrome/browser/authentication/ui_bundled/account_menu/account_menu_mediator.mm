@@ -323,6 +323,7 @@
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       base::RecordAction(
           base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Passphrase"));
+      self.userInteractionsBlocked = YES;
       [self.syncErrorSettingsCommandHandler
           openPassphraseDialogWithModalPresentation:YES];
       break;
@@ -382,7 +383,7 @@
 #pragma mark - Callbacks
 
 // Callback for didTapAddAccount
-- (void)accountAddedIsDone {
+- (void)accountMenuIsUsable {
   [self restartUpdates];
   self.userInteractionsBlocked = NO;
 }

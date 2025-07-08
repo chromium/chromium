@@ -82,6 +82,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCoordinatorDelegate,
     SignoutActionSheetCoordinatorDelegate,
+    SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     SyncErrorSettingsCommandHandler,
     TrustedVaultReauthenticationCoordinatorDelegate> {
   // Sync observer.
@@ -529,7 +530,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   SceneState* sceneState = self.browser->GetSceneState();
-  if (sceneState.isUIBlocked) {
+  if (sceneState.isUIBlocked || _syncEncryptionPassphraseTableViewController) {
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
     return;
@@ -538,6 +539,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     _syncEncryptionPassphraseTableViewController =
         [[SyncEncryptionPassphraseTableViewController alloc]
             initWithBrowser:self.browser];
+    _syncEncryptionPassphraseTableViewController.presentationDelegate = self;
     _syncEncryptionPassphraseTableViewController.presentModally = YES;
     UINavigationController* navigationController =
         [[UINavigationController alloc]
@@ -558,6 +560,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     controllerToPush = _syncEncryptionPassphraseTableViewController =
         [[SyncEncryptionPassphraseTableViewController alloc]
             initWithBrowser:self.browser];
+    _syncEncryptionPassphraseTableViewController.presentationDelegate = self;
   } else {
     controllerToPush = _syncEncryptionTableViewController =
         [[SyncEncryptionTableViewController alloc]
@@ -660,6 +663,17 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     (AccountMenuCoordinator*)coordinator {
   CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
   [self stopAccountMenuCoordinator];
+}
+
+#pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate
+
+- (void)syncEncryptionPassphraseTableViewControllerDidDisappear:
+    (SyncEncryptionPassphraseTableViewController*)viewController {
+  CHECK_EQ(_syncEncryptionPassphraseTableViewController, viewController,
+           base::NotFatalUntil::M142);
+  _syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  _syncEncryptionPassphraseTableViewController = nil;
 }
 
 @end

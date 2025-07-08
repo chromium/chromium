@@ -46,7 +46,7 @@ extern NSString* const kSettingsDoneButtonId;
 
 // Controller to modify user settings.
 @interface SettingsNavigationController
-    : UINavigationController <SettingsCommands, KeyCommandActions>
+    : UINavigationController <KeyCommandActions, SettingsCommands>
 
 // Creates a new SettingsTableViewController and the chrome around it.
 // `browser` is the browser where settings are being displayed and should not be

@@ -185,6 +185,8 @@ const CGFloat kSpinnerButtonPadding = 18;
     [self unregisterTextField:self.passphrase];
   }
   _uiBlocker.reset();
+  [self.presentationDelegate
+      syncEncryptionPassphraseTableViewControllerDidDisappear:self];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -587,12 +589,6 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (void)settingsWillBeDismissed {
-  if (_settingsAreDismissed) {
-    // This method can be called twice when the account is removed. Related to
-    // crbug.com/1480441.
-    return;
-  }
-
   // Remove observer bridges.
   _syncObserver.reset();
   _identityManagerObserver.reset();

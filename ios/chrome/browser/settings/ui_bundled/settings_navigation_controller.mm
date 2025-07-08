@@ -96,6 +96,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     PrivacyCoordinatorDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
+    SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
 
@@ -165,6 +166,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // The Browser instance this controller is configured with.
 @property(nonatomic, assign) Browser* browser;
+
+// The Sync EncryptionPassphraseTableViewController if it’s displayed.
+@property(nonatomic, strong) SyncEncryptionPassphraseTableViewController*
+    syncEncryptionPassphraseTableViewController;
 
 @end
 
@@ -302,6 +307,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:controller
                              browser:browser
                             delegate:delegate];
+  controller.presentationDelegate = navigationController;
+  navigationController.syncEncryptionPassphraseTableViewController = controller;
   [controller navigationItem].leftBarButtonItem =
       [navigationController cancelButton];
   return navigationController;
@@ -1161,11 +1168,18 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // dispatcher.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
-  SyncEncryptionPassphraseTableViewController* controller =
+  if (self.syncEncryptionPassphraseTableViewController) {
+    // Can occurs if the user double-tap on the "Enter passphrase" button.
+    return;
+  }
+  self.syncEncryptionPassphraseTableViewController =
       [[SyncEncryptionPassphraseTableViewController alloc]
           initWithBrowser:self.browser];
-  ConfigureHandlers(controller, _browser->GetCommandDispatcher());
-  [self pushViewController:controller animated:YES];
+  self.syncEncryptionPassphraseTableViewController.presentationDelegate = self;
+  ConfigureHandlers(self.syncEncryptionPassphraseTableViewController,
+                    _browser->GetCommandDispatcher());
+  [self pushViewController:self.syncEncryptionPassphraseTableViewController
+                  animated:YES];
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
@@ -1299,6 +1313,17 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.notificationsCoordinator.delegate = self;
   [self.notificationsCoordinator start];
   [self.notificationsCoordinator showTrackingPrice];
+}
+
+#pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate
+
+- (void)syncEncryptionPassphraseTableViewControllerDidDisappear:
+    (SyncEncryptionPassphraseTableViewController*)viewController {
+  CHECK_EQ(self.syncEncryptionPassphraseTableViewController, viewController,
+           base::NotFatalUntil::M142);
+  self.syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
+  [self.syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  self.syncEncryptionPassphraseTableViewController = nil;
 }
 
 @end

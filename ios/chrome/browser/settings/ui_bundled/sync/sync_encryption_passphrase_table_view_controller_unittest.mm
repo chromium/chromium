@@ -26,6 +26,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -73,15 +75,27 @@ class SyncEncryptionPassphraseTableViewControllerTest
     TurnSyncErrorOff();
   }
 
+  void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)presentation_delegate_);
+    PassphraseTableViewControllerTest::TearDown();
+  }
+
   LegacyChromeTableViewController* InstantiateController() override {
-    return [[SyncEncryptionPassphraseTableViewController alloc]
-        initWithBrowser:browser_.get()];
+    SyncEncryptionPassphraseTableViewController* vc =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:browser_.get()];
+    vc.presentationDelegate = presentation_delegate_;
+    return vc;
   }
 
   SyncEncryptionPassphraseTableViewController* SyncController() {
     return static_cast<SyncEncryptionPassphraseTableViewController*>(
         controller());
   }
+
+  id<SyncEncryptionPassphraseTableViewControllerPresentationDelegate>
+      presentation_delegate_ = OCMStrictProtocolMock(@protocol(
+          SyncEncryptionPassphraseTableViewControllerPresentationDelegate));
 };
 
 TEST_F(SyncEncryptionPassphraseTableViewControllerTest, TestModel) {

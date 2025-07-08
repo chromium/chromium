@@ -8,6 +8,7 @@ source_set("sync") {
     "sync_create_passphrase_table_view_controller.mm",
     "sync_encryption_passphrase_table_view_controller.h",
     "sync_encryption_passphrase_table_view_controller.mm",
+    "sync_encryption_passphrase_table_view_controller_presentation_delegate.h",
     "sync_encryption_table_view_controller.h",
     "sync_encryption_table_view_controller.mm",
   ]
@@ -92,6 +93,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

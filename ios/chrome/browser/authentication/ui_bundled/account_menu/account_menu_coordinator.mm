@@ -88,6 +88,7 @@ void maybeShowSettingsIPH(Browser* browser) {
     AccountMenuMediatorDelegate,
     ManageAccountsCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
+    SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
@@ -378,7 +379,8 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   CHECK(presentModally);
-  if (self.sceneState.isUIBlocked) {
+  if (self.sceneState.isUIBlocked ||
+      _syncEncryptionPassphraseTableViewController) {
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
     return;
@@ -388,6 +390,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   _syncEncryptionPassphraseTableViewController =
       [[SyncEncryptionPassphraseTableViewController alloc]
           initWithBrowser:self.browser];
+  _syncEncryptionPassphraseTableViewController.presentationDelegate = self;
   _syncEncryptionPassphraseTableViewController.presentModally = YES;
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_syncEncryptionPassphraseTableViewController];
@@ -503,7 +506,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 // Clean up the add account coordinator.
 - (void)signinCoordinatorCompletion {
-  [self.mediator accountAddedIsDone];
+  [self.mediator accountMenuIsUsable];
   [self stopAddAccountCoordinator];
 }
 
@@ -563,6 +566,18 @@ void maybeShowSettingsIPH(Browser* browser) {
   _viewController = nil;
   [navigationController dismissViewControllerAnimated:animated
                                            completion:completion];
+}
+
+#pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate
+
+- (void)syncEncryptionPassphraseTableViewControllerDidDisappear:
+    (SyncEncryptionPassphraseTableViewController*)viewController {
+  CHECK_EQ(_syncEncryptionPassphraseTableViewController, viewController,
+           base::NotFatalUntil::M142);
+  _syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  _syncEncryptionPassphraseTableViewController = nil;
+  [_mediator accountMenuIsUsable];
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate

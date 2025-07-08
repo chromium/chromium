@@ -604,6 +604,7 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   SignInAndSetPassphraseRequired();
   OCMExpect([sync_error_settings_mock_
       openPassphraseDialogWithModalPresentation:YES]);
+  OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapErrorButton];
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "Signin_AccountMenu_ErrorButton_Passphrase"));
@@ -647,7 +648,7 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   [mediator_ didTapAddAccount];
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
-  [mediator_ accountAddedIsDone];
+  [mediator_ accountMenuIsUsable];
 }
 
 // Tests the effect of signOutFromTargetRect.

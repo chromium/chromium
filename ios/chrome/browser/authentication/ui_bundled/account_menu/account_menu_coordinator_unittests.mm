@@ -96,6 +96,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     OCMStub([scene_state_mock_ browserProviderInterface])
         .andReturn(stub_browser_interface_provider_);
 
+    presentation_delegate_ = OCMStrictProtocolMock(@protocol(
+        SyncEncryptionPassphraseTableViewControllerPresentationDelegate));
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     mock_snackbar_commands_handler_ =
@@ -160,6 +162,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
 
  protected:
   void VerifyMock() {
+    EXPECT_OCMOCK_VERIFY((id)presentation_delegate_);
     EXPECT_OCMOCK_VERIFY((id)mediator_);
     EXPECT_OCMOCK_VERIFY((id)scene_state_mock_);
     EXPECT_OCMOCK_VERIFY((id)view_controller_);
@@ -195,6 +198,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<BrowserCoordinatorCommands> mock_browser_coordinator_commands_handler_;
   AccountMenuViewController* view_controller_;
   AccountMenuMediator* mediator_;
+  id<SyncEncryptionPassphraseTableViewControllerPresentationDelegate>
+      presentation_delegate_;
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   // The view owned by the view controller.
@@ -328,6 +333,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
 TEST_P(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
   SyncEncryptionPassphraseTableViewController* passphraseViewController =
       [SyncEncryptionPassphraseTableViewController alloc];
+  passphraseViewController.presentationDelegate = presentation_delegate_;
   id classMock =
       OCMClassMock([SyncEncryptionPassphraseTableViewController class]);
   OCMExpect([classMock alloc]).andReturn(passphraseViewController);

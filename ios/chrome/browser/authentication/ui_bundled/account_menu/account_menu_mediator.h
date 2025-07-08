@@ -58,8 +58,9 @@ class SyncService;
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Informs the mediator that the Add Account process is done.
-- (void)accountAddedIsDone;
+// Informs the mediator that the Account Menu is back as the top view. It must
+// be updated and can be interacted with.
+- (void)accountMenuIsUsable;
 
 @end
 
