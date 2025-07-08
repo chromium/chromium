@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -57,10 +58,10 @@ namespace content {
 
 namespace {
 
-base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallbackForTesting() {
+base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallback() {
   static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
-      host_creation_callback_for_testing;
-  return *host_creation_callback_for_testing;
+      host_creation_callback;
+  return *host_creation_callback;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -191,7 +192,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
 // static
 void PrerenderHost::SetHostCreationCallbackForTesting(
     base::OnceCallback<void(FrameTreeNodeId host_id)> callback) {
-  GetHostCreationCallbackForTesting() = std::move(callback);  // IN-TEST
+  GetHostCreationCallback() = std::move(callback);
 }
 
 PrerenderHost::PrerenderHost(
@@ -267,9 +268,9 @@ PrerenderHost::PrerenderHost(
 
   frame_tree_node_id_ = frame_tree_->root()->frame_tree_node_id();
 
-  if (GetHostCreationCallbackForTesting()) {
-    std::move(GetHostCreationCallbackForTesting())  // IN-TEST
-        .Run(frame_tree_node_id_);
+  if (GetHostCreationCallback()) {
+    CHECK_IS_TEST();
+    std::move(GetHostCreationCallback()).Run(frame_tree_node_id_);
   }
 }
 
