@@ -207,9 +207,13 @@ void CullRectUpdater::UpdateForTesting(const CullRect& input_cull_rect) {
 
 void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   const auto& object = starting_layer_.GetLayoutObject();
-  if (object.GetFrameView()->ShouldThrottleRendering())
+  if (object.GetFrameView()->ShouldThrottleRendering()) {
     return;
+  }
   if (object.IsFragmentLessBox()) {
+    return;
+  }
+  if (!object.View()->FirstFragment().HasLocalBorderBoxProperties()) {
     return;
   }
 
