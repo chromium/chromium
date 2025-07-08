@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -11,7 +14,6 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -22,6 +24,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -49,6 +55,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
 /** A class that manages browser control visibility and positioning. */
+@NullMarked
 public class BrowserControlsManager implements ActivityStateListener, BrowserControlsSizer {
     // The amount of time to delay the control show request after returning to a once visible
     // activity.  This delay is meant to allow Android to run its Activity focusing animation and
@@ -74,8 +81,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private final ObservableSupplierImpl<Boolean> mControlsAtMinHeight =
             new ObservableSupplierImpl<>();
 
-    private TabModelSelectorTabObserver mTabControlsObserver;
-    @Nullable private ControlContainer mControlContainer;
+    private @Nullable TabModelSelectorTabObserver mTabControlsObserver;
+    private @Nullable ControlContainer mControlContainer;
     private int mTopControlsHeight;
     private int mTopControlsMinHeight;
     private int mBottomControlsHeight;
@@ -92,19 +99,19 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mRendererBottomControlsMinHeightChanged;
 
     private float mControlOffsetRatio;
-    private ActivityTabTabObserver mActiveTabObserver;
+    private @Nullable ActivityTabTabObserver mActiveTabObserver;
 
     private final ObserverList<BrowserControlsStateProvider.Observer> mControlsObservers =
             new ObserverList<>();
     private final FullscreenHtmlApiHandlerBase mHtmlApiHandler;
-    @Nullable private Tab mTab;
+    private @Nullable Tab mTab;
 
     /** The animator for the Android browser controls. */
-    private ValueAnimator mControlsAnimator;
+    private @Nullable ValueAnimator mControlsAnimator;
 
     /**
-     * Indicates if control offset is in the overridden state by animation. Stays {@code true}
-     * from animation start till the next offset update from compositor arrives.
+     * Indicates if control offset is in the overridden state by animation. Stays {@code true} from
+     * animation start till the next offset update from compositor arrives.
      */
     private boolean mOffsetOverridden;
 
@@ -134,7 +141,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         return;
                     } else if (visibility == View.VISIBLE
                             && mContentViewScrolling
-                            && mBrowserVisibilityDelegate.get() == BrowserControlsState.BOTH) {
+                            && assumeNonNull(mBrowserVisibilityDelegate.get())
+                                    == BrowserControlsState.BOTH) {
+                        // TODO(crbug.com/430320400): mBrowserVisibilityDelegate.get() never
+                        // returns null, but ObservableSupplier.get() returns @Nullable.
+
                         // Don't make the controls visible until scrolling has stopped to avoid
                         // doing it more often than we need to. onContentViewScrollingStateChanged
                         // will schedule us again when scrolling ceases.
@@ -240,11 +251,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         setTab(tab);
 
                         // The tab that's been switched away from is never going to update us that
                         // the scroll event stopped.
+                        assumeNonNull(mTabControlsObserver);
                         mTabControlsObserver.onContentViewScrollingStateChanged(false);
                     }
                 };
@@ -373,9 +385,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     /**
      * @return The currently selected tab for fullscreen.
      */
-    @Nullable
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public Tab getTab() {
+    public @Nullable Tab getTab() {
         return mTab;
     }
 
@@ -389,7 +400,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             }
         }
 
-        if (tab == null && mBrowserVisibilityDelegate.get() != BrowserControlsState.HIDDEN) {
+        if (tab == null
+                && assumeNonNull(mBrowserVisibilityDelegate.get()) != BrowserControlsState.HIDDEN) {
             setPositionsForTabToNonFullscreen();
         }
     }
@@ -415,13 +427,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     /**
      * @return True if the browser controls are showing as much as the min height. Note that this is
-     * the same as
-     * {@link BrowserControlsUtils#areBrowserControlsOffScreen(BrowserControlsStateProvider)} when
-     * both min-heights are 0.
+     *     the same as {@link
+     *     BrowserControlsUtils#areBrowserControlsOffScreen(BrowserControlsStateProvider)} when both
+     *     min-heights are 0.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean areBrowserControlsAtMinHeight() {
-        return mControlsAtMinHeight.get();
+        return assertNonNull(mControlsAtMinHeight.get());
     }
 
     private void bottomControlsAnimationMaybeStarted(
@@ -563,7 +575,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     public int getTopControlsHairlineHeight() {
         if (mControlContainer == null) {
             return 0;
-        }  else {
+        } else {
             return mControlContainer.getToolbarHairlineHeight();
         }
     }
@@ -826,6 +838,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mHidingTokenHolder.releaseToken(token);
     }
 
+    @EnsuresNonNullIf({"mControlContainer"})
     private boolean shouldShowAndroidControls() {
         if (mControlContainer == null) return false;
         if (mHidingTokenHolder.hasTokens()) {
@@ -1008,6 +1021,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         resetControlsOffsetOverridden();
 
         Tab tab = getTab();
+        assert tab != null;
         if (SadTab.isShowing(tab) || tab.isNativePage()) {
             showAndroidControls(false);
         } else {
@@ -1331,10 +1345,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
     }
 
+    @NullUnmarked
     public TabModelSelectorTabObserver getTabControlsObserverForTesting() {
         return mTabControlsObserver;
     }
 
+    @NullUnmarked
     ValueAnimator getControlsAnimatorForTesting() {
         return mControlsAnimator;
     }

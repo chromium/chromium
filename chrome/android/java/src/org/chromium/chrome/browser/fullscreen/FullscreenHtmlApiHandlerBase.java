@@ -4,19 +4,19 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.OutcomeReceiver;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
@@ -29,6 +29,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -55,6 +58,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
 /** Handles updating the UI based on requests to the HTML Fullscreen API. */
+@NullMarked
 public abstract class FullscreenHtmlApiHandlerBase
         implements ActivityStateListener, WindowFocusChangedListener, FullscreenManager {
     private static final String TAG = "FullscreenHTMLBase";
@@ -101,20 +105,20 @@ public abstract class FullscreenHtmlApiHandlerBase
     // We need to cache WebContents/ContentView since we are setting fullscreen UI state on
     // the WebContents's container view, and a Tab can change to have null web contents/
     // content view, i.e., if you navigate to a native page.
-    @Nullable private WebContents mWebContentsInFullscreen;
-    @Nullable private View mContentViewInFullscreen;
-    @Nullable protected Tab mTabInFullscreen;
-    @Nullable private FullscreenOptions mFullscreenOptions;
+    private @Nullable WebContents mWebContentsInFullscreen;
+    private @Nullable View mContentViewInFullscreen;
+    protected @Nullable Tab mTabInFullscreen;
+    private @Nullable FullscreenOptions mFullscreenOptions;
 
-    private FullscreenToast mToast;
+    private @Nullable FullscreenToast mToast;
 
-    private OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
+    private @Nullable OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
-    private FullscreenOptions mPendingFullscreenOptions;
+    private @Nullable FullscreenOptions mPendingFullscreenOptions;
 
-    private ActivityTabTabObserver mActiveTabObserver;
-    private TabModelSelectorTabObserver mTabFullscreenObserver;
-    @Nullable private Tab mTab;
+    private @Nullable ActivityTabTabObserver mActiveTabObserver;
+    private @Nullable TabModelSelectorTabObserver mTabFullscreenObserver;
+    private @Nullable Tab mTab;
     private boolean mDisplayEdgeToEdgeFullscreenToBeExited;
     private boolean mIsInMultiWindowMode;
 
@@ -124,18 +128,19 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     // Current ContentView. Updates when active tab is switched or WebContents is swapped
     // in the current Tab.
-    private ContentView mContentView;
+    private @Nullable ContentView mContentView;
 
-    protected ContentView getContentView() {
+    protected @Nullable ContentView getContentView() {
         return mContentView;
     }
 
     /**
      * Update the current content view that can be shown in fullscreen mode, e.g. when the active
      * tab is switched or when web contents are swapped in the current Tab.
+     *
      * @param contentView The new content view.
      */
-    protected void setContentView(ContentView contentView) {
+    protected void setContentView(@Nullable ContentView contentView) {
         mContentView = contentView;
     }
 
@@ -291,7 +296,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         mTab = tab;
                         setContentView(tab != null ? tab.getContentView() : null);
                         if (tab != null) {
@@ -421,7 +426,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
-    private void setEnterFullscreenRunnable(Tab tab, Runnable runnable) {
+    private void setEnterFullscreenRunnable(Tab tab, @Nullable Runnable runnable) {
         TabAttributes attrs = TabAttributes.from(tab);
         if (runnable == null) {
             attrs.clear(TabAttributeKeys.ENTER_FULLSCREEN);
@@ -430,7 +435,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
-    private Runnable getAndClearEnterFullscreenRunnable(Tab tab) {
+    private @Nullable Runnable getAndClearEnterFullscreenRunnable(Tab tab) {
         Runnable r =
                 tab != null ? TabAttributes.from(tab).get(TabAttributeKeys.ENTER_FULLSCREEN) : null;
         if (r != null) setEnterFullscreenRunnable(tab, null);
@@ -447,17 +452,17 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (!shouldSkipEnterFullscreenRequest(options)) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    OutcomeReceiver<Void, Throwable> resultCb =
+                    OutcomeReceiver<@Nullable Void, Throwable> resultCb =
                             new OutcomeReceiver<>() {
                                 @Override
-                                public void onResult(Void unused) {
+                                public void onResult(@Nullable Void unused) {
                                     // Mark that the Window mode was changed during the fullscreen
                                     // transition. It needs to be reverted on exit.
                                     mDisplayEdgeToEdgeFullscreenToBeExited = true;
                                 }
 
                                 @Override
-                                public void onError(@NonNull Throwable error) {
+                                public void onError(Throwable error) {
                                     // There is nothing to be done in case of failed transition to
                                     // fullscreen mode. It can happen when in split screen or
                                     // already in fullscreen mode.
@@ -472,6 +477,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             mNotifyOnNextExit = true;
             if (mAreControlsHidden.get()) {
                 // The browser controls are currently hidden.
+                assert mTab != null;
                 enterFullscreen(mTab, options);
             } else {
                 // We should hide browser controls first.
@@ -513,6 +519,8 @@ public abstract class FullscreenHtmlApiHandlerBase
             mPersistentModeSupplier.set(false);
 
             if (mWebContentsInFullscreen != null && mTabInFullscreen != null) {
+                // mContentViewInFullscreen is non-null, since mWebContentsInFullscreen is non-null
+                assumeNonNull(mContentViewInFullscreen);
                 exitFullscreen(mWebContentsInFullscreen, mContentViewInFullscreen);
             } else {
                 if (mPendingFullscreenOptions != null) mPendingFullscreenOptions.setCanceled();
@@ -531,7 +539,9 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     @Override
     public boolean getPersistentFullscreenMode() {
-        return mPersistentModeSupplier.get();
+        Boolean value = mPersistentModeSupplier.get();
+        assert value != null;
+        return value;
     }
 
     /**
@@ -668,7 +678,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (webContents == null) return;
         mFullscreenOptions = options;
         final View contentView = tab.getContentView();
-
+        assert contentView != null;
         if (isAlreadyInFullscreenOrNavigationHidden(contentView)) {
             // We are already in fullscreen mode and the fullscreen options match what is
             // needed; nothing to do.
@@ -810,20 +820,23 @@ public abstract class FullscreenHtmlApiHandlerBase
         window.setAttributes(attrs);
     }
 
-    private void maybeEnterActivityFullscreenMode(OutcomeReceiver<Void, Throwable> callback) {
+    private void maybeEnterActivityFullscreenMode(
+            OutcomeReceiver<@Nullable Void, Throwable> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             runRequestActivityFullscreenMode(callback, Activity.FULLSCREEN_MODE_REQUEST_ENTER);
         }
     }
 
-    private void maybeExitActivityFullscreenMode(OutcomeReceiver<Void, Throwable> callback) {
+    private void maybeExitActivityFullscreenMode(
+            @Nullable OutcomeReceiver<@Nullable Void, Throwable> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             runRequestActivityFullscreenMode(callback, Activity.FULLSCREEN_MODE_REQUEST_EXIT);
         }
     }
 
     private void runRequestActivityFullscreenMode(
-            OutcomeReceiver<Void, Throwable> callback, int fullscreenModeRequest) {
+            @Nullable OutcomeReceiver<@Nullable Void, Throwable> callback,
+            int fullscreenModeRequest) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             mActivity.requestFullscreenMode(fullscreenModeRequest, callback);
         }
@@ -846,6 +859,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         return mObservers;
     }
 
+    @NullUnmarked
     FullscreenOptions getPendingFullscreenOptionsForTesting() {
         return mPendingFullscreenOptions;
     }

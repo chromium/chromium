@@ -8,9 +8,11 @@ import android.app.Activity;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 
+@NullMarked
 public class FullscreenHtmlApiHandlerFactory {
 
     /** Creates an instance of {@link FullscreenHtmlApiHandlerBase}. */

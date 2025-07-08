@@ -62,7 +62,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      * @param tab Tab whose browser controls state is looked into.
      * @return The current visibility constraints.
      */
-    public static @BrowserControlsState int getConstraints(Tab tab) {
+    public static @BrowserControlsState int getConstraints(@Nullable Tab tab) {
         TabBrowserControlsConstraintsHelper helper = safeGet(tab);
         if (helper == null) return BrowserControlsState.BOTH;
         return helper.getConstraints();
@@ -87,7 +87,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      *
      * @param tab Tab object.
      */
-    public static void updateEnabledState(Tab tab) {
+    public static void updateEnabledState(@Nullable Tab tab) {
         TabBrowserControlsConstraintsHelper helper = safeGet(tab);
         if (helper == null) return;
         helper.updateEnabledState();
@@ -103,7 +103,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
      * @param animate Whether the controls should animate to the specified ending condition or
      *     should jump immediately.
      */
-    public static void update(Tab tab, int current, boolean animate) {
+    public static void update(@Nullable Tab tab, int current, boolean animate) {
         TabBrowserControlsConstraintsHelper helper = safeGet(tab);
         if (helper == null) return;
         helper.update(current, animate);
