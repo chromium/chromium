@@ -70,7 +70,6 @@ int posix_spawnattr_set_csm_np(const posix_spawnattr_t*, uint32_t)
 
 #include <crt_externs.h>
 #include <mach/mach.h>
-#include <os/availability.h>
 #include <spawn.h>
 #include <string.h>
 #include <sys/wait.h>
