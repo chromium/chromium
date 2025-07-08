@@ -81,7 +81,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCoordinatorDelegate,
-    SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
     TrustedVaultReauthenticationCoordinatorDelegate> {
@@ -645,19 +644,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)bulkUploadCoordinatorShouldStop:(BulkUploadCoordinator*)coordinator {
   DCHECK_EQ(coordinator, _bulkUploadCoordinator);
   [self stopBulkUpload];
-}
-
-#pragma mark - SettingsNavigationControllerDelegate
-
-- (void)closeSettings {
-  [_baseNavigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
-}
-
-- (void)settingsWasDismissed {
-  [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
 }
 
 #pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
