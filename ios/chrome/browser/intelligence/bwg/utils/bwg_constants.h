@@ -7,8 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-// BWG UI sheet detents.
-extern NSString* const kBWGPromoConsentPartialDetentIdentifier;
+// BWG UI sheet detent identifier.
 extern NSString* const kBWGPromoConsentFullDetentIdentifier;
 
 // BWG UI Lottie Animation name for FRE Banner.

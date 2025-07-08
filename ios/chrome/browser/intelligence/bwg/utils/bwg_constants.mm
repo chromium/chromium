@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 
-NSString* const kBWGPromoConsentPartialDetentIdentifier =
-    @"BWGConsentPartialDetentIdentifier";
 NSString* const kBWGPromoConsentFullDetentIdentifier =
-    @"BWGConsentFullDetentIdentifier";
+    @"BWGPromoConsentFullDetentIdentifier";
 
 NSString* const kLottieAnimationFREBannerName = @"FRE_Banner";
 
