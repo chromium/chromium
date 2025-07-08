@@ -112,12 +112,20 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TemplateUrlServiceAndroidUnitTest,
+                           FilterUserSelectableTemplateUrls);
+
   bool IsDefaultSearchEngineGoogle();
 
   void OnTemplateURLServiceLoaded();
 
   // TemplateUrlServiceObserver:
   void OnTemplateURLServiceChanged() override;
+
+  // Given a vector of TemplateURL pointers, returns an array of TemplateURLs
+  // that should be selectable by the user as their primary Search Engine.
+  static std::vector<raw_ptr<TemplateURL>> FilterUserSelectableTemplateUrls(
+      std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

@@ -459,11 +459,10 @@ TemplateUrlServiceAndroid::AddSearchEngineForTesting(
   return base::android::ConvertUTF16ToJavaString(env, t_url->data().keyword());
 }
 
-void TemplateUrlServiceAndroid::GetTemplateUrls(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& template_url_list_obj) {
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls =
-      template_url_service_->GetTemplateURLs();
+std::vector<raw_ptr<TemplateURL>>
+TemplateUrlServiceAndroid::FilterUserSelectableTemplateUrls(
+    std::vector<raw_ptr<TemplateURL, VectorExperimental>> template_urls) {
+  std::vector<raw_ptr<TemplateURL>> result;
 
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
@@ -486,10 +485,22 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
       continue;
     }
 
-    base::android::ScopedJavaLocalRef<jobject> j_template_url =
-        CreateTemplateUrlAndroid(env, template_url);
-    Java_TemplateUrlService_addTemplateUrlToList(env, template_url_list_obj,
-                                                 j_template_url);
+    result.push_back(template_url);
+  }
+
+  return result;
+}
+
+void TemplateUrlServiceAndroid::GetTemplateUrls(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& template_url_list_obj) {
+  auto template_urls = FilterUserSelectableTemplateUrls(
+      template_url_service_->GetTemplateURLs());
+
+  for (TemplateURL* template_url : template_urls) {
+    Java_TemplateUrlService_addTemplateUrlToList(
+        env, template_url_list_obj,
+        CreateTemplateUrlAndroid(env, template_url));
   }
 }
 
