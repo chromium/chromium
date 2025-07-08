@@ -219,7 +219,12 @@ PhysicalOffset LayoutTableColumn::PhysicalLocation(
 
   auto* table = Table();
   DCHECK(table);
-  DCHECK_GT(table->PhysicalFragmentCount(), 0u);
+  if (!table->PhysicalFragmentCount()) {
+    // The tree may be dirty, and the table may not have been laid out even once
+    // yet. Scroll anchoring does this, for instance.
+    DCHECK(NeedsLayout());
+    return PhysicalOffset();
+  }
 
   LayoutTableColumn* parent_colgroup = nullptr;
   if (IsColumn()) {
