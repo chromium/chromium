@@ -54,7 +54,7 @@ class DistilledPagePrefsAndroid {
 class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {
  public:
   DistilledPagePrefsObserverAndroid(JNIEnv* env, jobject obj);
-  virtual ~DistilledPagePrefsObserverAndroid();
+  ~DistilledPagePrefsObserverAndroid() override;
 
   // DistilledPagePrefs::Observer implementation.
   void OnChangeFontFamily(mojom::FontFamily new_font_family) override;

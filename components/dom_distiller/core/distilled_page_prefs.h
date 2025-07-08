@@ -22,7 +22,7 @@ namespace dom_distiller {
 // Interface for preferences used for distilled page.
 class DistilledPagePrefs {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnChangeFontFamily(mojom::FontFamily font) = 0;
     virtual void OnChangeTheme(mojom::Theme theme) = 0;
@@ -66,7 +66,7 @@ class DistilledPagePrefs {
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
 };

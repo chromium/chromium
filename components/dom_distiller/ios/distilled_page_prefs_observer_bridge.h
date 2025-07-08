@@ -23,7 +23,7 @@ class DistilledPagePrefsObserverBridge
  public:
   explicit DistilledPagePrefsObserverBridge(
       id<DistilledPagePrefsObserving> observer);
-  virtual ~DistilledPagePrefsObserverBridge();
+  ~DistilledPagePrefsObserverBridge() override;
 
   DistilledPagePrefsObserverBridge(const DistilledPagePrefsObserverBridge&) =
       delete;
