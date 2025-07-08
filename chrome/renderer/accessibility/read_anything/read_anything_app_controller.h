@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+#include "v8/include/cppgc/persistent.h"
 
 namespace content {
 class RenderFrame;
@@ -69,20 +70,23 @@ class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 //  1. If the AXTreeUpdate has a selection, display a subtree containing all of
 //     the nodes between the selection start and end.
 //  2. If the AXTreeUpdate has no selection, display a subtree containing all of
-//     the content nodes, their descendants, and their ancestors.
+// the distilled content.
 //
 class ReadAnythingAppController
-    : public content::RenderFrameObserver,
-      public gin::DeprecatedWrappable<ReadAnythingAppController>,
+    : public gin::Wrappable<ReadAnythingAppController>,
+      public content::RenderFrameObserver,
       public ReadAnythingAppModel::ModelObserver,
       public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static gin::WrapperInfo kWrapperInfo;
 
   ReadAnythingAppController(const ReadAnythingAppController&) = delete;
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
       delete;
+
+  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
+  ~ReadAnythingAppController() override;
 
   // Installs v8 context for Read Anything and adds chrome.readingMode binding
   // to page.
@@ -92,6 +96,7 @@ class ReadAnythingAppController
   void OnDestruct() override;
 
   // gin::WrappableBase:
+  const gin::WrapperInfo* wrapper_info() const override;
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -339,10 +344,6 @@ class ReadAnythingAppController
  private:
   friend ReadAnythingAppControllerTest;
   friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
-
-  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
-  ~ReadAnythingAppController() override;
-
   // The fallback language code if GetLanguageCodeForSpeech has an error.
   // However, this may be the same value as GetLanguageCodeForSpeech.
   const std::string& GetDefaultLanguageCodeForSpeech() const;
@@ -440,6 +441,17 @@ class ReadAnythingAppController
   // A timer that causes a distillation after a user stops typing for a set
   // number of seconds.
   std::unique_ptr<base::RetainingOneShotTimer> post_user_entry_draw_timer_;
+
+  // As a subclass of RenderFrameObserver, all objects of this class are stored
+  // in data structure and should not get deallocated as long as the object is
+  // in that structure. Once an object gets removed from the data structure,
+  // OnDestruct() is called and the object can be deallocated. The memory of
+  // this object, though, and by having this persistent self reference here, we
+  // make sure that the GC keeps the object alive as long as this self reference
+  // exists. Once the self reference is cleared in OnDestruct(), the garbage
+  // collector will free the object if it is not referenced by any other
+  // object.
+  cppgc::Persistent<ReadAnythingAppController> self_;
 
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };

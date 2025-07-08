@@ -41,7 +41,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -71,7 +70,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-typed-array.h"
 
@@ -390,8 +391,9 @@ std::optional<T> ToEnum(int value) {
 }  // namespace
 
 // static
-gin::DeprecatedWrapperInfo ReadAnythingAppController::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
+gin::WrapperInfo ReadAnythingAppController::kWrapperInfo = {
+    {gin::kEmbedderNativeGin},
+    gin::kReadAnythingAppController};
 
 // static
 ReadAnythingAppController* ReadAnythingAppController::Install(
@@ -410,16 +412,17 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
   v8::Context::Scope context_scope(context);
 
   ReadAnythingAppController* controller =
-      new ReadAnythingAppController(render_frame);
-  gin::Handle<ReadAnythingAppController> handle =
-      gin::CreateHandle(isolate, controller);
-  if (handle.IsEmpty()) {
+      cppgc::MakeGarbageCollected<ReadAnythingAppController>(
+          isolate->GetCppHeap()->GetAllocationHandle(), render_frame);
+
+  v8::Local<v8::Value> controller_v8;
+  if (!controller->GetWrapper(isolate).ToLocal(&controller_v8)) {
     return nullptr;
   }
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
-  chrome->Set(context, gin::StringToV8(isolate, "readingMode"), handle.ToV8())
+  chrome->Set(context, gin::StringToV8(isolate, "readingMode"), controller_v8)
       .Check();
   return controller;
 }
@@ -449,6 +452,8 @@ ReadAnythingAppController::ReadAnythingAppController(
   }
 
   model_observer_.Observe(&model_);
+
+  self_ = this;
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() {
@@ -457,7 +462,7 @@ ReadAnythingAppController::~ReadAnythingAppController() {
 }
 
 void ReadAnythingAppController::OnDestruct() {
-  delete this;
+  self_.Clear();
 }
 
 void ReadAnythingAppController::OnNodeDataChanged(
@@ -926,10 +931,14 @@ void ReadAnythingAppController::ScreenAIServiceReady() {
   distiller_->ScreenAIServiceReady();
 }
 
+const gin::WrapperInfo* ReadAnythingAppController::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<
-             ReadAnythingAppController>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
+             isolate)
       .SetProperty("rootId", &ReadAnythingAppController::RootId)
       .SetProperty("startNodeId", &ReadAnythingAppController::StartNodeId)
       .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)
