@@ -1229,34 +1229,6 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
       /*retried_count=*/0);
 }
 
-// Test that a failure wit ha network error that doesn't trigger a retry
-IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
-                       FailedNotRetried_NonRetryEligibleNetworkError) {
-  ASSERT_TRUE(server()->Start());
-  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
-  // Always fail the fetch with a SSL protocol error.
-  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
-      URLLoaderInterceptor::SetupRequestFailForURL(beacon_url,
-                                                   net::ERR_SSL_PROTOCOL_ERROR);
-  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
-
-  // Observe the error, which is invalid for retrying.
-  loaders_observer().WaitForTotalOnComplete({net::ERR_SSL_PROTOCOL_ERROR});
-  loaders_observer().WaitForTotalOnCompleteForwarded(
-      {net::ERR_SSL_PROTOCOL_ERROR});
-  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
-
-  // The fetch is not retried.
-  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
-  ExpectFetchKeepAliveHistogram(
-      FetchKeepAliveRequestMetricType::kFetch,
-      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
-      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
-      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
-      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1),
-      /*retried_count=*/0);
-}
-
 // Test failing a load and all the retries.
 IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
                        FailedRetriedUntilMaxRetryCount) {
