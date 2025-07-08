@@ -11,6 +11,7 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="114dp"
+    android:background="@drawable/download_manager_item_background"
     style="@style/MaterialCardStyle">
 
     <RelativeLayout

@@ -52,7 +52,7 @@ found in the LICENSE file.
         app:layout_row="0"
         app:layout_rowSpan="2"
         app:layout_gravity="center_vertical"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/default_icon_background"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
         app:tint="@macro/default_icon_color" />

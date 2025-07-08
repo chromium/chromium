@@ -5,5 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/list_item_rounded_background_selector" />
+    <item android:drawable="@drawable/oval_surface_1" />
+    <item android:drawable="@drawable/circular_progress_bar_selector_small" />
 </layer-list>

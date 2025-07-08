@@ -46,7 +46,7 @@ found in the LICENSE file.
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
         <item name="android:tint">@color/baseline_primary_40</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/circular_progress_bar_selector_small</item>
         <item name="resumeSrc">@drawable/circular_progress_bar_resume_tiny</item>
         <item name="retrySrc">@drawable/circular_progress_bar_retry_tiny</item>
         <item name="pauseSrc">@drawable/circular_progress_bar_pause_tiny</item>
@@ -63,8 +63,9 @@ found in the LICENSE file.
         <item name="pauseSrc">@drawable/ic_pause_white_24dp</item>
     </style>
     <style name="LargeCircularProgress">
-        <item name="android:layout_width">60dp</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">@dimen/download_manager_progress_bar_focus_circle_size</item>
+        <item name="android:layout_height">@dimen/download_manager_progress_bar_focus_circle_size</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:tint">@macro/circular_progress_icon_color_small_large</item>
         <item name="android:background">@drawable/circular_progress_bar_background_large</item>
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_large</item>
@@ -74,8 +75,8 @@ found in the LICENSE file.
         <item name="pauseSrc">@drawable/ic_pause_white_36dp</item>
     </style>
     <style name="LargeMediaPlayButton">
-        <item name="android:layout_width">60dp</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">@dimen/download_manager_progress_bar_focus_circle_size</item>
+        <item name="android:layout_height">@dimen/download_manager_progress_bar_focus_circle_size</item>
         <item name="android:background">@drawable/circular_progress_bar_background_large</item>
         <item name="android:src">@drawable/ic_play_arrow_white_36dp</item>
         <item name="android:tint">@color/baseline_neutral_20</item>

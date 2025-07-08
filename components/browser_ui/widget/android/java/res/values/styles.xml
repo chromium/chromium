@@ -74,7 +74,7 @@ found in the LICENSE file.
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@null</item>
+        <item name="android:background">@drawable/default_icon_background</item>
         <item name="android:scaleType">center</item>
     </style>
     <style name="ListItemSmallIconContainer" parent="ListItemContainer">

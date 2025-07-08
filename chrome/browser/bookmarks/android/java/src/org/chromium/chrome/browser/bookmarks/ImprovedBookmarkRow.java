@@ -104,6 +104,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     /** Constructor for inflating from XML. */
     public ImprovedBookmarkRow(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        // The view from buildView should have a focus highlight, so avoid duplicate focus
+        setDefaultFocusHighlightEnabled(false);
     }
 
     @Override

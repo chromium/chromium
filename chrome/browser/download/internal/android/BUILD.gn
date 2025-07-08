@@ -157,6 +157,7 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/circular_progress_bar_background_large.xml",
+    "java/res/drawable/circular_progress_bar_background_small.xml",
     "java/res/drawable/circular_progress_bar_determinate_large.xml",
     "java/res/drawable/circular_progress_bar_determinate_small.xml",
     "java/res/drawable/circular_progress_bar_indeterminate_large.xml",
@@ -164,7 +165,10 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_pause_tiny.xml",
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
+    "java/res/drawable/circular_progress_bar_selector_large.xml",
+    "java/res/drawable/circular_progress_bar_selector_small.xml",
     "java/res/drawable/download_interstitial_icon.xml",
+    "java/res/drawable/download_manager_image_background.xml",
     "java/res/drawable/download_manager_item_background.xml",
     "java/res/drawable/downloading_fill_animation_24dp.xml",
     "java/res/drawable/downloads_empty_state_illustration.xml",
@@ -200,7 +204,6 @@ android_resources("java_resources") {
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/attrs.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/drawables.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]
