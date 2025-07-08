@@ -338,7 +338,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
   READ_BITS_OR_RETURN(6, &vps->vps_max_layers_minus1);
   IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 63);
   READ_BITS_OR_RETURN(3, &vps->vps_max_sub_layers_minus1);
-  IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, 7);
+  IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, kMaxSubLayers - 1);
   READ_BOOL_OR_RETURN(&vps->vps_temporal_id_nesting_flag);
   SKIP_BITS_OR_RETURN(16);  // vps_reserved_0xffff_16bits
   res = ParseProfileTierLevel(true, vps->vps_max_sub_layers_minus1,
