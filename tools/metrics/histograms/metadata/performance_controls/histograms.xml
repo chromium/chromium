@@ -205,7 +205,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DailyAcceptancePercentage"
-    units="%" expires_after="2025-11-02">
+    units="%" expires_after="2026-01-04">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -231,7 +231,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DiscardedTabCount"
-    units="tabs" expires_after="2025-11-02">
+    units="tabs" expires_after="2026-01-04">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -244,7 +244,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DiscardedTabsPercentageUsage"
-    units="%" expires_after="2025-11-02">
+    units="%" expires_after="2026-01-04">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -257,7 +257,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.SettingsChangeNotification"
-    enum="BooleanEnabled" expires_after="2025-11-02">
+    enum="BooleanEnabled" expires_after="2026-01-04">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

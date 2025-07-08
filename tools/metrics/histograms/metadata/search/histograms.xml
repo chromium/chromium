@@ -395,7 +395,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ChoicePrefsCheck.WipeOnMissingDse" enum="Boolean"
-    expires_after="2025-10-19">
+    expires_after="2026-01-04">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -575,7 +575,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2025-11-01">
+    enum="BooleanBottomSearchKind" expires_after="2026-01-04">
 <!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
@@ -1356,7 +1356,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.RelatedSearches.AllUserPermissions"
-    enum="ContextualSearchPermissions" expires_after="2025-11-01">
+    enum="ContextualSearchPermissions" expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1371,7 +1371,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselLastVisibleItemPosition"
-    units="position" expires_after="2025-11-01">
+    units="position" expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1422,7 +1422,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked2"
-    units="selected" expires_after="2025-11-01">
+    units="selected" expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1433,7 +1433,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
-    expires_after="2025-11-01">
+    expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1448,7 +1448,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
-    expires_after="2025-11-01">
+    expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1473,7 +1473,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>dullweber@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1485,7 +1485,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineChangedSnackbar.SettingsTapped"
-    enum="Boolean" expires_after="2025-11-02">
+    enum="Boolean" expires_after="2026-01-04">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>

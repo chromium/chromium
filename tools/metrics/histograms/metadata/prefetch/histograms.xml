@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

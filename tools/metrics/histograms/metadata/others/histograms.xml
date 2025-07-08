@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes"
-    units="KB" expires_after="2025-11-02">
+    units="KB" expires_after="2026-01-04">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1835,7 +1835,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.NumAdSlotsPerResponse"
-    units="ad slots" expires_after="2025-11-02">
+    units="ad slots" expires_after="2026-01-04">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -2321,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumIterations"
-    units="count" expires_after="2025-11-02">
+    units="count" expires_after="2026-01-04">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -4882,7 +4882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.HappinessTrackingSurvey.{SurveyName}"
-    enum="HappinessTrackingSurvey" expires_after="2025-11-02">
+    enum="HappinessTrackingSurvey" expires_after="2026-01-04">
   <owner>zhouzj@google.com</owner>
   <owner>fjacky@google.com</owner>
   <summary>
@@ -5284,7 +5284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>jlebel@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -6284,7 +6284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchActivelyInParallel" units="threads"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>ajgo@chromium.org</owner>
   <owner>src/sandbox/policy/win/OWNERS</owner>
   <summary>
@@ -10106,7 +10106,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserManager.LoginUserType" enum="UserType"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>achuith@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>

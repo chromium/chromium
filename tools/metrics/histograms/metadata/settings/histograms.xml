@@ -106,7 +106,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </variants>
 
 <histogram name="Settings.AddSiteDialog.Incognito" enum="BooleanEnabled"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -263,7 +263,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.DefaultBrowserFromSource"
-    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2025-11-02">
+    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2026-01-04">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1325,7 +1325,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.StartupPageEngineTypes2"
-    enum="OmniboxSearchEngineType" expires_after="2025-11-02">
+    enum="OmniboxSearchEngineType" expires_after="2026-01-04">
   <owner>mpearson@chromium.org</owner>
   <owner>csharp@chromium.org</owner>
   <summary>

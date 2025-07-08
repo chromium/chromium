@@ -1426,7 +1426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.ReadResponseHeadError"
-    enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-10-05">
+    enum="IsolatedWebAppReadResponseHeadError" expires_after="2026-01-04">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>

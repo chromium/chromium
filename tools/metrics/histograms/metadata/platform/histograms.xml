@@ -1514,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Meminfo{PlatformMeminfoSize}" units="KB"
-    expires_after="2025-08-24">
+    expires_after="2026-01-04">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>

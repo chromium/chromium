@@ -286,7 +286,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DeviceGain{Device}" units="level"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

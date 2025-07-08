@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="DataSharing.Android.JoinActionFlowState"
-    enum="JoinActionStateAndroid" expires_after="2025-11-02">
+    enum="JoinActionStateAndroid" expires_after="2026-01-04">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Android.ShareActionFlowState"
-    enum="ShareActionStateAndroid" expires_after="2025-11-02">
+    enum="ShareActionStateAndroid" expires_after="2026-01-04">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

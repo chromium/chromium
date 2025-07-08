@@ -1098,7 +1098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-01-04">
   <owner>gangwu@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>

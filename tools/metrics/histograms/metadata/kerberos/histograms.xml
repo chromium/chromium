@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.GetKerberosFiles" enum="KerberosErrorType"
-    expires_after="2025-10-05">
+    expires_after="2026-01-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>

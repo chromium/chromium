@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Cookie.AndroidOTRRestore" enum="BooleanEnabled"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>arichiv@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2025-11-02">
+    expires_after="2026-01-04">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -1050,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SessionAgeSinceLastUpdateInHoursGTOneWeek"
-    units="hours" expires_after="2025-10-31">
+    units="hours" expires_after="2026-01-04">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1062,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek"
-    units="hours" expires_after="2025-10-31">
+    units="hours" expires_after="2026-01-04">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SourceType.Subsampled" enum="CookieSourceType"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1089,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.StaleSessionCookiesDeletedOnStartup" units="cookies"
-    expires_after="2025-10-31">
+    expires_after="2026-01-04">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

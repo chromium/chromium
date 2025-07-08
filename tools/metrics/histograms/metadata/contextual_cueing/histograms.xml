@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
-    enum="ContextualCueingNudgeDecision" expires_after="2025-11-02">
+    enum="ContextualCueingNudgeDecision" expires_after="2026-01-04">
   <owner>sophiechang@chromium.org</owner>
   <owner>rajendrant@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualCueing.NudgeInteraction"
-    enum="ContextualCueingNudgeInteraction" expires_after="2025-11-02">
+    enum="ContextualCueingNudgeInteraction" expires_after="2026-01-04">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>rajendrant@google.com</owner>
   <summary>
