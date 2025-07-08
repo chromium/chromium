@@ -55,6 +55,17 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         int HIDDEN = 1;
     }
 
+    // The pre-defined stack order for different top controls.
+    private static final @TopControlType int[] STACK_ORDER =
+            new int[] {
+                TopControlType.STATUS_INDICATOR,
+                TopControlType.TABSTRIP,
+                TopControlType.TOOLBAR,
+                TopControlType.BOOKMARK_BAR,
+                TopControlType.HAIRLINE,
+                TopControlType.PROGRESS_BAR,
+            };
+
     // All controls are stored in a Map and we should only have one of each control type.
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
 
@@ -90,6 +101,24 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      */
     public void removeControl(TopControlLayer control) {
         mControls.remove(control.getTopControlType());
+    }
+
+    /**
+     * Returns the total height of all currently visible {@link TopControlLayer} controls of this
+     * instance that also contribute to the total height of the controls.
+     *
+     * @return The total height of all visible controls in pixels.
+     */
+    public int getVisibleTopControlsTotalHeight() {
+        int totalHeight = 0;
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (layer == null || !layer.contributesToTotalHeight()) continue;
+            if (layer.getTopControlVisibility() == TopControlVisibility.VISIBLE) {
+                totalHeight += layer.getTopControlHeight();
+            }
+        }
+        return totalHeight;
     }
 
     // BrowserControlsStateProvider.Observer implementation:
