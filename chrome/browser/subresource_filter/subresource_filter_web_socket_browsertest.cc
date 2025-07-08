@@ -13,7 +13,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -37,19 +38,16 @@ class SubresourceFilterWebSocketBrowserTest
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
-    websocket_test_server_ = std::make_unique<net::SpawnedTestServer>(
-        net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
-    ASSERT_TRUE(websocket_test_server_->Start());
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server_);
+    ASSERT_TRUE(websocket_test_server_.Start());
   }
 
-  net::SpawnedTestServer* websocket_test_server() {
-    return websocket_test_server_.get();
+  net::EmbeddedTestServer& websocket_test_server() {
+    return websocket_test_server_;
   }
 
   GURL GetWebSocketUrl(const std::string& path) {
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr("ws");
-    return websocket_test_server_->GetURL(path).ReplaceComponents(replacements);
+    return net::test_server::GetWebSocketURL(websocket_test_server_, path);
   }
 
   void CreateWebSocketAndExpectResult(const GURL& url,
@@ -62,20 +60,21 @@ class SubresourceFilterWebSocketBrowserTest
   }
 
  private:
-  std::unique_ptr<net::SpawnedTestServer> websocket_test_server_;
+  net::EmbeddedTestServer websocket_test_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTP};
 };
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
                          GetParam() == IN_WORKER ? "inWorker" : "")));
-  GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
+  GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CreateWebSocketAndExpectResult(websocket_url,
-                                 false /* expect_connection_success */);
+                                 /*expect_connection_success=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
@@ -83,13 +82,13 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
                          GetParam() == IN_WORKER ? "inWorker" : "")));
-  GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
+  GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
-                                 true /* expect_connection_success */);
+                                 /*expect_connection_success=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
@@ -97,12 +96,12 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
                          GetParam() == IN_WORKER ? "inWorker" : "")));
-  GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
+  GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
-                                 true /* expect_connection_success */);
+                                 /*expect_connection_success=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(
