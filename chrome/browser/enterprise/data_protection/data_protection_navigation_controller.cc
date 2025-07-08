@@ -100,7 +100,8 @@ void DataProtectionNavigationController::DidStartNavigation(
           base::BindOnce(&DataProtectionNavigationController::
                              ApplyDataProtectionSettingsOrDelayIfEmpty,
                          weak_ptr_factory_.GetWeakPtr(),
-                         web_contents()->GetWeakPtr()));
+                         web_contents()->GetWeakPtr(),
+                         navigation_handle->IsSameDocument()));
 
   if (navigation_observer) {
     navigation_observers_.emplace(navigation_handle->GetNavigationId(),
@@ -111,6 +112,7 @@ void DataProtectionNavigationController::DidStartNavigation(
 void DataProtectionNavigationController::
     ApplyDataProtectionSettingsOrDelayIfEmpty(
         base::WeakPtr<content::WebContents> expected_web_contents,
+        bool is_same_document,
         const enterprise_data_protection::UrlSettings& settings) {
   // If discarded, do nothing.
   if (!expected_web_contents || expected_web_contents.get() != web_contents()) {
@@ -159,12 +161,13 @@ void DataProtectionNavigationController::
           block.record.ToSkPicture(SkRect::MakeWH(block.width, block.height)),
           block.width, block.height);
 
-  if (!settings.watermark_text.empty()) {
+  // For same document navigations, watermark clearing has to happen here,
+  // because there is no document onload event that is invoked.
+  clear_watermark_text_on_page_load_ =
+      settings.watermark_text.empty() && !is_same_document;
+
+  if (!clear_watermark_text_on_page_load_) {
     browser_view->ApplyWatermarkSettings(settings.watermark_text);
-  } else {
-    // The watermark string should be cleared.  Delay that until the page
-    // finishes loading.
-    clear_watermark_text_on_page_load_ = true;
   }
 
   if (!on_delay_apply_data_protection_settings_if_empty_called_for_testing_

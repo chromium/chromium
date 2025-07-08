@@ -122,13 +122,14 @@ class FakeRealTimeUrlLookupService
   FakeRealTimeUrlLookupService() = default;
 
   // RealTimeUrlLookupServiceBase:
-  void StartLookup(
+  void StartMaybeCachedLookup(
       const GURL& url,
       safe_browsing::RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       SessionID session_id,
       std::optional<safe_browsing::internal::ReferringAppInfo>
-          referring_app_info) override {
+          referring_app_info,
+      bool use_cache) override {
     // Create custom threat info instance. The DataProtectionNavigationObserver
     // does not care whether the verdict came from the verdict cache or from an
     // actual lookup request, as long as it gets a verdict back.
