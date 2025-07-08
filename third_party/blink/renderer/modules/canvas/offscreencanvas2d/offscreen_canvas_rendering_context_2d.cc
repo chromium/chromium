@@ -172,8 +172,8 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     return nullptr;
   }
 
-  if (CanvasResourceProvider* provider = resource_provider_.get()) {
-    if (!provider->IsValid()) {
+  if (resource_provider_) {
+    if (!resource_provider_->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
       // happens if the GPU process dies in the middle of a render task. The
       // canvas is notified of GPU context losses via the `NotifyGpuContextLost`
@@ -186,7 +186,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
       // `TryRestoreContextEvent` wait for the GPU process to up again.
       return nullptr;
     }
-    return provider;
+    return resource_provider_.get();
   }
 
   if (!host->IsValidImageSize() && !host->Size().IsEmpty()) {
@@ -393,20 +393,12 @@ const cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas()
   if (!is_valid_size_ || isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  CanvasResourceProvider* const provider = resource_provider_.get();
-  if (provider == nullptr) [[unlikely]] {
-    return nullptr;
-  }
-  return &provider->Canvas();
+  return resource_provider_ ? &resource_provider_->Canvas() : nullptr;
 }
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
     const {
-  const CanvasResourceProvider* provider = resource_provider_.get();
-  if (provider == nullptr) [[unlikely]] {
-    return nullptr;
-  }
-  return &provider->Recorder();
+  return resource_provider_ ? &resource_provider_->Recorder() : nullptr;
 }
 
 void OffscreenCanvasRenderingContext2D::WillDraw(
@@ -420,10 +412,9 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   } else {
     Host()->DidDraw(dirty_rect_for_commit_);
   }
-  if (CanvasResourceProvider* provider = resource_provider_.get();
-      layer_count_ == 0 && provider != nullptr) [[likely]] {
+  if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    provider->FlushIfRecordingLimitExceeded();
+    resource_provider_->FlushIfRecordingLimitExceeded();
   }
 }
 
@@ -507,10 +498,8 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() {
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  if (CanvasResourceProvider* provider = resource_provider_.get()) [[likely]] {
-    return provider->FlushCanvas(reason);
-  }
-  return std::nullopt;
+  return resource_provider_ ? resource_provider_->FlushCanvas(reason)
+                            : std::nullopt;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
