@@ -229,7 +229,7 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         ('Prefer passing in the Profile reference instead of relying on the '
          'static getLastUsedRegularProfile() call. Only top level entry points '
          '(e.g. Activities) should call this method. Otherwise, the Profile '
-         'should either be passed in explicitly or retreived from an existing '
+         'should either be passed in explicitly or retrieved from an existing '
          'entity with a reference to the Profile (e.g. WebContents).', ),
         False,
         excluded_paths=(r'.*Test[A-Z]?.*\.java', ),
@@ -1935,7 +1935,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         pattern='ProfileManager::GetLastUsedProfile',
         explanation=
         ('Most code should already be scoped to a Profile. Pass in a Profile* '
-         'or retreive from an existing entity with a reference to the Profile '
+         'or retrieve from an existing entity with a reference to the Profile '
          '(e.g. WebContents).', ),
         treat_as_error=False,
     ),
@@ -1950,7 +1950,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
                  r'FindBrowserWithActiveWindow'),
         explanation=
         ('Most code should already be scoped to a Browser. Pass in a Browser* '
-         'or retreive from an existing entity with a reference to the Browser.',
+         'or retrieve from an existing entity with a reference to the Browser.',
          ),
         treat_as_error=False,
     ),
