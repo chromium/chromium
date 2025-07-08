@@ -21,12 +21,22 @@ ToolRequest::CreateToolResult::~CreateToolResult() = default;
 
 ToolRequest::ToolRequest() = default;
 ToolRequest::~ToolRequest() = default;
+ToolRequest::ToolRequest(const ToolRequest& other) = default;
+ToolRequest& ToolRequest::operator=(const ToolRequest& other) = default;
+
+bool ToolRequest::IsTabScoped() const {
+  return GetTabHandle() != tabs::TabHandle::Null();
+}
 
 GURL ToolRequest::GetURLForJournal() const {
   return GURL::EmptyGURL();
 }
 
-TabToolRequest::TabToolRequest(const tabs::TabInterface::Handle tab_handle)
+tabs::TabHandle ToolRequest::GetTabHandle() const {
+  return tabs::TabHandle();
+}
+
+TabToolRequest::TabToolRequest(const tabs::TabHandle tab_handle)
     : tab_handle_(tab_handle) {
   // The given handle need not be valid - the handle is validated at time of
   // dereferencing when instantiating a tool. However, it must be a non-null
@@ -34,6 +44,9 @@ TabToolRequest::TabToolRequest(const tabs::TabInterface::Handle tab_handle)
   CHECK_NE(tab_handle.raw_value(), TabHandle::Null().raw_value());
 }
 TabToolRequest::~TabToolRequest() = default;
+TabToolRequest::TabToolRequest(const TabToolRequest& other) = default;
+TabToolRequest& TabToolRequest::operator=(const TabToolRequest& other) =
+    default;
 
 GURL TabToolRequest::GetURLForJournal() const {
   if (TabInterface* tab = tab_handle_.Get()) {
@@ -42,7 +55,7 @@ GURL TabToolRequest::GetURLForJournal() const {
   return ToolRequest::GetURLForJournal();
 }
 
-tabs::TabInterface::Handle TabToolRequest::GetTabHandle() const {
+tabs::TabHandle TabToolRequest::GetTabHandle() const {
   return tab_handle_;
 }
 

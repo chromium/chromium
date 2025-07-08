@@ -140,7 +140,7 @@ class ActorKeyedService : public KeyedService {
   void OnActionsFinished(
       base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
           callback,
-      optimization_guide::proto::ActionsResult result);
+      actor::mojom::ActionResultPtr action_result);
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
   // Stores completed tasks. May want to add cancelled tasks in the future.

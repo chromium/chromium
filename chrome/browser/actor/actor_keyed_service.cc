@@ -274,7 +274,9 @@ void ActorKeyedService::PerformActions(
 
 void ActorKeyedService::OnActionsFinished(
     base::OnceCallback<void(optimization_guide::proto::ActionsResult)> callback,
-    optimization_guide::proto::ActionsResult result) {
+    actor::mojom::ActionResultPtr action_result) {
+  optimization_guide::proto::ActionsResult result;
+  result.set_action_result(static_cast<int32_t>(action_result->code));
   RunLater(base::BindOnce(std::move(callback), std::move(result)));
 }
 

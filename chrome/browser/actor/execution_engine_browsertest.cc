@@ -240,12 +240,11 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   click2->set_tab_id(tab_handle.raw_value());
 
   // Execute the actions.
-  TestFuture<optimization_guide::proto::ActionsResult> result;
+  TestFuture<mojom::ActionResultPtr> result;
   execution_engine().Act(actions, result.GetCallback());
 
   // Check that the action succeeded.
-  EXPECT_EQ(result.Get().action_result(),
-            static_cast<int>(mojom::ActionResultCode::kOk));
+  ExpectOkResult(result);
 
   // Check background color changed to green in the background tab.
   EXPECT_EQ("green", EvalJs(tab->GetContents(), "document.body.bgColor"));

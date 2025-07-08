@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -50,8 +51,6 @@ class UiEventDispatcher;
 class ExecutionEngine {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  using ActionsResultCallback =
-      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>;
 
   // State machine (success case)
   //
@@ -101,7 +100,7 @@ class ExecutionEngine {
 
   // Performs the next action in the current task.
   void Act(const optimization_guide::proto::Actions& actions,
-           ActionsResultCallback callback);
+           ActionResultCallback callback);
 
   // Gets called when a new observation is made for the actor task.
   void DidObserveContext(const mojo_base::ProtoWrapper&);
@@ -111,7 +110,7 @@ class ExecutionEngine {
   const optimization_guide::proto::AnnotatedPageContent*
   GetLastObservedPageContent();
 
-  // Invalidated anytime `actions_` is reset.
+  // Invalidated anytime `action_sequence_` is reset.
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
   static std::string StateToString(State state);
@@ -145,23 +144,20 @@ class ExecutionEngine {
   void FinishedToolController(mojom::ActionResultPtr result);
   void FinishedUiPostTool(mojom::ActionResultPtr result);
 
-  // Calls out to CompleteActionsV1 or CompleteActionsV2.
   void CompleteActions(mojom::ActionResultPtr result);
-
-  // Calls `callback` and clears `actions_v1_`.
-  void CompleteActionsV1(mojom::ActionResultPtr result);
-
-  // Calls `callback` and clears `actions_v2_`.
-  void CompleteActionsV2(mojom::ActionResultPtr result);
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
 
   const GURL& LastCommittedURLOfCurrentTask();
 
-  const optimization_guide::proto::Action& GetNextAction();
-  // Returns the tab associated with the action or nullptr.
-  tabs::TabInterface* GetTab(const optimization_guide::proto::Action& action);
+  // Returns the next action that will be started when ExecuteNextAction is
+  // reached.
+  const ToolRequest& GetNextAction() const;
+
+  // Returns the action that was last executed and is still in progress. It is
+  // an error to call this when an action is not in progress.
+  const ToolRequest& GetInProgressAction() const;
 
   State state_ = State::kInit;
 
@@ -174,50 +170,23 @@ class ExecutionEngine {
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
 
-  template <typename ActionT, typename CallbackT>
-  struct ActionWithCallback {
-    ActionWithCallback(const ActionT& actions, CallbackT callback)
-        : proto(actions), callback(std::move(callback)) {}
-    ~ActionWithCallback() = default;
-    ActionWithCallback(const ActionWithCallback&) = delete;
-    ActionWithCallback& operator=(const ActionWithCallback&) = delete;
-
-    ActionT proto;
-    CallbackT callback;
-  };
-
-  // TODO(crbug.com/411462297): This assumes all tasks are scoped to a tab,
-  // which is not true. This should eventually be removed.
-  bool tab_scoped_actions_deprecated_ = false;
   raw_ptr<tabs::TabInterface> tab_;
   base::CallbackListSubscription tab_will_detach_subscription_;
 
   // Owns `this`.
   raw_ptr<ActorTask> task_;
 
-  // Tool request currently being invoked.
-  std::unique_ptr<ToolRequest> active_tool_request_;
-
   // Created when task_ is set. Handles execution details for an individual tool
   // request.
   std::unique_ptr<ToolController> tool_controller_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
-  // A sequence of actions that the model has requested. When it is finished
-  // being processed it is reset.
-  // This is deprecated; do not add new use cases.
-  std::optional<ActionWithCallback<optimization_guide::proto::BrowserAction,
-                                   ActionResultCallback>>
-      actions_v1_;
+  std::vector<std::unique_ptr<ToolRequest>> action_sequence_;
+  ActionResultCallback act_callback_;
 
-  // A sequence of actions that the model has requested. When it is finished
-  // being processed it is reset.
-  std::optional<ActionWithCallback<optimization_guide::proto::Actions,
-                                   ActionsResultCallback>>
-      actions_v2_;
-
-  // The index of the in-progress action.
-  int action_index_ = 0;
+  // The index of the next action that will be started when ExecuteNextAction is
+  // reached.
+  size_t next_action_index_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
