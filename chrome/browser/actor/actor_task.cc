@@ -88,22 +88,6 @@ base::Time ActorTask::GetEndTime() const {
   return end_time_;
 }
 
-std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
-  using enum ActorTask::State;
-  switch (state) {
-    case kCreated:
-      return os << "Created";
-    case kActing:
-      return os << "Acting";
-    case kReflecting:
-      return os << "Reflecting";
-    case kPausedByClient:
-      return os << "PausedByClient";
-    case kFinished:
-      return os << "Finished";
-  }
-}
-
 base::CallbackListSubscription ActorTask::RegisterTaskStateChange(
     TaskStateChangeCallback callback) {
   return task_state_change_callback_list_.Add(std::move(callback));
@@ -126,6 +110,26 @@ tabs::TabInterface* ActorTask::GetTabForObservation() const {
   }
 
   return nullptr;
+}
+
+std::string ToString(const ActorTask::State& state) {
+  using enum ActorTask::State;
+  switch (state) {
+    case kCreated:
+      return "Created";
+    case kActing:
+      return "Acting";
+    case kReflecting:
+      return "Reflecting";
+    case kPausedByClient:
+      return "PausedByClient";
+    case kFinished:
+      return "Finished";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
+  return os << ToString(state);
 }
 
 }  // namespace actor

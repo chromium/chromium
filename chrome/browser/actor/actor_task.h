@@ -109,6 +109,7 @@ class ActorTask {
 };
 
 std::ostream& operator<<(std::ostream& os, const ActorTask::State& state);
+std::string ToString(const ActorTask::State& state);
 
 }  // namespace actor
 
