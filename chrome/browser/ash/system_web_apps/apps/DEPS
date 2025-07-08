@@ -131,4 +131,7 @@ specific_include_rules = {
   "personalization_app_utils_unittest.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",
   ],
+  "demo_mode_app_integration_browsertest.cc": [
+    "+chrome/browser/ash/policy/core/device_local_account.h",
+  ],
 }
