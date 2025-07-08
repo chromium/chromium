@@ -48,6 +48,7 @@
           "group": "tryserver.chromium.chromiumos"
         }
       ],
+      "retry_failed_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-chromeos-dbg-oslogin/targets"
     }
   },
