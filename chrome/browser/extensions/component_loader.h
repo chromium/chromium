@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -238,10 +237,6 @@ class ComponentLoader : public KeyedService {
 
   // Finishes loading an extension tts engine.
   void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
-
-  // Grant ContentSettingsType permissions to Extension.
-  void GrantPermissions(const ExtensionId& extension_id,
-                        std::initializer_list<ContentSettingsType> permissions);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(

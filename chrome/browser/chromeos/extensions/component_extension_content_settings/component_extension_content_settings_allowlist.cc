@@ -4,27 +4,29 @@
 
 #include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist.h"
 
-#include "base/callback_list.h"
 #include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "url/origin.h"
+#include "extensions/common/extension.h"
 
 namespace extensions {
 
 namespace {
-bool IsExtension(const url::Origin& origin) {
-  return origin.scheme() == kExtensionScheme;
-}
-
-bool IsComponentExtensionOrigin(const url::Origin& origin) {
-  return IsComponentExtensionAllowlisted(origin.host());
-}
+static const ComponentExtensionContentSettingsAllowlist::
+    ExtensionsContentSettingsTypes kComponentExtensionsContentSettingsTypes = {
+        {extension_misc::kQuickOfficeComponentExtensionId,
+         {ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+          ContentSettingsType::FILE_SYSTEM_WRITE_GUARD}}};
 }  // namespace
 
-// static
+std::optional<
+    ComponentExtensionContentSettingsAllowlist::ExtensionsContentSettingsTypes>
+    ComponentExtensionContentSettingsAllowlist::
+        component_extensions_content_settings_types_for_testing_;
+
 ComponentExtensionContentSettingsAllowlist*
 ComponentExtensionContentSettingsAllowlist::Get(
     content::BrowserContext* context) {
@@ -33,7 +35,11 @@ ComponentExtensionContentSettingsAllowlist::Get(
 }
 
 ComponentExtensionContentSettingsAllowlist::
-    ComponentExtensionContentSettingsAllowlist() = default;
+    ComponentExtensionContentSettingsAllowlist(content::BrowserContext* context)
+    : context_(context) {
+  observation_.Observe(extensions::ExtensionRegistry::Get(context_));
+}
+
 ComponentExtensionContentSettingsAllowlist::
     ~ComponentExtensionContentSettingsAllowlist() = default;
 
@@ -41,31 +47,6 @@ base::CallbackListSubscription
 ComponentExtensionContentSettingsAllowlist::SubscribeForContentSettingsChange(
     const ContentSettingsCallback& content_settings_callback) {
   return content_callback_list_.Add(content_settings_callback);
-}
-
-void ComponentExtensionContentSettingsAllowlist::RegisterAutoGrantedPermission(
-    const url::Origin& origin,
-    ContentSettingsType content_type,
-    ContentSetting content_setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  CHECK(IsExtension(origin));
-  CHECK(IsComponentExtensionOrigin(origin));
-
-  SetContentSettingsAndNotifySubscribers(
-      ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()),
-      ContentSettingsPattern::Wildcard(), content_type, content_setting);
-}
-
-void ComponentExtensionContentSettingsAllowlist::RegisterAutoGrantedPermissions(
-    const url::Origin& origin,
-    std::initializer_list<ContentSettingsType> content_types,
-    ContentSetting content_setting) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  for (const auto& content_type : content_types) {
-    RegisterAutoGrantedPermission(origin, content_type, content_setting);
-  }
 }
 
 std::unique_ptr<content_settings::RuleIterator>
@@ -83,6 +64,63 @@ ComponentExtensionContentSettingsAllowlist::GetRule(
   return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
+void ComponentExtensionContentSettingsAllowlist::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  SetContentSettingsForComponentExtension(
+      extension, ContentSetting::CONTENT_SETTING_ALLOW);
+}
+
+void ComponentExtensionContentSettingsAllowlist::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  SetContentSettingsForComponentExtension(
+      extension, ContentSetting::CONTENT_SETTING_DEFAULT);
+}
+
+void ComponentExtensionContentSettingsAllowlist::Shutdown() {
+  content_callback_list_.Clear();
+}
+
+void ComponentExtensionContentSettingsAllowlist::
+    SetComponentExtensionsContentSettingsTypesForTesting(
+        const ExtensionsContentSettingsTypes&
+            component_extensions_content_settings_types_for_testing) {
+  component_extensions_content_settings_types_for_testing_ =
+      component_extensions_content_settings_types_for_testing;
+}
+
+const ComponentExtensionContentSettingsAllowlist::
+    ExtensionsContentSettingsTypes&
+    ComponentExtensionContentSettingsAllowlist::
+        GetComponentExtensionsContentSettingsTypes() {
+  return component_extensions_content_settings_types_for_testing_.has_value()
+             ? component_extensions_content_settings_types_for_testing_.value()
+             : kComponentExtensionsContentSettingsTypes;
+}
+
+void ComponentExtensionContentSettingsAllowlist::
+    SetContentSettingsForComponentExtension(const Extension* extension,
+                                            ContentSetting contentSetting) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const auto& component_extensions_content_settings_types =
+      GetComponentExtensionsContentSettingsTypes().find(extension->id());
+  if (component_extensions_content_settings_types ==
+          GetComponentExtensionsContentSettingsTypes().end() ||
+      !IsComponentExtensionAllowlisted(extension->id())) {
+    return;
+  }
+
+  for (const auto& content_type :
+       component_extensions_content_settings_types->second) {
+    SetContentSettingsAndNotifySubscribers(
+        ContentSettingsPattern::FromURLNoWildcard(extension->url()),
+        ContentSettingsPattern::Wildcard(), content_type, contentSetting);
+  }
+}
+
 void ComponentExtensionContentSettingsAllowlist::
     SetContentSettingsAndNotifySubscribers(
         const ContentSettingsPattern& primary_pattern,
@@ -93,8 +131,15 @@ void ComponentExtensionContentSettingsAllowlist::
 
   {
     base::AutoLock auto_lock(value_map_.GetLock());
-    if (!value_map_.SetValue(primary_pattern, secondary_pattern, content_type,
-                             base::Value(content_setting), /*metadata=*/{})) {
+    if (content_setting == CONTENT_SETTING_DEFAULT) {
+      // CONTENT_SETTING_DEFAULT cannot be set through SetValue
+      if (!value_map_.DeleteValue(primary_pattern, secondary_pattern,
+                                  content_type)) {
+        return;
+      }
+    } else if (!value_map_.SetValue(primary_pattern, secondary_pattern,
+                                    content_type, base::Value(content_setting),
+                                    /*metadata=*/{})) {
       return;
     }
   }

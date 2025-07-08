@@ -8,10 +8,10 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_registry_factory.h"
 
 namespace extensions {
 
-// static
 ComponentExtensionContentSettingsAllowlist*
 ComponentExtensionContentSettingsAllowlistFactory::GetForBrowserContext(
     content::BrowserContext* context) {
@@ -19,7 +19,6 @@ ComponentExtensionContentSettingsAllowlistFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-// static
 ComponentExtensionContentSettingsAllowlistFactory*
 ComponentExtensionContentSettingsAllowlistFactory::GetInstance() {
   static base::NoDestructor<ComponentExtensionContentSettingsAllowlistFactory>
@@ -35,7 +34,9 @@ ComponentExtensionContentSettingsAllowlistFactory::
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               .WithAshInternals(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(ExtensionRegistryFactory::GetInstance());
+}
 
 ComponentExtensionContentSettingsAllowlistFactory::
     ~ComponentExtensionContentSettingsAllowlistFactory() = default;
@@ -44,7 +45,7 @@ std::unique_ptr<KeyedService>
 ComponentExtensionContentSettingsAllowlistFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  return std::make_unique<ComponentExtensionContentSettingsAllowlist>();
+  return std::make_unique<ComponentExtensionContentSettingsAllowlist>(context);
 }
 
 }  // namespace extensions
