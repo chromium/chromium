@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/client/client_shared_image.h"
 
 #include <GLES2/gl2.h>
@@ -48,6 +53,84 @@
 namespace gpu {
 
 namespace {
+
+class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
+ public:
+  FakeGpuMemoryBuffer() = delete;
+  FakeGpuMemoryBuffer(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      bool premapped,
+      const ClientSharedImage::AsyncMapInvokedCallback& callback)
+      : size_(size),
+        format_(format),
+        premapped_(premapped),
+        async_map_invoked_callback_(callback) {
+    int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
+    size_t allocation_size = 0;
+    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+      size_t height_in_pixels;
+      CHECK(gfx::PlaneHeightForBufferFormatChecked(
+          GetSize().height(), GetFormat(), plane_index, &height_in_pixels));
+      allocation_size += stride(plane_index) * height_in_pixels;
+    }
+
+    data_ = std::vector<uint8_t>(allocation_size);
+
+    handle_.type = gfx::SHARED_MEMORY_BUFFER;
+  }
+
+  FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
+  FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
+
+  ~FakeGpuMemoryBuffer() override = default;
+
+  bool Map() override { return true; }
+
+  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
+    if (premapped_) {
+      std::move(result_cb).Run(true);
+      return;
+    }
+    async_map_invoked_callback_.Run(std::move(result_cb));
+  }
+
+  bool AsyncMappingIsNonBlocking() const override { return true; }
+
+  void* memory(size_t plane) override {
+    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+    auto* data_ptr = data_.data();
+    data_ptr += gfx::BufferOffsetForBufferFormat(GetSize(), GetFormat(), plane);
+    return data_ptr;
+  }
+
+  void Unmap() override {}
+
+  gfx::Size GetSize() const override { return size_; }
+
+  gfx::BufferFormat GetFormat() const override { return format_; }
+
+  int stride(size_t plane) const override {
+    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
+    return gfx::RowSizeForBufferFormat(GetSize().width(), GetFormat(), plane);
+  }
+
+  gfx::GpuMemoryBufferType GetType() const override {
+    return gfx::SHARED_MEMORY_BUFFER;
+  }
+
+  gfx::GpuMemoryBufferHandle CloneHandle() const override {
+    return handle_.Clone();
+  }
+
+ private:
+  gfx::Size size_;
+  gfx::BufferFormat format_;
+  std::vector<uint8_t> data_;
+  gfx::GpuMemoryBufferHandle handle_;
+  bool premapped_ = true;
+  ClientSharedImage::AsyncMapInvokedCallback async_map_invoked_callback_;
+};
 
 class ScopedMappingSharedMemoryMapping
     : public ClientSharedImage::ScopedMapping {
@@ -718,6 +801,31 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, info, sync_token, sii_holder, gpu_memory_buffer->GetType());
   client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+  client_si->buffer_usage_ = buffer_usage;
+  return client_si;
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    bool premapped,
+    const AsyncMapInvokedCallback& callback,
+    gfx::BufferUsage buffer_usage,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
+  SharedImageInfo info(metadata, "CSICreateForTesting");
+
+  // Create a FakeGpuMemoryBuffer.
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          metadata.format);
+  auto fake_gmb = std::make_unique<FakeGpuMemoryBuffer>(
+      metadata.size, buffer_format, premapped, callback);
+
+  auto client_si = base::MakeRefCounted<ClientSharedImage>(
+      mailbox, info, sync_token, sii_holder, fake_gmb->GetType());
+  client_si->gpu_memory_buffer_ = std::move(fake_gmb);
   client_si->buffer_usage_ = buffer_usage;
   return client_si;
 }

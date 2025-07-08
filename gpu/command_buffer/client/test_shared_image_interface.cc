@@ -437,15 +437,7 @@ TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
     gfx::BufferUsage buffer_usage,
     bool premapped,
     const ClientSharedImage::AsyncMapInvokedCallback& callback) {
-  // Create a FakeGpuMemoryBuffer.
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          si_info.meta.format);
-  auto fake_gmb = std::make_unique<FakeGpuMemoryBuffer>(
-      si_info.meta.size, buffer_format, premapped, callback);
-
   Mailbox mailbox;
-  // Create a ClientSharedImage with a FakeGpuMemoryBuffer.
   {
     base::AutoLock locked(lock_);
     mailbox = Mailbox::Generate();
@@ -453,7 +445,7 @@ TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
   }
 
   auto image = ClientSharedImage::CreateForTesting(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), std::move(fake_gmb),
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), premapped, callback,
       buffer_usage, holder_);
   return image;
 }

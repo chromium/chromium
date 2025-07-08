@@ -5,11 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_
 
-#include <memory>
-#include <vector>
-
-#include "gpu/command_buffer/client/client_shared_image.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "build/build_config.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
@@ -27,42 +25,6 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
     gfx::BufferFormat format,
     uint64_t modifier = gfx::NativePixmapHandle::kNoModifier);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-// A fake implementation of gfx::GpuMemoryBuffer for testing purposes.
-class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
- public:
-  FakeGpuMemoryBuffer() = delete;
-
-  FakeGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      bool premapped,
-      const ClientSharedImage::AsyncMapInvokedCallback& callback);
-
-  FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
-  FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
-
-  // gfx::GpuMemoryBuffer implementation.
-  ~FakeGpuMemoryBuffer() override;
-  bool Map() override;
-  void MapAsync(base::OnceCallback<void(bool)> result_cb) override;
-  bool AsyncMappingIsNonBlocking() const override;
-  void* memory(size_t plane) override;
-  void Unmap() override;
-  gfx::Size GetSize() const override;
-  gfx::BufferFormat GetFormat() const override;
-  int stride(size_t plane) const override;
-  gfx::GpuMemoryBufferType GetType() const override;
-  gfx::GpuMemoryBufferHandle CloneHandle() const override;
-
- private:
-  gfx::Size size_;
-  gfx::BufferFormat format_;
-  std::vector<uint8_t> data_;
-  gfx::GpuMemoryBufferHandle handle_;
-  bool premapped_ = true;
-  ClientSharedImage::AsyncMapInvokedCallback async_map_invoked_callback_;
-};
 
 }  // namespace gpu
 

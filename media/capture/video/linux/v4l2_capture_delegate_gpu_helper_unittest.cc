@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/test_data_util.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
