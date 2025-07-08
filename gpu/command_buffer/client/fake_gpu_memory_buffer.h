@@ -22,8 +22,7 @@ namespace gpu {
 // methods will address those concerns.
 gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
-    uint64_t modifier = gfx::NativePixmapHandle::kNoModifier);
+    gfx::BufferFormat format);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace gpu

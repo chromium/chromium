@@ -5,52 +5,31 @@
 #include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 
 #include "build/build_config.h"
-#include "media/base/format_utils.h"
-#include "media/base/video_frame.h"
 #include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #endif
 
 namespace gpu {
 
-namespace {
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-base::ScopedFD GetDummyFD() {
-  base::ScopedFD fd(open("/dev/zero", O_RDWR));
-  DCHECK(fd.is_valid());
-  return fd;
-}
-#endif
-
-}  // namespace
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
-    uint64_t modifier) {
-  std::optional<media::VideoPixelFormat> video_pixel_format =
-      media::GfxBufferFormatToVideoPixelFormat(format);
-  CHECK(video_pixel_format);
-
+    gfx::BufferFormat format) {
   gfx::NativePixmapHandle native_pixmap_handle;
-  for (size_t i = 0; i < media::VideoFrame::NumPlanes(*video_pixel_format);
+  for (size_t i = 0; i < gfx::NumberOfPlanesForLinearBufferFormat(format);
        i++) {
-    const gfx::Size plane_size_in_bytes =
-        media::VideoFrame::PlaneSize(*video_pixel_format, i, size);
-    native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
-                                             plane_size_in_bytes.GetArea(),
-                                             GetDummyFD());
+    size_t height_in_pixels;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(size.height(), format, i,
+                                                 &height_in_pixels));
+    size_t stride = gfx::RowSizeForBufferFormat(size.width(), format, i);
+    native_pixmap_handle.planes.emplace_back(
+        stride, 0, height_in_pixels * stride,
+        base::ScopedFD(open("/dev/zero", O_RDWR)));
   }
-  native_pixmap_handle.modifier = modifier;
 
-  gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
-  return handle;
+  return gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
 }
 #endif
 
