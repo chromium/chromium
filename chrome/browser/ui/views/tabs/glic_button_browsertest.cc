@@ -33,7 +33,8 @@ class GlicButtonTest : public InProcessBrowserTest {
  public:
   GlicButtonTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicRollout},
         /*disabled_features=*/{});
   }
 
@@ -101,22 +102,12 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, UnpinCommand) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextForOpening) {
-  // expect window closed
   EXPECT_FALSE(glic_service()->IsWindowOrFreShowing());
   EXPECT_EQ(glic_button()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 }
 
-// TODO(crbug.com/428742560): Re-enable this test for Windows and Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_TooltipAndA11yTextWhileGlicFreOpen \
-  DISABLED_TooltipAndA11yTextWhileGlicFreOpen
-#else
-#define MAYBE_TooltipAndA11yTextWhileGlicFreOpen \
-  TooltipAndA11yTextWhileGlicFreOpen
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(GlicButtonTest,
-                       MAYBE_TooltipAndA11yTextWhileGlicFreOpen) {
+IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
   // Toggle to open the FRE dialog.
   SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
   glic_service()->ToggleUI(browser(), false,
@@ -129,17 +120,15 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest,
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE));
 }
 
-// Tests using programmatic window activation are flaky on Linux. This test also
-// fails on Windows.
-// TODO(crbug.com/428742560): Re-enable this test for Windows and de-flake for
-// Linux.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// Tests using programmatic window activation are flaky on Linux.
+// TODO(crbug.com/428742560): De-flake for Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TooltipAndA11yTextWhileGlicWindowOpen \
   DISABLED_TooltipAndA11yTextWhileGlicWindowOpen
 #else
 #define MAYBE_TooltipAndA11yTextWhileGlicWindowOpen \
   TooltipAndA11yTextWhileGlicWindowOpen
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlicButtonTest,
                        MAYBE_TooltipAndA11yTextWhileGlicWindowOpen) {
   // Toggle to open the glic window.
