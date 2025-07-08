@@ -6,6 +6,7 @@
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
+// META: script=./resources/helper.js
 // META: timeout=long
 
 'use strict';
