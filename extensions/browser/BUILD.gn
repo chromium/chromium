@@ -448,6 +448,7 @@ source_set("browser_sources") {
     "process_manager_delegate.h",
     "process_manager_factory.cc",
     "process_manager_factory.h",
+    "process_manager_observer.cc",
     "process_manager_observer.h",
     "process_map.cc",
     "process_map.h",

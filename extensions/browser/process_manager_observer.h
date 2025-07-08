@@ -20,6 +20,8 @@ struct WorkerId;
 
 class ProcessManagerObserver : public base::CheckedObserver {
  public:
+  ~ProcessManagerObserver() override;
+
   // Called immediately after an extension background host is started. This
   // corresponds with the loading of background hosts immediately after profile
   // startup.
