@@ -28,10 +28,12 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class ExtensionFunction;
 class GURL;
 class Profile;
 class TabStripModel;
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -65,8 +67,10 @@ class ExtensionTabUtil {
       "Tabs can only be moved to and from normal windows.";
   static constexpr char kCanOnlyMoveTabsWithinSameProfileError[] =
       "Tabs can only be moved between windows in the same profile.";
+#endif
   static constexpr char kNoCurrentWindowError[] = "No current window";
   static constexpr char kWindowNotFoundError[] = "No window with id: *.";
+#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kTabStripNotEditableError[] =
       "Tabs cannot be edited right now (user may be dragging a tab).";
   static constexpr char kTabStripDoesNotSupportTabGroupsError[] =
@@ -124,16 +128,18 @@ class ExtensionTabUtil {
       ExtensionFunction* function,
       const OpenTabParams& params,
       bool user_gesture);
+#endif
 
-  static int GetWindowId(Browser* browser);
+  static int GetWindowId(BrowserWindowInterface* browser);
+
+#if !BUILDFLAG(IS_ANDROID)
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   static int GetTabId(const content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
 
-#if !BUILDFLAG(IS_ANDROID)
-  static base::Value::List CreateTabList(Browser* browser,
+  static base::Value::List CreateTabList(BrowserWindowInterface* browser,
                                          const Extension* extension,
                                          mojom::ContextType context);
 
@@ -153,8 +159,7 @@ class ExtensionTabUtil {
       std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the `browser`.
-  static std::string GetBrowserWindowTypeText(Browser& browser);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  static std::string GetBrowserWindowTypeText(BrowserWindowInterface& browser);
 
   // Creates a Tab object (see chrome/common/extensions/api/tabs.json) with
   // information about the state of a browser tab for the given `web_contents`.
@@ -174,7 +179,6 @@ class ExtensionTabUtil {
                                         const Extension* extension,
                                         TabStripModel* tab_strip,
                                         int tab_index);
-#if !BUILDFLAG(IS_ANDROID)
   // Creates a base::Value::Dict representing the window for the given
   // `browser`, and scrubs any privacy-sensitive data that `extension` does not
   // have access to. `populate_tab_behavior` determines whether tabs will be
@@ -182,15 +186,16 @@ class ExtensionTabUtil {
   // ScrubTabBehavior for the populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
   static base::Value::Dict CreateWindowValueForExtension(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       const Extension* extension,
       WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
   // with information about the mute state of a browser tab.
   static api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
   // Gets the level of scrubbing of tab data that needs to happen for a given
   // extension and web contents. This is the preferred way to get
@@ -217,11 +222,11 @@ class ExtensionTabUtil {
   static bool GetTabStripModel(const content::WebContents* web_contents,
                                TabStripModel** tab_strip_model,
                                int* tab_index);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the active tab's WebContents if there is an active tab. Returns
   // null if there is no active tab.
-  static content::WebContents* GetActiveTab(Browser* browser);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  static content::WebContents* GetActiveTab(BrowserWindowInterface* browser);
 
   // Any out parameter (`window`, `contents`, & `tab_index`) may be null.
   //

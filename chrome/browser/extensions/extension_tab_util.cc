@@ -14,8 +14,12 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -25,7 +29,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -34,6 +42,8 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -50,8 +60,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/browser_process.h"  // nogncheck
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/platform_util.h"  // nogncheck
@@ -82,16 +90,10 @@
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
-#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
-#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
 #endif
 
 using content::NavigationEntry;
@@ -124,12 +126,16 @@ enum class NavigationScheme {
   kMaxValue = kOther,
 };
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Guaranteed non-null for any initialized browser window when the extensions
 // system is still attached to the Browser (callers shouldn't need to null
 // check).
 WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
   return BrowserExtensionWindowController::From(browser);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -441,6 +447,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
              function->extension(), tab_strip, new_index)
       .ToValue();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 WindowController* ExtensionTabUtil::GetControllerFromWindowID(
     const ChromeExtensionFunctionDetails& details,
@@ -470,9 +477,9 @@ WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
       also_match_incognito_profile
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
           : nullptr;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if ((browser->profile() == profile ||
-         browser->profile() == incognito_profile)) {
+  for (auto* browser : GetAllBrowserWindowInterfaces()) {
+    if ((browser->GetProfile() == profile ||
+         browser->GetProfile() == incognito_profile)) {
       WindowController* controller = WindowControllerFromBrowser(browser);
       if (controller->GetWindowId() == window_id) {
         return controller;
@@ -488,10 +495,11 @@ WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
   return nullptr;
 }
 
-int ExtensionTabUtil::GetWindowId(Browser* browser) {
+int ExtensionTabUtil::GetWindowId(BrowserWindowInterface* browser) {
   return WindowControllerFromBrowser(browser)->GetWindowId();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 int ExtensionTabUtil::GetWindowIdOfTabStripModel(
     const TabStripModel* tab_strip_model) {
   for (Browser* browser : *BrowserList::GetInstance()) {
@@ -511,12 +519,11 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
       .id();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
-std::string ExtensionTabUtil::GetBrowserWindowTypeText(Browser& browser) {
+std::string ExtensionTabUtil::GetBrowserWindowTypeText(
+    BrowserWindowInterface& browser) {
   return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 api::tabs::Tab ExtensionTabUtil::CreateTabObject(
@@ -617,18 +624,18 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
-base::Value::List ExtensionTabUtil::CreateTabList(Browser* browser,
-                                                  const Extension* extension,
-                                                  mojom::ContextType context) {
+base::Value::List ExtensionTabUtil::CreateTabList(
+    BrowserWindowInterface* browser,
+    const Extension* extension,
+    mojom::ContextType context) {
   return WindowControllerFromBrowser(browser)->CreateTabList(extension,
                                                              context);
 }
 
 // static
 base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     const Extension* extension,
     WindowController::PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) {
@@ -636,6 +643,7 @@ base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
       extension, populate_tab_behavior, context);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
     content::WebContents* contents) {
@@ -747,11 +755,12 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
 
   return false;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-content::WebContents* ExtensionTabUtil::GetActiveTab(Browser* browser) {
+content::WebContents* ExtensionTabUtil::GetActiveTab(
+    BrowserWindowInterface* browser) {
   return WindowControllerFromBrowser(browser)->GetActiveTab();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 bool ExtensionTabUtil::GetTabById(int tab_id,
