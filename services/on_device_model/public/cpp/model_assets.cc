@@ -38,8 +38,8 @@ constexpr uint32_t kCacheFlags = kWeightsFlags;
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC |
     base::File::FLAG_WIN_SEQUENTIAL_SCAN;
-constexpr uint32_t kCacheFlags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WRITE;
+constexpr uint32_t kCacheFlags = base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ | base::File::FLAG_WRITE;
 #endif
 
 // Attempts to make sure `file` will be read from disk quickly when needed.
