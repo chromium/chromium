@@ -14,47 +14,47 @@
 
 namespace actor::ui {
 struct StartTask {
+  actor::TaskId task_id;
+
   explicit StartTask(actor::TaskId);
   StartTask(const StartTask&);
   ~StartTask();
-
-  actor::TaskId task_id;
 };
 
 struct StartingToActOnTab {
+  tabs::TabInterface::Handle tab_handle;
+  actor::TaskId task_id;
+
   StartingToActOnTab(tabs::TabInterface::Handle, actor::TaskId);
   StartingToActOnTab(const StartingToActOnTab&);
   ~StartingToActOnTab();
-
-  tabs::TabInterface::Handle tab_handle;
-  actor::TaskId task_id;
 };
 
 struct StoppedActingOnTab {
+  tabs::TabInterface::Handle tab_handle;
+
   explicit StoppedActingOnTab(tabs::TabInterface::Handle);
   StoppedActingOnTab(const StoppedActingOnTab&);
   ~StoppedActingOnTab();
-
-  tabs::TabInterface::Handle tab_handle;
 };
 
 struct MouseMove {
+  tabs::TabInterface::Handle tab_handle;
+  PageTarget target;
+
   MouseMove(tabs::TabInterface::Handle, PageTarget);
   MouseMove(const MouseMove&);
   ~MouseMove();
-
-  tabs::TabInterface::Handle tab_handle;
-  PageTarget target;
 };
 
 struct MouseClick {
-  MouseClick(tabs::TabInterface::Handle, MouseClickType, MouseClickCount);
-  MouseClick(const MouseClick&);
-  ~MouseClick();
-
   tabs::TabInterface::Handle tab_handle;
   MouseClickType click_type;
   MouseClickCount click_count;
+
+  MouseClick(tabs::TabInterface::Handle, MouseClickType, MouseClickCount);
+  MouseClick(const MouseClick&);
+  ~MouseClick();
 };
 
 using UiEvent = std::variant<StartTask,
