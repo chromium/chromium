@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_UI_SELECTOR_H_
 #define COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_UI_SELECTOR_H_
 
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 
 // Test implementation of PermissionUiSelector that always returns a canned
 // decision.

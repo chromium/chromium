@@ -784,12 +784,10 @@ std::vector<ModelMetadata> model_data_testcase = {
 };
 
 std::vector<PermissionRequestMetadata> request_data_testcase = {
-    {
-        /*optimization_target=*/kAiv3OptTargetGeolocation,
-        /*request_type=*/RequestType::kGeolocation},
-    {
-        /*optimization_target=*/kAiv3OptTargetNotification,
-        /*request_type=*/RequestType::kNotifications},
+    {/*optimization_target=*/kAiv3OptTargetGeolocation,
+     /*request_type=*/RequestType::kGeolocation},
+    {/*optimization_target=*/kAiv3OptTargetNotification,
+     /*request_type=*/RequestType::kNotifications},
 };
 
 INSTANTIATE_TEST_SUITE_P(

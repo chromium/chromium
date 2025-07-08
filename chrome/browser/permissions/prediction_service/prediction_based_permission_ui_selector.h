@@ -20,7 +20,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
 // pref_names include is needed for the browser tests to work as they cannot

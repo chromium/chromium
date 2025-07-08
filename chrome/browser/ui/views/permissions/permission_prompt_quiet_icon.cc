@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
 
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "content/public/browser/web_contents.h"
 
 PermissionPromptQuietIcon::PermissionPromptQuietIcon(

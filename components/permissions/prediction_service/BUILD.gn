@@ -15,6 +15,8 @@ proto_library("prediction_service_messages_proto") {
 
 source_set("prediction_service") {
   sources = [
+    "permission_ui_selector.cc",
+    "permission_ui_selector.h",
     "prediction_common.cc",
     "prediction_common.h",
     "prediction_request_features.h",

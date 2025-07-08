@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PERMISSIONS_PREF_BASED_QUIET_PERMISSION_UI_SELECTOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 
 class Profile;
 

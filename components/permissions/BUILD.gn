@@ -105,8 +105,6 @@ source_set("permissions") {
     "permission_request_manager.h",
     "permission_request_queue.cc",
     "permission_request_queue.h",
-    "permission_ui_selector.cc",
-    "permission_ui_selector.h",
     "permission_uma_util.cc",
     "permission_uma_util.h",
     "permission_usage_session.cc",
@@ -134,7 +132,6 @@ source_set("permissions") {
     "//components/favicon/core:core",
     "//components/guest_view/buildflags",
     "//components/keyed_service/content",
-    "//components/permissions/prediction_service",
     "//components/permissions/vector_icons",
     "//components/pref_registry",
     "//components/prefs",
@@ -233,7 +230,10 @@ source_set("permissions") {
     ]
   }
 
-  public_deps = [ ":permissions_common" ]
+  public_deps = [
+    ":permissions_common",
+    "//components/permissions/prediction_service",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
