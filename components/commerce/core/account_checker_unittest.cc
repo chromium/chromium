@@ -24,6 +24,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -158,10 +159,11 @@ TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
     // Fetch email pref.
     EXPECT_CALL(
         *account_checker_,
-        CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
-                              endpoint_fetcher::HttpMethod::kGet, kContentType,
-                              std::vector<std::string>{kOAuthScope}, kTimeout,
-                              kEmptyPostData, _));
+        CreateEndpointFetcher(
+            kOAuthName, GURL(kNotificationsPrefUrl),
+            endpoint_fetcher::HttpMethod::kGet, kContentType,
+            std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
+            kTimeout, kEmptyPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
@@ -180,10 +182,11 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
     // Send email pref.
     EXPECT_CALL(
         *account_checker_,
-        CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
-                              endpoint_fetcher::HttpMethod::kPost, kContentType,
-                              std::vector<std::string>{kOAuthScope}, kTimeout,
-                              kPostData, _));
+        CreateEndpointFetcher(
+            kOAuthName, GURL(kNotificationsPrefUrl),
+            endpoint_fetcher::HttpMethod::kPost, kContentType,
+            std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
+            kTimeout, kPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));

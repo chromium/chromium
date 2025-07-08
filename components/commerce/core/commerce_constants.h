@@ -55,10 +55,6 @@ inline constexpr int kProductSpecMaxEntryPointTriggeringInterval = 64;
 // OAuth name used for network request.
 inline constexpr char kOAuthName[] = "chromememex_svc";
 
-// OAuth scope used for network request.
-inline constexpr char kOAuthScope[] =
-    "https://www.googleapis.com/auth/chromememex";
-
 // Open graph keys.
 inline constexpr char kOgImage[] = "image";
 inline constexpr char kOgPriceAmount[] = "price:amount";

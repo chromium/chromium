@@ -24,6 +24,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -300,7 +301,8 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+      .SetOauthScopes(
+          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
       .SetConsentLevel(consent_level)
       .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
       .SetOauthConsumerName(kOAuthName)

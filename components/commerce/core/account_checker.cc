@@ -21,6 +21,7 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -184,11 +185,11 @@ void AccountChecker::FetchPriceEmailPref() {
             }
           }
         })");
-  auto endpoint_fetcher =
-      CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
-                            endpoint_fetcher::HttpMethod::kGet, kContentType,
-                            std::vector<std::string>{kOAuthScope}, kTimeout,
-                            kEmptyPostData, traffic_annotation);
+  auto endpoint_fetcher = CreateEndpointFetcher(
+      kOAuthName, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kGet, kContentType,
+      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
+      kTimeout, kEmptyPostData, traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleFetchPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
@@ -279,11 +280,11 @@ void AccountChecker::OnPriceEmailPrefChanged() {
             }
           }
         })");
-  auto endpoint_fetcher =
-      CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
-                            endpoint_fetcher::HttpMethod::kPost, kContentType,
-                            std::vector<std::string>{kOAuthScope}, kTimeout,
-                            post_data, traffic_annotation);
+  auto endpoint_fetcher = CreateEndpointFetcher(
+      kOAuthName, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kPost, kContentType,
+      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
+      kTimeout, post_data, traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleSendPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
