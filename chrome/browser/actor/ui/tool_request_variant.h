@@ -13,6 +13,7 @@ namespace actor::ui {
 
 // Type safe union of ToolRequest types.
 using ToolRequestVariant = std::variant<ActivateTabToolRequest,
+                                        AttemptLoginToolRequest,
                                         ClickToolRequest,
                                         CloseTabToolRequest,
                                         CreateTabToolRequest,
@@ -32,6 +33,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   ConvertToVariantFn();
   ~ConvertToVariantFn();
   void Apply(const ActivateTabToolRequest&) override;
+  void Apply(const AttemptLoginToolRequest&) override;
   void Apply(const ClickToolRequest&) override;
   void Apply(const CloseTabToolRequest&) override;
   void Apply(const CreateTabToolRequest&) override;

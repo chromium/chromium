@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/shared_types.h"
+#include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -35,6 +36,7 @@ namespace apc = ::optimization_guide::proto;
 using apc::Action;
 using apc::ActionTarget;
 using apc::ActivateTabAction;
+using apc::AttemptLoginAction;
 using apc::ClickAction;
 using apc::CloseTabAction;
 using apc::CreateTabAction;
@@ -400,6 +402,18 @@ std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
   return std::make_unique<WaitToolRequest>(kWaitTime);
 }
 
+std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
+    const AttemptLoginAction& action,
+    TabInterface* deprecated_fallback_tab) {
+  const tabs::TabHandle tab_handle =
+      GetTabHandle(action, deprecated_fallback_tab);
+  if (tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  return std::make_unique<AttemptLoginToolRequest>(tab_handle);
+}
+
 }  // namespace
 
 std::unique_ptr<ToolRequest> CreateToolRequest(
@@ -458,6 +472,11 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const ActivateTabAction& activate_tab_action = action.activate_tab();
       return CreateActivateTabRequest(activate_tab_action,
                                       deprecated_fallback_tab);
+    }
+    case optimization_guide::proto::Action::kAttemptLogin: {
+      const AttemptLoginAction& attempt_login_action = action.attempt_login();
+      return CreateAttemptLoginRequest(attempt_login_action,
+                                       deprecated_fallback_tab);
     }
     case optimization_guide::proto::Action::kCreateWindow:
     case optimization_guide::proto::Action::kCloseWindow:

@@ -2342,6 +2342,22 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, WaitTool_DontRecordActOnTask) {
 }
 
 // ===============================================
+// Attempt Login Tool
+// ===============================================
+
+// TODO(crbug.com/427817201): This tool is currently a no-op. Update this test
+// to do something meaningful once the tool is actually implemented.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, AttemptLoginTool) {
+  const GURL url = embedded_https_test_server().GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  BrowserAction attempt_login = MakeAttemptLogin();
+  TestFuture<mojom::ActionResultPtr> result;
+  execution_engine().Act(attempt_login, result.GetCallback());
+  EXPECT_TRUE(result.Wait());
+}
+
+// ===============================================
 // Tab Management Tool
 // ===============================================
 

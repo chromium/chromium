@@ -57,6 +57,7 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& from_point,
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();
+optimization_guide::proto::BrowserAction MakeAttemptLogin();
 
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,

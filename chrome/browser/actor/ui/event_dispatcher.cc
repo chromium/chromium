@@ -54,7 +54,8 @@ constexpr Visitor PreToolEventsFn{
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
     NoUiEvents<TypeToolRequest>,
-    NoUiEvents<WaitToolRequest>};
+    NoUiEvents<WaitToolRequest>,
+    NoUiEvents<AttemptLoginToolRequest>};
 
 constexpr Visitor PostToolEventsFn{
     NoUiEvents<ClickToolRequest>,          NoUiEvents<ActivateTabToolRequest>,
@@ -62,7 +63,8 @@ constexpr Visitor PostToolEventsFn{
     NoUiEvents<DragAndReleaseToolRequest>, NoUiEvents<HistoryToolRequest>,
     NoUiEvents<MoveMouseToolRequest>,      NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,         NoUiEvents<SelectToolRequest>,
-    NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>};
+    NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>,
+    NoUiEvents<AttemptLoginToolRequest>};
 
 constexpr Visitor FirstActEventsFn{
     [](const UiEventDispatcher::FirstActInfo& info) {

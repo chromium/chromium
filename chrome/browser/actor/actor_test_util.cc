@@ -207,6 +207,12 @@ BrowserAction MakeWait() {
   return action;
 }
 
+BrowserAction MakeAttemptLogin() {
+  BrowserAction action;
+  action.add_actions()->mutable_attempt_login();
+  return action;
+}
+
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
   const auto& result = *(future.Get());
   EXPECT_TRUE(IsOk(result))
