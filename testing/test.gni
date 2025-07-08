@@ -898,7 +898,6 @@ template("test") {
                                "data",
                                "data_deps",
                                "package_deps",
-                               "use_test_server",
                              ])
 
       is_test_exe = true

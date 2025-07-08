@@ -20,8 +20,6 @@ from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner, run_symbolizer
 from test_runner import TestRunner
 
-DEFAULT_TEST_SERVER_CONCURRENCY = 4
-
 
 def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
                              dest: str) -> None:
@@ -68,7 +66,6 @@ class ExecutableTestRunner(TestRunner):
         self._isolated_script_test_perf_output = None
         self._logs_dir = logs_dir
         self._test_launcher_summary_output = None
-        self._test_server = None
         self._test_realm = test_realm
 
     def _get_args(self) -> List[str]:
@@ -99,10 +96,6 @@ class ExecutableTestRunner(TestRunner):
         parser.add_argument('--test-launcher-jobs',
                             type=int,
                             help='Sets the number of parallel test jobs.')
-        parser.add_argument('--enable-test-server',
-                            action='store_true',
-                            default=False,
-                            help='Enable Chrome test server spawner.')
         parser.add_argument('--test-arg',
                             dest='test_args',
                             action='append',
@@ -139,22 +132,6 @@ class ExecutableTestRunner(TestRunner):
                 args.test_launcher_filter_file.split(';'))
             child_args.append('--test-launcher-filter-file=' +
                               ';'.join(test_launcher_filter_files))
-        if args.test_launcher_jobs is not None:
-            test_concurrency = args.test_launcher_jobs
-        else:
-            test_concurrency = DEFAULT_TEST_SERVER_CONCURRENCY
-        if args.enable_test_server:
-            # Repos other than chromium may not have chrome_test_server_spawner,
-            # and they may not run server at all, so only import the test_server
-            # when it's really necessary.
-
-            # pylint: disable=import-outside-toplevel
-            from test_server import setup_test_server
-            # pylint: enable=import-outside-toplevel
-            self._test_server, spawner_url_base = setup_test_server(
-                self._target_id, test_concurrency)
-            child_args.append('--remote-test-server-spawner-url-base=%s' %
-                              spawner_url_base)
         if get_host_arch() == 'x64':
             # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
             # default.
@@ -169,8 +146,6 @@ class ExecutableTestRunner(TestRunner):
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:
-        if self._test_server:
-            self._test_server.Stop()
         if self._test_launcher_summary_output:
             _copy_custom_output_file(
                 test_runner,

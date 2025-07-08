@@ -8,15 +8,12 @@ import os
 import sys
 import subprocess
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
-from common import DIR_SRC_ROOT, get_free_local_port, get_ssh_address
+from common import DIR_SRC_ROOT, get_free_local_port
 from compatible_utils import get_ssh_prefix
 
 sys.path.append(os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'common'))
-# pylint: disable=import-error,wrong-import-position
-import chrome_test_server_spawner
-# pylint: enable=import-error,wrong-import-position
 
 
 def _run_ssh_tunnel(target_addr: str, command: str,
@@ -133,71 +130,3 @@ def cancel_port_forwarding(target_addr: str, fuchsia_port: int, host_port: int,
     should still be used to cancel the port forwarding."""
     _run_ssh_tunnel(target_addr, 'cancel',
                     _forward_command(fuchsia_port, host_port, port_forwarding))
-
-
-# Disable pylint errors since the subclass is not from this directory.
-# pylint: disable=invalid-name,missing-function-docstring
-class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
-    """Implementation of chrome_test_server_spawner.PortForwarder that uses
-    SSH's remote port forwarding feature to forward ports."""
-
-    def __init__(self, target_addr: str) -> None:
-        self._target_addr = target_addr
-
-        # Maps the host (server) port to the device port number.
-        self._port_mapping = {}
-
-    def Map(self, port_pairs: List[Tuple[int, int]]) -> None:
-        for p in port_pairs:
-            fuchsia_port, host_port = p
-            assert fuchsia_port == 0, \
-                'Port forwarding with a fixed fuchsia-port is unsupported yet.'
-            self._port_mapping[host_port] = \
-                port_forward(self._target_addr, host_port)
-
-    def GetDevicePortForHostPort(self, host_port: int) -> int:
-        return self._port_mapping[host_port]
-
-    def Unmap(self, device_port: int) -> None:
-        for host_port, fuchsia_port in self._port_mapping.items():
-            if fuchsia_port == device_port:
-                cancel_port_forwarding(self._target_addr, 0, host_port, True)
-                del self._port_mapping[host_port]
-                return
-
-        raise Exception('Unmap called for unknown port: %d' % device_port)
-
-
-# pylint: enable=invalid-name,missing-function-docstring
-
-
-def setup_test_server(target_id: Optional[str], test_concurrency: int)\
-         -> Tuple[chrome_test_server_spawner.SpawningServer, str]:
-    """Provisions a test server and configures |target_id| to use it.
-
-    Args:
-        target_id: The target to which port forwarding to the test server will
-            be established.
-        test_concurrency: The number of parallel test jobs that will be run.
-
-    Returns a tuple of a SpawningServer object and the local url to use on
-    |target_id| to reach the test server."""
-
-    logging.debug('Starting test server.')
-
-    target_addr = get_ssh_address(target_id)
-
-    # The TestLauncher can launch more jobs than the limit specified with
-    # --test-launcher-jobs so the max number of spawned test servers is set to
-    # twice that limit here. See https://crbug.com/913156#c19.
-    spawning_server = chrome_test_server_spawner.SpawningServer(
-        0, SSHPortForwarder(target_addr), test_concurrency * 2)
-
-    forwarded_port = port_forward(target_addr, spawning_server.server_port)
-    spawning_server.Start()
-
-    logging.debug('Test server listening for connections (port=%d)',
-                  spawning_server.server_port)
-    logging.debug('Forwarded port is %d', forwarded_port)
-
-    return (spawning_server, 'http://localhost:%d' % forwarded_port)

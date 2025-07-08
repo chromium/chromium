@@ -107,6 +107,11 @@ class CompatibleUtilsTest(unittest.TestCase):
             self.assertRaises(IOError, compatible_utils.get_sdk_hash,
                               'some/image/dir')
 
+    def test_get_ssh_prefix(self) -> None:
+        """Ensures the get_ssh_prefix won't return a None."""
+        self.assertIsNotNone(compatible_utils.get_ssh_prefix(
+            ("host.test", 80)))
+
     def test_install_symbols(self):
         """Test |install_symbols|."""
         def trim_noop_prefixes(path):

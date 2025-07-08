@@ -3281,7 +3281,6 @@ target(_test_target_type, "net_unittests") {
   }
 
   if (is_fuchsia) {
-    use_test_server = true
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
