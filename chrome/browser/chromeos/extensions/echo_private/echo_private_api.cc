@@ -55,11 +55,11 @@ std::string GetRegistrationCode(std::string_view type) {
   if (type == kCouponType) {
     const std::optional<std::string_view> offers_code =
         provider->GetMachineStatistic(ash::system::kOffersCouponCodeKey);
-    result = std::string(offers_code.value());
+    result = std::string(offers_code.value_or(""));
   } else if (type == kGroupType) {
     const std::optional<std::string_view> offers_code =
         provider->GetMachineStatistic(ash::system::kOffersGroupCodeKey);
-    result = std::string(offers_code.value());
+    result = std::string(offers_code.value_or(""));
   }
 
   return result;
