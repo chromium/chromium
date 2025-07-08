@@ -21,13 +21,11 @@ ExtensionViewHost::Delegate::~Delegate() = default;
 
 ExtensionViewHost::ExtensionViewHost(
     const Extension* extension,
-    content::SiteInstance* site_instance,
     content::BrowserContext* browser_context_param,
     const GURL& url,
     mojom::ViewType host_type,
     std::unique_ptr<Delegate> delegate)
     : ExtensionHost(extension,
-                    site_instance,
                     browser_context_param,
                     url,
                     host_type),

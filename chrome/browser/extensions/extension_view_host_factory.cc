@@ -17,7 +17,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
@@ -185,10 +184,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
     mojom::ViewType view_type,
     std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
   DCHECK(profile);
-  scoped_refptr<content::SiteInstance> site_instance =
-      ProcessManager::Get(profile)->GetSiteInstanceForURL(url);
-  return std::make_unique<ExtensionViewHost>(extension, site_instance.get(),
-                                             profile, url, view_type,
+  return std::make_unique<ExtensionViewHost>(extension, profile, url, view_type,
                                              std::move(delegate));
 }
 

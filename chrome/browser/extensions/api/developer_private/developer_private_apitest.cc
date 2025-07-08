@@ -28,7 +28,6 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -432,9 +431,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
     offscreen_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     offscreen_document = std::make_unique<OffscreenDocumentHost>(
         *extension,
-        ProcessManager::Get(profile())
-            ->GetSiteInstanceForURL(offscreen_url)
-            .get(),
         profile(), offscreen_url);
     offscreen_document->CreateRendererSoon();
     offscreen_waiter.WaitForHostCompletedFirstLoad();

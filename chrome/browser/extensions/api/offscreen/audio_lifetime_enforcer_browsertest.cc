@@ -18,7 +18,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -85,13 +84,10 @@ class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
   std::unique_ptr<OffscreenDocumentHost> CreateOffscreenDocument(
       const Extension& extension,
       const GURL& url) {
-    scoped_refptr<content::SiteInstance> site_instance =
-        ProcessManager::Get(profile())->GetSiteInstanceForURL(url);
-
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
-    auto offscreen_document = std::make_unique<OffscreenDocumentHost>(
-        extension, site_instance.get(), profile(), url);
+    auto offscreen_document =
+        std::make_unique<OffscreenDocumentHost>(extension, profile(), url);
     offscreen_document->CreateRendererSoon();
     navigation_observer.Wait();
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());

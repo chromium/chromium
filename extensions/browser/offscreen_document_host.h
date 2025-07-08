@@ -9,10 +9,6 @@
 
 class GURL;
 
-namespace content {
-class SiteInstance;
-}
-
 namespace extensions {
 class Extension;
 
@@ -23,7 +19,6 @@ class Extension;
 class OffscreenDocumentHost : public ExtensionHost {
  public:
   OffscreenDocumentHost(const Extension& extension,
-                        content::SiteInstance* site_instance,
                         content::BrowserContext* browser_context,
                         const GURL& url);
 

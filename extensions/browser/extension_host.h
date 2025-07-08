@@ -32,7 +32,6 @@ class ElapsedTimer;
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
-class SiteInstance;
 }  // namespace content
 
 namespace extensions {
@@ -59,7 +58,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   using CloseHandler = base::OnceCallback<void(ExtensionHost*)>;
 
   ExtensionHost(const Extension* extension,
-                content::SiteInstance* site_instance,
                 content::BrowserContext* browser_context,
                 const GURL& url,
                 mojom::ViewType host_type);

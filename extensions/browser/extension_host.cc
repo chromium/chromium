@@ -21,7 +21,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router.h"
@@ -49,7 +48,6 @@
 #include "ui/color/color_provider_utils.h"
 
 using content::RenderProcessHost;
-using content::SiteInstance;
 using content::WebContents;
 
 namespace extensions {
@@ -131,7 +129,6 @@ void EmitDispatchTimeMetrics(const EventDispatchSource& dispatch_source,
 }  // namespace
 
 ExtensionHost::ExtensionHost(const Extension* extension,
-                             SiteInstance* site_instance,
                              content::BrowserContext* browser_context,
                              const GURL& url,
                              mojom::ViewType host_type)
@@ -145,15 +142,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
          host_type == mojom::ViewType::kOffscreenDocument ||
          host_type == mojom::ViewType::kExtensionPopup ||
          host_type == mojom::ViewType::kExtensionSidePanel);
-  // NOTE: `site_instance` may be null if the kRemoveRootSiteInstance feature
-  // is active. `WebContents::CreateParams` handles a null SiteInstance the
-  // same as if no SiteInstance argument were passed.
-  if (site_instance) {
-    // If a SiteInstance is passed, it must match the `browser_context`
-    // associated with the ExtensionHost.
-    CHECK_EQ(browser_context_, site_instance->GetBrowserContext());
-  }
-  WebContents::CreateParams create_params(browser_context_, site_instance);
+  WebContents::CreateParams create_params(browser_context_);
   create_params.is_never_composited =
       host_type == mojom::ViewType::kExtensionBackgroundPage ||
       host_type == mojom::ViewType::kOffscreenDocument;

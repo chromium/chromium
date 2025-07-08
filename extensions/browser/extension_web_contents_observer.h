@@ -132,7 +132,6 @@ class ExtensionWebContentsObserver
   content::WebContents* GetAssociatedWebContents() const override;
 
   // content::WebContentsObserver overrides.
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -140,8 +139,8 @@ class ExtensionWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
 
-  // Temporarily needed to host common code between RenderFrameCreated and
-  // ReadyToCommitNavigation.
+  // Initializes state for any processes associated with the new
+  // `render_frame_host`, such as granting process access to new schemes.
   virtual void SetUpRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 

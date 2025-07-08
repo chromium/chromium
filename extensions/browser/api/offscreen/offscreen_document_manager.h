@@ -23,7 +23,6 @@ class GURL;
 namespace extensions {
 class Extension;
 class ExtensionHost;
-class ProcessManager;
 class OffscreenDocumentHost;
 class OffscreenDocumentLifetimeEnforcer;
 
@@ -106,9 +105,6 @@ class OffscreenDocumentManager : public KeyedService,
 
   // The associated browser context.
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // The process manager for the `browser_context_`.
-  raw_ptr<ProcessManager> process_manager_;
 
   // Observe ExtensionRegistry for extensions being unloaded.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

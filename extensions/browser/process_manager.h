@@ -38,7 +38,6 @@ namespace content {
 class BrowserContext;
 class DevToolsAgentHost;
 class RenderFrameHost;
-class SiteInstance;
 class WebContents;
 }  // namespace content
 
@@ -111,16 +110,6 @@ class ProcessManager : public KeyedService,
   void StopTrackingServiceWorkerRunningInstance(const WorkerId& worker_id);
   void StopTrackingServiceWorkerRunningInstance(const ExtensionId& extension_id,
                                                 int64_t worker_version_id);
-
-  // Returns the SiteInstance that the given URL belongs to.
-  // NOTE: Usage of this method is potentially error-prone. An extension can
-  // correspond to multiple SiteInstances (e.g. consider a cross origin isolated
-  // extension with non-cross-origin-isolated contexts).
-  // TODO(aa): This only returns correct results for extensions and packaged
-  // apps, not hosted apps.
-  // TODO(https://crbug.com/334991035): Remove this method.
-  virtual scoped_refptr<content::SiteInstance> GetSiteInstanceForURL(
-      const GURL& url);
 
   using FrameSet = std::set<content::RenderFrameHost*>;
   const FrameSet GetAllFrames() const;
@@ -375,13 +364,6 @@ class ProcessManager : public KeyedService,
 
   // The set of ExtensionHosts running viewless background extensions.
   ExtensionHostSet background_hosts_;
-
-  // A SiteInstance related to the SiteInstance for all extensions in
-  // this profile.  We create it in such a way that a new
-  // browsing instance is created.  This controls process grouping.
-  // TODO(https://crbug.com/334991035): Remove this member. The //content
-  // layer will properly isolate new extension processes.
-  scoped_refptr<content::SiteInstance> site_instance_;
 
   // The browser context associated with the ProcessManager.
   raw_ptr<content::BrowserContext> browser_context_;

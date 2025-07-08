@@ -17,8 +17,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/process_manager.h"
-#include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -53,7 +51,6 @@ OffscreenDocumentManagerFactory::OffscreenDocumentManagerFactory()
           "OffscreenDocumentManager",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
-  DependsOn(ProcessManagerFactory::GetInstance());
   // Indirectly depends on ExtensionService via ChromeExtensionSystem.
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
@@ -91,8 +88,7 @@ OffscreenDocumentManager::OffscreenDocumentData::OffscreenDocumentData(
 // OffscreenDocumentManager:
 OffscreenDocumentManager::OffscreenDocumentManager(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context),
-      process_manager_(ProcessManager::Get(browser_context_)) {
+    : browser_context_(browser_context) {
   registry_observation_.Observe(ExtensionRegistry::Get(browser_context_));
 }
 
@@ -133,10 +129,8 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
 
   OffscreenDocumentData& data = offscreen_documents_[extension.id()];
 
-  scoped_refptr<content::SiteInstance> site_instance =
-      process_manager_->GetSiteInstanceForURL(url);
-  data.host = std::make_unique<OffscreenDocumentHost>(
-      extension, site_instance.get(), browser_context_, url);
+  data.host =
+      std::make_unique<OffscreenDocumentHost>(extension, browser_context_, url);
   OffscreenDocumentHost* host = data.host.get();
 
   // The following Unretained()s are safe because this class owns the offscreen

@@ -246,14 +246,6 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
 // Show no warning banner when an extension uses CDP's `chrome.debugger`.
 BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
 
-// Controls whether the core SiteInstance in ProcessManager is removed. This
-// also requires adjusting when some frames are registered with the
-// ProcessManager, since they are no longer created directly with an
-// extension's SiteInstance (and instead go through a host swap before commit).
-// TODO(https://crbug.com/334991035): Remove this feature after we're confident
-// nothing breaks.
-BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
-
 // Disables loading extensions via the `--disable-extensions-except` command
 // line switch.
 BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);

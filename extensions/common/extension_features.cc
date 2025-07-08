@@ -198,10 +198,6 @@ BASE_FEATURE(kSilentDebuggerExtensionAPI,
              "SilentDebuggerExtensionAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRemoveCoreSiteInstance,
-             "RemoveCoreSiteInstance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch,
              "DisableDisableExtensionsExceptCommandLineSwitch",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)

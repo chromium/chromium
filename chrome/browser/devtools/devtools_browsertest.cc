@@ -2046,9 +2046,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   std::unique_ptr<extensions::OffscreenDocumentHost> offscreen_document =
       std::make_unique<extensions::OffscreenDocumentHost>(
           *extension,
-          extensions::ProcessManager::Get(browser()->profile())
-              ->GetSiteInstanceForURL(offscreen_url)
-              .get(),
           browser()->profile(), offscreen_url);
   {
     extensions::ExtensionHostTestHelper offscreen_waiter(browser()->profile(),

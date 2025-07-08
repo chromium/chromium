@@ -26,7 +26,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest_delegate.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
@@ -177,37 +176,9 @@ void MimeHandlerViewGuest::CreateInnerPage(
       /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
       mime_type_, browser_context());
 
-  // Compute the mime handler extension's `SiteInstance`. This must match the
-  // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the
-  // wrong `HostZoomMap` will be used, and the `RenderFrameHost` for the guest
-  // `WebContents` will need to be swapped.
-  bool use_current_site_instance_if_present = true;
-#if BUILDFLAG(ENABLE_PDF)
-  // TODO(crbug.com/40216386): Using `SiteInstance::CreateForURL()` creates a
-  // new `BrowsingInstance`, which causes problems for features like background
-  // pages. Remove one of these branches either when `ProcessManager` correctly
-  // handles the multiple `StoragePartitionConfig` case, or when no
-  // `MimeHandlerView` extension depends on background pages.
-  if (mime_handler_extension->id() == extension_misc::kPdfExtensionId) {
-    use_current_site_instance_if_present = false;
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  scoped_refptr<content::SiteInstance> guest_site_instance;
-  if (use_current_site_instance_if_present) {
-    ProcessManager* process_manager = ProcessManager::Get(browser_context());
-    guest_site_instance =
-        process_manager->GetSiteInstanceForURL(stream_->handler_url());
-  }
-
-  // `guest_site_instance` may be null if either we are meant to create a new
-  // SiteInstance (`use_current_site_instance_if_present` is false) or if the
-  // SiteInstance returned from the ProcessManager is null. Create a new
-  // SiteInstance in that case.
-  if (!guest_site_instance) {
-    guest_site_instance = content::SiteInstance::CreateForURL(
-        browser_context(), stream_->handler_url());
-  }
+  scoped_refptr<content::SiteInstance> guest_site_instance =
+      content::SiteInstance::CreateForURL(browser_context(),
+                                          stream_->handler_url());
 
   // Clear the zoom level for the mime handler extension. The extension is
   // responsible for managing its own zoom. This is necessary for OOP PDF, as

@@ -18,7 +18,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
-class SiteInstance;
 class WebContents;
 }
 
@@ -64,7 +63,6 @@ class ExtensionViewHost
   };
 
   ExtensionViewHost(const Extension* extension,
-                    content::SiteInstance* site_instance,
                     content::BrowserContext* browser_context,
                     const GURL& url,
                     mojom::ViewType host_type,
