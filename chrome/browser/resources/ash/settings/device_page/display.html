@@ -124,7 +124,8 @@
   <h2>[[selectedDisplay.name]]</h2>
   <template is="dom-if" if="[[showUnifiedDesktop(unifiedDesktopAvailable_,
       unifiedDesktopMode_, displays, isTabletMode_)]]" restamp>
-    <div class="settings-box indented two-line">
+    <div class="settings-box indented two-line"
+         on-click="onUnifiedDesktopClick_" actionable-row>
       <div class="start">
         <div id="displayUnifiedDesktopCheckboxLabel">
           $i18n{displayUnifiedDesktop}
@@ -135,7 +136,7 @@
       </div>
       <cr-toggle id="displayUnifiedDesktopToggle"
           checked="[[unifiedDesktopMode_]]"
-          on-click="onUnifiedDesktopClick_"
+          on-change="onUnifiedDesktopClick_"
           aria-labelledby="displayUnifiedDesktopCheckboxLabel"
           deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
       </cr-toggle>
