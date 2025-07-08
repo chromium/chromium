@@ -141,7 +141,7 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ(frame->format(), "s16");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kS16);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -172,7 +172,7 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   auto* frame = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kF32Planar);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -191,7 +191,7 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit_HighChannelCount) {
   auto* frame = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->format(), V8AudioSampleFormat::Enum::kF32Planar);
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(),
@@ -309,7 +309,7 @@ TEST_F(AudioDataTest, TransferBuffer) {
   auto* audio_data = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(audio_data->format(), "u8");
+  EXPECT_EQ(audio_data->format(), V8AudioSampleFormat::Enum::kU8);
   EXPECT_EQ(audio_data->numberOfFrames(), data.size());
   EXPECT_EQ(audio_data->numberOfChannels(), 1u);
 
@@ -453,7 +453,7 @@ TEST_F(AudioDataTest, Interleaved) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ("s16", frame->format());
+  EXPECT_EQ(V8AudioSampleFormat::Enum::kS16, frame->format());
 
   auto* options = CreateCopyToOptions(/*index=*/1, kOffset, kPartialFrameCount);
 

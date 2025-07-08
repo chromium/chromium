@@ -762,7 +762,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
     EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
@@ -966,7 +966,7 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
     EXPECT_EQ(frame->timestamp(), 0u);
     EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
@@ -994,7 +994,7 @@ TEST_F(ImageDecoderTest, DecodeYuvCustomColorProfile) {
     EXPECT_TRUE(result->complete());
 
     auto* frame = result->image();
-    EXPECT_EQ(frame->format(), "I420");
+    EXPECT_EQ(frame->format(), V8VideoPixelFormat::Enum::kI420);
 
     auto cs = frame->frame()->ColorSpace();
     EXPECT_TRUE(cs.IsValid());

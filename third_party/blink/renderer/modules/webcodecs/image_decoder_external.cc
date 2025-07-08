@@ -165,10 +165,10 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   DCHECK(init->hasData());
   DCHECK(init->data());
 
-  constexpr char kNoneOption[] = "none";
   auto color_behavior = ColorBehavior::kTag;
-  if (init->colorSpaceConversion() == kNoneOption)
+  if (init->colorSpaceConversion() == V8ColorSpaceConversion::Enum::kNone) {
     color_behavior = ColorBehavior::kIgnore;
+  }
 
   auto desired_size = SkISize::MakeEmpty();
   if (init->hasDesiredWidth() && init->hasDesiredHeight())

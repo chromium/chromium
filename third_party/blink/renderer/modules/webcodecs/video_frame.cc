@@ -656,8 +656,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     transformed = transformation != media::kNoTransformation;
   }
 
-  constexpr char kAlphaDiscard[] = "discard";
-
   // Special case <video> and VideoFrame to directly use the underlying frame.
   if (source->IsVideoFrame() || source->IsHTMLVideoElement()) {
     scoped_refptr<media::VideoFrame> source_frame;
@@ -679,7 +677,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
     }
 
-    const bool force_opaque = init->alpha() == kAlphaDiscard &&
+    const bool force_opaque = init->alpha() == V8AlphaOption::Enum::kDiscard &&
                               !media::IsOpaque(source_frame->format());
 
     const auto wrapped_format =
@@ -789,7 +787,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size default_display_size(coded_size);
   const bool has_undiscarded_unpremultiplied_alpha =
       sk_image_info.alphaType() == kUnpremul_SkAlphaType &&
-      !image->IsOpaque() && !(init && init->alpha() == kAlphaDiscard);
+      !image->IsOpaque() &&
+      !(init && init->alpha() == V8AlphaOption::Enum::kDiscard);
 
   sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
@@ -798,7 +797,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     DCHECK(image->IsStaticBitmapImage());
     const auto format = media::VideoPixelFormatFromSkColorType(
         paint_image.GetColorType(),
-        image->IsOpaque() || init->alpha() == kAlphaDiscard);
+        image->IsOpaque() || init->alpha() == V8AlphaOption::Enum::kDiscard);
 
     ParsedVideoFrameInit parsed_init(init, format, coded_size,
                                      default_visible_rect, default_display_size,
@@ -862,8 +861,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
     }
 
-    const bool force_opaque =
-        init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
+    const bool force_opaque = init &&
+                              init->alpha() == V8AlphaOption::Enum::kDiscard &&
+                              !sk_image->isOpaque();
 
     const auto format = media::VideoPixelFormatFromSkColorType(
         sk_image->colorType(), sk_image->isOpaque() || force_opaque);

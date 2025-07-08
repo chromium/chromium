@@ -8,27 +8,25 @@
 
 namespace blink {
 
-HardwarePreference StringToHardwarePreference(const String& value) {
-  if (value == "no-preference")
-    return HardwarePreference::kNoPreference;
-
-  if (value == "prefer-hardware")
-    return HardwarePreference::kPreferHardware;
-
-  if (value == "prefer-software")
-    return HardwarePreference::kPreferSoftware;
-
-  NOTREACHED();
+HardwarePreference IdlEnumToHardwarePreference(V8HardwarePreference value) {
+  switch (value.AsEnum()) {
+    case V8HardwarePreference::Enum::kNoPreference:
+      return HardwarePreference::kNoPreference;
+    case V8HardwarePreference::Enum::kPreferHardware:
+      return HardwarePreference::kPreferHardware;
+    case V8HardwarePreference::Enum::kPreferSoftware:
+      return HardwarePreference::kPreferSoftware;
+  }
 }
 
-String HardwarePreferenceToString(HardwarePreference hw_pref) {
+V8HardwarePreference HardwarePreferenceToIdlEnum(HardwarePreference hw_pref) {
   switch (hw_pref) {
     case HardwarePreference::kNoPreference:
-      return "no-preference";
+      return V8HardwarePreference(V8HardwarePreference::Enum::kNoPreference);
     case HardwarePreference::kPreferHardware:
-      return "prefer-hardware";
+      return V8HardwarePreference(V8HardwarePreference::Enum::kPreferHardware);
     case HardwarePreference::kPreferSoftware:
-      return "prefer-software";
+      return V8HardwarePreference(V8HardwarePreference::Enum::kPreferSoftware);
   }
 }
 

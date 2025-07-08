@@ -234,8 +234,7 @@ HardwarePreference VideoDecoder::GetHardwareAccelerationPreference(
     const ConfigType& config) {
   // The IDL defines a default value of "allow".
   DCHECK(config.hasHardwareAcceleration());
-  return StringToHardwarePreference(
-      IDLEnumAsString(config.hardwareAcceleration()));
+  return IdlEnumToHardwarePreference(config.hardwareAcceleration());
 }
 
 // static

@@ -61,7 +61,7 @@ EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
                 init->duration()))
           : media::kNoTimestamp);
 
-  buffer->set_is_key_frame(init->type() == "key");
+  buffer->set_is_key_frame(init->type() == V8EncodedVideoChunkType::Enum::kKey);
 
   if (init->hasDecryptConfig()) {
     auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
