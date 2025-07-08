@@ -73,7 +73,6 @@ public class AnswerSuggestionProcessorUnitTest {
         AnswerType.ANSWER_TYPE_SUNRISE_SUNSET,
         AnswerType.ANSWER_TYPE_TRANSLATION,
         AnswerType.ANSWER_TYPE_WEATHER,
-        AnswerType.ANSWER_TYPE_WHEN_IS,
         AnswerType.ANSWER_TYPE_CURRENCY
     };
 

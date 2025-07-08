@@ -313,7 +313,6 @@ android_resources("java_resources") {
     "java/res/drawable/hairline_circle.xml",
     "java/res/drawable/ic_book_round.xml",
     "java/res/drawable/ic_equals_sign_round.xml",
-    "java/res/drawable/ic_event_round.xml",
     "java/res/drawable/ic_google_round.xml",
     "java/res/drawable/ic_logo_googleg_20dp.xml",
     "java/res/drawable/ic_loop_round.xml",

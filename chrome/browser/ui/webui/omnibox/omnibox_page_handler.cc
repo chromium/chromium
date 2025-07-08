@@ -78,14 +78,10 @@ std::string AnswerTypeToString(int answer_type) {
       return "translation";
     case omnibox::ANSWER_TYPE_WEATHER:
       return "weather";
-    case omnibox::ANSWER_TYPE_WHEN_IS:
-      return "when is";
     case omnibox::ANSWER_TYPE_CURRENCY:
       return "currency";
     case omnibox::ANSWER_TYPE_LOCAL_TIME:
       return "local time";
-    case omnibox::ANSWER_TYPE_PLAY_INSTALL:
-      return "play install";
     default:
       return base::NumberToString(answer_type);
   }

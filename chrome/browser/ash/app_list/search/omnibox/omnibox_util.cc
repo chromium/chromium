@@ -43,8 +43,6 @@ SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
       return SearchResult::AnswerType::kSunrise;
     case omnibox::ANSWER_TYPE_TRANSLATION:
       return SearchResult::AnswerType::kTranslation;
-    case omnibox::ANSWER_TYPE_WHEN_IS:
-      return SearchResult::AnswerType::kWhenIs;
     default:
       return SearchResult::AnswerType::kDefaultAnswer;
   }

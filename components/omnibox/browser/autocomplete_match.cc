@@ -501,8 +501,6 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
       return omnibox::kAnswerSunriseChromeRefreshIcon;
     case omnibox::ANSWER_TYPE_TRANSLATION:
       return omnibox::kAnswerTranslationChromeRefreshIcon;
-    case omnibox::ANSWER_TYPE_WHEN_IS:
-      return omnibox::kAnswerWhenIsChromeRefreshIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
   }

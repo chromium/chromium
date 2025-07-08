@@ -26,18 +26,14 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
         return OmniboxSuggestionIconType::kStock;
       case omnibox::ANSWER_TYPE_TRANSLATION:
         return OmniboxSuggestionIconType::kTranslation;
-      case omnibox::ANSWER_TYPE_WHEN_IS:
-        return OmniboxSuggestionIconType::kWhenIs;
       case omnibox::ANSWER_TYPE_CURRENCY:
         return OmniboxSuggestionIconType::kConversion;
       case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
         return OmniboxSuggestionIconType::kSunrise;
       case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
       case omnibox::ANSWER_TYPE_LOCAL_TIME:
-      case omnibox::ANSWER_TYPE_PLAY_INSTALL:
       case omnibox::ANSWER_TYPE_SPORTS:
       case omnibox::ANSWER_TYPE_WEATHER:
-      case omnibox::ANSWER_TYPE_WEB_ANSWER:
         return OmniboxSuggestionIconType::kFallbackAnswer;
       case omnibox::ANSWER_TYPE_UNSPECIFIED:
         NOTREACHED();

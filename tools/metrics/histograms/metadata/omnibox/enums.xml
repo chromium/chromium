@@ -141,6 +141,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="mouse click on hint view"/>
   <int value="7" label="tap gesture on hint view"/>
   <int value="8" label="select suggestion"/>
+  <int value="9" label="toolbelt"/>
 </enum>
 
 <enum name="OmniboxEscapeAction">

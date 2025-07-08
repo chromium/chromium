@@ -208,9 +208,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                 case ANSWER_TYPE_WEATHER:
                     icon = R.drawable.logo_partly_cloudy;
                     break;
-                case ANSWER_TYPE_WHEN_IS:
-                    icon = R.drawable.ic_event_round;
-                    break;
                 case ANSWER_TYPE_CURRENCY:
                     icon = R.drawable.ic_loop_round;
                     break;

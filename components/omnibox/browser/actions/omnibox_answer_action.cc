@@ -31,14 +31,10 @@ constexpr const char* ToUmaUsageHistogramName(omnibox::AnswerType answer_type) {
       return "Omnibox.AnswerAction.UsageByType.Translation";
     case omnibox::ANSWER_TYPE_WEATHER:
       return "Omnibox.AnswerAction.UsageByType.Weather";
-    case omnibox::ANSWER_TYPE_WHEN_IS:
-      return "Omnibox.AnswerAction.UsageByType.WhenIs";
     case omnibox::ANSWER_TYPE_CURRENCY:
       return "Omnibox.AnswerAction.UsageByType.Currency";
     case omnibox::ANSWER_TYPE_LOCAL_TIME:
       return "Omnibox.AnswerAction.UsageByType.LocalTime";
-    case omnibox::ANSWER_TYPE_PLAY_INSTALL:
-      return "Omnibox.AnswerAction.UsageByType.PlayInstall";
     case omnibox::ANSWER_TYPE_UNSPECIFIED:
     default:
       return "Omnibox.AnswerAction.UsageByType.Invalid";

@@ -316,21 +316,4 @@ TEST_F(OmniboxAnswerResultTest, SunriseResult) {
             crosapi::mojom::SearchResult::AnswerType::kSunrise);
 }
 
-TEST_F(OmniboxAnswerResultTest, WhenIsResult) {
-  AutocompleteMatch match;
-  match.answer_type = omnibox::ANSWER_TYPE_WHEN_IS;
-  // When is result when ACMatch has |answer_template| populated.
-  omnibox::RichAnswerTemplate answer_template;
-  answer_template.add_answers();
-  match.answer_template = answer_template;
-
-  OmniboxAnswerResult result(
-      /*profile=*/nullptr, /*list_controller=*/nullptr,
-      CreateAnswerResult(match, /*controller=*/nullptr, u"when is christmas",
-                         AutocompleteInput()),
-      u"when is christmas");
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kWhenIs);
-}
-
 }  // namespace app_list::test
