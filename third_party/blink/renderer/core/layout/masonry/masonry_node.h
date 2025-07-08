@@ -35,6 +35,11 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
   // Collects the children of this node, sorts by order property if needed, and
   // resolves the grid line positions of the items based on style.
   GridItems ConstructMasonryItems(const GridLineResolver& line_resolver) const;
+
+  // Update the grid line positions of the items based on style and provided
+  // `line_resolver`.
+  void AdjustMasonryItemSpans(GridItems& masonry_items,
+                              const GridLineResolver& line_resolver) const;
 };
 
 template <>

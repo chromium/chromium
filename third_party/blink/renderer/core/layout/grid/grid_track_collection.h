@@ -441,6 +441,12 @@ class CORE_EXPORT GridSizingTrackCollection final
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
+  // Return the index of the first auto sized track within an auto repeat
+  // definition.
+  wtf_size_t GetAutoSizedRepeaterTrackIndex() const {
+    return auto_sized_repeater_track_index_;
+  }
+
  private:
   friend class GridLayoutAlgorithmTest;
   friend class GridTrackCollectionTest;
@@ -453,6 +459,7 @@ class CORE_EXPORT GridSizingTrackCollection final
   void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
 
   wtf_size_t non_collapsed_track_count_{0};
+  wtf_size_t auto_sized_repeater_track_index_{kNotFound};
 
   // A vector of every set element that compose the entire collection's ranges;
   // track definitions from the same set are stored in consecutive positions,

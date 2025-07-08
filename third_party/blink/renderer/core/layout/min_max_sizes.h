@@ -74,6 +74,11 @@ struct CORE_EXPORT MinMaxSizes {
     max_size -= length;
     return *this;
   }
+  MinMaxSizes& operator/=(const float length) {
+    min_size /= length;
+    max_size /= length;
+    return *this;
+  }
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const MinMaxSizes&);

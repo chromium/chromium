@@ -221,8 +221,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
-  void EncompassContributionSize(MinMaxSizes sizes, LayoutUnit margin_sum) {
-    sizes += margin_sum;
+  void EncompassContributionSize(MinMaxSizes sizes) {
     if (contribution_sizes) {
       contribution_sizes->Encompass(sizes);
     } else {

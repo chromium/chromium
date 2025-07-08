@@ -29,14 +29,15 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto masonry_items =
         algorithm.Node().ConstructMasonryItems(line_resolver);
     grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
-        line_resolver, masonry_items, SizingConstraint::kLayout, start_offset);
+        line_resolver, masonry_items, /*needs_auto_track_size=*/false,
+        SizingConstraint::kLayout, start_offset);
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
 
     for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
-             line_resolver, masonry_items, SizingConstraint::kLayout,
-             start_offset)) {
+             line_resolver, masonry_items, /*needs_auto_track_size=*/false,
+             SizingConstraint::kLayout, start_offset)) {
       MasonryItemCachedData item_data;
 
       item_data.resolved_span =

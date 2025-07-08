@@ -77,11 +77,16 @@ class GridTrackSizingAlgorithm {
       const BoxStrut& container_border_scrollbar_padding);
 
   // Calculates the used track size from the min and max track sizing functions
-  // as defined in https://drafts.csswg.org/css-grid-2/#algo-track-sizing.
+  // as defined in https://drafts.csswg.org/css-grid-2/#algo-track-sizing. If
+  // `needs_auto_track_size` is true, that means that we have a repeat() track
+  // definition with an auto sized track, and we are in the first track sizing
+  // pass used to determine the size of such tracks per
+  // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
   void ComputeUsedTrackSizes(
       const ContributionSizeFunctionRef& contribution_size,
       GridSizingTrackCollection* track_collection,
-      GridItems* grid_items) const;
+      GridItems* grid_items,
+      bool needs_auto_track_size = false) const;
 
  private:
   // These methods implement the steps of the algorithm for intrinsic track size

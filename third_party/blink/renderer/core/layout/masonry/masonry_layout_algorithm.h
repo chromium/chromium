@@ -43,21 +43,51 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       MasonryRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
+  // Returns the track collection given the provided `sizing_constraint`.
+  // If `auto_repeat_track_size` is non-null, this contains the track size to
+  // use for an auto sized track inside a repeat() track definition. The
+  // `masonry_items` and `start_offset` associated with the returned track
+  // collection are returned via the corresponding output params. If we hit an
+  // auto sized track within a repeat() definition and don't provide
+  // `auto_repeat_track_size`, then `needs_auto_track_size` will be set to true,
+  // indicating that another track sizing pass will be required once we've
+  // computed the auto track size.
+  GridSizingTrackCollection ComputeGridAxisTracks(
+      const SizingConstraint sizing_constraint,
+      std::optional<LayoutUnit> auto_repeat_track_size,
+      GridItems& masonry_items,
+      wtf_size_t& start_offset,
+      bool& needs_auto_track_size) const;
+
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
       const GridItems& masonry_items,
+      const bool needs_auto_track_size,
       SizingConstraint sizing_constraint,
       wtf_size_t& start_offset) const;
 
-  wtf_size_t ComputeAutomaticRepetitions() const;
+  // If `auto_repeat_track_size` is non-null, this indicates the track
+  // size to use for an auto sized track inside a repeat() track definition.
+  // If we hit an auto sized track within a repeat() definition and don't
+  // provide `auto_repeat_track_size`, then `needs_auto_track_size` will
+  // be set to true, indicating that another track sizing pass will be
+  // required once we've computed the auto track size.
+  wtf_size_t ComputeAutomaticRepetitions(
+      std::optional<LayoutUnit> auto_repeat_track_size,
+      bool& needs_auto_track_size) const;
 
   // From https://drafts.csswg.org/css-grid-3/#track-sizing-performance:
   //   "... synthesize a virtual masonry item that has the maximum of every
   //   intrinsic size contribution among the items in that group."
   // Returns a collection of items that reflect the intrinsic contributions from
   // the item groups, which will be used to resolve the grid axis' track sizes.
+  // If `needs_auto_track_size` is true, that means that we are in the first
+  // track size pass required to compute auto track sizes within a repeat
+  // definition, which requires adjustments to virtual item creation and track
+  // sizing per https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
   GridItems BuildVirtualMasonryItems(const GridLineResolver& line_resolver,
                                      const GridItems& masonry_items,
+                                     const bool needs_auto_track_size,
                                      SizingConstraint sizing_constraint,
                                      wtf_size_t& start_offset) const;
 
@@ -65,13 +95,16 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       const ConstraintSpace space_for_measure,
-      const GridItemData* virtual_item) const;
+      const GridItemData* virtual_item,
+      const bool needs_auto_track_size) const;
 
   ConstraintSpace CreateConstraintSpace(
       const GridItemData& masonry_item,
       const LogicalSize& containing_size,
       const LogicalSize& fixed_available_size,
-      LayoutResultCacheSlot result_cache_slot) const;
+      LayoutResultCacheSlot result_cache_slot,
+      const std::optional<LogicalSize>& opt_percentage_resolution_size =
+          std::nullopt) const;
 
   // If `containing_rect` is provided, it will store the available size for the
   // item and its offset within the container. These values will be used to
@@ -83,6 +116,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item,
+      const bool needs_auto_track_size = false,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       bool is_for_min_max_sizing = false) const;
 

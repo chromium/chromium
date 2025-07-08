@@ -9,6 +9,23 @@
 
 namespace blink {
 
+namespace {
+
+void AdjustMasonryItemSpan(Member<GridItemData>& masonry_item,
+                           const GridLineResolver& line_resolver,
+                           const GridTrackSizingDirection grid_axis_direction) {
+  CHECK(masonry_item);
+
+  // Resolve the positions of the items based on style. We can only resolve
+  // the number of spans for each item based on the grid axis.
+  GridSpan item_span = line_resolver.ResolveGridPositionsFromStyle(
+      masonry_item->node.Style(), grid_axis_direction);
+
+  masonry_item->resolved_position.SetSpan(item_span, grid_axis_direction);
+}
+
+}  // namespace
+
 MasonryItemGroups MasonryNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
     const GridItems& masonry_items,
@@ -71,8 +88,9 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
 
 GridItems MasonryNode::ConstructMasonryItems(
     const GridLineResolver& line_resolver) const {
-  const auto& style = Style();
-  const auto grid_axis_direction = style.MasonryTrackSizingDirection();
+  const ComputedStyle& style = Style();
+  const GridTrackSizingDirection grid_axis_direction =
+      style.MasonryTrackSizingDirection();
 
   GridItems masonry_items;
   {
@@ -81,20 +99,14 @@ GridItems MasonryNode::ConstructMasonryItems(
 
     // This collects all our children, and orders them by their order property.
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
-      const auto& child_style = child.Style();
-      auto* masonry_item = MakeGarbageCollected<GridItemData>(
+      Member<GridItemData> masonry_item = MakeGarbageCollected<GridItemData>(
           To<BlockNode>(child), /*parent_style=*/style);
 
       // We'll need to sort when we encounter a non-initial order property.
       should_sort_masonry_items_by_order_property |=
-          child_style.Order() != initial_order;
+          child.Style().Order() != initial_order;
 
-      // Resolve the positions of the items based on style. We can only resolve
-      // the number of spans for each item based on the grid axis.
-      auto item_span = line_resolver.ResolveGridPositionsFromStyle(
-          child_style, grid_axis_direction);
-
-      masonry_item->resolved_position.SetSpan(item_span, grid_axis_direction);
+      AdjustMasonryItemSpan(masonry_item, line_resolver, grid_axis_direction);
       masonry_items.Append(masonry_item);
     }
 
@@ -104,6 +116,16 @@ GridItems MasonryNode::ConstructMasonryItems(
     }
   }
   return masonry_items;
+}
+
+void MasonryNode::AdjustMasonryItemSpans(
+    GridItems& masonry_items,
+    const GridLineResolver& line_resolver) const {
+  const GridTrackSizingDirection grid_axis_direction =
+      Style().MasonryTrackSizingDirection();
+  for (Member<GridItemData> masonry_item : masonry_items) {
+    AdjustMasonryItemSpan(masonry_item, line_resolver, grid_axis_direction);
+  }
 }
 
 }  // namespace blink

@@ -282,7 +282,8 @@ GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
 void GridTrackSizingAlgorithm::ComputeUsedTrackSizes(
     const ContributionSizeFunctionRef& contribution_size,
     GridSizingTrackCollection* track_collection,
-    GridItems* grid_items) const {
+    GridItems* grid_items,
+    bool needs_auto_track_size) const {
   DCHECK(track_collection);
   DCHECK(grid_items);
 
@@ -293,6 +294,14 @@ void GridTrackSizingAlgorithm::ComputeUsedTrackSizes(
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
   if (track_collection->HasIntrinsicTrack()) {
     ResolveIntrinsicTrackSizes(contribution_size, track_collection, grid_items);
+  }
+
+  // If we are currently calculating the size of auto tracks in an
+  // auto repeat(), there is no need to perform the remaining track
+  // sizing, since we will need to run another pass with the actual
+  // size for 'auto'.
+  if (needs_auto_track_size) {
+    return;
   }
 
   // If any track still has an infinite growth limit (i.e. it had no items

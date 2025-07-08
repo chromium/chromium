@@ -1106,6 +1106,11 @@ void GridSizingTrackCollection::BuildSets(
               TrackSpanProperties::kIsDependentOnAvailableSize);
         }
 
+        if (auto_sized_repeater_track_index_ == kNotFound &&
+            set_track_size.IsTrackDefinitionAuto()) {
+          auto_sized_repeater_track_index_ = i;
+        }
+
         CacheSetProperties(sets_.emplace_back(set_track_count, set_track_size,
                                               is_available_size_indefinite));
       }

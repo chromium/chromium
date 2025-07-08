@@ -94,8 +94,8 @@ wtf_size_t CalculateAutomaticRepetitions(
       const GridTrackSize& track_size =
           track_list.RepeatTrackSize(repeater_index, i);
 
-      // TODO(almaher): Use `auto_repeat_track_size` if it is non-null.
-      if (track_size.IsTrackDefinitionAuto() && !auto_repeat_track_size) {
+      const bool is_track_size_auto = track_size.IsTrackDefinitionAuto();
+      if (is_track_size_auto && !auto_repeat_track_size) {
         return 0;
       }
 
@@ -112,7 +112,9 @@ wtf_size_t CalculateAutomaticRepetitions(
       }
 
       LayoutUnit track_contribution;
-      if (fixed_max_track_breadth && fixed_min_track_breadth) {
+      if (is_track_size_auto) {
+        track_contribution = auto_repeat_track_size.value();
+      } else if (fixed_max_track_breadth && fixed_min_track_breadth) {
         track_contribution =
             std::max(*fixed_max_track_breadth, *fixed_min_track_breadth);
       } else if (fixed_max_track_breadth) {
