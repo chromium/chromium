@@ -73,6 +73,14 @@ class BnplManagerTestApi {
     bnpl_manager_->OnRedirectUrlFetched(result, response);
   }
 
+  void GetDetailsForUpdateBnplPaymentInstrument() {
+    bnpl_manager_->GetDetailsForUpdateBnplPaymentInstrument();
+  }
+
+  void UpdateBnplPaymentInstrument() {
+    bnpl_manager_->UpdateBnplPaymentInstrument();
+  }
+
  private:
   const raw_ref<BnplManager> bnpl_manager_;
 };

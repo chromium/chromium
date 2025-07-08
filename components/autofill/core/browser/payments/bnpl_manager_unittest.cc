@@ -110,6 +110,19 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
       (GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                const BnplFetchUrlResponseDetails&)> callback));
+  MOCK_METHOD(
+      void,
+      UpdateBnplPaymentInstrument,
+      (const UpdateBnplPaymentInstrumentRequestDetails& request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+           callback));
+  MOCK_METHOD(
+      void,
+      GetDetailsForUpdateBnplPaymentInstrument,
+      (const GetDetailsForUpdateBnplPaymentInstrumentRequestDetails&,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               std::string context_token,
+                               LegalMessageLines)>));
 };
 
 class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
@@ -857,13 +870,12 @@ TEST_F(
             unlinked_issuer);
 }
 
-// Tests that `OnDidGetDetailsForCreateBnplPaymentInstrument` set the BNPL
-// manager state if the request has completed successfully, and shows the ToS
-// dialog. This test also ensures the ToS dialog is closed after receiving a
-// redirect URL for an unlinked issuer.
-TEST_F(
-    BnplManagerTest,
-    OnDidGetDetailsForCreateBnplPaymentInstrument_ClosesTosAfterRedirectUrlReceived) {
+// Tests that `OnDidGetLegalMessageFromServer` set the BNPL manager state if the
+// request has completed successfully, and shows the ToS dialog. This test also
+// ensures the ToS dialog is closed after receiving a redirect URL for an
+// unlinked issuer.
+TEST_F(BnplManagerTest,
+       OnDidGetLegalMessageFromServer_ClosesTosAfterRedirectUrlReceived) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
@@ -900,9 +912,8 @@ TEST_F(
 }
 
 // Tests that cancelling the ToS dialog resets and ends the flow.
-TEST_F(
-    BnplManagerTest,
-    OnDidGetDetailsForCreateBnplPaymentInstrument_TosCancellationResetsFlow) {
+TEST_F(BnplManagerTest,
+       OnDidGetLegalMessageFromServer_TosCancellationResetsFlow) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
@@ -925,10 +936,9 @@ TEST_F(
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnDidGetDetailsForCreateBnplPaymentInstrument` shows an error
+// Tests that `OnDidGetLegalMessageFromServer` shows an error
 // when there is a PaymentsRpcResult error.
-TEST_F(BnplManagerTest,
-       OnDidGetDetailsForCreateBnplPaymentInstrument_RpcError) {
+TEST_F(BnplManagerTest, OnDidGetLegalMessageFromServer_RpcError) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
@@ -968,11 +978,10 @@ TEST_F(BnplManagerTest, ShowSelectBnplIssuerDialog_UserCancelled) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnDidGetDetailsForCreateBnplPaymentInstrument` will dismiss
+// Tests that `OnDidGetLegalMessageFromServer` will dismiss
 // the showing issuer selection dialog.
-TEST_F(
-    BnplManagerTest,
-    OnDidGetDetailsForCreateBnplPaymentInstrument_DismissSelectBnplIssuerDialog) {
+TEST_F(BnplManagerTest,
+       OnDidGetLegalMessageFromServer_DismissSelectBnplIssuerDialog) {
   const BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   InSequence s;
@@ -991,8 +1000,93 @@ TEST_F(
             unlinked_issuer);
 }
 
-// Tests that `OnRedirectUrlFetched` will will dismiss the showing issuer
-// selection dialog.
+// Tests that `GetDetailsForUpdateBnplPaymentInstrument` calls the payments
+// network interface with the request details filled out correctly.
+TEST_F(BnplManagerTest, GetDetailsForUpdateBnplPaymentInstrument_Success) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  test_api(*bnpl_manager_).GetOngoingFlowState()->issuer = issuer;
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetDetailsForUpdateBnplPaymentInstrument(
+          /*request_details=*/
+          FieldsAre(kAppLocale, kBillingCustomerNumber,
+                    issuer.payment_instrument()->instrument_id(),
+                    GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+                        GetDetailsForUpdateBnplPaymentInstrumentType::
+                            kGetDetailsForAcceptTos),
+          /*callback=*/_));
+
+  test_api(*bnpl_manager_).GetDetailsForUpdateBnplPaymentInstrument();
+}
+
+// Tests that `UpdateBnplPaymentInstrument` calls the payments network interface
+// with the request details filled out correctly.
+TEST_F(BnplManagerTest, UpdateBnplPaymentInstrument_Success) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  test_api(*bnpl_manager_).GetOngoingFlowState()->context_token = kContextToken;
+  test_api(*bnpl_manager_).GetOngoingFlowState()->risk_data = kRiskData;
+  test_api(*bnpl_manager_).GetOngoingFlowState()->issuer = issuer;
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      UpdateBnplPaymentInstrument(
+          FieldsAre(kAppLocale, kBillingCustomerNumber,
+                    autofill::ConvertToBnplIssuerIdString(issuer.issuer_id()),
+                    issuer.payment_instrument()->instrument_id(), kContextToken,
+                    kRiskData,
+                    UpdateBnplPaymentInstrumentRequestDetails::
+                        UpdateBnplPaymentInstrumentType::kAcceptTos),
+          /*callback=*/_));
+
+  test_api(*bnpl_manager_).UpdateBnplPaymentInstrument();
+}
+
+// Tests that a successful `UpdateBnplPaymentInstrument` response results in a
+// call to fetch the redirect URL.
+TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Success) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+  test_api(*bnpl_manager_).GetOngoingFlowState()->issuer =
+      test::GetTestLinkedBnplIssuer();
+
+  EXPECT_CALL(*payments_network_interface_, UpdateBnplPaymentInstrument)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess));
+
+  // Successful update should trigger fetching the redirect URL.
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .Times(1);
+
+  test_api(*bnpl_manager_).UpdateBnplPaymentInstrument();
+}
+
+// Tests that a failed `UpdateBnplPaymentInstrument` response shows an error
+// dialog and resets the flow.
+TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Failure) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+  test_api(*bnpl_manager_).GetOngoingFlowState()->issuer =
+      test::GetTestLinkedBnplIssuer();
+
+  EXPECT_CALL(*payments_network_interface_, UpdateBnplPaymentInstrument)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+
+  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos());
+
+  test_api(*bnpl_manager_).UpdateBnplPaymentInstrument();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
+// Tests that `OnRedirectUrlFetched` will dismiss the showing issuer selection
+// dialog.
 TEST_F(BnplManagerTest,
        OnRedirectUrlFetched_LinkedIssuer_DismissSelectBnplIssuerDialog) {
   BnplFetchUrlResponseDetails response;

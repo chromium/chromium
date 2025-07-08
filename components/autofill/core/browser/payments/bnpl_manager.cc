@@ -257,12 +257,30 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
       .GetPaymentsNetworkInterface()
       ->GetDetailsForCreateBnplPaymentInstrument(
           std::move(request_details),
-          base::BindOnce(
-              &BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument,
-              weak_factory_.GetWeakPtr()));
+          base::BindOnce(&BnplManager::OnDidGetLegalMessageFromServer,
+                         weak_factory_.GetWeakPtr()));
 }
 
-void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
+void BnplManager::GetDetailsForUpdateBnplPaymentInstrument() {
+  GetDetailsForUpdateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = ongoing_flow_state_->app_locale;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.instrument_id =
+      ongoing_flow_state_->issuer.payment_instrument()->instrument_id();
+  request_details.type =
+      GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
+          GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
+
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
+      ->GetDetailsForUpdateBnplPaymentInstrument(
+          std::move(request_details),
+          base::BindOnce(&BnplManager::OnDidGetLegalMessageFromServer,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnDidGetLegalMessageFromServer(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
     LegalMessageLines legal_message) {
@@ -516,6 +534,40 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
     std::string instrument_id) {
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->instrument_id = std::move(instrument_id);
+    FetchRedirectUrl();
+  } else {
+    payments_autofill_client().CloseBnplTos();
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
+    Reset();
+  }
+}
+
+void BnplManager::UpdateBnplPaymentInstrument() {
+  UpdateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = ongoing_flow_state_->app_locale;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.context_token = ongoing_flow_state_->context_token;
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
+  request_details.instrument_id =
+      ongoing_flow_state_->issuer.payment_instrument()->instrument_id();
+  request_details.risk_data = ongoing_flow_state_->risk_data;
+  request_details.type = UpdateBnplPaymentInstrumentRequestDetails::
+      UpdateBnplPaymentInstrumentType::kAcceptTos;
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
+      ->UpdateBnplPaymentInstrument(
+          std::move(request_details),
+          base::BindOnce(&BnplManager::OnBnplPaymentInstrumentUpdated,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnBnplPaymentInstrumentUpdated(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     FetchRedirectUrl();
   } else {
     payments_autofill_client().CloseBnplTos();
