@@ -1061,7 +1061,7 @@ bool AreCriticalHintsMissing(
   return false;
 }
 
-std::vector<network::mojom::WebClientHintsType> GetAddedClientHints(
+std::vector<network::mojom::WebClientHintsType> GetEnabledClientHints(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate) {

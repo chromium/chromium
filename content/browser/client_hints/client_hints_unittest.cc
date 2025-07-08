@@ -313,7 +313,7 @@ TEST_F(ClientHintsTest, SubFrame) {
   EXPECT_EQ(existing_hints, current_hints.GetEnabledHints());
 }
 
-TEST_F(ClientHintsTest, GetAddedClientHints) {
+TEST_F(ClientHintsTest, GetEnabledClientHints) {
   url::Origin origin = url::Origin::Create(GURL(ClientHintsTest::kOriginUrl));
 
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
@@ -334,7 +334,7 @@ TEST_F(ClientHintsTest, GetAddedClientHints) {
     }
   }
   std::vector<network::mojom::WebClientHintsType> actual_types =
-      GetAddedClientHints(origin, main_frame_node, &delegate);
+      GetEnabledClientHints(origin, main_frame_node, &delegate);
 
   // We do not care the order of contents.
   EXPECT_THAT(actual_types, testing::UnorderedElementsAreArray(expected_types));

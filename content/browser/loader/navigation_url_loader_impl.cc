@@ -348,11 +348,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   if (base::FeatureList::IsEnabled(
           network::features::kOffloadAcceptCHFrameCheck)) {
     CHECK(client_hints_controller_delegate);
-    // TODO(crbug.com/406407746): rename the function name upon
-    // https://chromium-review.googlesource.com/c/chromium/src/+/6677314/comment/781e24f0_4b7eebc7/
-    new_request->trusted_params->enabled_client_hints =
-        GetAddedClientHints(url::Origin::Create(new_request->url),
-                            frame_tree_node, client_hints_controller_delegate);
+    new_request->trusted_params->enabled_client_hints = GetEnabledClientHints(
+        url::Origin::Create(new_request->url), frame_tree_node,
+        client_hints_controller_delegate);
   }
 
   return new_request;
