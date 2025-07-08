@@ -116,11 +116,15 @@ def _replace_icons(paths, dist, config):
     packaging_dir = paths.packaging_dir(config)
     resources_dir = os.path.join(paths.work, config.resources_dir)
 
+    new_asset_catalog = os.path.join(packaging_dir,
+                                     'Assets_{}.car'.format(dist.channel))
     new_app_icon = os.path.join(packaging_dir,
                                 'app_{}.icns'.format(dist.channel))
     new_document_icon = os.path.join(packaging_dir,
                                      'document_{}.icns'.format(dist.channel))
 
+    commands.copy_files(new_asset_catalog,
+                        os.path.join(resources_dir, 'Assets.car'))
     commands.copy_files(new_app_icon, os.path.join(resources_dir, 'app.icns'))
     commands.copy_files(new_document_icon,
                         os.path.join(resources_dir, 'document.icns'))
@@ -130,6 +134,8 @@ def _replace_icons(paths, dist, config):
         paths.work, config.framework_dir, 'Helpers',
         '{} Helper (Alerts).app'.format(config.product), 'Contents',
         'Resources')
+    commands.copy_files(new_asset_catalog,
+                        os.path.join(alert_helper_resources_dir, 'Assets.car'))
     commands.copy_files(new_app_icon,
                         os.path.join(alert_helper_resources_dir, 'app.icns'))
 

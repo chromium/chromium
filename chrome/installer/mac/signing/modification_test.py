@@ -385,7 +385,7 @@ class TestModification(unittest.TestCase):
             ),
         ])
 
-        self.assertEqual(7, kwargs['copy_files'].call_count)
+        self.assertEqual(9, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
@@ -396,11 +396,18 @@ class TestModification(unittest.TestCase):
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
+            mock.call(
+                '/$I/Product Packaging/Assets_canary.car',
+                '/$W/App Product Canary.app/Contents/Resources/Assets.car'),
             mock.call('/$I/Product Packaging/app_canary.icns',
                       '/$W/App Product Canary.app/Contents/Resources/app.icns'),
             mock.call(
                 '/$I/Product Packaging/document_canary.icns',
                 '/$W/App Product Canary.app/Contents/Resources/document.icns'),
+            mock.call(
+                '/$I/Product Packaging/Assets_canary.car',
+                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/Assets.car'
+            ),
             mock.call(
                 '/$I/Product Packaging/app_canary.icns',
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Resources/app.icns'
