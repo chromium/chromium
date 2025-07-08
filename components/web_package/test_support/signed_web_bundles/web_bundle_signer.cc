@@ -21,7 +21,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
 #include "components/web_package/signed_web_bundles/types.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_package::test {
@@ -188,11 +188,8 @@ cbor::Value CreateIntegrityBlockForBundle(
         errors_for_testing.signatures_errors.size() == key_pairs.size());
   auto use_signatures_errors = !errors_for_testing.signatures_errors.empty();
 
-  // Calculate the SHA512 hash of the bundle.
-  auto secure_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA512);
-  secure_hash->Update(unsigned_bundle.data(), unsigned_bundle.size());
-  std::vector<uint8_t> unsigned_bundle_hash(secure_hash->GetHashLength());
-  secure_hash->Finish(unsigned_bundle_hash.data(), unsigned_bundle_hash.size());
+  auto unsigned_bundle_hash =
+      base::ToVector(crypto::hash::Sha512(unsigned_bundle));
 
   std::vector<cbor::Value> signature_stack;
   for (size_t i = 0; i < key_pairs.size(); ++i) {
