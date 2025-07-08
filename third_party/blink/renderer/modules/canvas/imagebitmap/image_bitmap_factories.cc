@@ -86,8 +86,6 @@ enum CreateImageBitmapSource {
   kMaxValue = kCreateImageBitmapSourceVideoFrame,
 };
 
-constexpr const char* kImageBitmapOptionNone = "none";
-
 gfx::Rect NormalizedCropRect(int x, int y, int width, int height) {
   if (width < 0) {
     x = base::ClampAdd(x, width);
@@ -191,7 +189,7 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmapFromBlob(
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
   // 'none'. Adding a deprecation warning when 'none' is called in
   // createImageBitmap.
-  if (options->imageOrientation() == kImageBitmapOptionNone) {
+  if (options->imageOrientation() == V8ImageOrientation::Enum::kNone) {
     auto* execution_context =
         ExecutionContext::From(script_state->GetContext());
     Deprecation::CountDeprecation(
@@ -416,12 +414,13 @@ void ImageBitmapFactories::ImageBitmapLoader::ScheduleAsyncImageBitmapDecoding(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking);
   ImageDecoder::AlphaOption alpha_option =
-      options_->premultiplyAlpha() != "none"
+      options_->premultiplyAlpha() != V8PremultiplyAlpha::Enum::kNone
           ? ImageDecoder::AlphaOption::kAlphaPremultiplied
           : ImageDecoder::AlphaOption::kAlphaNotPremultiplied;
-  ColorBehavior color_behavior = options_->colorSpaceConversion() == "none"
-                                     ? ColorBehavior::kIgnore
-                                     : ColorBehavior::kTag;
+  ColorBehavior color_behavior =
+      options_->colorSpaceConversion() == V8ColorSpaceConversion::Enum::kNone
+          ? ColorBehavior::kIgnore
+          : ColorBehavior::kTag;
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(

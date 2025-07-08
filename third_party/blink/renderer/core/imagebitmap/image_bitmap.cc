@@ -59,15 +59,6 @@
 
 namespace blink {
 
-constexpr const char* kImageOrientationFlipY = "flipY";
-constexpr const char* kImageOrientationFromImage = "from-image";
-constexpr const char* kImageBitmapOptionNone = "none";
-constexpr const char* kImageBitmapOptionDefault = "default";
-constexpr const char* kImageBitmapOptionPremultiply = "premultiply";
-constexpr const char* kImageBitmapOptionResizeQualityHigh = "high";
-constexpr const char* kImageBitmapOptionResizeQualityMedium = "medium";
-constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
-
 namespace {
 
 gfx::Size ParseDstSize(const ImageBitmapOptions* options,
@@ -100,40 +91,43 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
                                         ImageOrientation source_orientation,
                                         bool source_is_unpremul) {
   ImageBitmap::ParsedOptions parsed_options;
-  if (options->imageOrientation() == kImageOrientationFlipY) {
+  if (options->imageOrientation() == V8ImageOrientation::Enum::kFlipY) {
     parsed_options.flip_y = true;
     parsed_options.orientation_from_image = true;
     parsed_options.source_orientation = source_orientation;
   } else {
-    DCHECK(options->imageOrientation() == kImageOrientationFromImage ||
-           options->imageOrientation() == kImageBitmapOptionNone);
+    DCHECK(options->imageOrientation() ==
+               V8ImageOrientation::Enum::kFromImage ||
+           options->imageOrientation() == V8ImageOrientation::Enum::kNone);
     parsed_options.flip_y = false;
     parsed_options.orientation_from_image = true;
     parsed_options.source_orientation = source_orientation;
     if (base::FeatureList::IsEnabled(
             features::kCreateImageBitmapOrientationNone) &&
-        options->imageOrientation() == kImageBitmapOptionNone) {
+        options->imageOrientation() == V8ImageOrientation::Enum::kNone) {
       parsed_options.orientation_from_image = false;
       parsed_options.source_orientation = ImageOrientation();
     }
   }
 
   parsed_options.source_is_unpremul = source_is_unpremul;
-  if (options->premultiplyAlpha() == kImageBitmapOptionNone) {
-    parsed_options.premultiply_alpha = false;
-  } else {
-    parsed_options.premultiply_alpha = true;
-    DCHECK(options->premultiplyAlpha() == kImageBitmapOptionDefault ||
-           options->premultiplyAlpha() == kImageBitmapOptionPremultiply);
+  switch (options->premultiplyAlpha().AsEnum()) {
+    case V8PremultiplyAlpha::Enum::kNone:
+      parsed_options.premultiply_alpha = false;
+      break;
+    case V8PremultiplyAlpha::Enum::kDefault:
+    case V8PremultiplyAlpha::Enum::kPremultiply:
+      parsed_options.premultiply_alpha = true;
+      break;
   }
 
-  parsed_options.has_color_space_conversion =
-      (options->colorSpaceConversion() != kImageBitmapOptionNone);
-  if (options->colorSpaceConversion() != kImageBitmapOptionNone &&
-      options->colorSpaceConversion() != kImageBitmapOptionDefault) {
-    NOTREACHED()
-        << "Invalid ImageBitmap creation attribute colorSpaceConversion: "
-        << IDLEnumAsString(options->colorSpaceConversion());
+  switch (options->colorSpaceConversion().AsEnum()) {
+    case V8ColorSpaceConversion::Enum::kNone:
+      parsed_options.has_color_space_conversion = false;
+      break;
+    case V8ColorSpaceConversion::Enum::kDefault:
+      parsed_options.has_color_space_conversion = true;
+      break;
   }
 
   parsed_options.source_size =
@@ -167,14 +161,20 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
   }
   parsed_options.should_scale_input = true;
 
-  if (options->resizeQuality() == kImageBitmapOptionResizeQualityHigh)
-    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kHigh;
-  else if (options->resizeQuality() == kImageBitmapOptionResizeQualityMedium)
-    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kMedium;
-  else if (options->resizeQuality() == kImageBitmapOptionResizeQualityPixelated)
-    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kNone;
-  else
-    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kLow;
+  switch (options->resizeQuality().AsEnum()) {
+    case V8ResizeQuality::Enum::kHigh:
+      parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kHigh;
+      break;
+    case V8ResizeQuality::Enum::kMedium:
+      parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kMedium;
+      break;
+    case V8ResizeQuality::Enum::kLow:
+      parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kLow;
+      break;
+    case V8ResizeQuality::Enum::kPixelated:
+      parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kNone;
+      break;
+  }
 
   parsed_options.sampling = cc::PaintFlags::FilterQualityToSkSamplingOptions(
       parsed_options.resize_quality);
@@ -358,7 +358,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
   const bool allow_accelerated_images =
       !options->hasResizeWidth() && !options->hasResizeHeight();
   const bool reinterpret_as_srgb =
-      (options->colorSpaceConversion() == kImageBitmapOptionNone);
+      (options->colorSpaceConversion() == V8ColorSpaceConversion::Enum::kNone);
   auto input = video->CreateStaticBitmapImage(
       allow_accelerated_images, /*size=*/std::nullopt, reinterpret_as_srgb);
   if (!input)
