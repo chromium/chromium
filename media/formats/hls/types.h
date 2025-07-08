@@ -36,6 +36,28 @@ struct repeat_t<0, impl, types...> {
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
 
+// A `DecimalFloatingPoint` is an unsigned floating-point value.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
+using DecimalFloatingPoint = double;
+
+// A `SignedDecimalFloatingPoint` is a signed floating-point value.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
+using SignedDecimalFloatingPoint = double;
+
+// A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
+// height.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
+struct MEDIA_EXPORT DecimalResolution {
+  static ParseStatus::Or<DecimalResolution> Parse(
+      ResolvedSourceString source_str);
+
+  types::DecimalInteger width;
+  types::DecimalInteger height;
+
+  types::DecimalInteger Area() const { return width * height; }
+  types::DecimalInteger Szudzik() const;
+};
+
 namespace parsing {
 
 // A substituting parser functions as a super-struct parser which provides the
@@ -111,6 +133,11 @@ struct MEDIA_EXPORT RawInt : SubstitutingParser<RawInt, DecimalInteger> {
   static ParseStatus::Or<DecimalInteger> Parse(ResolvedSourceString str);
 };
 
+struct MEDIA_EXPORT RawFloat
+    : SubstitutingParser<RawFloat, DecimalFloatingPoint> {
+  static ParseStatus::Or<DecimalFloatingPoint> Parse(ResolvedSourceString str);
+};
+
 struct MEDIA_EXPORT YesOrNo : SubstitutingParser<YesOrNo, bool> {
   static ParseStatus::Or<bool> Parse(ResolvedSourceString str);
 };
@@ -122,6 +149,13 @@ struct MEDIA_EXPORT TimeDelta : SubstitutingParser<TimeDelta, base::TimeDelta> {
 
 struct MEDIA_EXPORT ISO8601Date : SubstitutingParser<ISO8601Date, base::Time> {
   static ParseStatus::Or<base::Time> Parse(ResolvedSourceString str);
+};
+
+struct MEDIA_EXPORT DecimalResolution
+    : SubstitutingParser<DecimalResolution,
+                         ::media::hls::types::DecimalResolution> {
+  static ParseStatus::Or<::media::hls::types::DecimalResolution> Parse(
+      ResolvedSourceString str);
 };
 
 // A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
@@ -264,33 +298,12 @@ struct MEDIA_EXPORT HexRepr
 MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
     ResolvedSourceString source_str);
 
-// A `DecimalFloatingPoint` is an unsigned floating-point value.
-// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
-using DecimalFloatingPoint = double;
-
 MEDIA_EXPORT ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
     ResolvedSourceString source_str);
-
-// A `SignedDecimalFloatingPoint` is a signed floating-point value.
-// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
-using SignedDecimalFloatingPoint = double;
 
 MEDIA_EXPORT ParseStatus::Or<SignedDecimalFloatingPoint>
 ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str);
 
-// A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
-// height.
-// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
-struct MEDIA_EXPORT DecimalResolution {
-  static ParseStatus::Or<DecimalResolution> Parse(
-      ResolvedSourceString source_str);
-
-  types::DecimalInteger width;
-  types::DecimalInteger height;
-
-  types::DecimalInteger Area() const { return width * height; }
-  types::DecimalInteger Szudzik() const;
-};
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:
 // - `length` is non-zero

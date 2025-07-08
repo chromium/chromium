@@ -343,7 +343,75 @@ TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
       ToTagName(MultivariantPlaylistTagName::kXIFrameStreamInf),
       "#EXT-X-I-FRAME-STREAM-INF:URI=\"foo.m3u8\",BANDWIDTH=1000\n",
       "URI=\"foo.m3u8\",BANDWIDTH=1000");
-  // TODO(crbug.com/40057824): Implement the EXT-X-I-FRAME-STREAM-INF tag.
+  RunTagIdentificationTest<XIFrameStreamInfTag>(
+      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=128000,URI=\"iframe_playlist."
+      "m3u8\"\n",
+      "BANDWIDTH=128000,URI=\"iframe_playlist.m3u8\"");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XIFrameStreamInfTag>(
+      "BANDWIDTH=128000,URI=\"iframe_playlist.m3u8\",AUDIO=\"audio\"\n", dict,
+      subs, ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XIFrameStreamInfTag>("BANDWIDTH=128000", dict, subs,
+                                 ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XIFrameStreamInfTag>(
+        "BANDWIDTH=128000,URI=\"iframe_playlist.m3u8\"", dict, subs);
+    EXPECT_EQ(result.tag.bandwidth, 128000u);
+    EXPECT_EQ(result.tag.uri.Str(), "iframe_playlist.m3u8");
+  }
+
+  {
+    auto result = OkTest<XIFrameStreamInfTag>(
+        "BANDWIDTH=256000,URI=\"another_iframe_playlist.m3u8\","
+        "AVERAGE-BANDWIDTH=240000",
+        dict, subs);
+    EXPECT_EQ(result.tag.bandwidth, 256000u);
+    EXPECT_EQ(result.tag.uri.Str(), "another_iframe_playlist.m3u8");
+    EXPECT_EQ(result.tag.average_bandwidth.value(), 240000u);
+  }
+
+  {
+    auto result = OkTest<XIFrameStreamInfTag>(
+        "BANDWIDTH=512000,URI=\"third_iframe_playlist.m3u8\","
+        "SCORE=9.5,CODECS=\"avc1.64001f\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.bandwidth, 512000u);
+    EXPECT_EQ(result.tag.uri.Str(), "third_iframe_playlist.m3u8");
+    EXPECT_EQ(result.tag.score.value(), 9.5);
+    EXPECT_EQ(result.tag.codecs.value().size(), 1u);
+    EXPECT_EQ(result.tag.codecs.value()[0], "avc1.64001f");
+  }
+
+  {
+    auto result = OkTest<XIFrameStreamInfTag>(
+        "BANDWIDTH=512000,URI=\"third_iframe_playlist.m3u8\","
+        "SCORE=9.5,CODECS=\"avc1.64001f,vp9,hevc\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.bandwidth, 512000u);
+    EXPECT_EQ(result.tag.uri.Str(), "third_iframe_playlist.m3u8");
+    EXPECT_EQ(result.tag.score.value(), 9.5);
+    EXPECT_EQ(result.tag.codecs.value().size(), 3u);
+    EXPECT_EQ(result.tag.codecs.value()[0], "avc1.64001f");
+    EXPECT_EQ(result.tag.codecs.value()[1], "vp9");
+    EXPECT_EQ(result.tag.codecs.value()[2], "hevc");
+  }
+
+  {
+    auto result = OkTest<XIFrameStreamInfTag>(
+        "BANDWIDTH=640000,URI=\"fourth_iframe_playlist.m3u8\","
+        "RESOLUTION=1280x720",
+        dict, subs);
+    EXPECT_EQ(result.tag.bandwidth, 640000u);
+    EXPECT_EQ(result.tag.uri.Str(), "fourth_iframe_playlist.m3u8");
+    EXPECT_TRUE(result.tag.resolution.has_value());
+    EXPECT_EQ(result.tag.resolution->width, 1280u);
+    EXPECT_EQ(result.tag.resolution->height, 720u);
+  }
 }
 
 TEST(HlsTagsTest, ParseXMediaTag) {

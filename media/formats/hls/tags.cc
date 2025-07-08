@@ -429,6 +429,39 @@ constexpr std::string_view GetAttributeName(
   NOTREACHED();
 }
 
+enum class XIFrameStreamInfTagAttribute {
+  kAverageBandwidth,
+  kBandwidth,
+  kCodecs,
+  kResolution,
+  kScore,
+  kUri,
+  kVideo,
+  kMaxValue = kVideo,
+};
+
+constexpr std::string_view GetAttributeName(
+    XIFrameStreamInfTagAttribute attribute) {
+  switch (attribute) {
+    case XIFrameStreamInfTagAttribute::kAverageBandwidth:
+      return "AVERAGE-BANDWIDTH";
+    case XIFrameStreamInfTagAttribute::kBandwidth:
+      return "BANDWIDTH";
+    case XIFrameStreamInfTagAttribute::kCodecs:
+      return "CODECS";
+    case XIFrameStreamInfTagAttribute::kResolution:
+      return "RESOLUTION";
+    case XIFrameStreamInfTagAttribute::kScore:
+      return "SCORE";
+    case XIFrameStreamInfTagAttribute::kUri:
+      return "URI";
+    case XIFrameStreamInfTagAttribute::kVideo:
+      return "VIDEO";
+  }
+
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -2025,6 +2058,97 @@ ParseStatus::Or<XSessionDataTag> XSessionDataTag::Parse(
             .uri = std::move(uri).value(),
             .format_is_json = fmt.has_value() && fmt.value().Str() == "JSON",
         };
+      });
+}
+
+struct XIFrameStreamInfTag::CtorArgs {
+  decltype(XIFrameStreamInfTag::uri) uri;
+  decltype(XIFrameStreamInfTag::bandwidth) bandwidth;
+  decltype(XIFrameStreamInfTag::average_bandwidth) average_bandwidth;
+  decltype(XIFrameStreamInfTag::score) score;
+  decltype(XIFrameStreamInfTag::codecs) codecs;
+  decltype(XIFrameStreamInfTag::resolution) resolution;
+  decltype(XIFrameStreamInfTag::video) video;
+};
+
+XIFrameStreamInfTag::XIFrameStreamInfTag(CtorArgs args)
+    : uri(std::move(args.uri)),
+      bandwidth(std::move(args.bandwidth)),
+      average_bandwidth(std::move(args.average_bandwidth)),
+      score(std::move(args.score)),
+      codecs(std::move(args.codecs)),
+      resolution(std::move(args.resolution)),
+      video(std::move(args.video)) {}
+
+XIFrameStreamInfTag::~XIFrameStreamInfTag() = default;
+XIFrameStreamInfTag::XIFrameStreamInfTag(const XIFrameStreamInfTag&) = default;
+
+ParseStatus::Or<XIFrameStreamInfTag> XIFrameStreamInfTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XIFrameStreamInfTag::kName));
+  return RequireNonEmptyMap<XIFrameStreamInfTagAttribute>(tag.GetContent())
+      .MapValue([&vars,
+                 &subs](auto map) -> ParseStatus::Or<XIFrameStreamInfTag> {
+        auto uri = ParseField<ResolvedSourceString>(
+            XIFrameStreamInfTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto bandwidth = ParseField<types::DecimalInteger>(
+            XIFrameStreamInfTagAttribute::kBandwidth, map,
+            &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(bandwidth);
+
+        auto average_bandwidth =
+            ParseField<std::optional<types::DecimalInteger>>(
+                XIFrameStreamInfTagAttribute::kAverageBandwidth, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(average_bandwidth);
+
+        auto score = ParseField<std::optional<types::DecimalFloatingPoint>>(
+            XIFrameStreamInfTagAttribute::kScore, map,
+            &types::parsing::RawFloat::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(score);
+
+        auto maybe_codecs_csv = ParseField<std::optional<ResolvedSourceString>>(
+            XIFrameStreamInfTagAttribute::kCodecs, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(maybe_codecs_csv);
+        auto codecs_csv = std::move(maybe_codecs_csv).value();
+        std::optional<std::vector<std::string>> codecs;
+        if (codecs_csv.has_value()) {
+          std::vector<std::string> codecs_vec;
+          SplitCodecs(std::move(codecs_csv).value().Str(), &codecs_vec);
+          codecs = std::move(codecs_vec);
+        }
+
+        auto resolution = ParseField<std::optional<types::DecimalResolution>>(
+            XIFrameStreamInfTagAttribute::kResolution, map,
+            &types::parsing::DecimalResolution::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(resolution);
+
+        auto video = ParseField<std::optional<ResolvedSourceString>>(
+            XIFrameStreamInfTagAttribute::kVideo, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(video);
+
+        return XIFrameStreamInfTag(XIFrameStreamInfTag::CtorArgs{
+            .uri = std::move(uri).value(),
+            .bandwidth = std::move(bandwidth).value(),
+            .average_bandwidth = std::move(average_bandwidth).value(),
+            .score = std::move(score).value(),
+            .codecs = std::move(codecs),
+            .resolution = std::move(resolution).value(),
+            .video = std::move(video).value(),
+        });
       });
 }
 

@@ -83,8 +83,20 @@ ParseStatus::Or<DecimalInteger> RawInt::Parse(ResolvedSourceString str) {
 }
 
 // static
+ParseStatus::Or<DecimalFloatingPoint> RawFloat::Parse(
+    ResolvedSourceString str) {
+  return ParseDecimalFloatingPoint(str);
+}
+
+// static
 ParseStatus::Or<bool> YesOrNo::Parse(ResolvedSourceString str) {
   return str.Str() == "YES";
+}
+
+// static
+ParseStatus::Or<::media::hls::types::DecimalResolution>
+DecimalResolution::Parse(ResolvedSourceString str) {
+  return ::media::hls::types::DecimalResolution::Parse(str);
 }
 
 }  // namespace parsing
