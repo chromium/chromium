@@ -8,7 +8,7 @@ found in the LICENSE file.
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item
       android:state_selected="true"
-      android:color="@macro/chip_bg_selected_color" />
+      android:color="?attr/colorOnSecondaryContainer" />
   <item
-      android:color="?attr/colorSurfaceContainer" />
+      android:color="?attr/colorOnSurface" />
 </selector>

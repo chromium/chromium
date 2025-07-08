@@ -72,6 +72,8 @@ android_resources("java_resources") {
     "java/res/layout/instance_switcher_list.xml",
     "java/res/layout/target_selector_dialog.xml",
     "java/res/layout/target_selector_dialog_v2.xml",
+    "java/res/color/instance_switcher_item_foreground_color_list.xml",
+    "java/res/color/instance_switcher_item_secondary_text_color_list.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",

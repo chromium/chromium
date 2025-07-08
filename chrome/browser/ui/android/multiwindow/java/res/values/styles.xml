@@ -17,4 +17,13 @@ found in the LICENSE file.
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+    <!-- Styles for the instance switcher item v2. -->
+    <style name="TextAppearance.TextLarge.Primary.InstanceSwitcherItem" parent="TextAppearance.TextLarge.Primary">
+        <item name="android:textColor">@color/instance_switcher_item_foreground_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Secondary.InstanceSwitcherItem" parent="TextAppearance.TextLarge.Secondary">
+        <item name="android:textColor">@color/instance_switcher_item_secondary_text_color_list</item>
+    </style>
 </resources>
