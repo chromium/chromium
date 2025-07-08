@@ -69,6 +69,7 @@ public class RichRadioButtonRenderTest {
     private RichRadioButton mRichRbHorizontalFullUnchecked;
     private RichRadioButton mRichRbHorizontalTitleChecked;
     private RichRadioButton mRichRbHorizontalMinimalUnchecked;
+    private RichRadioButton mRichRbVerticalFullUnchecked;
 
     private final int mFakeBgColor;
 
@@ -114,6 +115,8 @@ public class RichRadioButtonRenderTest {
                             mLayout.findViewById(R.id.rich_rb_horizontal_title_checked);
                     mRichRbHorizontalMinimalUnchecked =
                             mLayout.findViewById(R.id.rich_rb_horizontal_minimal_unchecked);
+                    mRichRbVerticalFullUnchecked =
+                            mLayout.findViewById(R.id.rich_rb_vertical_full_unchecked);
                 });
 
         Assert.assertNotNull(mLayout);
@@ -178,5 +181,18 @@ public class RichRadioButtonRenderTest {
                     mRichRbHorizontalFullUnchecked.setChecked(true);
                 });
         mRenderTestRule.render(mRichRbHorizontalFullUnchecked, "rich_rb_horizontal_full_checked");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "RichRadioButton"})
+    public void testRichRbVerticalFullUnchecked() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRichRbVerticalFullUnchecked.setItemData(
+                            R.drawable.test_location_precise, "Title", "Vertical item", true);
+                    mRichRbVerticalFullUnchecked.setChecked(false);
+                });
+        mRenderTestRule.render(mRichRbVerticalFullUnchecked, "rich_rb_vertical_full_unchecked");
     }
 }

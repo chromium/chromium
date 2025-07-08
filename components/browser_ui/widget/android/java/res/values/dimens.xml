@@ -236,4 +236,16 @@ found in the LICENSE file.
 
     <!-- Anchored popup menu dimens -->
     <dimen name="popup_menu_shadow_length">6dp</dimen>
+
+    <!-- Rich Radio Button dimens -->
+    <dimen name="rich_radio_button_default_padding">16dp</dimen>
+
+    <dimen name="rich_radio_button_icon_container_size">80dp</dimen>
+
+    <dimen name="rich_radio_button_vertical_margin_bottom">16dp</dimen>
+
+    <dimen name="rich_radio_button_icon_margin_end">8dp</dimen>
+    <dimen name="rich_radio_button_radio_button_margin_start">16dp</dimen>
+
+    <dimen name="rich_radio_button_description_margin_top">4dp</dimen>
 </resources>

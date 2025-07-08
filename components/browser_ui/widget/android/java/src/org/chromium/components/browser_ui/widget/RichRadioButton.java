@@ -6,17 +6,19 @@ package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -27,10 +29,11 @@ import org.chromium.ui.widget.ChromeImageView;
 /**
  * A custom view that combines a RadioButton with an optional icon, title, and optional description.
  * It implements the {@link Checkable} interface to behave like a standard radio button and provides
- * methods to customize its content and layout.
+ * methods to customize its content and layout. It can display its content in a horizontal or
+ * vertical orientation.
  */
 @NullMarked
-public class RichRadioButton extends LinearLayout implements Checkable {
+public class RichRadioButton extends ConstraintLayout implements Checkable {
 
     private FrameLayout mIconContainer;
     private ChromeImageView mItemIcon;
@@ -38,7 +41,13 @@ public class RichRadioButton extends LinearLayout implements Checkable {
     private TextView mItemDescription;
     private RadioButton mItemRadioButton;
 
+    private ConstraintSet mHorizontalConstraints;
+    private ConstraintSet mVerticalConstraints;
+
+    private ConstraintLayout mRootItemLayout;
+
     private boolean mIsChecked;
+    private boolean mIsVerticalLayout;
 
     public RichRadioButton(@NonNull Context context) {
         super(context);
@@ -59,6 +68,12 @@ public class RichRadioButton extends LinearLayout implements Checkable {
     private void init(@NonNull Context context) {
         LayoutInflater.from(context).inflate(R.layout.rich_radio_button, this, true);
 
+        mHorizontalConstraints = new ConstraintSet();
+        mHorizontalConstraints.load(context, R.xml.rich_radio_button_horizontal_constraints);
+        mVerticalConstraints = new ConstraintSet();
+        mVerticalConstraints.load(context, R.xml.rich_radio_button_vertical_constraints);
+
+        mRootItemLayout = findViewById(R.id.root_item_layout);
         mIconContainer = findViewById(R.id.rich_radio_button_icon_container);
         mItemIcon = findViewById(R.id.rich_radio_button_icon);
         mItemTitle = findViewById(R.id.rich_radio_button_title);
@@ -87,12 +102,14 @@ public class RichRadioButton extends LinearLayout implements Checkable {
      * @param iconResId Optional drawable resource ID for the icon. Pass 0 to hide the icon.
      * @param title The title text for the item.
      * @param description Optional description text. Pass null or empty string to hide.
+     * @param isInternalVertical True if the item's internal content should be vertically stacked,
+     *     false for horizontal.
      */
     public void setItemData(
             @DrawableRes int iconResId,
             @NonNull String title,
             @Nullable String description,
-            boolean isVertical) {
+            boolean isInternalVertical) {
         if (iconResId != 0) {
             mItemIcon.setImageResource(iconResId);
             mItemIcon.setVisibility(VISIBLE);
@@ -107,6 +124,28 @@ public class RichRadioButton extends LinearLayout implements Checkable {
             mItemDescription.setVisibility(VISIBLE);
         } else {
             mItemDescription.setVisibility(GONE);
+        }
+        setOrientation(isInternalVertical);
+    }
+
+    /**
+     * Sets the orientation of the item's internal layout.
+     *
+     * @param isVertical True for vertical stacking, false for horizontal.
+     */
+    private void setOrientation(boolean isVertical) {
+        if (mIsVerticalLayout != isVertical) {
+            mIsVerticalLayout = isVertical;
+
+            if (isVertical) {
+                mVerticalConstraints.applyTo(mRootItemLayout);
+                mItemTitle.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+                mItemDescription.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+            } else {
+                mHorizontalConstraints.applyTo(mRootItemLayout);
+                mItemTitle.setGravity(Gravity.NO_GRAVITY);
+                mItemDescription.setGravity(Gravity.NO_GRAVITY);
+            }
         }
     }
 

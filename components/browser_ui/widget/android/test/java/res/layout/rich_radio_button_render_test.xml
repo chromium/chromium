@@ -29,4 +29,11 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp" />
 
+    <org.chromium.components.browser_ui.widget.RichRadioButton
+        android:id="@+id/rich_rb_vertical_full_unchecked"
+        android:layout_width="160dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"/>
+
 </LinearLayout>

@@ -331,6 +331,8 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
     "java/res/values/values.xml",
+    "java/res/xml/rich_radio_button_horizontal_constraints.xml",
+    "java/res/xml/rich_radio_button_vertical_constraints.xml",
   ]
   deps = [
     "shared_with_webview:java_resources",
@@ -414,6 +416,7 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
