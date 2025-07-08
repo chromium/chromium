@@ -57,6 +57,8 @@ constexpr char kProfileMigrationDecisionHistogram[] =
     "Autofill.ProfileImport.MigrateProfileDecision";
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
+constexpr char kHomeAndWorkProfileUpdateHistogram[] =
+    "Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision";
 
 // Test that two AutofillProfiles have the same `record_type() and `Compare()`
 // equal.
@@ -383,28 +385,34 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       kProfileUpdateDecisionHistogram, kProfileUpdateEditsHistogram};
   constexpr ImportHistogramNames migrate_profile_histograms = {
       kProfileMigrationDecisionHistogram, kProfileMigrationEditsHistogram};
+  constexpr ImportHistogramNames update_home_and_work_profile_histograms = {
+      kHomeAndWorkProfileUpdateHistogram};
 
   // If the import was not a new profile, confirmable merge or migration, test
   // that the corresponding histograms are unchanged.
   if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario) &&
-      !IsMigration(test_scenario)) {
+      !IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario)) {
     new_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_profile_histograms.ExpectAllEmpty(histogram_tester);
     migrate_profile_histograms.ExpectAllEmpty(histogram_tester);
+    update_home_and_work_profile_histograms.ExpectAllEmpty(histogram_tester);
     return;
   }
   // The import can only be one of {new, updated, migrated} profile at once.
   ASSERT_EQ(
-      std::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
-                                           IsConfirmableMerge(test_scenario),
-                                           IsMigration(test_scenario)},
-                         true),
+      std::ranges::count(
+          std::vector<bool>{
+              IsNewProfile(test_scenario), IsConfirmableMerge(test_scenario),
+              IsMigration(test_scenario), IsHomeAndWorkSuperset(test_scenario)},
+          true),
       1);
 
   const ImportHistogramNames& affected_histograms =
       IsNewProfile(test_scenario)         ? new_profile_histograms
       : IsConfirmableMerge(test_scenario) ? update_profile_histograms
-                                          : migrate_profile_histograms;
+      : IsHomeAndWorkSuperset(test_scenario)
+          ? update_home_and_work_profile_histograms
+          : migrate_profile_histograms;
   // Expect records in the affected histograms.
   histogram_tester.ExpectUniqueSample(affected_histograms.decision,
                                       test_scenario.user_decision, 1);
@@ -419,7 +427,8 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   // Expect no records in all unaffected histograms.
   for (const ImportHistogramNames* histograms :
        {&new_profile_histograms, &update_profile_histograms,
-        &migrate_profile_histograms}) {
+        &migrate_profile_histograms,
+        &update_home_and_work_profile_histograms}) {
     if (histograms != &affected_histograms) {
       histograms->ExpectAllEmpty(histogram_tester);
     }
@@ -476,9 +485,7 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
           form_url().host());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
-  } else if ((IsNewProfile(test_scenario) ||
-              IsHomeAndWorkSuperset(test_scenario)) &&
-             last_import.UserAccepted()) {
+  } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, profile_save_strikes);
@@ -491,9 +498,13 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // updated.
   const StrikeDatabaseIntegratorBase* db =
       address_data_manager().GetProfileUpdateStrikeDatabase();
-  if (IsConfirmableMerge(test_scenario) && last_import.UserAccepted()) {
+  if ((IsConfirmableMerge(test_scenario) ||
+       IsHomeAndWorkSuperset(test_scenario)) &&
+      last_import.UserAccepted()) {
     EXPECT_EQ(0, db->GetStrikes(test_scenario.merge_candidate->guid()));
-  } else if (IsConfirmableMerge(test_scenario) && last_import.UserDeclined()) {
+  } else if ((IsConfirmableMerge(test_scenario) ||
+              IsHomeAndWorkSuperset(test_scenario)) &&
+             last_import.UserDeclined()) {
     // Or that it is incremented if the update was declined.
     EXPECT_EQ(2, db->GetStrikes(test_scenario.merge_candidate->guid()));
   } else if (test_scenario.merge_candidate.has_value()) {
@@ -1436,6 +1447,66 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
       .import_candidate = final_profile,
       .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
                                   mergeable_profile},
+      .expected_affected_types_in_merge_for_metrics = {
+          SettingsVisibleFieldTypeForMetrics::kZip,
+          SettingsVisibleFieldTypeForMetrics::kCity}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a Home profile update offered, but declined by the
+// user.
+TEST_P(AddressProfileSaveManagerTest,
+       HomeAndWorkSuperset_UpdateHomeProfile_Declined) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  test_api(mergeable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type = AutofillProfileImportType::kHomeAndWorkSuperset,
+      .is_profile_change_expected = false,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {mergeable_profile},
+      .expected_affected_types_in_merge_for_metrics = {
+          SettingsVisibleFieldTypeForMetrics::kZip,
+          SettingsVisibleFieldTypeForMetrics::kCity}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a Work profile update offered, but declined by the
+// user.
+TEST_P(AddressProfileSaveManagerTest,
+       HomeAndWorkSuperset_UpdateWorkProfile_Declined) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  test_api(mergeable_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  AutofillProfile final_profile = observed_profile;
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type = AutofillProfileImportType::kHomeAndWorkSuperset,
+      .is_profile_change_expected = false,
+      .merge_candidate = mergeable_profile,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {mergeable_profile},
       .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};

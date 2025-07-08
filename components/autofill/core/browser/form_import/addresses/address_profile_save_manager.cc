@@ -151,10 +151,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
 
 void AddressProfileSaveManager::AdjustNewProfileStrikes(
     ProfileImportProcess& import_process) {
-  // Use the same strike database for all types of new profile prompts.
-  if (import_process.import_type() != AutofillProfileImportType::kNewProfile &&
-      import_process.import_type() !=
-          AutofillProfileImportType::kHomeAndWorkSuperset) {
+  if (import_process.import_type() != AutofillProfileImportType::kNewProfile) {
     return;
   }
   const GURL& url = import_process.form_source_url();
@@ -167,7 +164,11 @@ void AddressProfileSaveManager::AdjustNewProfileStrikes(
 
 void AddressProfileSaveManager::AdjustUpdateProfileStrikes(
     ProfileImportProcess& import_process) {
-  if (!import_process.is_confirmable_update()) {
+  // Importing Home & Work superset profiles technically adds a new profile, but
+  // the user experience is designed to mimic an update flow.
+  if (!import_process.is_confirmable_update() &&
+      import_process.import_type() !=
+          AutofillProfileImportType::kHomeAndWorkSuperset) {
     return;
   }
   CHECK(import_process.merge_candidate().has_value());
