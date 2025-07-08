@@ -399,8 +399,6 @@ void RecordTimeToFirstInteraction(
       break;
     case lens::LensOverlayInvocationSource::kOmnibox:
     case lens::LensOverlayInvocationSource::kAIHub:
-    // TODO(crbug.com/419051875): Add separate UKM for homework action chip.
-    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
       event.SetOmnibox(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kOmniboxPageAction:
@@ -413,6 +411,9 @@ void RecordTimeToFirstInteraction(
     case lens::LensOverlayInvocationSource::kFREPromo:
       // First interaction for Lens Overlay is already recorded and sliced by invocation
       // source.
+      break;
+    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
+      event.SetHomeworkActionChip(time_to_first_interaction.InMilliseconds());
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

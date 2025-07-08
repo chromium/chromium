@@ -12979,6 +12979,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="HomeworkActionChip">
+    <summary>
+      Time to first interaction when overlay invoked through the omnibox Lens
+      homework page action suggestion.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Omnibox">
     <summary>
       Time to first interaction when overlay invoked through the omnibox.
