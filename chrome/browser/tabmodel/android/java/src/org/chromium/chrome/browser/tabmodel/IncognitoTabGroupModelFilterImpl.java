@@ -203,12 +203,6 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public @Nullable Token getTabGroupIdFromRootId(@TabId int rootId) {
-        if (mCurrentFilter == null) return null;
-        return mCurrentFilter.getTabGroupIdFromRootId(rootId);
-    }
-
-    @Override
     public List<Tab> getRelatedTabList(@TabId int tabId) {
         if (mCurrentFilter == null) return Collections.emptyList();
         return mCurrentFilter.getRelatedTabList(tabId);

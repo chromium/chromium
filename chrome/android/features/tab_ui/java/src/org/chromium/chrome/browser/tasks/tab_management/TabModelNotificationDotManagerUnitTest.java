@@ -105,7 +105,6 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(ROOT_ID)).thenReturn(TAB_GROUP_ID);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
         when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT);
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);

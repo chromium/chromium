@@ -1489,8 +1489,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return mGroupIdToRootIdMap.getOrDefault(stableId, Tab.INVALID_TAB_ID);
     }
 
-    @Override
-    public @Nullable Token getTabGroupIdFromRootId(int rootId) {
+    private @Nullable Token getTabGroupIdFromRootId(int rootId) {
         TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
         if (tabGroup == null) return null;
 

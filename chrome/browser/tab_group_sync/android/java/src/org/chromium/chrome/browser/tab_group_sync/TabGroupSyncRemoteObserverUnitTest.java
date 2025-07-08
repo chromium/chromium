@@ -93,7 +93,6 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
         when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(true);
         when(mIsActiveWindowSupplier.get()).thenReturn(true);
     }

@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -55,6 +54,7 @@ public class TabGroupSyncControllerImplUnitTest {
     private static final int TAB_ID_1 = 1;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock TabCreator mTabCreator;
     private @Mock TabGroupSyncService mTabGroupSyncService;
@@ -86,9 +86,10 @@ public class TabGroupSyncControllerImplUnitTest {
                 .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
 
         // Prepare mock tab.
-        Mockito.doReturn(TAB_ID_1).when(mTab1).getId();
-        Mockito.doReturn(TAB_ID_1).when(mTab1).getRootId();
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(TAB_ID_1)).thenReturn(TOKEN_1);
+        when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
+        when(mTab1.getId()).thenReturn(TAB_ID_1);
+        when(mTab1.getRootId()).thenReturn(TAB_ID_1);
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
         when(mTabCreator.createNewTab(any(), anyString(), anyInt(), any(), anyInt()))
                 .thenReturn(mTab1);
     }

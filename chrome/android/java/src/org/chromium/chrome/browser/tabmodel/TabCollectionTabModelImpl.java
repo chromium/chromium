@@ -647,11 +647,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public @Nullable Token getTabGroupIdFromRootId(@TabId int rootId) {
-        return null;
-    }
-
-    @Override
     public List<Tab> getRelatedTabList(@TabId int tabId) {
         return Collections.emptyList();
     }

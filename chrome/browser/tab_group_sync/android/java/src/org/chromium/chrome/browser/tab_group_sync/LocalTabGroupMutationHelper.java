@@ -98,7 +98,7 @@ public class LocalTabGroupMutationHelper {
 
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId =
-                TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
+                TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootTab.getTabGroupId());
         assert localTabGroupId != null : "Local tab group ID is null after creating a group!";
         mTabGroupSyncService.updateLocalTabGroupMapping(
                 assertNonNull(tabGroup.syncId), localTabGroupId, openingSource);

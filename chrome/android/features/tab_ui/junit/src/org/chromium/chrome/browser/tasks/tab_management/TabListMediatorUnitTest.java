@@ -5352,7 +5352,6 @@ public class TabListMediatorUnitTest {
             List<Tab> tabs, int rootId, Token tabGroupId, @Nullable Integer index) {
         when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId)).thenReturn(tabs.size());
         when(mTabGroupModelFilter.tabGroupExists(tabGroupId)).thenReturn(true);
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(rootId)).thenReturn(tabGroupId);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId)).thenReturn(rootId);
         when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(tabs);
         int firstTabId = tabs.get(0).getId();

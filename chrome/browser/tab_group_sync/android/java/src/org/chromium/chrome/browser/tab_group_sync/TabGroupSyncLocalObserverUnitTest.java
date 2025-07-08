@@ -126,7 +126,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(true);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -626,6 +626,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidChangeTitleAndColorForNonExistingGroup() {
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(false);
         // Handle updates for non-existing groups.
         when(mTabGroupModelFilter.getTabGroupTitle(12)).thenReturn(null);
         mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(12, TOKEN_1, TITLE_1);

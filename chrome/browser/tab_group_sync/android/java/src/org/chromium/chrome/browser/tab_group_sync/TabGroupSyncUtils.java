@@ -68,9 +68,9 @@ public final class TabGroupSyncUtils {
 
     /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
     public static @Nullable LocalTabGroupId getLocalTabGroupId(
-            TabGroupModelFilter filter, int rootId) {
-        Token tabGroupId = filter.getTabGroupIdFromRootId(rootId);
-        return tabGroupId == null ? null : new LocalTabGroupId(tabGroupId);
+            TabGroupModelFilter filter, @Nullable Token tabGroupId) {
+        if (tabGroupId == null || !filter.tabGroupExists(tabGroupId)) return null;
+        return new LocalTabGroupId(tabGroupId);
     }
 
     /** Conversion method to get a root ID from a {@link LocalTabGroupId}. */

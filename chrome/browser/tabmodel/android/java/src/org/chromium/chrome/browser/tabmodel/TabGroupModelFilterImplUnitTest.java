@@ -538,19 +538,14 @@ public class TabGroupModelFilterImplUnitTest {
     public void rootIdToStableIdAndBackConversion() {
         // Test existing IDs.
         assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(TAB2_TAB_GROUP_ID));
-        assertEquals(TAB2_TAB_GROUP_ID, mTabGroupModelFilter.getTabGroupIdFromRootId(TAB2_ROOT_ID));
-
-        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(TAB1_ROOT_ID));
 
         // Test non-existing IDs.
         assertEquals(
                 Tab.INVALID_TAB_ID,
                 mTabGroupModelFilter.getRootIdFromTabGroupId(new Token(93L, 42L)));
-        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(1000));
 
         // Test null/invalid inputs.
         assertEquals(Tab.INVALID_TAB_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(null));
-        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(Tab.INVALID_TAB_ID));
     }
 
     @Test

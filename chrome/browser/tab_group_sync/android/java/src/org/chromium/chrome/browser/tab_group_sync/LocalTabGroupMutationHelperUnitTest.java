@@ -100,8 +100,8 @@ public class LocalTabGroupMutationHelperUnitTest {
                         mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
-        when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TOKEN_1)).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
 
         Mockito.doNothing()
                 .when(mTabGroupSyncService)
@@ -390,6 +390,8 @@ public class LocalTabGroupMutationHelperUnitTest {
             tab.setUrl(url);
             tab.setRootId(parent == null ? tab.getId() : parent.getRootId());
             tab.setTitle("Tab Title");
+            // Assume all tabs are in a group.
+            tab.setTabGroupId(TOKEN_1);
             mTabModel.addTab(
                     tab, -1, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
             return tab;
