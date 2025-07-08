@@ -87,6 +87,8 @@ if (use_centipede) {
       "src/centipede/byte_array_mutator.h",
       "src/centipede/command.cc",
       "src/centipede/control_flow.cc",
+      "src/centipede/crash_summary.cc",
+      "src/centipede/crash_summary.h",
       "src/centipede/execution_metadata.cc",
       "src/centipede/execution_metadata.h",
       "src/centipede/feature.cc",
