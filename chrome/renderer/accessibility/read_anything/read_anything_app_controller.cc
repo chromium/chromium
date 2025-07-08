@@ -765,7 +765,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     if (tree_id != model_.active_tree_id()) {
       VLOG(1) << "Distillation terminated because not on active tree";
     }
-    if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
+    if (model_.active_tree_id() == ui::AXTreeIDUnknown()) {
       VLOG(1) << "Distillation terminated because active tree is unknown";
     }
     if (!model_.ContainsTree(tree_id)) {
