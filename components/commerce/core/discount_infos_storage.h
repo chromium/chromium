@@ -59,6 +59,11 @@ class DiscountInfosStorage : public history::HistoryServiceObserver {
   std::vector<DiscountInfo> GetUnexpiredDiscountsFromProto(
       const DiscountInfosContent& proto);
 
+  // When loading from local db, remove duplicate discounts that have the same
+  // discount code.
+  std::vector<DiscountInfo> RemoveDuplicateDiscountsFromProto(
+      const std::vector<DiscountInfo>& infos);
+
   raw_ptr<SessionProtoStorage<DiscountInfosContent>> proto_db_;
 
   base::ScopedObservation<history::HistoryService,

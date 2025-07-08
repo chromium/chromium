@@ -103,7 +103,9 @@ void DiscountInfosStorage::OnLoadDiscounts(const GURL& url,
                              valid_infos.end());
     }
   }
-  std::move(callback).Run(url, std::move(unexpired_infos));
+  std::vector<DiscountInfo> unique_infos =
+      RemoveDuplicateDiscountsFromProto(unexpired_infos);
+  std::move(callback).Run(url, std::move(unique_infos));
 }
 
 std::vector<DiscountInfo> DiscountInfosStorage::GetUnexpiredDiscountsFromProto(
@@ -134,6 +136,26 @@ std::vector<DiscountInfo> DiscountInfosStorage::GetUnexpiredDiscountsFromProto(
   }
 
   return infos;
+}
+
+std::vector<DiscountInfo>
+DiscountInfosStorage::RemoveDuplicateDiscountsFromProto(
+    const std::vector<DiscountInfo>& infos) {
+  std::vector<DiscountInfo> unique_infos;
+  std::map<std::string, bool> existing_codes;
+
+  for (const DiscountInfo& info : infos) {
+    DCHECK(info.discount_code.has_value());
+    const std::string& discount_code = info.discount_code.value();
+    // Check if the discount code is already present in the map.
+    if (!existing_codes.contains(discount_code)) {
+      // If not present, add the discount code to the map and to the result
+      // vector.
+      existing_codes[discount_code] = true;
+      unique_infos.push_back(info);
+    }
+  }
+  return unique_infos;
 }
 
 void DiscountInfosStorage::OnHistoryDeletions(
