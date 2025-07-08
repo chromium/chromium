@@ -73,8 +73,6 @@ class CookieControlsBubbleViewController
                                     base::Time expiration);
   void FillViewForTrackingProtections();
 
-  void CloseBubbleAndReloadPage();
-
   void CloseBubble();
 
   [[nodiscard]] std::unique_ptr<views::View> InitReloadingView(

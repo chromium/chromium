@@ -45,10 +45,6 @@ constexpr int kProgressBarHeight = 3;
 // Unique identifier within the CookieControlsBubbleView hierarchy.
 constexpr int kFaviconID = 1;
 
-// TODO(crbug.com/388294499): Make this a feature param so it can be changed via
-// Finch if needed.
-constexpr int kReloadUiDisplayDelay = 900;
-
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
@@ -337,36 +333,14 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();
   // TODO(crbug.com/388294499): Verify a11y readout for the button.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kActUserBypassSpinnerShownAfterReload)) {
-    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-    bubble_view_->GetContentView()
-        ->SetTrackingProtectionsButtonReloadingState();
-    bubble_view_->GetReloadingView()->RequestFocus();
-    // Set a timeout for how long the reloading UI is shown for.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CookieControlsBubbleViewController::OnReloadingUiTimeout,
-            weak_factory_.GetWeakPtr()),
-        content_settings::features::kUserBypassUIReloadBubbleTimeout.Get());
-  } else {
-    bubble_view_->GetContentView()
-        ->SetTrackingProtectionsButtonReloadingState();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
-            weak_factory_.GetWeakPtr()),
-        base::Milliseconds(kReloadUiDisplayDelay));
-  }
-}
-
-void CookieControlsBubbleViewController::CloseBubbleAndReloadPage() {
-  CloseBubble();
-  if (web_contents_) {
-    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-  }
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+  bubble_view_->GetContentView()->SetTrackingProtectionsButtonReloadingState();
+  // Set a timeout for how long the reloading UI is shown for.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CookieControlsBubbleViewController::OnReloadingUiTimeout,
+                     weak_factory_.GetWeakPtr()),
+      content_settings::features::kUserBypassUIReloadBubbleTimeout.Get());
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
