@@ -67,6 +67,7 @@ proto_extras("proto_extras") {
     "web_app_url_pattern.proto",
   ]
   deps = [
+    ":proto",
     "//chromeos/ash/experiences/system_web_apps/types/proto",
     "//components/sync/protocol",
     "//content/browser/background_fetch:background_fetch_proto",
