@@ -258,6 +258,21 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_APPLE_TV_4K_3RD_GENERATION_18_5",
+    identifier = "Apple TV 4K (3rd generation) 18.5",
+    generate_pyl_entry = False,
+    mixins = [
+        "tvos_runtime_cache_18_5",
+    ],
+    args = [
+        "--platform",
+        "Apple TV 4K (3rd generation)",
+        "--version",
+        "18.5",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_17_5",
     identifier = "iPad Air (5th generation) 17.5",
     generate_pyl_entry = False,

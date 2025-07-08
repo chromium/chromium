@@ -592,9 +592,19 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(runtime['identifier'], '111111')
 
   def test_get_simulator_runtime_info(self, _, _2):
-    runtime = iossim_util.get_simulator_runtime_info('13.1')
+    runtime = iossim_util.get_simulator_runtime_info(
+        constants.IOSPlatformType.IPHONEOS, '13.1')
     self.assertIsNotNone(runtime)
     self.assertEqual(runtime['version'], '13.1')
+
+    runtime = iossim_util.get_simulator_runtime_info(
+        constants.IOSPlatformType.TVOS, '13.1')
+    self.assertIsNone(runtime)
+
+    runtime = iossim_util.get_simulator_runtime_info(
+        constants.IOSPlatformType.TVOS, '18.2')
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['version'], '18.2')
 
   @mock.patch.object(iossim_util, 'get_simulator_runtime_match_list')
   def test_override_default_iphonesim_runtime(self, override_runtime_mock, _,

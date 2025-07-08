@@ -118,10 +118,12 @@ class Runner():
     try:
       with measures.time_consumption('mac_toolchain', 'Download and Install',
                                      'Xcode and Runtime'):
-        install_success = xcode.install_xcode(
-            self.args.mac_toolchain_cmd, self.args.xcode_build_version,
-            self.args.xcode_path, self.args.runtime_cache_prefix,
-            self.args.version)
+        install_success = xcode.install_xcode(self.args.mac_toolchain_cmd,
+                                              self.args.xcode_build_version,
+                                              self.args.xcode_path,
+                                              self.args.runtime_cache_prefix,
+                                              self.args.platform,
+                                              self.args.version)
       if not install_success:
         raise test_runner_errors.XcodeInstallFailedError(
             self.args.xcode_build_version)

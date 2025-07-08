@@ -1340,6 +1340,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "tvos_runtime_cache_18_5",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "runtime_tvos_18_5",
+                path = "Runtime-tvos-18.5",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "ioswpt-chromium-swarming-pool",
     generate_pyl_entry = False,
     swarming = targets.swarming(

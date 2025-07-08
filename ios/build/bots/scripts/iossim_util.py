@@ -397,15 +397,17 @@ def get_simulator_runtime_info_by_id(identifier):
   return None
 
 
-def get_simulator_runtime_info(ios_version):
+def get_simulator_runtime_info(platform_type: constants.IOSPlatformType,
+                               platform_version: str):
   """Gets runtime object based on iOS version.
 
   Args:
-    version: (str) A version name, e.g. "13.4"
+    platform_type: (IOSPlatformType) iOS-based platform in use
+    platform_version: (str) A version name, e.g. "13.4"
 
   Returns:
     a simulator runtime json object that contains all the info of an
-    iOS runtime
+    iOS/tvOS runtime
     e.g.
     {
       "build" : "19F70",
@@ -413,18 +415,27 @@ def get_simulator_runtime_info(ios_version):
       "identifier" : "FD9ED7F9-96A7-4621-B328-4C317893EC8A",
       etc...
     }
-    if no runtime for the corresponding iOS version is found, then
+    if no runtime for the corresponding iOS/tvOS version is found, then
     return None.
   """
+  if platform_type == constants.IOSPlatformType.IPHONEOS:
+    platform_identifier = "com.apple.platform.iphonesimulator"
+  elif platform_type == constants.IOSPlatformType.TVOS:
+    platform_identifier = "com.apple.platform.appletvsimulator"
+  else:
+    raise ValueError('Invalid platform_type value: %s' % platform_type)
+
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
     # The output might use version with a patch number (e.g. 17.0.1)
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
     version = runtime.get('version')
-    if version and version.startswith(ios_version):
+    if version and version.startswith(platform_version) and runtime.get(
+        'platformIdentifier') == platform_identifier:
       return runtime
   return None
+
 
 def is_simulator_runtime_builtin(runtime):
   if (runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):

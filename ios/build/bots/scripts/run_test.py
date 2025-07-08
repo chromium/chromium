@@ -11,6 +11,8 @@ import re
 import sys
 import unittest
 
+import constants
+import iossim_util
 import run
 import result_sink_util
 from test_runner import SimulatorNotFoundError, TestRunner
@@ -472,6 +474,10 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
 
     self.mock(self.runner, 'parse_args', lambda _: None)
     self.mock(xcode_util, 'is_local_run', lambda: False)
+    self.mock(
+        iossim_util, 'get_platform_type_by_platform',
+        lambda platform: constants.IOSPlatformType.TVOS if platform.startswith(
+            'Apple TV') else constants.IOSPlatformType.IPHONEOS)
     self.runner.args = mock.MagicMock()
     # Make run() choose xcodebuild_runner.SimulatorParallelTestRunner as tr.
     self.runner.args.xcode_parallelization = True
@@ -480,6 +486,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.runner.args.xcode_path = 'test/xcode/path'
     self.runner.args.xcode_build_version = 'testXcodeVersion'
     self.runner.args.runtime_cache_prefix = 'test/runtime-ios-'
+    self.runner.args.platform = 'iPhone 11'
     self.runner.args.version = '14.4'
     self.runner.args.out_dir = 'out/dir'
 
@@ -525,6 +532,44 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
   @mock.patch('xcode_util.install', autospec=True, return_value=True)
   @mock.patch('xcode_util.install_runtime_dmg')
   @mock.patch('xcode_util.move_runtime', autospec=True)
+  @mock.patch('xcode_util.check_xcode_exists_in_apps', return_value=False)
+  @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
+  def test_legacy_xcode_tvos(self, mock_macos_13_or_higher,
+                             mock_check_xcode_exists_in_apps, mock_move_runtime,
+                             mock_install_runtime_dmg, mock_install,
+                             mock_construct_runtime_cache_folder, mock_tr, _1,
+                             _2, _3, _4):
+    mock_macos_13_or_higher.return_value = False
+    mock_construct_runtime_cache_folder.side_effect = lambda a, b: a + b
+    self.runner.args.platform = 'Apple TV 4K'
+    self.runner.args.runtime_cache_prefix = 'test/runtime-tvos-'
+    test_runner = mock_tr.return_value
+    test_runner.launch.return_value = True
+    test_runner.logs = {}
+
+    with mock.patch('run.open', mock.mock_open()):
+      self.runner.run(None)
+
+    mock_install.assert_called_with(
+        'mac_toolchain',
+        'testXcodeVersion',
+        'test/xcode/path',
+        runtime_cache_folder='test/runtime-tvos-14.4',
+        ios_version='14.4')
+    mock_construct_runtime_cache_folder.assert_called_once_with(
+        'test/runtime-tvos-', '14.4')
+    self.assertFalse(mock_install_runtime_dmg.called)
+    self.assertFalse(mock_move_runtime.called)
+
+  @mock.patch('test_runner.defaults_delete')
+  @mock.patch('json.dump')
+  @mock.patch('xcode_util.select', autospec=True)
+  @mock.patch('os.path.exists', autospec=True, return_value=True)
+  @mock.patch('xcodebuild_runner.SimulatorParallelTestRunner')
+  @mock.patch('xcode_util.construct_runtime_cache_folder', autospec=True)
+  @mock.patch('xcode_util.install', autospec=True, return_value=True)
+  @mock.patch('xcode_util.install_runtime_dmg')
+  @mock.patch('xcode_util.move_runtime', autospec=True)
   @mock.patch(
       'xcode_util.is_runtime_builtin', autospec=True, return_value=False)
   @mock.patch('xcode_util.check_xcode_exists_in_apps', return_value=False)
@@ -551,9 +596,52 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
         ios_version='14.4')
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
+    mock_install_runtime_dmg.assert_called_with(
+        'mac_toolchain', 'test/runtime-ios-14.4',
+        constants.IOSPlatformType.IPHONEOS, '14.4', 'testXcodeVersion')
+    self.assertFalse(mock_move_runtime.called)
+
+  @mock.patch('test_runner.defaults_delete')
+  @mock.patch('json.dump')
+  @mock.patch('xcode_util.select', autospec=True)
+  @mock.patch('os.path.exists', autospec=True, return_value=True)
+  @mock.patch('xcodebuild_runner.SimulatorParallelTestRunner')
+  @mock.patch('xcode_util.construct_runtime_cache_folder', autospec=True)
+  @mock.patch('xcode_util.install', autospec=True, return_value=True)
+  @mock.patch('xcode_util.install_runtime_dmg')
+  @mock.patch('xcode_util.move_runtime', autospec=True)
+  @mock.patch(
+      'xcode_util.is_runtime_builtin', autospec=True, return_value=False)
+  @mock.patch('xcode_util.check_xcode_exists_in_apps', return_value=False)
+  @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
+  def test_legacy_xcode_macos13_runtime_not_builtin_tvos(
+      self, mock_macos_13_or_higher, mock_check_xcode_exists_in_apps,
+      mock_is_runtime_builtin, mock_move_runtime, mock_install_runtime_dmg,
+      mock_install, mock_construct_runtime_cache_folder, mock_tr, _1, _2, _3,
+      _4):
+    mock_macos_13_or_higher.return_value = True
+    mock_construct_runtime_cache_folder.side_effect = lambda a, b: a + b
+    self.runner.args.platform = 'Apple TV 4K'
+    self.runner.args.runtime_cache_prefix = 'test/runtime-tvos-'
+    test_runner = mock_tr.return_value
+    test_runner.launch.return_value = True
+    test_runner.logs = {}
+
+    with mock.patch('run.open', mock.mock_open()):
+      self.runner.run(None)
+
+    mock_install.assert_called_with(
+        'mac_toolchain',
+        'testXcodeVersion',
+        'test/xcode/path',
+        ios_version='14.4',
+        runtime_cache_folder='test/runtime-tvos-14.4')
+    mock_construct_runtime_cache_folder.assert_called_once_with(
+        'test/runtime-tvos-', '14.4')
     mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4',
-                                                'testXcodeVersion')
+                                                'test/runtime-tvos-14.4',
+                                                constants.IOSPlatformType.TVOS,
+                                                '14.4', 'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
 
   @mock.patch('test_runner.defaults_delete')
@@ -590,9 +678,9 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
         ios_version='14.4')
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
-    mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4',
-                                                'testXcodeVersion')
+    mock_install_runtime_dmg.assert_called_with(
+        'mac_toolchain', 'test/runtime-ios-14.4',
+        constants.IOSPlatformType.IPHONEOS, '14.4', 'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
 
   @mock.patch('test_runner.defaults_delete')
@@ -678,6 +766,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
                        mock_install, mock_construct_runtime_cache_folder,
                        mock_tr, _1, _2, _3, _4):
     """Check if Xcode is correctly installed for device tasks."""
+    self.runner.args.platform = None
     self.runner.args.version = None
     test_runner = mock_tr.return_value
     test_runner.launch.return_value = True

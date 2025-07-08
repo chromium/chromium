@@ -6821,6 +6821,40 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "tvos_rel_tests",
+    targets = [
+        targets.bundle(
+            targets = "tvos_tests",
+            variants = [
+                "SIM_APPLE_TV_4K_3RD_GENERATION_18_5",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "tvos_tests",
+    targets = [
+        "base_unittests",
+        "content_unittests",
+    ],
+    per_test_modifications = {
+        "base_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
+        "content_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "updater_gtests_linux",
     targets = [
         "updater_tests",

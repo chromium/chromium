@@ -9,9 +9,9 @@ import mock
 import os
 import unittest
 
+import constants
 import test_runner_errors
 import test_runner_test
-import iossim_util
 import xcode_util
 
 
@@ -103,7 +103,7 @@ class InstallTest(XcodeUtilTest):
     self.xcode_build_version = 'TestXcodeVersion'
     self.xcode_app_path = 'test/path/Xcode.app'
     self.runtime_cache_folder = 'test/path/Runtime'
-    self.ios_version = '14.4'
+    self.platform_version = '14.4'
 
   @mock.patch('xcode_util.move_runtime', autospec=True)
   @mock.patch('xcode_util._install_runtime', autospec=True)
@@ -143,7 +143,7 @@ class InstallTest(XcodeUtilTest):
         self.xcode_build_version,
         self.xcode_app_path,
         runtime_cache_folder=self.runtime_cache_folder,
-        ios_version=self.ios_version)
+        ios_version=self.platform_version)
 
     self.assertFalse(is_legacy_xcode, 'install should return False')
     mock_install_xcode.assert_called_with('mac_toolchain', 'TestXcodeVersion',
@@ -244,7 +244,8 @@ class InstallTest(XcodeUtilTest):
             result = xcode_util.install_runtime_dmg(
                 mac_toolchain='mac_toolchain',
                 runtime_cache_folder='/path/to/runtime_cache_folder',
-                ios_version='15.0',
+                platform_type=constants.IOSPlatformType.IPHONEOS,
+                platform_version='15.0',
                 xcode_build_version='14a123')
 
     self.assertFalse(mock__install_runtime_dmg.called)
@@ -279,13 +280,15 @@ class InstallTest(XcodeUtilTest):
                       result = xcode_util.install_runtime_dmg(
                           mac_toolchain='mac_toolchain',
                           runtime_cache_folder='/path/to/runtime_cache_folder',
-                          ios_version='15.0',
+                          platform_type=constants.IOSPlatformType.IPHONEOS,
+                          platform_version='15.0',
                           xcode_build_version='15a123')
 
     mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
     mock__install_runtime_dmg.assert_called_once_with(
-        'mac_toolchain', '/path/to/runtime_cache_folder', '15.0', '15a123')
+        'mac_toolchain', '/path/to/runtime_cache_folder',
+        constants.IOSPlatformType.IPHONEOS, '15.0', '15a123')
     mock_add_simulator_runtime.assert_called_once_with(
         '/path/to/runtime_cache_folder/test.dmg')
     mock_override_default_iphonesim_runtime.assert_called_once_with(
@@ -310,7 +313,8 @@ class InstallTest(XcodeUtilTest):
                 result = xcode_util.install_runtime_dmg(
                     mac_toolchain='mac_toolchain',
                     runtime_cache_folder='/path/to/runtime_cache_folder',
-                    ios_version='15.0',
+                    platform_type=constants.IOSPlatformType.IPHONEOS,
+                    platform_version='15.0',
                     xcode_build_version='15a123')
 
     mock_delete_least_recently_used_simulator_runtimes.assert_not_called()
@@ -322,17 +326,23 @@ class InstallTest(XcodeUtilTest):
   @mock.patch('xcode_util.version', return_value=('', 'TestXcodeVersion'))
   @mock.patch(
       'iossim_util.get_simulator_runtime_info_by_build', return_value=object())
+  @mock.patch(
+      'iossim_util.get_platform_type_by_platform',
+      return_value=constants.IOSPlatformType.IPHONEOS)
   @mock.patch('xcode_util.get_latest_runtime_build_cipd', return_value=object())
   @mock.patch('xcode_util.install')
   def test_local_run(self, mock_install, mock_get_latest_runtime_build_cipd, _1,
-                     _2, _3, _4):
-    ios_version = '14.4'
-    install_success = xcode_util.install_xcode(
-        self.mac_toolchain, self.xcode_build_version, self.xcode_app_path, '',
-        ios_version)
+                     _2, _3, _4, _5):
+    platform_version = '14.4'
+
+    install_success = xcode_util.install_xcode(self.mac_toolchain,
+                                               self.xcode_build_version,
+                                               self.xcode_app_path, '',
+                                               'iPhone 11', platform_version)
     self.assertTrue(install_success)
     mock_get_latest_runtime_build_cipd.assert_called_once_with(
-        self.xcode_build_version, ios_version)
+        self.xcode_build_version, constants.IOSPlatformType.IPHONEOS,
+        platform_version)
     self.assertFalse(mock_install.called)
 
   @mock.patch('xcode_util.ensure_xcode_ready_in_apps', return_value=None)
@@ -340,18 +350,36 @@ class InstallTest(XcodeUtilTest):
   @mock.patch('xcode_util.version', return_value=('', 'TestXcodeVersion'))
   @mock.patch(
       'iossim_util.get_simulator_runtime_info_by_build', return_value=object())
+  @mock.patch('iossim_util.get_platform_type_by_platform', autospec=True)
   @mock.patch('xcode_util.get_latest_runtime_build_cipd', return_value=None)
   @mock.patch('xcode_util.install')
   def test_local_run_no_cipd_runtime(self, mock_install,
-                                     mock_get_latest_runtime_build_cipd, _1, _2,
+                                     mock_get_latest_runtime_build_cipd,
+                                     mock_get_platform_type_by_platform, _1, _2,
                                      _3, _4):
-    ios_version = '14.4'
-    install_success = xcode_util.install_xcode(
-        self.mac_toolchain, self.xcode_build_version, self.xcode_app_path, '',
-        ios_version)
+    platform_version = '14.4'
+
+    mock_get_platform_type_by_platform.return_value = constants.IOSPlatformType.IPHONEOS
+    install_success = xcode_util.install_xcode(self.mac_toolchain,
+                                               self.xcode_build_version,
+                                               self.xcode_app_path, '',
+                                               'iPhone 11', platform_version)
     self.assertTrue(install_success)
     mock_get_latest_runtime_build_cipd.assert_called_once_with(
-        self.xcode_build_version, ios_version)
+        self.xcode_build_version, constants.IOSPlatformType.IPHONEOS,
+        platform_version)
+    self.assertFalse(mock_install.called)
+
+    mock_get_platform_type_by_platform.return_value = constants.IOSPlatformType.TVOS
+    install_success = xcode_util.install_xcode(self.mac_toolchain,
+                                               self.xcode_build_version,
+                                               self.xcode_app_path, '',
+                                               'Apple TV 4K', platform_version)
+    self.assertTrue(install_success)
+    self.assertEqual(2, mock_get_latest_runtime_build_cipd.call_count)
+    mock_get_latest_runtime_build_cipd.assert_called_with(
+        self.xcode_build_version, constants.IOSPlatformType.TVOS,
+        platform_version)
     self.assertFalse(mock_install.called)
 
 
@@ -427,7 +455,8 @@ class HelperFunctionTests(XcodeUtilTest):
         return_value={
             'kind': 'Bundled with Xcode',
         }):
-      result = xcode_util.is_runtime_builtin('15.0')
+      result = xcode_util.is_runtime_builtin(constants.IOSPlatformType.IPHONEOS,
+                                             '15.0')
 
     self.assertTrue(result)
 
@@ -437,21 +466,28 @@ class HelperFunctionTests(XcodeUtilTest):
         return_value={
             'kind': 'Disk Image',
         }):
-      result = xcode_util.is_runtime_builtin('15.0')
+      result = xcode_util.is_runtime_builtin(constants.IOSPlatformType.IPHONEOS,
+                                             '15.0')
 
     self.assertFalse(result)
 
   def test_is_runtime_builtin_with_no_runtime_info(self):
     with mock.patch(
         'iossim_util.get_simulator_runtime_info', return_value=None):
-      result = xcode_util.is_runtime_builtin('15.0')
+      result = xcode_util.is_runtime_builtin(constants.IOSPlatformType.IPHONEOS,
+                                             '15.0')
 
     self.assertFalse(result)
 
-  def test_convert_ios_version_to_cipd_ref(self):
-    expected_result = "ios-14-4"
-    actual_result = xcode_util.convert_ios_version_to_cipd_ref("14.4")
-    self.assertEqual(expected_result, actual_result)
+  def test_convert_platform_version_to_cipd_ref(self):
+    self.assertEqual(
+        "ios-14-4",
+        xcode_util.convert_platform_version_to_cipd_ref(
+            constants.IOSPlatformType.IPHONEOS, "14.4"))
+    self.assertEqual(
+        "tvos-14-4",
+        xcode_util.convert_platform_version_to_cipd_ref(
+            constants.IOSPlatformType.TVOS, "14.4"))
 
   def test_get_latest_runtime_build_cipd_with_ios_version(self):
     output1 = """
@@ -464,25 +500,28 @@ class HelperFunctionTests(XcodeUtilTest):
         ios_runtime_version:ios-15-0"""
     with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
       mock_describe_cipd_ref.side_effect = [output1, output2]
-      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
+      result = xcode_util.get_latest_runtime_build_cipd(
+          '14c18', constants.IOSPlatformType.IPHONEOS, '15.0')
     self.assertEqual(result, '21A342')
 
   def test_get_latest_runtime_build_cipd_with_xcode_version(self):
-    output = """
-      Tags:
-        ios_runtime_build:21A342
-        ios_runtime_version:ios-15-0"""
     with mock.patch(
         'xcode_util.describe_cipd_ref',
         return_value='ios_runtime_build:21A342'):
-      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
+      result = xcode_util.get_latest_runtime_build_cipd(
+          '14c18', constants.IOSPlatformType.IPHONEOS, '15.0')
     self.assertEqual(result, '21A342')
 
   def test_get_latest_runtime_build_cipd_return_no_match(self):
     with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
       mock_describe_cipd_ref.side_effect = ['', '']
-      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
-    self.assertIsNone(result)
+      result_ios = xcode_util.get_latest_runtime_build_cipd(
+          '14c18', constants.IOSPlatformType.IPHONEOS, '15.0')
+      mock_describe_cipd_ref.side_effect = ['', '']
+      result_tvos = xcode_util.get_latest_runtime_build_cipd(
+          '14c18', constants.IOSPlatformType.TVOS, '15.0')
+    self.assertIsNone(result_ios)
+    self.assertIsNone(result_tvos)
 
   @mock.patch('os.path.exists')
   def test_check_xcode_exists_in_apps_exists(self, mock_exists):
@@ -616,7 +655,7 @@ class MacToolchainInvocationTests(XcodeUtilTest):
     self.xcode_build_version = 'TestXcodeVersion'
     self.xcode_app_path = 'test/path/Xcode.app'
     self.runtime_cache_folder = 'test/path/Runtime'
-    self.ios_version = '14.4'
+    self.platform_version = '14.4'
 
   @mock.patch('shutil.rmtree', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
@@ -628,7 +667,7 @@ class MacToolchainInvocationTests(XcodeUtilTest):
     mock_exists.return_value = False
 
     xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
-                                self.xcode_build_version, self.ios_version)
+                                self.xcode_build_version, self.platform_version)
 
     mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
     calls = [
@@ -652,7 +691,7 @@ class MacToolchainInvocationTests(XcodeUtilTest):
                                      mock_exists, mock_rmtree):
     mock_glob.return_value = ['test/path/Runtime/iOS.simruntime']
     xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
-                                self.xcode_build_version, self.ios_version)
+                                self.xcode_build_version, self.platform_version)
 
     mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
     self.assertFalse(mock_exists.called)
@@ -674,7 +713,7 @@ class MacToolchainInvocationTests(XcodeUtilTest):
     mock_exists.return_value = True
 
     xcode_util._install_runtime(self.mac_toolchain, self.runtime_cache_folder,
-                                self.xcode_build_version, self.ios_version)
+                                self.xcode_build_version, self.platform_version)
 
     mock_glob.assert_called_with('test/path/Runtime/*.simruntime')
     calls = [
@@ -705,13 +744,27 @@ class MacToolchainInvocationTests(XcodeUtilTest):
   @mock.patch('subprocess.check_call', autospec=True)
   def test_install_runtime_dmg(self, mock_check_output):
     xcode_util._install_runtime_dmg(self.mac_toolchain,
-                                    self.runtime_cache_folder, self.ios_version,
+                                    self.runtime_cache_folder,
+                                    constants.IOSPlatformType.IPHONEOS,
+                                    self.platform_version,
                                     self.xcode_build_version)
 
     mock_check_output.assert_called_with([
         'mac_toolchain', 'install-runtime-dmg', '-runtime-version', 'ios-14-4',
-        '-xcode-version', self.xcode_build_version, '-output-dir',
-        'test/path/Runtime'
+        '-runtime-type', 'ios', '-xcode-version', self.xcode_build_version,
+        '-output-dir', 'test/path/Runtime'
+    ],
+                                         stderr=-2)
+    xcode_util._install_runtime_dmg(self.mac_toolchain,
+                                    self.runtime_cache_folder,
+                                    constants.IOSPlatformType.TVOS,
+                                    self.platform_version,
+                                    self.xcode_build_version)
+
+    mock_check_output.assert_called_with([
+        'mac_toolchain', 'install-runtime-dmg', '-runtime-version', 'tvos-14-4',
+        '-runtime-type', 'tvos', '-xcode-version', self.xcode_build_version,
+        '-output-dir', 'test/path/Runtime'
     ],
                                          stderr=-2)
 

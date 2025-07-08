@@ -1620,9 +1620,22 @@ fyi_ios_builder(
         ],
     ),
     targets = targets.bundle(
+        targets = [
+            "tvos_rel_tests",
+        ],
         additional_compile_targets = [
+            "base_unittests",
             "content_shell",
             "content_unittests",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "mac_default_arm64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_beta",
+            "xctest",
         ],
     ),
     builderless = True,
