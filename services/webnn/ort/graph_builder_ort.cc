@@ -89,6 +89,7 @@ constexpr base::cstring_view kOpTypeSplit = "Split";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
 constexpr base::cstring_view kOpTypeTile = "Tile";
 constexpr base::cstring_view kOpTypeTranspose = "Transpose";
+constexpr base::cstring_view kOpTypeWhere = "Where";
 
 // Pooling operations
 constexpr base::cstring_view kOpTypeAveragePool2d = "AveragePool";
@@ -1497,6 +1498,38 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
                         attributes);
 }
 
+void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
+  const std::string node_name = GenerateNodeName(where.label);
+  std::string condition = GetOperandNameById(where.condition_operand_id);
+  const std::string true_value =
+      GetOperandNameById(where.true_value_operand_id);
+  const std::string false_value =
+      GetOperandNameById(where.false_value_operand_id);
+  const std::string output = GetOperandNameById(where.output_operand_id);
+
+  const OperandDescriptor& condition_descriptor =
+      GetOperand(where.condition_operand_id).descriptor;
+  const OperandDescriptor& true_value_descriptor =
+      GetOperand(where.true_value_operand_id).descriptor;
+  const OperandDescriptor& false_value_descriptor =
+      GetOperand(where.false_value_operand_id).descriptor;
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  CHECK(data_type_limits.where_condition.Supports(condition_descriptor));
+  CHECK(data_type_limits.where_value.Supports(true_value_descriptor));
+  CHECK(data_type_limits.where_value.Supports(false_value_descriptor));
+
+  // ONNX where operation only supports bool condition input.
+  CHECK_EQ(condition_descriptor.data_type(), OperandDataType::kUint8);
+  condition = CreateCastNode(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+
+  std::array<const char*, 3> inputs = {condition.c_str(), true_value.c_str(),
+                                       false_value.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeWhere, node_name, inputs, outputs);
+}
+
 [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                              mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
@@ -1660,6 +1693,10 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
+      case mojom::Operation::Tag::kWhere: {
+        AddWhereOperation(*operation->get_where());
+        break;
+      }
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
@@ -1678,7 +1715,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTriangular:
-      case mojom::Operation::Tag::kWhere:
         NOTREACHED() << "[WebNN] Unsupported operation.";
     }
   }

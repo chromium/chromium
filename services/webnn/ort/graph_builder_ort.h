@@ -204,6 +204,7 @@ class GraphBuilderOrt {
   void AddSplitOperation(const mojom::Split& split);
   void AddTileOperation(const mojom::Tile& tile);
   void AddTransposeOperation(const mojom::Transpose& transpose);
+  void AddWhereOperation(const mojom::Where& where);
 
   [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                                mojom::ErrorPtr>

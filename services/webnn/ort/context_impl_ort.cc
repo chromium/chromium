@@ -55,6 +55,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kUint8, OperandDataType::kInt8,
       OperandDataType::kFloat16, OperandDataType::kFloat32};
 
+  static constexpr SupportedDataTypes kFloat16To32Uint8Int32To64 = {
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kUint8, OperandDataType::kInt32,
+      OperandDataType::kInt64};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       BatchNormalizationAxis::kChannelsFirst,
@@ -214,8 +219,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*tile_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*transpose_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*triangular_input=*/{},
-       /*where_condition=*/{},
-       /*where_value=*/{}});
+       /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
+       // TODO(crbug.com/429859156): ORT CPU EP should support int8, uint32, and
+       // uint64 for where operation.
+       /*where_value=*/
+       {kFloat16To32Uint8Int32To64, kMaxRank}});
 }
 
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
