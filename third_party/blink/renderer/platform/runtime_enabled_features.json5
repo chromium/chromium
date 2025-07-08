@@ -1106,11 +1106,6 @@
       status: "stable",
     },
     {
-      // Enables alignment properties for block and inline out-of-flow elements.
-      name: "CSSAlignBlockAndInlineOutOfFlows",
-      status: "stable",
-    },
-    {
       // Allows using counter() and counters() in alt text (after / in content property).
       name: "CSSAltCounter",
       status: "experimental",
