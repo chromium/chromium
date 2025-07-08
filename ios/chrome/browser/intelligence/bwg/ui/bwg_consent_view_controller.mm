@@ -213,7 +213,7 @@ const char kFootnoteLinkURLManagedAccount[] =
 
     NSDictionary* linkAttributes = @{
       NSLinkAttributeName : linkAction,
-      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
       NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
       NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleFootnote,
                                                       UIFontWeightSemibold)
@@ -370,7 +370,7 @@ const char kFootnoteLinkURLManagedAccount[] =
   bodyLabel.text = bodyText;
   bodyLabel.font = PreferredFontForTextStyle(UIFontTextStyleBody);
   bodyLabel.numberOfLines = 0;
-  bodyLabel.textColor = [UIColor colorNamed:kGrey700Color];
+  bodyLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [innerStackView addArrangedSubview:bodyLabel];
 
   return boxView;
@@ -386,7 +386,7 @@ const char kFootnoteLinkURLManagedAccount[] =
 
   footNoteTextView.textContainerInset = UIEdgeInsetsZero;
   footNoteTextView.linkTextAttributes =
-      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
   footNoteTextView.attributedText = [self createFootnoteAttributedText];
 
   return footNoteTextView;
