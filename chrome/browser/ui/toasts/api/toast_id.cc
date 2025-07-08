@@ -42,6 +42,8 @@ std::string GetToastName(ToastId toast_id) {
       return "VideoFrameCopied";
     case ToastId::kClosePinnedTab:
       return "ClosePinnedTab";
+    case ToastId::kGeminiWorkingOnTask:
+      return "GeminiWorkingOnTask";
   }
 
   NOTREACHED();

@@ -172,6 +172,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "save_page.icon",
     "saved_tab_group_bar_everything.icon",
     "science.icon",
+    "screensaver_auto.icon",
     "search_menu.icon",
     "security.icon",
     "settings_menu.icon",

@@ -36,7 +36,8 @@ enum class ToastId {
   kTabGroupSyncRemovedFromGroup = 14,
   kVideoFrameCopied = 15,
   kClosePinnedTab = 16,
-  kMaxValue = kClosePinnedTab
+  kGeminiWorkingOnTask = 17,
+  kMaxValue = kGeminiWorkingOnTask
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

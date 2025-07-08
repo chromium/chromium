@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -257,6 +258,15 @@ void ToastService::RegisterToasts(
         ToastId::kClosePinnedTab,
         ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
             .SetToastAsActionable()
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiStateManager)) {
+    toast_registry_->RegisterToast(
+        ToastId::kGeminiWorkingOnTask,
+        ToastSpecification::Builder(kScreensaverAutoIcon,
+                                    IDS_GEMINI_WORKING_ON_TASK_BODY)
+            .AddCloseButton()
             .Build());
   }
 
