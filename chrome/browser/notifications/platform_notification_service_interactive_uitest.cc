@@ -1064,8 +1064,16 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 }
 
+// TODO(crbug.com/430163317): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseBrowserDuringNotificationCloseEvent \
+  DISABLED_CloseBrowserDuringNotificationCloseEvent
+#else
+#define MAYBE_CloseBrowserDuringNotificationCloseEvent \
+  CloseBrowserDuringNotificationCloseEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
-                       CloseBrowserDuringNotificationCloseEvent) {
+                       MAYBE_CloseBrowserDuringNotificationCloseEvent) {
   RequestAndAcceptPermission();
 
   // Show a notification with a close event that will take 3 seconds to
