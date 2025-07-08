@@ -45,6 +45,11 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
+  if (paint_info.IsPrivacyPreserving() &&
+      !layout_svg_image_.ImageResource()->IsAccessAllowed()) {
+    return;
+  }
+
   if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.StyleRef())) {
     if (!paint_info.GetCullRect().IntersectsTransformed(
             layout_svg_image_.LocalSVGTransform(),

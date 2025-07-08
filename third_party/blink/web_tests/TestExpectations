@@ -266,20 +266,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 #  view-transition
 # Some additional bugs that are caused by painting problems are also within this section.
 
-
-# --- canvasRenderingContext.placeElement() implementation: issues.chromium.org/issues/349835587
-
-crbug.com/349835587 wpt_internal/html/canvas/placeElement/placeElement-draw-atomically.html [ Failure ]
-crbug.com/379143298 wpt_internal/html/canvas/placeElement/placeElement-hit-testing.html [ Failure ]
-crbug.com/379143306 wpt_internal/html/canvas/placeElement/placeElement-backface-visibility.html [ Failure ]
-# Transforms for place element
-crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-3d-transform.html [ Failure ]
-crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-css-transform-animation.html [ Failure ]
-crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-perspective-transform.html [ Failure ]
-crbug.com/380039243 crbug.com/382294240 wpt_internal/html/canvas/placeElement/placeElement-draw-twice.html [ Failure ]
-
-# --- END canvasRenderingContext.placeElement() implementation
-
 # --- Skia roll test suppressions
 
 # --- END Skia roll test suppresions

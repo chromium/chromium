@@ -750,7 +750,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
     double y,
     std::optional<double> dwidth,
     std::optional<double> dheight,
-    Canvas2DDrawElementOption*,
+    Canvas2DDrawElementOption* options,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 
@@ -785,7 +785,11 @@ void CanvasRenderingContext2D::DrawElementInternal(
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
+  PaintFlags paint_flags = PaintFlag::kPlacedElement;
+  if (options && options->allowReadback()) {
+    paint_flags |= PaintFlag::kPrivacyPreserving;
+  }
+  paint_layer_painter.Paint(builder.Context(), paint_flags);
 
   PropertyTreeState property_tree_state = layer->GetLayoutObject()
                                               .FirstFragment()

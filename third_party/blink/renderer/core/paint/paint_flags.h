@@ -37,6 +37,10 @@ enum : unsigned {
 
   // Used to paint CanvasRenderingContext2D.placeElement()
   kPlacedElement = 1 << 6,
+
+  // Used to suppress painting of PII and other sensitive content, allowing
+  // the result to be used in WebGL, WebGPU and non-tainting 2D Canvas.
+  kPrivacyPreserving = 1 << 7,
 };
 }  // namespace PaintFlag
 

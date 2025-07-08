@@ -181,6 +181,10 @@ void LayoutImageResource::UseBrokenImage() {
   SetImageResource(broken_image);
 }
 
+bool LayoutImageResource::IsAccessAllowed() const {
+  return !cached_image_ || cached_image_->IsAccessAllowed();
+}
+
 scoped_refptr<Image> LayoutImageResource::GetImage(
     const gfx::Size& container_size) const {
   return GetImage(gfx::SizeF(container_size));
