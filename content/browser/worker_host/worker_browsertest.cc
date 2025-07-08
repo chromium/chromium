@@ -50,7 +50,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
@@ -612,21 +612,18 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, WebSocketSharedWorker) {
     return;
 
   // Launch WebSocket server.
-  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
-                                   net::GetWebSocketTestDataDirectory());
+  net::EmbeddedTestServer ws_server(net::EmbeddedTestServer::TYPE_HTTP);
+  net::test_server::InstallDefaultWebSocketHandlers(&ws_server);
+  // Needed to add the file handler.
+  ws_server.AddDefaultHandlers(GetTestDataFilePath());
   ASSERT_TRUE(ws_server.Start());
-
-  // Generate test URL.
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr("http");
-  GURL url = ws_server.GetURL("websocket_shared_worker.html")
-                 .ReplaceComponents(replacements);
 
   // Run test.
   Shell* window = shell();
   const std::u16string expected_title = u"OK";
   TitleWatcher title_watcher(window->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(window, url));
+  EXPECT_TRUE(NavigateToURL(
+      window, ws_server.GetURL("/workers/websocket_shared_worker.html")));
   std::u16string final_title = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(expected_title, final_title);
 }

@@ -8679,6 +8679,8 @@ data/workers/simple.html
 data/workers/simple_shared_worker.html
 data/workers/single_shared_worker.html
 data/workers/single_worker.html
+data/workers/websocket_shared_worker.html
+data/workers/websocket_worker_simple.js
 data/workers/worker.js
 data/workers/worker_auth.html
 data/workers/worker_close.html
