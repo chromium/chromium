@@ -164,9 +164,10 @@ class PredictionBasedPermissionUiSelector
 
   // Part of the AIv3 model execution chain; provided as a curryed callback to
   // be submitted to the logic that fetches a snapshot that serves as the input
-  // for the AIv3 model. The first two parameters are set by the callee, to be
-  // used by the server side model later.
+  // for the AIv3 model. The first three parameters are set by the callee, to
+  // be used by the server side model later and for logging.
   void OnSnapshotTakenForOnDeviceModel(
+      base::TimeTicks snapshot_inquire_start_time,
       permissions::PredictionRequestFeatures features,
       PredictionRequestMetadata request_metadata,
       const SkBitmap& screenshot);

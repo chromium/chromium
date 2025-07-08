@@ -107,8 +107,13 @@ bool ShouldPredictionTriggerQuietUi(
   return likelihood == VeryUnlikely;
 }
 
-void LogSnapshotTakenSuccessfullyForAiv3(bool success) {
+void LogSnapshotTakenSuccessfullyForAiv3(
+    bool success,
+    base::TimeTicks snapshot_inquire_start_time) {
   base::UmaHistogramBoolean("Permissions.AIv3.SnapshotTaken", success);
+  base::UmaHistogramMediumTimes(
+      "Permissions.AIv3.SnapshotTakenDuration",
+      base::TimeTicks::Now() - snapshot_inquire_start_time);
 }
 
 void LogPredictionModelHandlerProviderForAiv3(bool exists) {
@@ -226,26 +231,29 @@ void PredictionBasedPermissionUiSelector::
 
   if (snapshot_for_testing_.has_value()) {
     PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
+        /*snapshot_inquire_start_time=*/base::TimeTicks::Now(),
         std::move(features), std::move(request_metadata),
         snapshot_for_testing_.value());
     return;
   }
 
-  // TODO(crbug.com/382447738) Add time measurement metrics
   host_view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(
           &PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(features),
-          std::move(request_metadata)));
+          weak_ptr_factory_.GetWeakPtr(),
+          /*snapshot_inquire_start_time=*/base::TimeTicks::Now(),
+          std::move(features), std::move(request_metadata)));
 }
 
 void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
+    base::TimeTicks snapshot_inquire_start_time,
     PredictionRequestFeatures features,
     PredictionRequestMetadata request_metadata,
     const SkBitmap& snapshot) {
   VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
-  LogSnapshotTakenSuccessfullyForAiv3(/*success=*/!snapshot.drawsNothing());
+  LogSnapshotTakenSuccessfullyForAiv3(/*success=*/!snapshot.drawsNothing(),
+                                      snapshot_inquire_start_time);
   if (snapshot.drawsNothing()) {
     VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
   } else {
@@ -639,19 +647,29 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   const bool is_msbb_enabled = profile_->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 
+  VLOG(1) << "[CPSS] GetPredictionTypeToUse MSBB: " << is_msbb_enabled;
+
   const bool is_notification_cpss_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kEnableNotificationCPSS);
+
+  VLOG(1) << "[CPSS] GetPredictionTypeToUse NotificationCPSS: "
+          << is_notification_cpss_enabled;
 
   const bool is_geolocation_cpss_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kEnableGeolocationCPSS);
 
+  VLOG(1) << "[CPSS] GetPredictionTypeToUse GeolocationCPSS: "
+          << is_geolocation_cpss_enabled;
+
   if (request_type == permissions::RequestType::kNotifications &&
       !is_notification_cpss_enabled) {
+    VLOG(1) << "[CPSS] GetPredictionTypeToUse NoCpssModel";
     return PredictionSource::kNoCpssModel;
   }
 
   if (request_type == permissions::RequestType::kGeolocation &&
       !is_geolocation_cpss_enabled) {
+    VLOG(1) << "[CPSS] GetPredictionTypeToUse NoCpssModel";
     return PredictionSource::kNoCpssModel;
   }
 
@@ -669,12 +687,15 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     // Aiv3 takes priority over Aiv1 if both are enabled.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+      VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv3";
       return PredictionSource::kOnDeviceAiv3AndServerSideModel;
     }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+      VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv1";
       return PredictionSource::kOnDeviceAiv1AndServerSideModel;
     }
+    VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv3";
     return PredictionSource::kServerSideCpssV3Model;
   }
 
@@ -688,10 +709,12 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
   if (use_ondevice_tflite) {
+    VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv1";
     return PredictionSource::kOnDeviceCpssV1Model;
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
+  VLOG(1) << "[CPSS] GetPredictionTypeToUse NoCpssModel";
   return PredictionSource::kNoCpssModel;
 }
 

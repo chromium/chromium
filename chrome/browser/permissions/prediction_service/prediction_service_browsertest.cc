@@ -103,6 +103,8 @@ constexpr std::string_view kGeolocationModelExecutionSuccessHistogram =
     "OptimizationGuide.ModelExecutor.ExecutionStatus.GeolocationPermissionsV3";
 constexpr std::string_view kSnapshotTakenHistogram =
     "Permissions.AIv3.SnapshotTaken";
+constexpr std::string_view kSnapshotTakenDurationHistogram =
+    "Permissions.AIv3.SnapshotTakenDuration";
 constexpr char kAIv3InquiryDurationHistogram[] =
     "Permissions.AIv3.InquiryDuration";
 constexpr char kCpssV1InquiryDurationHistogram[] =
@@ -849,6 +851,8 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
   histogram_tester().ExpectBucketCount(kSnapshotTakenHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
+  histogram_tester().ExpectTotalCount(kSnapshotTakenDurationHistogram,
+                                      /*expected_count=*/1);
   // We should receive timing information for both, the on-device model
   // and the server-side model.
   histogram_tester().ExpectTotalCount(kCpssV3InquiryDurationHistogram,
