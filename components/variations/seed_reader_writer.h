@@ -52,43 +52,43 @@ struct COMPONENT_EXPORT(VARIATIONS) StoredSeed {
 
   // The storage format of the seed. Seed-file-based seeds are compressed while
   // local-state-based seeds are compressed and base64 encoded.
-  StorageFormat storage_format;
+  const StorageFormat storage_format;
   // The seed data.
-  std::string_view data;
+  const std::string_view data;
   // base64-encoded signature of the seed.
-  std::string_view signature;
+  const std::string_view signature;
   // The milestone with which the seed was fetched
-  int milestone = 0;
+  const int milestone = 0;
   // Date used for study date checks. Is a server-provided timestamp.
   // On some platforms, on the first run, it's set to a client-provided
   // timestamp until the server-provided timestamp is fetched. (See
   // ChromeFeatureListCreator::SetupInitialPrefs())
-  base::Time seed_date;
+  const base::Time seed_date;
   // The time at which the seed was fetched. This is always a client-side
   // timestamp.
-  base::Time client_fetch_time;
+  const base::Time client_fetch_time;
   // Latest country code fetched from the server. Used for evaluating session
   // consistency studies.
-  std::string session_country_code;
+  const std::string session_country_code;
   // Country code used for evaluating permanent consistency studies.
-  std::string permanent_country_code;
+  const std::string permanent_country_code;
   // Chrome version at the time `permanent_country_code` was updated.
-  std::string permanent_country_version;
+  const std::string permanent_country_version;
 };
 
 // Groups the data from a seed and other seed-related info that is validated
 // and ready to be stored in a seed file or local state. This struct is passed
 // by value, so it must be copyable and lightweight.
 struct ValidatedSeedInfo {
-  std::string_view compressed_seed_data;
-  std::string_view base64_seed_data;
-  std::string_view signature;
-  int milestone = 0;
-  base::Time seed_date;
-  base::Time client_fetch_time;
-  std::string_view session_country_code;
-  std::string_view permanent_country_code;
-  std::string_view permanent_country_version;
+  const std::string_view compressed_seed_data;
+  const std::string_view base64_seed_data;
+  const std::string_view signature;
+  const int milestone = 0;
+  const base::Time seed_date;
+  const base::Time client_fetch_time;
+  const std::string_view session_country_code;
+  const std::string_view permanent_country_code;
+  const std::string_view permanent_country_version;
 };
 
 struct SeedFieldsPrefs {
