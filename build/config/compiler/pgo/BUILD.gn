@@ -100,7 +100,14 @@ config("pgo_optimization_flags") {
     } else if (_pgo_target == "android-arm32") {
       inputs = [ "//chrome/build/android-arm32.pgo.txt" ]
     } else if (_pgo_target == "android-arm64") {
-      inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
+      # By default on android for arm64 we use the PGO profile that is
+      # generated at the same commit as the orderfile.
+      if (pgo_data_path == "") {
+        pgo_data_path =
+            "//chrome/android/orderfiles/arm64/pgo_profile.arm64.profdata"
+      } else {
+        inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
+      }
     } else if (_pgo_target == "android-desktop-x64") {
       inputs = [ "//chrome/build/android-desktop-x64.pgo.txt" ]
     }
