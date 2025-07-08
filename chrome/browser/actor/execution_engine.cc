@@ -193,28 +193,20 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
 
 ExecutionEngine::ExecutionEngine(
     Profile* profile,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-    tabs::TabInterface* tab)
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
-      tab_scoped_actions_deprecated_(true),
-      tab_(tab),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
-
-  CHECK(tab_);
-  tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
-      &ExecutionEngine::OnTabWillDetach, base::Unretained(this)));
 }
 
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
     Profile* profile,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-    tabs::TabInterface* tab) {
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
   return base::WrapUnique<ExecutionEngine>(
-      new ExecutionEngine(profile, std::move(ui_event_dispatcher), tab));
+      new ExecutionEngine(profile, std::move(ui_event_dispatcher)));
 }
 
 ExecutionEngine::~ExecutionEngine() {
@@ -439,7 +431,14 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 
   auto task_id = task_->id();
   tabs::TabInterface* tab = GetTab(GetNextAction());
-  CHECK(tab);
+
+  if (!tab) {
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
+                  "The tab is no longer present");
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "The tab is no longer present."));
+    return;
+  }
 
   if (!evaluated_origin.IsSameOriginWith(tab->GetContents()
                                              ->GetPrimaryMainFrame()

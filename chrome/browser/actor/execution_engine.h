@@ -84,8 +84,7 @@ class ExecutionEngine {
 
   static std::unique_ptr<ExecutionEngine> CreateForTesting(
       Profile* profile,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-      tabs::TabInterface* tab);
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   // This cannot be in the constructor as we first construct the
   // ExecutionEngine, then the ActorTask.
@@ -121,8 +120,7 @@ class ExecutionEngine {
   class NewTabWebContentsObserver;
   // Used by tests only.
   ExecutionEngine(Profile* profile,
-                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-                  tabs::TabInterface* tab);
+                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   void SetState(State state);
 

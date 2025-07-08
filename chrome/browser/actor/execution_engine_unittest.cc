@@ -22,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,7 +124,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     mock_ui_event_dispatcher_ =
         static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
     auto execution_engine = ExecutionEngine::CreateForTesting(
-        profile(), std::move(ui_event_dispatcher), GetTab());
+        profile(), std::move(ui_event_dispatcher));
     task_ = std::make_unique<ActorTask>(std::move(execution_engine));
 
     ON_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _, _))
@@ -144,6 +145,15 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ClearTabInterface();
 
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  base::OnceCallback<BrowserAction()> MakeClickCallback(int content_node_id) {
+    return base::BindLambdaForTesting([this, content_node_id]() {
+      BrowserAction action = MakeClick(*main_rfh(), content_node_id);
+      action.mutable_actions()->at(0).mutable_click()->set_tab_id(
+          GetTab()->GetHandle().raw_value());
+      return action;
+    });
   }
 
  protected:
@@ -212,9 +222,7 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
                          Property(&ToolRequest::JournalEvent, Eq("Click")), _))
       .Times(1);
   EXPECT_TRUE(
-      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
-            return MakeClick(*main_rfh(), kFakeContentNodeId);
-          })));
+      Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kOk, 1);
 }
@@ -225,9 +233,7 @@ TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(0);
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
-                   base::BindLambdaForTesting([this]() {
-                     return MakeClick(*main_rfh(), kFakeContentNodeId);
-                   })));
+                   MakeClickCallback(kFakeContentNodeId)));
 }
 
 TEST_F(ExecutionEngineTest, UiOnPreFirstActFails) {
@@ -238,9 +244,7 @@ TEST_F(ExecutionEngineTest, UiOnPreFirstActFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(0);
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
   EXPECT_FALSE(
-      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
-            return MakeClick(*main_rfh(), kFakeContentNodeId);
-          })));
+      Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kError, 1);
 }
@@ -253,9 +257,7 @@ TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
           base::BindRepeating(MakeErrorResult))));
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
   EXPECT_FALSE(
-      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
-            return MakeClick(*main_rfh(), kFakeContentNodeId);
-          })));
+      Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kError, 1);
 }
@@ -268,9 +270,7 @@ TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
       .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeErrorResult))));
   EXPECT_FALSE(
-      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
-            return MakeClick(*main_rfh(), kFakeContentNodeId);
-          })));
+      Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kError, 1);
 }
@@ -280,15 +280,17 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto execution_engine =
-      std::make_unique<ExecutionEngine>(profile(), GetTab());
+  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
   ActorTask task(std::move(execution_engine));
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  task.GetExecutionEngine()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                                 result.GetCallback());
+  BrowserAction action = MakeClick(*main_rfh(), kFakeContentNodeId);
+  action.mutable_actions()->at(0).mutable_click()->set_tab_id(
+      GetTab()->GetHandle().raw_value());
+
+  task.GetExecutionEngine()->Act(action, result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -306,11 +308,12 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto execution_engine =
-      std::make_unique<ExecutionEngine>(profile(), GetTab());
+  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
   ActorTask task(std::move(execution_engine));
-  task.GetExecutionEngine()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                                 result.GetCallback());
+  BrowserAction action = MakeClick(*main_rfh(), kFakeContentNodeId);
+  action.mutable_actions()->at(0).mutable_click()->set_tab_id(
+      GetTab()->GetHandle().raw_value());
+  task.GetExecutionEngine()->Act(action, result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

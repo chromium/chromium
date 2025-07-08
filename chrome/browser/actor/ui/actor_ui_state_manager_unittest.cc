@@ -70,7 +70,7 @@ class ActorUiStateManagerTest : public testing::Test,
 
     // Set up fake actor task.
     auto execution_engine = ExecutionEngine::CreateForTesting(
-        profile(), std::move(ui_event_dispatcher), &mock_tab_interface_);
+        profile(), std::move(ui_event_dispatcher));
     task_id_ = ActorKeyedService::Get(profile())->AddActiveTask(
         std::make_unique<ActorTask>(std::move(execution_engine)));
   }
