@@ -122,7 +122,7 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
 }
 
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
-    : media_log_(media_log), timestamp_map_(128) {
+    : media_log_(media_log) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -356,14 +356,10 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
     auto buffer_span = base::span(buffer);
     packet->data = const_cast<uint8_t*>(buffer_span.data());
     packet->size = buffer_span.size();
+    packet->pts = ConvertToTimeBase(codec_context_->pkt_timebase, buffer.timestamp());
 
     DCHECK(packet->data);
     DCHECK_GT(packet->size, 0);
-
-    const int64_t timestamp = buffer.timestamp().InMicroseconds();
-    const TimestampId timestamp_id = timestamp_id_generator_.GenerateNextId();
-    timestamp_map_.Put(std::make_pair(timestamp_id, timestamp));
-    packet->opaque = reinterpret_cast<void*>(timestamp_id.GetUnsafeValue());
   }
   FFmpegDecodingLoop::DecodeStatus decode_status = decoding_loop_->DecodePacket(
       packet, base::BindRepeating(&FFmpegVideoDecoder::OnNewFrame,
@@ -423,12 +419,7 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   }
   gfx::Size natural_size = aspect_ratio.GetNaturalSize(visible_rect);
 
-  const auto ts_id = TimestampId(reinterpret_cast<size_t>(frame->opaque));
-  const auto ts_lookup = timestamp_map_.Get(ts_id);
-  if (ts_lookup == timestamp_map_.end()) {
-    return false;
-  }
-  const auto pts = base::Microseconds(std::get<1>(*ts_lookup));
+  const auto pts = ConvertFromTimeBase(codec_context_->pkt_timebase, frame->pts);
   auto video_frame = VideoFrame::WrapExternalDataWithLayout(
       opaque->layout, visible_rect, natural_size, opaque->data, pts);
   if (!video_frame) {
@@ -500,6 +491,10 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   if (decode_nalus_) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
   }
+
+  // Timebase must be at most 1us because of web-facing APIs with
+  // microsecond-level precision such as VideoFrame.timestamp.
+  codec_context_->pkt_timebase = AVRational{1, 1000000};
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, nullptr) < 0) {
