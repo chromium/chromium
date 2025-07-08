@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import posixpath
 import sys
 import json
 import itertools
@@ -65,7 +66,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
-                            cls.GenerateAudioTests(), cls.BitrateTests())
+                            cls.GenerateAudioTests(), cls.BitrateTests(),
+                            cls.GenerateD3D12EncodingTests())
     yield from tests
 
   @classmethod
@@ -336,14 +338,132 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'source_type': source_type,
           }],
       )
+
+  @classmethod
+  def GenerateD3D12EncodingTests(cls) -> ct.TestGenerator:
+    source_type = 'offscreen'
+    acc = 'prefer-hardware'
+
+    for source_type, codec in itertools.product(frame_sources, video_codecs):
+      yield (
+          f'WebCodecs_D3D12_EncodeDecode_{source_type}_{codec}',
+          'encode-decode.html',
+          [{
+              'source_type': source_type,
+              'codec': codec,
+              'acceleration': acc,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for source_type, codec in itertools.product(frame_sources, video_codecs):
+      yield (
+          f'WebCodecs_D3D12_Encode_{source_type}_{codec}',
+          'encode.html',
+          [{
+              'source_type': source_type,
+              'codec': codec,
+              'acceleration': acc,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for codec, bitrate_mode, latency_mode in itertools.product(
+        video_codecs, ['constant', 'variable'], ['realtime', 'quality']):
+      source_type = 'offscreen'
+      content_hint = 'motion'
+      yield (
+          f'WebCodecs_D3D12_EncodingModes_'
+          f'{source_type}_{codec}_{bitrate_mode}_{latency_mode}',
+          'encoding-modes.html',
+          [{
+              'source_type': source_type,
+              'codec': codec,
+              'acceleration': acc,
+              'bitrate_mode': bitrate_mode,
+              'latency_mode': latency_mode,
+              'content_hint': content_hint,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for codec, content_hint in itertools.product(video_codecs,
+                                                 ['detail', 'text', 'motion']):
+      source_type = 'offscreen'
+      bitrate_mode = 'constant'
+      latency_mode = 'realtime'
+      yield (
+          f'WebCodecs_D3D12_ContentHint_{codec}_{content_hint}',
+          'encoding-modes.html',
+          [{
+              'source_type': source_type,
+              'codec': codec,
+              'acceleration': acc,
+              'bitrate_mode': bitrate_mode,
+              'latency_mode': latency_mode,
+              'content_hint': content_hint,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for codec, layers in itertools.product(video_codecs, [2, 3]):
+      yield (
+          f'WebCodecs_D3D12_SVC_{codec}_layers_{layers}',
+          'svc.html',
+          [{
+              'codec': codec,
+              'acceleration': acc,
+              'layers': layers,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for codec in video_codecs:
+      yield (
+          f'WebCodecs_D3D12_EncodeColorSpace_{codec}',
+          'encode-color-space.html',
+          [{
+              'codec': codec,
+              'acceleration': acc,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+      yield (
+          f'WebCodecs_D3D12_MixedSourceEncoding_{codec}',
+          'mixed-source-encoding.html',
+          [{
+              'codec': codec,
+              'acceleration': acc,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
+
+    for codec, source_type in itertools.product(video_codecs, frame_sources):
+      yield (
+          f'WebCodecs_D3D12_FrameSizeChange_{codec}_{source_type}',
+          'frame-size-change.html',
+          [{
+              'codec': codec,
+              'source_type': source_type,
+              'runs_on_d3d12_encoder': True,
+          }],
+      )
 # pylint: enable=too-many-branches
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
-    url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
-    tab = self.tab
+    url = self.UrlOfStaticFilePath(posixpath.join(html_path, test_path))
     arg_obj = args[0]
     os_name = self.platform.GetOSName()
+    enable_d3d12_encoder = arg_obj.get('runs_on_d3d12_encoder', False)
+    if enable_d3d12_encoder and not host_information.IsWindows():
+      self.skipTest('Skipping D3D12 based test.')
+      return
+
+    args = self.GetBrowserArguments(enable_d3d12_encoder)
+    self.RestartBrowserIfNecessaryWithArgs(args)
+
     arg_obj['validate_camera_frames'] = self.CameraCanShowFourColors(os_name)
+    tab = self.tab
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
         'document.readyState == "complete"')
@@ -359,8 +479,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return os_name not in ('android', 'chromeos')
 
   @classmethod
-  def SetUpProcess(cls) -> None:
-    super(WebCodecsIntegrationTest, cls).SetUpProcess()
+  def GetBrowserArguments(cls, enable_d3d12_encoder: bool) -> list[str]:
     args = [
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
@@ -368,12 +487,22 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
-    # If we don't call CustomizeBrowserArgs cls.platform is None
-    cls.CustomizeBrowserArgs(args)
+    if enable_d3d12_encoder:
+      args.append('--enable-features=D3D12VideoEncodeAccelerator')
 
     if cls.CameraCanShowFourColors(cls.platform.GetOSName()):
       args.append('--use-file-for-fake-video-capture=' + four_colors_img_path)
-      cls.CustomizeBrowserArgs(args)
+    return args
+
+  @classmethod
+  def SetUpProcess(cls) -> None:
+    super(WebCodecsIntegrationTest, cls).SetUpProcess()
+
+    args = []
+    # If we don't call CustomizeBrowserArgs cls.platform is None
+    cls.CustomizeBrowserArgs(args)
+    args = cls.GetBrowserArguments(False)
+    cls.CustomizeBrowserArgs(args)
 
     cls.StartBrowser()
     cls.SetStaticServerDirs([html_path, data_path])

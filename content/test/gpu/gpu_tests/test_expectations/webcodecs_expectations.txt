@@ -106,6 +106,12 @@
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# D3d12 Video Encoder doesn't work on Win10
+crbug.com/40275246 [ win10 ] WebCodecs_D3D12_* [ Skip ]
+
+# AMD has drivers bugs that we haven't been able to get fixed yet
+crbug.com/40275246 [ win11 amd ] WebCodecs_D3D12_* [ Skip ]
+
 # Suspected of causing flakes in other tests.
 crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
@@ -116,6 +122,35 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_detail [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeColorSpace_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_motion [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_text [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_arraybuffer_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_camera_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_capture_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_hw_decoder_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_offscreen_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_Encode_sw_decoder_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_avc1.42001E [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_camera_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_capture_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_hw_decoder_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_avc1.42001E [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_sw_decoder_av01.0.04M.08 [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_quality [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_realtime [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_quality [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_realtime [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_arraybuffer [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_camera [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_capture [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_FrameSizeChange_av01.0.04M.08_sw_decoder [ Failure ]
+crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_MixedSourceEncoding_av01.0.04M.08 [ Failure ]
+
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
 crbug.com/1368785 [ android-pixel-6 arm renderer-skia-gl graphite-enabled target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
