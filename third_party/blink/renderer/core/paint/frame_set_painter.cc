@@ -52,12 +52,8 @@ void FrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
     const PhysicalFragment& child_fragment = *link;
     if (child_fragment.HasSelfPaintingLayer())
       continue;
-    if (To<PhysicalBoxFragment>(child_fragment).CanTraverse()) {
-      BoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
-          .Paint(paint_info);
-    } else {
-      child_fragment.GetLayoutObject()->Paint(paint_info);
-    }
+    BoxFragmentPainter::PaintFragment(To<PhysicalBoxFragment>(child_fragment),
+                                      paint_info);
   }
 }
 

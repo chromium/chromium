@@ -368,39 +368,6 @@ PaintInfo FloatPaintInfo(const PaintInfo& paint_info) {
   return float_paint_info;
 }
 
-// Helper function for painting a child fragment, when there's any likelihood
-// that we need legacy fallback. If it's guaranteed that legacy fallback won't
-// be necessary, on the other hand, there's no need to call this function. In
-// such cases, call sites may just as well invoke BoxFragmentPainter::Paint()
-// on their own.
-void PaintFragment(const PhysicalBoxFragment& fragment,
-                   const PaintInfo& paint_info) {
-  if (fragment.CanTraverse()) {
-    BoxFragmentPainter(fragment).Paint(paint_info);
-    return;
-  }
-
-  if (fragment.IsHiddenForPaint() ||
-      (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))) {
-    return;
-  }
-
-  // We are about to enter legacy paint code. This means that the node is
-  // monolithic. However, that doesn't necessarily mean that it only has one
-  // fragment. Repeated table headers / footers may cause multiple fragments,
-  // for instance. Set the FragmentData, to use the right paint offset.
-  PaintInfo modified_paint_info(paint_info);
-  modified_paint_info.SetFragmentDataOverride(fragment.GetFragmentData());
-
-  auto* layout_object = fragment.GetLayoutObject();
-  DCHECK(layout_object);
-  if (fragment.IsPaintedAtomically() && layout_object->IsLayoutReplaced()) {
-    ObjectPainter(*layout_object).PaintAllPhasesAtomically(modified_paint_info);
-  } else {
-    layout_object->Paint(modified_paint_info);
-  }
-}
-
 bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
                                             PaintPhase paint_phase) {
   if (!fragment.GetLayoutObject()) {
@@ -465,6 +432,34 @@ InlinePaintContext& BoxFragmentPainter::EnsureInlineContext() {
   if (!inline_context_)
     inline_context_ = &inline_context_storage_.emplace();
   return *inline_context_;
+}
+
+void BoxFragmentPainter::PaintFragment(const PhysicalBoxFragment& fragment,
+                                       const PaintInfo& paint_info) {
+  if (fragment.CanTraverse()) {
+    BoxFragmentPainter(fragment).Paint(paint_info);
+    return;
+  }
+
+  if (fragment.IsHiddenForPaint() ||
+      (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))) {
+    return;
+  }
+
+  // We are about to enter legacy paint code. This means that the node is
+  // monolithic. However, that doesn't necessarily mean that it only has one
+  // fragment. Repeated table headers / footers may cause multiple fragments,
+  // for instance. Set the FragmentData, to use the right paint offset.
+  PaintInfo modified_paint_info(paint_info);
+  modified_paint_info.SetFragmentDataOverride(fragment.GetFragmentData());
+
+  auto* layout_object = fragment.GetLayoutObject();
+  DCHECK(layout_object);
+  if (fragment.IsPaintedAtomically() && layout_object->IsLayoutReplaced()) {
+    ObjectPainter(*layout_object).PaintAllPhasesAtomically(modified_paint_info);
+  } else {
+    layout_object->Paint(modified_paint_info);
+  }
 }
 
 void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {

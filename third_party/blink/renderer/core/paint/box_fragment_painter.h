@@ -45,6 +45,11 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
                      const PhysicalBoxFragment& fragment,
                      InlinePaintContext* inline_context);
 
+  // Paint a fragment. This normally just creates a BoxFragmentPainter and calls
+  // Paint(), but certain object types require custom painters (such as replaced
+  // content).
+  static void PaintFragment(const PhysicalBoxFragment&, const PaintInfo&);
+
   void Paint(const PaintInfo&);
   // Routes single PaintPhase to actual painters, and traverses children.
   void PaintObject(const PaintInfo&,
