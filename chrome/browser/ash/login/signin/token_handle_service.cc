@@ -22,6 +22,12 @@
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_constants.h"
 
+// Enable VLOG level 1.
+// TODO(b/387248794): Remove after stabilizing, along with associated log
+// statements.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 
@@ -61,6 +67,10 @@ void TokenHandleService::StartObserving() {
 
 void TokenHandleService::MaybeFetchForExistingUser(
     const AccountId& account_id) {
+  VLOG(1) << "TokenHandleService::MaybeFetchForExistingUser";
+  if (account_id.GetAccountType() != AccountType::GOOGLE) {
+    return;
+  }
   FetchAccessToken(account_id);
 }
 
@@ -83,6 +93,7 @@ void TokenHandleService::OnRefreshTokenUpdatedForAccount(
 }
 
 void TokenHandleService::FetchAccessToken(const AccountId& account_id) {
+  VLOG(1) << "TokenHandleService::FetchAccessToken";
   if (signin::IdentityManager* const identity_manager =
           IdentityManagerFactory::GetForProfile(profile_);
       identity_manager) {
@@ -103,6 +114,7 @@ void TokenHandleService::OnAccessTokenFetchComplete(
     const AccountId& account_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
+  VLOG(1) << "TokenHandleService::OnAccessTokenFetchComplete";
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -116,6 +128,7 @@ void TokenHandleService::OnAccessTokenFetchComplete(
 
 void TokenHandleService::GetRefreshTokenHash(const AccountId& account_id,
                                              const std::string& access_token) {
+  VLOG(1) << "TokenHandleService::GetRefreshTokenHash";
   GetAccountManager(profile_)->GetTokenHash(
       account_manager::AccountKey::FromGaiaId(account_id.GetGaiaId()),
       base::BindOnce(&TokenHandleService::MaybeFetchTokenHandle,
@@ -126,6 +139,7 @@ void TokenHandleService::MaybeFetchTokenHandle(
     const AccountId account_id,
     const std::string& access_token,
     const std::string& refresh_token_hash) {
+  VLOG(1) << "TokenHandleService::OnGetRefreshTokenHash";
   token_handle_store_->MaybeFetchTokenHandle(profile_->GetURLLoaderFactory(),
                                              account_id, access_token,
                                              refresh_token_hash);

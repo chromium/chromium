@@ -62,6 +62,7 @@ class LegacyTokenHandleFetcher;
 class EolNotification;
 class InputEventsBlocker;
 class U2FNotification;
+class TokenHandleService;
 
 namespace test {
 class UserSessionManagerTestApi;
@@ -517,7 +518,15 @@ class UserSessionManager
   HelpAppNotificationController* GetHelpAppNotificationController(
       Profile* profile);
 
+  void MaybeFetchTokenHandleForExistingUser(
+      TokenHandleService* token_handle_service);
+
+  void MaybeFetchTokenHandleForExistingUserIfInvalidOrEmpty(
+      const user_manager::User* user,
+      TokenHandleService* token_handle_service);
+
   void FetchTokenHandleLegacy(Profile* profile, const user_manager::User* user);
+  void FetchTokenHandle(Profile* profile, const user_manager::User* user);
 
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
