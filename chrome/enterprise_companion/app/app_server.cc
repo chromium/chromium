@@ -137,20 +137,6 @@ class AppServer : public App {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-#if !BUILDFLAG(IS_MAC)
-  base::Thread net_thread_{"Network"};
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  base::win::ScopedCOMInitializer com_initializer_{
-      base::win::ScopedCOMInitializer::kMTA};
-#endif
-  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
-  std::unique_ptr<ScopedLock> lock_;
-  std::unique_ptr<mojom::EnterpriseCompanion> stub_;
-
   void OnUrlLoaderFactoryReceived(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory) {
@@ -169,6 +155,18 @@ class AppServer : public App {
             base::BindOnce(&AppServer::Shutdown, weak_ptr_factory_.GetWeakPtr(),
                            EnterpriseCompanionStatus::Success())));
   }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+#if !BUILDFLAG(IS_MAC)
+  base::Thread net_thread_{"Network"};
+#endif
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::kMTA};
+#endif
+  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
+  std::unique_ptr<ScopedLock> lock_;
+  std::unique_ptr<mojom::EnterpriseCompanion> stub_;
 
   base::WeakPtrFactory<AppServer> weak_ptr_factory_{this};
 };

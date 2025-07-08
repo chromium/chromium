@@ -132,6 +132,9 @@ class TelemetryLogger
   }
 
  private:
+  friend class base::RefCountedDeleteOnSequence<TelemetryLogger<T>>;
+  friend class base::DeleteHelper<TelemetryLogger<T>>;
+
   virtual ~TelemetryLogger() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
@@ -269,9 +272,6 @@ class TelemetryLogger
             << ": next allowed attempt time: " << *first_allowed_attempt_time;
     SetCooldown(*first_allowed_attempt_time - base::Time::Now());
   }
-
-  friend class base::RefCountedDeleteOnSequence<TelemetryLogger<T>>;
-  friend class base::DeleteHelper<TelemetryLogger<T>>;
 
   bool is_transmitting_ = false;
   std::unique_ptr<Delegate> delegate_;

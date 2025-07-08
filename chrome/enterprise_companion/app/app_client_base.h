@@ -27,12 +27,12 @@ class AppClientBase : public App {
   ~AppClientBase() override;
 
  protected:
-  mojo::Remote<mojom::EnterpriseCompanion> remote_;
-
   // Called on the constructing sequence when `remote_` is ready to dispatch
   // calls. If a connection could not be established, `Shutdown` will be called
   // and this method will not be invoked.
   virtual void OnRemoteReady() = 0;
+
+  mojo::Remote<mojom::EnterpriseCompanion> remote_;
 
  private:
   void OnConnected(std::unique_ptr<mojo::IsolatedConnection> connection,

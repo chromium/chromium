@@ -142,8 +142,6 @@ class EnterpriseCompanionStatus {
   }
 
  private:
-  StatusVariant status_variant_;
-
   explicit EnterpriseCompanionStatus(StatusVariant status_variant);
 
   template <size_t I, typename T>
@@ -151,6 +149,8 @@ class EnterpriseCompanionStatus {
     return EnterpriseCompanionStatus(
         StatusVariant(std::in_place_index_t<I>(), std::forward<T>(status)));
   }
+
+  StatusVariant status_variant_;
 };
 
 // A general-purpose callback type for operations that produce an
