@@ -23,11 +23,11 @@ body { font-size: 10px; }
     testGridDefinitionsSetJSValues("[a] repeat(auto-fit, [z] 100px [y]) repeat(1, [b] 30px [c]) 20px [e]", "[a b] 30px [c d] 20px [e] repeat(auto-fit, [z] 100px [y])", "[a z] 0px [y z] 0px [y z] 0px [y z] 0px [y z] 0px [y z] 0px [y z] 0px [y b] 30px [c] 20px [e]", "[a b] 30px [c d] 20px [e z] 0px [y z] 0px [y z] 0px [y z] 0px [y z] 0px [y]", "[a] repeat(auto-fit, [z] 100px [y]) repeat(1, [b] 30px [c]) 20px [e]");
     testGridDefinitionsSetJSValues("repeat(auto-fit, [start] 200px 100px [end])", "100px [foo] repeat(auto-fit, [a] 2em [b] 10% [c]) [bar] 3em", "[start] 0px 0px [end start] 0px 0px [end]", "100px [foo a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c bar] 30px");
 
-    // TODO(almaher): Fix computed style returned for these.
-    testGridDefinitionsSetJSValues("repeat(auto-fill, [bar] auto)", "repeat(auto-fill, [bar] auto)");
-    testGridDefinitionsSetJSValues("repeat(auto-fill, auto [foo bar] 10px)", "repeat(auto-fill, auto [foo bar] 10px)");
-    testGridDefinitionsSetJSValues("repeat(auto-fit, [bar] auto)", "repeat(auto-fit, [bar] auto)");
-    testGridDefinitionsSetJSValues("repeat(auto-fit, minmax(20px, 30px) auto)", "repeat(auto-fit, minmax(20px, 30px) auto)");
+    // TODO(almaher): Update this to the correct computed style values.
+    testGridDefinitionsSetJSValues("repeat(auto-fill, [bar] auto)", "repeat(auto-fill, [bar] auto)", "none", "none");
+    testGridDefinitionsSetJSValues("repeat(auto-fill, auto [foo bar] 10px)", "repeat(auto-fill, auto [foo bar] 10px)", "none", "none");
+    testGridDefinitionsSetJSValues("repeat(auto-fit, [bar] auto)", "repeat(auto-fit, [bar] auto)", "none", "none");
+    testGridDefinitionsSetJSValues("repeat(auto-fit, minmax(20px, 30px) auto)", "repeat(auto-fit, minmax(20px, 30px) auto)", "none", "none");
 
     debug("");
     debug("Test invalid repeat syntax.");

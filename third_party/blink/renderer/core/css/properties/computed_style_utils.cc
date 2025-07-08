@@ -2044,6 +2044,9 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
+  const bool is_masonry = style.IsDisplayMasonryBox();
+  // TODO(almaher): Update this in some way for Masonry (perhaps make
+  // LayoutMasonry a subclass of LayoutGrid).
   const auto* grid = DynamicTo<LayoutGrid>(layout_object);
 
   // Handle the 'none' case.
@@ -2081,7 +2084,14 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
   wtf_size_t auto_repeat_insertion_point =
       computed_grid_track_list.auto_repeat_insertion_point;
-  const GridTrackList& ng_track_list = computed_grid_track_list.track_list;
+  const GridTrackList& track_list = computed_grid_track_list.track_list;
+
+  // Treat repeat(auto-fill, auto) as none in Grid.
+  //
+  // TODO(almaher): Change this depending on if we allow this syntax in Grid.
+  if (!is_masonry && track_list.HasAutoSizedRepeater()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
 
   // "Note: In general, resolved values are the computed values, except for a
   // small list of legacy 2.1 properties. However, compatibility with early
@@ -2093,6 +2103,9 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   // Default to the used value if it's a layout grid, unless
   // `force_computed_value` is set (which is used for `grid-template`). Non
   // layout-grids will always report the computed value.
+  //
+  // TODO(almaher): Consider if we should force repeat(auto-fill, auto) to the
+  // computed value instead of used value.
   if (grid && !force_computed_value) {
     // The number of auto repeat tracks. For 'repeat(auto-fill, [x][y])' this
     // will be 2, regardless of what auto-fill computes to. For subgrids, use
@@ -2100,7 +2113,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // standalone grids, this will be the number of track sizes, as this can
     // can differ from the count on the track definition.
     wtf_size_t auto_repeat_track_list_length =
-        ng_track_list.AutoRepeatTrackCount();
+        track_list.AutoRepeatTrackCount();
 
     // Standalone grids will report the track sizes in the computed style
     // string, so base the start and end indices on it.
@@ -2147,7 +2160,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
       computed_grid_track_list.ordered_named_grid_lines,
       computed_grid_track_list.auto_repeat_ordered_named_grid_lines,
       is_subgrid_specified, !!grid);
-  PopulateGridTrackListComputedValues(list, collector, ng_track_list, style);
+  PopulateGridTrackListComputedValues(list, collector, track_list, style);
   return list;
 }
 

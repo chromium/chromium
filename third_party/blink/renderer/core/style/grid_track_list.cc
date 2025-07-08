@@ -144,6 +144,9 @@ bool GridTrackList::AddRepeater(
       break;
     case GridTrackRepeater::RepeatType::kAutoFill:
     case GridTrackRepeater::RepeatType::kAutoFit:  // Intentional Fallthrough.
+      has_auto_sized_repeater_ =
+          std::find(repeater_track_sizes.begin(), repeater_track_sizes.end(),
+                    Length::Auto()) != repeater_track_sizes.end();
       if (HasAutoRepeater() || repeat_size > AvailableTrackCount()) {
         return false;
       }
@@ -197,6 +200,7 @@ void GridTrackList::operator=(const GridTrackList& other) {
   track_count_without_auto_repeat_ = other.track_count_without_auto_repeat_;
   non_auto_repeat_line_count_ = other.non_auto_repeat_line_count_;
   axis_type_ = other.axis_type_;
+  has_auto_sized_repeater_ = other.has_auto_sized_repeater_;
 }
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
@@ -206,7 +210,8 @@ bool GridTrackList::operator==(const GridTrackList& other) const {
          repeaters_ == other.repeaters_ &&
          repeater_track_sizes_ == other.repeater_track_sizes_ &&
          non_auto_repeat_line_count_ == other.non_auto_repeat_line_count_ &&
-         axis_type_ == other.axis_type_;
+         axis_type_ == other.axis_type_ &&
+         has_auto_sized_repeater_ == other.has_auto_sized_repeater_;
 }
 
 }  // namespace blink

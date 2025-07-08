@@ -346,9 +346,15 @@ GridRangeBuilder::GridRangeBuilder(const GridTrackList& explicit_tracks,
         explicit_tracks_.RepeatCount(i, auto_repetitions_) *
         explicit_tracks_.RepeatSize(i);
 
-    // Subgrids can have zero auto repetitions.
+    // Subgrids can have zero auto repetitions. Grids with repeat(auto-fill,
+    // auto) also currently can have a track count of 0.
+    //
+    // TODO (almaher): Update this check depending on if we allow Grid to have
+    // repeat(auto-fill, auto) track definitions.
     if (repeater_track_count == 0) {
-      DCHECK(explicit_tracks_.IsSubgriddedAxis());
+      DCHECK(explicit_tracks_.IsSubgriddedAxis() ||
+             explicit_tracks_.HasAutoSizedRepeater() ||
+             implicit_tracks_.HasAutoSizedRepeater());
       continue;
     }
 

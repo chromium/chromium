@@ -70,7 +70,8 @@ class GridTrackSize {
         fit_content_track_breadth_(track_size_type == kFitContentTrackSizing
                                        ? length
                                        : Length::Fixed()),
-        type_(track_size_type) {
+        type_(track_size_type),
+        track_size_definition_is_auto_(length == Length::Auto()) {
     DCHECK(track_size_type == kLengthTrackSizing ||
            track_size_type == kFitContentTrackSizing);
     DCHECK(track_size_type == kLengthTrackSizing || !length.IsFlex());
@@ -82,7 +83,8 @@ class GridTrackSize {
       : min_track_breadth_(min_track_breadth),
         max_track_breadth_(max_track_breadth),
         fit_content_track_breadth_(Length::Fixed()),
-        type_(kMinMaxTrackSizing) {
+        type_(kMinMaxTrackSizing),
+        track_size_definition_is_auto_(false) {
     CacheMinMaxTrackBreadthTypes();
   }
 
@@ -204,6 +206,8 @@ class GridTrackSize {
            min_track_breadth_ == max_track_breadth_;
   }
 
+  bool IsTrackDefinitionAuto() const { return track_size_definition_is_auto_; }
+
  private:
   Length min_track_breadth_;
   Length max_track_breadth_;
@@ -222,6 +226,7 @@ class GridTrackSize {
   bool max_track_breadth_is_max_content_ : 1;
   bool min_track_breadth_is_min_content_ : 1;
   bool max_track_breadth_is_min_content_ : 1;
+  bool track_size_definition_is_auto_ : 1;
 };
 
 }  // namespace blink

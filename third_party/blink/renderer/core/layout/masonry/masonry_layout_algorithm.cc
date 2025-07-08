@@ -507,6 +507,7 @@ wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions() const {
   const LayoutUnit gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
       style, masonry_available_size_, masonry_track_sizing_direction);
 
+  // TODO(almaher): Pass in a value to use for auto sized tracks.
   return CalculateAutomaticRepetitions(
       track_list, gutter_size,
       is_for_columns ? masonry_available_size_.inline_size

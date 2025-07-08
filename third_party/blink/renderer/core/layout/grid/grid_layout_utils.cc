@@ -62,11 +62,13 @@ void ComputeAvailableSizes(const BoxStrut& border_scrollbar_padding,
   }
 }
 
-wtf_size_t CalculateAutomaticRepetitions(const GridTrackList& track_list,
-                                         const LayoutUnit gutter_size,
-                                         LayoutUnit available_size,
-                                         LayoutUnit min_available_size,
-                                         LayoutUnit max_available_size) {
+wtf_size_t CalculateAutomaticRepetitions(
+    const GridTrackList& track_list,
+    const LayoutUnit gutter_size,
+    LayoutUnit available_size,
+    LayoutUnit min_available_size,
+    LayoutUnit max_available_size,
+    std::optional<LayoutUnit> auto_repeat_track_size) {
   DCHECK(track_list.HasAutoRepeater());
 
   if (available_size == kIndefiniteSize) {
@@ -91,6 +93,11 @@ wtf_size_t CalculateAutomaticRepetitions(const GridTrackList& track_list,
     for (wtf_size_t i = 0; i < repeater_track_count; ++i) {
       const GridTrackSize& track_size =
           track_list.RepeatTrackSize(repeater_index, i);
+
+      // TODO(almaher): Use `auto_repeat_track_size` if it is non-null.
+      if (track_size.IsTrackDefinitionAuto() && !auto_repeat_track_size) {
+        return 0;
+      }
 
       std::optional<LayoutUnit> fixed_min_track_breadth;
       if (track_size.HasFixedMinTrackBreadth()) {

@@ -90,6 +90,10 @@ class CORE_EXPORT GridTrackList {
   // Sets the axis type (standalone or subgrid).
   void SetAxisType(GridAxisType axis_type);
 
+  // If true, this track list has a repeat definition with an auto sized track
+  // with an automatic number of repetitions.
+  bool HasAutoSizedRepeater() const { return has_auto_sized_repeater_; }
+
   // Clears all data.
   void Clear();
 
@@ -120,6 +124,10 @@ class CORE_EXPORT GridTrackList {
   // than `track_count_without_auto_repeat_`, as that is track definitions,
   // while this tracks line names (including empty lines).
   wtf_size_t non_auto_repeat_line_count_{0};
+
+  // If true, this track list has a repeat definition with an auto sized track
+  // with an automatic number of repetitions.
+  bool has_auto_sized_repeater_{false};
 
   // The grid axis type (standalone or subgridded).
   GridAxisType axis_type_{GridAxisType::kStandaloneAxis};
