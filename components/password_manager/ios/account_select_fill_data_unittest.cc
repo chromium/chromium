@@ -36,6 +36,7 @@ using test_helpers::SetPasswordFormFillData;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::FieldsAre;
 
 namespace {
 // Test data.
@@ -381,12 +382,14 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id,
           form_data_[0].username_element_renderer_id, false);
-  EXPECT_EQ(2u, suggestions.size());
-  EXPECT_EQ(base::ASCIIToUTF16(kUsernames[0]), suggestions[0].username);
-  EXPECT_EQ(kRealm, suggestions[0].realm);
-  EXPECT_EQ(base::ASCIIToUTF16(kAdditionalUsernames[0]),
-            suggestions[1].username);
-  EXPECT_EQ(kAdditionalRealm, suggestions[1].realm);
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(AllOf(Field(&UsernameAndRealm::username,
+                              base::ASCIIToUTF16(kUsernames[0])),
+                        Field(&UsernameAndRealm::realm, kRealm)),
+                  AllOf(Field(&UsernameAndRealm::username,
+                              base::ASCIIToUTF16(kAdditionalUsernames[0])),
+                        Field(&UsernameAndRealm::realm, kAdditionalRealm))));
 }
 
 TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
@@ -464,14 +467,13 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnExistingUsernameField) {
       /*is_password_field=*/false);
 
   ASSERT_TRUE(result.has_value());
-  const FormInfo* form_info = result.value();
-
-  EXPECT_EQ(form_data.url, form_info->origin);
-  EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
-  EXPECT_EQ(form_data.username_element_renderer_id,
-            form_info->username_element_id);
-  EXPECT_EQ(form_data.password_element_renderer_id,
-            form_info->password_element_id);
+  EXPECT_THAT(
+      *result.value(),
+      FieldsAre(
+          /*origin=*/form_data.url,
+          /*form_id=*/form_data.form_renderer_id,
+          /*username_element_id=*/form_data.username_element_renderer_id,
+          /*password_element_id=*/form_data.password_element_renderer_id));
 }
 
 // Tests getting form info for an unexisting username field that was no added to
@@ -506,14 +508,13 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnPasswordField) {
       /*is_password_field=*/true);
 
   EXPECT_TRUE(result.has_value());
-  const FormInfo* form_info = result.value();
-
-  EXPECT_EQ(form_data.url, form_info->origin);
-  EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
-  EXPECT_EQ(form_data.username_element_renderer_id,
-            form_info->username_element_id);
-  EXPECT_EQ(form_data.password_element_renderer_id,
-            form_info->password_element_id);
+  EXPECT_THAT(*result.value(),
+              FieldsAre(/*origin=*/form_data.url,
+                        /*form_id=*/form_data.form_renderer_id,
+                        /*username_element_id=*/
+                        form_data.username_element_renderer_id,
+                        /*password_element_id=*/
+                        form_data.password_element_renderer_id));
 }
 
 // Test getting form info when there is no data for the form.
@@ -551,12 +552,14 @@ TEST_P(AccountSelectFillDataFieldTypeTest, RetrieveSuggestionsOneForm) {
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id, field_id, is_password_field);
-  EXPECT_EQ(2u, suggestions.size());
-  EXPECT_EQ(base::ASCIIToUTF16(kUsernames[0]), suggestions[0].username);
-  EXPECT_EQ(std::string(), suggestions[0].realm);
-  EXPECT_EQ(base::ASCIIToUTF16(kAdditionalUsernames[0]),
-            suggestions[1].username);
-  EXPECT_EQ(std::string(), suggestions[1].realm);
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(AllOf(Field(&UsernameAndRealm::username,
+                              base::ASCIIToUTF16(kUsernames[0])),
+                        Field(&UsernameAndRealm::realm, std::string())),
+                  AllOf(Field(&UsernameAndRealm::username,
+                              base::ASCIIToUTF16(kAdditionalUsernames[0])),
+                        Field(&UsernameAndRealm::realm, std::string()))));
 }
 
 TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
@@ -586,16 +589,15 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
     FillDataRetrievalResult result = account_select_fill_data.GetFillData(
         base::ASCIIToUTF16(kUsernames[1]), /*is_backup_credential=*/false);
     ASSERT_TRUE(result.has_value());
-    const FillData* fill_data = result.value().get();
-
-    ASSERT_TRUE(fill_data);
-    EXPECT_EQ(form_data.url, fill_data->origin);
-    EXPECT_EQ(form_data.form_renderer_id.value(), fill_data->form_id.value());
-    EXPECT_EQ(kUsernameUniqueIDs[form_i],
-              fill_data->username_element_id.value());
-    EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), fill_data->username_value);
-    EXPECT_EQ(password_field_id, fill_data->password_element_id);
-    EXPECT_EQ(base::ASCIIToUTF16(kPasswords[1]), fill_data->password_value);
+    EXPECT_THAT(
+        *result.value(),
+        FieldsAre(/*origin=*/form_data.url,
+                  /*form_id=*/form_data.form_renderer_id,
+                  /*username_element_id=*/
+                  FieldRendererId(kUsernameUniqueIDs[form_i]),
+                  /*username_value=*/base::ASCIIToUTF16(kUsernames[1]),
+                  /*password_element_id=*/password_field_id,
+                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1])));
   }
 }
 
@@ -630,15 +632,15 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenStateless) {
         base::ASCIIToUTF16(kUsernames[1]), /*is_backup_credential=*/false,
         form_data.form_renderer_id, clicked_field, is_password_field);
     ASSERT_TRUE(result.has_value());
-    const FillData* fill_data = result.value().get();
-    ASSERT_TRUE(fill_data);
-    EXPECT_EQ(form_data.url, fill_data->origin);
-    EXPECT_EQ(form_data.form_renderer_id.value(), fill_data->form_id.value());
-    EXPECT_EQ(kUsernameUniqueIDs[form_i],
-              fill_data->username_element_id.value());
-    EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), fill_data->username_value);
-    EXPECT_EQ(password_field_id, fill_data->password_element_id);
-    EXPECT_EQ(base::ASCIIToUTF16(kPasswords[1]), fill_data->password_value);
+    EXPECT_THAT(
+        *result.value(),
+        FieldsAre(/*origin=*/form_data.url,
+                  /*form_id=*/form_data.form_renderer_id,
+                  /*username_element_id=*/
+                  FieldRendererId(kUsernameUniqueIDs[form_i]),
+                  /*username_value=*/base::ASCIIToUTF16(kUsernames[1]),
+                  /*password_element_id=*/password_field_id,
+                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1])));
   }
 }
 
@@ -707,17 +709,17 @@ TEST_P(AccountSelectFillDataFieldAndCredentialTypeTest,
   FillDataRetrievalResult result = account_select_fill_data.GetFillData(
       base::ASCIIToUTF16(kUsernames[0]), is_backup_credential);
   ASSERT_TRUE(result.has_value());
-  const FillData* fill_data = result.value().get();
-
-  ASSERT_TRUE(fill_data);
-  EXPECT_EQ(form_data.url, fill_data->origin);
-  EXPECT_EQ(form_data.form_renderer_id.value(), fill_data->form_id.value());
-  EXPECT_EQ(kUsernameUniqueIDs[0], fill_data->username_element_id.value());
-  EXPECT_EQ(base::ASCIIToUTF16(kUsernames[0]), fill_data->username_value);
-  EXPECT_EQ(password_field_id, fill_data->password_element_id);
-  EXPECT_EQ(is_backup_credential ? kBackupPassword
-                                 : base::ASCIIToUTF16(kPasswords[0]),
-            fill_data->password_value);
+  EXPECT_THAT(*result.value(),
+              FieldsAre(
+                  /*origin=*/form_data.url,
+                  /*form_id=*/form_data.form_renderer_id,
+                  /*username_element_id=*/
+                  FieldRendererId(kUsernameUniqueIDs[0]),
+                  /*username_value=*/base::ASCIIToUTF16(kUsernames[0]),
+                  /*password_element_id=*/password_field_id,
+                  /*password_value=*/
+                  is_backup_credential ? kBackupPassword
+                                       : base::ASCIIToUTF16(kPasswords[0])));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
