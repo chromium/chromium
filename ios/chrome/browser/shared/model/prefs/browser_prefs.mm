@@ -607,6 +607,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
 
+  registry->RegisterIntegerPref(prefs::kBWGSettingsNewBadgeShownCount, 0);
+
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
 

@@ -44,6 +44,11 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // (serverID) and creation timestamp.
 inline constexpr char kBwgSessionMap[] = "ios.bwg.session_map";
 
+// Number of times the "BWG" settings "new" IPH badge has been shown.
+// This is set to INT_MAX when the user visites the "BWG" settings page.
+inline constexpr char kBWGSettingsNewBadgeShownCount[] =
+    "ios.bwg_settings_new_badge_shown_count";
+
 // A map of profile data directory to cached information. This cache can
 // be used to display information about profiles without actually having
 // to load them.

@@ -301,6 +301,7 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
   TableViewDetailIconItem* _defaultBrowserCellItem;
+  TableViewDetailIconItem* _BWGDetailItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -463,6 +464,12 @@ struct EnhancedSafeBrowsingActivePromoData
     // Update the address bar new IPH badge here as it depends on the number of
     // time it's shown.
     [self updateAddressBarNewIPHBadge];
+  }
+
+  // Update the BWG new IPH badge here as it depends on the number of times it's
+  // shown.
+  if (IsPageActionMenuEnabled()) {
+    [self updateBWGNewIPHBadge];
   }
 }
 
@@ -1062,7 +1069,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (TableViewItem*)BWGSettingsDetailItem {
   UIImage* geminiLogo = [self createGeminiLogo];
-  TableViewDetailIconItem* BWGSettingsDetailItem = [self
+  _BWGDetailItem = [self
            detailItemWithType:SettingsItemTypeBWGSettings
                          text:l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE)
                    detailText:nil
@@ -1070,7 +1077,7 @@ struct EnhancedSafeBrowsingActivePromoData
         symbolBackgroundColor:nil
       accessibilityIdentifier:kSettingsBWGSettingsCellId];
 
-  return BWGSettingsDetailItem;
+  return _BWGDetailItem;
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -1406,6 +1413,9 @@ struct EnhancedSafeBrowsingActivePromoData
     case SettingsItemTypeBWGSettings:
       base::RecordAction(base::UserMetricsAction("Settings.BWGSettings"));
       [self showBWGSettings];
+      // Sets the "new" IPH badge shown count to max so it's not shown again.
+      GetApplicationContext()->GetLocalState()->SetInteger(
+          prefs::kBWGSettingsNewBadgeShownCount, INT_MAX);
       break;
     default:
       break;
@@ -1926,6 +1936,31 @@ struct EnhancedSafeBrowsingActivePromoData
   if (badgeType != _addressBarPreferenceItem.badgeType) {
     _addressBarPreferenceItem.badgeType = badgeType;
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
+  }
+}
+
+// Add or remove the "new" IPH badge from the BWG settings row. The
+// badge is shown a maximum of `kMaxShowCountNewIPHBadge` times.
+- (void)updateBWGNewIPHBadge {
+  CHECK(_BWGDetailItem);
+
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  NSInteger showCount =
+      prefService->GetInteger(prefs::kBWGSettingsNewBadgeShownCount);
+
+  BadgeType badgeType = BadgeType::kNone;
+
+  const BOOL isFreshInstall = IsFirstRunRecent(kFreshInstallTimeDelta);
+
+  if (!isFreshInstall && showCount < kMaxShowCountNewIPHBadge) {
+    badgeType = BadgeType::kNew;
+    prefService->SetInteger(prefs::kBWGSettingsNewBadgeShownCount,
+                            showCount + 1);
+  }
+
+  if (badgeType != _BWGDetailItem.badgeType) {
+    _BWGDetailItem.badgeType = badgeType;
+    [self reconfigureCellsForItems:@[ _BWGDetailItem ]];
   }
 }
 
