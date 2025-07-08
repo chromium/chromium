@@ -24,13 +24,16 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -57,6 +60,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Before
     public void setup() {
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -81,6 +85,52 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
         mOnSwipeAutomotiveToolbar =
                 parent.findViewById(R.id.automotive_on_swipe_back_button_toolbar);
         mAutomotiveToolbar = parent.findViewById(R.id.back_button_toolbar);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
+    public void testAutomotiveBackButtonBarStreamline_onAppStart() {
+        Assert.assertEquals(
+                "Back button toolbar should be gone when the app opens.",
+                View.GONE,
+                mAutomotiveToolbar.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
+    public void testAutomotiveBackButtonBarStreamline_onEnterAndExitFullScreen() {
+        mFullscreenObserver =
+                mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();
+
+        verify(mFullscreenManager).addObserver(mFullscreenObserver);
+
+        mFullscreenObserver.onEnterFullscreen(null, null);
+
+        Assert.assertEquals(
+                "Back button toolbar should be gone when entering full screen.",
+                View.GONE,
+                mAutomotiveToolbar.getVisibility());
+
+        // Check the that toolbar is visible when the user swipes in full screen.
+        mOnSwipeAutomotiveToolbar.setVisibility(View.GONE);
+        mAutomotiveBackButtonToolbarCoordinator.getOnSwipeCallbackForTesting().handleSwipe();
+
+        ShadowLooper.idleMainLooper(ANIMATION_DURATION_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(
+                "On swipe toolbar should be visible on valid swipe.",
+                View.VISIBLE,
+                mOnSwipeAutomotiveToolbar.getVisibility());
+        ShadowLooper.idleMainLooper(ON_SWIPE_TOOLBAR_DURATION_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(
+                "On swipe toolbar should disappear after 10s.",
+                View.GONE,
+                mOnSwipeAutomotiveToolbar.getVisibility());
+
+        mFullscreenObserver.onExitFullscreen(null);
+        Assert.assertEquals(
+                "Back button toolbar should be gone when exiting full screen.",
+                View.GONE,
+                mAutomotiveToolbar.getVisibility());
     }
 
     @Test

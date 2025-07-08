@@ -41,9 +41,9 @@ public abstract class DisplayUtil {
     // CaRMA phase 1 has version 1 and 2. Version 1 includes car-ready mobile app identification
     // logic, opaque blocking activity, and safe app area. Version 2 includes all v1 features plus
     // DPI Scaling.
-    private static final String sCarmaPhase1Compliance =
+    private static final String CARMA_PHASE_1_COMPLIANCE =
             "com.google.android.automotive.software.car_ready_mobile_apps";
-    private static final String sCarmaDisplayCompatAppMetaData =
+    private static final String CARMA_DISPLAY_COMPAT_APP_META_DATA =
             "android.software.car.display_compatibility";
     private static @Nullable Boolean sCarmaPhase1Version2ComplianceForTesting;
     private static @Nullable Boolean sIsDisplayCompatAppForTesting;
@@ -421,7 +421,7 @@ public abstract class DisplayUtil {
         if (sCarmaPhase1Version2ComplianceForTesting != null) {
             return sCarmaPhase1Version2ComplianceForTesting;
         }
-        return context.getPackageManager().hasSystemFeature(sCarmaPhase1Compliance, 2);
+        return context.getPackageManager().hasSystemFeature(CARMA_PHASE_1_COMPLIANCE, 2);
     }
 
     /** Checks if the app has opted in to Display Compatibility via its manifest metadata. */
@@ -439,7 +439,7 @@ public abstract class DisplayUtil {
             if (applicationInfo.metaData == null) {
                 return false;
             }
-            return applicationInfo.metaData.getBoolean(sCarmaDisplayCompatAppMetaData);
+            return applicationInfo.metaData.getBoolean(CARMA_DISPLAY_COMPAT_APP_META_DATA);
 
         } catch (NameNotFoundException e) {
             return false;
