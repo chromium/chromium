@@ -445,14 +445,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
-    enum="MediaStatus" expires_after="2024-12-15">
+    enum="MediaStatus" expires_after="2026-07-07">
   <owner>vikassoni@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Error codes to handle AImage and AImageReader api calls. This is recorded
     when AImageReader acquireNextImage or acquireLatestImage is called and the
     returned code is other than AMEDIA_OK. This histogram was enabled in the
-    past and became absolete on 2018-11-25.
+    past and became absolete on 2018-11-25. NOTE: metric expired from 2024-12-15
+    to 2025-07-07.
   </summary>
 </histogram>
 
