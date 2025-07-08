@@ -17,15 +17,12 @@
 }
 </style>
 
-<!-- <li> elements with no <ol> or <ul> ancestor are forced to have inside markers -->
 <li class="<li> not-in-list inside" data-marker-display="inline">item</li>
 <li class="<li> not-in-list outside" data-marker-display="inline-block">item</li>
 
-<!-- That quirk is doesn't affect non-<li> elements with 'display: list-item' -->
 <div class="<div> not-in-list inside" data-marker-display="inline">item</li>
 <div class="<div> not-in-list outside" data-marker-display="inline-block">item</li>
 
-<!-- All list items inside a list element obey 'list-style-position' -->
 <ol>
   <li class="<li> in-ol inside" data-marker-display="inline">item</li>
   <li class="<li> in-ol outside" data-marker-display="inline-block">item</li>
