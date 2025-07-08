@@ -37,6 +37,10 @@ void MockNavigationThrottleRegistry::AddThrottle(
   }
 }
 
+bool MockNavigationThrottleRegistry::IsHTTPOrHTTPS() {
+  return GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS();
+}
+
 bool MockNavigationThrottleRegistry::ContainsHeldThrottle(
     const std::string& name) {
   CHECK_EQ(registration_mode_, RegistrationMode::kHold);

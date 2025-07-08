@@ -50,6 +50,7 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
   // Implements NavigationThrottleRegistry:
   NavigationHandle& GetNavigationHandle() override;
   void AddThrottle(std::unique_ptr<NavigationThrottle> throttle) override;
+  bool IsHTTPOrHTTPS() override;
   // Following methods are not supported in this mock, and returns false always.
   bool HasThrottle(const std::string& name) override;
   bool EraseThrottleForTesting(const std::string& name) override;

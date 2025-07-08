@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
+#include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -206,8 +207,8 @@ void NavigationThrottleRegistryImpl::AddThrottle(
 
 bool NavigationThrottleRegistryImpl::HasThrottle(const std::string& name) {
   return std::ranges::find_if(throttles_, [name](const auto& throttle) {
-    return throttle->GetNameForLogging() == name;
-  }) != throttles_.end();
+           return throttle->GetNameForLogging() == name;
+         }) != throttles_.end();
 }
 
 bool NavigationThrottleRegistryImpl::EraseThrottleForTesting(
@@ -215,6 +216,24 @@ bool NavigationThrottleRegistryImpl::EraseThrottleForTesting(
   return std::erase_if(throttles_, [name](const auto& throttle) {
     return throttle->GetNameForLogging() == name;
   });
+}
+
+bool NavigationThrottleRegistryImpl::IsHTTPOrHTTPS() {
+  static bool is_cache_enabled = base::FeatureList::IsEnabled(
+      features::kNavigationThrottleRegistryAttributeCache);
+  // The cached properties are only safe to access at throttle registration
+  // time, and not safe afterward because the URL could change (e.g., due to
+  // redirects).
+  CHECK_LE(navigation_request_->state(),
+           NavigationRequest::NavigationState::WILL_START_REQUEST);
+
+  if (!is_cache_enabled) {
+    return GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS();
+  }
+  if (!is_http_or_https_.has_value()) {
+    is_http_or_https_ = GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS();
+  }
+  return *is_http_or_https_;
 }
 
 void NavigationThrottleRegistryImpl::OnEventProcessed(

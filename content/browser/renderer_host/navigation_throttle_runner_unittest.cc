@@ -192,6 +192,9 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
       std::unique_ptr<NavigationThrottle> navigation_throttle) override {
     throttles_.push_back(std::move(navigation_throttle));
   }
+  bool IsHTTPOrHTTPS() override {
+    return handle_.GetURL().SchemeIsHTTPOrHTTPS();
+  }
   MOCK_METHOD(bool, HasThrottle, (const std::string& name), (override));
   MOCK_METHOD(bool, EraseThrottleForTesting, (const std::string& name),
               (override));

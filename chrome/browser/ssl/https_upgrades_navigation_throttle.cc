@@ -51,8 +51,8 @@ void HttpsUpgradesNavigationThrottle::MaybeCreateAndAdd(
   // HTTPS-First Mode is only relevant for primary main-frame HTTP(S)
   // navigations.
   content::NavigationHandle& handle = registry.GetNavigationHandle();
-  if (!handle.GetURL().SchemeIsHTTPOrHTTPS() ||
-      !handle.IsInPrimaryMainFrame() || handle.IsSameDocument()) {
+  if (!registry.IsHTTPOrHTTPS() || !handle.IsInPrimaryMainFrame() ||
+      handle.IsSameDocument()) {
     return;
   }
 

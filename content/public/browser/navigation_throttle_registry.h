@@ -37,6 +37,16 @@ class CONTENT_EXPORT NavigationThrottleRegistry {
   // Erases the throttle with the given name from the registry. This is only
   // used for testing. Returns true if the throttle is found and erased.
   virtual bool EraseThrottleForTesting(const std::string& name) = 0;
+
+  // Attribute check APIs follow. Recommend to use them instead of directly
+  // accessing the NavigationHandle as they could be optimized for repeated
+  // queries.
+
+  // Returns true if the navigation request is a request that will be sent to
+  // the network over HTTP(S).
+  // This is an experimental attribute, and should be called only in the
+  // NavigationThrottle registration phase as URL could be changed later.
+  virtual bool IsHTTPOrHTTPS() = 0;
 };
 
 }  // namespace content

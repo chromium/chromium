@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_THROTTLE_REGISTRY_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_THROTTLE_REGISTRY_IMPL_H_
 
+#include <optional>
 #include <memory>
 #include <set>
 #include <vector>
@@ -110,6 +111,7 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
       std::unique_ptr<NavigationThrottle> navigation_throttle) override;
   bool HasThrottle(const std::string& name) override;
   bool EraseThrottleForTesting(const std::string& name) override;
+  bool IsHTTPOrHTTPS() override;
 
   // Implements NavigationThrottleRegistryBase:
   void OnEventProcessed(
@@ -136,6 +138,12 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // TODO(https://crbug.com/.422003056): Explore more efficient approach, i.e.
   // the runner notifies the registry to update this set.
   std::set<NavigationThrottle*> deferring_throttles_in_v1_runner_;
+
+  // This is used in an experiment to cache frequently used navigation
+  // attributes.
+  // TODO(https://424460302): Remove this once the experiment completes, and
+  // move the cache to GURL if it's successful.
+  std::optional<bool> is_http_or_https_;
 };
 
 }  // namespace content

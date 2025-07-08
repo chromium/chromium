@@ -105,7 +105,7 @@ void PlatformAppNavigationRedirector::MaybeCreateAndAdd(
     return;
   }
 
-  if (!handle.GetURL().SchemeIsHTTPOrHTTPS()) {
+  if (!registry.IsHTTPOrHTTPS()) {
     DVLOG(1) << "Skip redirection: scheme is not HTTP or HTTPS";
     return;
   }

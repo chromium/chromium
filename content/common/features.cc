@@ -340,6 +340,12 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    1u);
 
+// When enabled, NavigationThrottleRegistry will cache attribute query results
+// for the next same query. See https://crbug.com/424460302.
+BASE_FEATURE(kNavigationThrottleRegistryAttributeCache,
+             "NavigationThrottleRegistryAttributeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification
 // is enabled in components/permissions/permission_context_base.cc
