@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/main/model/browser_impl.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -161,9 +160,6 @@
   web::WebState::CreateParams params(
       (web::BrowserState*)(_browser->GetProfile()));
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-  IOSChromeSessionTabHelper::CreateForWebState(webState.get());
-  IOSChromeSessionTabHelper::FromWebState(webState.get())
-      ->SetWindowID(SessionID::NewUnique());
   _browser->GetWebStateList()->InsertWebState(
       std::move(webState),
       WebStateList::InsertionParams::Automatic().Activate());

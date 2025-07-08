@@ -192,7 +192,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/search_engines/model:eg_app_support+eg2",
     "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/settings/ui_bundled",
