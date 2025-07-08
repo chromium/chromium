@@ -523,7 +523,6 @@ REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest,
 TYPED_TEST_SUITE_P(GpuMemoryBufferImplCreateTest);
 
 TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
-  const gfx::GpuMemoryBufferId kBufferId(1);
   const gfx::Size kBufferSize(8, 8);
   gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
 
@@ -535,7 +534,7 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
     }
     bool destroyed = false;
     std::unique_ptr<TypeParam> buffer(TypeParam::CreateForTesting(
-        kBufferId, kBufferSize, format, usage,
+        kBufferSize, format, usage,
         base::BindOnce([](bool* destroyed) { *destroyed = true; },
                        base::Unretained(&destroyed))));
     ASSERT_TRUE(buffer);

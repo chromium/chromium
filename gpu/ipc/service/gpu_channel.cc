@@ -462,8 +462,6 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
         gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
             size, buffer_format)) {
       handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-          gfx::GpuMemoryBufferId(
-              static_cast<int>(MappableSIClientGmbId::kGpuChannel)),
           size, buffer_format, buffer_usage);
     }
   }

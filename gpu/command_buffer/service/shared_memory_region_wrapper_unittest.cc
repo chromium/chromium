@@ -13,8 +13,7 @@ namespace {
 gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(const gfx::Size& size,
                                                  gfx::BufferFormat format) {
   return GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId{1}, size, format,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      size, format, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 }
 
 TEST(SharedMemoryRegionWrapperTest, SinglePlaneRGBA_8888) {

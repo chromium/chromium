@@ -25,7 +25,6 @@
 namespace gpu {
 
 GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -48,7 +47,6 @@ GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() = default;
 // static
 std::unique_ptr<GpuMemoryBufferImplSharedMemory>
 GpuMemoryBufferImplSharedMemory::CreateForTesting(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -66,15 +64,14 @@ GpuMemoryBufferImplSharedMemory::CreateForTesting(
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
-      id, size, format, usage, std::move(callback),
-      std::move(shared_memory_region), std::move(shared_memory_mapping), 0,
+      size, format, usage, std::move(callback), std::move(shared_memory_region),
+      std::move(shared_memory_mapping), 0,
       gfx::RowSizeForBufferFormat(size.width(), format, 0)));
 }
 
 // static
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
@@ -149,8 +146,7 @@ GpuMemoryBufferImplSharedMemory::CreateFromHandle(
   const uint32_t offset = handle.offset;
   const uint32_t stride = handle.stride;
   return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
-      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, usage,
-      std::move(callback), std::move(handle).region(),
+      size, format, usage, std::move(callback), std::move(handle).region(),
       base::WritableSharedMemoryMapping(), offset, stride));
 }
 
@@ -217,8 +213,7 @@ base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  *handle = CreateGpuMemoryBuffer(gfx::GpuMemoryBufferHandle::kInvalidId, size,
-                                  format, usage);
+  *handle = CreateGpuMemoryBuffer(size, format, usage);
   return base::DoNothing();
 }
 

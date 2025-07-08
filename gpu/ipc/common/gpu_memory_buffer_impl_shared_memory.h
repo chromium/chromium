@@ -41,14 +41,12 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   }
 
   static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateForTesting(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       DestructionCallback callback);
 
   static gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
@@ -82,7 +80,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       DestructionCallback callback);
 
   GpuMemoryBufferImplSharedMemory(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,

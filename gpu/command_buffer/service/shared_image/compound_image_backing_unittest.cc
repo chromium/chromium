@@ -144,8 +144,7 @@ class CompoundImageBackingTest : public testing::Test {
 
     gfx::GpuMemoryBufferHandle handle =
         GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-            static_cast<gfx::GpuMemoryBufferId>(1), size, buffer_format,
-            buffer_usage);
+            size, buffer_format, buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, Mailbox::Generate(), std::move(handle),
@@ -162,8 +161,7 @@ class CompoundImageBackingTest : public testing::Test {
 
     gfx::GpuMemoryBufferHandle handle =
         GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-            static_cast<gfx::GpuMemoryBufferId>(1), size, buffer_format,
-            buffer_usage);
+            size, buffer_format, buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, Mailbox::Generate(), std::move(handle),
