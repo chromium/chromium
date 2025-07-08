@@ -2821,7 +2821,9 @@ enum class ToolbarKind {
     web::WebState* activeWebState = self.activeWebState;
     DCHECK(activeWebState);
     auto* helper = FindTabHelper::FromWebState(activeWebState);
-    helper->DismissFindNavigator();
+    if (helper) {
+      helper->DismissFindNavigator();
+    }
   } else {
     [self.findBarCoordinator stop];
     self.findBarCoordinator = nil;
