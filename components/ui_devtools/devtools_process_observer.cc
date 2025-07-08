@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/devtools_process_observer.h"
+#include "components/ui_devtools/devtools_process_observer.h"
 
 #include "base/process/process.h"
 #include "components/ui_devtools/tracing_agent.h"

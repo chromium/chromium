@@ -140,7 +140,6 @@ source_set("browser") {
     "//components/sqlite_proto",
     "//components/system_media_controls",
     "//components/tracing:tracing_config",
-    "//components/ui_devtools",
     "//components/ukm",
     "//components/ukm/debug:util",
     "//components/url_formatter",

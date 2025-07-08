@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
-#define CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
+#ifndef COMPONENTS_UI_DEVTOOLS_DEVTOOLS_PROCESS_OBSERVER_H_
+#define COMPONENTS_UI_DEVTOOLS_DEVTOOLS_PROCESS_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
+#include "components/ui_devtools/devtools_export.h"
 #include "content/public/browser/browser_child_process_observer.h"
 
 namespace ui_devtools {
@@ -15,7 +16,8 @@ class TracingAgent;
 
 // Observer that is notified of browser and gpu processes when they are launched
 // and destroyed. This is used to update the process id for event tracing.
-class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
+class UI_DEVTOOLS_EXPORT DevtoolsProcessObserver
+    : public content::BrowserChildProcessObserver {
  public:
   explicit DevtoolsProcessObserver(ui_devtools::TracingAgent* agent);
 
@@ -40,4 +42,4 @@ class DevtoolsProcessObserver : public content::BrowserChildProcessObserver {
   raw_ptr<ui_devtools::TracingAgent> tracing_agent_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_DEVTOOLS_PROCESS_OBSERVER_H_
+#endif  // COMPONENTS_UI_DEVTOOLS_DEVTOOLS_PROCESS_OBSERVER_H_
