@@ -44,7 +44,6 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
 }  // namespace
 
 GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,
@@ -96,8 +95,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
 #endif
 
   return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
-      handle.Clone(), LockFlags(usage)));
+      size, format, std::move(callback), handle.Clone(), LockFlags(usage)));
 }
 
 // static

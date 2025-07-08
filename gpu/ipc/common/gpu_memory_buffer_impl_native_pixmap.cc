@@ -28,7 +28,6 @@ void FreeNativePixmapForTesting(
 }  // namespace
 
 GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
-    gfx::GpuMemoryBufferId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,
@@ -54,8 +53,7 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
-      std::move(native_pixmap)));
+      size, format, std::move(callback), std::move(native_pixmap)));
 }
 
 // static

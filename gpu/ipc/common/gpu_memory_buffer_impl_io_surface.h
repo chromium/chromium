@@ -67,8 +67,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
       gfx::BufferUsage usage,
       DestructionCallback callback);
 
-  GpuMemoryBufferImplIOSurface(gfx::GpuMemoryBufferId id,
-                               const gfx::Size& size,
+  GpuMemoryBufferImplIOSurface(const gfx::Size& size,
                                gfx::BufferFormat format,
                                DestructionCallback callback,
                                gfx::GpuMemoryBufferHandle handle,

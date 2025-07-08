@@ -97,7 +97,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       DestructionCallback callback);
 
   GpuMemoryBufferImplNativePixmap(
-      gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
       DestructionCallback callback,
