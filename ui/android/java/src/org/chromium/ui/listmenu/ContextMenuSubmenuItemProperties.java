@@ -4,11 +4,12 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
@@ -17,17 +18,13 @@ import java.util.List;
 @NullMarked
 public class ContextMenuSubmenuItemProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
     // The ON_CLICK should enter the submenu (for drilldown).
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
             new WritableObjectPropertyKey<>();
     // The ON_HOVER should show the flyout on mouse hover or keyboard focus.
     public static final WritableObjectPropertyKey<Runnable> ON_HOVER =
             new WritableObjectPropertyKey<>();
-    public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
-    // A list of PropertyModels, each of which represents a context menu item. Some of these menu
-    // items may represent context menus themselves.
-    public static final WritableObjectPropertyKey<List<PropertyModel>> SUBMENU_ITEMS =
+    public static final WritableObjectPropertyKey<List<ListItem>> SUBMENU_ITEMS =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {

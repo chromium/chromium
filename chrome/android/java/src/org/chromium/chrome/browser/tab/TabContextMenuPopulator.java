@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -52,8 +53,8 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public boolean onItemSelected(int itemId) {
-        return mPopulator.onItemSelected(itemId);
+    public boolean onItemSelected(int itemId, @Nullable ListItem menuItem) {
+        return mPopulator.onItemSelected(itemId, menuItem);
     }
 
     @Override

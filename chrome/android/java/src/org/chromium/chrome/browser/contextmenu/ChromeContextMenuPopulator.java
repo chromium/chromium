@@ -86,6 +86,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -637,7 +638,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public boolean onItemSelected(int itemId) {
+    public boolean onItemSelected(int itemId, @Nullable ListItem menuItem) {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             RecordUserAction.record("TabContextMenu.OpenInNewTab");
@@ -890,6 +891,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             WebContents webContents = mItemDelegate.getWebContents();
             webContents.showInterestInElement(mParams.getInterestForNodeID());
         } else {
+            if (menuItem != null && menuItem.type == ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU) {
+                // TODO(crbug.com/418807464): Implement submenu handling.
+                return true;
+            }
             assert false;
         }
 
@@ -1199,8 +1204,21 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 
+    @VisibleForTesting
+    ListItem createListItemWithSubmenu(String title, int menuItemId, List<ListItem> submenuItems) {
+        final PropertyModel model =
+                new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(ContextMenuSubmenuItemProperties.TITLE, title)
+                        .with(MENU_ITEM_ID, menuItemId)
+                        .with(ENABLED, true)
+                        .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
+                        .build();
+        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, model);
+    }
+
     /**
      * Return the icon and name of the most recently shared app by certain app.
+     *
      * @param isLink Whether the item is SHARE_LINK.
      */
     private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {

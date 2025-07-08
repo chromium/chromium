@@ -18,7 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
+import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -347,56 +349,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage());
 
-        ModelListAdapter adapter =
-                new ModelListAdapter(listItems) {
-                    @Override
-                    public boolean areAllItemsEnabled() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isEnabled(int position) {
-                        return getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
-                                || getItemViewType(position)
-                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON;
-                    }
-
-                    @Override
-                    public long getItemId(int position) {
-                        if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
-                                || getItemViewType(position)
-                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
-                            return ((ListItem) getItem(position)).model.get(MENU_ITEM_ID);
-                        }
-                        return INVALID_ITEM_ID;
-                    }
-                };
+        ModelListAdapter adapter = getModelListAdapter(listItems);
 
         mListView = menu.findViewById(R.id.context_menu_list_view);
-        adapter.registerType(
-                ListItemType.HEADER,
-                new LayoutViewBuilder(R.layout.context_menu_header),
-                ContextMenuHeaderViewBinder::bind);
-        adapter.registerType(
-                ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.list_section_divider),
-                (m, v, p) -> {});
-        adapter.registerType(
-                ListItemType.CONTEXT_MENU_ITEM,
-                new LayoutViewBuilder(R.layout.context_menu_row),
-                ContextMenuItemViewBinder::bind);
-        adapter.registerType(
-                ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                new LayoutViewBuilder(R.layout.context_menu_row),
-                ContextMenuItemViewBinder::bind);
-        adapter.registerType(
-                ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
-                new LayoutViewBuilder<>(R.layout.checkbox_layout),
-                ContextMenuItemWithCheckboxViewBinder::bind);
-        adapter.registerType(
-                ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
-                new LayoutViewBuilder<>(R.layout.radio_button_layout_element),
-                ContextMenuItemWithRadioButtonViewBinder::bind);
         mListView.setAdapter(adapter);
 
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
@@ -421,6 +376,71 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 };
 
         mDialog.show();
+    }
+
+    /**
+     * Creates and configures a {@link ModelListAdapter} for the context menu.
+     *
+     * <p>This adapter handles different {@link ListItemType}s for context menu items, dividers, and
+     * headers, and provides custom logic for determining item enabled status and retrieving item
+     * IDs.
+     *
+     * @param listItems The {@link ModelList} containing the items to be displayed in the menu.
+     * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
+     */
+    @NonNull
+    static ModelListAdapter getModelListAdapter(ModelList listItems) {
+        ModelListAdapter adapter =
+                new ModelListAdapter(listItems) {
+                    @Override
+                    public boolean areAllItemsEnabled() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isEnabled(int position) {
+                        int type = getItemViewType(position);
+                        return type != ListItemType.DIVIDER && type != ListItemType.HEADER;
+                    }
+
+                    @Override
+                    public long getItemId(int position) {
+                        return isEnabled(position)
+                                ? ((ListItem) getItem(position)).model.get(MENU_ITEM_ID)
+                                : INVALID_ITEM_ID;
+                    }
+                };
+
+        adapter.registerType(
+                ListItemType.HEADER,
+                new LayoutViewBuilder(R.layout.context_menu_header),
+                ContextMenuHeaderViewBinder::bind);
+        adapter.registerType(
+                ListItemType.DIVIDER,
+                new LayoutViewBuilder(R.layout.list_section_divider),
+                (m, v, p) -> {});
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM,
+                new LayoutViewBuilder(R.layout.context_menu_row),
+                ContextMenuItemViewBinder::bind);
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                new LayoutViewBuilder(R.layout.context_menu_row),
+                ContextMenuItemViewBinder::bind);
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                new LayoutViewBuilder<>(R.layout.checkbox_layout),
+                ContextMenuItemWithCheckboxViewBinder::bind);
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
+                new LayoutViewBuilder<>(R.layout.radio_button_layout_element),
+                ContextMenuItemWithRadioButtonViewBinder::bind);
+        adapter.registerType(
+                ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                new LayoutViewBuilder<>(R.layout.context_menu_submenu_parent_row),
+                ContextMenuItemWithSubmenuViewBinder::bind);
+
+        return adapter;
     }
 
     /**

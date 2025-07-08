@@ -6,6 +6,7 @@ package org.chromium.components.embedder_support.contextmenu;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -29,9 +30,10 @@ public interface ContextMenuPopulator {
      * Called when a context menu item has been selected.
      *
      * @param itemId The id of the selected menu item.
+     * @param menuItem The ListItem corresponding to the selected item.
      * @return Whether or not the selection was handled.
      */
-    boolean onItemSelected(int itemId);
+    boolean onItemSelected(int itemId, @Nullable ListItem menuItem);
 
     /** Called when the context menu is closed. */
     void onMenuClosed();

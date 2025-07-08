@@ -28,6 +28,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -47,7 +48,6 @@ public class ContextMenuHelper {
     private @Nullable ContextMenuParams mCurrentContextMenuParams;
     private @Nullable ContextMenuUi mCurrentContextMenu;
     private @Nullable WindowAndroid mWindow;
-    private @Nullable Callback<Integer> mCallback;
     private @Nullable Runnable mOnMenuShown;
     private @Nullable Runnable mOnMenuClosed;
     private @Nullable ChipDelegate mChipDelegate;
@@ -114,12 +114,6 @@ public class ContextMenuHelper {
                         windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
-        mCallback =
-                (result) -> {
-                    if (mCurrentPopulator == null) return;
-
-                    mCurrentPopulator.onItemSelected(result);
-                };
         mOnMenuShown =
                 () -> {
                     RecordHistogram.recordBooleanHistogram(
@@ -186,12 +180,18 @@ public class ContextMenuHelper {
         assert mCurrentNativeDelegate != null
                 && mWindow != null
                 && mCurrentContextMenuParams != null
-                && mCallback != null
                 && mOnMenuShown != null;
         final ContextMenuCoordinator menuCoordinator =
                 new ContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
+
+        Callback<Integer> callback =
+                (result) -> {
+                    if (mCurrentPopulator == null) return;
+                    ListItem menuItem = menuCoordinator.findItem(result);
+                    mCurrentPopulator.onItemSelected(result, menuItem);
+                };
 
         if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(
@@ -199,7 +199,7 @@ public class ContextMenuHelper {
                     mWebContents,
                     mCurrentContextMenuParams,
                     items,
-                    mCallback,
+                    callback,
                     mOnMenuShown,
                     mOnMenuClosed,
                     mChipDelegate);
@@ -209,7 +209,7 @@ public class ContextMenuHelper {
                     mWebContents,
                     mCurrentContextMenuParams,
                     items,
-                    mCallback,
+                    callback,
                     mOnMenuShown,
                     mOnMenuClosed);
         }

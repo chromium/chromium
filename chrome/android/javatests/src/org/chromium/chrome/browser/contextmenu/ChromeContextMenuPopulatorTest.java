@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +19,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.widget.ListView;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -59,10 +61,13 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
@@ -98,6 +103,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private Profile mProfile;
     @Mock private Profile.Natives mProfileNatives;
     @Mock private MenuModelBridge mMenuModelBridge;
+    @Mock private ListView mMockListView;
 
     private ChromeContextMenuPopulator mPopulator;
 
@@ -1836,5 +1842,38 @@ public class ChromeContextMenuPopulatorTest {
                 "Expected the group of extension-injected items to be the last group",
                 modelListFromBridge,
                 result.get(result.size() - 1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAddMenuItemWithSubmenu() {
+        ContextMenuParams params = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+
+        ModelList modelList = new ModelList();
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(
+                new ListItem(
+                        ListItemType.CONTEXT_MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Sample submenu item")
+                                .build()));
+        String menuItemWithSubmenuTitle = "Sample item with Submenu";
+        modelList.add(
+                mPopulator.createListItemWithSubmenu(
+                        menuItemWithSubmenuTitle, /* menuItemId= */ 1000, submenuItems));
+
+        when(mMenuModelBridge.populateModelList()).thenReturn(modelList);
+
+        ModelListAdapter adapter = new ModelListAdapter(modelList);
+        when(mMockListView.getAdapter()).thenReturn(adapter);
+        assertEquals(1, adapter.getCount());
+        ListItem menuItemWithSubmenu = (ListItem) adapter.getItem(0);
+        assertNotNull("Should find the menu item with submenu", menuItemWithSubmenu);
+        assertEquals(
+                "Title of the found submenu item should match",
+                menuItemWithSubmenuTitle,
+                menuItemWithSubmenu.model.get(ContextMenuSubmenuItemProperties.TITLE));
     }
 }
