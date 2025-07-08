@@ -15,6 +15,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
@@ -71,8 +72,13 @@ id<GREYAction> PageSheetScrollDown() {
   CGFloat menu_scroll_displacement = 500;
 
   // But for very small devices (like the SE), this is too big.
-  UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
+  UIWindow* currentWindow = [ChromeEarlGreyAppInterface keyWindow];
   if (currentWindow.rootViewController.view.frame.size.height < 600) {
+    menu_scroll_displacement = 250;
+  }
+
+  // And for iOS 26, the updated table view layout also makes this too big.
+  if (@available(iOS 19.0, *)) {
     menu_scroll_displacement = 250;
   }
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);

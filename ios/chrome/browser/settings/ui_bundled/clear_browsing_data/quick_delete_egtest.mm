@@ -313,11 +313,9 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 - (void)openQuickDeleteFromThreeDotMenu {
   [ChromeEarlGreyUI openToolsMenu];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                             IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))];
 
   // Wait for the summary to be loaded.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
