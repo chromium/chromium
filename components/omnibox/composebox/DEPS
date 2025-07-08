@@ -9,6 +9,8 @@ include_rules = [
   "+components/version_info",
   "+google_apis",
   "+net",
+  "+services/data_decoder/public/cpp",
+  "+services/data_decoder/public/cpp/test_support",
   "+services/network/public/cpp",
   "+services/network/test",
   "+third_party/icu",

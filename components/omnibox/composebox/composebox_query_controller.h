@@ -26,6 +26,10 @@
 
 class TemplateURLService;
 
+#if !BUILDFLAG(IS_IOS)
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif  // !BUILDFLAG(IS_IOS)
+
 enum class SessionState {
   kNone = 0,
   kSessionStarted = 1,
@@ -279,6 +283,14 @@ class ComposeboxQueryController {
   void UpdateFileUploadStatus(const base::UnguessableToken& file_token,
                               FileUploadStatus status,
                               std::optional<FileUploadErrorType> error_type);
+
+#if !BUILDFLAG(IS_IOS)
+  // Handler for when the image from an image file upload is decoded. Creates
+  // the request body proto and calls the callback with the request.
+  void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
+                                      RequestBodyProtoCreatedCallback callback,
+                                      const SkBitmap& bitmap);
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Creates the request body proto and calls the callback with the request.
   void CreateFileUploadRequestBodyAndContinue(

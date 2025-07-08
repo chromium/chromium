@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "net/base/url_util.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +30,12 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia_operations.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/gfx/codec/jpeg_codec.h"
+#endif  // !BUILDFLAG(IS_IOS)
 
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kTestUser[] = "test_user@gmail.com";
@@ -51,6 +58,9 @@ class ComposeboxQueryControllerTest
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_factory_);
+
+    in_process_data_decoder_ =
+        std::make_unique<data_decoder::test::InProcessDataDecoder>();
 
     icu::TimeZone::adoptDefault(
         icu::TimeZone::createTimeZone(icu::UnicodeString(kTimeZone)));
@@ -87,6 +97,16 @@ class ComposeboxQueryControllerTest
       expected_file_upload_status_.reset();
     }
   }
+
+#if !BUILDFLAG(IS_IOS)
+  std::vector<uint8_t> CreateJPGBytes(int width, int height) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(width, height);
+    bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+    auto image_bytes = gfx::JPEGCodec::Encode(bitmap, 100);
+    return image_bytes.value();
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 
  protected:
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -144,6 +164,8 @@ class ComposeboxQueryControllerTest
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<TestComposeboxQueryController> controller_;
+  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
+      in_process_data_decoder_;
   signin::AccessTokenInfo access_token_info_{"access_token", base::Time::Max(),
                                              "id_token"};
 
@@ -280,7 +302,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
       std::make_unique<ComposeboxQueryController::FileInfo>();
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   file_info->file_token_ = file_token;
-  file_info->mime_type_ = lens::MimeType::kImage;
+  file_info->mime_type_ = lens::MimeType::kPdf;
 
   SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadFailed);
 
@@ -301,6 +323,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
               testing::Optional(std::string(kTestServerSessionId)));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   // Wait until the state changes to kClusterInfoReceived.
   base::RunLoop run_loop;
@@ -324,9 +347,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 
   SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
   controller().StartFileUploadFlow(
       std::move(file_info),
-      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>(image_bytes));
 
   WaitForFileExpectedUploadStatus();
 
@@ -340,6 +364,34 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
               testing::Optional(std::string(kTestServerSessionId)));
   EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
             FileUploadStatus::kUploadSuccessful);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .image_data()
+                .image_metadata()
+                .width(),
+            100);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .image_data()
+                .image_metadata()
+                .height(),
+            100);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->client_logs()
+                .phase_latencies_metadata()
+                .phase_size(),
+            1);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->client_logs()
+                .phase_latencies_metadata()
+                .phase(0)
+                .image_encode_data()
+                .encoded_image_size_bytes(),
+            360);
 
   // Check that the vsrid matches that for an image upload.
   EXPECT_EQ(controller()
@@ -353,6 +405,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 ->image_sequence_id(),
             1);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Wait until the state changes to kClusterInfoReceived.
@@ -465,7 +518,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
       std::make_unique<ComposeboxQueryController::FileInfo>();
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   file_info->file_token_ = file_token;
-  file_info->mime_type_ = lens::MimeType::kImage;
+  file_info->mime_type_ = lens::MimeType::kPdf;
 
   SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
 
@@ -512,7 +565,7 @@ TEST_F(ComposeboxQueryControllerTest,
       std::make_unique<ComposeboxQueryController::FileInfo>();
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
   file_info->file_token_ = file_token;
-  file_info->mime_type_ = lens::MimeType::kImage;
+  file_info->mime_type_ = lens::MimeType::kPdf;
 
   // Start the file upload flow without waiting for the cluster info request to
   // complete.
