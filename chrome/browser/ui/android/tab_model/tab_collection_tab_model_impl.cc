@@ -5,15 +5,21 @@
 #include "chrome/browser/ui/android/tab_model/tab_collection_tab_model_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_interface_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -28,7 +34,9 @@
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::TokenAndroid;
+using tab_groups::TabGroupColorId;
 using tab_groups::TabGroupId;
+using tab_groups::TabGroupVisualData;
 
 namespace tabs {
 
@@ -138,6 +146,44 @@ void TabCollectionTabModelImpl::RemoveTabRecursive(JNIEnv* env,
   int index = GetIndexOfTabRecursive(env, tab);
   CHECK_NE(index, kInvalidTabIndex);
   tab_strip_collection_->RemoveTabAtIndexRecursive(index);
+}
+
+void TabCollectionTabModelImpl::CreateTabGroup(
+    JNIEnv* env,
+    const base::Token& tab_group_id,
+    const std::u16string& tab_group_title,
+    jint j_color_id,
+    bool is_collapsed) {
+  TabGroupAndroid::Factory factory(profile_);
+  std::unique_ptr<TabGroupTabCollection> group_collection =
+      std::make_unique<TabGroupTabCollection>(
+          factory, TabGroupId::FromRawToken(tab_group_id),
+          TabGroupVisualData(tab_group_title,
+                             static_cast<TabGroupColorId>(j_color_id),
+                             is_collapsed));
+  tab_strip_collection_->CreateTabGroup(std::move(group_collection));
+}
+
+void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
+    JNIEnv* env,
+    const base::Token& tab_group_id,
+    const std::u16string& tab_group_title,
+    jint j_color_id,
+    bool is_collapsed) {
+  TabGroupTabCollection* group_collection =
+      tab_strip_collection_->GetTabGroupCollection(
+          TabGroupId::FromRawToken(tab_group_id));
+  CHECK(group_collection);
+  TabGroupVisualData visual_data(
+      tab_group_title, static_cast<TabGroupColorId>(j_color_id), is_collapsed);
+  group_collection->GetTabGroup()->SetVisualData(visual_data);
+}
+
+void TabCollectionTabModelImpl::CloseDetachedTabGroup(
+    JNIEnv* env,
+    const base::Token& tab_group_id) {
+  tab_strip_collection_->CloseDetachedTabGroup(
+      TabGroupId::FromRawToken(tab_group_id));
 }
 
 size_t TabCollectionTabModelImpl::GetTabCountForGroup(

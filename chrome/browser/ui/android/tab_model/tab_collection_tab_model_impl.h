@@ -69,6 +69,23 @@ class TabCollectionTabModelImpl {
   // Removes a list of tabs from the tab model.
   void RemoveTabRecursive(JNIEnv* env, TabAndroid* tab);
 
+  // Create tab group.
+  void CreateTabGroup(JNIEnv* env,
+                      const base::Token& tab_group_id,
+                      const std::u16string& tab_group_title,
+                      jint j_color_id,
+                      bool is_collapsed);
+
+  // Update tab group visual data.
+  void UpdateTabGroupVisualData(JNIEnv* env,
+                                const base::Token& tab_group_id,
+                                const std::u16string& tab_group_title,
+                                jint j_color_id,
+                                bool is_collapsed);
+
+  // Closes a detached tab group.
+  void CloseDetachedTabGroup(JNIEnv* env, const base::Token& tab_group_id);
+
   // Returns the count of tabs in a group. Returns 0 if not group not found.
   size_t GetTabCountForGroup(JNIEnv* env, const base::Token& token);
 

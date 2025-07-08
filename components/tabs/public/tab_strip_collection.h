@@ -102,7 +102,8 @@ class TabStripCollection : public TabCollection {
   void InsertTabGroupAt(std::unique_ptr<TabGroupTabCollection> group_collection,
                         int index);
 
-  // Clears all detached groups present in `detached_group_collections_`.
+  // Clears the detached group with `group_id` in `detached_group_collections_`.
+  // Crashes if the group is not found in the detached tab groups list.
   void CloseDetachedTabGroup(const tab_groups::TabGroupId& group_id);
 
   // Split tab operations.

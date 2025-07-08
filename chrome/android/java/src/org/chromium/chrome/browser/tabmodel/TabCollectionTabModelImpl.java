@@ -938,5 +938,22 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         int getTabCountForGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        void createTabGroup(
+                long nativeTabCollectionTabModelImpl,
+                @JniType("base::Token") Token tabGroupId,
+                @JniType("std::u16string") String title,
+                @TabGroupColorId int colorId,
+                boolean isCollapsed);
+
+        void updateTabGroupVisualData(
+                long nativeTabCollectionTabModelImpl,
+                @JniType("base::Token") Token tabGroupId,
+                @JniType("std::u16string") String title,
+                @TabGroupColorId int colorId,
+                boolean isCollapsed);
+
+        void closeDetachedTabGroup(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
     }
 }
