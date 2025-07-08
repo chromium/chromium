@@ -14928,6 +14928,7 @@ from previous Chrome versions.
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
   <int value="339671131" label="disable-per-user-timezone"/>
+  <int value="340192710" label="Prerender2ReuseHost:disabled"/>
   <int value="340497722" label="WebPaymentAPICSP:enabled"/>
   <int value="341116976" label="(Obsolete) TranslateSubFrames:enabled"/>
   <int value="341152650" label="SoundContentSetting:enabled"/>
@@ -17981,6 +17982,7 @@ from previous Chrome versions.
   <int value="1462042881" label="ArcRoundedWindowCompat:enabled"/>
   <int value="1462978380" label="EnableBuiltInAIAPI:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
+  <int value="1463918520" label="Prerender2ReuseHost:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
   <int value="1464610065" label="TabbedAppOverflowMenuRegroup:disabled"/>

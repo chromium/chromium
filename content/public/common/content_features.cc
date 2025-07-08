@@ -709,6 +709,12 @@ BASE_FEATURE(kPrefetchPrerenderIntegration,
 // If explicitly disabled, prefetch proxy is not used.
 BASE_FEATURE(kPrefetchProxy, "PrefetchProxy", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the feature allows the prerender host to be reused for the
+// future same-site page prerender if marked as reusable.
+BASE_FEATURE(kPrerender2ReuseHost,
+             "Prerender2ReuseHost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,

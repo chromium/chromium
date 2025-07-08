@@ -9368,6 +9368,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerender2)},
 
+    {"prerender2-reuse-host", flag_descriptions::kPrerender2ReuseHostName,
+     flag_descriptions::kPrerender2ReuseHostDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPrerender2ReuseHost)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,
@@ -12803,7 +12807,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableSeparatePixPreferenceItemDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(
-        autofill::features::kAutofillEnableSeparatePixPreferenceItem)},
+         autofill::features::kAutofillEnableSeparatePixPreferenceItem)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.

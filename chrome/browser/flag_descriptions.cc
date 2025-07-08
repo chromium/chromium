@@ -567,6 +567,11 @@ const char kPrerender2Description[] =
     "prerendering. If disabled, all prerendering APIs still exist, but a "
     "prerender will never successfully take place.";
 
+const char kPrerender2ReuseHostName[] = "Prerender Reuse Host";
+const char kPrerender2ReuseHostDescription[] =
+    "If enabled, the browser will reuse the prerender host and the underlying"
+    "process for future prerendered pages when possible.";
+
 const char kEnableDrDcName[] =
     "Enables Display Compositor to use a new gpu thread.";
 const char kEnableDrDcDescription[] =

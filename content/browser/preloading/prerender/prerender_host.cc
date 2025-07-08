@@ -64,6 +64,28 @@ base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallback() {
   return *host_creation_callback;
 }
 
+void CheckPrerenderAttributes(const PrerenderAttributes& attributes) {
+  // If the prerendering is browser-initiated, it is expected to have no
+  // initiator. All initiator related information should be null or invalid. On
+  // the other hand, renderer-initiated prerendering should have valid initiator
+  // information.
+  if (attributes.IsBrowserInitiated()) {
+    CHECK(!attributes.initiator_origin.has_value());
+    CHECK(!attributes.initiator_frame_token.has_value());
+    CHECK_EQ(attributes.initiator_process_id,
+             ChildProcessHost::kInvalidUniqueID);
+    CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
+    CHECK(attributes.initiator_frame_tree_node_id.is_null());
+  } else {
+    CHECK(attributes.initiator_origin.has_value());
+    CHECK(attributes.initiator_frame_token.has_value());
+    CHECK_NE(attributes.initiator_process_id,
+             ChildProcessHost::kInvalidUniqueID);
+    CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
+    CHECK(attributes.initiator_frame_tree_node_id);
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // This is similar to `HttpRequestHeaders::ToString()` but the headers are
 // separated by "\n", not "\r\n", as
@@ -296,6 +318,7 @@ void PrerenderHost::SetHostCreationCallbackForTesting(
 }
 
 PrerenderHost::PrerenderHost(
+    std::unique_ptr<PrerenderHost> reuse_host,
     const PrerenderAttributes& attributes,
     WebContentsImpl& web_contents,
     base::WeakPtr<PreloadingAttempt> attempt,
@@ -306,59 +329,49 @@ PrerenderHost::PrerenderHost(
                                            embedder_histogram_suffix())),
       attempt_(std::move(attempt)),
       devtools_attempt_(std::move(devtools_attempt)),
-      web_contents_(web_contents),
-      frame_tree_delegate_(std::make_unique<PrerenderFrameTreeDelegate>(
-          web_contents.GetBrowserContext(),
-          web_contents,
-          *this)) {
+      web_contents_(web_contents) {
 #if BUILDFLAG(IS_ANDROID)
   if (trigger_type() == PreloadingTriggerType::kSpeculationRule) {
     base::trace_event::EmitNamedTrigger("sp-prerender-start");
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  // If the prerendering is browser-initiated, it is expected to have no
-  // initiator. All initiator related information should be null or invalid. On
-  // the other hand, renderer-initiated prerendering should have valid initiator
-  // information.
-  if (attributes.IsBrowserInitiated()) {
-    CHECK(!attributes.initiator_origin.has_value());
-    CHECK(!attributes.initiator_frame_token.has_value());
-    CHECK_EQ(attributes.initiator_process_id,
-             ChildProcessHost::kInvalidUniqueID);
-    CHECK_EQ(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK(attributes.initiator_frame_tree_node_id.is_null());
-  } else {
-    CHECK(attributes.initiator_origin.has_value());
-    CHECK(attributes.initiator_frame_token.has_value());
-    CHECK_NE(attributes.initiator_process_id,
-             ChildProcessHost::kInvalidUniqueID);
-    CHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    CHECK(attributes.initiator_frame_tree_node_id);
-  }
 
+  CheckPrerenderAttributes(attributes_);
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kTriggeredButPending);
 
-  scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::Create(web_contents.GetBrowserContext());
-  GetFrameTree()->Init(site_instance.get(),
-                       /*renderer_initiated_creation=*/false,
-                       /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                       /*frame_policy=*/blink::FramePolicy(),
-                       base::UnguessableToken::Create());
+  if (reuse_host) {
+    frame_tree_delegate_ = std::move(reuse_host->frame_tree_delegate_);
+    // Reset the NavigationRequest if there is an on-going one in the frame tree
+    // since the navigation is no longer needed. If there is no on-going
+    // NavigationRequest, the function call will be no-op.
+    GetFrameTree()->root()->ResetNavigationRequest(
+        NavigationDiscardReason::kExplicitCancellation);
+    frame_tree_delegate_->prerender_host_ = *this;
+  } else {
+    frame_tree_delegate_ = std::make_unique<PrerenderFrameTreeDelegate>(
+        web_contents.GetBrowserContext(), web_contents, *this);
+    scoped_refptr<SiteInstanceImpl> site_instance =
+        SiteInstanceImpl::Create(web_contents.GetBrowserContext());
+    GetFrameTree()->Init(site_instance.get(),
+                         /*renderer_initiated_creation=*/false,
+                         /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
+                         /*frame_policy=*/blink::FramePolicy(),
+                         base::UnguessableToken::Create());
 
-  // Use the same SessionStorageNamespace as the primary page for the
-  // prerendering page.
-  GetFrameTree()->controller().SetSessionStorageNamespace(
-      site_instance->GetStoragePartitionConfig(),
-      web_contents_->GetPrimaryFrameTree()
-          .controller()
-          .GetSessionStorageNamespace(
-              site_instance->GetStoragePartitionConfig()));
+    // Use the same SessionStorageNamespace as the primary page for the
+    // prerendering page.
+    GetFrameTree()->controller().SetSessionStorageNamespace(
+        site_instance->GetStoragePartitionConfig(),
+        web_contents_->GetPrimaryFrameTree()
+            .controller()
+            .GetSessionStorageNamespace(
+                site_instance->GetStoragePartitionConfig()));
 
-  // TODO(crbug.com/40177940): This should be moved to FrameTree::Init
-  web_contents_->NotifySwappedFromRenderManager(
-      /*old_frame=*/nullptr,
-      GetFrameTree()->root()->render_manager()->current_frame_host());
+    // TODO(crbug.com/40177940): This should be moved to FrameTree::Init
+    web_contents_->NotifySwappedFromRenderManager(
+        /*old_frame=*/nullptr,
+        GetFrameTree()->root()->render_manager()->current_frame_host());
+  }
 
   frame_tree_node_id_ = GetFrameTree()->root()->frame_tree_node_id();
 

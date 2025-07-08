@@ -7797,6 +7797,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "prerender2-reuse-host",
+    "owners": [
+      "gjc@google.com",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "press-and-hold-esc-to-exit-browser-fullscreen",
     "owners": ["muyaoxu@google.com", "takumif@chromium.org"],
     "expiry_milestone": 134

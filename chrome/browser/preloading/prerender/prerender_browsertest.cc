@@ -946,6 +946,11 @@ class PrerenderPrewarmDefaultSearchEngineTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<content::PreloadingPredictor> {
  public:
+  PrerenderPrewarmDefaultSearchEngineTest() {
+    reuse_prerender_host_feature_.InitAndEnableFeature(
+        features::kPrerender2ReuseHost);
+  }
+
   void SetUpOnMainThread() override {
     PrerenderBrowserTest::SetUpOnMainThread();
     PrerenderManager::CreateForWebContents(GetActiveWebContents());
@@ -966,6 +971,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
   GURL prewarm_url_;
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
+  base::test::ScopedFeatureList reuse_prerender_host_feature_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
@@ -983,6 +989,37 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
+                       PrewarmPrerenderReuseThenActivate) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Prerender the prewarm page.
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+  auto host_id = GetPrewarmSearchResultHost();
+  ASSERT_TRUE(host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+
+  // Trigger a new prerender under the same site
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
+  prerender_helper().AddPrerender(prerender_url);
+  auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
+  ASSERT_EQ(host_id, reuse_host_id);
+
+  // Activate
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  prerender_helper().NavigatePrimaryPageAsync(
+      prerender_url, ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
 }
 
 }  // namespace

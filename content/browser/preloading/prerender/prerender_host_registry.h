@@ -367,6 +367,11 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void RecordPotentialPrerenderProcessReuse(bool has_machable_hosts,
                                             const GURL& naivgation_url);
 
+  // Find a prerender host that is marked as reusable and under the
+  // same site as attributes.prerendering_url.
+  std::unique_ptr<PrerenderHost> FindPrerenderHostToReuse(
+      const PrerenderAttributes& attributes);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
   // Holds the frame_tree_node_id of running PrerenderHost. Reset to an invalid

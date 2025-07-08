@@ -13,3 +13,4 @@
 -PrerenderBrowserTest.PrerenderAndActivate
 -PrerenderBrowserTest.SameOriginMainFrameNavigation
 -PrerenderBrowserTest.SameSiteCrossOriginMainFrameNavigation
+-PrerenderPrewarmDefaultSearchEngineTest.PrewarmPrerenderReuseThenActivate

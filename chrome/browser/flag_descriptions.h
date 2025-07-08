@@ -2034,6 +2034,9 @@ extern const char kPreloadingOnPerformancePageDescription[];
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 
+extern const char kPrerender2ReuseHostName[];
+extern const char kPrerender2ReuseHostDescription[];
+
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 

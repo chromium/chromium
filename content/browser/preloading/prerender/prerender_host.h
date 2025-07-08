@@ -191,7 +191,8 @@ class CONTENT_EXPORT PrerenderHost {
   static void SetHostCreationCallbackForTesting(
       base::OnceCallback<void(FrameTreeNodeId host_id)> callback);
 
-  PrerenderHost(const PrerenderAttributes& attributes,
+  PrerenderHost(std::unique_ptr<PrerenderHost> reuse_host,
+                const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt,
                 std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt);
@@ -311,6 +312,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   // Returns true if the given `url` is the same site as the initial_url.
   bool IsUrlSameSite(const GURL& url) const;
+
+  bool IsReusable() const { return attributes_.allow_reuse; }
 
   // Called when the prerender pages asks the client to change the Accept Client
   // Hints. The instruction applies to the prerendering page before activation,
