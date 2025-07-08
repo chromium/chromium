@@ -40,7 +40,10 @@ enum class ProfilerThreadType {
   // Thread pool worker thread.
   kThreadPoolWorker,
 
-  kMax = kThreadPoolWorker,
+  // Network thread. Only exists on Android.
+  kNetwork,
+
+  kMax = kNetwork,
 };
 
 }  // namespace sampling_profiler

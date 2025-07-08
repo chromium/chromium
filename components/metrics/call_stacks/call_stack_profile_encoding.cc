@@ -50,6 +50,8 @@ Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
       return SERVICE_WORKER_THREAD;
     case sampling_profiler::ProfilerThreadType::kThreadPoolWorker:
       return THREAD_POOL_THREAD;
+    case sampling_profiler::ProfilerThreadType::kNetwork:
+      return NETWORK_THREAD;
   }
   NOTREACHED();
 }

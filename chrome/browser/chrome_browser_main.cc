@@ -107,6 +107,8 @@
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/synthetic_trial_syncer.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/content_features.h"
@@ -1107,6 +1109,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 }
 
 void ChromeBrowserMainParts::PostCreateThreads() {
+  TRACE_EVENT("startup", "ChromeBrowserMainParts::PostCreateThreads");
   // This task should be posted after the IO thread starts, and prior to the
   // base version of the function being invoked. It is functionally okay to post
   // this task in method ChromeBrowserMainParts::BrowserThreadsStarted() which
@@ -1128,6 +1131,23 @@ void ChromeBrowserMainParts::PostCreateThreads() {
       base::BindOnce(&tracing::TracingSamplerProfiler::
                          CreateOnChildThreadWithCustomUnwinders,
                      base::BindRepeating(&CreateCoreUnwindersFactory)));
+#else
+  if (content::IsInProcessNetworkService() &&
+      base::FeatureList::IsEnabled(content::kNetworkServiceDedicatedThread)) {
+    auto task_runner = content::GetNetworkTaskRunner();
+    // In some tests, we don't initialize the Network Service, so we check that
+    // here to avoid crashing.
+    //
+    // TODO(thiabaud): Make this more robust, regarding initialization order.
+    // The current implementation will silently fail if this is called before
+    // |GetNetworkService()| is called for the first time.
+    if (task_runner) {
+      task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
+                         sampling_profiler::ProfilerThreadType::kNetwork));
+    }
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
