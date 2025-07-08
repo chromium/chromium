@@ -7,6 +7,7 @@
 #import "base/threading/platform_thread.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
@@ -275,7 +276,7 @@ void MaybeDismissNotification() {
 
   // Dismiss Signin.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
       performAction:grey_tap()];
 }
 
