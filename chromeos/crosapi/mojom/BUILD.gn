@@ -26,7 +26,6 @@ mojom("mojom") {
     "keystore_service.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",
-    "login.mojom",
     "magic_boost.mojom",
     "mahi.mojom",
     "media_ui.mojom",

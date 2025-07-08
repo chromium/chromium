@@ -24,7 +24,6 @@ import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
-import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
@@ -180,10 +179,7 @@ interface Crosapi {
   // Added in M91.
   [MinVersion=25] BindLocalPrinter@30(pending_receiver<LocalPrinter> receiver);
 
-  // Binds the login service.
-  // Added in M99.
-  [MinVersion=63] BindLogin@67(pending_receiver<Login> receiver);
-
+  // BindLogin@67 was removed.
   // BindLoginScreenStorage@68 was removed.
   // BindLoginState@61 was removed.
 

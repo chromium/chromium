@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/browser/lifetime/application_lifetime.h",
   "+chrome/browser/lifetime/termination_notification.h",
   "+chrome/browser/policy/extension_force_install_mixin.h",
+  "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/session",
   "+chrome/common",

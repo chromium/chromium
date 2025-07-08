@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "chromeos/crosapi/mojom/login.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -22,15 +21,7 @@ class LoginAsyncFunctionBase : public ExtensionFunction {
 };
 }  // namespace internal
 
-class ExtensionFunctionWithOptionalErrorResult : public ExtensionFunction {
- protected:
-  ~ExtensionFunctionWithOptionalErrorResult() override;
-
-  void OnResult(const std::optional<std::string>& error);
-};
-
-class LoginLaunchManagedGuestSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginLaunchManagedGuestSessionFunction : public ExtensionFunction {
  public:
   LoginLaunchManagedGuestSessionFunction();
 
@@ -50,8 +41,7 @@ class LoginLaunchManagedGuestSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginExitCurrentSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginExitCurrentSessionFunction : public ExtensionFunction {
  public:
   LoginExitCurrentSessionFunction();
 
@@ -132,8 +122,7 @@ class LoginUnlockManagedGuestSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginLockCurrentSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginLockCurrentSessionFunction : public ExtensionFunction {
  public:
   LoginLockCurrentSessionFunction();
 
@@ -174,8 +163,7 @@ class LoginUnlockCurrentSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginLaunchSamlUserSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginLaunchSamlUserSessionFunction : public ExtensionFunction {
  public:
   LoginLaunchSamlUserSessionFunction();
 

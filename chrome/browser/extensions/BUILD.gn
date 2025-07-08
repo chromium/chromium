@@ -1119,7 +1119,6 @@ source_set("extensions") {
       deps += [
         "//chrome/browser/chromeos/extensions/desk_api",
         "//chrome/browser/chromeos/extensions/external_loader",
-        "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request",
         "//chrome/browser/chromeos/extensions/login_screen/login_state",
         "//chrome/browser/chromeos/platform_keys",
         "//chrome/browser/chromeos/policy/dlp",
@@ -1315,7 +1314,6 @@ source_set("extensions") {
         "//chrome/browser/ash/settings",
         "//chrome/browser/ash/system_logs",
         "//chrome/browser/ash/system_web_apps/apps",
-        "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done",
         "//chrome/browser/devtools",
         "//chrome/browser/nearby_sharing/common",
         "//chrome/browser/policy:system_features_disable_list",

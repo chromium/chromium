@@ -22,13 +22,12 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
+#include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -43,6 +42,9 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -1389,96 +1391,66 @@ TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
   EXPECT_NE(foo_salt, baz_salt);
 }
 
-class LoginApiExternalLogoutRequestUnittest : public ExtensionApiUnittest {
- public:
-  // A mock around the external logout event handler for tracking method calls.
-  class MockExternalLogoutRequestEventHandler
-      : public ExternalLogoutRequestEventHandler {
-   public:
-    explicit MockExternalLogoutRequestEventHandler(
-        content::BrowserContext* context)
-        : ExternalLogoutRequestEventHandler(context) {}
-    ~MockExternalLogoutRequestEventHandler() override = default;
-    MOCK_METHOD0(OnRequestExternalLogout, void());
-  };
+TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
+  // Register second profile. Not necessary to be a User profile.
+  profile_manager()->CreateTestingProfile("other@test");
 
-  LoginApiExternalLogoutRequestUnittest() = default;
-
-  LoginApiExternalLogoutRequestUnittest(
-      const LoginApiExternalLogoutRequestUnittest&) = delete;
-  LoginApiExternalLogoutRequestUnittest& operator=(
-      const LoginApiExternalLogoutRequestUnittest&) = delete;
-
-  ~LoginApiExternalLogoutRequestUnittest() override = default;
-
- protected:
-  void SetUp() override {
-    ExtensionApiUnittest::SetUp();
-
-    mock_external_logout_request_event_handler_ =
-        std::make_unique<MockExternalLogoutRequestEventHandler>(profile());
+  std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
+  {
+    auto loaded_profiles =
+        profile_manager()->profile_manager()->GetLoadedProfiles();
+    ASSERT_GE(loaded_profiles.size(), 2u);
+    for (auto* profile : loaded_profiles) {
+      observers.push_back(std::make_unique<TestEventRouterObserver>(
+          EventRouterFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+              profile,
+              base::BindOnce([](content::BrowserContext* browser_context) {
+                return std::make_unique<EventRouter>(
+                    browser_context,
+                    /*extension_prefs=*/nullptr);
+              }))));
+    }
   }
-
-  std::unique_ptr<MockExternalLogoutRequestEventHandler>
-      mock_external_logout_request_event_handler_;
-};
-
-TEST_F(LoginApiExternalLogoutRequestUnittest, CallsOnRequestExternalLogout) {
-  // Expect the |OnRequestExternalLogout()| method to be called.
-  EXPECT_CALL(*mock_external_logout_request_event_handler_,
-              OnRequestExternalLogout())
-      .Times(1);
 
   auto function = base::MakeRefCounted<LoginRequestExternalLogoutFunction>();
   RunFunction(function.get(), "[]");
+
+  // Make sure events are routed to all profiles.
+  for (const auto& observer : observers) {
+    EXPECT_TRUE(base::Contains(
+        observer->events(), api::login::OnRequestExternalLogout::kEventName));
+  }
 }
 
-class LoginApiExternalLogoutDoneUnittest : public ExtensionApiUnittest {
- public:
-  class MockExternalLogoutDoneEventHandler
-      : public ExternalLogoutDoneEventHandler {
-   public:
-    explicit MockExternalLogoutDoneEventHandler(
-        content::BrowserContext* context)
-        : ExternalLogoutDoneEventHandler(context) {}
-    ~MockExternalLogoutDoneEventHandler() override = default;
-    MOCK_METHOD0(OnExternalLogoutDone, void());
-  };
+TEST_F(LoginApiUnittest, CallsOnExternalLogoutDone) {
+  // Register second profile. Not necessary to be a User profile.
+  profile_manager()->CreateTestingProfile("other@test");
 
-  LoginApiExternalLogoutDoneUnittest() = default;
-
-  LoginApiExternalLogoutDoneUnittest(
-      const LoginApiExternalLogoutDoneUnittest&) = delete;
-  LoginApiExternalLogoutDoneUnittest& operator=(
-      const LoginApiExternalLogoutDoneUnittest&) = delete;
-
-  ~LoginApiExternalLogoutDoneUnittest() override = default;
-
- protected:
-  void SetUp() override {
-    ExtensionApiUnittest::SetUp();
-
-    mock_external_logout_done_event_handler_ =
-        std::make_unique<MockExternalLogoutDoneEventHandler>(profile());
+  std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
+  {
+    auto loaded_profiles =
+        profile_manager()->profile_manager()->GetLoadedProfiles();
+    ASSERT_GE(loaded_profiles.size(), 2u);
+    for (auto* profile : loaded_profiles) {
+      observers.push_back(std::make_unique<TestEventRouterObserver>(
+          EventRouterFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+              profile,
+              base::BindOnce([](content::BrowserContext* browser_context) {
+                return std::make_unique<EventRouter>(
+                    browser_context,
+                    /*extension_prefs=*/nullptr);
+              }))));
+    }
   }
-
-  void TearDown() override {
-    mock_external_logout_done_event_handler_.reset();
-
-    ExtensionApiUnittest::TearDown();
-  }
-
-  std::unique_ptr<MockExternalLogoutDoneEventHandler>
-      mock_external_logout_done_event_handler_;
-};
-
-TEST_F(LoginApiExternalLogoutDoneUnittest, CallsOnExternalLogoutDone) {
-  // Expect the |OnExternalLogoutDone()| method to be called.
-  EXPECT_CALL(*mock_external_logout_done_event_handler_, OnExternalLogoutDone())
-      .Times(1);
 
   auto function = base::MakeRefCounted<LoginNotifyExternalLogoutDoneFunction>();
   RunFunction(function.get(), "[]");
+
+  // Make sure events are routed to all profiles.
+  for (const auto& observer : observers) {
+    EXPECT_TRUE(base::Contains(observer->events(),
+                               api::login::OnExternalLogoutDone::kEventName));
+  }
 }
 
 }  // namespace extensions

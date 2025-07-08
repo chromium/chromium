@@ -12,9 +12,6 @@
 #include "base/logging.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/browser_process.h"
@@ -22,6 +19,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
@@ -33,15 +31,13 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "extensions/browser/event_router.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace extensions {
 
 namespace {
-crosapi::LoginAsh* GetLoginApi() {
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_ash();
-}
 
 base::expected<void, std::string> LockSession(
     std::optional<user_manager::UserType> user_type) {
@@ -164,19 +160,6 @@ ExtensionFunction::ResponseAction LoginAsyncFunctionBase::MaybeResponded() {
 }
 
 }  // namespace internal
-
-ExtensionFunctionWithOptionalErrorResult::
-    ~ExtensionFunctionWithOptionalErrorResult() = default;
-
-void ExtensionFunctionWithOptionalErrorResult::OnResult(
-    const std::optional<std::string>& error) {
-  if (error) {
-    Respond(Error(*error));
-    return;
-  }
-
-  return Respond(NoArguments());
-}
 
 LoginLaunchManagedGuestSessionFunction::
     LoginLaunchManagedGuestSessionFunction() = default;
@@ -429,7 +412,13 @@ LoginRequestExternalLogoutFunction::~LoginRequestExternalLogoutFunction() =
     default;
 
 ExtensionFunction::ResponseAction LoginRequestExternalLogoutFunction::Run() {
-  GetLoginApi()->NotifyOnRequestExternalLogout();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+    EventRouter::Get(profile)->BroadcastEvent(
+        std::make_unique<Event>(events::LOGIN_ON_REQUEST_EXTERNAL_LOGOUT,
+                                api::login::OnRequestExternalLogout::kEventName,
+                                api::login::OnRequestExternalLogout::Create()));
+  }
   return RespondNow(NoArguments());
 }
 
@@ -439,7 +428,13 @@ LoginNotifyExternalLogoutDoneFunction::
     ~LoginNotifyExternalLogoutDoneFunction() = default;
 
 ExtensionFunction::ResponseAction LoginNotifyExternalLogoutDoneFunction::Run() {
-  GetLoginApi()->NotifyOnExternalLogoutDone();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+    EventRouter::Get(profile)->BroadcastEvent(
+        std::make_unique<Event>(events::LOGIN_ON_EXTERNAL_LOGOUT_DONE,
+                                api::login::OnExternalLogoutDone::kEventName,
+                                api::login::OnExternalLogoutDone::Create()));
+  }
   return RespondNow(NoArguments());
 }
 

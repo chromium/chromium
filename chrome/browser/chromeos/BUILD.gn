@@ -24,8 +24,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/extensions/file_system_provider:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
-    "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done:unit_tests",
-    "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
