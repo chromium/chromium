@@ -18,10 +18,6 @@
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
-
 namespace media {
 class MediaGpuChannelManager;
 }
@@ -37,7 +33,6 @@ class GpuServiceFactory {
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::GPUInfo& gpu_info,
       base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
 
   GpuServiceFactory(const GpuServiceFactory&) = delete;
@@ -57,8 +52,6 @@ class GpuServiceFactory {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
   media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
-  // Indirectly owned by GpuChildThread.
-  raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;

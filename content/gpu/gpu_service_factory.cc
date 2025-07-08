@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/media_buildflags.h"
@@ -32,7 +31,6 @@ GpuServiceFactory::GpuServiceFactory(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
   gpu_preferences_ = gpu_preferences;
@@ -41,7 +39,6 @@ GpuServiceFactory::GpuServiceFactory(
   gpu_info_ = gpu_info;
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   media_gpu_channel_manager_ = std::move(media_gpu_channel_manager);
-  gpu_memory_buffer_factory_ = gpu_memory_buffer_factory;
   android_overlay_factory_cb_ = std::move(android_overlay_factory_cb);
 #endif
 }
