@@ -12,19 +12,34 @@
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
+namespace {
+
+void ResetCachedLastActiveTimeForWebState(web::WebState* web_state) {
+  if (!web_state) {
+    return;
+  }
+
+  auto* tab_helper = IOSChromeSyncedTabDelegate::FromWebState(web_state);
+  if (!tab_helper) {
+    return;
+  }
+
+  tab_helper->ResetCachedLastActiveTime();
+}
+
+}  // namespace
+
 SyncedWindowDelegateBrowserAgent::SyncedWindowDelegateBrowserAgent(
     Browser* browser)
     : BrowserUserData(browser),
-      web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {
   browser->AddObserver(this);
-  for (int index = 0; index < web_state_list_->count(); ++index) {
-    SetWindowIdForWebState(web_state_list_->GetWebStateAt(index));
-  }
-  web_state_list_->AddObserver(this);
+  StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
 }
 
-SyncedWindowDelegateBrowserAgent::~SyncedWindowDelegateBrowserAgent() {}
+SyncedWindowDelegateBrowserAgent::~SyncedWindowDelegateBrowserAgent() {
+  StopObserving();
+}
 
 SessionID SyncedWindowDelegateBrowserAgent::GetTabIdAt(int index) const {
   return GetTabAt(index)->GetSessionId();
@@ -54,7 +69,7 @@ SessionID SyncedWindowDelegateBrowserAgent::GetSessionId() const {
 }
 
 int SyncedWindowDelegateBrowserAgent::GetTabCount() const {
-  return web_state_list_->count();
+  return browser_->GetWebStateList()->count();
 }
 
 bool SyncedWindowDelegateBrowserAgent::IsTypeNormal() const {
@@ -73,79 +88,35 @@ bool SyncedWindowDelegateBrowserAgent::IsTabPinned(
 sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
     int index) const {
   return IOSChromeSyncedTabDelegate::FromWebState(
-      web_state_list_->GetWebStateAt(index));
-}
-
-#pragma mark - WebStateListObserver
-
-void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateListStatus& status) {
-  DCHECK_EQ(web_state_list_, web_state_list);
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // Do nothing when a WebState is selected and its status is updated.
-      break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
-      break;
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      SetWindowIdForWebState(replace_change.inserted_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      const WebStateListChangeInsert& insert_change =
-          change.As<WebStateListChangeInsert>();
-      SetWindowIdForWebState(insert_change.inserted_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kGroupCreate:
-      // TODO(crbug.com/329640035): Should Sync be notified of the group
-      // creation here?
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // TODO(crbug.com/329640035): Should Sync be notified of the group's
-      // visual data update here?
-      break;
-    case WebStateListChange::Type::kGroupMove:
-      // TODO(crbug.com/329640035): Should Sync be notified of the group move
-      // here?
-      break;
-    case WebStateListChange::Type::kGroupDelete:
-      // TODO(crbug.com/329640035): Should Sync be notified of the group
-      // deletion here?
-      break;
-  }
-  if (status.active_web_state_change()) {
-    if (status.old_active_web_state &&
-        IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)) {
-      IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)
-          ->ResetCachedLastActiveTime();
-    }
-    if (status.new_active_web_state &&
-        IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)) {
-      IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)
-          ->ResetCachedLastActiveTime();
-    }
-  }
+      browser_->GetWebStateList()->GetWebStateAt(index));
 }
 
 #pragma mark - BrowserObserver
 
 void SyncedWindowDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
-  web_state_list_->RemoveObserver(this);
   browser->RemoveObserver(this);
 }
 
-#pragma mark - Private
+#pragma mark - TabsDependencyInstaller
 
-void SyncedWindowDelegateBrowserAgent::SetWindowIdForWebState(
+void SyncedWindowDelegateBrowserAgent::OnWebStateInserted(
     web::WebState* web_state) {
   IOSChromeSessionTabHelper::FromWebState(web_state)->SetWindowID(session_id_);
+}
+
+void SyncedWindowDelegateBrowserAgent::OnWebStateRemoved(
+    web::WebState* web_state) {
+  IOSChromeSessionTabHelper::FromWebState(web_state)->ClearWindowID();
+}
+
+void SyncedWindowDelegateBrowserAgent::OnWebStateDeleted(
+    web::WebState* web_state) {
+  // Nothing to do.
+}
+
+void SyncedWindowDelegateBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  ResetCachedLastActiveTimeForWebState(old_active);
+  ResetCachedLastActiveTimeForWebState(new_active);
 }

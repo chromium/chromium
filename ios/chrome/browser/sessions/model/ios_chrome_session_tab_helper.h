@@ -21,8 +21,11 @@ class IOSChromeSessionTabHelper
   SessionID session_id() const { return session_id_; }
 
   // Identifier of the window the tab is in.
-  void SetWindowID(SessionID window_id);
   SessionID window_id() const { return window_id_; }
+
+  // Sets/clears the identifier of the window the tab is in.
+  void SetWindowID(SessionID window_id);
+  void ClearWindowID();
 
  private:
   explicit IOSChromeSessionTabHelper(web::WebState* web_state);

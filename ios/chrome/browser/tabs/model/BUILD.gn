@@ -12,6 +12,7 @@ source_set("model") {
   ]
   public_deps = [ "//ios/web" ]
   deps = [
+    ":dependency_installer",
     "//components/saved_tab_groups/public",
     "//components/sessions:session_id",
     "//components/sync_sessions",
