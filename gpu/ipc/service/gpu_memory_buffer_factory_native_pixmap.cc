@@ -95,7 +95,6 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
   }
 
   gfx::GpuMemoryBufferHandle new_handle(std::move(native_pixmap_handle));
-  new_handle.id = id;
 
   // TODO(reveman): Remove this once crbug.com/628334 has been fixed.
   {

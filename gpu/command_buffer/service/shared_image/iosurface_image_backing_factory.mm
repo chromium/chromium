@@ -259,7 +259,6 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::IO_SURFACE_BUFFER;
   handle.io_surface = std::move(io_surface);
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
 
   CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(mailbox, format, size, color_space,

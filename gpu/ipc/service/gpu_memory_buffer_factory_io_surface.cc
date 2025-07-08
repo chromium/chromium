@@ -50,7 +50,6 @@ GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::IO_SURFACE_BUFFER;
-  handle.id = id;
   handle.io_surface = io_surface;
 
 #if BUILDFLAG(IS_IOS)

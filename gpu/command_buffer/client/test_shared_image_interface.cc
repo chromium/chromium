@@ -53,7 +53,6 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(
     const gfx::BufferFormat& buffer_format,
     const gfx::Size& size,
     gfx::BufferUsage buffer_usage) {
-  static int last_handle_id = 0;
   size_t buffer_size = 0u;
   CHECK(
       gfx::BufferSizeForBufferFormatChecked(size, buffer_format, &buffer_size));
@@ -62,7 +61,6 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(
   CHECK(shared_memory_region.IsValid());
 
   gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
-  handle.id = gfx::GpuMemoryBufferId(last_handle_id++);
   handle.offset = 0;
   handle.stride = static_cast<uint32_t>(
       gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));

@@ -172,7 +172,6 @@ TEST_F(StructTraitsTest, AcceleratedWidget) {
 }
 
 TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
-  const gfx::GpuMemoryBufferId kId(99);
   const uint32_t kOffset = 126;
   const uint32_t kStride = 256;
   base::UnsafeSharedMemoryRegion shared_memory_region =
@@ -181,7 +180,6 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   ASSERT_TRUE(shared_memory_region.Map().IsValid());
 
   gfx::GpuMemoryBufferHandle handle(shared_memory_region.Duplicate());
-  handle.id = kId;
   handle.offset = kOffset;
   handle.stride = kStride;
 
@@ -189,7 +187,6 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   gfx::GpuMemoryBufferHandle output;
   remote->EchoGpuMemoryBufferHandle(std::move(handle), &output);
   EXPECT_EQ(gfx::SHARED_MEMORY_BUFFER, output.type);
-  EXPECT_EQ(kId, output.id);
   EXPECT_EQ(kOffset, output.offset);
   EXPECT_EQ(kStride, output.stride);
 
@@ -216,7 +213,6 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   native_pixmap_handle.planes.emplace_back(kOffset, kStride, kSize,
                                            std::move(buffer_handle));
   gfx::GpuMemoryBufferHandle handle2(std::move(native_pixmap_handle));
-  handle2.id = kId;
   handle2.offset = kOffset;
   handle2.stride = kStride;
   remote->EchoGpuMemoryBufferHandle(std::move(handle2), &output);

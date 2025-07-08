@@ -81,7 +81,6 @@ GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   // referred to by mailboxes.
   gfx::GpuMemoryBufferHandle handle =
       shared_image_->CloneGpuMemoryBufferHandle();
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   return handle;
 }
 

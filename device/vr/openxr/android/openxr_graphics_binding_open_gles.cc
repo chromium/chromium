@@ -260,8 +260,6 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   // Create a GMB Handle from scoped_ahb_handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
-  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1.
-  gmb_handle.id = gfx::GpuMemoryBufferId(1);
   gmb_handle.android_hardware_buffer =
       swap_chain_info.scoped_ahb_handle.Clone();
 

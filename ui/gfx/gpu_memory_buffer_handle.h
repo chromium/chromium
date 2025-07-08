@@ -208,7 +208,6 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 #endif  // BUILDFLAG(IS_WIN)
 
   GpuMemoryBufferType type = GpuMemoryBufferType::EMPTY_BUFFER;
-  GpuMemoryBufferId id{0};
 
   uint32_t offset = 0;
   uint32_t stride = 0;

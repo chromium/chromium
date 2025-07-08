@@ -59,7 +59,6 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
 
   // Package `last_received_io_surface_` as a GpuMemoryBuffer.
   gfx::GpuMemoryBufferHandle handle;
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   handle.io_surface = last_received_io_surface_;
 

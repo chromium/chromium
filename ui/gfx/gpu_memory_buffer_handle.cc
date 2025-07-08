@@ -128,7 +128,6 @@ GpuMemoryBufferHandle::~GpuMemoryBufferHandle() = default;
 GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   GpuMemoryBufferHandle handle;
   handle.type = type;
-  handle.id = id;
   handle.offset = offset;
   handle.stride = stride;
 #if BUILDFLAG(IS_OZONE)

@@ -66,7 +66,6 @@ struct GpuMemoryBufferId {
 // gfx::GpuMemoryBufferHandle
 [EnableIf=use_blink]
 struct GpuMemoryBufferHandle {
-  GpuMemoryBufferId id;
   uint32 offset;
   uint32 stride;
   GpuMemoryBufferPlatformHandle? platform_handle;

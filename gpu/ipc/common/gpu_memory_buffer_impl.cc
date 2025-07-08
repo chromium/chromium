@@ -10,7 +10,7 @@ GpuMemoryBufferImpl::GpuMemoryBufferImpl(gfx::GpuMemoryBufferId id,
                                          const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          DestructionCallback callback)
-    : id_(id), size_(size), format_(format), callback_(std::move(callback)) {}
+    : size_(size), format_(format), callback_(std::move(callback)) {}
 
 GpuMemoryBufferImpl::~GpuMemoryBufferImpl() {
 #if DCHECK_IS_ON()

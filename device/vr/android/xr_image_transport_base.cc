@@ -128,9 +128,6 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
   // Create a GMB Handle from AHardwareBuffer handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
-  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1
-  // here.
-  gmb_handle.id = gfx::GpuMemoryBufferId(1);
   gmb_handle.android_hardware_buffer = buffer->scoped_ahb_handle.Clone();
 
   buffer->shared_image = mailbox_bridge_->CreateSharedImage(

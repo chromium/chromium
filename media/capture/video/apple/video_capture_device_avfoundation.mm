@@ -967,7 +967,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                           (const gfx::ColorSpace&)colorSpace {
   DCHECK(ioSurface);
   gfx::GpuMemoryBufferHandle handle;
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
 

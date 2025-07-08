@@ -231,9 +231,6 @@ template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
                  gfx::GpuMemoryBufferHandle> {
-  static gfx::GpuMemoryBufferId id(const gfx::GpuMemoryBufferHandle& handle) {
-    return handle.id;
-  }
   static uint32_t offset(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.offset;
   }

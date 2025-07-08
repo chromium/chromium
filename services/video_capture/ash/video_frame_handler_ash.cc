@@ -73,7 +73,12 @@ crosapi::mojom::ReadyFrameInBufferPtr ToCrosapiBuffer(
 crosapi::mojom::GpuMemoryBufferHandlePtr ToCrosapiGpuMemoryBufferHandle(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   auto crosapi_gpu_handle = crosapi::mojom::GpuMemoryBufferHandle::New();
-  crosapi_gpu_handle->id = buffer_handle.id.id;
+
+  // NOTE: VideoFrameHandlerAsh is unused and waiting to be deleted after the
+  // removal of LaCrOS, so it doesn't matter what value is passed here.
+  // GpuMemoryBufferHandles no longer have IDs associated with them, so just
+  // pass a dummy invalid value.
+  crosapi_gpu_handle->id = gfx::GenericSharedMemoryId().id;
   crosapi_gpu_handle->offset = buffer_handle.offset;
   crosapi_gpu_handle->stride = buffer_handle.stride;
 

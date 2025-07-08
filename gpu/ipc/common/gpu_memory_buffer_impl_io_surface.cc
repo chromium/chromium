@@ -96,8 +96,8 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
 #endif
 
   return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      handle.id, size, format, std::move(callback), handle.Clone(),
-      LockFlags(usage)));
+      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
+      handle.Clone(), LockFlags(usage)));
 }
 
 // static
@@ -106,9 +106,7 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  gfx::GpuMemoryBufferId kBufferId(1);
   handle->type = gfx::IO_SURFACE_BUFFER;
-  handle->id = kBufferId;
   handle->io_surface = gfx::CreateIOSurface(size, format);
   DCHECK(handle->io_surface);
   return base::DoNothing();

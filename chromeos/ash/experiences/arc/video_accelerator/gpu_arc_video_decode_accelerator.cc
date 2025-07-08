@@ -814,7 +814,6 @@ void GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture(
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
-  gmb_handle.id = media::GetNextGpuMemoryBufferId();
   // Explicitly verify the GPU Memory Buffer Handle here.
   if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
                                           gmb_handle)) {

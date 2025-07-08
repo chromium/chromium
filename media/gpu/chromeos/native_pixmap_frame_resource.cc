@@ -311,9 +311,6 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
-  // |gmb_handle.id| is set to the GenericSharedMemoryId from |this|. This
-  // allows for more predictable caching when converting to a VideoFrame.
-  gmb_handle.id = id_;
   return gmb_handle;
 }
 

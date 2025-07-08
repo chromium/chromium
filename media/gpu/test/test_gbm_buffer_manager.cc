@@ -115,8 +115,6 @@ TestGbmBuffer::TestGbmBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
         base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
   }
   handle_ = gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
-  // Set a dummy id since this is for testing only.
-  handle_.id = gfx::GpuMemoryBufferId(0);
 }
 
 TestGbmBuffer::~TestGbmBuffer() {
@@ -189,7 +187,6 @@ gfx::GpuMemoryBufferHandle TestGbmBuffer::CloneHandle() const {
   DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
   gfx::GpuMemoryBufferHandle handle(
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
-  handle.id = handle_.id;
   return handle;
 }
 

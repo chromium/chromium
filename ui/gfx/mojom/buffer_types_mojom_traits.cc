@@ -30,9 +30,6 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
                   gfx::GpuMemoryBufferHandle>::
     Read(gfx::mojom::GpuMemoryBufferHandleDataView data,
          gfx::GpuMemoryBufferHandle* out) {
-  if (!data.ReadId(&out->id))
-    return false;
-
   out->offset = data.offset();
   out->stride = data.stride();
 

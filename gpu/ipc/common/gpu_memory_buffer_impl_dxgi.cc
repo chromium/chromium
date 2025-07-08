@@ -44,7 +44,7 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
-      handle.id, size, format, std::move(callback),
+      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
       std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
 }
@@ -94,10 +94,8 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
       &texture_handle);
   DCHECK(SUCCEEDED(hr));
 
-  gfx::GpuMemoryBufferId kBufferId(1);
   *handle = gfx::GpuMemoryBufferHandle(
       gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
-  handle->id = kBufferId;
   return base::DoNothing();
 }
 
@@ -260,7 +258,6 @@ gfx::GpuMemoryBufferType GpuMemoryBufferImplDXGI::GetType() const {
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle(dxgi_handle_.Clone());
-  handle.id = id_;
   handle.offset = 0;
   handle.stride = stride(0);
 
@@ -275,7 +272,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandleWithRegion(
     base::UnsafeSharedMemoryRegion region) const {
   gfx::GpuMemoryBufferHandle handle(
       dxgi_handle_.CloneWithRegion(std::move(region)));
-  handle.id = id_;
   handle.offset = 0;
   handle.stride = stride(0);
   return handle;

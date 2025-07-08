@@ -494,7 +494,6 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
     }
     gmb_handle = std::move(handle).value();
   }
-  gmb_handle.id = media::GetNextGpuMemoryBufferId();
 
   return gmb_handle;
 }

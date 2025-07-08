@@ -171,9 +171,6 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   // Create a GMB Handle from AHardwareBuffer handle.
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
-  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1
-  // here.
-  gmb_handle.id = gfx::GpuMemoryBufferId(1);
   gmb_handle.android_hardware_buffer =
       shared_buffer_->scoped_ahb_handle.Clone();
 

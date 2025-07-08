@@ -11,7 +11,6 @@
 #include <array>
 #include <optional>
 
-#include "base/atomic_sequence_num.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -78,8 +77,6 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
   }
   native_pixmap_handle.modifier = gfx::NativePixmapHandle::kNoModifier;
   gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
-  static base::AtomicSequenceNumber buffer_id_generator;
-  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
   return handle;
 }
 

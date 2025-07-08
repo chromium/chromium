@@ -214,7 +214,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
 
   handle = gfx::GpuMemoryBufferHandle(
       gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
-  handle.id = id;
 
   return handle;
 }

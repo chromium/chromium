@@ -9,7 +9,6 @@
 
 #include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 
-#include "base/atomic_sequence_num.h"
 #include "build/build_config.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -38,8 +37,6 @@ base::ScopedFD GetDummyFD() {
 }
 #endif
 
-static base::AtomicSequenceNumber buffer_id_generator;
-
 }  // namespace
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -63,7 +60,6 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
   native_pixmap_handle.modifier = modifier;
 
   gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
-  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
   return handle;
 }
 #endif
@@ -89,7 +85,6 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(
   data_ = std::vector<uint8_t>(allocation_size);
 
   handle_.type = gfx::SHARED_MEMORY_BUFFER;
-  handle_.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;

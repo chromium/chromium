@@ -47,7 +47,6 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
-  const auto id = handle.id;
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
           std::move(handle).native_pixmap_handle(), size, format, usage);
@@ -55,7 +54,8 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      id, size, format, std::move(callback), std::move(native_pixmap)));
+      gfx::GpuMemoryBufferHandle::kInvalidId, size, format, std::move(callback),
+      std::move(native_pixmap)));
 }
 
 // static
@@ -135,7 +135,6 @@ gfx::GpuMemoryBufferType GpuMemoryBufferImplNativePixmap::GetType() const {
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
     const {
   gfx::GpuMemoryBufferHandle handle(pixmap_->CloneHandleForIPC());
-  handle.id = id_;
   return handle;
 }
 

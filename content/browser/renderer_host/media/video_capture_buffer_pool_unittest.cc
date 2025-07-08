@@ -459,7 +459,6 @@ namespace {
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
   gfx::GpuMemoryBufferHandle result;
   result.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  result.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   result.io_surface =
       gfx::CreateIOSurface(kDefaultTextureSize, gfx::BufferFormat::BGRA_8888);
   return result;

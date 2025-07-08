@@ -190,7 +190,6 @@ void VideoToolboxFrameConverter::Convert(
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
   gfx::GpuMemoryBufferHandle handle;
-  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   handle.io_surface.reset(CVPixelBufferGetIOSurface(image.get()),
                           base::scoped_policy::RETAIN);

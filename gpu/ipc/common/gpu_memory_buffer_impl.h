@@ -42,7 +42,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
 
   void AssertMapped();
 
-  const gfx::GpuMemoryBufferId id_;
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   DestructionCallback callback_;

@@ -159,7 +159,6 @@ bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
   }
 
   dxgi_handle_ = std::move(buffer_handle).dxgi_handle();
-  handle_id_ = buffer_handle.id;
   dimensions_ = dimensions;
   stride_ = gfx::RowSizeForBufferFormat(dimensions_.width(),
                                         gfx::BufferFormat::YUV_420_BIPLANAR,
@@ -230,7 +229,6 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
   }
   gfx::GpuMemoryBufferHandle handle(
       dxgi_handle_.CloneWithRegion(region_.Duplicate()));
-  handle.id = handle_id_;
   handle.offset = 0;
   handle.stride = stride_;
   return handle;
