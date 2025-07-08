@@ -1254,6 +1254,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ShutdownWithRequests) {
   SimpleTest(GetTestUrl("indexeddb", "shutdown_with_requests.html"));
 }
 
+// Regression test for https://crbug.com/429974682
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteOpenUse) {
+  SimpleTest(GetTestUrl("indexeddb", "delete_open_use.html"));
+}
+
 // Verifies that a "NotFound" DOMException is thrown on reading a large value
 // when the underlying blob file has been deleted but the record is not.
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {

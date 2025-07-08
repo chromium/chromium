@@ -229,6 +229,22 @@ bool Database::IsInitialized() const {
   return backing_store_db_ != nullptr;
 }
 
+StatusOr<int64_t> Database::DeleteDatabase(std::vector<PartitionedLock> locks,
+                                           base::OnceClosure on_complete) {
+  if (!backing_store_db_) {
+    return blink::IndexedDBDatabaseMetadata::DEFAULT_VERSION;
+  }
+
+  const int64_t old_version = version();
+  Status s = backing_store_db_->DeleteDatabase(std::move(locks),
+                                               std::move(on_complete));
+  backing_store_db_.reset();
+  if (!s.ok()) {
+    return base::unexpected(s);
+  }
+  return old_version;
+}
+
 std::vector<PartitionedLockManager::PartitionedLockRequest>
 Database::BuildLockRequestsForTransaction(
     blink::mojom::IDBTransactionMode mode,
