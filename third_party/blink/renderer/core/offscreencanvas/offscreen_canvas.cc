@@ -466,22 +466,7 @@ bool OffscreenCanvas::OriginClean() const {
   return origin_clean_ && !disable_reading_from_canvas_;
 }
 
-std::unique_ptr<CanvasResourceProvider>
-OffscreenCanvas::ReplaceResourceProviderForCanvas2D(
-    std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
-  CHECK(IsRenderingContext2D());
-  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      std::move(resource_provider_for_canvas2d_);
-  resource_provider_for_canvas2d_ = std::move(new_resource_provider);
-  UpdateMemoryUsage();
-  if (old_resource_provider) {
-    old_resource_provider->SetDelegate(nullptr);
-  }
-  return old_resource_provider;
-}
-
 void OffscreenCanvas::DiscardResources() {
-  resource_provider_for_canvas2d_ = nullptr;
   UpdateMemoryUsage();
 }
 

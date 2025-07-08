@@ -248,7 +248,8 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
         CanvasResourceProvider::ShouldInitialize::kCallClear, host);
   }
 
-  host->SetResourceProviderForCanvas2D(std::move(provider));
+  resource_provider_ = std::move(provider);
+  Host()->UpdateMemoryUsage();
 
   if (GetResourceProviderForCanvas2D() &&
       GetResourceProviderForCanvas2D()->IsValid()) {
@@ -265,16 +266,23 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
 std::unique_ptr<CanvasResourceProvider>
 OffscreenCanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> provider) {
-  return HostAsOffscreenCanvas()->ReplaceResourceProviderForCanvas2D(
-      std::move(provider));
+  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
+      std::move(resource_provider_);
+  resource_provider_ = std::move(provider);
+  Host()->UpdateMemoryUsage();
+  if (old_resource_provider) {
+    old_resource_provider->SetDelegate(nullptr);
+  }
+  return old_resource_provider;
 }
 
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
-  return HostAsOffscreenCanvas()->GetResourceProviderForCanvas2D();
+  return resource_provider_.get();
 }
 
 void OffscreenCanvasRenderingContext2D::Reset() {
+  resource_provider_ = nullptr;
   Host()->DiscardResources();
   BaseRenderingContext2D::ResetInternal();
   // Because the host may have changed to a zero size
@@ -345,6 +353,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
   // to fully resolve the snapshot.
   image->PaintImageForCurrentFrame().FlushPendingSkiaOps();
 
+  resource_provider_ = nullptr;
   Host()->DiscardResources();
 
   return MakeGarbageCollected<ImageBitmap>(std::move(image));
@@ -425,12 +434,18 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 
+void OffscreenCanvasRenderingContext2D::Dispose() {
+  resource_provider_.reset();
+  CanvasRenderingContext::Dispose();
+}
+
 void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
   context_lost_mode_ = lost_mode;
   ResetInternal();
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
+    resource_provider_ = nullptr;
     host->DiscardResources();
     host->DiscardResourceDispatcher();
   }
