@@ -22,11 +22,6 @@ def main():
                       dest="build_dir",
                       default="out/Debug",
                       help="Specify the build directory, defaults to out/Debug")
-  parser.add_argument("-t",
-                      dest="targets",
-                      action="append",
-                      default=[],
-                      help="Build target besides chrome (multiple times OK)")
   parser.add_argument("-v",
                       dest="verbose",
                       action="store_true",
@@ -37,7 +32,6 @@ def main():
   args = parser.parse_args()
   build_dir = args.build_dir
   directory = args.directory
-  targets = ["chrome"] + args.targets
   verbose = args.verbose
 
   print("Checking GN build arg configuration ...")
@@ -98,12 +92,29 @@ def main():
     print("Remaing files:")
     print("\n".join(source_files), "\n")
 
+  # Starting with all files in the directory, find the ones that are
+  # able to be compiled on this platform/configurarion by asking ninja
+  # to build them all, and then removing the ones that aren't known.
+  obj_targets = ["../../" + x + "^" for x in source_files]
+  ninja_command = ["autoninja", "-C", build_dir] + obj_targets
+  ninja = subprocess.run(ninja_command, text=True, capture_output=True)
+  if ninja.stderr:
+    source_files = [
+        x for x in source_files
+        if not 'unknown target "../../' + x in ninja.stderr
+    ]
+
+  if verbose:
+    print("Remaing files:")
+    print("\n".join(source_files), "\n")
+
   subprocess.run(
       ["tools/clang/unsafe_pragma_rewriter/remove_unsafe_pragma.py"] +
       source_files,
       check=True)
 
   print("Compile to find unsafe errors ...")
+  targets = ["../../" + x + "^" for x in source_files]
   buildlog0 = os.path.join(tmpdir, "buildlog0")
   with open(buildlog0, "w") as f_log:
     subprocess.run(["autoninja", "-k", "1000", "-C", build_dir, "-v"] + targets,
