@@ -133,6 +133,7 @@ void GraphImplOrt::CreateAndBuild(
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), context->session_options(),
                      context->properties(), std::move(constant_operands),
+                     context->is_external_data_supported(),
                      std::move(scoped_trace)),
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
                      context->AsWeakPtr(), std::move(compute_resource_info),
@@ -147,13 +148,14 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
+    bool is_external_data_supported,
     ScopedTrace scoped_trace) {
   scoped_trace.AddStep("Create model info");
-
-  ASSIGN_OR_RETURN(std::unique_ptr<ModelEditor::ModelInfo> model_info,
-                   GraphBuilderOrt::CreateAndBuild(
-                       *graph_info, std::move(context_properties),
-                       std::move(constant_operands)));
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<ModelEditor::ModelInfo> model_info,
+      GraphBuilderOrt::CreateAndBuild(
+          *graph_info, std::move(context_properties),
+          std::move(constant_operands), is_external_data_supported));
 
   scoped_trace.AddStep("Initializing ORT");
   // `CreateEnv()` will increase the reference count and return the reference of

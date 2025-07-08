@@ -24,13 +24,15 @@ ContextImplOrt::ContextImplOrt(
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     ScopedOrtEnv env,
-    scoped_refptr<SessionOptions> session_options)
+    scoped_refptr<SessionOptions> session_options,
+    bool is_external_data_supported)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
                        std::move(options)),
       env_(std::move(env)),
-      session_options_(std::move(session_options)) {}
+      session_options_(std::move(session_options)),
+      is_external_data_supported_(is_external_data_supported) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 

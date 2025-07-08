@@ -26,7 +26,8 @@ class ContextImplOrt final : public WebNNContextImpl {
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
                  ScopedOrtEnv env,
-                 scoped_refptr<SessionOptions> session_options);
+                 scoped_refptr<SessionOptions> session_options,
+                 bool is_external_data_supported);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -40,6 +41,10 @@ class ContextImplOrt final : public WebNNContextImpl {
 
   scoped_refptr<SessionOptions> session_options() const {
     return session_options_;
+  }
+
+  bool is_external_data_supported() const {
+    return is_external_data_supported_;
   }
 
  private:
@@ -63,6 +68,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   // The session options are shared among all the sessions created by this
   // context.
   scoped_refptr<SessionOptions> session_options_;
+
+  const bool is_external_data_supported_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

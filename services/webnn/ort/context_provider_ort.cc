@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/strings/cstring_view.h"
 #include "base/types/expected_macros.h"
@@ -20,29 +21,48 @@ namespace webnn::ort {
 namespace {
 
 struct EpInfo {
-  base::cstring_view name;
   base::wcstring_view package_family_name;
   base::wcstring_view library_name;
   PACKAGE_VERSION package_version;
   // Represents the vendor id of the hardware device used by the execution
   // provider.
   uint32_t vendor_id;
+  // Indicates whether the execution provider supports in-memory external data.
+  // TODO(crbug.com/429253567): Specify the minimum package version that
+  // supports in-memory external data.
+  bool is_external_data_supported;
 };
 
-constexpr EpInfo kKnownEPs[] = {
-    {.name = "OpenVINOExecutionProvider",
-     .package_family_name =
-         L"Microsoft.WindowsMLRuntime.Intel.OpenVINO.EP_8wekyb3d8bbwe",
-     .library_name = L"onnxruntime_providers_openvino.dll",
-     .package_version =
-         {
-             .Major = 0,
-             .Minor = 0,
-             .Build = 0,
-             .Revision = 0,
-         },
-     .vendor_id = 0x8086},
-};
+constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
+    {
+        "OpenVINOExecutionProvider",
+        {
+            .package_family_name =
+                L"Microsoft.WindowsMLRuntime.Intel.OpenVINO.EP_8wekyb3d8bbwe",
+            .library_name = L"onnxruntime_providers_openvino.dll",
+            .package_version =
+                {
+                    .Major = 0,
+                    .Minor = 0,
+                    .Build = 0,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x8086,
+            .is_external_data_supported = false,
+        },
+    },
+});
+
+OrtHardwareDeviceType GetOrtHardwareDeviceType(mojom::Device device_type) {
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      return OrtHardwareDeviceType_CPU;
+    case mojom::Device::kGpu:
+      return OrtHardwareDeviceType_GPU;
+    case mojom::Device::kNpu:
+      return OrtHardwareDeviceType_NPU;
+  }
+}
 
 // Returns true if the `vendor_id` exists in the `gpu_info`.
 bool VendorIdExistsInGpuInfo(const gpu::GPUInfo& gpu_info, uint32_t vendor_id) {
@@ -62,18 +82,26 @@ bool VendorIdExistsInGpuInfo(const gpu::GPUInfo& gpu_info, uint32_t vendor_id) {
   return false;
 }
 
-bool IsExecutionProviderRegistered(const OrtApi* ort_api,
-                                   OrtEnv* env,
-                                   base::cstring_view ep_name) {
+// Returns a span of registered execution provider devices in `env`. The span is
+// guaranteed to be valid until `env` is released or the list of execution
+// providers is modified.
+base::span<const OrtEpDevice* const> GetRegisteredEpDevices(
+    const OrtApi* ort_api,
+    const OrtEnv* env) {
   size_t num_ep_devices = 0;
   const OrtEpDevice* const* ep_devices = nullptr;
   CHECK_STATUS(ort_api->GetEpDevices(env, &ep_devices, &num_ep_devices));
-
   // SAFETY: ORT guarantees that `ep_devices` is valid and contains
   // `num_ep_devices` elements.
-  base::span<const OrtEpDevice* const> ep_devices_span =
-      UNSAFE_BUFFERS(base::span(ep_devices, num_ep_devices));
-  for (const OrtEpDevice* ep_device : ep_devices_span) {
+  return UNSAFE_BUFFERS(base::span(ep_devices, num_ep_devices));
+}
+
+bool IsExecutionProviderRegistered(const OrtApi* ort_api,
+                                   const OrtEnv* env,
+                                   base::cstring_view ep_name) {
+  base::span<const OrtEpDevice* const> ep_devices =
+      GetRegisteredEpDevices(ort_api, env);
+  for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
     const char* registered_ep_name = ort_api->EpDevice_EpName(ep_device);
     // SAFETY: ORT guarantees that `registered_ep_name` is valid and
@@ -84,6 +112,32 @@ bool IsExecutionProviderRegistered(const OrtApi* ort_api,
     }
   }
   return false;
+}
+
+bool IsExternalDataSupported(const OrtApi* ort_api,
+                             const OrtEnv* env,
+                             mojom::Device webnn_device_type) {
+  base::span<const OrtEpDevice* const> ep_devices =
+      GetRegisteredEpDevices(ort_api, env);
+  OrtHardwareDeviceType ort_device_type =
+      GetOrtHardwareDeviceType(webnn_device_type);
+  for (const auto* ep_device : ep_devices) {
+    CHECK(ep_device);
+    if (ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device)) ==
+        ort_device_type) {
+      const char* ep_name = ort_api->EpDevice_EpName(ep_device);
+      // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+      const auto& iter =
+          kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+      // TODO(crbug.com/429859159): Decide whether the external data is
+      // supported according to the first found EP once the EP devices returned
+      // from `GetEpDevices()` are sorted in the selection order.
+      if (iter != kKnownEPs.end() && !iter->second.is_external_data_supported) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 // Helper function to convert a string to OrtLoggingLevel enum.
@@ -148,15 +202,12 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
   //
   // TODO(crbug.com/427242324): Add a flag to register an EP from location
   // passed in command line for testing development EP build.
-  for (const auto& ep_info : kKnownEPs) {
-    bool vendor_matched = VendorIdExistsInGpuInfo(gpu_info, ep_info.vendor_id);
-    if (!vendor_matched) {
+  for (const auto& [ep_name, ep_info] : kKnownEPs) {
+    if (!VendorIdExistsInGpuInfo(gpu_info, ep_info.vendor_id)) {
       continue;
     }
 
-    bool ep_registered =
-        IsExecutionProviderRegistered(ort_api, env.get(), ep_info.name);
-    if (ep_registered) {
+    if (IsExecutionProviderRegistered(ort_api, env.get(), ep_name)) {
       continue;
     }
 
@@ -165,7 +216,7 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
             ep_info.package_family_name, ep_info.package_version);
     if (ep_package_path) {
       CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
-          env.get(), ep_info.name.c_str(),
+          env.get(), ep_name.c_str(),
           ep_package_path->Append(L"ExecutionProvider")
               .Append(ep_info.library_name)
               .value()
@@ -173,11 +224,19 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
     }
   }
 
+  // Some EPs like OpenVINO EP haven't supported in-memory external weights in
+  // model yet and will throw error during session creation if it's used, so we
+  // have to disable this feature for these EPs.
+  // TODO(crbug.com/428740146): Remove this workaround once in-memory external
+  // data is well supported.
+  bool is_external_data_supported =
+      IsExternalDataSupported(ort_api, env.get(), options->device);
+
   ASSIGN_OR_RETURN(scoped_refptr<SessionOptions> session_options,
                    SessionOptions::Create(options->device));
-  return std::make_unique<ContextImplOrt>(std::move(receiver), context_provider,
-                                          std::move(options), std::move(env),
-                                          std::move(session_options));
+  return std::make_unique<ContextImplOrt>(
+      std::move(receiver), context_provider, std::move(options), std::move(env),
+      std::move(session_options), is_external_data_supported);
 }
 
 }  // namespace webnn::ort

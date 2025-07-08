@@ -192,9 +192,11 @@ GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands) {
+        constant_operands,
+    bool is_external_data_supported) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands));
+                                std::move(constant_operands),
+                                is_external_data_supported);
   return graph_builder.BuildModel();
 }
 
@@ -202,11 +204,12 @@ GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands)
+        constant_operands,
+    bool is_external_data_supported)
     : graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
-      model_editor_(ModelEditor()) {}
+      model_editor_(ModelEditor(is_external_data_supported)) {}
 
 GraphBuilderOrt::~GraphBuilderOrt() = default;
 
