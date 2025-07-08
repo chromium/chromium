@@ -10,6 +10,7 @@ if (is_android) {
 
 group("public") {
   public_deps = [
+    ":comments_public",
     ":core_public",
     ":empty_messaging_backend_service",
     ":messaging_public",
@@ -41,6 +42,19 @@ static_library("core_public") {
     "//components/strings:components_strings_grit",
     "//url",
   ]
+}
+
+source_set("comments_public") {
+  visibility = [
+    ":*",
+    "//components/collaboration/internal:comments_internal",
+    "//components/collaboration/internal:comments_unit_tests",
+  ]
+  sources = [ "comments/comments_service.h" ]
+
+  deps = [ "//components/keyed_service/core" ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("data_type_controller") {

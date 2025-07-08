@@ -6236,6 +6236,7 @@ test("unit_tests") {
     "../browser/chrome_content_browser_client_parts_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/collaboration/collaboration_service_factory_unittest.cc",
+    "../browser/collaboration/comments/comments_service_factory_unittest.cc",
     "../browser/collaboration/messaging/messaging_backend_service_factory_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",

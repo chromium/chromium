@@ -330,6 +330,8 @@ static_library("browser") {
     "client_hints/client_hints_factory.h",
     "collaboration/collaboration_service_factory.cc",
     "collaboration/collaboration_service_factory.h",
+    "collaboration/comments/comments_service_factory.cc",
+    "collaboration/comments/comments_service_factory.h",
     "collaboration/delegate_factory.h",
     "collaboration/messaging/messaging_backend_service_factory.cc",
     "collaboration/messaging/messaging_backend_service_factory.h",

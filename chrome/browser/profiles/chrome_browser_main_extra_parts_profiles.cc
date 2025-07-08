@@ -47,6 +47,7 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
+#include "chrome/browser/collaboration/comments/comments_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -815,6 +816,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   collaboration::CollaborationServiceFactory::GetInstance();
+  collaboration::comments::CommentsServiceFactory::GetInstance();
   collaboration::messaging::MessagingBackendServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
