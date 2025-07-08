@@ -801,10 +801,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp) {
-  return CreateFrameForGpuMemoryBufferOrMappableSIInternal(
+  return WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size, std::move(gpu_memory_buffer),
-      /*shared_image=*/nullptr,
-      /*enable_mappable_si=*/false, base::NullCallback(), timestamp);
+      /*shared_image=*/nullptr, gpu::SyncToken(), timestamp);
 }
 
 // static
