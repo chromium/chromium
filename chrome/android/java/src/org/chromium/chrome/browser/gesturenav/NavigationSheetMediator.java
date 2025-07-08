@@ -13,6 +13,9 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -35,6 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Mediator class for navigation sheet. */
+@NullMarked
 class NavigationSheetMediator {
     private final ClickListener mClickListener;
     private final FaviconHelper mFaviconHelper;
@@ -48,7 +52,7 @@ class NavigationSheetMediator {
     private final String mNewIncognitoTabText;
     private final Profile mProfile;
 
-    private NavigationHistory mHistory;
+    private @MonotonicNonNull NavigationHistory mHistory;
 
     /** Performs an action when a navigation item is clicked. */
     interface ClickListener {
@@ -144,9 +148,11 @@ class NavigationSheetMediator {
 
     /**
      * Called when favicon data requested by {@link #initializeFavicons()} is retrieved.
+     *
      * @param pageUrl the page for which the favicon was retrieved.
      * @param favicon the favicon data.
      */
+    @RequiresNonNull("mHistory")
     private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         // This callback can come after the sheet is hidden (which clears modelList).
         // Do nothing if that happens.

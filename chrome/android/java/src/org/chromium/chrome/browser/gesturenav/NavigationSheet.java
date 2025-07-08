@@ -8,11 +8,13 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationHistory;
 
 /** Interface that defines the methods for controlling Navigation sheet. */
+@NullMarked
 public interface NavigationSheet {
     /** Delegate performing navigation-related operations/providing the required info. */
     interface Delegate {

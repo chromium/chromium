@@ -7,6 +7,7 @@ package org.chromium.content_public.browser;
 import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Represents one entry in the navigation history of a page. */
@@ -18,7 +19,7 @@ public class NavigationEntry {
     private final GURL mOriginalUrl;
     private final GURL mVirtualUrl;
     private final String mTitle;
-    private Bitmap mFavicon;
+    private @Nullable Bitmap mFavicon;
     private final int mTransition;
     private final long mTimestamp;
     private final boolean mIsInitialEntry;
@@ -30,7 +31,7 @@ public class NavigationEntry {
             GURL virtualUrl,
             GURL originalUrl,
             String title,
-            Bitmap favicon,
+            @Nullable Bitmap favicon,
             int transition,
             long timestamp,
             boolean isInitialEntry) {
@@ -96,7 +97,7 @@ public class NavigationEntry {
     /**
      * @return The favicon of the page. This may be null.
      */
-    public Bitmap getFavicon() {
+    public @Nullable Bitmap getFavicon() {
         return mFavicon;
     }
 

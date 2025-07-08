@@ -184,7 +184,7 @@ class NavigationHandler implements TouchEventObserver {
         mIncorrectEdgeSwipeCount = 0;
     }
 
-    void setTab(Tab tab) {
+    void setTab(@Nullable Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
         if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
             onGestureEnd(GestureEndState.RESET);

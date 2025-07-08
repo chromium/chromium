@@ -4,18 +4,23 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
 
 /**
- * Implementation of {@link NavigationSheet#Delegate} that works with
- * native/rendered pages in tabbed mode. Uses interface methods of {@link Tab}.
+ * Implementation of {@link NavigationSheet#Delegate} that works with native/rendered pages in
+ * tabbed mode. Uses interface methods of {@link Tab}.
  */
+@NullMarked
 public class TabbedSheetDelegate implements NavigationSheet.Delegate {
     private static final int MAXIMUM_HISTORY_ITEMS = 8;
     private static final int FULL_HISTORY_ENTRY_INDEX = -1;
@@ -32,10 +37,13 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
 
     @Override
     public NavigationHistory getHistory(boolean forward, boolean isOffTheRecord) {
+        WebContents webContents = mTab.getWebContents();
+        assumeNonNull(webContents);
         NavigationHistory history =
-                mTab.getWebContents()
+                webContents
                         .getNavigationController()
                         .getDirectedNavigationHistory(forward, MAXIMUM_HISTORY_ITEMS);
+        assert history != null;
         if (!isOffTheRecord) {
             history.addEntry(
                     new NavigationEntry(
@@ -57,7 +65,9 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
         if (index == FULL_HISTORY_ENTRY_INDEX) {
             mShowHistoryManager.accept(mTab);
         } else {
-            mTab.getWebContents().getNavigationController().goToNavigationIndex(index);
+            WebContents webContents = mTab.getWebContents();
+            assert webContents != null;
+            webContents.getNavigationController().goToNavigationIndex(index);
         }
     }
 }
