@@ -464,6 +464,7 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   FrameSinkId current_id = frame_sink_id;
 
   while (
+      parent_frame_sink_id.is_valid() &&
       !frame_sink_manager_->IsFrameSinkIdInRootSinkMap(parent_frame_sink_id)) {
     current_id = parent_frame_sink_id;
     parent_frame_sink_id = frame_sink_manager_->GetOldestParentByChildFrameId(
@@ -471,7 +472,8 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   }
 
   auto it = frame_sink_metadata_map_.find(current_id);
-  if (it != frame_sink_metadata_map_.end()) {
+  if (it != frame_sink_metadata_map_.end() &&
+      !it->second.rir_support->IsRenderInputRouterSupportChildFrame()) {
     return it->second.rir_support.get();
   }
   return nullptr;
