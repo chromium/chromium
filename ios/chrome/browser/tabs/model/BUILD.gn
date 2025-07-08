@@ -6,7 +6,6 @@ source_set("model") {
   sources = [
     "ios_synced_window_delegate_getter.h",
     "synced_window_delegate_browser_agent.h",
-    "tab_helper_delegate_installer.h",
     "tab_helper_util.h",
     "tab_title_util.h",
     "tabs_closer.h",
@@ -232,7 +231,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",
-    "tab_helper_delegate_installer_unittest.mm",
     "tab_sync_util_unittest.mm",
     "tab_title_util_unittest.mm",
     "tabs_closer_unittest.mm",
