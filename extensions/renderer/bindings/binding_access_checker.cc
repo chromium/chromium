@@ -27,10 +27,10 @@ bool BindingAccessChecker::HasAccessOrThrowError(
     v8::Local<v8::Context> context,
     const std::string& full_name) const {
   if (!HasAccess(context, full_name)) {
-    context->GetIsolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
-        context->GetIsolate(),
-        base::StringPrintf("'%s' is not available in this context.",
-                           full_name.c_str()))));
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    isolate->ThrowException(v8::Exception::Error(gin::StringToV8(
+        isolate, base::StringPrintf("'%s' is not available in this context.",
+                                    full_name.c_str()))));
     return false;
   }
 

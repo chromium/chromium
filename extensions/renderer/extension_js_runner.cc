@@ -42,7 +42,7 @@ v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
     base::span<v8::Local<v8::Value>> args) {
   DCHECK(script_context_->v8_context() == context);
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(context == isolate->GetCurrentContext());
 
   v8::MicrotasksScope microtasks(isolate, context->GetMicrotaskQueue(),

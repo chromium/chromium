@@ -155,7 +155,7 @@ v8::LocalVector<v8::Value> MassageRequestUpdateCheckResults(
   DCHECK(success);
 
   // Version is wrapped as a parameter on a details object.
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> details = v8::Object::New(isolate);
   auto key = gin::StringToV8(isolate, "version");
   details->CreateDataProperty(context, key, version).Check();
@@ -254,7 +254,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
   }
 
   if (should_massage) {
-    messaging_util::MassageSendMessageArguments(context->GetIsolate(),
+    messaging_util::MassageSendMessageArguments(v8::Isolate::GetCurrent(),
                                                 allow_options, arguments);
   }
 

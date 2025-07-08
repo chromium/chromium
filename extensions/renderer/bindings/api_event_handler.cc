@@ -66,7 +66,7 @@ struct APIEventPerContextData : public base::SupportsUserData::Data {
   static APIEventPerContextData* GetFrom(v8::Local<v8::Context> context,
                                          CreatePerContextData should_create) {
     return GetPerContextData<APIEventPerContextData>(context, should_create,
-                                                     context->GetIsolate());
+                                                     v8::Isolate::GetCurrent());
   }
 };
 
@@ -169,17 +169,16 @@ v8::Local<v8::Object> APIEventHandler::CreateEventInstance(
         supports_lazy_listeners, &listener_tracker_);
   }
 
-  gin::Handle<EventEmitter> emitter_handle =
-      gin::CreateHandle(context->GetIsolate(),
-                        new EventEmitter(supports_filters, std::move(listeners),
-                                         exception_handler_));
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  gin::Handle<EventEmitter> emitter_handle = gin::CreateHandle(
+      isolate, new EventEmitter(supports_filters, std::move(listeners),
+                                exception_handler_));
   CHECK(!emitter_handle.IsEmpty());
   v8::Local<v8::Value> emitter_value = emitter_handle.ToV8();
   CHECK(emitter_value->IsObject());
   v8::Local<v8::Object> emitter_object =
       v8::Local<v8::Object>::Cast(emitter_value);
-  data->emitters[event_name] =
-      v8::Global<v8::Object>(context->GetIsolate(), emitter_object);
+  data->emitters[event_name] = v8::Global<v8::Object>(isolate, emitter_object);
 
   return emitter_object;
 }
@@ -200,14 +199,14 @@ v8::Local<v8::Object> APIEventHandler::CreateAnonymousEventInstance(
           base::DoNothing(), empty_event_name,
           APIEventListeners::ContextOwnerIdGetter(), binding::kNoListenerMax,
           false, anonymous_listener_tracker);
-  gin::Handle<EventEmitter> emitter_handle =
-      gin::CreateHandle(context->GetIsolate(),
-                        new EventEmitter(supports_filters, std::move(listeners),
-                                         exception_handler_));
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  gin::Handle<EventEmitter> emitter_handle = gin::CreateHandle(
+      isolate, new EventEmitter(supports_filters, std::move(listeners),
+                                exception_handler_));
   CHECK(!emitter_handle.IsEmpty());
   v8::Local<v8::Object> emitter_object = emitter_handle.ToV8().As<v8::Object>();
   data->anonymous_emitters.push_back(
-      v8::Global<v8::Object>(context->GetIsolate(), emitter_object));
+      v8::Global<v8::Object>(isolate, emitter_object));
   return emitter_object;
 }
 
@@ -224,7 +223,7 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
     return;
   }
 
-  if (!gin::Converter<EventEmitter*>::FromV8(context->GetIsolate(), event,
+  if (!gin::Converter<EventEmitter*>::FromV8(v8::Isolate::GetCurrent(), event,
                                              &emitter)) {
     NOTREACHED();
   }
@@ -262,7 +261,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
 
-  v8::LocalVector<v8::Value> v8_args(context->GetIsolate());
+  v8::LocalVector<v8::Value> v8_args(v8::Isolate::GetCurrent());
   v8_args.reserve(args.size());
   for (const auto& arg : args) {
     v8_args.push_back(converter->ToV8Value(arg, context));
@@ -287,9 +286,10 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   if (iter == data->emitters.end()) {
     return;
   }
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   EventEmitter* emitter = nullptr;
-  gin::Converter<EventEmitter*>::FromV8(
-      context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);
+  gin::Converter<EventEmitter*>::FromV8(isolate, iter->second.Get(isolate),
+                                        &emitter);
   CHECK(emitter);
 
   auto massager_iter = data->massagers.find(event_name);
@@ -310,7 +310,6 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
     DCHECK(callback.IsEmpty())
         << "Can't use an event callback with argument massagers.";
 
-    v8::Isolate* isolate = context->GetIsolate();
     v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Function> massager = massager_iter->second.Get(isolate);
 
@@ -358,7 +357,7 @@ void APIEventHandler::RegisterArgumentMassager(
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kCreateIfMissing);
   DCHECK(!base::Contains(data->massagers, event_name));
-  data->massagers[event_name].Reset(context->GetIsolate(), massager);
+  data->massagers[event_name].Reset(v8::Isolate::GetCurrent(), massager);
 }
 
 bool APIEventHandler::HasListenerForEvent(const std::string& event_name,
@@ -373,9 +372,10 @@ bool APIEventHandler::HasListenerForEvent(const std::string& event_name,
   if (iter == data->emitters.end()) {
     return false;
   }
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   EventEmitter* emitter = nullptr;
-  gin::Converter<EventEmitter*>::FromV8(
-      context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);
+  gin::Converter<EventEmitter*>::FromV8(isolate, iter->second.Get(isolate),
+                                        &emitter);
   CHECK(emitter);
   return emitter->GetNumListeners() > 0;
 }
@@ -389,7 +389,7 @@ void APIEventHandler::InvalidateContext(v8::Local<v8::Context> context) {
     return;
   }
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope scope(isolate);
 
   // This loop *shouldn't* allow any self-modification (i.e., no listeners
@@ -429,9 +429,10 @@ size_t APIEventHandler::GetNumEventListenersForTesting(
 
   auto iter = data->emitters.find(event_name);
   CHECK(iter != data->emitters.end());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   EventEmitter* emitter = nullptr;
-  gin::Converter<EventEmitter*>::FromV8(
-      context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);
+  gin::Converter<EventEmitter*>::FromV8(isolate, iter->second.Get(isolate),
+                                        &emitter);
   CHECK(emitter);
   return emitter->GetNumListeners();
 }

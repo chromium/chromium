@@ -35,7 +35,7 @@ APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
                                    const ExtensionId& extension_id,
                                    const std::string& context_type)
     : extension_id_(extension_id), context_type_(context_type) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();
   v8::Maybe<bool> result = wrapper->SetPrivate(
       context, GetPrivatePropertyName(isolate, kApiObjectKey), api_object);

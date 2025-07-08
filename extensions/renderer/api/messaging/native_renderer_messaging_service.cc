@@ -791,7 +791,6 @@ gin::Handle<GinPort> NativeRendererMessagingService::GetPort(
     const PortId& port_id) {
   // Note: no HandleScope because it would invalidate the gin::Handle::wrapper_.
   v8::Isolate* isolate = script_context->isolate();
-  v8::Local<v8::Context> context = script_context->v8_context();
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
       script_context->v8_context(), kDontCreateIfMissing);
@@ -799,8 +798,8 @@ gin::Handle<GinPort> NativeRendererMessagingService::GetPort(
   DCHECK(base::Contains(data->ports, port_id));
 
   GinPort* port = nullptr;
-  gin::Converter<GinPort*>::FromV8(context->GetIsolate(),
-                                   data->ports[port_id].Get(isolate), &port);
+  gin::Converter<GinPort*>::FromV8(isolate, data->ports[port_id].Get(isolate),
+                                   &port);
   CHECK(port);
 
   return gin::CreateHandle(isolate, port);

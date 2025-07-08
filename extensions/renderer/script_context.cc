@@ -135,7 +135,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              const Extension* effective_extension,
                              mojom::ContextType effective_context_type)
     : is_valid_(true),
-      v8_context_(v8_context->GetIsolate(), v8_context),
+      v8_context_(v8::Isolate::GetCurrent(), v8_context),
       web_frame_(web_frame),
       host_id_(host_id),
       extension_(extension),
@@ -145,7 +145,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
       effective_context_type_(effective_context_type),
       context_id_(base::UnguessableToken::Create()),
       safe_builtins_(this),
-      isolate_(v8_context->GetIsolate()),
+      isolate_(v8::Isolate::GetCurrent()),
       service_worker_version_id_(blink::mojom::kInvalidServiceWorkerVersionId) {
   VLOG(1) << "Created context:\n" << GetDebugString();
   v8_context_.AnnotateStrongRetainer("extensions::ScriptContext::v8_context_");

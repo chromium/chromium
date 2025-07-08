@@ -34,7 +34,7 @@ bool ValidateFilter(v8::Local<v8::Context> context,
                     v8::Local<v8::Object> filter,
                     std::unique_ptr<base::Value::Dict>* filter_dict,
                     std::string* error) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
 
   if (filter.IsEmpty()) {
@@ -115,7 +115,7 @@ bool UnfilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
   }
 
   listeners_.push_back(
-      v8::Global<v8::Function>(context->GetIsolate(), listener));
+      v8::Global<v8::Function>(v8::Isolate::GetCurrent(), listener));
   if (listeners_.size() == 1) {
     // NOTE: |listener_tracker_| is null for unmanaged events, in which case we
     // send no notifications.
@@ -180,10 +180,11 @@ size_t UnfilteredEventListeners::GetNumListeners() {
 v8::LocalVector<v8::Function> UnfilteredEventListeners::GetListeners(
     mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
-  v8::LocalVector<v8::Function> listeners(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::LocalVector<v8::Function> listeners(isolate);
   listeners.reserve(listeners_.size());
   for (const auto& listener : listeners_)
-    listeners.push_back(listener.Get(context->GetIsolate()));
+    listeners.push_back(listener.Get(isolate));
   return listeners;
 }
 
@@ -287,7 +288,8 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
   }
 
   listeners_.push_back(
-      {v8::Global<v8::Function>(context->GetIsolate(), listener), filter_id});
+      {v8::Global<v8::Function>(v8::Isolate::GetCurrent(), listener),
+       filter_id});
   if (was_first_of_kind) {
     listeners_updated_.Run(event_name_,
                            binding::EventListenersChanged::
@@ -337,11 +339,12 @@ v8::LocalVector<v8::Function> FilteredEventListeners::GetListeners(
       filter ? std::move(filter) : mojom::EventFilteringInfo::New(),
       kIgnoreRoutingId);
 
-  v8::LocalVector<v8::Function> listeners(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::LocalVector<v8::Function> listeners(isolate);
   listeners.reserve(ids.size());
   for (const auto& listener : listeners_) {
     if (ids.count(listener.filter_id))
-      listeners.push_back(listener.function.Get(context->GetIsolate()));
+      listeners.push_back(listener.function.Get(isolate));
   }
   return listeners;
 }

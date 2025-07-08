@@ -111,7 +111,7 @@ bool IsContextValid(v8::Local<v8::Context> context) {
 bool IsContextValidOrThrowError(v8::Local<v8::Context> context) {
   if (IsContextValid(context))
     return true;
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   isolate->ThrowException(v8::Exception::Error(
       gin::StringToV8(isolate, "Extension context invalidated.")));
   return false;

@@ -26,7 +26,7 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
     const APITypeReferenceMap& refs) {
   using RequestResult = APIBindingHooks::RequestResult;
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::TryCatch try_catch(isolate);
   APISignature::V8ParseResult parse_result =
       signature->ParseArgumentsToV8(context, *arguments, refs);

@@ -124,7 +124,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
   // TODO(crbug.com/40321352): Incorporate `format` while serializing the
   // message.
   DCHECK(!value.IsEmpty());
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Context::Scope context_scope(context);
 
   // TODO(devlin): For some reason, we don't use the signature for
@@ -169,7 +169,7 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
   // TODO(crbug.com/40321352): Incorporate `message.format` while deserializing
   // the message.
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Context::Scope context_scope(context);
 
   v8::Local<v8::String> v8_message_string =
@@ -214,7 +214,7 @@ MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,
   DCHECK(!v8_options.IsEmpty());
   DCHECK(!v8_options->IsNull());
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   MessageOptions options;
 

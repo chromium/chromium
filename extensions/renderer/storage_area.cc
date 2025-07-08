@@ -312,7 +312,7 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
   CHECK_EQ(v8::Isolate::GetCurrent(), isolate);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
-  CHECK_EQ(isolate, context->GetIsolate());
+  CHECK_EQ(isolate, v8::Isolate::GetCurrent());
 
   // The context may have been invalidated, as in the case where this could be
   // a reference to an object from a removed frame.

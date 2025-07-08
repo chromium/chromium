@@ -53,7 +53,7 @@ int GetIntPropertyFromV8Object(v8::Local<v8::Object> v8_object,
   v8::Local<v8::Value> v8_property_value;
   if (!v8_object
            ->Get(v8_context, v8::String::NewFromUtf8(
-                                 v8_context->GetIsolate(), property_name,
+                                 v8::Isolate::GetCurrent(), property_name,
                                  v8::NewStringType::kInternalized)
                                  .ToLocalChecked())
            .ToLocal(&v8_property_value)) {
@@ -67,7 +67,7 @@ int GetIntPropertyFromV8Object(v8::Local<v8::Object> v8_object,
                                int index) {
   v8::Local<v8::Value> v8_property_value;
   if (!v8_object
-           ->Get(v8_context, v8::Integer::New(v8_context->GetIsolate(), index))
+           ->Get(v8_context, v8::Integer::New(v8::Isolate::GetCurrent(), index))
            .ToLocal(&v8_property_value)) {
     return 0;
   }
@@ -91,7 +91,7 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
     const v8::Local<v8::Object> image_data,
     v8::Local<v8::Value>* image_data_bitmap) {
   v8::Local<v8::Context> v8_context = context()->v8_context();
-  v8::Isolate* isolate = v8_context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Value> value;
   if (!image_data
            ->Get(v8_context,
@@ -164,7 +164,7 @@ bool SetIconNatives::ConvertImageDataSetToBitmapValueSet(
     v8::Local<v8::Object>& details,
     v8::Local<v8::Object>* bitmap_set_value) {
   v8::Local<v8::Context> v8_context = context()->v8_context();
-  v8::Isolate* isolate = v8_context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Value> v8_value;
   if (!details
            ->Get(v8_context,

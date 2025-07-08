@@ -43,7 +43,7 @@ v8::LocalVector<v8::Value> MassageSendFeedbackResults(
   success = v8_helpers::GetProperty(context, result_obj, "landingPageType",
                                     &landingPageType);
   DCHECK(success);
-  v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+  v8::LocalVector<v8::Value> new_args(v8::Isolate::GetCurrent(),
                                       {status, landingPageType});
   return new_args;
 }

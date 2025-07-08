@@ -568,7 +568,7 @@ bool OneTimeMessageHandler::DisconnectOpener(ScriptContext* script_context,
   }
 
   bindings_system_->api_system()->request_handler()->CompleteRequest(
-      opener.request_id, v8::LocalVector<v8::Value>(v8_context->GetIsolate()),
+      opener.request_id, v8::LocalVector<v8::Value>(v8::Isolate::GetCurrent()),
       error);
 
   // Note: The context could be invalidated at this point!

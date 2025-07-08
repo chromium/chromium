@@ -361,7 +361,7 @@ APIBinding::~APIBinding() = default;
 v8::Local<v8::Object> APIBinding::CreateInstance(
     v8::Local<v8::Context> context) {
   DCHECK(binding::IsContextValid(context));
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (object_template_.IsEmpty())
     InitializeTemplate(isolate);
   DCHECK(!object_template_.IsEmpty());

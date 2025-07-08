@@ -33,7 +33,7 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
   if (event_name == api::web_request::OnActionIgnored::kEventName)
     return false;
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   v8::Local<v8::Object> internal_bindings;

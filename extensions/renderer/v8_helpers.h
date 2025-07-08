@@ -67,18 +67,18 @@ inline bool SetPrivateProperty(v8::Local<v8::Context> context,
                                v8::Local<v8::String> key,
                                v8::Local<v8::Value> value) {
   return IsTrue(object->SetPrivate(
-      context, v8::Private::ForApi(context->GetIsolate(), key), value));
+      context, v8::Private::ForApi(v8::Isolate::GetCurrent(), key), value));
 }
 
 inline bool SetPrivateProperty(v8::Local<v8::Context> context,
                                v8::Local<v8::Object> object,
                                const char* key,
                                v8::Local<v8::Value> value) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> v8_key;
-  return ToV8String(context->GetIsolate(), key, &v8_key) &&
+  return ToV8String(isolate, key, &v8_key) &&
          IsTrue(object->SetPrivate(
-             context, v8::Private::ForApi(context->GetIsolate(), v8_key),
-             value));
+             context, v8::Private::ForApi(isolate, v8_key), value));
 }
 
 // GetProperty() family calls V8::Object::Get() and extracts a value from
@@ -97,8 +97,9 @@ inline bool GetProperty(v8::Local<v8::Context> context,
                         const char* key,
                         v8::Local<v8::Value>* out) {
   v8::Local<v8::String> v8_key;
-  if (!ToV8String(context->GetIsolate(), key, &v8_key))
+  if (!ToV8String(v8::Isolate::GetCurrent(), key, &v8_key)) {
     return false;
+  }
   return GetProperty(context, object, v8_key, out);
 }
 
@@ -108,7 +109,7 @@ inline bool GetPrivateProperty(v8::Local<v8::Context> context,
                                v8::Local<v8::String> key,
                                v8::Local<v8::Value>* out) {
   return object
-      ->GetPrivate(context, v8::Private::ForApi(context->GetIsolate(), key))
+      ->GetPrivate(context, v8::Private::ForApi(v8::Isolate::GetCurrent(), key))
       .ToLocal(out);
 }
 
@@ -117,7 +118,7 @@ inline bool GetPrivateProperty(v8::Local<v8::Context> context,
                                const char* key,
                                v8::Local<v8::Value>* out) {
   v8::Local<v8::String> v8_key;
-  return ToV8String(context->GetIsolate(), key, &v8_key) &&
+  return ToV8String(v8::Isolate::GetCurrent(), key, &v8_key) &&
          GetPrivateProperty(context, object, v8_key, out);
 }
 
@@ -128,8 +129,9 @@ inline v8::Local<v8::Value> GetPropertyUnsafe(
     v8::Local<v8::Object> object,
     const char* key,
     v8::NewStringType string_type = v8::NewStringType::kNormal) {
-  return object->Get(context,
-                     ToV8StringUnsafe(context->GetIsolate(), key, string_type))
+  return object
+      ->Get(context,
+            ToV8StringUnsafe(v8::Isolate::GetCurrent(), key, string_type))
       .ToLocalChecked();
 }
 

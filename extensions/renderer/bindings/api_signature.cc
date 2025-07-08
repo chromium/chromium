@@ -97,7 +97,7 @@ class ArgumentParser {
   ArgumentParser& operator=(const ArgumentParser&) = delete;
 
  protected:
-  v8::Isolate* GetIsolate() { return context_->GetIsolate(); }
+  v8::Isolate* GetIsolate() { return v8::Isolate::GetCurrent(); }
 
   // Common implementation for parsing arguments to either V8 values or
   // base::Values.
@@ -175,7 +175,7 @@ class V8ArgumentParser : public ArgumentParser {
                        arguments,
                        type_refs,
                        promises_allowed),
-        values_(context->GetIsolate()) {}
+        values_(v8::Isolate::GetCurrent()) {}
 
   V8ArgumentParser(const V8ArgumentParser&) = delete;
   V8ArgumentParser& operator=(const V8ArgumentParser&) = delete;
@@ -254,7 +254,7 @@ bool ArgumentParser::ParseArgumentsImpl(bool signature_has_callback) {
   bool allow_omitted_final_argument =
       signature_has_callback && promises_allowed_ == PromisesAllowed::kAllowed;
 
-  v8::LocalVector<v8::Value> resolved_arguments(context_->GetIsolate(),
+  v8::LocalVector<v8::Value> resolved_arguments(v8::Isolate::GetCurrent(),
                                                 signature_->size());
   if (!ResolveArguments(*provided_arguments_, *signature_, &resolved_arguments,
                         0u, allow_omitted_final_argument)) {
