@@ -513,15 +513,9 @@ TEST_P(StorageAreaImplCacheModeTest, CommitPutToDB) {
   EXPECT_TRUE(put_success1);
   EXPECT_TRUE(put_success2);
   EXPECT_TRUE(put_success3);
-
   EXPECT_FALSE(HasDatabaseEntry(test_prefix_ + key2));
-  histograms.ExpectTotalCount("DOMStorage.CommitSizeBytes", 0);
-  histograms.ExpectTotalCount("DOMStorage.CommitMeasuredDelay", 0);
 
   BlockingCommit();
-
-  histograms.ExpectTotalCount("DOMStorage.CommitSizeBytes", 1);
-  histograms.ExpectTotalCount("DOMStorage.CommitMeasuredDelay", 3);
 
   EXPECT_TRUE(HasDatabaseEntry(test_prefix_ + key1));
   EXPECT_EQ(value1, GetDatabaseEntry(test_prefix_ + key1));
@@ -1385,78 +1379,6 @@ TEST_P(StorageAreaImplCrossAreaCommitsTest, PrefixForkingPsuedoFuzzer) {
 
     EXPECT_FALSE(areas[i]->has_pending_load_tasks()) << i;
   }
-}
-
-// This test verifies that the CommitSizeBytes metrics are logged the intended
-// number of times with and without coalesced commits. It writes values to a
-// bunch of different storage areas then starts committing.
-TEST_P(StorageAreaImplCrossAreaCommitsTest, CommitMetrics) {
-  const std::string kKey1 = "key1";
-  const std::vector<uint8_t> kKey1Vec = ToBytes(kKey1);
-  const std::string kKey2 = "key2";
-  const std::vector<uint8_t> kKey2Vec = ToBytes(kKey2);
-  const std::string value1 = "value1";
-  const std::string value2 = "value2";
-  const int kTotalAreas = 10;
-
-  std::vector<std::unique_ptr<StorageAreaImpl>> areas(kTotalAreas);
-  std::vector<MockDelegate> delegates(kTotalAreas);
-  std::list<bool> successes;
-  int curr_prefix = 0;
-
-  // Make sure the map is loaded initially.
-  {
-    bool success = false;
-    base::RunLoop run_loop;
-    storage_area_impl()->Put(
-        kKey1Vec, ToBytes("foobar"), std::nullopt, test_source_,
-        MakeSuccessCallback(run_loop.QuitClosure(), &success));
-    run_loop.Run();
-    EXPECT_TRUE(success);
-  }
-
-  // Set up storage areas. (This may cause some committing due to forking.)
-  for (int64_t i = 0; i < kTotalAreas; i++) {
-    areas[i] = storage_area_impl()->ForkToNewPrefix(
-        GetNewPrefix(&curr_prefix), &delegates[i],
-        GetDefaultTestingOptions(CacheMode::KEYS_ONLY_WHEN_POSSIBLE));
-  }
-
-  // Put values (won't be immediately committed).
-  for (int64_t i = 0; i < kTotalAreas; i++) {
-    bool success = false;
-    base::RunLoop run_loop;
-    areas[i]->Put(kKey1Vec, ToBytes(value1), std::nullopt, test_source_,
-                  base::DoNothing());
-    areas[i]->Put(kKey2Vec, ToBytes(value2), std::nullopt, test_source_,
-                  MakeSuccessCallback(run_loop.QuitClosure(), &success));
-    run_loop.Run();
-    EXPECT_TRUE(success);
-  }
-
-  // Initiate commits and monitor histograms.
-  base::HistogramTester histograms;
-  ASSERT_EQ(areas.size(), delegates.size());
-  if (base::FeatureList::IsEnabled(kCoalesceStorageAreaCommits)) {
-    // Committing just one should commit all.
-    EXPECT_TRUE(BlockingCommit(&delegates[0], areas[0].get()));
-    for (const auto& area : areas) {
-      EXPECT_FALSE(area->has_changes_to_commit());
-    }
-    histograms.ExpectTotalCount("DOMStorage.CommitSizeBytesAggregated", 1);
-  } else {
-    size_t half = kTotalAreas / 2;
-    for (size_t i = 0; i < half; i++) {
-      BlockingCommit(&delegates[i], areas[i].get());
-    }
-
-    for (size_t i = kTotalAreas - 1; i >= half; i--) {
-      BlockingCommit(&delegates[i], areas[i].get());
-    }
-    histograms.ExpectTotalCount("DOMStorage.CommitSizeBytesAggregated",
-                                kTotalAreas);
-  }
-  histograms.ExpectTotalCount("DOMStorage.CommitSizeBytes", kTotalAreas);
 }
 
 TEST_P(StorageAreaImplCacheModeTest, EmptyMapIgnoresDisk) {

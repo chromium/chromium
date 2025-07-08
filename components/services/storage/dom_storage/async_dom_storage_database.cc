@@ -124,29 +124,20 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
 void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
   std::vector<Commit> commits;
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
-  size_t total_data_size = 0u;
   if (base::FeatureList::IsEnabled(kCoalesceStorageAreaCommits)) {
     commits.reserve(committers_.size());
     commit_dones.reserve(committers_.size());
     for (Committer* committer : committers_) {
       std::optional<Commit> commit = committer->CollectCommit();
       if (commit) {
-        total_data_size += commit->data_size;
         commits.emplace_back(std::move(*commit));
         commit_dones.emplace_back(committer->GetCommitCompleteCallback());
       }
     }
   } else {
     commits.emplace_back(*source->CollectCommit());
-    total_data_size += commits.back().data_size;
     commit_dones.emplace_back(source->GetCommitCompleteCallback());
   }
-
-  base::UmaHistogramCustomCounts("DOMStorage.CommitSizeBytesAggregated",
-                                 total_data_size,
-                                 /*min=*/100,
-                                 /*exclusive_max=*/12 * 1024 * 1024,
-                                 /*buckets=*/100);
 
   auto run_all = base::BindOnce(
       [](std::vector<base::OnceCallback<void(DbStatus)>> callbacks,

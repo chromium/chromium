@@ -804,13 +804,7 @@ StorageAreaImpl::CollectCommit() {
     commit.copy_to_prefix = std::move(commit_batch_->copy_to_prefix);
   }
 
-  base::UmaHistogramCustomCounts("DOMStorage.CommitSizeBytes", data_size,
-                                 /*min=*/100,
-                                 /*exclusive_max=*/12 * 1024 * 1024,
-                                 /*buckets=*/100);
-
   data_rate_limiter_.add_samples(data_size);
-  commit.data_size = data_size;
 
   ++commit_batches_in_flight_;
   commit_batch_.reset();
