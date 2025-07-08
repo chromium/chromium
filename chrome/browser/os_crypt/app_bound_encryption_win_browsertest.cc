@@ -28,6 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
@@ -93,6 +94,10 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
       GTEST_SKIP() << "Elevation is required for this test.";
     }
+#if defined(ARCH_CPU_32_BITS)
+    // Flaky on 32-bit win-rel-ready bot. See crbug.com/430106357.
+    GTEST_SKIP() << "Temporarily disabled on 32-bit. See crbug.com/430106357.";
+#else
     if (should_install_service_) {
       maybe_uninstall_service_ = InstallService(log_grabber_);
       EXPECT_TRUE(maybe_uninstall_service_.has_value());
@@ -106,6 +111,7 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
     chrome::SetUsingDefaultUserDataDirectoryForTesting(
         set_default_user_data_dir_);
     InProcessBrowserTest::SetUp();
+#endif  // defined(ARCH_CPU_32_BITS)
   }
 
   void TearDown() override { maybe_uninstall_service_.reset(); }
