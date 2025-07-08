@@ -16,7 +16,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   NetworkTestRunner.makeSimpleXHR('PUT', 'resources/redirect.cgi?status=301&ttl=3', true, step2);
 
   function step2() {
-    NetworkTestRunner.networkRequests()[offset].requestContent().then(step3);
+    NetworkTestRunner.networkRequests()[offset].requestContentData().then(step3);
   }
 
   function step3() {

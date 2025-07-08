@@ -22,7 +22,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 
   function step2() {
     resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
-    resource.requestContent().then(step3);
+    resource.requestContentData().then(step3);
   }
 
   async function step3() {

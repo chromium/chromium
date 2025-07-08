@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(`Tests XHR network resource type and content for synchronous requests. Bug 61205\n`);
   await TestRunner.showPanel('network');
@@ -17,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
     TestRunner.addResult(request1.url());
     TestRunner.addResult('resource.type: ' + request1.resourceType());
     TestRunner.assertTrue(!request1.failed, 'Resource loading failed.');
-    request1.requestContent().then(step3);
+    request1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(step3);
   }
 
   function step3({ content, error, isEncoded }) {
