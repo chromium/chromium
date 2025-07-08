@@ -3843,6 +3843,13 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeSafeAreaConstraintVariations[] =
          std::size(kEdgeToEdgeSafeAreaConstraintFeatureParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEdgeToEdgeTabletFeatureParams[] = {
+    {"e2e_tablet_invisible_bottom_chin_min_width", "768"}};
+const FeatureEntry::FeatureVariation kEdgeToEdgeTabletVariations[] = {
+    {"chin on smaller screens", kEdgeToEdgeTabletFeatureParams,
+     std::size(kEdgeToEdgeTabletFeatureParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
     {"disable_bottom_controls_stacker_y_offset", "false"}};
 const FeatureEntry::FeatureVariation
@@ -5915,7 +5922,9 @@ const FeatureEntry kFeatureEntries[] = {
          "EdgeToEdgeSafeAreaConstraint")},
     {"edge-to-edge-tablet", flag_descriptions::kEdgeToEdgeTabletName,
      flag_descriptions::kEdgeToEdgeTabletDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeTablet)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTablet,
+                                    kEdgeToEdgeTabletVariations,
+                                    "EdgeToEdgeTablet")},
     {"edge-to-edge-web-opt-in", flag_descriptions::kEdgeToEdgeWebOptInName,
      flag_descriptions::kEdgeToEdgeWebOptInDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeWebOptIn)},
