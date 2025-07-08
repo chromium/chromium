@@ -158,8 +158,12 @@
 
 #pragma mark - TabsDependencyInstalling
 
-- (void)installDependencyForWebState:(web::WebState*)webState {
+- (void)webStateInserted:(web::WebState*)webState {
   SadTabTabHelper::FromWebState(webState)->SetDelegate(self);
+}
+
+- (void)webStateRemoved:(web::WebState*)webState {
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
 @end

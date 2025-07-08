@@ -23,14 +23,10 @@ void TabsDependencyInstallerBridge::StopObserving() {
 
 void TabsDependencyInstallerBridge::OnWebStateInserted(
     web::WebState* web_state) {
-  if ([installing_ respondsToSelector:@selector(webStateInserted:)]) {
-    [installing_ webStateInserted:web_state];
-  }
+  [installing_ webStateInserted:web_state];
 }
 
 void TabsDependencyInstallerBridge::OnWebStateRemoved(
     web::WebState* web_state) {
-  if ([installing_ respondsToSelector:@selector(webStateRemoved:)]) {
-    [installing_ webStateRemoved:web_state];
-  }
+  [installing_ webStateRemoved:web_state];
 }

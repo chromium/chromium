@@ -14,8 +14,6 @@
 // the Objective-C analogue to the C++ TabsDependencyInstaller class.
 @protocol TabsDependencyInstalling <NSObject>
 
-@optional
-
 // Serves as a hook for any installation work needed to set up a per-WebState
 // dependency.
 - (void)webStateInserted:(web::WebState*)webState;
