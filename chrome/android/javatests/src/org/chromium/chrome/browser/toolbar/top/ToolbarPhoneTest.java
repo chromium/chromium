@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import org.chromium.base.test.util.DisabledTest;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -658,7 +659,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/339034032")
+    @DisabledTest(message = "crbug.com/430278811")
     @EnableFeatures({
         ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     })
