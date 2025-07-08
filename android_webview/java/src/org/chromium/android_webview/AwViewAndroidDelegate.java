@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import android.graphics.Insets;
 import android.graphics.Point;
 import android.os.Build;
 import android.view.View;
@@ -168,6 +169,14 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+        Insets imeInsets = insets.getInsets(WindowInsets.Type.ime());
+        if (imeInsets.bottom == 0) {
+            mBottomInset = 0;
+            if (mWebContents != null && mWebContents.getRenderWidgetHostView() != null) {
+                mWebContents.getRenderWidgetHostView().onViewportInsetBottomChanged();
+            }
+            return insets;
+        }
         View containerView = getContainerView();
         if (containerView.getDisplay() == null) {
             // View is not attached yet, do nothing and pass insets through.
@@ -175,14 +184,21 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
         }
         int[] pos = new int[2];
         containerView.getLocationOnScreen(pos);
-        int imeSize = insets.getInsets(WindowInsets.Type.ime()).bottom;
         Point screenSize = new Point();
         containerView.getDisplay().getRealSize(screenSize);
         // Calculate the intersect between the WebView bounds and the IME and clamp it to >= 0.
-        mBottomInset = Math.max(0, (pos[1] + containerView.getHeight()) - (screenSize.y - imeSize));
+        mBottomInset =
+                Math.max(
+                        0,
+                        (pos[1] + containerView.getHeight()) - (screenSize.y - imeInsets.bottom));
         if (mWebContents != null && mWebContents.getRenderWidgetHostView() != null) {
             mWebContents.getRenderWidgetHostView().onViewportInsetBottomChanged();
         }
-        return insets;
+        // Remove the bottom IME inset as we've consumed that one.
+        return new WindowInsets.Builder(insets)
+                .setInsets(
+                        WindowInsets.Type.ime(),
+                        Insets.of(imeInsets.left, imeInsets.top, imeInsets.right, 0))
+                .build();
     }
 }
