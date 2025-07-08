@@ -82,12 +82,26 @@ class FooterControllerExtensionTestBase
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
+  void VerifyNoticeMetricsRecorded(int total_count,
+                                   int management_count = 0,
+                                   int extension_count = 0) {
+    const std::string& notice_item = "NewTabPage.Footer.NoticeItem";
+    histogram_tester_.ExpectTotalCount(notice_item, total_count);
+    histogram_tester_.ExpectBucketCount(
+        notice_item, new_tab_footer::FooterNoticeItem::kManagementNotice,
+        management_count);
+    histogram_tester_.ExpectBucketCount(
+        notice_item, new_tab_footer::FooterNoticeItem::kExtensionAttribution,
+        extension_count);
+  }
+
   new_tab_footer::NewTabFooterWebView* footer() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->new_tab_footer_web_view();
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -150,41 +164,45 @@ IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
   EXPECT_TRUE(footer()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, VisibilityRecorded) {
-  base::HistogramTester histogram_tester;
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, MetricsRecorded) {
   const std::string& visible_on_load = "NewTabPage.Footer.VisibleOnLoad";
 
   auto extension = LoadNtpExtension();
-  histogram_tester.ExpectTotalCount(visible_on_load, 0);
+  histogram_tester_.ExpectTotalCount(visible_on_load, 0);
+  VerifyNoticeMetricsRecorded(0);
 
   NavigateCurrentTab(extension->url());
-  histogram_tester.ExpectTotalCount(visible_on_load, 1);
-  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
+  histogram_tester_.ExpectTotalCount(visible_on_load, 1);
+  histogram_tester_.ExpectBucketCount(visible_on_load, true, 1);
+  VerifyNoticeMetricsRecorded(/*total_count= */ 1, /*management_count= */ 0,
+                              /*extension_count= */ 1);
 
   profile()->GetPrefs()->SetBoolean(
       prefs::kNTPFooterExtensionAttributionEnabled, false);
-  histogram_tester.ExpectTotalCount(visible_on_load, 1);
-  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
+  histogram_tester_.ExpectTotalCount(visible_on_load, 1);
+  histogram_tester_.ExpectBucketCount(visible_on_load, true, 1);
 
   NavigateCurrentTab(extension->url());
-  histogram_tester.ExpectTotalCount(visible_on_load, 2);
-  histogram_tester.ExpectBucketCount(visible_on_load, true, 1);
-  histogram_tester.ExpectBucketCount(visible_on_load, false, 1);
+  histogram_tester_.ExpectTotalCount(visible_on_load, 2);
+  histogram_tester_.ExpectBucketCount(visible_on_load, true, 1);
+  histogram_tester_.ExpectBucketCount(visible_on_load, false, 1);
+  VerifyNoticeMetricsRecorded(/*total_count= */ 1, /*management_count= */ 0,
+                              /*extension_count= */ 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, ShownTimeRecorded) {
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester_;
   const std::string& shown_time = "NewTabPage.Footer.ShownTime";
 
   auto extension = LoadNtpExtension();
-  histogram_tester.ExpectTotalCount(shown_time, 0);
+  histogram_tester_.ExpectTotalCount(shown_time, 0);
 
   base::TimeTicks start = base::TimeTicks::Now();
   NavigateCurrentTab(extension->url());
   int max_expected = (base::TimeTicks::Now() - start).InMilliseconds();
 
-  histogram_tester.ExpectTotalCount(shown_time, 1);
-  int actual = histogram_tester.GetAllSamples(shown_time)[0].min;
+  histogram_tester_.ExpectTotalCount(shown_time, 1);
+  int actual = histogram_tester_.GetAllSamples(shown_time)[0].min;
   EXPECT_GT(actual, 1);
   EXPECT_LE(actual, max_expected);
 }
@@ -265,6 +283,35 @@ IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest, NoticePolicyChanged) {
 
   local_state()->SetBoolean(prefs::kNTPFooterManagementNoticeEnabled, true);
   EXPECT_EQ(managed(), footer()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
+                       NoticeItemMetricsRecorded) {
+  if (!managed()) {
+    GTEST_SKIP() << "This test is relevant only for managed case. Unmanaged "
+                    "case is covered by the extension test.";
+  }
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+  VerifyNoticeMetricsRecorded(0);
+
+  NavigateCurrentTab(GURL(chrome::kChromeUINewTabURL));
+  ASSERT_EQ(managed(), footer()->GetVisible());
+  VerifyNoticeMetricsRecorded(/*total_count= */ 1, /*management_count= */ 1);
+
+  auto extension = LoadNtpExtension();
+  NavigateCurrentTab(extension->url());
+  VerifyNoticeMetricsRecorded(/*total_count= */ 3, /*management_count= */ 2,
+                              /*extension_count= */ 1);
+
+  local_state()->SetBoolean(prefs::kNTPFooterManagementNoticeEnabled, false);
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, false);
+  NavigateCurrentTab(extension->url());
+  VerifyNoticeMetricsRecorded(/*total_count= */ 3, /*management_count= */ 2,
+                              /*extension_count= */ 1);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
