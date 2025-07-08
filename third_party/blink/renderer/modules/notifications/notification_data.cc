@@ -148,13 +148,14 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     notification_action->action = action->action();
     notification_action->title = action->title();
 
-    if (action->type() == "button") {
-      notification_action->type = mojom::blink::NotificationActionType::BUTTON;
-    } else if (action->type() == "text") {
-      notification_action->type = mojom::blink::NotificationActionType::TEXT;
-    } else {
-      NOTREACHED() << "Unknown action type: "
-                   << IDLEnumAsString(action->type());
+    switch (action->type().AsEnum()) {
+      case V8NotificationActionType::Enum::kButton:
+        notification_action->type =
+            mojom::blink::NotificationActionType::BUTTON;
+        break;
+      case V8NotificationActionType::Enum::kText:
+        notification_action->type = mojom::blink::NotificationActionType::TEXT;
+        break;
     }
 
     if (!action->placeholder().IsNull() &&
