@@ -182,6 +182,10 @@ void HttpStreamPool::JobController::HandleStreamRequest(
 
   auto stream_with_protocol = MaybeCreateStreamFromExistingSession();
   if (stream_with_protocol) {
+    if (stream_with_protocol->negotiated_protocol != NextProto::kProtoQUIC &&
+        origin_quic_version_.IsKnown()) {
+      StartAltSvcQuicPreconnect();
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -225,6 +229,9 @@ int HttpStreamPool::JobController::Preconnect(
     return OK;
   }
 
+  // TODO(crbug.com/429404814): Try preconnecting QUIC if `quic_version_` is
+  // known.
+
   SpdySessionKey spdy_session_key =
       origin_stream_key_.CalculateSpdySessionKey();
   if (pool_->FindAvailableSpdySession(origin_stream_key_, spdy_session_key,
@@ -251,9 +258,9 @@ int HttpStreamPool::JobController::Preconnect(
   }
 
   preconnect_callback_ = std::move(callback);
-  origin_job_ =
-      std::make_unique<Job>(this, &group, origin_quic_version_,
-                            NextProto::kProtoUnknown, net_log_, num_streams);
+  origin_job_ = std::make_unique<Job>(
+      this, JobType::kPreconnect, &group, origin_quic_version_,
+      NextProto::kProtoUnknown, net_log_, num_streams);
   origin_job_->Start();
   return ERR_IO_PENDING;
 }
@@ -538,6 +545,16 @@ bool HttpStreamPool::JobController::MaybeStartAlternativeJob() {
 bool HttpStreamPool::JobController::CanUseExistingQuicSession() {
   return pool_->CanUseExistingQuicSession(
       origin_quic_key_, enable_ip_based_pooling_, enable_alternative_services_);
+}
+
+void HttpStreamPool::JobController::StartAltSvcQuicPreconnect() {
+  Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  preconnect_callback_ = pool_->GetAltSvcQuicPreconnectCallback();
+  origin_job_ = std::make_unique<Job>(this, JobType::kAltSvcQuicPreconnect,
+                                      &group, origin_quic_version_,
+                                      NextProto::kProtoQUIC, net_log_,
+                                      /*num_streams=*/1);
+  origin_job_->Start();
 }
 
 void HttpStreamPool::JobController::CallRequestCompleteAndStreamReady(

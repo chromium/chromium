@@ -138,6 +138,10 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Returns true when a QUIC session can be used for the request.
   bool CanUseExistingQuicSession();
 
+  // Starts a QUIC preconnect job when an alternative service is advertised via
+  // Alt-Svc but the current request is not using it.
+  void StartAltSvcQuicPreconnect();
+
   // Calls the request's Complete() and tells the delegate that `stream` is
   // ready. Used when there is an existing QUIC/SPDY session that can serve
   // the request.

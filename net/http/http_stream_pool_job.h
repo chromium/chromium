@@ -87,6 +87,7 @@ class HttpStreamPool::Job {
   // `delegate` must outlive `this`. For a stream request, `num_streams` must
   // not be specified. For a preconnect, `num_streams` must be specified.
   Job(Delegate* delegate,
+      JobType type,
       Group* group,
       quic::ParsedQuicVersion quic_version,
       NextProto expected_protocol,
@@ -166,7 +167,7 @@ class HttpStreamPool::Job {
 
   size_t num_streams() const { return num_streams_; }
 
-  bool IsPreconnect() const { return num_streams_ > 0; }
+  JobType type() const { return type_; }
 
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
@@ -176,6 +177,7 @@ class HttpStreamPool::Job {
 
  private:
   const raw_ptr<Delegate> delegate_;
+  const JobType type_;
   raw_ptr<AttemptManager> attempt_manager_;
 
   const quic::ParsedQuicVersion quic_version_;

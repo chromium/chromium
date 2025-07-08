@@ -424,6 +424,13 @@ bool HttpStreamPool::CanUseExistingQuicSession(
              quic_session_alias_key.session_key(), destination);
 }
 
+CompletionOnceCallback HttpStreamPool::GetAltSvcQuicPreconnectCallback() {
+  if (alt_svc_quic_preconnect_callback_for_testing_) {
+    return std::move(alt_svc_quic_preconnect_callback_for_testing_);
+  }
+  return base::DoNothing();
+}
+
 void HttpStreamPool::SetDelegateForTesting(
     std::unique_ptr<TestDelegate> delegate) {
   delegate_for_testing_ = std::move(delegate);

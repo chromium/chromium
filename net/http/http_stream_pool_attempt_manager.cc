@@ -240,8 +240,10 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
-  // JobController should check active streams before starting a preconnect Job.
-  CHECK_LT(group_->ActiveStreamSocketCount(), job->num_streams());
+  // JobController should check active streams before starting a preconnect
+  // Job unless the Job is AltSvc QUIC preconnect.
+  CHECK(job->type() == JobType::kAltSvcQuicPreconnect ||
+        group_->ActiveStreamSocketCount() < job->num_streams());
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
@@ -999,13 +1001,17 @@ void HttpStreamPool::AttemptManager::SetOnCompleteCallbackForTesting(
 void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   CHECK(availability_state_ == AvailabilityState::kAvailable);
 
-  if (job->IsPreconnect()) {
-    preconnect_jobs_.emplace(job);
-  } else {
-    request_jobs_.Insert(job, job->priority());
-    if (base_ssl_config_.has_value()) {
-      base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();
-    }
+  switch (job->type()) {
+    case JobType::kRequest:
+      request_jobs_.Insert(job, job->priority());
+      if (base_ssl_config_.has_value()) {
+        base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();
+      }
+      break;
+    case JobType::kPreconnect:
+    case JobType::kAltSvcQuicPreconnect:
+      preconnect_jobs_.emplace(job);
+      break;
   }
 
   if (job->respect_limits() == RespectLimits::kIgnore) {
@@ -1024,8 +1030,11 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
 
   // JobController should check the existing QUIC/SPDY sessions before starting
   // a Job.
-  DCHECK(!CanUseExistingQuicSession());
-  DCHECK(!HasAvailableSpdySession());
+  // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
+  // implementation.
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(job->type() == JobType::kAltSvcQuicPreconnect ||
+        !HasAvailableSpdySession());
 
   MaybeChangeServiceEndpointRequestPriority();
   RestrictAllowedProtocols(job->allowed_alpns());
@@ -1193,7 +1202,7 @@ QuicChromiumClientSession* HttpStreamPool::AttemptManager::
 
 base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
     CanUseExistingSpdySessionAfterEndpointChanges() {
-  if (!IsIpBasedPoolingEnabled() || !UsingTls()) {
+  if (!IsIpBasedPoolingEnabled() || !UsingTls() || !CanUseTcpBasedProtocols()) {
     return nullptr;
   }
 

@@ -144,6 +144,8 @@ class HttpStreamPool::AttemptManager
     return dns_resolution_end_time_;
   }
 
+  NextProtoSet allowed_alpns() const { return allowed_alpns_; }
+
   const NetLogWithSource& net_log();
 
   // Starts `job` for a stream request. Will call one of Job::Delegate methods

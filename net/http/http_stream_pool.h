@@ -62,6 +62,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     kStartTimerOnFirstQuicAttempt,
   };
 
+  // The type of a Job. A Job is a stream request or a preconnect.
+  enum class JobType {
+    // A stream request.
+    kRequest = 0,
+    // A normal preconnect.
+    kPreconnect = 1,
+    // A preconnect which is initiated when an alternative service is advertised
+    // via Alt-Svc but the current request is not using it.
+    kAltSvcQuicPreconnect = 2,
+  };
+
   // Observes events on the HttpStreamPool and may intercept preconnects. Used
   // only for tests.
   class NET_EXPORT_PRIVATE TestDelegate {
@@ -278,6 +289,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       bool enable_ip_based_pooling,
       bool enable_alternative_services);
 
+  CompletionOnceCallback GetAltSvcQuicPreconnectCallback();
+
   // Retrieves information on the current state of the pool as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
 
@@ -315,6 +328,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   size_t JobControllerCountForTesting() const {
     return job_controllers_.size();
+  }
+
+  void SetAltSvcQuicPreconnectCallbackForTesting(
+      CompletionOnceCallback callback) {
+    alt_svc_quic_preconnect_callback_for_testing_ = std::move(callback);
   }
 
  private:
@@ -391,6 +409,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   size_t limit_ignoring_job_controller_counts_ = 0;
 
   std::unique_ptr<TestDelegate> delegate_for_testing_;
+
+  CompletionOnceCallback alt_svc_quic_preconnect_callback_for_testing_;
 
   base::WeakPtrFactory<HttpStreamPool> weak_ptr_factory_{this};
 };
