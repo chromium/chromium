@@ -79,9 +79,9 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
       MessagePortChannel,
       scoped_refptr<SerializedScriptValue> node_options);
 
-  AudioWorkletProcessorDefinition* FindDefinition(const String& name);
+  AudioWorkletProcessorDefinition* FindDefinition(const String& name) const;
 
-  unsigned NumberOfRegisteredDefinitions();
+  unsigned NumberOfRegisteredDefinitions() const;
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
   WorkletProcessorInfoListForSynchronization();

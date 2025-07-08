@@ -249,7 +249,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 }
 
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
-    const String& name) {
+    const String& name) const {
   const auto it = processor_definition_map_.find(name);
   if (it == processor_definition_map_.end()) {
     return nullptr;
@@ -257,7 +257,7 @@ AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
   return it->value.Get();
 }
 
-unsigned AudioWorkletGlobalScope::NumberOfRegisteredDefinitions() {
+unsigned AudioWorkletGlobalScope::NumberOfRegisteredDefinitions() const {
   return processor_definition_map_.size();
 }
 
@@ -265,10 +265,10 @@ std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
 AudioWorkletGlobalScope::WorkletProcessorInfoListForSynchronization() {
   auto processor_info_list =
       std::make_unique<Vector<CrossThreadAudioWorkletProcessorInfo>>();
-  for (auto definition_entry : processor_definition_map_) {
-    if (!definition_entry.value->IsSynchronized()) {
-      definition_entry.value->MarkAsSynchronized();
-      processor_info_list->emplace_back(*definition_entry.value);
+  for (auto definition : processor_definition_map_.Values()) {
+    if (!definition->IsSynchronized()) {
+      definition->MarkAsSynchronized();
+      processor_info_list->emplace_back(*definition);
     }
   }
   return processor_info_list;
