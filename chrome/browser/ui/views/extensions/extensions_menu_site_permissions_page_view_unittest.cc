@@ -21,6 +21,7 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/test/views_test_utils.h"
 

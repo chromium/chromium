@@ -7,9 +7,7 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
-#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_actions_history.h"
 #include "ui/base/metadata/metadata_header_macros.h"

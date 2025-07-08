@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"

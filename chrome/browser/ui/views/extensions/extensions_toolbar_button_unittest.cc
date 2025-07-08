@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension_features.h"
 
 class ExtensionsToolbarButtonUnitTest : public ExtensionsToolbarUnitTest {

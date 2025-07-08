@@ -25,6 +25,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 

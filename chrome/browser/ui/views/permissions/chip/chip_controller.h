@@ -24,6 +24,7 @@ class PermissionPromptChipModel;
 class LocationBarView;
 class PermissionDashboardView;
 class PermissionDashboardController;
+class PermissionPromptBubbleBaseView;
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
 // immediately after being closed via losing focus.

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"

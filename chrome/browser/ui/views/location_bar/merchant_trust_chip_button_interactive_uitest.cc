@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"

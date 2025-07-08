@@ -19,7 +19,6 @@ class ImageView;
 class Label;
 class RadioButton;
 class ToggleButton;
-class RadioButton;
 }  // namespace views
 
 class Browser;
