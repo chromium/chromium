@@ -35,6 +35,12 @@ import java.util.Set;
  */
 @NullMarked
 class TouchToFillPaymentMethodView extends TouchToFillViewBase {
+
+    private @StringRes int mSheetContentDescriptionId;
+    private @StringRes int mSheetFullHeightDescriptionId;
+    private @StringRes int mSheetHalfHeightDescriptionId;
+    private @StringRes int mSheetClosedDescriptionId;
+
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
@@ -91,6 +97,22 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 .setOnClickListener((unused) -> backPressHandler.run());
     }
 
+    public void setSheetContentDescriptionId(@StringRes int sheetContentDescriptionId) {
+        mSheetContentDescriptionId = sheetContentDescriptionId;
+    }
+
+    public void setSheetHalfHeigthDescriptionId(@StringRes int sheetHalfHeightDescriptionId) {
+        mSheetHalfHeightDescriptionId = sheetHalfHeightDescriptionId;
+    }
+
+    public void setSheetFullHeightDescriptionId(@StringRes int sheetFullHeightDescriptionId) {
+        mSheetFullHeightDescriptionId = sheetFullHeightDescriptionId;
+    }
+
+    public void setSheetClosedDescriptionId(@StringRes int sheetClosedDescriptionId) {
+        mSheetClosedDescriptionId = sheetClosedDescriptionId;
+    }
+
     @Override
     public int getVerticalScrollOffset() {
         return getSheetItemListView().computeVerticalScrollOffset();
@@ -98,26 +120,22 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        // TODO - crbug.com/: Update for loyalty cards.
-        return context.getString(R.string.autofill_payment_method_bottom_sheet_content_description);
+        return getContentView().getContext().getString(mSheetContentDescriptionId);
     }
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        // TODO - crbug.com/: Update for loyalty cards.
-        return R.string.autofill_payment_method_bottom_sheet_half_height;
+        return mSheetHalfHeightDescriptionId;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        // TODO - crbug.com/: Update for loyalty cards.
-        return R.string.autofill_payment_method_bottom_sheet_full_height;
+        return mSheetFullHeightDescriptionId;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        // TODO - crbug.com/: Update for loyalty cards.
-        return R.string.autofill_payment_method_bottom_sheet_closed;
+        return mSheetClosedDescriptionId;
     }
 
     @Override

@@ -32,6 +32,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -121,6 +125,14 @@ class TouchToFillPaymentMethodViewBinder {
             view.updateScreenHeight();
         } else if (propertyKey == CURRENT_SCREEN) {
             // Intentionally ignored.
+        } else if (propertyKey == SHEET_CONTENT_DESCRIPTION_ID) {
+            view.setSheetContentDescriptionId(model.get(SHEET_CONTENT_DESCRIPTION_ID));
+        } else if (propertyKey == SHEET_HALF_HEIGHT_DESCRIPTION_ID) {
+            view.setSheetHalfHeigthDescriptionId(model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID));
+        } else if (propertyKey == SHEET_FULL_HEIGHT_DESCRIPTION_ID) {
+            view.setSheetFullHeightDescriptionId(model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID));
+        } else if (propertyKey == SHEET_CLOSED_DESCRIPTION_ID) {
+            view.setSheetClosedDescriptionId(model.get(SHEET_CLOSED_DESCRIPTION_ID));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

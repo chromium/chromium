@@ -60,6 +60,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
@@ -74,7 +78,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
@@ -350,6 +353,10 @@ public class TouchToFillPaymentMethodViewTest {
                                     .with(SHEET_ITEMS, new ModelList())
                                     .with(BACK_PRESS_HANDLER, mBackPressHandler)
                                     .with(DISMISS_HANDLER, mDismissCallback)
+                                    .with(SHEET_CONTENT_DESCRIPTION_ID, R.string.ok)
+                                    .with(SHEET_HALF_HEIGHT_DESCRIPTION_ID, R.string.ok)
+                                    .with(SHEET_FULL_HEIGHT_DESCRIPTION_ID, R.string.ok)
+                                    .with(SHEET_CLOSED_DESCRIPTION_ID, R.string.ok)
                                     .build();
                     mTouchToFillPaymentMethodView =
                             new TouchToFillPaymentMethodView(
@@ -1223,7 +1230,7 @@ public class TouchToFillPaymentMethodViewTest {
         return mBottomSheetController.getSheetState();
     }
 
-    private String getString(@IdRes int id) {
+    private String getString(@StringRes int id) {
         return mActivityTestRule.getActivity().getString(id);
     }
 
