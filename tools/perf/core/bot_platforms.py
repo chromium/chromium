@@ -595,6 +595,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--probe-config=../../clank/android_webview/tools/crossbench_config/'
             'agsa_probe_config.hjson',
             '--repetitions=50',
+            '--http-request-timeout=15s',
         ]
     ),
 ])
