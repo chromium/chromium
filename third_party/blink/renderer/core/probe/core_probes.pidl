@@ -53,6 +53,7 @@
 
 interface CoreProbes {
 
+  class BlobDataHandle;
   class ClassicScript;
   class ConsoleMessage;
   class FontCustomPlatformData;
@@ -61,6 +62,7 @@ interface CoreProbes {
   class HTMLInputElement;
   class JSBasedEventListener;
   class PerformanceEntry;
+  class ResourceError;
   class Script;
   class ScriptState;
   class SpeculationCandidate;
