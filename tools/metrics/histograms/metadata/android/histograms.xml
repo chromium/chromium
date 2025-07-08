@@ -1254,6 +1254,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessRanking.{RankType}.Count" units="count"
+    expires_after="2025-11-02">
+  <owner>kawasin@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the number of child process connections that are classified as
+    {RankType}. Whether the process is high rank or low rank is determined by
+    ChildProcessRanking.shouldBeInLowRankGroup() This is recorded when the
+    application is sent to the background.
+  </summary>
+  <token key="RankType">
+    <variant name="HighRank" summary="high-rank processes"/>
+    <variant name="LowRank" summary="low-rank processes"/>
+  </token>
+</histogram>
+
 <histogram name="Android.ChildProcessStartTimeV2.{Type}" units="ms"
     expires_after="2023-02-22">
   <owner>cduvall@chromium.org</owner>

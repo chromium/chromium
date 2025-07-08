@@ -514,7 +514,12 @@ public final class ChildProcessLauncherHelperImpl {
         LauncherThread.postDelayed(sDelayedBackgroundTask, delay);
         LauncherThread.post(
                 () -> {
-                    if (sBindingManager != null) sBindingManager.onSentToBackground();
+                    if (sBindingManager != null) {
+                        sBindingManager.onSentToBackground();
+                    }
+                    if (sSandboxedChildConnectionRanking != null) {
+                        sSandboxedChildConnectionRanking.recordProcessRanking();
+                    }
                 });
     }
 
