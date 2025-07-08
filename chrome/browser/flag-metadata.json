@@ -6821,7 +6821,7 @@
   {
       "name": "notifications-ignore-require-interaction",
       "owners": ["amehfooz@chromium.org", "joelhockey@chromium.org" ],
-      "expiry_milestone": 140
+      "expiry_milestone": 160
   },
   {
     "name": "ntp-alpha-background-collections",
