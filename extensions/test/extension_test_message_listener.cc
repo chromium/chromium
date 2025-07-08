@@ -31,11 +31,16 @@ ExtensionTestMessageListener::~ExtensionTestMessageListener() {
 }
 
 bool ExtensionTestMessageListener::WaitUntilSatisfied() {
+  return WaitUntilSatisfied(base::RunLoop::Type::kDefault);
+}
+
+bool ExtensionTestMessageListener::WaitUntilSatisfied(
+    base::RunLoop::Type message_waiter_type) {
   if (satisfied_)
     return !failed_;
-  base::RunLoop run_loop;
-  quit_wait_closure_ = run_loop.QuitWhenIdleClosure();
-  run_loop.Run();
+  base::RunLoop message_waiter(message_waiter_type);
+  quit_wait_closure_ = message_waiter.QuitWhenIdleClosure();
+  message_waiter.Run();
   return !failed_;
 }
 

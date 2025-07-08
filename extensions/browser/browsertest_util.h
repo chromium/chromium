@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/run_loop.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {
@@ -67,9 +68,14 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
 
 // Synchronously stops the service worker registered by the extension with the
 // given `extension_id` at global scope. The extension must be installed and
-// enabled.
+// enabled. `stop_waiter_type` allows the caller to nest this call in another
+// base::RunLoop if needed in their test.
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
                                               const ExtensionId& extension_id);
+void StopServiceWorkerForExtensionGlobalScope(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    base::RunLoop::Type stop_waiter_type);
 
 // Returns whether the given `web_contents` has the associated
 // `changed_title`. If the web contents has neither `changed_title`

@@ -23,7 +23,7 @@ chrome.test.runTests([
   async function onMessagePromiseResolveObjectValue() {
     const response =
         await chrome.runtime.sendMessage('return promise resolve value object');
-    chrome.test.assertEq({test_key: 'promise resolved'}, response);
+    chrome.test.assertEq({testKey: 'promise resolved'}, response);
     chrome.test.succeed();
   },
 
@@ -59,16 +59,6 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Tests that a runtime.onMessage() listener that synchronously calls
-  // sendResponse() causes the the sender's response callback to be provided the
-  // synchronous response call's value.
-  async function onMessageSyncReply() {
-    const response =
-        await chrome.runtime.sendMessage('call sendResponse synchronously');
-    chrome.test.assertEq('synchronous response return', response);
-    chrome.test.succeed();
-  },
-
   // Tests that a runtime.onMessage() listener that synchronously responds, but
   // then returns a promise will provide the synchronous response to the caller,
   // and the promise settled value is ignored.
@@ -76,15 +66,6 @@ chrome.test.runTests([
     const response = await chrome.runtime.sendMessage(
         'return promise after synchronous sendResponse() is called');
     chrome.test.assertEq('synchronous response return', response);
-    chrome.test.succeed();
-  },
-
-  // Tests that a runtime.onMessage() listener that throws an error
-  // synchronously returns an `undefined` response.
-  async function onMessageSyncThrowsError() {
-    const response =
-        await chrome.runtime.sendMessage('synchronously throw an error');
-    chrome.test.assertEq(undefined, response);
     chrome.test.succeed();
   },
 

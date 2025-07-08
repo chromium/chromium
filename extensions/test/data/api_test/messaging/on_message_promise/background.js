@@ -12,7 +12,7 @@ function doSomeAsyncThing() {
 }
 
 async function OnMessageListenerCallsSendResponseAsyncAfterPromise(
-    unused_message, unused_sender, sendResponse) {
+    sendResponse) {
   doSomeAsyncThing().then((result) => {
     sendResponse(result);
   });
@@ -27,7 +27,7 @@ function onMessageListener(message, sender, sendResponse) {
       });
     case 'return promise resolve value object':
       return new Promise((resolve) => {
-        resolve({test_key: 'promise resolved'});
+        resolve({testKey: 'promise resolved'});
       });
     case 'return promise resolve an error':
       return new Promise((resolve) => {
@@ -37,16 +37,10 @@ function onMessageListener(message, sender, sendResponse) {
       return onMessageListenerReturnsPromiseAsAsyncFunction(
           message, sender, sendResponse);
     case 'call sendResponse asynchronously after returned promise resolves':
-      return OnMessageListenerCallsSendResponseAsyncAfterPromise(
-          message, sender, sendResponse);
-    case 'call sendResponse synchronously':
-      sendResponse('synchronous response return');
-      return;
+      return OnMessageListenerCallsSendResponseAsyncAfterPromise(sendResponse);
     case 'return promise after synchronous sendResponse() is called':
       sendResponse('synchronous response return');
       return new Promise(resolve => resolve('promise resolved'));
-    case 'synchronously throw an error':
-      throw new Error('synchronous error thrown');
     default:
       chrome.test.fail('Unexpected test message: ' + message);
   }

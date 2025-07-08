@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/test/test_api_observer.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
@@ -133,7 +134,11 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // extension_id_for_message() accessors can be used.
   // Returns false if the wait is interrupted and we still haven't gotten the
   // message, or if the message was equal to `failure_message_`.
+  // `message_waiter_type` allows the caller to nest this call in another
+  // base::RunLoop if needed in their test.
   [[nodiscard]] bool WaitUntilSatisfied();
+  [[nodiscard]] bool WaitUntilSatisfied(
+      base::RunLoop::Type message_waiter_type);
 
   // Send the given message as a reply. It is only valid to call this after
   // WaitUntilSatisfied has returned true, and if will_reply is true.

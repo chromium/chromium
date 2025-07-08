@@ -21,6 +21,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -634,10 +635,11 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 };
 
 // Runs multiple test scenarios for runtime.OnMessage() listeners returning
-// various synchronous and asynchronous (promise or 'return true' callback)
-// values.
+// promises.
+// TODO(crbug.com/40753031): Create a test case that handles promise returns
+// from listeners that reject too.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
-                       OnMessageReturnBehavior) {
+                       OnMessagePromiseReturnResolvesBehavior) {
   ASSERT_TRUE(LoadExtension(
       shared_test_data_dir().AppendASCII("messaging/on_message_promise")));
 
@@ -647,12 +649,87 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
 
-  // Confirm content script response callback function is called with the
-  // expected value.
+  // Confirm content script sender gets response with the expected value.
   {
     SCOPED_TRACE(
-        "waiting for content script message sender response callback to "
-        "receive response from background message listener");
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+using PolyfillSupportMessagingApiTest = MessagingApiTest;
+
+// Tests that runtime.sendMessage() promise version behavior matches the
+// mozilla/webextension-polyfill
+// (https://github.com/mozilla/webextension-polyfill). The polyfill doesn't
+// support callbacks so we do not test the sendMessage() callback version
+// (https://github.com/mozilla/webextension-polyfill/issues/102). The test is
+// split into sync and async versions due to needing to stop the worker to
+// elicit the response for some test cases.
+IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
+                       SendMessageListenerBehavior_Synchronous) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/send_message_promise_polyfill_sync")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
+
+// See above.
+IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
+                       SendMessageListenerBehavior_Asynchronous) {
+  const Extension* extension = LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/send_message_promise_polyfill_async"));
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener message_processed_listener(
+      "listener_processed_message");
+  ExtensionTestMessageListener worker_shutdown_listener(
+      "shutdown_worker", ReplyBehavior::kWillReply);
+
+  auto OnShutdownMessage = [&](const std::string& message) {
+    // Wait for the worker listener to process the message so we don't shutdown
+    // the worker so quickly that the sender's message never gets to the
+    // listener.
+    ASSERT_TRUE(message_processed_listener.WaitUntilSatisfied(
+        base::RunLoop::Type::kNestableTasksAllowed));
+    message_processed_listener.Reset();
+    // Shut down the worker to start garbage collection of the sendResponse in
+    // the listener context. This elicits the browser to respond on behalf of
+    // the listener.
+    browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+        browser()->profile(), extension->id(),
+        base::RunLoop::Type::kNestableTasksAllowed);
+    // Notify the test cases to proceed.
+    worker_shutdown_listener.Reply("");
+    worker_shutdown_listener.Reset();
+  };
+  worker_shutdown_listener.SetOnRepeatedlySatisfied(
+      base::BindLambdaForTesting(OnShutdownMessage));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
   }
 }
