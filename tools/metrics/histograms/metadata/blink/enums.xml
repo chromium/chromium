@@ -8322,6 +8322,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="347" label="WasmSimd"/>
   <int value="348" label="Observable"/>
   <int value="349" label="MetaApplicationTitle"/>
+  <int value="350" label="DialogClosedby"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

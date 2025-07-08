@@ -731,9 +731,11 @@ void HTMLDialogElement::Trace(Visitor* visitor) const {
 void HTMLDialogElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (params.name == html_names::kClosedbyAttr && IsOpenAndActive() &&
-      params.old_value != params.new_value) {
-    SetCloseWatcherEnabledState();
+  if (params.name == html_names::kClosedbyAttr) {
+    UseCounter::CountWebDXFeature(GetDocument(), WebDXFeature::kDialogClosedby);
+    if (IsOpenAndActive() && params.old_value != params.new_value) {
+      SetCloseWatcherEnabledState();
+    }
   }
   if (params.name == html_names::kOpenAttr &&
       params.old_value != params.new_value) {
