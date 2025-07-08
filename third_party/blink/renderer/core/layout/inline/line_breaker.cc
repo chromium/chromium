@@ -3729,7 +3729,18 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   // already have been processed.
   InlineItemResult* item_result = AddItem(item, line_info);
   auto index_before_float = current_;
-  item_result->can_break_after = auto_wrap_;
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    // Out-of-flow elements must be ignored for the text processing.
+    // https://drafts.csswg.org/css-text-3/#text-encoding
+    DCHECK(!item_result->can_break_after);
+    if (!item_result->should_create_line_box) {
+      // Allow to break after leading floats. This is not defined, but it's a
+      // historical behavior some tests require, and is compatbible with WebKit.
+      item_result->can_break_after = auto_wrap_;
+    }
+  } else {
+    item_result->can_break_after = auto_wrap_;
+  }
   MoveToNextOf(item);
 
   // If we are currently computing our min/max-content size, simply append the
@@ -3872,12 +3883,35 @@ void LineBreaker::HandleOutOfFlowPositioned(const InlineItem& item,
   DCHECK_EQ(item.Type(), InlineItem::kOutOfFlowPositioned);
   InlineItemResult* item_result = AddItem(item, line_info);
 
-  // Break opportunity after OOF is not well-defined nor interoperable. Using
-  // |kObjectReplacementCharacter|, except when this is a leading OOF, seems to
-  // produce reasonable and interoperable results in common cases.
-  DCHECK(!item_result->can_break_after);
-  if (item_result->should_create_line_box)
-    ComputeCanBreakAfter(item_result, auto_wrap_, break_iterator_);
+  if (RuntimeEnabledFeatures::LineBreakOofNoOrcEnabled()) {
+    // Out-of-flow elements must be ignored for the text processing.
+    // https://drafts.csswg.org/css-text-3/#text-encoding
+    // But when the point is breakable, whether to break before or after isn't
+    // well-defined.
+    DCHECK(!item_result->can_break_after);
+    InlineItemResults& item_results = *line_info->MutableResults();
+    if (item_results.size() >= 2) {
+      InlineItemResult* last_item_result = std::prev(item_result);
+      if (last_item_result->IsEmptyText() && !last_item_result->can_break_after)
+          [[unlikely]] {
+        // Text+SP OP OOF Text => !break_after.
+        //     line-breaking-018, line-breaking-019
+        // Text+SP OP Empty OOF Text => break_after.
+        //     position-absolute-in-inline-004
+        ComputeCanBreakAfter(item_result, auto_wrap_, break_iterator_);
+      } else {
+        item_result->can_break_after = last_item_result->can_break_after;
+      }
+    }
+  } else {
+    // Break opportunity after OOF is not well-defined nor interoperable. Using
+    // |kObjectReplacementCharacter|, except when this is a leading OOF, seems
+    // to produce reasonable and interoperable results in common cases.
+    DCHECK(!item_result->can_break_after);
+    if (item_result->should_create_line_box) {
+      ComputeCanBreakAfter(item_result, auto_wrap_, break_iterator_);
+    }
+  }
 
   MoveToNextOf(item);
 }
