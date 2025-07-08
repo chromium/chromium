@@ -60,7 +60,7 @@ class ExecutionEngine {
   //     v
   // StartAction -> UiPreTool -> ToolController -> UiPostTool -> Complete
   //     ^                                            |                |
-  //     |____________________________________________|__(test only?)__|
+  //     |____________________________________________|________________|
   //
   // Complete may also be reached directly from other states in case of error.
   enum class State {

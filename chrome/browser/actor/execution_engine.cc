@@ -229,8 +229,6 @@ void ExecutionEngine::SetState(State state) {
           {State::kUiPreTool, {State::kToolController, State::kComplete}},
           {State::kToolController, {State::kUiPostTool, State::kComplete}},
           {State::kUiPostTool, {State::kComplete, State::kStartAction}},
-          // TODO(crbug.com/425784083): Confirm if this transition is valid
-          // outside of tests.
           {State::kComplete, {State::kStartAction}},
       }));
   DCHECK_STATE_TRANSITION(transitions, state_, state);
