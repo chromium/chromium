@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
@@ -232,6 +234,51 @@ class AutoPipInfoDevToolsWaiter : public content::DevToolsInspectorLogWatcher::
       content::DevToolsInspectorLogWatcher,
       content::DevToolsInspectorLogWatcher::DevToolsInspectorLogWatcherObserver>
       auto_pip_dev_tools_waiter_observation_{this};
+};
+
+// Helper class to wait for widget bound updates.
+class WidgetBoundsChangeWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetBoundsChangeWaiter(views::Widget* widget) {
+    observation_.Observe(widget);
+  }
+
+  void WaitForBoundsChange(const gfx::Rect& expected_bounds_in_screen) {
+    views::Widget* widget = observation_.GetSource();
+    if (!widget ||
+        widget->GetWindowBoundsInScreen() == expected_bounds_in_screen) {
+      return;
+    }
+
+    expected_bounds_in_screen_ = expected_bounds_in_screen;
+    CHECK(bounds_future_.Wait()) << "Waiting for value timed out.";
+  }
+
+ private:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    if (expected_bounds_in_screen_.has_value() &&
+        widget->GetWindowBoundsInScreen() ==
+            expected_bounds_in_screen_.value()) {
+      if (!bounds_future_.IsReady()) {
+        bounds_future_.SetValue();
+      }
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    // If the widget is destroyed before the expected bounds are met, stop
+    // waiting.
+    if (!bounds_future_.IsReady()) {
+      bounds_future_.SetValue();
+    }
+    observation_.Reset();
+  }
+
+  base::test::TestFuture<void> bounds_future_;
+  std::optional<gfx::Rect> expected_bounds_in_screen_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
@@ -1471,6 +1518,100 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 
   web_contents->ClosePage();
   ui_test_utils::WaitForBrowserToClose(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       CachedBoundsUsedWhenPermissionPromtNotVisible) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Allow the AUTO_PICTURE_IN_PICTURE content setting. This will prevent
+  // showing the permission prompt.
+  SetContentSetting(web_contents, CONTENT_SETTING_ALLOW);
+  SwitchToNewTabAndWaitForAutoPip();
+
+  // Wait for widget to be visible.
+  auto* pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_contents);
+  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      pip_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(browser_view);
+  auto* pip_widget = browser_view->GetWidget();
+  ASSERT_TRUE(pip_widget);
+  views::test::WidgetVisibleWaiter(pip_widget).Wait();
+
+  // Get the current picture-in-picture window bounds.
+  const gfx::Rect initial_bounds = pip_widget->GetWindowBoundsInScreen();
+
+  // Move the picture-in-picture window to a new location.
+  gfx::Rect moved_bounds = initial_bounds;
+  moved_bounds.set_origin({10, 20});
+  pip_widget->SetBounds(moved_bounds);
+
+  // Wait for the move to complete, and close the picture-in-picture window.
+  WidgetBoundsChangeWaiter(pip_widget).WaitForBoundsChange(moved_bounds);
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Re-open the picture-in-picture window, and verify that the new new and old
+  // bounds are equal.
+  SwitchToNewTabAndWaitForAutoPip();
+  auto* new_pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, new_pip_contents);
+  auto* new_pip_widget = BrowserView::GetBrowserViewForNativeWindow(
+                             new_pip_contents->GetTopLevelNativeWindow())
+                             ->GetWidget();
+  EXPECT_EQ(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       CachedBoundsIgnoredWhenPermissionPromtIsVisible) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Switch to a new tab and wait for auto picture-in-piture, the permission
+  // prompt should be shown.
+  SwitchToNewTabAndWaitForAutoPip();
+
+  // Wait for widget to be visible.
+  auto* pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_contents);
+  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      pip_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(browser_view);
+  auto* pip_widget = browser_view->GetWidget();
+  ASSERT_TRUE(pip_widget);
+  views::test::WidgetVisibleWaiter(pip_widget).Wait();
+
+  // Get the current picture-in-picture window bounds.
+  const gfx::Rect initial_bounds = pip_widget->GetWindowBoundsInScreen();
+
+  // Move the picture-in-picture window to a new location.
+  gfx::Rect moved_bounds = initial_bounds;
+  moved_bounds.set_origin({10, 20});
+  pip_widget->SetBounds(moved_bounds);
+
+  // Wait for the move to complete, and close the picture-in-picture window.
+  WidgetBoundsChangeWaiter(pip_widget).WaitForBoundsChange(moved_bounds);
+  SwitchBackToOpenerAndWaitForPipToClose();
+
+  // Re-open the picture-in-picture window, and verify that the new new and old
+  // bounds are not equal.
+  SwitchToNewTabAndWaitForAutoPip();
+  auto* new_pip_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, new_pip_contents);
+  auto* new_pip_widget = BrowserView::GetBrowserViewForNativeWindow(
+                             new_pip_contents->GetTopLevelNativeWindow())
+                             ->GetWidget();
+  EXPECT_NE(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(initial_bounds, new_pip_widget->GetWindowBoundsInScreen());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

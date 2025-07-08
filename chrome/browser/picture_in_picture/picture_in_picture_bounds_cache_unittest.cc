@@ -189,3 +189,23 @@ TEST_F(PictureInPictureBoundsCacheTest, SameOriginsDifferentPathsMatch) {
   EXPECT_TRUE(initial_bounds);
   EXPECT_EQ(*initial_bounds, bounds);
 }
+
+TEST_F(PictureInPictureBoundsCacheTest, ClearsCachedBounds) {
+  const gfx::Size requested_size(320, 240);
+  PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
+                                                     requested_size);
+  const gfx::Rect bounds(10, 20, 30, 40);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+
+  // Verify initial bounds are set.
+  auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), display(), requested_size);
+  EXPECT_TRUE(initial_bounds);
+  EXPECT_EQ(*initial_bounds, bounds);
+
+  // Verify cached bounds are cleared.
+  PictureInPictureBoundsCache::ClearCachedBounds(web_contents());
+  initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), display(), requested_size);
+  EXPECT_FALSE(initial_bounds);
+}

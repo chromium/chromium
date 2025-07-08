@@ -1690,6 +1690,14 @@ BASE_FEATURE(kVideoDecodeBatching,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Safety switch to allow us to revert to the previous behavior of using the
+// cached bounds when the permission prompt is visible. If this feature is
+// enabled (the default), we will clear the cached bounds, whenever the
+// permission prompt is visible.
+BASE_FEATURE(kClearPipCachedBoundsWhenPermissionPromptVisible,
+             "ClearPipCachedBoundsWhenPermissionPromptVisible",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Safety switch to allow us to revert to the previous behavior of using the
 // restored bounds for PiP windows, rather than the window bounds.  If this
 // feature is enabled (the default), then we'll use the window bounds.
 BASE_FEATURE(kUseWindowBoundsForPip,

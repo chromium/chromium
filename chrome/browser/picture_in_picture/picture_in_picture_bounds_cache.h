@@ -52,6 +52,9 @@ class PictureInPictureBoundsCache
   static void UpdateCachedBounds(content::WebContents* web_contents,
                                  const gfx::Rect& most_recent_bounds);
 
+  // Clears the cache for `web_contents`.
+  static void ClearCachedBounds(content::WebContents* web_contents);
+
  private:
   friend class content::WebContentsUserData<PictureInPictureBoundsCache>;
 

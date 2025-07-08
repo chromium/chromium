@@ -39,6 +39,14 @@ void PictureInPictureBoundsCache::UpdateCachedBounds(
   return cache->UpdateCachedBounds(most_recent_bounds);
 }
 
+// static
+void PictureInPictureBoundsCache::ClearCachedBounds(
+    content::WebContents* web_contents) {
+  auto* cache = FromWebContents(web_contents);
+  CHECK(cache);
+  cache->Clear();
+}
+
 std::optional<gfx::Rect> PictureInPictureBoundsCache::GetBoundsForNewWindow(
     const display::Display& display,
     const std::optional<gfx::Size>& requested_content_size) {
