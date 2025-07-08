@@ -992,16 +992,25 @@ String Range::GetText() const {
 }
 
 DocumentFragment* Range::createContextualFragment(
-    const String& markup,
+    const V8UnionStringOrTrustedHTML* markup,
     ExceptionState& exception_state) {
   // Algorithm:
-  // http://domparsing.spec.whatwg.org/#extensions-to-the-range-interface
+  // https://html.spec.whatwg.org/#the-createcontextualfragment()-method
 
-  DCHECK(!markup.IsNull());
+  // Step 1: Invoke Get Trusted Type compliant string.
+  String compliant_markup = TrustedTypesCheckForHTML(
+      markup, OwnerDocument().GetExecutionContext(), "Range",
+      "createContextualFragment", exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
 
+  DCHECK(!compliant_markup.IsNull());
+
+  // Step 2: This' start node.
   Node* node = &start_.Container();
 
-  // Step 1.
+  // Step 3, 4, 5: Determine element.
   Element* element;
   if (!start_.Offset() &&
       (node->IsDocumentNode() || node->IsDocumentFragment()))
@@ -1011,7 +1020,7 @@ DocumentFragment* Range::createContextualFragment(
   else
     element = node->parentElement();
 
-  // Step 2.
+  // Step 6: Handle null and <html> element.
   if (!element || IsA<HTMLHtmlElement>(element)) {
     Document& document = node->GetDocument();
 
@@ -1028,10 +1037,10 @@ DocumentFragment* Range::createContextualFragment(
     }
   }
 
-  // Steps 3, 4, 5.
+  // Steps 7, 8, 9: Invoke fragment parsing, etc.
   return blink::CreateContextualFragment(
-      markup, element, kAllowScriptingContentAndDoNotMarkAlreadyStarted,
-      exception_state);
+      compliant_markup, element,
+      kAllowScriptingContentAndDoNotMarkAlreadyStarted, exception_state);
 }
 
 void Range::detach() {

@@ -64,7 +64,7 @@
 
     // DOM Parsing and Serialization
     // https://w3c.github.io/DOM-Parsing/#extensions-to-the-range-interface
-    [NewObject, RaisesException, CEReactions] DocumentFragment createContextualFragment(HTMLString fragment);
+    [NewObject, RaisesException, CEReactions] DocumentFragment createContextualFragment((DOMString or TrustedHTML) fragment);
 
     // Non-standard API
     [RaisesException, DeprecateAs=RangeExpand] void expand(optional DOMString unit = "");
