@@ -291,12 +291,6 @@ class NodeUnittest(unittest.TestCase):
         'fun': True
     }, 'linux', 'undefined Grit variable found: baz')
 
-    # Test invalid chromeos configurations.
-    AssertThrows("is_chromeos", {}, 'chromeos',
-                 'The chromeos target must be ash')
-    AssertThrows("is_linux", {'chromeos_ash': True}, 'linux',
-                 'Non-chromeos targets cannot be ash')
-
 
 if __name__ == '__main__':
   unittest.main()

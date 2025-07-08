@@ -607,7 +607,7 @@
       <message name="IDS_ARC_SDK_VERSION_UNKNOWN" desc="Message displayed when the Android SDK Version can not be found">
         Unknown
       </message>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <part file="recorder_strings.grdp" />
 
         <!-- The following strings are located here for accessibility from both //ash and //chrome -->

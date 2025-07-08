@@ -472,12 +472,6 @@ class Node:
   def EvaluateExpression(cls, expr, defs, target_platform, extra_variables={}):
     '''Worker for EvaluateCondition (below) and conditions in XTB files.'''
 
-    if target_platform == 'chromeos':
-      assert defs.get('chromeos_ash', False), 'The chromeos target must be ash'
-    else:
-      assert not defs.get('chromeos_ash',
-                          False), 'Non-chromeos targets cannot be ash'
-
     if expr in cls.eval_expr_cache:
       code, variables_in_expr = cls.eval_expr_cache[expr]
     else:

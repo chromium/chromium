@@ -18,7 +18,6 @@ import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from './parse
 
 /** @polymerBehavior */
 export const I18nBehavior = {
-  // <if expr="chromeos_ash">
   // Dynamic locale changes are only relevant in the multidevice_setup step in
   // ChromeOS OOBE/Login flows. On other platforms Chrome process is restarted
   // upon locale changes.
@@ -42,7 +41,6 @@ export const I18nBehavior = {
   i18nUpdateLocale() {
     this.locale = loadTimeData.getString('app_locale');
   },
-  // </if>
 
   /**
    * Returns a translated string where $1 to $9 are replaced by the given
@@ -139,15 +137,11 @@ export const I18nBehavior = {
 /** @interface */
 export class I18nBehaviorInterface {
   constructor() {
-    // <if expr="chromeos_ash">
     /** @type {string} */
     this.locale;
-    // </if>
   }
 
-  // <if expr="chromeos_ash">
   i18nUpdateLocale() {}
-  // </if>
 
   /**
    * @param {string} id
