@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
@@ -278,7 +279,8 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       if (!browser_extra_info.tab_group_infos.empty()) {
         chrome_desks_util::AttachTabGroupsToBrowserInstance(
-            browser_extra_info.tab_group_infos, browser);
+            browser_extra_info.tab_group_infos,
+            ash::BrowserController::GetInstance()->GetDelegate(browser));
       }
 
       if (browser_extra_info.first_non_pinned_tab_index.has_value() &&

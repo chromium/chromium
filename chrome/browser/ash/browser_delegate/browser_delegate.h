@@ -20,6 +20,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tab_groups {
+struct TabGroupInfo;
+}  // namespace tab_groups
+
 namespace ash {
 
 // Abstraction of the `Browser` class from chrome/browser/ui/browser.h for use
@@ -95,6 +99,9 @@ class BrowserDelegate {
   enum class TabPinning { kYes, kNo };
   virtual content::WebContents* NavigateWebApp(const GURL& url,
                                                TabPinning pin_tab) = 0;
+
+  // Creates the specified tab group.
+  virtual void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) = 0;
 
  protected:
   ~BrowserDelegate() = default;

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_info.h"
 
 namespace ash {
 
@@ -102,6 +104,20 @@ content::WebContents* BrowserDelegateImpl::NavigateWebApp(const GURL& url,
   }
 
   return web_app::NavigateWebAppUsingParams(nav_params);
+}
+
+void BrowserDelegateImpl::CreateTabGroup(
+    const tab_groups::TabGroupInfo& tab_group) {
+  std::vector<int> indices;
+  for (uint32_t index = tab_group.tab_range.start();
+       index < tab_group.tab_range.end(); ++index) {
+    indices.push_back(static_cast<int>(index));
+  }
+
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  const tab_groups::TabGroupId new_group_id =
+      tab_strip_model->AddToNewGroup(indices);
+  tab_strip_model->ChangeTabGroupVisuals(new_group_id, tab_group.visual_data);
 }
 
 }  // namespace ash

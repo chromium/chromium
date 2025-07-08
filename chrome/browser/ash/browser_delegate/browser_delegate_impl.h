@@ -38,6 +38,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
               TabDisposition disposition) override;
   content::WebContents* NavigateWebApp(const GURL& url,
                                        TabPinning pin_tab) override;
+  void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) override;
 
  private:
   const raw_ref<Browser> browser_;

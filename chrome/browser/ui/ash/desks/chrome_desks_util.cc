@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
+
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -9,20 +12,6 @@
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
-
-namespace {
-
-const std::vector<int> ConvertRangeToTabGroupIndices(const gfx::Range& range) {
-  std::vector<int> indices;
-
-  for (uint32_t index = range.start(); index < range.end(); ++index) {
-    indices.push_back(static_cast<int>(index));
-  }
-
-  return indices;
-}
-
-}  // namespace
 
 namespace chrome_desks_util {
 
@@ -45,13 +34,9 @@ std::vector<tab_groups::TabGroupInfo> ConvertTabGroupsToTabGroupInfos(
 
 void AttachTabGroupsToBrowserInstance(
     const std::vector<tab_groups::TabGroupInfo>& tab_groups,
-    Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-
+    ash::BrowserDelegate* browser) {
   for (const tab_groups::TabGroupInfo& tab_group : tab_groups) {
-    tab_groups::TabGroupId new_group_id = tab_strip_model->AddToNewGroup(
-        ConvertRangeToTabGroupIndices(tab_group.tab_range));
-    tab_strip_model->ChangeTabGroupVisuals(new_group_id, tab_group.visual_data);
+    browser->CreateTabGroup(tab_group);
   }
 }
 

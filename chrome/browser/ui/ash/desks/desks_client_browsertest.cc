@@ -72,6 +72,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -554,7 +555,9 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
       const std::vector<tab_groups::TabGroupInfo>& tab_groups) {
     Browser* browser = ash::test::CreateBrowser(profile(), urls, std::nullopt);
 
-    chrome_desks_util::AttachTabGroupsToBrowserInstance(tab_groups, browser);
+    chrome_desks_util::AttachTabGroupsToBrowserInstance(
+        tab_groups,
+        ash::BrowserController::GetInstance()->GetDelegate(browser));
     browser->window()->Show();
     return browser;
   }
