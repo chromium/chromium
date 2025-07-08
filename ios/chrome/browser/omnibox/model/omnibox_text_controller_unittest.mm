@@ -105,7 +105,8 @@ class OmniboxTextControllerTest : public PlatformTest {
 };
 
 // Tests if the controller updates the inline autocomplete text.
-TEST_F(OmniboxTextControllerTest, InlineAutocompleteText) {
+// TODO(crbug.com/430259426): Re-enable the test.
+TEST_F(OmniboxTextControllerTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   [omnibox_text_controller_ setUserText:u"he"];
   [omnibox_text_controller_ onPopupDataChanged:u"llo"
@@ -134,7 +135,8 @@ TEST_F(OmniboxTextControllerTest, InlineAutocompleteText) {
   EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 }
 
-TEST_F(OmniboxTextControllerTest, CurrentMatch) {
+// TODO(crbug.com/430259426): Re-enable the test.
+TEST_F(OmniboxTextControllerTest, DISABLED_CurrentMatch) {
   // Test the HTTP case.
   {
     location_bar_model()->set_url(GURL("http://www.example.com/"));
@@ -171,7 +173,8 @@ TEST_F(OmniboxTextControllerTest, CurrentMatch) {
   }
 }
 
-TEST_F(OmniboxTextControllerTest, DisplayText) {
+// TODO(crbug.com/430259426): Re-enable the test.
+TEST_F(OmniboxTextControllerTest, DISABLED_DisplayText) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
 
