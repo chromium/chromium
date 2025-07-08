@@ -1584,7 +1584,7 @@ TEST_F(FormFillerTest, FillPassportEntity) {
 
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields()[0], &passport).fields();
-  EXPECT_EQ(filled_fields[0].value(), u"123");
+  EXPECT_EQ(filled_fields[0].value(), u"LR1234567");
   EXPECT_EQ(filled_fields[1].value(), u"Pippi");
   EXPECT_EQ(filled_fields[2].value(), u"Långstrump");
   EXPECT_EQ(filled_fields[3].value(), u"Sweden");

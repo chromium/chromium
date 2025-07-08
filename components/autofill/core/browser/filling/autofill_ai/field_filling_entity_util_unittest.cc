@@ -326,7 +326,7 @@ TEST_F(GetFillValueForEntityTest, NumbersWithMaxLength) {
             u"12312345");
   EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
                                   mojom::ActionPersistence::kFill),
-            u"123");
+            u"LR1234567");
   EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
                                   mojom::ActionPersistence::kFill),
             u"123456");
@@ -348,7 +348,7 @@ TEST_F(GetFillValueForEntityTest, NumbersWithMaxLength) {
             u"345");
   EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
                                   mojom::ActionPersistence::kFill),
-            u"123");
+            u"567");
   EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
                                   mojom::ActionPersistence::kFill),
             u"456");
@@ -370,7 +370,7 @@ TEST_F(GetFillValueForEntityTest, NumbersWithMaxLength) {
             u"12312345");
   EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
                                   mojom::ActionPersistence::kFill),
-            u"123");
+            u"LR1234567");
   EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
                                   mojom::ActionPersistence::kFill),
             u"123456");

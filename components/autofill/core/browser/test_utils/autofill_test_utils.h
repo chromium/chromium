@@ -332,7 +332,7 @@ void SetServerCreditCards(PaymentsAutofillTable* table,
 template <typename = void>
 struct PassportEntityOptionsT {
   const char16_t* name = u"Pippi Långstrump";
-  const char16_t* number = u"123";
+  const char16_t* number = u"LR1234567";
   const char16_t* country = u"Sweden";
   const char16_t* expiry_date = u"2019-08-30";
   const char16_t* issue_date = u"2010-09-01";
