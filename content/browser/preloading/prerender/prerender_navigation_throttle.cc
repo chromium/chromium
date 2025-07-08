@@ -89,11 +89,9 @@ PrerenderNavigationThrottle::WillRedirectRequest() {
 PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry),
-      prerender_host_(static_cast<PrerenderHost*>(
-          NavigationRequest::From(&registry.GetNavigationHandle())
-              ->frame_tree_node()
-              ->frame_tree()
-              .delegate())) {
+      prerender_host_(&PrerenderHost::GetFromFrameTreeNode(
+          *NavigationRequest::From(&registry.GetNavigationHandle())
+               ->frame_tree_node())) {
   CHECK(prerender_host_);
 
   // This throttle is responsible for setting the initial navigation id on the

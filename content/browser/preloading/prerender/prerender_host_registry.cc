@@ -1588,11 +1588,10 @@ void PrerenderHostRegistry::DidStartNavigation(
 
   // This navigation is running on the main frame in the prerendered page, so
   // its FrameTree::Delegate should be PrerenderHost.
-  auto* prerender_host = static_cast<PrerenderHost*>(
-      navigation_request->frame_tree_node()->frame_tree().delegate());
-  CHECK(prerender_host);
+  auto& prerender_host = PrerenderHost::GetFromFrameTreeNode(
+      *navigation_request->frame_tree_node());
 
-  prerender_host->DidStartNavigation(navigation_handle);
+  prerender_host.DidStartNavigation(navigation_handle);
 }
 
 void PrerenderHostRegistry::ReadyToCommitNavigation(
@@ -1607,11 +1606,10 @@ void PrerenderHostRegistry::ReadyToCommitNavigation(
 
   // This navigation is running on the main frame in the prerendered page, so
   // its FrameTree::Delegate should be PrerenderHost.
-  auto* prerender_host = static_cast<PrerenderHost*>(
-      navigation_request->frame_tree_node()->frame_tree().delegate());
-  CHECK(prerender_host);
+  auto& prerender_host = PrerenderHost::GetFromFrameTreeNode(
+      *navigation_request->frame_tree_node());
 
-  prerender_host->ReadyToCommitNavigation(navigation_handle);
+  prerender_host.ReadyToCommitNavigation(navigation_handle);
 }
 
 void PrerenderHostRegistry::DidFinishNavigation(

@@ -54,8 +54,7 @@ class WebContentsImpl;
 // process via SpeculationHostImpl or will directly be created for
 // browser-initiated prerendering (this code path is not implemented yet). This
 // is owned by PrerenderHostRegistry.
-class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
-                                     public NavigationControllerDelegate {
+class CONTENT_EXPORT PrerenderHost {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -166,6 +165,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // Similar to GetPrerenderHostFromFrameTreeNode() but `frame_tree_node` must
   // be in prerendering.
   static PrerenderHost& GetFromFrameTreeNode(FrameTreeNode& frame_tree_node);
+  static PrerenderHost& GetFromFrameTree(FrameTree* frame_tree);
 
   // Checks whether two headers are the same in a case-insensitive and
   // order-insensitive way.
@@ -195,50 +195,15 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt,
                 std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt);
-  ~PrerenderHost() override;
+  ~PrerenderHost();
 
   PrerenderHost(const PrerenderHost&) = delete;
   PrerenderHost& operator=(const PrerenderHost&) = delete;
   PrerenderHost(PrerenderHost&&) = delete;
   PrerenderHost& operator=(PrerenderHost&&) = delete;
 
-  // FrameTree::Delegate
-
-  // TODO(crbug.com/40177943): Correctly handle load events. Ignored for
-  // now as it confuses WebContentsObserver instances because they can not
-  // distinguish between the different FrameTrees.
-
-  void LoadingStateChanged(LoadingState new_state) override {}
-  void DidStartLoading(FrameTreeNode* frame_tree_node) override {}
-  void DidStopLoading() override;
-  bool IsHidden() override;
-  FrameTree* LoadingTree() override;
-  FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() override;
-  RenderFrameHostImpl* GetProspectiveOuterDocument() override;
-  void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
-  FrameTree* GetOwnedPictureInPictureFrameTree() override;
-  FrameTree* GetPictureInPictureOpenerFrameTree() override;
-  bool OnRenderFrameProxyVisibilityChanged(
-      RenderFrameProxyHost* render_frame_proxy_host,
-      blink::mojom::FrameVisibility visibility) override;
-
-  // NavigationControllerDelegate
-  void NotifyNavigationStateChangedFromController(
-      InvalidateTypes changed_flags) override {}
-  void NotifyBeforeFormRepostWarningShow() override {}
-  void NotifyNavigationEntryCommitted(
-      const LoadCommittedDetails& load_details) override {}
-  void NotifyNavigationEntryChanged(
-      const EntryChangedDetails& change_details) override {}
-  void NotifyNavigationListPruned(
-      const PrunedDetails& pruned_details) override {}
-  void NotifyNavigationEntriesDeleted() override {}
-  void ActivateAndShowRepostFormWarningDialog() override;
-  bool ShouldPreserveAbortedURLs() override;
-  void UpdateOverridingUserAgent() override {}
-
   NavigationControllerImpl& GetNavigationController() {
-    return frame_tree_->controller();
+    return GetFrameTree()->controller();
   }
 
   // Returns false if prerendering hasn't been started.
@@ -448,6 +413,63 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
                                    FrameTreeNode& navigating_frame_tree_node);
 
  private:
+  // The helper class to make the frame tree movable among different
+  // PrerenderHosts. When moving the prerender host to the new owner, we need to
+  // redirect the function calls to the delegates.
+  class PrerenderFrameTreeDelegate : public FrameTree::Delegate,
+                                     public NavigationControllerDelegate {
+   public:
+    // TODO(crbug.com/40177943): Correctly handle load events. Ignored for
+    // now as it confuses WebContentsObserver instances because they can not
+    // distinguish between the different FrameTrees.
+    PrerenderFrameTreeDelegate(BrowserContext* browser_context,
+                               WebContentsImpl& web_contents,
+                               PrerenderHost& prerender_host);
+
+    // FrameTree::Delegate
+    void LoadingStateChanged(LoadingState new_state) override {}
+    void DidStartLoading(FrameTreeNode* frame_tree_node) override {}
+    void DidStopLoading() override;
+    bool IsHidden() override;
+    FrameTree* LoadingTree() override;
+    FrameTreeNodeId GetOuterDelegateFrameTreeNodeId() override;
+    RenderFrameHostImpl* GetProspectiveOuterDocument() override;
+    void SetFocusedFrame(FrameTreeNode* node,
+                         SiteInstanceGroup* source) override;
+    FrameTree* GetOwnedPictureInPictureFrameTree() override;
+    FrameTree* GetPictureInPictureOpenerFrameTree() override;
+    bool OnRenderFrameProxyVisibilityChanged(
+        RenderFrameProxyHost* render_frame_proxy_host,
+        blink::mojom::FrameVisibility visibility) override;
+
+    // NavigationControllerDelegate
+    void NotifyNavigationStateChangedFromController(
+        InvalidateTypes changed_flags) override {}
+    void NotifyBeforeFormRepostWarningShow() override {}
+    void NotifyNavigationEntryCommitted(
+        const LoadCommittedDetails& load_details) override {}
+    void NotifyNavigationEntryChanged(
+        const EntryChangedDetails& change_details) override {}
+    void NotifyNavigationListPruned(
+        const PrunedDetails& pruned_details) override {}
+    void NotifyNavigationEntriesDeleted() override {}
+    void ActivateAndShowRepostFormWarningDialog() override;
+    bool ShouldPreserveAbortedURLs() override;
+    void UpdateOverridingUserAgent() override {}
+
+    ~PrerenderFrameTreeDelegate() override;
+
+   private:
+    friend class PrerenderHost;
+
+    // The PrerenderHost owns a 1:1 relationship to the
+    // PrerenderFrameTreeDelegate so it is safe to store a raw_ptr.
+    raw_ref<PrerenderHost> prerender_host_;
+    std::unique_ptr<FrameTree> frame_tree_;
+  };
+
+  FrameTree* GetFrameTree() { return frame_tree_delegate_->frame_tree_.get(); }
+
   void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);
 
   // Asks the registry to cancel prerendering.
@@ -518,16 +540,17 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   const raw_ref<WebContentsImpl> web_contents_;
 
   // Used for testing, this closure is only set when waiting a page to be either
-  // loaded for prerendering. |frame_tree_| provides us with a trigger for when
-  // the page is loaded.
+  // loaded for prerendering. |frame_tree_delegate.frame_tree_| provides us with
+  // a trigger for when the page is loaded.
   base::OnceCallback<void(PrerenderHost::LoadingOutcome)>
       on_wait_loading_finished_;
 
   // Frame tree created for the prerenderer to load the page and prepare it for
   // a future activation. During activation, the prerendered page will be taken
-  // out from |frame_tree_| and moved over to |web_contents_|'s primary frame
-  // tree, while |frame_tree_| will be deleted.
-  std::unique_ptr<FrameTree> frame_tree_;
+  // out from |frame_tree_delegate_.frame_tree_| and moved over to
+  // |web_contents_|'s primary frame tree, while |frame_tree_delegate_| will be
+  // deleted.
+  std::unique_ptr<PrerenderFrameTreeDelegate> frame_tree_delegate_;
 
   // No-Vary-Search header information for the main frame of the prerendered
   // page.

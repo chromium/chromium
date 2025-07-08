@@ -462,15 +462,12 @@ bool RenderViewHostImpl::CreateRenderView(
       frame_tree_->page_delegate()->IsPageInPreviewMode()) {
     auto prerender_param = blink::mojom::PrerenderParam::New();
     if (frame_tree_->is_prerendering()) {
-      auto* prerender_host =
-          static_cast<PrerenderHost*>(frame_tree_->delegate());
-      CHECK(prerender_host);
-      prerender_param->page_metric_suffix =
-          prerender_host->GetHistogramSuffix();
+      auto& prerender_host = PrerenderHost::GetFromFrameTree(frame_tree_);
+      prerender_param->page_metric_suffix = prerender_host.GetHistogramSuffix();
       prerender_param->should_warm_up_compositor =
-          prerender_host->should_warm_up_compositor();
+          prerender_host.should_warm_up_compositor();
       prerender_param->should_prepare_paint_tree =
-          prerender_host->should_prepare_paint_tree();
+          prerender_host.should_prepare_paint_tree();
     } else {
       prerender_param->page_metric_suffix = ".Preview";
       prerender_param->should_warm_up_compositor = false;
