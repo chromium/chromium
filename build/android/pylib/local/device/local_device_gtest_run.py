@@ -4,14 +4,12 @@
 
 
 import contextlib
-import collections
 import fnmatch
 import itertools
 import logging
 import math
 import os
 import posixpath
-import subprocess
 import shutil
 import sys
 import time
@@ -21,7 +19,6 @@ from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
-from devil.android import ports
 from devil.android.ndk import abis
 from devil.android.tools import system_app
 from devil.android.sdk import version_codes
@@ -34,7 +31,6 @@ from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import test_exception
 from pylib.gtest import gtest_test_instance
-from pylib.local import local_test_server_spawner
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
 from pylib.symbols import stack_symbolizer
@@ -74,15 +70,6 @@ _EXTRA_TEST_LIST = (
 _GTEST_PRETEST_PREFIX = 'PRE_'
 
 _SECONDS_TO_NANOS = int(1e9)
-
-# Tests that use SpawnedTestServer must run the LocalTestServerSpawner on the
-# host machine.
-# TODO(jbudorick): Move this up to the test instance if the net test server is
-# handled outside of the APK for the remote_device environment.
-_SUITE_REQUIRES_TEST_SERVER_SPAWNER = [
-  'components_browsertests', 'content_unittests', 'content_browsertests',
-  'net_unittests', 'services_unittests', 'unit_tests'
-]
 
 # No-op context manager. If we used Python 3, we could change this to
 # contextlib.ExitStack()
@@ -491,7 +478,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     else:
       self._test_perf_output_filenames = itertools.repeat(None)
     self._crashes = set()
-    self._servers = collections.defaultdict(list)
 
   #override
   def TestPackage(self):
@@ -544,42 +530,12 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                               check_return=True,
                               as_root=self._env.force_main_user)
 
-      @measures.timed_func('device_setup', 'start_servers')
-      def start_servers(dev):
-        try:
-          # See https://crbug.com/1030827.
-          # This is a hack that may break in the future. We're relying on the
-          # fact that adb doesn't use ipv6 for it's server, and so doesn't
-          # listen on ipv6, but ssh remote forwarding does. 5037 is the port
-          # number adb uses for its server.
-          if b"[::1]:5037" in subprocess.check_output(
-              "ss -o state listening 'sport = 5037'", shell=True):
-            logging.error(
-                'Test Server cannot be started with a remote-forwarded adb '
-                'server. Continuing anyways, but some tests may fail.')
-            return
-        except subprocess.CalledProcessError:
-          pass
-
-        self._servers[str(dev)] = []
-        if self.TestPackage() in _SUITE_REQUIRES_TEST_SERVER_SPAWNER:
-          self._servers[str(dev)].append(
-              local_test_server_spawner.LocalTestServerSpawner(
-                  ports.AllocateTestServerPort(), dev))
-
-        for s in self._servers[str(dev)]:
-          s.SetUp()
-
       def bind_crash_handler(step, dev):
         return lambda: crash_handler.RetryOnSystemCrash(step, dev)
 
       steps = [install_apk]
       if not self._test_instance.use_existing_test_data:
         steps.append(push_test_data)
-      if self._env.disable_test_server:
-        logging.warning('Not starting test server. Some tests may fail.')
-      else:
-        steps.append(start_servers)
 
       steps = [bind_crash_handler(s, device) for s in steps]
       if self._env.concurrent_adb:
@@ -984,8 +940,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             if render_test_output_dir:
               self._PullRenderTestOutput(device, render_test_output_dir.name)
 
-    for s in self._servers[str(device)]:
-      s.Reset()
     if self._test_instance.app_files:
       self._delegate.PullAppFiles(device, self._test_instance.app_files,
                                   self._test_instance.app_file_dir)
@@ -1053,18 +1007,4 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
   #override
   def TearDown(self):
-    # By default, teardown will invoke ADB. When receiving SIGTERM due to a
-    # timeout, there's a high probability that ADB is non-responsive. In these
-    # cases, sending an ADB command will potentially take a long time to time
-    # out. Before this happens, the process will be hard-killed for not
-    # responding to SIGTERM fast enough.
-    if self._received_sigterm:
-      return
-
-    @local_device_environment.handle_shard_failures
-    @trace_event.traced
-    def individual_device_tear_down(dev):
-      for s in self._servers.get(str(dev), []):
-        s.TearDown()
-
-    self._env.parallel_devices.pMap(individual_device_tear_down)
+    pass

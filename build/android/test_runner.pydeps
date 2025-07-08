@@ -53,7 +53,6 @@
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
-../../third_party/catapult/devil/devil/android/ports.py
 ../../third_party/catapult/devil/devil/android/sdk/__init__.py
 ../../third_party/catapult/devil/devil/android/sdk/aapt.py
 ../../third_party/catapult/devil/devil/android/sdk/adb_wrapper.py
@@ -133,7 +132,6 @@
 ../skia_gold_common/skia_gold_session_manager.py
 ../util/lib/__init__.py
 ../util/lib/common/__init__.py
-../util/lib/common/chrome_test_server_spawner.py
 ../util/lib/common/decorators.py
 ../util/lib/common/google_storage_helper.py
 ../util/lib/common/unittest_util.py
@@ -172,7 +170,6 @@ pylib/base/test_instance.py
 pylib/base/test_instance_factory.py
 pylib/base/test_run.py
 pylib/base/test_run_factory.py
-pylib/base/test_server.py
 pylib/constants/__init__.py
 pylib/constants/host_paths.py
 pylib/gtest/__init__.py
@@ -199,7 +196,6 @@ pylib/local/emulator/ini.py
 pylib/local/emulator/local_emulator_environment.py
 pylib/local/emulator/proto/__init__.py
 pylib/local/emulator/proto/avd_pb2.py
-pylib/local/local_test_server_spawner.py
 pylib/local/machine/__init__.py
 pylib/local/machine/local_machine_environment.py
 pylib/local/machine/local_machine_hostside_test_run.py
