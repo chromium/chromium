@@ -317,6 +317,11 @@ class URLDatabase {
   // this class implements these functions to return its objects.
   virtual sql::Database& GetDB() = 0;
 
+  // Replaces the lower_term column in the keyword search terms table with
+  // normalized_term which contains the search term, in lower case, and with
+  // whitespaces collapsed for migration to version 42.
+  bool MigrateKeywordsSearchTermsLowerTermColumn();
+
  private:
   // True if InitKeywordSearchTermsTable() has been invoked. Not all subclasses
   // have keyword search terms.

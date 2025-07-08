@@ -1172,6 +1172,278 @@ bool VisitDatabase::GetIsUrlKnownToSync(URLID url_id, bool* is_known_to_sync) {
   return true;
 }
 
+bool VisitDatabase::MigrateVisitsWithoutDuration() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "visit_duration")) {
+    // Old versions don't have the visit_duration column, we modify the table
+    // to add that field.
+    if (!GetDB().Execute(
+            "ALTER TABLE visits "
+            "ADD COLUMN visit_duration INTEGER DEFAULT 0 NOT NULL"))
+      return false;
+  }
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "incremented_omnibox_typed_score")) {
+    // Wrap the creation and initialization of the new column in a transaction
+    // since the value must be computed outside of SQL and iteratively updated.
+    sql::Transaction committer(&GetDB());
+    if (!committer.Begin())
+      return false;
+
+    // Old versions don't have the incremented_omnibox_typed_score column, we
+    // modify the table to add that field. We iterate through the table and
+    // compute the result for each row.
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN incremented_omnibox_typed_score BOOLEAN "
+                         "DEFAULT FALSE NOT NULL"))
+      return false;
+
+    // Iterate through rows in the visits table and update each with the
+    // appropriate increment_omnibox_typed_score value. Because this column was
+    // newly added, the existing (default) value is not valid/correct.
+    sql::Statement read(GetDB().GetUniqueStatement(
+        "SELECT "
+        "id,url,visit_time,from_visit,transition,segment_id,visit_duration,"
+        "incremented_omnibox_typed_score FROM visits"));
+    while (read.is_valid() && read.Step()) {
+      VisitRow row;
+      row.visit_id = read.ColumnInt64(0);
+      row.url_id = read.ColumnInt64(1);
+      row.visit_time = read.ColumnTime(2);
+      row.referring_visit = read.ColumnInt64(3);
+      row.transition = PageTransitionFromIntWithFallback(read.ColumnInt(4));
+      row.segment_id = read.ColumnInt64(5);
+      row.visit_duration = read.ColumnTimeDelta(6);
+      // Check if the visit row is in an invalid state and if it is then
+      // leave the new field as the default value.
+      if (row.visit_id == row.referring_visit)
+        continue;
+      row.incremented_omnibox_typed_score =
+          HistoryBackend::IsTypedIncrement(row.transition);
+
+      sql::Statement statement(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "UPDATE visits SET "
+          "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
+          "visit_duration=?,incremented_omnibox_typed_score=? "
+          "WHERE id=?"));
+      statement.BindInt64(0, row.url_id);
+      statement.BindTime(1, row.visit_time);
+      statement.BindInt64(2, row.referring_visit);
+      statement.BindInt64(3, row.transition);
+      statement.BindInt64(4, row.segment_id);
+      statement.BindTimeDelta(5, row.visit_duration);
+      statement.BindBool(6, row.incremented_omnibox_typed_score);
+      statement.BindInt64(7, row.visit_id);
+
+      if (!statement.Run())
+        return false;
+    }
+    if (!read.Succeeded() || !committer.Commit())
+      return false;
+  }
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (GetDB().DoesColumnExist("visits", "publicly_routable"))
+    return true;
+
+  // Old versions don't have the publicly_routable column, we modify the table
+  // to add that field.
+  return GetDB().Execute(
+      "ALTER TABLE visits "
+      "ADD COLUMN publicly_routable BOOLEAN "
+      "DEFAULT FALSE NOT NULL");
+}
+
+bool VisitDatabase::CanMigrateFlocAllowed() {
+  // Migration expects a "visits" table with a "publicly_routable" column.
+  return GetDB().DoesTableExist("visits") &&
+         GetDB().DoesColumnExist("visits", "publicly_routable");
+}
+
+bool VisitDatabase::
+    MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (GetDB().DoesColumnExist("visits", "opener_visit"))
+    return true;
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE visits_tmp("
+             "id INTEGER PRIMARY KEY,"
+             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
+             "visit_time INTEGER NOT NULL,"
+             "from_visit INTEGER,"
+             "transition INTEGER DEFAULT 0 NOT NULL,"
+             "segment_id INTEGER,"
+             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
+             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT "
+             "NULL)") &&
+         GetDB().Execute(
+             "INSERT INTO visits_tmp SELECT "
+             "id, url, visit_time, from_visit, transition, segment_id, "
+             "visit_duration, incremented_omnibox_typed_score FROM visits") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN opener_visit INTEGER") &&
+         GetDB().Execute("DROP TABLE visits") &&
+         GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
+         transaction.Commit();
+}
+
+bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (GetDB().DoesColumnExist("visits", "originator_cache_guid") &&
+      GetDB().DoesColumnExist("visits", "originator_visit_id") &&
+      VisitTableContainsAutoincrement()) {
+    return true;
+  }
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE visits_tmp("
+             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
+             "visit_time INTEGER NOT NULL,"
+             "from_visit INTEGER,"
+             "transition INTEGER DEFAULT 0 NOT NULL,"
+             "segment_id INTEGER,"
+             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
+             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
+             "opener_visit INTEGER)") &&
+         GetDB().Execute(
+             "INSERT INTO visits_tmp SELECT "
+             "id, url, visit_time, from_visit, transition, segment_id, "
+             "visit_duration, incremented_omnibox_typed_score, opener_visit "
+             "FROM visits") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN originator_cache_guid TEXT") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN originator_visit_id INTEGER") &&
+         GetDB().Execute("DROP TABLE visits") &&
+         GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
+         transaction.Commit();
+}
+
+bool VisitDatabase::MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  // Old versions don't have the originator_from_visit or
+  // originator_opener_visit columns; modify the table to add those.
+  if (!GetDB().DoesColumnExist("visits", "originator_from_visit")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN originator_from_visit INTEGER")) {
+      return false;
+    }
+  }
+  if (!GetDB().DoesColumnExist("visits", "originator_opener_visit")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN originator_opener_visit INTEGER")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool VisitDatabase::VisitTableContainsAutoincrement() {
+  // sqlite_schema has columns:
+  //   type - "index" or "table".
+  //   name - name of created element.
+  //   tbl_name - name of element, or target table in case of index.
+  //   rootpage - root page of the element in database file.
+  //   sql - SQL to create the element.
+  sql::Statement statement(
+      GetDB().GetUniqueStatement("SELECT sql FROM sqlite_schema WHERE type = "
+                                 "'table' AND name = 'visits'"));
+
+  // visits table does not exist.
+  if (!statement.Step())
+    return false;
+
+  std::string_view urls_schema = statement.ColumnStringView(0);
+  // We check if the whole schema contains "AUTOINCREMENT", since
+  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
+  // other columns could contain "AUTOINCREMENT".
+  return urls_schema.find("AUTOINCREMENT") != std::string::npos;
+}
+
+bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(
+    std::vector<URLID>* visited_url_rowids_sorted) {
+  DCHECK(visited_url_rowids_sorted);
+  sql::Statement statement(GetDB().GetUniqueStatement(
+      "SELECT DISTINCT url FROM visits ORDER BY url"));
+
+  while (statement.Step()) {
+    visited_url_rowids_sorted->push_back(statement.ColumnInt64(0));
+  }
+  return statement.Succeeded();
+}
+
+bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "is_known_to_sync")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN is_known_to_sync "
+                         "BOOLEAN DEFAULT FALSE NOT NULL")) {
+      return false;
+    }
+
+    // Note we specifically DO NOT update the existing visits that have
+    // `visit_source` == `SOURCE_SYNCED` to have `is_known_to_sync` set to true.
+    //
+    // This is because we don't know if the user has subsequently turned off
+    // Sync, and we only want to flag this on for visits that are CURRENTLY
+    // known to Sync and associated with the current user.
+  }
+
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "consider_for_ntp_most_visited")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN consider_for_ntp_most_visited "
+                         "BOOLEAN DEFAULT FALSE NOT NULL")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool VisitDatabase::MigrateVisitsAddExternalReferrerUrlColumn() {
   if (!GetDB().DoesTableExist("visits")) {
     NOTREACHED() << " Visits table should exist before migration";
