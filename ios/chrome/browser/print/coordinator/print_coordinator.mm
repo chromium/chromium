@@ -22,12 +22,6 @@
 
 #pragma mark - Public Methods
 
-- (instancetype)initWithBaseViewController:
-    (UIViewController*)baseViewController {
-  self = [super initWithBaseViewController:baseViewController browser:nil];
-  return self;
-}
-
 - (void)printView:(UIView*)view
              withTitle:(NSString*)title
     baseViewController:baseViewController {

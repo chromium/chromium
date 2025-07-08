@@ -16,12 +16,11 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
+  CHECK(browser);
   if ((self = [super init])) {
     _baseViewController = viewController;
     _childCoordinators = [MutableCoordinatorArray array];
-    if (browser) {
-      _browser = browser->AsWeakPtr();
-    }
+    _browser = browser->AsWeakPtr();
   }
   return self;
 }

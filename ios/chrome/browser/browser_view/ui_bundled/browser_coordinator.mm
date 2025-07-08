@@ -1458,7 +1458,8 @@ enum class ToolbarKind {
   [self.vcardCoordinator start];
 
   self.printCoordinator =
-      [[PrintCoordinator alloc] initWithBaseViewController:self.viewController];
+      [[PrintCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser];
   // Updates the printControllar value inside tabLifecycleMediator.
   self.tabLifecycleMediator.printCoordinator = self.printCoordinator;
 

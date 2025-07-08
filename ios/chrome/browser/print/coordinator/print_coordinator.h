@@ -10,18 +10,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/web/model/print/web_state_printer.h"
 
-class Browser;
-
 // Interface for printing.
 @interface PrintCoordinator : ChromeCoordinator <WebStatePrinter>
-
-// `baseViewController` is the default VC to present print preview in case it
-// is not specified in the command.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Shows print UI for `view` with `title`.
 // Print preview will be presented on top of `baseViewController`.

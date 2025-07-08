@@ -47,6 +47,9 @@ source_set("unit_tests") {
   sources = [ "tos_unittest.mm" ]
   deps = [
     ":tos",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
