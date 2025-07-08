@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -31,8 +32,9 @@
 
 namespace blink {
 
-Document* DOMParser::parseFromString(const String& str,
-                                     const V8SupportedType& type) {
+Document* DOMParser::ParseFromStringWithoutTrustedTypes(
+    const String& str,
+    const V8SupportedType& type) {
   Document* doc = DocumentInit::Create()
                       .WithURL(window_->Url())
                       .WithTypeFrom(type.AsAtomicString())
@@ -44,6 +46,17 @@ Document* DOMParser::parseFromString(const String& str,
   doc->SetContentFromDOMParser(str);
   doc->SetMimeType(type.AsAtomicString());
   return doc;
+}
+
+Document* DOMParser::parseFromString(const V8UnionStringOrTrustedHTML* str,
+                                     const V8SupportedType& type,
+                                     ExceptionState& exception_state) {
+  String compliant_str = TrustedTypesCheckForHTML(
+      str, window_, "DOMParser", "parseFromString", exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  return ParseFromStringWithoutTrustedTypes(compliant_str, type);
 }
 
 DOMParser::DOMParser(ScriptState* script_state)

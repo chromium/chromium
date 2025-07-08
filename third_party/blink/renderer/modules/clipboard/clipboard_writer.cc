@@ -167,7 +167,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     const KURL& url = local_frame->GetDocument()->Url();
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
     String html_string = String::FromUTF8(html_data->ByteSpan());
-    const Document* doc = dom_parser->parseFromString(
+    const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
         html_string, V8SupportedType(V8SupportedType::Enum::kTextHtml));
     DCHECK(doc);
     String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
@@ -202,7 +202,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
 
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
     String svg_string = String::FromUTF8(svg_data->ByteSpan());
-    const Document* doc = dom_parser->parseFromString(
+    const Document* doc = dom_parser->ParseFromStringWithoutTrustedTypes(
         svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
     promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgWrite);
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));

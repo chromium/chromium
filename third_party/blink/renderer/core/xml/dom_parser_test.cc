@@ -33,7 +33,7 @@ TEST(DOMParserTest, DomParserDocumentUsesQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "<div></div>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InQuirksMode());
 }
@@ -43,7 +43,7 @@ TEST(DOMParserTest, DomParserDocumentUsesNoQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "<!doctype html>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   EXPECT_TRUE(document->InNoQuirksMode());
 }

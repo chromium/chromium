@@ -332,8 +332,9 @@ TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  parser->parseFromString("<strong>0</strong> items left",
-                          V8SupportedType(V8SupportedType::Enum::kTextHtml));
+  parser->ParseFromStringWithoutTrustedTypes(
+      "<strong>0</strong> items left",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
 }
 
@@ -342,7 +343,7 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingWhitespace) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "\n   <div></div>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body><div></div></body>", CreateMarkup(document->body()));
@@ -355,7 +356,7 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "\n   x<div></div>y ", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body>x<div></div>y </body>", CreateMarkup(document->body()));
@@ -368,7 +369,7 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace2) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString(
+  Document* document = parser->ParseFromStringWithoutTrustedTypes(
       "\n   x \n  <div></div>y \n   ",
       V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
