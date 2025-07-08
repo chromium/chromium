@@ -5,6 +5,7 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 
 #include "base/containers/map_util.h"
+#include "base/types/optional_util.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
 
 namespace net {
@@ -65,10 +66,7 @@ bool FirstPartySetsContextConfig::operator==(
 
 std::optional<FirstPartySetEntryOverride>
 FirstPartySetsContextConfig::FindOverride(const SchemefulSite& site) const {
-  if (const auto it = customizations_.find(site); it != customizations_.end()) {
-    return it->second;
-  }
-  return std::nullopt;
+  return base::OptionalFromPtr(base::FindOrNull(customizations_, site));
 }
 
 bool FirstPartySetsContextConfig::Contains(const SchemefulSite& site) const {

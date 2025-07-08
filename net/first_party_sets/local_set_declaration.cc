@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -107,7 +108,9 @@ SetsMutation LocalSetDeclaration::ComputeMutation() const {
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries = entries_;
 
   for (const auto& [alias, canonical] : aliases_) {
-    entries.emplace(alias, entries.find(canonical)->second);
+    // Note: it's safe to dereference the pointer below due to the checks in
+    // `CheckPreconditions`.
+    entries.emplace(alias, *base::FindOrNull(entries, canonical));
   }
   // A local set declaration is treated as a "replacement" set.
   return SetsMutation(/*replacement_sets=*/{std::move(entries)},

@@ -198,6 +198,12 @@ class NET_EXPORT GlobalFirstPartySets {
   bool IsValid(base::optional_ref<const FirstPartySetsContextConfig> config =
                    std::nullopt) const;
 
+  // Resolves an alias site into the canonical representative site, if possible.
+  // The returned reference's lifetime is the *minimum* of the lifetimes of
+  // `site` and `this`.
+  const SchemefulSite& ResolveAlias(const SchemefulSite& site) const
+      LIFETIME_BOUND;
+
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
   // installed yet, or has been corrupted. Entries and aliases from invalid
