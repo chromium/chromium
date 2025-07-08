@@ -42,7 +42,6 @@
 
 namespace IPC {
 class SyncChannel;
-class SyncMessageFilter;
 class UrgentMessageObserver;
 }  // namespace IPC
 
@@ -100,10 +99,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
                           const std::string& group_name) override;
 
   IPC::SyncChannel* channel() { return channel_.get(); }
-
-  IPC::SyncMessageFilter* sync_message_filter() const {
-    return sync_message_filter_.get();
-  }
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner() const {
     return main_thread_runner_;
@@ -184,9 +179,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 #endif
 
   std::unique_ptr<IPC::SyncChannel> channel_;
-
-  // Allows threads other than the main thread to send sync messages.
-  scoped_refptr<IPC::SyncMessageFilter> sync_message_filter_;
 
   // The OnChannelError() callback was invoked - the channel is dead, don't
   // attempt to communicate.
