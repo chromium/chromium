@@ -467,29 +467,6 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAccountAddresses) {
   EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(profile2)));
 }
 
-// Tests that H/W is not removed by disused address deletion.
-TEST_F(AddressDataCleanerTest, DeleteDisusedAccountAddressesHomeAndWork) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillDeduplicateAccountAddresses};
-  base::Time kDisusedDate = AutofillClock::Now() - base::Days(400);
-
-  // Create a disused home address.
-  AutofillProfile home = test::GetFullProfile();
-  home.usage_history().set_use_date(kDisusedDate);
-  test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
-  test_adm_.AddProfile(home);
-
-  // Create a disused work address.
-  AutofillProfile work = test::GetFullProfile2();
-  test_api(work).set_record_type(AutofillProfile::RecordType::kAccountWork);
-  work.usage_history().set_use_date(kDisusedDate);
-  test_adm_.AddProfile(work);
-
-  test_api(data_cleaner_).DeleteDisusedAddresses();
-  EXPECT_THAT(test_adm_.GetProfiles(),
-              UnorderedElementsAre(Pointee(home), Pointee(work)));
-}
-
 TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
   const AutofillProfileComparator comparator("en_US");
   AutofillProfile profile = test::GetFullProfile();

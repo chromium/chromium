@@ -804,7 +804,8 @@ void AddressDataManager::RemoveProfileImpl(const std::string& guid,
 
   ongoing_profile_changes_[guid].emplace_back(
       AutofillProfileChange(
-          profile->IsAccountProfile() && is_deduplication_initiated
+          (profile->IsAccountProfile() && is_deduplication_initiated) ||
+                  profile->IsHomeAndWorkProfile()
               ? AutofillProfileChange::HIDE_IN_AUTOFILL
               : AutofillProfileChange::REMOVE,
           guid, *profile),

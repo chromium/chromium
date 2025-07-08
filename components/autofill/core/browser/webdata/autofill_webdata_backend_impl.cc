@@ -444,9 +444,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   CHECK(change_type == AutofillProfileChange::REMOVE ||
-        (change_type == AutofillProfileChange::HIDE_IN_AUTOFILL &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillDeduplicateAccountAddresses)));
+        change_type == AutofillProfileChange::HIDE_IN_AUTOFILL);
 
   std::optional<AutofillProfile> profile =
       AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid);

@@ -963,12 +963,9 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       if (AddressDataManager& adm = manager_->client()
                                         .GetPersonalDataManager()
                                         .address_data_manager();
-          auto* profile = adm.GetProfileByGUID(guid)) {
-        // Home and Work profiles are read-only and therefore cannot be deleted.
-        if (!profile->IsHomeAndWorkProfile()) {
-          adm.RemoveProfile(guid);
-          return true;
-        }
+          adm.GetProfileByGUID(guid)) {
+        adm.RemoveProfile(guid);
+        return true;
       }
       return false;
     }

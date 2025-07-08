@@ -133,18 +133,12 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
 // 2) Merges pairs of mergeable profiles into each other.
 //   To prevent silently introducing new information into the account,
 //   local profiles are never merged into account profiles.
-// H/W profiles are not supported for deduplication.
 // TODO(crbug.com/357074792): Once the feature is launched, remove the
 // `DeduplicateProfiles()` function and rename this function to
 // `DeduplicateProfiles()`.
 void DeduplicateWithAccountProfiles(const AutofillProfileComparator& comparator,
                                     std::vector<AutofillProfile> profiles,
                                     AddressDataManager& adm) {
-  // H/W profiles are not supported for deduplication.
-  std::erase_if(profiles, [](const AutofillProfile& p) {
-    return p.IsHomeAndWorkProfile();
-  });
-
   std::set<std::string> guids_to_delete;
   for (const AutofillProfile& profile : profiles) {
     const bool is_subset = std::ranges::any_of(
@@ -348,10 +342,6 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
           ? address_data_manager_->GetProfiles()
           : address_data_manager_->GetProfilesByRecordType(
                 AutofillProfile::RecordType::kLocalOrSyncable);
-  // H/W profiles cannot be removed by disused address deletion.
-  std::erase_if(profiles, [](const AutofillProfile* p) {
-    return p->IsHomeAndWorkProfile();
-  });
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
     return;

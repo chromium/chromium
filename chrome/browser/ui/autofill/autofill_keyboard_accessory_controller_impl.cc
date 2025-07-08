@@ -563,11 +563,6 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
             pdm->address_data_manager().GetProfileByGUID(
                 std::get<Suggestion::AutofillProfilePayload>(payload)
                     .guid.value())) {
-      // Home & Work addresses can't be deleted through the chrome UI.
-      if (profile->IsHomeAndWorkProfile()) {
-        return false;
-      }
-
       if (title) {
         std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
         if (!street_address.empty()) {

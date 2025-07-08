@@ -40,9 +40,6 @@
 // YES, if the cloud off icon representing local profile is shown.
 @property(nonatomic, assign) BOOL localProfileIconShown;
 
-// YES, if item can be modified.
-@property(nonatomic, assign, getter=isDeletable) BOOL deletable;
-
 @end
 
 @interface AutofillProfileCell : TableViewCell

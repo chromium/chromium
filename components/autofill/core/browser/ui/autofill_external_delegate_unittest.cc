@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
@@ -2759,34 +2758,6 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
                                      Suggestion::Guid(server_card.guid()))));
   EXPECT_TRUE(
       pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
-}
-
-// Tests that the home and address suggestions are not removed.
-TEST_F(AutofillExternalDelegateTest, RemoveHomeAndWorkAddressSuggestion) {
-  autofill::AutofillProfile profile1 = autofill::test::GetFullProfile();
-  test_api(profile1).set_record_type(
-      autofill::AutofillProfile::RecordType::kAccountHome);
-
-  autofill::AutofillProfile profile2 = autofill::test::GetFullProfile2();
-  test_api(profile2).set_record_type(
-      autofill::AutofillProfile::RecordType::kAccountWork);
-
-  pdm().address_data_manager().AddProfile(profile1);
-  pdm().address_data_manager().AddProfile(profile2);
-  ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile1.guid()));
-  ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile2.guid()));
-
-  EXPECT_FALSE(external_delegate().RemoveSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"address1",
-                                     Suggestion::AutofillProfilePayload(
-                                         Suggestion::Guid(profile1.guid())))));
-  EXPECT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile1.guid()));
-
-  EXPECT_FALSE(external_delegate().RemoveSuggestion(
-      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"address2",
-                                     Suggestion::AutofillProfilePayload(
-                                         Suggestion::Guid(profile2.guid())))));
-  EXPECT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile2.guid()));
 }
 
 TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
