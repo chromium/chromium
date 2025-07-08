@@ -16,6 +16,9 @@ export function getHtml(this: ManagementUiElement) {
 <div id="cr-container-shadow-top"
     class="cr-container-shadow has-shadow"></div>
 <main id="mainContent">
+  ${this.shouldShowPromotion_ ? html`
+    <div id="promotion-banner"></div>
+  ` : ''}
   <div class="cr-centered-card-container">
     <div class="card">
       <section ?hidden="${!this.managed_}" class="page-subtitle">

@@ -2619,6 +2619,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagementPromotionBannerDisplayed" enum="Boolean"
+    expires_after="2025-12-07">
+  <owner>austinzzr@chromium.org</owner>
+  <owner>esalma@google.com</owner>
+  <summary>
+    Records the number of times the promotion banner on chrome://management is
+    visited and displayed or visited but not displayed.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.OidcEnrollment.Interception.Funnel"
     enum="OidcInterceptionFunnelStep" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>

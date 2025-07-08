@@ -3633,6 +3633,7 @@ if (!is_android) {
       "../browser/ui/webui/location_internals/location_internals_ui_browsertest.cc",
       "../browser/ui/webui/log_web_ui_url_browsertest.cc",
       "../browser/ui/webui/management/management_ui_browsertest.cc",
+      "../browser/ui/webui/management/management_ui_managed_status_browsertest.cc",
       "../browser/ui/webui/management/management_ui_pwa_browsertest.cc",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
       "../browser/ui/webui/ntp/new_tab_ui_browsertest.cc",
