@@ -251,11 +251,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "android-keyboard-a11y",
-    "owners": [ "jhimawan@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "android-native-pages-in-new-tab",
     "owners": ["agazal@google.com", "wenyufu@google.com"],
     "expiry_milestone": 170

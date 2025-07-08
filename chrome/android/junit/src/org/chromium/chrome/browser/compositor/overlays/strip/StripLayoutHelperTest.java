@@ -5726,10 +5726,7 @@ public class StripLayoutHelperTest {
                 /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
     }
 
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
-        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_notApplicable() {
         initializeTest(false, false, 0);
@@ -5739,10 +5736,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
     }
 
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
-        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_tab() {
         initializeTest(false, false, 0);
@@ -5755,10 +5749,7 @@ public class StripLayoutHelperTest {
         verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), anyInt());
     }
 
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
-        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_tabGroup() {
         initializeTest(false, false, 0);
@@ -5773,10 +5764,7 @@ public class StripLayoutHelperTest {
         verify(mTabGroupContextMenuCoordinator, times(1)).showMenu(any(), any());
     }
 
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
-        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_closeButton() {
         initializeTest(false, false, 0);

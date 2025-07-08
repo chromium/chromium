@@ -18,9 +18,9 @@ import android.view.KeyboardShortcutInfo;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.DeviceInfo;
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -1120,35 +1120,19 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
-                        // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
-                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                                R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
-                    } else {
-                        return false;
-                    }
+                    // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning
                         .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
-                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                                R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
-                    } else {
-                        return false;
-                    }
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR:
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         toolbarManager.requestFocus();
                         return true;
-                    } else {
-                        return false;
-                    }
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                                 R.id.focus_bookmarks, /* fromMenu= */ false);
-                    } else {
-                        return false;
-                    }
             }
         }
 
