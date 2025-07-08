@@ -33,7 +33,6 @@ SyncedWindowDelegateBrowserAgent::SyncedWindowDelegateBrowserAgent(
     Browser* browser)
     : BrowserUserData(browser),
       session_id_(SessionID::NewUnique()) {
-  browser->AddObserver(this);
   StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
 }
 
@@ -89,12 +88,6 @@ sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
     int index) const {
   return IOSChromeSyncedTabDelegate::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(index));
-}
-
-#pragma mark - BrowserObserver
-
-void SyncedWindowDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser->RemoveObserver(this);
 }
 
 #pragma mark - TabsDependencyInstaller

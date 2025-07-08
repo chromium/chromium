@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sync_sessions/synced_window_delegate.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
@@ -20,7 +19,6 @@ class SyncedTabDelegate;
 // SyncedWindowDelegate.
 class SyncedWindowDelegateBrowserAgent
     : public sync_sessions::SyncedWindowDelegate,
-      public BrowserObserver,
       public BrowserUserData<SyncedWindowDelegateBrowserAgent>,
       public TabsDependencyInstaller {
  public:
@@ -56,9 +54,6 @@ class SyncedWindowDelegateBrowserAgent
   friend class BrowserUserData<SyncedWindowDelegateBrowserAgent>;
 
   explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
-
-  // BrowserObserver
-  void BrowserDestroyed(Browser* browser) override;
 
   // Sets the window id of `web_state` to `session_id_`.
   void SetWindowIdForWebState(web::WebState* web_state);
