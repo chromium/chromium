@@ -17,6 +17,7 @@ include_rules = [
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/lens/model/lens_browser_agent.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/link_to_text/model",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/metrics/model",
@@ -41,11 +42,11 @@ include_rules = [
   "+ios/chrome/browser/ssl/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tab_insertion/model",
+  "+ios/chrome/browser/tabs/model/features.h",
   "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_selection/model",
-  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
 ]
 
 specific_include_rules = {

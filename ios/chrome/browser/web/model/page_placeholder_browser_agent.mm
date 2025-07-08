@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
@@ -81,10 +82,99 @@ void PagePlaceholderBrowserAgent::SessionRestorationFinished(
 
   // Setup the placeholder for the restored tabs if necessary.
   for (web::WebState* web_state : restored_web_states) {
-    const GURL& visible_url = web_state->GetVisibleURL();
-    if (visible_url.is_valid() && visible_url != kChromeUINewTabURL) {
-      PagePlaceholderTabHelper::FromWebState(web_state)
-          ->AddPlaceholderForNextNavigation();
+    AddPlaceholderToWebState(web_state);
+  }
+}
+
+void PagePlaceholderBrowserAgent::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kDetach:
+      StopObservingWebState(
+          change.As<WebStateListChangeDetach>().detached_web_state());
+      break;
+
+    case WebStateListChange::Type::kMove:
+      // Nothing do do.
+      break;
+
+    case WebStateListChange::Type::kReplace:
+      StopObservingWebState(
+          change.As<WebStateListChangeReplace>().replaced_web_state());
+      break;
+
+    case WebStateListChange::Type::kInsert:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kGroupCreate:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kGroupMove:
+      // Nothing to do.
+      break;
+
+    case WebStateListChange::Type::kGroupDelete:
+      // Nothing to do.
+      break;
+  }
+}
+
+void PagePlaceholderBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  AddPlaceholderToWebState(web_state);
+  StopObservingWebState(web_state);
+}
+
+void PagePlaceholderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  StopObservingWebState(web_state);
+}
+
+void PagePlaceholderBrowserAgent::StartObservingWebState(
+    web::WebState* web_state) {
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  if (!web_state_observations_.IsObservingAnySource()) {
+    web_state_list_observation_.Observe(browser_->GetWebStateList());
+  }
+  web_state_observations_.AddObservation(web_state);
+}
+
+void PagePlaceholderBrowserAgent::StopObservingWebState(
+    web::WebState* web_state) {
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  if (web_state_observations_.IsObservingSource(web_state)) {
+    web_state_observations_.RemoveObservation(web_state);
+    if (!web_state_observations_.IsObservingAnySource()) {
+      web_state_list_observation_.Reset();
     }
+  }
+}
+
+void PagePlaceholderBrowserAgent::AddPlaceholderToWebState(
+    web::WebState* web_state) {
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      StartObservingWebState(web_state);
+      return;
+    }
+  }
+
+  const GURL& visible_url = web_state->GetVisibleURL();
+  if (visible_url.is_valid() && visible_url != kChromeUINewTabURL) {
+    PagePlaceholderTabHelper::FromWebState(web_state)
+        ->AddPlaceholderForNextNavigation();
   }
 }
