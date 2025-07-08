@@ -155,9 +155,8 @@ RequestCauseFromActionCause(AppLauncherAlertCause cause) {
 #pragma mark - AppLauncherBrowserAgent
 
 AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
-    : BrowserUserData(browser),
-      tab_helper_delegate_(browser),
-      tab_helper_delegate_installer_(&tab_helper_delegate_, browser) {
+    : BrowserUserData(browser), tab_helper_delegate_(browser) {
+  StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
   browser->AddObserver(this);
   app_launcher_scene_state_observer_ = [[AppLauncherSceneStateObserver alloc]
       initWithTransitionCallback:
@@ -167,13 +166,36 @@ AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
   [browser->GetSceneState() addObserver:app_launcher_scene_state_observer_];
 }
 
-AppLauncherBrowserAgent::~AppLauncherBrowserAgent() = default;
+AppLauncherBrowserAgent::~AppLauncherBrowserAgent() {
+  StopObserving();
+}
 
 #pragma mark - BrowserObserver
 
 void AppLauncherBrowserAgent::BrowserDestroyed(Browser* browser) {
   [browser->GetSceneState() removeObserver:app_launcher_scene_state_observer_];
   browser->RemoveObserver(this);
+}
+
+#pragma mark - TabsDependencyInstaller
+
+void AppLauncherBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
+  AppLauncherTabHelper::FromWebState(web_state)->SetDelegate(
+      &tab_helper_delegate_);
+}
+
+void AppLauncherBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+  AppLauncherTabHelper::FromWebState(web_state)->SetDelegate(nullptr);
+}
+
+void AppLauncherBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  // Nothing to do.
+}
+
+void AppLauncherBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  // Nothing to do.
 }
 
 #pragma mark - AppLauncherBrowserAgent::TabHelperDelegate

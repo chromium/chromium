@@ -8,22 +8,30 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/tabs/model/tab_helper_delegate_installer.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 @class AppLauncherSceneStateObserver;
 class OverlayRequestQueue;
 
 // A browser agent that manages opening external apps for navigations that occur
 // within one of the Browser's WebStates.
-class AppLauncherBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<AppLauncherBrowserAgent> {
+class AppLauncherBrowserAgent : public BrowserObserver,
+                                public BrowserUserData<AppLauncherBrowserAgent>,
+                                public TabsDependencyInstaller {
  public:
   ~AppLauncherBrowserAgent() override;
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
+
+  // TabsDependencyInstaller
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
  private:
   friend class BrowserUserData<AppLauncherBrowserAgent>;
@@ -77,9 +85,6 @@ class AppLauncherBrowserAgent
 
   // Handler for app launches in the Browser.
   TabHelperDelegate tab_helper_delegate_;
-  // The tab helper delegate installer.
-  TabHelperDelegateInstaller<AppLauncherTabHelper, AppLauncherTabHelperDelegate>
-      tab_helper_delegate_installer_;
 
   // A helper class to observer SceneState activation state.
   AppLauncherSceneStateObserver* app_launcher_scene_state_observer_;
