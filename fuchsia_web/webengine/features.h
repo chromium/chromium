@@ -25,7 +25,7 @@ BASE_FEATURE(kEnableSoftwareOnlyVideoCodecs,
 // Enables the use of VP9 decoding for Cast Mirroring.
 BASE_FEATURE(kEnableCastMirroringVP9Decoding,
              "EnableCastMirroringVP9Decoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables keyboard input handling via the fuchsia.ui.input3.Keyboard interface.
 BASE_FEATURE(kKeyboardInput,
