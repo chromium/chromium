@@ -127,8 +127,8 @@ Note: All the extension settings mentioned below are already set in
     Syntax highlighting for .proto files.
 *   [**Mojom IDL support**](https://marketplace.visualstudio.com/items?itemName=Google.vscode-mojom) -
     Syntax highlighting and a [language server][lang-server] for .mojom files.
-*   [**GN**](https://marketplace.visualstudio.com/items?itemName=msedge-dev.gnls) -
-    Code IntelliSense for the GN build system.
+*   [**GN**](https://marketplace.visualstudio.com/items?itemName=google.gn) -
+    [Language server][lang-server] for the GN build system.
 *   [**Rewrap**](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) -
     Wrap lines at 80 characters with `Alt+Q`.
 *   [**Remote**](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) -
