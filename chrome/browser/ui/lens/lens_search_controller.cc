@@ -41,16 +41,18 @@ void CheckInitialized(bool initialized) {
          "be called before using the LensSearchController.";
 }
 
-LensSearchController* GetLensSearchControllerFromTabInterface(
-    tabs::TabInterface* tab_interface) {
-  return tab_interface
-             ? tab_interface->GetTabFeatures()->lens_search_controller()
-             : nullptr;
-}
 }  // namespace
 
+DEFINE_USER_DATA(LensSearchController);
+
+// static
+LensSearchController* LensSearchController::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
 LensSearchController::LensSearchController(tabs::TabInterface* tab)
-    : tab_(tab) {
+    : tab_(tab),
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(base::BindRepeating(
       &LensSearchController::TabForegrounded, weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
@@ -107,15 +109,13 @@ void LensSearchController::Initialize(
 // static.
 LensSearchController* LensSearchController::FromWebUIWebContents(
     content::WebContents* webui_web_contents) {
-  return GetLensSearchControllerFromTabInterface(
-      webui::GetTabInterface(webui_web_contents));
+  return From(webui::GetTabInterface(webui_web_contents));
 }
 
 // static.
 LensSearchController* LensSearchController::FromTabWebContents(
     content::WebContents* tab_web_contents) {
-  return GetLensSearchControllerFromTabInterface(
-      tabs::TabInterface::GetFromContents(tab_web_contents));
+  return From(tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
 void LensSearchController::OpenLensOverlay(

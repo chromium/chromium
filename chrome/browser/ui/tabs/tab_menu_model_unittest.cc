@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -40,7 +39,7 @@ class TabMenuModelTest : public MenuModelTest, public ::testing::Test {
   TabMenuModelDelegate& menu_model_delegate() { return menu_model_delegate_; }
 
  private:
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   TabMenuModelTestDelegate menu_model_delegate_;

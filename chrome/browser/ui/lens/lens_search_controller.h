@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -55,6 +56,9 @@ class LensSearchController {
  public:
   explicit LensSearchController(tabs::TabInterface* tab);
   virtual ~LensSearchController();
+
+  DECLARE_USER_DATA(LensSearchController);
+  static LensSearchController* From(tabs::TabInterface* tab);
 
   // Initializes all the necessary dependencies for the LensSearchController.
   void Initialize(variations::VariationsClient* variations_client,
@@ -450,6 +454,8 @@ class LensSearchController {
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
+
+  ScopedUnownedUserData<LensSearchController> scoped_unowned_user_data_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensSearchController> weak_ptr_factory_{this};

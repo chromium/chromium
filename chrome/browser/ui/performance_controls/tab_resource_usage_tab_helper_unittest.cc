@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -42,7 +41,7 @@ class TabResourceUsageTabHelperUiTest : public testing::Test {
   TestTabStripModelDelegate delegate_;
   TestingProfile profile_;
   TabStripModel tab_strip_model_{&delegate_, &profile_};
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   raw_ptr<TabResourceUsageTabHelper> helper_;
 };
 

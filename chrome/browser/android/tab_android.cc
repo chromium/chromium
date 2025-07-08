@@ -759,6 +759,14 @@ void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
   }
 }
 
+UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() {
+  NOTREACHED();
+}
+
+const UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() const {
+  NOTREACHED();
+}
+
 TabAndroid::TabAndroid(Profile* profile, int tab_id)
     : tab_id_(tab_id),
       session_window_id_(SessionID::InvalidValue()),

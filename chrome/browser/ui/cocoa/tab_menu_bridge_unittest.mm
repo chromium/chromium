@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
@@ -193,7 +193,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> model_;
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {

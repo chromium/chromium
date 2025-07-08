@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/test_util.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -44,29 +44,16 @@ class MockLensSearchController : public lens::TestLensSearchController {
               (override));
 };
 
-class TestTabFeatures : public tabs::TabFeatures {
- protected:
-  std::unique_ptr<LensSearchController> CreateLensController(
-      tabs::TabInterface* tab) override {
-    return std::make_unique<MockLensSearchController>(tab);
-  }
-};
-
-std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
-  return std::make_unique<TestTabFeatures>();
-}
-
 }  // namespace
 
 class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
  protected:
   ChromeAutocompleteProviderClientTest() {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-        base::BindRepeating(&CreateTabFeatures));
-  }
-
-  ~ChromeAutocompleteProviderClientTest() override {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::NullCallback());
+    lens_search_controller_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](tabs::TabInterface& tab) {
+              return std::make_unique<MockLensSearchController>(&tab);
+            }));
   }
 
   void SetUpOnMainThread() override {
@@ -95,10 +82,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
 
   MockLensSearchController* GetLensSearchController() {
     return static_cast<MockLensSearchController*>(
-        browser()
-            ->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->lens_search_controller());
+        LensSearchController::From(browser()->GetActiveTabInterface()));
   }
 
   // Replaces the client with one using an incognito profile. Note that this is
@@ -111,10 +95,10 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
 
   std::unique_ptr<ChromeAutocompleteProviderClient> client_;
   content::FakeServiceWorkerContext service_worker_context_;
-  tabs::PreventTabFeatureInitialization prevent_;
 
  private:
   content::TestStoragePartition storage_partition_;
+  UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,

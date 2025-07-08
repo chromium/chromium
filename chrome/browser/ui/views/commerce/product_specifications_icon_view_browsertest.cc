@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -29,7 +30,7 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
   }
 
   void SetUp() override {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    replace_commerce_ui_tab_helper_ = MockCommerceUiTabHelper::ReplaceFactory();
     UiBrowserTest::SetUp();
   }
 
@@ -84,6 +85,7 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
 
  private:
   base::test::ScopedFeatureList test_features_;
+  UserDataFactory::ScopedOverride replace_commerce_ui_tab_helper_;
 
   BrowserView* GetBrowserView() {
     return BrowserView::GetBrowserViewForBrowser(browser());

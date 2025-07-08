@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -698,26 +699,21 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
       page_context_eligibility_;
 };
 
-class TabFeaturesFake : public tabs::TabFeatures {
- public:
-  TabFeaturesFake() = default;
+namespace {
 
- protected:
-  std::unique_ptr<LensSearchController> CreateLensController(
-      tabs::TabInterface* tab) override {
-    return std::make_unique<LensSearchControllerFake>(tab);
-  }
-};
-
-std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
-  return std::make_unique<TabFeaturesFake>();
+UserDataFactory::ScopedOverride UseFakeLensSearchController() {
+  return tabs::TabFeatures::GetUserDataFactoryForTesting()
+      .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
+        return std::make_unique<LensSearchControllerFake>(&tab);
+      }));
 }
+
+}  // namespace
 
 class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
  protected:
   LensOverlayControllerBrowserTest() {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-        base::BindRepeating(&CreateTabFeatures));
+    lens_search_controller_override_ = UseFakeLensSearchController();
   }
 
   void SetUp() override {
@@ -757,10 +753,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     mock_hats_service_ = nullptr;
   }
 
-  ~LensOverlayControllerBrowserTest() override {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::NullCallback());
-  }
-
   virtual void SetupFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay,
@@ -792,11 +784,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   LensSearchController* GetLensSearchController() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->lens_search_controller();
+    return LensSearchController::From(browser()->GetActiveTabInterface());
   }
 
   LensOverlayController* GetLensOverlayController() {
@@ -959,9 +947,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     // It has to go through the LensOverlayController because the search
     // controller doesn't have proper state management. Use search controller
     // directly once it has its own state for properly determining kOff.
-    controller->GetTabInterface()
-        ->GetTabFeatures()
-        ->lens_search_controller()
+    LensSearchController::From(controller->GetTabInterface())
         ->CloseLensAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
@@ -985,6 +971,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   // The words returned by the mock objects response.
   std::vector<std::string> ocr_response_words_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+
+ private:
+  UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 }  // namespace
@@ -5334,8 +5323,7 @@ class LensOverlayControllerBrowserPDFTest
  public:
   LensOverlayControllerBrowserPDFTest()
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-        base::BindRepeating(&CreateTabFeatures));
+    lens_search_controller_override_ = UseFakeLensSearchController();
   }
 
   void SetUpOnMainThread() override {
@@ -5365,11 +5353,7 @@ class LensOverlayControllerBrowserPDFTest
   }
 
   LensSearchController* GetLensSearchController() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->lens_search_controller();
+    return LensSearchController::From(browser()->GetActiveTabInterface());
   }
 
   LensOverlayController* GetLensOverlayController() {
@@ -5390,13 +5374,14 @@ class LensOverlayControllerBrowserPDFTest
     // It has to go through the LensOverlayController because the search
     // controller doesn't have proper state management. Use search controller
     // directly once it has its own state for properly determining kOff.
-    controller->GetTabInterface()
-        ->GetTabFeatures()
-        ->lens_search_controller()
+    LensSearchController::From(controller->GetTabInterface())
         ->CloseLensAsync(dismissal_source);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOff; }));
   }
+
+ private:
+  UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 // Regression test for crbug.com/360710001. Asserts the overlay lens page will

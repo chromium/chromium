@@ -16,6 +16,9 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/supports_handles.h"
 
+// TODO(https://crbug.com/427458853): Move unowned_user_data down into ui/base.
+class UnownedUserDataHost;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -257,6 +260,12 @@ class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
 
   // Must be called whenever any of this tab's ancestor collections change.
   virtual void OnAncestorChanged(base::PassKey<TabCollection>) = 0;
+
+  // Returns the UnownedUserDataHost associated with this tab. This is used to
+  // retrieve arbitrary features from the tab without requiring TabModel to have
+  // knowledge of them.
+  virtual UnownedUserDataHost& GetUnownedUserDataHost() = 0;
+  virtual const UnownedUserDataHost& GetUnownedUserDataHost() const = 0;
 };
 
 using TabHandle = TabInterface::Handle;

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
@@ -90,7 +89,7 @@ class ExistingComparisonTableSubMenuModelTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   base::test::ScopedFeatureList features_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestTabStripModelDelegate> delegate_;

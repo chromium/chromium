@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/render_view_host.h"
@@ -68,7 +67,7 @@ class TriggerTest : public testing::Test {
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
   const std::unique_ptr<TabStripModel> tab_strip_model_;
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

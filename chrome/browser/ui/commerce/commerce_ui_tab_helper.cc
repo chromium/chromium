@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
@@ -74,6 +75,13 @@ END_METADATA
 
 namespace commerce {
 
+DEFINE_USER_DATA(CommerceUiTabHelper);
+
+// static
+CommerceUiTabHelper* CommerceUiTabHelper::From(tabs::TabModel* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
 CommerceUiTabHelper::CommerceUiTabHelper(
     tabs::TabInterface& tab_interface,
     ShoppingService* shopping_service,
@@ -85,7 +93,8 @@ CommerceUiTabHelper::CommerceUiTabHelper(
       bookmark_model_(model),
       image_fetcher_(image_fetcher),
       side_panel_registry_(side_panel_registry),
-      price_insights_label_type_(PriceInsightsIconLabelType::kNone) {
+      price_insights_label_type_(PriceInsightsIconLabelType::kNone),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   if (!image_fetcher_) {
     CHECK_IS_TEST();
   }

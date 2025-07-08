@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -108,7 +109,7 @@ class PowerBookmarkBubbleViewBrowserTest
     : public BaseBookmarkBubbleViewBrowserTest {
  public:
   PowerBookmarkBubbleViewBrowserTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     test_features_.InitWithFeatures({commerce::kShoppingList}, {});
   }
 
@@ -118,6 +119,9 @@ class PowerBookmarkBubbleViewBrowserTest
       const PowerBookmarkBubbleViewBrowserTest&) = delete;
 
   ~PowerBookmarkBubbleViewBrowserTest() override = default;
+
+ private:
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(PowerBookmarkBubbleViewBrowserTest,

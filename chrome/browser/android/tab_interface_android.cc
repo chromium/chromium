@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/tab_interface_android.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -220,4 +221,12 @@ void TabInterfaceAndroid::OnAncestorChanged(
     return;
   }
   return weak_tab_android_->OnAncestorChanged(pass_key);
+}
+
+UnownedUserDataHost& TabInterfaceAndroid::GetUnownedUserDataHost() {
+  NOTREACHED();
+}
+
+const UnownedUserDataHost& TabInterfaceAndroid::GetUnownedUserDataHost() const {
+  NOTREACHED();
 }

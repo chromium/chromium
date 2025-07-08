@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_visual_data.h"
@@ -57,7 +56,7 @@ class TabCollectionIteratorTest : public ::testing::Test {
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabCollectionIteratorTest, TabIteratorWithoutChildren) {

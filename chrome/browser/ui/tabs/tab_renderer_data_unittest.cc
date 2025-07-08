@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/tab_interface.h"
@@ -63,7 +62,7 @@ class TabRendererDataTest : public testing::Test {
 
   // These tests wont support parts of the rendererdata that need
   // BrowserWindowFeatures.
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 
   int AddTab(bool foreground = true, bool pinned = false) {
     auto web_contents =

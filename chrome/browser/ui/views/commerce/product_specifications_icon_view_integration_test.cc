@@ -42,7 +42,7 @@ class ProductSpecificationsIconViewIntegrationTest
       public ::testing::WithParamInterface<bool> {
  public:
   ProductSpecificationsIconViewIntegrationTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
   }
 
   ProductSpecificationsIconViewIntegrationTest(
@@ -113,6 +113,7 @@ class ProductSpecificationsIconViewIntegrationTest
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       shopping_service_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_P(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {

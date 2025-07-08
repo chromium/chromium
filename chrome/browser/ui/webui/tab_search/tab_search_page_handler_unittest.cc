@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
@@ -1030,7 +1029,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<MockTabDeclutterController> tab_declutter_controller_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindUnusedTabs) {

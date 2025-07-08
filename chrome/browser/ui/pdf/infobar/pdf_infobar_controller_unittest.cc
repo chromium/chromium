@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
@@ -116,7 +115,7 @@ class PdfInfoBarControllerTest : public testing::Test {
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
   const std::unique_ptr<TabStripModel> tab_strip_model_;
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 class PdfInfoBarControllerPdfLoadTest : public PdfInfoBarControllerTest {

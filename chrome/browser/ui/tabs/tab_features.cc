@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
@@ -90,33 +91,8 @@
 #endif
 namespace tabs {
 
-namespace {
-
-// This is the generic entry point for test code to stub out TabFeature
-// functionality. It is called by production code, but only used by tests.
-TabFeatures::TabFeaturesFactory& GetFactory() {
-  static base::NoDestructor<TabFeatures::TabFeaturesFactory> factory;
-  return *factory;
-}
-
-}  // namespace
-
-// static
-std::unique_ptr<TabFeatures> TabFeatures::CreateTabFeatures() {
-  if (GetFactory()) {
-    return GetFactory().Run();
-  }
-  // Constructor is protected.
-  return base::WrapUnique(new TabFeatures());
-}
-
+TabFeatures::TabFeatures() = default;
 TabFeatures::~TabFeatures() = default;
-
-// static
-void TabFeatures::ReplaceTabFeaturesForTesting(TabFeaturesFactory factory) {
-  TabFeatures::TabFeaturesFactory& f = GetFactory();
-  f = std::move(factory);
-}
 
 LensOverlayController* TabFeatures::lens_overlay_controller() {
   // LensSearchController won't exist on non-normal windows.
@@ -137,7 +113,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   initialized_ = true;
 
   // In tests you may want to disable TabFeatures initialization.
-  // See tabs::PreventTabFeatureInitialization
+  // See tabs::TabModel::PreventFeatureInitializationForTesting
   CHECK(tab.GetBrowserWindowInterface());
 
   tab_subscriptions_.push_back(
@@ -214,7 +190,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
-    lens_search_controller_ = CreateLensController(&tab);
+    lens_search_controller_ =
+        GetUserDataFactory().CreateInstance<LensSearchController>(tab, &tab);
     lens_search_controller_->Initialize(
         profile->GetVariationsClient(),
         IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
@@ -237,7 +214,16 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<PinnedTranslateActionListener>(&tab);
 
     if (!profile->IsIncognitoProfile()) {
-      commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(tab, profile);
+      // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
+      commerce_ui_tab_helper_ =
+          GetUserDataFactory().CreateInstance<commerce::CommerceUiTabHelper>(
+              tab, tab,
+              commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+              BookmarkModelFactory::GetForBrowserContext(profile),
+              ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+                  ->GetImageFetcher(
+                      image_fetcher::ImageFetcherConfig::kNetworkOnly),
+              side_panel_registry_.get());
     }
 
     contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
@@ -370,8 +356,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 }
 
-TabFeatures::TabFeatures() = default;
-
 TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(
     std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper) {
   resource_usage_helper_ = std::move(resource_usage_helper);
@@ -382,22 +366,6 @@ TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
     std::unique_ptr<TabUIHelper> tab_ui_helper) {
   tab_ui_helper_ = std::move(tab_ui_helper);
   return tab_ui_helper_.get();
-}
-
-std::unique_ptr<LensSearchController> TabFeatures::CreateLensController(
-    TabInterface* tab) {
-  return std::make_unique<LensSearchController>(tab);
-}
-
-std::unique_ptr<commerce::CommerceUiTabHelper>
-TabFeatures::CreateCommerceUiTabHelper(TabInterface& tab, Profile* profile) {
-  // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
-  return std::make_unique<commerce::CommerceUiTabHelper>(
-      tab, commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
-      BookmarkModelFactory::GetForBrowserContext(profile),
-      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
-          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly),
-      side_panel_registry_.get());
 }
 
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
@@ -462,6 +430,18 @@ TabFeatures::SetCustomizeChromeSidePanelControllerForTesting(
   customize_chrome_side_panel_controller_ =
       std::move(customize_chrome_side_panel_controller);
   return customize_chrome_side_panel_controller_.get();
+}
+
+// static
+UserDataFactoryWithOwner<TabInterface>& TabFeatures::GetUserDataFactory() {
+  static base::NoDestructor<UserDataFactoryWithOwner<TabInterface>> factory;
+  return *factory;
+}
+
+// static
+UserDataFactoryWithOwner<TabInterface>&
+TabFeatures::GetUserDataFactoryForTesting() {
+  return GetUserDataFactory();
 }
 
 }  // namespace tabs

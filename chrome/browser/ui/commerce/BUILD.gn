@@ -113,6 +113,7 @@ source_set("unit_tests") {
     ":commerce",
     "//base/test:test_support",
     "//chrome/browser/ui/toasts:toasts",
+    "//chrome/browser/ui/unowned_user_data",
     "//chrome/test:test_support",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:feature_list",

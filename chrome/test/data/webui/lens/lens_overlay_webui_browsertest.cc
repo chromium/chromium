@@ -73,11 +73,8 @@ class LensOverlayTest : public LensOverlayWebUIBrowserTest {
     WaitForPaint();
 
     // State should start in off.
-    auto* search_controller = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveTab()
-                                  ->GetTabFeatures()
-                                  ->lens_search_controller();
+    auto* search_controller =
+        LensSearchController::From(browser()->GetActiveTabInterface());
     auto* overlay_controller = search_controller->lens_overlay_controller();
     ASSERT_EQ(overlay_controller->state(), State::kOff);
 

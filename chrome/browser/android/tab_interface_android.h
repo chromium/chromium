@@ -65,6 +65,11 @@ class TabInterfaceAndroid : public tabs::TabInterface {
                     base::PassKey<tabs::TabCollection>) override;
   void OnAncestorChanged(base::PassKey<tabs::TabCollection>) override;
 
+  // TODO(https://crbug.com/427458853): These should not be called on android
+  // until `UnownedUserDataHost` is pushed down into ui/base.
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
+
  private:
   base::WeakPtr<TabAndroid> weak_tab_android_;
 };

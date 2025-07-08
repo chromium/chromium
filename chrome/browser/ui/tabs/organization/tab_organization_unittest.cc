@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -164,7 +163,7 @@ class TabOrganizationTest : public testing::Test {
   TabStripModel tab_strip_model_{&delegate_, &profile_};
   UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 class SessionObserver : public TabOrganizationSession::Observer {

@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,26 +55,17 @@ constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
 
-class TabFeaturesFake : public tabs::TabFeatures {
- public:
-  TabFeaturesFake() = default;
-
- protected:
-  std::unique_ptr<LensSearchController> CreateLensController(
-      tabs::TabInterface* tab) override {
-    return std::make_unique<lens::TestLensSearchController>(tab);
-  }
-};
-
 class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
  public:
   template <typename... Args>
   explicit LensOverlayControllerCUJTest(Args&&... args)
       : InteractiveFeaturePromoTest(
             UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {
-    tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-        base::BindRepeating(&LensOverlayControllerCUJTest::CreateTabFeatures,
-                            base::Unretained(this)));
+    lens_search_controller_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](tabs::TabInterface& tab) {
+              return std::make_unique<lens::TestLensSearchController>(&tab);
+            }));
   }
   ~LensOverlayControllerCUJTest() override = default;
 
@@ -119,10 +111,6 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
     // Disallow sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
-  }
-
-  std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
-    return std::make_unique<TabFeaturesFake>();
   }
 
   InteractiveTestApi::MultiStep OpenArbitraryNewTab() {
@@ -228,6 +216,9 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+
+ private:
+  UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 
 // This tests the following CUJ:

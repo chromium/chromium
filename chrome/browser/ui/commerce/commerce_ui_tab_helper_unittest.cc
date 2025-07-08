@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -97,6 +98,8 @@ class CommerceUiTabHelperTest : public testing::Test {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
     ON_CALL(tab_interface_, GetContents())
         .WillByDefault(testing::Return(web_contents_));
+    ON_CALL(tab_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(data_host_));
 
     side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
@@ -155,6 +158,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   // Must outlive `web_contents_`.
   content::TestWebContentsFactory test_web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
+  UnownedUserDataHost data_host_;
   tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;

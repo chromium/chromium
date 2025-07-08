@@ -279,7 +279,7 @@ class PriceTrackingViewFeatureFlagTest
       public testing::WithParamInterface<bool> {
  public:
   PriceTrackingViewFeatureFlagTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     const bool is_feature_enabled = GetParam();
     if (is_feature_enabled) {
       test_features_.InitAndEnableFeature(commerce::kShoppingList);
@@ -291,6 +291,9 @@ class PriceTrackingViewFeatureFlagTest
       const ::testing::TestParamInfo<ParamType>& info) {
     return info.param ? "ShoppingListEnabled" : "ShoppingListDisabled";
   }
+
+ private:
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

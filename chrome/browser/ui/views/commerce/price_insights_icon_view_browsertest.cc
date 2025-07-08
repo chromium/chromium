@@ -40,7 +40,7 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
   explicit PriceInsightsIconViewBaseBrowserTest(
       bool is_migration_enabled = false)
       : is_migration_enabled_(is_migration_enabled) {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
   }
 
   // UiBrowserTest:
@@ -127,6 +127,7 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
   }
 
   bool is_migration_enabled_;
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 class PriceInsightsIconViewBrowserTest

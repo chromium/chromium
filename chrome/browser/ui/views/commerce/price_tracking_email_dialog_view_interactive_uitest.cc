@@ -49,7 +49,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     test_iph_features_.InitForDemo(
         feature_engagement::kIPHPriceTrackingEmailConsentFeature);
 
@@ -130,6 +130,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     mock_shopping_service->SetIsSubscribedCallbackValue(true);
   }
 
+  UserDataFactory::ScopedOverride commerce_ui_override_;
   base::WeakPtrFactory<PriceTrackingEmailDialogConsentViewInteractiveTest>
       weak_ptr_factory_{this};
 };

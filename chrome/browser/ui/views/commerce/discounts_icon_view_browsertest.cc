@@ -30,7 +30,7 @@ const char kTestURL[] = "about:blank";
 class DiscountsIconViewBrowserTest : public UiBrowserTest {
  public:
   void SetUp() override {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     UiBrowserTest::SetUp();
   }
   // UiBrowserTest:
@@ -135,6 +135,7 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
   }
 
   std::vector<commerce::DiscountInfo> discount_infos_;
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiscountsIconViewBrowserTest,

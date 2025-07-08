@@ -260,6 +260,11 @@ class TabAndroid : public tabs::TabInterface,
                     base::PassKey<tabs::TabCollection>) override;
   void OnAncestorChanged(base::PassKey<tabs::TabCollection>) override;
 
+  // TODO(https://crbug.com/427458853): These should not be called on android
+  // until `UnownedUserDataHost` is pushed down into ui/base.
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
+
  private:
   // This constructor bypassing JVM setup is for CreateForTesting only.
   TabAndroid(Profile* profile, int tab_id);

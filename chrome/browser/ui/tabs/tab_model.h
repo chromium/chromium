@@ -8,10 +8,12 @@
 #include <memory>
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -71,6 +73,12 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   void set_will_be_detaching_for_testing(bool will_be_detaching) {
     will_be_detaching_ = will_be_detaching;
   }
+
+  // Returns the UnownedUserDataHost associated with this tab. This is used to
+  // retrieve arbitrary features from the tab without requiring TabModel to have
+  // knowledge of them.
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -156,6 +164,22 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
                     base::PassKey<TabCollection>) override;
   void OnAncestorChanged(base::PassKey<TabCollection>) override;
   void Close() override;
+
+  // Helper class that prevents initialization of tab features.
+  // Prevents initialization of TabFeatures while in scope.
+  // In most cases you can simply declare one in your test class.
+  class PreventFeatureInitializationForTesting {
+   public:
+    PreventFeatureInitializationForTesting();
+    PreventFeatureInitializationForTesting(
+        PreventFeatureInitializationForTesting&&) noexcept;
+    PreventFeatureInitializationForTesting& operator=(
+        PreventFeatureInitializationForTesting&&) noexcept;
+    ~PreventFeatureInitializationForTesting();
+
+   private:
+    base::AutoReset<bool> scoped_prevent_initialization_;
+  };
 
  private:
   // Overridden from TabStripModelObserver:
@@ -250,6 +274,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // The unowned user data host that can be used by `tab_features_`.
+  UnownedUserDataHost unowned_user_data_host_;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

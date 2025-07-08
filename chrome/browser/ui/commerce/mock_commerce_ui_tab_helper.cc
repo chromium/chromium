@@ -13,26 +13,12 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
-namespace {
-class TabFeaturesFake : public tabs::TabFeatures {
- public:
-  TabFeaturesFake() = default;
-
- protected:
-  std::unique_ptr<commerce::CommerceUiTabHelper> CreateCommerceUiTabHelper(
-      tabs::TabInterface& tab,
-      Profile* profile) override {
-    return std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
-        tab, side_panel_registry());
-  }
-};
-}  // namespace
-
 // static
-void MockCommerceUiTabHelper::ReplaceFactory() {
-  tabs::TabFeatures::ReplaceTabFeaturesForTesting(
-      base::BindRepeating([]() -> std::unique_ptr<tabs::TabFeatures> {
-        return std::make_unique<TabFeaturesFake>();
+UserDataFactory::ScopedOverride MockCommerceUiTabHelper::ReplaceFactory() {
+  return tabs::TabFeatures::GetUserDataFactoryForTesting()
+      .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
+        return std::make_unique<MockCommerceUiTabHelper>(
+            tab, tab.GetTabFeatures()->side_panel_registry());
       }));
 }
 

@@ -320,11 +320,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInAndSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -370,11 +367,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInNotSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -413,11 +407,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedOut) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -463,11 +454,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -513,11 +501,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -556,11 +541,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -644,11 +626,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -691,11 +670,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -731,11 +707,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  auto* search_controller = browser()
-                                ->tab_strip_model()
-                                ->GetActiveTab()
-                                ->GetTabFeatures()
-                                ->lens_search_controller();
+  auto* search_controller =
+      LensSearchController::From(browser()->GetActiveTabInterface());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);

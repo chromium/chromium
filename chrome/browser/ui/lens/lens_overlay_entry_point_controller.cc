@@ -202,7 +202,7 @@ void LensOverlayEntryPointController::InvokeAction(
     tabs::TabInterface* active_tab,
     const actions::ActionInvocationContext& context) {
   LensSearchController* search_controller =
-      active_tab->GetTabFeatures()->lens_search_controller();
+      LensSearchController::From(active_tab);
   LensOverlayController* overlay_controller =
       active_tab->GetTabFeatures()->lens_overlay_controller();
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -135,7 +134,7 @@ class TabCollectionBaseTest : public ::testing::Test {
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabCollectionBaseTest, GetDirectChildIndexOfCollectionContainingTab) {
@@ -332,7 +331,7 @@ class TabGroupTabCollectionTest : public TabCollectionBaseTest {
 
  private:
   std::unique_ptr<tabs::TabGroupTabCollection> grouped_collection_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabGroupTabCollectionTest, AddOperation) {
@@ -422,7 +421,7 @@ class SplitTabCollectionTest : public TabCollectionBaseTest {
 
  private:
   std::unique_ptr<tabs::SplitTabCollection> split_collection_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(SplitTabCollectionTest, AddOperation) {
@@ -701,7 +700,7 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
 
  private:
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabStripCollectionTest, CollectionOperations) {

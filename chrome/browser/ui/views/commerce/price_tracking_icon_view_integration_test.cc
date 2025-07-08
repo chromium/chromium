@@ -46,7 +46,7 @@ const char kNonTrackableUrl[] = "about:blank";
 class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
  public:
   PriceTrackingIconViewIntegrationTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
   }
 
   PriceTrackingIconViewIntegrationTest(
@@ -161,6 +161,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList test_features_;
+  UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_F(PriceTrackingIconViewIntegrationTest,

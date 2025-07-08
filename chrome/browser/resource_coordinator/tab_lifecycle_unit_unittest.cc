@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -202,7 +201,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   // So that the main thread looks like the UI thread as expected.
   TestTabStripModelDelegate tab_strip_model_delegate_;
   ScopedSetClocksForTesting scoped_set_clocks_for_testing_;
-  tabs::PreventTabFeatureInitialization prevent_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
   performance_manager::PerformanceManagerTestHarnessHelper pm_helper_;
 };
 

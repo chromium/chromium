@@ -22,7 +22,10 @@ source_set("tabs_public") {
     "//components/tab_groups:tab_groups",
     "//components/tabs:public",
   ]
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/browser/ui/unowned_user_data",
+    "//content/public/browser",
+  ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been
@@ -168,6 +171,8 @@ if (!is_android) {
       "split_tab_swap_menu_model.h",
       "tab_model.h",
     ]
+
+    deps = [ "//chrome/browser/ui/unowned_user_data" ]
 
     public_deps = [
       ":tab_strip_model_observer",
@@ -406,6 +411,7 @@ if (!is_android) {
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/unowned_user_data",
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
@@ -488,8 +494,6 @@ if (!is_android) {
       "tab_ukm_test_helper.h",
       "test_tab_strip_model_delegate.cc",
       "test_tab_strip_model_delegate.h",
-      "test_util.cc",
-      "test_util.h",
     ]
 
     public_deps = [
