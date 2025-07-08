@@ -124,7 +124,7 @@ GWP_ASAN_EXPORT extern const base::FeatureParam<int>
     kGwpAsanMallocGpuAllocationSamplingRange{&kGwpAsanMalloc,
                                              "GpuAllocationSamplingRange", 10};
 
-#else
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Browser reservation params.
 GWP_ASAN_EXPORT extern const base::FeatureParam<int>
@@ -177,6 +177,8 @@ GWP_ASAN_EXPORT extern const base::FeatureParam<int>
                                              "GpuAllocationSamplingRange", 10};
 
 #endif
+// BUILDFLAG(IS_IOS) does not need process-specific parameters as it only has
+// one chrome-controlled process (the browser process).
 
 BASE_FEATURE(kExtremeLightweightUAFDetector,
              "ExtremeLightweightUAFDetector",
