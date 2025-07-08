@@ -3607,6 +3607,7 @@ static_library("browser") {
       "//third_party/libaddressinput:util",
       "//third_party/libphonenumber",
       "//ui/accessibility",
+      "//ui/base/unowned_user_data",
       "//url",
     ]
     deps += [

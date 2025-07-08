@@ -224,10 +224,10 @@ void TabInterfaceAndroid::OnAncestorChanged(
 }
 
 ui::UnownedUserDataHost& TabInterfaceAndroid::GetUnownedUserDataHost() {
-  NOTREACHED();
+  return unowned_user_data_host_;
 }
 
 const ui::UnownedUserDataHost& TabInterfaceAndroid::GetUnownedUserDataHost()
     const {
-  NOTREACHED();
+  return unowned_user_data_host_;
 }

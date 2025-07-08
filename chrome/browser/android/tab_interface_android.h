@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class TabAndroid;
 
@@ -68,6 +69,7 @@ class TabInterfaceAndroid : public tabs::TabInterface {
   const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
 
  private:
+  ui::UnownedUserDataHost unowned_user_data_host_;
   base::WeakPtr<TabAndroid> weak_tab_android_;
 };
 

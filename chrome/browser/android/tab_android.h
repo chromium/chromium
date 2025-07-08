@@ -28,6 +28,7 @@
 #include "components/tab_groups/token_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class GURL;
 class Profile;
@@ -293,6 +294,7 @@ class TabAndroid : public tabs::TabInterface,
   base::ObserverList<Observer> observers_;
 
   const base::WeakPtr<Profile> profile_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
   base::WeakPtrFactory<TabAndroid> weak_ptr_factory_{this};
 };
 
