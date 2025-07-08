@@ -90,10 +90,9 @@ const gfx::Insets CalculateOutsets(int hit, int thickness) {
 const gfx::ImageSkia& MakeShadowImageOnce(
     const ash::ResizeShadow::InitParams& params,
     const ui::ColorProvider* color_provider) {
-  // Resolve the color with color type.
-  const SkColor color = params.color.GetSkColor()
-                            ? *params.color.GetSkColor()
-                            : params.color.ResolveToSkColor(color_provider);
+  // Resolve the color with color type. Note that color_provider will be NULL
+  // when `params.color` is semantic.
+  const SkColor color = params.color.ResolveToSkColor(color_provider);
 
   // Generate the shadow features key.
   const ShadowFeaturesKey features_key{ShadowImageSize(params),

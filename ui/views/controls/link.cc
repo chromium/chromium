@@ -202,8 +202,9 @@ void Link::OnThemeChanged() {
 }
 
 void Link::SetEnabledColor(ui::ColorVariant color) {
-  if (color.GetSkColor()) {
-    requested_enabled_color_ = color.GetSkColor().value();
+  if (color.IsPhysical()) {
+    requested_enabled_color_ =
+        color.ResolveToSkColor(/*color_provider=*/nullptr);
   }
 
   if (GetWidget()) {
