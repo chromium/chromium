@@ -116,6 +116,7 @@ vs-chromium-project.txt
 /c_icu
 /cdm
 /ceee/internal/
+/chrome/android/orderfiles/
 /chrome/android/profiles/afdo.prof
 /chrome/android/profiles/afdo.prof.new.xz
 /chrome/android/profiles/arm.afdo.prof

@@ -1173,6 +1173,28 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/chrome/android/orderfiles/arm': {
+      'packages': [
+          {
+              'package': 'chromium/chrome/android/orderfiles/arm',
+              'version': 'T6gCP1dbYIqKRukD5q7eZ-jy2JR7_igOG9epVzYLcVkC',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/chrome/android/orderfiles/arm64': {
+      'packages': [
+          {
+              'package': 'chromium/chrome/android/orderfiles/arm64',
+              'version': 'Mva-kZ98N-xU0PBj-NuGUr6F3yUCSAji2JgSoxyqAZsC',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/chrome/browser/resources/preinstalled_web_apps/internal': {
     'url': Var('chrome_git') + '/chrome/components/default_apps.git' + '@' + '656ac90405cdbb7d7ab05c54a1628c6d7418832e',
     'condition': 'checkout_src_internal',
