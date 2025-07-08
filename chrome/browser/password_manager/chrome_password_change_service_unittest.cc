@@ -21,6 +21,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
@@ -31,24 +32,26 @@
 namespace {
 
 struct TestCase {
-  using TupleT = std::tuple<bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool>;
 
   explicit TestCase(TupleT configuration)
       : is_generation_available(std::get<0>(configuration)),
         is_model_execution_allowed(std::get<1>(configuration)),
-        is_feature_enabled(std::get<2>(configuration)) {}
+        is_saving_allowed(std::get<2>(configuration)),
+        is_feature_enabled(std::get<3>(configuration)) {}
 
   bool expected_outcome() const {
 #if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return is_generation_available & is_model_execution_allowed &
-           is_feature_enabled;
+           is_saving_allowed & is_feature_enabled;
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
   const bool is_generation_available;
   const bool is_model_execution_allowed;
+  const bool is_saving_allowed;
   const bool is_feature_enabled;
 };
 
@@ -62,7 +65,7 @@ class ChromePasswordChangeServiceBase {
     feature_manager_ = feature_manager.get();
     change_service_ = std::make_unique<ChromePasswordChangeService>(
         &mock_affiliation_service_, &mock_optimization_service_,
-        std::move(feature_manager));
+        &settings_service_, std::move(feature_manager));
   }
 
   ~ChromePasswordChangeServiceBase() = default;
@@ -72,6 +75,9 @@ class ChromePasswordChangeServiceBase {
   }
   MockOptimizationGuideKeyedService& mock_optimization_service() {
     return mock_optimization_service_;
+  }
+  password_manager::MockPasswordManagerSettingsService& settings_service() {
+    return settings_service_;
   }
 
   password_manager::PasswordChangeServiceInterface* change_service() {
@@ -90,6 +96,8 @@ class ChromePasswordChangeServiceBase {
       mock_affiliation_service_;
   testing::StrictMock<MockOptimizationGuideKeyedService>
       mock_optimization_service_;
+  testing::StrictMock<password_manager::MockPasswordManagerSettingsService>
+      settings_service_;
   std::unique_ptr<ChromePasswordChangeService> change_service_;
   raw_ptr<password_manager::MockPasswordFeatureManager> feature_manager_;
 };
@@ -133,6 +141,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
       .WillOnce(testing::Return(GURL("https://test.com/password/")));
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
@@ -151,6 +161,8 @@ TEST_F(ChromePasswordChangeServiceTest, NoChangePasswordUrl) {
       .WillOnce(testing::Return(GURL()));
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
@@ -168,6 +180,8 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentCountry) {
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url)).Times(0);
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
@@ -182,6 +196,8 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentLanguage) {
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url)).Times(0);
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
@@ -248,6 +264,13 @@ TEST_P(ChromePasswordChangeServiceAvailabilityTest, TestWithNoArgs) {
     EXPECT_CALL(mock_optimization_service(),
                 ShouldModelExecutionBeAllowedForUser)
         .WillOnce(testing::Return(GetParam().is_model_execution_allowed));
+    if (GetParam().is_model_execution_allowed) {
+      EXPECT_CALL(
+          settings_service(),
+          IsSettingEnabled(
+              password_manager::PasswordManagerSetting::kOfferToSavePasswords))
+          .WillOnce(testing::Return(GetParam().is_saving_allowed));
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -273,13 +296,17 @@ INSTANTIATE_TEST_SUITE_P(
     Availability,
     ChromePasswordChangeServiceAvailabilityTest,
     testing::ConvertGenerator<TestCase::TupleT>(
-        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool())),
+        testing::Combine(testing::Bool(),
+                         testing::Bool(),
+                         testing::Bool(),
+                         testing::Bool())),
     [](const ::testing::TestParamInfo<TestCase>& info) {
       std::string test_name;
       test_name +=
           info.param.is_generation_available ? "GenerationOn" : "GenerationOff";
       test_name += info.param.is_model_execution_allowed ? "ExecutionOn"
                                                          : "ExecutionOff";
+      test_name += info.param.is_saving_allowed ? "SavingOn" : "SavingOff";
       test_name += info.param.is_feature_enabled ? "FeatureOn" : "FeatureOff";
       return test_name;
     });

@@ -14,8 +14,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/password_manager/chrome_password_change_service.h"
-#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,8 +70,6 @@ ManagePasswordsTest::~ManagePasswordsTest() = default;
 
 void ManagePasswordsTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
-  mock_optimization_service_ =
-      std::make_unique<testing::NiceMock<MockOptimizationGuideKeyedService>>();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
@@ -86,7 +82,6 @@ void ManagePasswordsTest::SetUpOnMainThread() {
 }
 
 void ManagePasswordsTest::TearDownOnMainThread() {
-  mock_optimization_service_ = nullptr;
   InteractiveBrowserTest::TearDownOnMainThread();
 }
 
@@ -141,39 +136,6 @@ void ManagePasswordsTest::SetupManagingPasswords(
                                                        federated_form};
   GetController()->OnPasswordAutofilled(
       forms, embedded_test_server()->GetOrigin(), {});
-}
-
-void ManagePasswordsTest::SetupPasswordChange() {
-  affiliations::MockAffiliationService mock_affiliation_service;
-  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
-      base::BindLambdaForTesting([this, &mock_affiliation_service](
-                                     content::BrowserContext* context)
-                                     -> std::unique_ptr<KeyedService> {
-        auto feature_manager =
-            std::make_unique<password_manager::MockPasswordFeatureManager>();
-        ON_CALL(*feature_manager.get(), IsGenerationEnabled)
-            .WillByDefault(testing::Return(true));
-        return std::make_unique<ChromePasswordChangeService>(
-            &mock_affiliation_service, mock_optimization_service_.get(),
-            std::move(feature_manager));
-      }));
-  mock_optimization_service_.reset();
-
-  const GURL kUrl = GURL("https://example.com/");
-  ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
-      .WillByDefault(testing::Return(embedded_test_server()->GetURL(
-          "/password/update_form_empty_fields.html")));
-  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
-      password_manager::CreateLeakType(
-          password_manager::IsSaved(true), password_manager::IsReused(false),
-          password_manager::IsSyncing(true),
-          password_manager::HasChangePasswordUrl(true)),
-      kUrl, u"new_username", u"new_password",
-      /*in_account_store=*/true));
-  static_cast<PasswordsModelDelegate*>(GetController())
-      ->GetPasswordChangeDelegate()
-      ->StartPasswordChangeFlow();
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {

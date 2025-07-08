@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
@@ -20,6 +21,7 @@ PasswordChangeServiceFactory::PasswordChangeServiceFactory()
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(PasswordManagerSettingsServiceFactory::GetInstance());
 }
 
 PasswordChangeServiceFactory::~PasswordChangeServiceFactory() = default;
@@ -42,6 +44,7 @@ PasswordChangeServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<ChromePasswordChangeService>(
       AffiliationServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      PasswordManagerSettingsServiceFactory::GetForProfile(profile),
       std::make_unique<password_manager::PasswordFeatureManagerImpl>(
           profile->GetPrefs(), g_browser_process->local_state(),
           SyncServiceFactory::GetForProfile(profile)));

@@ -16,6 +16,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -65,9 +66,11 @@ std::string GetVariationConfigCountryCode() {
 ChromePasswordChangeService::ChromePasswordChangeService(
     affiliations::AffiliationService* affiliation_service,
     OptimizationGuideKeyedService* optimization_keyed_service,
+    password_manager::PasswordManagerSettingsService* settings_service,
     std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager)
     : affiliation_service_(affiliation_service),
       optimization_keyed_service_(optimization_keyed_service),
+      settings_service_(settings_service),
       feature_manager_(std::move(feature_manager)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
@@ -86,10 +89,14 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
     return false;
   }
 
-  if (!optimization_keyed_service_) {
+  if (!optimization_keyed_service_ ||
+      !optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser()) {
     return false;
   }
-  if (!optimization_keyed_service_->ShouldModelExecutionBeAllowedForUser()) {
+
+  if (!settings_service_ ||
+      !settings_service_->IsSettingEnabled(
+          password_manager::PasswordManagerSetting::kOfferToSavePasswords)) {
     return false;
   }
 
