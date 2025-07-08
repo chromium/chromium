@@ -130,6 +130,8 @@ void ReadFromMLMultiArray(
     base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) {
   __block auto wrapped_callback =
       base::BindPostTaskToCurrentDefault(std::move(result_callback));
+  __block size_t packed_size = static_cast<size_t>(multi_array.count) *
+                               GetDataTypeByteSize(multi_array.dataType);
 
   [multi_array getBytesWithHandler:^(const void* bytes, NSInteger size) {
     std::vector<uint32_t> shape = ToStdVector(multi_array.shape);
@@ -141,7 +143,7 @@ void ReadFromMLMultiArray(
     auto multi_array_data = UNSAFE_BUFFERS(base::span(
         static_cast<const uint8_t*>(bytes), base::checked_cast<size_t>(size)));
 
-    mojo_base::BigBuffer output_buffer(multi_array_data.size());
+    mojo_base::BigBuffer output_buffer(packed_size);
 
     RecursivelyReadFromMLMultiArray(multi_array_data,
                                     GetDataTypeByteSize(multi_array.dataType),

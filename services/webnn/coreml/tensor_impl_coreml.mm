@@ -4,11 +4,16 @@
 
 #include "services/webnn/coreml/tensor_impl_coreml.h"
 
+#import <CoreFoundation/CoreFoundation.h>
 #import <CoreML/CoreML.h>
+#import <CoreVideo/CVPixelBuffer.h>
+#import <IOSurface/IOSurfaceRef.h>
 
+#include "base/apple/bridging.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
@@ -42,47 +47,34 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
   }
 }
 
-}  // namespace
-
-// static
-base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
-TensorImplCoreml::Create(
-    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    WebNNContextImpl* context,
-    mojom::TensorInfoPtr tensor_info) {
-  // TODO(crbug.com/343638938): Check `MLTensorUsageFlags` and use an
-  // IOSurface to facilitate zero-copy buffer sharing with WebGPU when possible.
-
-  // TODO(crbug.com/329482489): Move this check to the renderer and throw a
-  // TypeError.
-  if (tensor_info->descriptor.Rank() > 5) {
-    LOG(ERROR) << "[WebNN] Tensor rank is too large.";
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
-  }
-
-  CHECK(base::IsValueInRangeForNumericType<int>(
-      tensor_info->descriptor.PackedByteLength()));
-
+NSArray<NSNumber*>* ShapeToNSArray(base::span<const uint32_t> shape) {
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
-  if (tensor_info->descriptor.shape().empty()) {
+  if (shape.empty()) {
     // Allocate a one-element array to hold the value of a scalar tensor.
     [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:1ul]];
   } else {
-    for (uint32_t dimension : tensor_info->descriptor.shape()) {
+    for (uint32_t dimension : shape) {
       [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:dimension]];
     }
   }
 
+  return ns_shape;
+}
+
+// Creates an MLMultiArray given a data type and shape. See documentation here:
+// https://developer.apple.com/documentation/coreml/mlmultiarray/init(shape:datatype:)
+API_AVAILABLE(macos(12.3))
+MLMultiArray* CreateMultiArrayFromDescriptor(OperandDescriptor descriptor) {
+  NSArray<NSNumber*>* shape = ShapeToNSArray(descriptor.shape());
+
   NSError* error = nil;
   MLMultiArray* multi_array = [[MLMultiArray alloc]
-      initWithShape:ns_shape
-           dataType:ToMLMultiArrayDataType(tensor_info->descriptor.data_type())
+      initWithShape:shape
+           dataType:ToMLMultiArrayDataType(descriptor.data_type())
               error:&error];
   if (error) {
-    LOG(ERROR) << "[WebNN] Failed to allocate buffer: " << error;
-    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to allocate buffer."));
+    LOG(ERROR) << "[WebNN] Failed to allocate tensor: " << error;
+    return nil;
   }
 
   // `MLMultiArray` doesn't initialize its contents.
@@ -99,6 +91,85 @@ TensorImplCoreml::Create(
     UNSAFE_TODO(memset(mutable_bytes, 0, size));
   }];
   block_executing_synchronously = false;
+
+  return multi_array;
+}
+
+// Creates an MLMultiArray by wrapping an IOSurface wrapped by a CVPixelBuffer.
+// This is only supported for float16 tensors. See the documentation here:
+// https://developer.apple.com/documentation/coreml/mlmultiarray/init(pixelbuffer:shape:)
+API_AVAILABLE(macos(12.0))
+MLMultiArray* CreateMultiArrayBackedByIOSurface(OperandDescriptor descriptor) {
+  CHECK_EQ(descriptor.data_type(), OperandDataType::kFloat16);
+
+  // The pixel buffer's width must match the last dimension of the tensor.
+  NSArray<NSNumber*>* shape = ShapeToNSArray(descriptor.shape());
+  NSNumber* width = shape.lastObject;
+  NSNumber* height =
+      @(descriptor.NumberOfElements() / static_cast<size_t>(width.intValue));
+
+  NSDictionary* iosurface_properties = @{
+    (NSString*)kIOSurfaceWidth : width,
+    (NSString*)kIOSurfaceHeight : height,
+    (NSString*)kIOSurfaceBytesPerElement : @(2),
+    // This is the only supported data type for importing an MLMultiArray from a
+    // CVPixelBuffer.
+    (NSString*)kIOSurfacePixelFormat : @(kCVPixelFormatType_OneComponent16Half),
+  };
+
+  IOSurfaceRef surface =
+      IOSurfaceCreate(base::apple::NSToCFPtrCast(iosurface_properties));
+
+  CVPixelBufferRef pixel_buffer = nil;
+  CVReturn pixel_buffer_result = CVPixelBufferCreateWithIOSurface(
+      kCFAllocatorDefault, surface,
+      /*pixelBufferAttributes=*/nil, &pixel_buffer);
+  if (pixel_buffer_result != kCVReturnSuccess) {
+    LOG(ERROR) << "[WebNN] Failed to allocate tensor: " << pixel_buffer_result;
+    return nil;
+  }
+
+  return [[MLMultiArray alloc] initWithPixelBuffer:pixel_buffer shape:shape];
+}
+
+}  // namespace
+
+// static
+base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplCoreml::Create(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    WebNNContextImpl* context,
+    mojom::TensorInfoPtr tensor_info) {
+  // TODO(crbug.com/329482489): Move this check to the renderer and throw a
+  // TypeError.
+  if (tensor_info->descriptor.Rank() > 5) {
+    LOG(ERROR) << "[WebNN] Tensor rank is too large.";
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
+  }
+
+  CHECK(base::IsValueInRangeForNumericType<int>(
+      tensor_info->descriptor.PackedByteLength()));
+
+  MLMultiArray* multi_array = nil;
+  if (tensor_info->descriptor.data_type() == OperandDataType::kFloat16) {
+    // TODO(https://crbug.com/333392274): Consider not using IOSurface when
+    // WebGPU interop is not requested.
+    multi_array = CreateMultiArrayBackedByIOSurface(tensor_info->descriptor);
+  } else if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    // TODO(https://crbug.com/333392274): Support WebGPU interop with more
+    // than just float16 tensors.
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Interoperability with WebGPU is only supported "
+                          "when using float16 tensors."));
+  } else {
+    multi_array = CreateMultiArrayFromDescriptor(tensor_info->descriptor);
+  }
+  if (!multi_array) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to allocate tensor."));
+  }
 
   auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
   auto buffer_state =

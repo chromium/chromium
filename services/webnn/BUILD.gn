@@ -124,7 +124,9 @@ component("webnn_service") {
     frameworks = [
       "CoreFoundation.framework",
       "CoreML.framework",
+      "CoreVideo.framework",
       "Foundation.framework",
+      "IOSurface.framework",
     ]
     deps += [
       "//third_party/coremltools:modelformat_proto",
