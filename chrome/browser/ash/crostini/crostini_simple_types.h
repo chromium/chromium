@@ -30,6 +30,7 @@ namespace crostini {
 // scripts in
 // https://plx.corp.google.com/home2/home/collections/c16e3c1474497b821
 // and CrostiniResultString in crostini_simple_types.cc.
+// LINT.IfChange
 enum class CrostiniResult {
   SUCCESS = 0,
   // DBUS_ERROR = 1,
@@ -125,6 +126,7 @@ enum class CrostiniResult {
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/crostini/enums.xml,crostini_simple_types.cc)
 
 // Returns the string name of the CrostiniResult.
 const char* CrostiniResultString(const CrostiniResult res);
