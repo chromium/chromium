@@ -733,6 +733,21 @@ struct MEDIA_EXPORT XStartTag {
   bool precise;
 };
 
+// The EXT-X-CONTENT-STEERING tag allows a server to provide a Content Steering
+// (Section 7) Manifest. It is OPTIONAL. It MUST NOT appear more than once in a
+// Multivariant Playlist.
+struct MEDIA_EXPORT XContentSteeringTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXContentSteering;
+
+  static ParseStatus::Or<XContentSteeringTag> Parse(
+      TagItem item,
+      const VariableDictionary& vars,
+      VariableDictionary::SubstitutionBuffer& subs);
+
+  ResolvedSourceString server_uri;
+  std::optional<ResolvedSourceString> pathway_id;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

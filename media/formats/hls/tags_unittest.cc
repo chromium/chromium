@@ -367,7 +367,38 @@ TEST(HlsTagsTest, ParseXContentSteeringTag) {
       "#EXT-X-CONTENT-STEERING:SERVER-URI=\"https://google.com/"
       "manifest.json\"\n",
       "SERVER-URI=\"https://google.com/manifest.json\"");
-  // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag.
+  RunTagIdentificationTest<XContentSteeringTag>(
+      "#EXT-X-CONTENT-STEERING:SERVER-URI=\"http://example.com/"
+      "manifest\",PATHWAY-ID=\"pathway1\"\n",
+      "SERVER-URI=\"http://example.com/manifest\",PATHWAY-ID=\"pathway1\"");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XContentSteeringTag>(
+      "SERVER-URI=\"http://example.com/manifest\",PATHWAY-ID=MALFORMED", dict,
+      subs, ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XContentSteeringTag>("SERVER-URI=NOT_A_QUOTED_STRING", dict, subs,
+                                 ParseStatusCode::kMalformedTag);
+
+  ErrorTest<XContentSteeringTag>("PATHWAY-ID=\"pathway1\"", dict, subs,
+                                 ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XContentSteeringTag>(
+        "SERVER-URI=\"http://example.com/manifest\"", dict, subs);
+    EXPECT_EQ(result.tag.server_uri.Str(), "http://example.com/manifest");
+    EXPECT_FALSE(result.tag.pathway_id.has_value());
+  }
+
+  {
+    auto result = OkTest<XContentSteeringTag>(
+        "SERVER-URI=\"http://example.com/manifest\",PATHWAY-ID=\"pathway1\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.server_uri.Str(), "http://example.com/manifest");
+    EXPECT_EQ(result.tag.pathway_id.value().Str(), "pathway1");
+  }
 }
 
 TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {

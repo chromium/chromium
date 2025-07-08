@@ -479,6 +479,24 @@ constexpr std::string_view GetAttributeName(XStartTagAttribute attribute) {
   NOTREACHED();
 }
 
+enum class XContentSteeringTagAttribute {
+  kPathwayId,
+  kServerUri,
+  kMaxValue = kServerUri,
+};
+
+constexpr std::string_view GetAttributeName(
+    XContentSteeringTagAttribute attribute) {
+  switch (attribute) {
+    case XContentSteeringTagAttribute::kServerUri:
+      return "SERVER-URI";
+    case XContentSteeringTagAttribute::kPathwayId:
+      return "PATHWAY-ID";
+  }
+
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -2198,6 +2216,37 @@ ParseStatus::Or<XStartTag> XStartTag::Parse(
         };
       });
 }
+
+ParseStatus::Or<XContentSteeringTag> XContentSteeringTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XContentSteeringTag::kName));
+  return RequireNonEmptyMap<XContentSteeringTagAttribute>(tag.GetContent())
+      .MapValue(
+          [&vars, &subs](auto map) -> ParseStatus::Or<XContentSteeringTag> {
+            auto server_uri = ParseField<ResolvedSourceString>(
+                XContentSteeringTagAttribute::kServerUri, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+            RETURN_IF_ERROR(server_uri);
+
+            auto pathway_id = ParseField<std::optional<ResolvedSourceString>>(
+                XContentSteeringTagAttribute::kPathwayId, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+            RETURN_IF_ERROR(pathway_id);
+
+            // Create and return the XContentSteeringTag object
+            return XContentSteeringTag{
+                .server_uri = std::move(server_uri).value(),
+                .pathway_id = std::move(pathway_id).value(),
+            };
+          });
+}
+
 #undef RETURN_IF_ERROR
 
 }  // namespace media::hls
