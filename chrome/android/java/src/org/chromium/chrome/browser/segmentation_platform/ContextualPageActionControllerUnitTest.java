@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +36,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
+import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonControllerFactory;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -46,6 +50,7 @@ public class ContextualPageActionControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
+    private UserDataHost mTabUserDataHost;
 
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
@@ -60,10 +65,12 @@ public class ContextualPageActionControllerUnitTest {
 
         mProfileSupplier = new ObservableSupplierImpl<>();
         mTabSupplier = new ObservableSupplierImpl<>();
+        mTabUserDataHost = new UserDataHost();
 
         ContextualPageActionControllerJni.setInstanceForTesting(mMockControllerJni);
-        doReturn(mMockConfiguration).when(mMockResources).getConfiguration();
-        doReturn(true).when(mMockActivityLifecycleDispatcher).isNativeInitializationFinished();
+        when(mMockResources.getConfiguration()).thenReturn(mMockConfiguration);
+        when(mMockActivityLifecycleDispatcher.isNativeInitializationFinished()).thenReturn(true);
+        when(mMockTab.getUserDataHost()).thenReturn(mTabUserDataHost);
     }
 
     private ContextualPageActionController createContextualPageActionController() {
@@ -140,5 +147,26 @@ public class ContextualPageActionControllerUnitTest {
 
         verify(mMockAdaptiveToolbarController)
                 .showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_TAB_GROUPING})
+    public void tabGroupingControllerIsCreatedWithFlag() {
+        var groupSuggestionButtonController = mock(GroupSuggestionsButtonController.class);
+        GroupSuggestionsButtonControllerFactory.setControllerForTesting(
+                groupSuggestionButtonController);
+
+        var cpaController =
+                new ContextualPageActionController(
+                        mProfileSupplier,
+                        mTabSupplier,
+                        mMockAdaptiveToolbarController,
+                        /* shoppingServiceSupplier= */ null,
+                        /* bookmarkModelSupplier= */ null);
+
+        mProfileSupplier.set(mMockProfile);
+
+        assertNotNull(
+                cpaController.mActionProviders.get(AdaptiveToolbarButtonVariant.TAB_GROUPING));
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabwindow;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,6 +48,12 @@ public class TabWindowManagerSingleton {
     public static void setTabModelSelectorFactoryForTesting(TabModelSelectorFactory factory) {
         assert sInstance == null;
         sSelectorFactoryForTesting = factory;
+    }
+
+    public static void setTabWindowManagerForTesting(TabWindowManager manager) {
+        sInstance = manager;
+        ResettersForTesting.register(
+                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
     }
 
     public static void resetTabModelSelectorFactoryForTesting() {

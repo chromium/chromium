@@ -6556,6 +6556,21 @@
             ]
         }
     ],
+    "ContextualPageActionTabGrouping": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualPageActionTabGrouping"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualSearchBox": [
         {
             "platforms": [
