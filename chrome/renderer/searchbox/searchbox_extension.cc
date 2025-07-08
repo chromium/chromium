@@ -58,6 +58,8 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8/include/v8.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace {
 
@@ -367,9 +369,10 @@ static const char kDispatchThemeChangeEventScript[] =
 
 // ----------------------------------------------------------------------------
 
-class SearchBoxBindings : public gin::DeprecatedWrappable<SearchBoxBindings> {
+class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSearchBoxBindings};
 
   SearchBoxBindings();
 
@@ -379,9 +382,11 @@ class SearchBoxBindings : public gin::DeprecatedWrappable<SearchBoxBindings> {
   ~SearchBoxBindings() override;
 
  private:
-  // gin::DeprecatedWrappable.
+  // gin::Wrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // Handlers for JS properties.
   static bool IsFocused();
@@ -392,16 +397,13 @@ class SearchBoxBindings : public gin::DeprecatedWrappable<SearchBoxBindings> {
   static void StopCapturingKeyStrokes();
 };
 
-gin::DeprecatedWrapperInfo SearchBoxBindings::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 SearchBoxBindings::SearchBoxBindings() = default;
 
 SearchBoxBindings::~SearchBoxBindings() = default;
 
 gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<SearchBoxBindings>::GetObjectTemplateBuilder(
+  return gin::Wrappable<SearchBoxBindings>::GetObjectTemplateBuilder(
              isolate)
       .SetProperty("rtl", &base::i18n::IsRTL)
       .SetProperty("isFocused", &SearchBoxBindings::IsFocused)
@@ -411,6 +413,10 @@ gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
                  &SearchBoxBindings::StartCapturingKeyStrokes)
       .SetMethod("stopCapturingKeyStrokes",
                  &SearchBoxBindings::StopCapturingKeyStrokes);
+}
+
+const gin::WrapperInfo* SearchBoxBindings::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 // static
@@ -643,10 +649,12 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<SearchBoxBindings> searchbox_controller =
-      gin::CreateHandle(isolate, new SearchBoxBindings());
-  if (searchbox_controller.IsEmpty())
+  auto* searchbox_controller = cppgc::MakeGarbageCollected<SearchBoxBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  v8::Local<v8::Object> searchbox_wrapper;
+  if (!searchbox_controller->GetWrapper(isolate).ToLocal(&searchbox_wrapper)) {
     return;
+  }
 
   gin::Handle<NewTabPageBindings> newtabpage_controller =
       gin::CreateHandle(isolate, new NewTabPageBindings());
@@ -658,7 +666,7 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
   v8::Local<v8::Object> embedded_search = v8::Object::New(isolate);
   embedded_search
       ->Set(context, gin::StringToV8(isolate, "searchBox"),
-            searchbox_controller.ToV8())
+            searchbox_wrapper)
       .ToChecked();
   embedded_search
       ->Set(context, gin::StringToV8(isolate, "newTabPage"),

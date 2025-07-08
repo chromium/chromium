@@ -23,6 +23,9 @@ enum WrappablePointerTag : uint16_t {
   kFirstPointerTag = 1501,
   kTestObject = 1501,          // gin::MyObject
   kGamepadControllerBindings,  // content::GameControllerBindings
+  kNetErrorPageController,     // NetErrorPageController
+  kSearchBoxBindings,          // SearchBoxBindings
+  kSupervisedUserErrorPageController,  // SupervisedUserErrorPageController
   kTestObject2,                // gin::MyObject2
   kLastPointerTag = kTestObject2
 };

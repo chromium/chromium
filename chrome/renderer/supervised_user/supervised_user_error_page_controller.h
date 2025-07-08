@@ -21,9 +21,11 @@ class SupervisedUserErrorPageControllerDelegate;
 // interstitials when committed interstitials are on. It is bound to the
 // JavaScript window.certificateErrorPageController object.
 class SupervisedUserErrorPageController
-    : public gin::DeprecatedWrappable<SupervisedUserErrorPageController> {
+    : public gin::Wrappable<SupervisedUserErrorPageController> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+    {gin::kEmbedderNativeGin},
+    gin::kSupervisedUserErrorPageController};
 
   SupervisedUserErrorPageController(const SupervisedUserErrorPageController&) =
       delete;
@@ -38,12 +40,12 @@ class SupervisedUserErrorPageController
       content::RenderFrame* render_frame,
       base::WeakPtr<SupervisedUserErrorPageControllerDelegate> delegate);
 
- private:
   SupervisedUserErrorPageController(
       base::WeakPtr<SupervisedUserErrorPageControllerDelegate> delegate,
       content::RenderFrame* render_frame);
   ~SupervisedUserErrorPageController() override;
 
+ private:
   void GoBack();
   void RequestUrlAccessRemote();
   void RequestUrlAccessLocal();
@@ -61,6 +63,8 @@ class SupervisedUserErrorPageController
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   base::WeakPtr<SupervisedUserErrorPageControllerDelegate> const delegate_;
 

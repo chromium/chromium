@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/net/net_error_page_controller.h"
-
 #include "content/public/renderer/render_frame.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
-
-gin::DeprecatedWrapperInfo NetErrorPageController::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 NetErrorPageController::Delegate::Delegate() = default;
 NetErrorPageController::Delegate::~Delegate() = default;
@@ -33,15 +30,17 @@ void NetErrorPageController::Install(content::RenderFrame* render_frame,
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<NetErrorPageController> controller = gin::CreateHandle(
-      isolate, new NetErrorPageController(delegate));
-  if (controller.IsEmpty())
+  auto* controller = cppgc::MakeGarbageCollected<NetErrorPageController>(
+      isolate->GetCppHeap()->GetAllocationHandle(), delegate);
+  v8::Local<v8::Object> wrapper;
+  if (!controller->GetWrapper(isolate).ToLocal(&wrapper)) {
     return;
+  }
 
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "errorPageController"),
-            controller.ToV8())
+            wrapper)
       .ToChecked();
 }
 
@@ -106,8 +105,7 @@ NetErrorPageController::~NetErrorPageController() = default;
 
 gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<
-             NetErrorPageController>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<NetErrorPageController>::GetObjectTemplateBuilder(isolate)
       .SetMethod("downloadButtonClick",
                  &NetErrorPageController::DownloadButtonClick)
       .SetMethod("reloadButtonClick",
@@ -125,4 +123,8 @@ gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
                  &NetErrorPageController::ResetEasterEggHighScore)
       .SetMethod("savePageForLater", &NetErrorPageController::SavePageForLater)
       .SetMethod("cancelSavePage", &NetErrorPageController::CancelSavePage);
+}
+
+const gin::WrapperInfo* NetErrorPageController::wrapper_info() const {
+  return &kWrapperInfo;
 }
