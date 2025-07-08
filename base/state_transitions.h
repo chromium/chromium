@@ -9,7 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 
 namespace base {
 
@@ -72,14 +72,14 @@ struct StateTransitions {
       : state_transitions(std::move(state_transitions)) {}
 
   // Returns a list of states that are valid to transition to from |source|.
-  const std::vector<State>& GetValidTransitions(const State& source) const {
+  span<const State> GetValidTransitions(const State& source) const
+      LIFETIME_BOUND {
     for (const StateTransition& state_transition : state_transitions) {
       if (state_transition.source == source) {
         return state_transition.destinations;
       }
     }
-    static const base::NoDestructor<std::vector<State>> no_transitions;
-    return *no_transitions;
+    return span<const State>();
   }
 
   // Tests whether transitioning from |source| to |destination| is valid.
