@@ -59,7 +59,10 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
                                       const VideoEncoder::EncodeOptions&));
   MOCK_METHOD(EncoderStatus::Or<BitstreamBufferMetadata>,
               EncodeImpl,
-              (ID3D12Resource*, UINT, const VideoEncoder::EncodeOptions&),
+              (ID3D12Resource*,
+               UINT,
+               const VideoEncoder::EncodeOptions&,
+               const gfx::ColorSpace&),
               (override));
 
  protected:

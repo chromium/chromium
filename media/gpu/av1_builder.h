@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/libgav1/src/src/gav1/decoder_buffer.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 
@@ -86,6 +87,15 @@ struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::SequenceHeader {
   bool enable_superres = false;
   bool enable_cdef = false;
   bool enable_restoration = false;
+  bool color_description_present_flag = false;
+  Libgav1ColorPrimary color_primaries = kLibgav1ColorPrimaryBt709;
+  Libgav1TransferCharacteristics transfer_characteristics =
+      kLibgav1TransferCharacteristicsBt709;
+  Libgav1MatrixCoefficients matrix_coefficients =
+      kLibgav1MatrixCoefficientsBt709;
+  Libgav1ColorRange color_range = kLibgav1ColorRangeStudio;
+  Libgav1ChromaSamplePosition chroma_sample_position =
+      kLibgav1ChromaSamplePositionUnknown;
 };
 
 struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::FrameHeader {

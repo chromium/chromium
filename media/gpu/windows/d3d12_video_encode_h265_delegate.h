@@ -77,7 +77,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
-      const VideoEncoder::EncodeOptions& options) override;
+      const VideoEncoder::EncodeOptions& options,
+      const gfx::ColorSpace& input_color_space) override;
 
  private:
   EncoderStatus InitializeVideoEncoder(

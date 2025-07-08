@@ -226,8 +226,8 @@ D3D12VideoEncodeDelegate::Encode(
     input_frame_subresource = 0;
   }
 
-  auto impl_result =
-      EncodeImpl(input_frame.Get(), input_frame_subresource, options);
+  auto impl_result = EncodeImpl(input_frame.Get(), input_frame_subresource,
+                                options, input_frame_color_space);
   if (!impl_result.has_value()) {
     return std::move(impl_result).error();
   }

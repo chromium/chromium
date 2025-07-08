@@ -82,11 +82,23 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   ret.WriteBool(seq_hdr.enable_cdef);
   ret.WriteBool(seq_hdr.enable_restoration);
 
+  // AV1 spec section 5.5.2, color config syntax.
   ret.WriteBool(false);  // Disable high bitdepth.
-
   ret.WriteBool(false);  // Disable monochrome.
-  ret.WriteBool(false);  // Disable color description present.
-  ret.WriteBool(false);  // No color range.
+
+  if (seq_hdr.color_description_present_flag) {
+    ret.WriteBool(true);  // Color description present.
+    ret.Write(seq_hdr.color_primaries, 8);
+    ret.Write(seq_hdr.transfer_characteristics, 8);
+    ret.Write(seq_hdr.matrix_coefficients, 8);
+  } else {
+    ret.WriteBool(false);  // No color description present.
+  }
+
+  // We won't skip color range syntax unless the color primariy is
+  // Rec.709, transfer is sRGB and at the same time the identity
+  // matrix is used.
+  ret.WriteBool(seq_hdr.color_range);
   ret.Write(0, 2);       // Chroma sample position = 0.
 
   ret.WriteBool(true);   // Separate uv delta q.

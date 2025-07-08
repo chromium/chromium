@@ -36,7 +36,8 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
   EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
       ID3D12Resource*,
       UINT,
-      const VideoEncoder::EncodeOptions&) override {
+      const VideoEncoder::EncodeOptions&,
+      const gfx::ColorSpace&) override {
     return BitstreamBufferMetadata();
   }
 

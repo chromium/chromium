@@ -41,6 +41,19 @@ constexpr auto kVideoCodecProfileToD3D12Profile =
          {AV1PROFILE_PROFILE_PRO,
           D3D12_VIDEO_ENCODER_AV1_PROFILE_PROFESSIONAL}});
 
+bool IsRec709(const gfx::ColorSpace& color_space) {
+  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709 &&
+         color_space.GetTransferID() == gfx::ColorSpace::TransferID::BT709 &&
+         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709;
+}
+
+bool IsRec601(const gfx::ColorSpace& color_space) {
+  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::SMPTE170M &&
+         color_space.GetTransferID() ==
+             gfx::ColorSpace::TransferID::SMPTE170M &&
+         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M;
+}
+
 AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
     D3D12_VIDEO_ENCODER_AV1_PROFILE profile,
     const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& input_size,
@@ -780,7 +793,8 @@ EncoderStatus::Or<BitstreamBufferMetadata>
 D3D12VideoEncodeAV1Delegate::EncodeImpl(
     ID3D12Resource* input_frame,
     UINT input_frame_subresource,
-    const VideoEncoder::EncodeOptions& options) {
+    const VideoEncoder::EncodeOptions& options,
+    const gfx::ColorSpace& input_color_space) {
   input_arguments_.SequenceControlDesc.Flags =
       D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE;
   input_arguments_.SequenceControlDesc.RateControl = {
@@ -818,6 +832,27 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
           input_arguments_, reconstructed_picture);
       !result.is_ok()) {
     return result;
+  }
+
+  // We only update sequence header for Rec.601 and Rec.709 on key frames.
+  if (is_keyframe) {
+    sequence_header_.color_range =
+        input_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL
+            ? kLibgav1ColorRangeFull
+            : kLibgav1ColorRangeStudio;
+    if (IsRec601(input_color_space)) {
+      sequence_header_.color_primaries = kLibgav1ColorPrimaryBt601;
+      sequence_header_.transfer_characteristics =
+          kLibgav1TransferCharacteristicsBt601;
+      sequence_header_.matrix_coefficients = kLibgav1MatrixCoefficientsBt601;
+      sequence_header_.color_description_present_flag = true;
+    } else if (IsRec709(input_color_space)) {
+      sequence_header_.color_primaries = kLibgav1ColorPrimaryBt709;
+      sequence_header_.transfer_characteristics =
+          kLibgav1TransferCharacteristicsBt709;
+      sequence_header_.matrix_coefficients = kLibgav1MatrixCoefficientsBt709;
+      sequence_header_.color_description_present_flag = true;
+    }
   }
 
   BitstreamBufferMetadata metadata;
