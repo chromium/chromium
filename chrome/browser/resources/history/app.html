@@ -1,7 +1,8 @@
-    <style include="cr-shared-style shared-style">
+    <style include="cr-shared-style shared-style cr-scrollable">
       :host {
         color: var(--cr-primary-text-color);
-        display: block;
+        display: flex;
+        flex-direction: column;
         height: 100%;
         line-height: 1.54;  /* 20px. */
         overflow: hidden;
@@ -13,8 +14,10 @@
       }
 
       #main-container {
+        anchor-name: --main-container;
         display: flex;
-        height: calc(100% - var(--toolbar-height));
+        flex: 1;
+        overflow: hidden;
         position: relative;
       }
 
@@ -78,36 +81,17 @@
         width: 100%;
       }
 
-      /**
-       * If history embeddings is enabled, all tabbed content shares the same
-       * parent scroll container #tabsScrollContainer. Otherwise, tabbed
-       * content are their own individual scroll containers.
-       */
       #tabsScrollContainer {
-        overflow: hidden;
-        height: 100%;
-      }
-
-      :host([enable-history-embeddings_]) #tabsScrollContainer {
         overflow: auto;
+        height: 100%;
         scrollbar-gutter: stable;
       }
 
-      :host(:not([enable-history-embeddings_])) #tabs-content {
-        height: 100%;
-      }
-
-      :host(:not([enable-history-embeddings_])) #tabs-content > * {
-        height: 100%;
-        overflow: auto;
-      }
-
-      :host([show-history-clusters_]) #tabsScrollContainer {
-        flex: 1;
-      }
-
-      :host([toolbar-shadow_]) #drop-shadow {
-        opacity: var(--cr-container-shadow-max-opacity);
+      .cr-scrollable-top-shadow {
+        /* The cr-scrollable containers are only within the content area, but
+         * the shadow should stretch across both the sidebar and the content
+         * area, below the entirety of the toolbar. */
+        position-anchor: --main-container;
       }
 
       /* Both history-list and history-clusters have their own empty states
@@ -184,7 +168,8 @@
               </cr-tabs>
             </div>
           </template>
-          <div id="tabsScrollContainer">
+          <div id="tabsScrollContainer" class="cr-scrollable">
+            <div class="cr-scrollable-top-shadow" hidden$="[[showTabs_]]"></div>
             <template is="dom-if" if="[[enableHistoryEmbeddings_]]"
                 on-dom-change="onHistoryEmbeddingsContainerShown_">
               <div id="historyEmbeddingsContainer" class="history-cards">
@@ -225,7 +210,7 @@
                   on-pending-delete-changed="onListPendingDeleteChanged_"
                   query-result="[[queryResult_]]"
                   path="history"
-                  scroll-target="[[scrollTarget]]"
+                  scroll-target="[[scrollTarget_]]"
                   scroll-offset="[[tabContentScrollOffset_]]">
               </history-list>
               <template is="dom-if"
@@ -235,7 +220,7 @@
                     query="[[queryState_.searchTerm]]"
                     time-range-start="[[queryStateAfterDate_]]"
                     path="grouped"
-                    scroll-target="[[scrollTarget]]"
+                    scroll-target="[[scrollTarget_]]"
                     scroll-offset="[[tabContentScrollOffset_]]">
                 </history-clusters>
               </template>
@@ -243,12 +228,14 @@
           </div>
         </div>
         <template is="dom-if" if="[[syncedTabsSelected_(selectedPage_)]]">
-          <history-synced-device-manager id="synced-devices"
-              session-list="[[queryResult_.sessionList]]"
-              search-term="[[queryState_.searchTerm]]"
-              sign-in-state="[[isUserSignedIn_]]"
-              path="syncedTabs">
-          </history-synced-device-manager>
+          <div id="syncedDevicesScroll" class="cr-scrollable" path="syncedTabs">
+            <div class="cr-scrollable-top-shadow"></div>
+            <history-synced-device-manager id="synced-devices"
+                session-list="[[queryResult_.sessionList]]"
+                search-term="[[queryState_.searchTerm]]"
+                sign-in-state="[[isUserSignedIn_]]">
+            </history-synced-device-manager>
+          </div>
         </template>
       </cr-page-selector>
     </div>

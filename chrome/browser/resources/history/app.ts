@@ -6,6 +6,7 @@ import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_scrollable.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
@@ -19,7 +20,6 @@ import './side_bar.js';
 import '/strings.m.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
@@ -29,17 +29,14 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import type {FindShortcutListener} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
-import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import type {BrowserService} from './browser_service.js';
@@ -147,13 +144,8 @@ export interface QueryResult {
   sessionList?: ForeignSession[];
 }
 
-const HistoryAppElementBase = mixinBehaviors(
-                                  [IronScrollTargetBehavior],
-                                  HelpBubbleMixin(FindShortcutMixin(
-                                      WebUiListenerMixin(PolymerElement)))) as {
-  new (): PolymerElement & HelpBubbleMixinInterface & FindShortcutListener &
-      IronScrollTargetBehavior & WebUiListenerMixinInterface,
-};
+const HistoryAppElementBase =
+    HelpBubbleMixin(FindShortcutMixin(WebUiListenerMixin(PolymerElement)));
 
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
@@ -198,12 +190,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       },
 
       pendingDelete_: Boolean,
-
-      toolbarShadow_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        notify: true,
-      },
 
       queryState_: Object,
 
@@ -332,7 +318,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   declare private showHistoryClusters_: boolean;
   declare private tabsIcons_: string[];
   declare private tabsNames_: string[];
-  declare private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
   private onHasOtherFormsChangedListenerId_: number|null = null;
   declare private scrollTarget_: HTMLElement;
@@ -413,11 +398,15 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  private getShowResultsByGroup_() {
+  getScrollTargetForTesting(): HTMLElement {
+    return this.scrollTarget_;
+  }
+
+  private getShowResultsByGroup_(): boolean {
     return this.selectedPage_ === Page.HISTORY_CLUSTERS;
   }
 
-  private getShowHistoryList_() {
+  private getShowHistoryList_(): boolean {
     return this.selectedPage_ === Page.HISTORY;
   }
 
@@ -479,18 +468,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         (document as any).fonts.load('bold 12px Roboto');
       });
     });
-  }
-
-  /** Overridden from IronScrollTargetBehavior */
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _scrollHandler() {
-    if (this.scrollTarget) {
-      // When the tabs are visible, show the toolbar shadow for the synced
-      // devices page.
-      this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0 &&
-          (!this.showHistoryClusters_ ||
-           this.syncedTabsSelected_(this.selectedPage_));
-    }
   }
 
   private onCrToolbarMenuClick_() {
@@ -713,23 +690,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
     const topLevelHistoryPage = this.$['tabs-container'];
     if (topLevelIronPages.selectedItem &&
         topLevelIronPages.selectedItem === topLevelHistoryPage) {
-      if (this.enableHistoryEmbeddings_) {
-        // The top-level History page has another inner IronPages element that
-        // can toggle between different pages.
-        this.scrollTarget = this.$.tabsScrollContainer;
+      this.scrollTarget_ = this.$.tabsScrollContainer;
 
-        // Scroll target won't change if history embeddings is enabled as
-        // the scroll target for both Date and Group view is
-        // this.$.tabsScrollContainer, which means history-list's callbacks
-        // to fill the viewport do not get triggered automatically.
-        this.$.history.fillCurrentViewport();
-      } else {
-        this.scrollTarget = this.$['tabs-content'].selectedItem as HTMLElement;
-      }
-    } else if (topLevelIronPages.selectedItem) {
-      this.scrollTarget = topLevelIronPages.selectedItem as HTMLElement;
+      // Scroll target won't change as the scroll target for both Date and Group
+      // view is this.$.tabsScrollContainer, which means history-list's
+      // callbacks to fill the viewport do not get triggered automatically.
+      this.$.history.fillCurrentViewport();
     } else {
-      this.scrollTarget = null;
+      this.scrollTarget_ = topLevelIronPages.selectedItem as HTMLElement;
     }
   }
 
@@ -752,11 +720,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private historyViewChanged_() {
-    // This allows the synced-device-manager to render so that it can be set
-    // as the scroll target.
-    requestAnimationFrame(() => {
-      this._scrollHandler();
-    });
     this.recordHistoryPageView_();
   }
 

@@ -56,48 +56,21 @@ suite('HistoryAppTest', function() {
   });
 
   test('SetsScrollTarget', async () => {
-    assertEquals(element.$.tabsScrollContainer, element.scrollTarget);
+    assertEquals(
+        element.$.tabsScrollContainer, element.getScrollTargetForTesting());
 
     // 'By group' view shares the same scroll container as default history view.
     element.$.router.selectedPage = 'grouped';
     await flushTasks();
-    assertEquals(element.$.tabsScrollContainer, element.scrollTarget);
+    assertEquals(
+        element.$.tabsScrollContainer, element.getScrollTargetForTesting());
 
     // Switching to synced tabs should change scroll target to it.
     element.$.router.selectedPage = 'syncedTabs';
     await flushTasks();
     assertEquals(
-        element.shadowRoot!.querySelector('history-synced-device-manager'),
-        element.scrollTarget);
-  });
-
-  test('SetsScrollTargetForEmbeddingsDisabled', async () => {
-    // Override loadTimeData and re-create the element to disable history
-    // embeddings.
-    loadTimeData.overrideValues({enableHistoryEmbeddings: false});
-    element.remove();
-    element = document.createElement('history-app');
-    document.body.appendChild(element);
-    await flushTasks();
-
-    // By default, the history-list should be its own scroll container.
-    assertEquals(
-        element.shadowRoot!.querySelector('history-list'),
-        element.scrollTarget);
-
-    // 'By group' view switches the scroll target to it.
-    element.$.router.selectedPage = 'grouped';
-    await flushTasks();
-    assertEquals(
-        element.shadowRoot!.querySelector('history-clusters'),
-        element.scrollTarget);
-
-    // Switching to synced tabs should change scroll target to it.
-    element.$.router.selectedPage = 'syncedTabs';
-    await flushTasks();
-    assertEquals(
-        element.shadowRoot!.querySelector('history-synced-device-manager'),
-        element.scrollTarget);
+        element.shadowRoot!.querySelector('#syncedDevicesScroll'),
+        element.getScrollTargetForTesting());
   });
 
   test('ShowsHistoryEmbeddings', async () => {

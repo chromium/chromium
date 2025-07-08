@@ -64,7 +64,7 @@ import {navigateTo} from './test_util.js';
       await microtasksFinished();
       assertEquals('syncedTabs', app.$.content.selected);
       assertEquals(
-          app.shadowRoot!.querySelector('#synced-devices'),
+          app.shadowRoot!.querySelector('#syncedDevicesScroll'),
           app.$.content.selectedItem);
     });
 
