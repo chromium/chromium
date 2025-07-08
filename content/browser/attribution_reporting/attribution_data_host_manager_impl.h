@@ -100,7 +100,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       const net::HttpResponseHeaders* headers,
       const GURL& reporting_url) override;
   void NotifyNavigationRegistrationCompleted(
-      const blink::AttributionSrcToken& attribution_src_token) override;
+      const blink::AttributionSrcToken& attribution_src_token,
+      int64_t navigation_id = 0) override;
 
   void NotifyBackgroundRegistrationStarted(
       BackgroundRegistrationsId id,

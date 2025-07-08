@@ -396,14 +396,28 @@ class AttributionDataHostManagerImpl::NavigationForPendingRegistration {
     return eligible_.value();
   }
 
-  void DeclareIneligible() {
-    CHECK(!eligible_.has_value());
+  void DeclareIneligible(int64_t navigation_id) {
+    if (eligible_.has_value()) {
+      SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "ineligible_nav_id",
+                              navigation_id);
+      SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "existing_nav_id",
+                              navigation_id_.value_or(0));
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
 
     eligible_ = false;
   }
 
   void Set(int64_t navigation_id, AttributionSuitableContext suitable_context) {
-    CHECK(!eligible_.has_value());
+    if (eligible_.has_value()) {
+      SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "set_nav_id",
+                              navigation_id);
+      SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "existing_nav_id",
+                              navigation_id_.value_or(0));
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
 
     navigation_id_ = navigation_id;
     suitable_context_ = std::move(suitable_context);
@@ -1395,7 +1409,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     const blink::AttributionSrcToken& attribution_src_token,
     int64_t navigation_id,
     std::string devtools_request_id) {
-  if (auto [_, inserted] = registrations_.emplace(
+  if (auto [it, inserted] = registrations_.emplace(
           RegistrationsId(attribution_src_token),
           RegistrationContext(suitable_context,
                               RegistrationEligibility::kSource,
@@ -1406,6 +1420,11 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
       !inserted) {
     RecordNavigationUnexpectedRegistration(
         NavigationUnexpectedRegistration::kRegistrationAlreadyExists);
+    SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "start_nav_id",
+                            navigation_id);
+    SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "exist_nav_id",
+                            it->navigation_id().value_or(0));
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -1527,7 +1546,8 @@ void AttributionDataHostManagerImpl::
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
-    const blink::AttributionSrcToken& attribution_src_token) {
+    const blink::AttributionSrcToken& attribution_src_token,
+    int64_t navigation_id) {
   // The eligible data host should have been bound in
   // `NotifyNavigationRegistrationStarted()`. For non-top level navigation and
   // same document navigation, `AttributionHost::RegisterNavigationDataHost()`
@@ -1555,7 +1575,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
     MaybeOnRegistrationsFinished(registrations_it);
   } else if (waiting_it !=
              navigations_waiting_on_background_registrations_.end()) {
-    waiting_it->second.DeclareIneligible();
+    waiting_it->second.DeclareIneligible(navigation_id);
   }
 
   if (waiting_it != navigations_waiting_on_background_registrations_.end()) {
