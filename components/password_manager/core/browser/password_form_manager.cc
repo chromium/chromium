@@ -94,9 +94,9 @@ bool PasswordFormManager::wait_for_server_predictions_for_filling_ = true;
 
 namespace {
 
-bool FormContainsFieldWithName(const FormData& form,
+bool FormContainsFieldWithName(const FormData* form,
                                const std::u16string& element) {
-  if (element.empty()) {
+  if (element.empty() || !form) {
     return false;
   }
 
@@ -104,7 +104,7 @@ bool FormContainsFieldWithName(const FormData& form,
       [&element](const std::u16string& name) {
         return base::EqualsCaseInsensitiveASCII(name, element);
       };
-  return std::ranges::any_of(form.fields(), equals_element_case_insensitive,
+  return std::ranges::any_of(form->fields(), equals_element_case_insensitive,
                              &FormFieldData::name);
 }
 
@@ -266,6 +266,35 @@ void RecordSavingIsDisabled(PasswordManagerClient* client) {
   }
 }
 
+bool AreFormsSimilar(const autofill::FormData* form,
+                     const PasswordForm* parsed_other_form) {
+  if (!form || !parsed_other_form) {
+    return false;
+  }
+  if (form->action().is_valid() && !form->is_action_empty() &&
+      !parsed_other_form->form_data.is_action_empty() &&
+      parsed_other_form->form_data.action() == form->action()) {
+    return true;
+  }
+
+  // Match the form if username and password fields are same.
+  if (FormContainsFieldWithName(form, parsed_other_form->username_element) &&
+      FormContainsFieldWithName(form, parsed_other_form->password_element)) {
+    return true;
+  }
+
+  // Match the form if the observed username field has the same value as in
+  // the other form.
+  if (!parsed_other_form->username_value.empty()) {
+    for (const auto& field : form->fields()) {
+      if (field.value() == parsed_other_form->username_value) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 PasswordFormManager::PasswordFormManager(
@@ -348,40 +377,31 @@ bool PasswordFormManager::DoesManage(
         return field.renderer_id() == field_renderer_id;
       });
 }
+bool PasswordFormManager::DoesManageSimilarForm(
+    const PasswordForm& form,
+    const PasswordManagerDriver* driver) const {
+  if (driver != driver_.get()) {
+    return false;
+  }
+  CHECK(observed_form());
+  return IsEqualToObservedForm(form);
+}
 
 bool PasswordFormManager::IsEqualToSubmittedForm(
     const autofill::FormData& form) const {
-  if (!is_submitted_) {
+  if (!is_submitted_ || IsHttpAuth()) {
     return false;
   }
+  return AreFormsSimilar(&form, parsed_submitted_form_.get());
+}
+
+bool PasswordFormManager::IsEqualToObservedForm(
+    const PasswordForm& form) const {
   if (IsHttpAuth()) {
     return false;
   }
 
-  if (form.action().is_valid() && !form.is_action_empty() &&
-      !submitted_form_.is_action_empty() &&
-      submitted_form_.action() == form.action()) {
-    return true;
-  }
-
-  // Match the form if username and password fields are same.
-  if (FormContainsFieldWithName(form,
-                                parsed_submitted_form_->username_element) &&
-      FormContainsFieldWithName(form,
-                                parsed_submitted_form_->password_element)) {
-    return true;
-  }
-
-  // Match the form if the observed username field has the same value as in
-  // the submitted form.
-  if (!parsed_submitted_form_->username_value.empty()) {
-    for (const auto& field : form.fields()) {
-      if (field.value() == parsed_submitted_form_->username_value) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return AreFormsSimilar(observed_form(), &form);
 }
 
 const GURL& PasswordFormManager::GetURL() const {
@@ -447,8 +467,8 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 
   const std::u16string& username = GetPendingCredentials().username_value;
   const std::u16string& password = GetPendingCredentials().password_value;
-  // If no match in the profile store with the same username and password exist,
-  // then there is nothing to move.
+  // If no match in the profile store with the same username and password
+  // exists, then there is nothing to move.
   auto is_movable = [&username, &password](const PasswordForm& match) {
     return !match.IsUsingAccountStore() && match.username_value == username &&
            match.password_value == password;
@@ -483,8 +503,8 @@ bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
           .gaia;
 
   const std::u16string& username = GetPendingCredentials().username_value;
-  //  If no match in the account store with the same username exists, then there
-  //  is nothing to update in this store.
+  //  If no match in the account store with the same username exists, then
+  //  there is nothing to update in this store.
   auto same_username_in_account_store = [&](const PasswordForm& match) {
     return match.IsUsingAccountStore() && match.username_value == username;
   };
