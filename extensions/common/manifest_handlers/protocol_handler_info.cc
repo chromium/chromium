@@ -93,13 +93,9 @@ ProtocolHandlers::~ProtocolHandlers() = default;
 // static
 const ProtocolHandlersInfo* ProtocolHandlers::GetProtocolHandlers(
     const Extension& extension) {
-  // Guard against incompatible extension manifest versions.
-  if (!SupportsProtocolHandlers(extension)) {
-    return nullptr;
-  }
-
   ProtocolHandlers* info = static_cast<ProtocolHandlers*>(
       extension.GetManifestData(keys::kProtocolHandlers));
+  DCHECK(!info || SupportsProtocolHandlers(extension));
   return info ? &info->protocol_handlers : nullptr;
 }
 
@@ -149,6 +145,10 @@ bool ProtocolHandlersParser::Parse(Extension* extension,
                                    std::u16string* error) {
   CHECK(extension);
   CHECK_GE(extension->manifest_version(), 3);
+
+  if (!SupportsProtocolHandlers(*extension)) {
+    return true;
+  }
 
   std::vector<InstallWarning> install_warnings;
   auto info = ParseEntryList(*extension, install_warnings);
