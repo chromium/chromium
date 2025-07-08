@@ -1096,8 +1096,17 @@ void LensOverlayController::IssueLensRequest(
   MaybeOpenSidePanel();
   GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
-  state_ = State::kOverlayAndResults;
-  MaybeLaunchSurvey();
+
+  // TODO(crbug.com/428208291): The overlay can be in the live page and results
+  // state and this could be a query coming from the back stack which would make
+  // setting this to kOverlayAndResults incorrect. Check if the overlay is
+  // currently in that state to determine if this should be set to
+  // kOverlayAndResults or not. This should be fixed by moving the functionality
+  // to make Lens requests to a more appropriate location.
+  if (state_ != State::kLivePageAndResults) {
+    state_ = State::kOverlayAndResults;
+    MaybeLaunchSurvey();
+  }
 }
 
 void LensOverlayController::IssueMultimodalRequest(
