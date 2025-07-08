@@ -1965,6 +1965,7 @@
 }
 
 - (void)openIncognitoSearch {
+  [self.NTPMetricsRecorder recordIncognitoTapped];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
   command.shouldFocusOmnibox = YES;
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(

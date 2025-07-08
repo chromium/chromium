@@ -66,6 +66,14 @@
   base::RecordAction(base::UserMetricsAction(kNTPIdentityDiscTappedAction));
 }
 
+- (void)recordIncognitoTapped {
+  base::RecordAction(base::UserMetricsAction(kNTPIncognitoButtonTappedAction));
+}
+
+- (void)recordMIATapped {
+  base::RecordAction(base::UserMetricsAction(kNTPMIAEntryPointTappedAction));
+}
+
 - (void)
     recordMagicStackCustomizationStateWithSetUpList:(BOOL)setUpListEnabled
                                         safetyCheck:(BOOL)safetyCheckEnabled
