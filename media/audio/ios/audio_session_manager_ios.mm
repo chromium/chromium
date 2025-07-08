@@ -29,13 +29,24 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
 
   NSError* error = nil;
-  auto options = AVAudioSessionCategoryOptionAllowBluetooth |
-                 AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+  AVAudioSessionCategoryOptions options;
 #if !BUILDFLAG(IS_IOS_TVOS)
-                 AVAudioSessionCategoryOptionDefaultToSpeaker |
+  options = AVAudioSessionCategoryOptionAllowBluetooth |
+            AVAudioSessionCategoryOptionAllowBluetoothA2DP |
+            AVAudioSessionCategoryOptionDefaultToSpeaker |
+            AVAudioSessionCategoryOptionMixWithOthers;
+#else
+  options = 0;
 #endif
-                 AVAudioSessionCategoryOptionMixWithOthers;
-  [audio_session setCategory:AVAudioSessionCategoryPlayAndRecord
+
+  AVAudioSessionCategory category;
+#if !BUILDFLAG(IS_IOS_TVOS)
+  category = AVAudioSessionCategoryPlayAndRecord;
+#else
+  category = AVAudioSessionCategoryPlayback;
+#endif
+
+  [audio_session setCategory:category
                         mode:AVAudioSessionModeDefault
                      options:options
                        error:&error];
@@ -85,16 +96,13 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   // Find the desired audio output device
   AVAudioSessionRouteDescription* currentRoute = [audio_session currentRoute];
   if ([currentRoute.outputs count] > 0) {
+#if !BUILDFLAG(IS_IOS_TVOS)
     AVAudioSessionPortDescription* output = currentRoute.outputs.firstObject;
     if ([output.portType isEqualToString:AVAudioSessionPortBuiltInReceiver] ||
         [output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-      auto option =
-#if !BUILDFLAG(IS_IOS_TVOS)
-          AVAudioSessionPortOverrideSpeaker;
-#else
-          AVAudioSessionPortOverrideNone;
-#endif
-      [audio_session overrideOutputAudioPort:option error:&error];
+      error = nil;
+      [audio_session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
+                                       error:&error];
       if (error) {
         NSLog(@"Error overriding output audio port: %@",
               [error localizedDescription]);
@@ -102,6 +110,7 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
         NSLog(@"Set default output device to Speaker");
       }
     } else {
+      error = nil;
       [audio_session overrideOutputAudioPort:AVAudioSessionPortOverrideNone
                                        error:&error];
       if (error) {
@@ -111,6 +120,12 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
         NSLog(@"Using System chosen default audio output device");
       }
     }
+#else
+    // tvOS manages audio output routing at the system level and does not
+    // support port overrides. Hardware devices use HDMIOutput as the single
+    // available route, while the simulator uses BuiltInSpeaker.
+    NSLog(@"Using System chosen default audio output device");
+#endif
   }
 
   [audio_session setActive:YES error:nil];
