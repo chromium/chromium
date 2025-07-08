@@ -130,7 +130,7 @@ class CORE_EXPORT OffscreenCanvas final
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>);
   void DiscardResources() override;
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
     CHECK(IsRenderingContext2D());
     return resource_provider_for_canvas2d_.get();
   }

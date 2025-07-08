@@ -271,7 +271,7 @@ OffscreenCanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
 
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
-  return Host()->GetResourceProviderForCanvas2D();
+  return HostAsOffscreenCanvas()->GetResourceProviderForCanvas2D();
 }
 
 void OffscreenCanvasRenderingContext2D::Reset() {

@@ -145,8 +145,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   // ImageBitmapSource implementation
   ImageBitmapSourceStatus CheckUsability() const override;
 
-  virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
-
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 

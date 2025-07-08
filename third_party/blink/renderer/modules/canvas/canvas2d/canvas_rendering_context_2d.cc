@@ -1127,7 +1127,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 
 CanvasResourceProvider*
 CanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
-  return Host()->GetResourceProviderForCanvas2D();
+  return canvas()->GetResourceProviderForCanvas2D();
 }
 
 CanvasResourceProvider*
