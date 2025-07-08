@@ -233,3 +233,7 @@
 -PersistentBackground/AutomationApiTestWithContextType.TestRendererAccessibilityEnabled/0
 -ServiceWorker/AutomationApiTestWithContextType.ImageLabels/0
 -ServiceWorker/AutomationApiTestWithContextType.TestRendererAccessibilityEnabled/0
+
+# WebUI TabStrip tests are not activated in Screen Reader mode.
+-WebUITabStripContainerViewTest.*
+-WebUITabStripDevToolsTest.*
