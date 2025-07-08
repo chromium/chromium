@@ -2433,11 +2433,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "eche-launcher-app-icon-in-more-apps-button",
-    "owners": ["joeantonetti@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "eche-launcher-list-view",
     "owners": ["pushi@chromium.org"],
     "expiry_milestone": 125

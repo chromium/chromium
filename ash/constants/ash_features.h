@@ -376,8 +376,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncherListView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEcheLauncherIconsInMoreAppsButton);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEcheNetworkConnectionState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEcheShorterScanningDutyCycle);
@@ -1182,8 +1180,6 @@ bool ShouldForceEnableServerSideSpeechRecognition();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForestFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherListViewEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsEcheLauncherIconsInMoreAppsButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheNetworkConnectionStateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEcheShorterScanningDutyCycleEnabled();

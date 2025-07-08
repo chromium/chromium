@@ -1948,11 +1948,6 @@ BASE_FEATURE(kEcheLauncherListView,
              "EcheLauncherListView",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Switch the "More Apps" button in eche launcher to show small app icons
-BASE_FEATURE(kEcheLauncherIconsInMoreAppsButton,
-             "EcheLauncherIconsInMoreAppsButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Phone Hub recent apps loading and error views based on the
 // connection status with the phone.
 BASE_FEATURE(kEcheNetworkConnectionState,
@@ -4105,10 +4100,6 @@ bool IsMultiCalendarSupportEnabled() {
 bool IsEcheLauncherEnabled() {
   return base::FeatureList::IsEnabled(kEcheLauncher) &&
          base::FeatureList::IsEnabled(kEcheSWA);
-}
-
-bool IsEcheLauncherIconsInMoreAppsButtonEnabled() {
-  return base::FeatureList::IsEnabled(kEcheLauncherIconsInMoreAppsButton);
 }
 
 bool IsEcheLauncherListViewEnabled() {

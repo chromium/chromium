@@ -7139,11 +7139,6 @@ const char kEcheLauncherListViewName[] = "Enable Eche launcher list view";
 const char kEcheLauncherListViewDescription[] =
     "Convert Eche launcher from grid view to list view";
 
-const char kEcheLauncherIconsInMoreAppsButtonName[] =
-    "Enable app icons in the Eche launcher more apps button";
-const char kEcheLauncherIconsInMoreAppsButtonDescription[] =
-    "Show app icons in the Eche launcher more apps button";
-
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] =
     "Save console logs of Eche in the system log";

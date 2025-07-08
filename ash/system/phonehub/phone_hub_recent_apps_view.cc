@@ -55,12 +55,9 @@ using RecentAppsUiState =
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
 constexpr int kHeaderLabelLineHeight = 48;
-constexpr int kRecentAppButtonDefaultSpacing = 42;
-constexpr int kRecentAppButtonMinSpacing = 20;
 constexpr int kRecentAppButtonSize = 36;
 constexpr int kMoreAppsButtonSize = 40;
 constexpr int kRecentAppButtonsViewTopPadding = 4;
-constexpr int kRecentAppButtonsViewHorizontalPadding = 6;
 constexpr int kContentLabelLineHeightDip = 20;
 constexpr int kContentTextLabelExtraMargin = 6;
 constexpr auto kContentTextLabelInsetsDip =
@@ -68,10 +65,6 @@ constexpr auto kContentTextLabelInsetsDip =
 
 // Max number of apps can be shown with more apps button
 constexpr int kMaxAppsWithMoreAppsButton = 5;
-
-// Sizing of more apps button.
-constexpr gfx::Rect kMoreAppsButtonArea = gfx::Rect(57, 32);
-constexpr int kMoreAppsButtonRadius = 16;
 
 constexpr int kRecentAppsHeaderSpacing = 220;
 
@@ -82,42 +75,6 @@ constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
 // When the recent apps view is swapped in for the loading view or vice versa,
 // the opacities of the two are animated to give the appearance of a fade-in.
 constexpr int kRecentAppsTransitionDurationMs = 200;
-
-void LayoutAppButtonsView(views::View* buttons_view) {
-  const gfx::Rect child_area = buttons_view->GetContentsBounds();
-  views::View::Views visible_children;
-  std::ranges::copy_if(
-      buttons_view->children(), std::back_inserter(visible_children),
-      [](const views::View* v) {
-        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
-      });
-  if (visible_children.empty()) {
-    return;
-  }
-  const int visible_child_width = std::transform_reduce(
-      visible_children.cbegin(), visible_children.cend(), 0, std::plus<>(),
-      [](const views::View* v) { return v->GetPreferredSize().width(); });
-
-  int spacing = 0;
-  if (visible_children.size() > 1) {
-    spacing = (child_area.width() - visible_child_width -
-               kRecentAppButtonsViewHorizontalPadding * 2) /
-              (static_cast<int>(visible_children.size()) - 1);
-    spacing = std::clamp(spacing, kRecentAppButtonMinSpacing,
-                         kRecentAppButtonDefaultSpacing);
-  }
-
-  int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;
-  int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
-                kRecentAppButtonFocusPadding.bottom();
-  for (views::View* child : visible_children) {
-    // Most recent apps be added to the left and shift right as the other apps
-    // are streamed.
-    int width = child->GetPreferredSize().width();
-    child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
-    child_x += width + spacing;
-  }
-}
 
 }  // namespace
 
@@ -245,16 +202,16 @@ PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
-  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    views::BoxLayout* box_layout =
-        SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal));
-    box_layout->SetDefaultFlex(1);
-    box_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
-    box_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-  }
+
+  views::BoxLayout* box_layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  box_layout->SetDefaultFlex(1);
+  box_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  box_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
 }
 
 PhoneHubRecentAppsView::RecentAppButtonsView::~RecentAppButtonsView() = default;
@@ -284,11 +241,7 @@ gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize(
 }
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Layout(PassKey) {
-  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    LayoutSuperclass<views::View>(this);
-    return;
-  }
-  LayoutAppButtonsView(this);
+  LayoutSuperclass<views::View>(this);
 }
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
@@ -333,11 +286,7 @@ gfx::Size PhoneHubRecentAppsView::LoadingView::CalculatePreferredSize(
 }
 
 void PhoneHubRecentAppsView::LoadingView::Layout(PassKey) {
-  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    LayoutSuperclass<views::View>(this);
-    return;
-  }
-  LayoutAppButtonsView(this);
+  LayoutSuperclass<views::View>(this);
 }
 
 base::WeakPtr<PhoneHubRecentAppsView::LoadingView>
@@ -539,31 +488,10 @@ void PhoneHubRecentAppsView::ShowConnectionErrorDialog() {
 }
 
 std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
-  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
-    return std::make_unique<PhoneHubMoreAppsButton>(
-        phone_hub_manager_->GetAppStreamLauncherDataModel(),
-        base::BindRepeating(&PhoneHubRecentAppsView::SwitchToFullAppsList,
-                            base::Unretained(this)));
-  }
-
-  auto more_apps_button = std::make_unique<views::ImageButton>(
+  return std::make_unique<PhoneHubMoreAppsButton>(
+      phone_hub_manager_->GetAppStreamLauncherDataModel(),
       base::BindRepeating(&PhoneHubRecentAppsView::SwitchToFullAppsList,
                           base::Unretained(this)));
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kPhoneHubFullAppsListIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
-  more_apps_button->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromImageSkia(
-          gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea)));
-  more_apps_button->SetBackground(views::CreateRoundedRectBackground(
-      kColorAshControlBackgroundColorInactive, kMoreAppsButtonRadius));
-  more_apps_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
-
-  return more_apps_button;
 }
 
 BEGIN_METADATA(PhoneHubRecentAppsView)
