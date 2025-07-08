@@ -68,6 +68,8 @@ include_rules = [
   "+chrome/browser/tab",
   "+chrome/browser/ui/android/ephemeraltab",
   "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeUtils.java",
+  "+chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/ThemeType.java",
   "+chrome/browser/version",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",

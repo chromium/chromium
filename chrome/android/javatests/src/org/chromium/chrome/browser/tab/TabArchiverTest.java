@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
@@ -50,6 +51,8 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiverImpl.Clock;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
@@ -149,6 +152,7 @@ public class TabArchiverTest {
                     mTabArchiveSettings = new TabArchiveSettings(mSharedPrefs);
                     mTabArchiveSettings.resetSettingsForTesting();
                     mTabArchiveSettings.setArchiveEnabled(true);
+                    mSharedPrefs.removeKey(UI_THEME_SETTING);
                 });
 
         mTabArchiver =
@@ -173,6 +177,8 @@ public class TabArchiverTest {
                             .closeTabs(
                                     TabClosureParams.closeAllTabs().build(),
                                     /* allowDialog= */ false);
+                    // Remove key between tests to reset the status.
+                    mSharedPrefs.removeKey(UI_THEME_SETTING);
                 });
     }
 
@@ -680,6 +686,51 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
+    public void testDuplicateTabsNotArchivedWithUiThemeChange() {
+        // Tab 2
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 3
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 4
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 2 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(2);
+                    // Change the UI theme type.
+                    mSharedPrefs.writeInt(UI_THEME_SETTING, getAlternateUiThemeSetting());
+                });
+
+        // Set the clock to 1 hour after 0. No tabs should be archived by timestamp eligibility.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
+        // will be the new active tab), tab 2 at 0 and tab 3 at 1.
+        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+
+        assertEquals(4, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder().expectNoRecords("Tabs.TabArchived.TabCount").build();
+        // Duplicate tabs should not be archived.
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setArchiveDuplicateTabsEnabled(true);
+                    mTabArchiver.doArchivePass(
+                            sActivityTestRule.getActivity().getTabModelSelectorSupplier().get());
+                });
+        CriteriaHelper.pollUiThread(() -> 4 == mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     public void testDuplicateTabInGroupIsNotArchived_BaseDuplicateOutOfGroup() {
         // Tab 2
         sActivityTestRule.loadUrlInNewTab(
@@ -1136,5 +1187,12 @@ public class TabArchiverTest {
                         /* incognito= */ false,
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND);
         runOnUiThreadBlocking(() -> tab.setTimestampMillis(0));
+    }
+
+    // Taking into account the tri-state enum, get an alternate UI theme setting from the current.
+    private int getAlternateUiThemeSetting() {
+        return NightModeUtils.getThemeSetting() == ThemeType.LIGHT
+                ? ThemeType.DARK
+                : ThemeType.LIGHT;
     }
 }

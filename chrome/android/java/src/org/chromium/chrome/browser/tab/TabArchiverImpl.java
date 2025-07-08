@@ -24,6 +24,8 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.tab.TabArchiver.Observer;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -48,6 +50,9 @@ import java.util.concurrent.TimeUnit;
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
 @NullMarked
 public class TabArchiverImpl implements TabArchiver {
+    // The {@link ThemeType} checked at the end of each declutter pass.
+    private static @ThemeType int sUiThemeSetting = NightModeUtils.getThemeSetting();
+
     /** Provides the current timestamp. */
     // TODO(crbug.com/389152957): Collect Clock implementations in base for code reuse.
     @FunctionalInterface
@@ -122,7 +127,8 @@ public class TabArchiverImpl implements TabArchiver {
                                 .getCurrentTabGroupModelFilter());
         TabModel model = regularTabGroupModelFilter.getTabModel();
 
-        if (!isUserActive(model)) {
+        // Skip archiving if the declutter pass arises from a UI theme change or user is inactive.
+        if (!isUserActive(model) || wasUiThemeChanged()) {
             broadcastDeclutterComplete();
             return;
         }
@@ -589,6 +595,10 @@ public class TabArchiverImpl implements TabArchiver {
         for (Observer obs : mObservers) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onDeclutterPassCompleted);
         }
+
+        // Store the UI {@link ThemeType} at the current instant to compare with the up-to-date
+        // theme setting during the next declutter pass.
+        sUiThemeSetting = NightModeUtils.getThemeSetting();
     }
 
     private void broadcastPersistedTabDataCreated() {
@@ -631,6 +641,12 @@ public class TabArchiverImpl implements TabArchiver {
             return false;
         }
         return true;
+    }
+
+    // Returns whether the UI theme was changed since the time of last check as it causes an app
+    // restart and runs a declutter pass.
+    private boolean wasUiThemeChanged() {
+        return sUiThemeSetting != NightModeUtils.getThemeSetting();
     }
 
     // Testing-specific methods.
