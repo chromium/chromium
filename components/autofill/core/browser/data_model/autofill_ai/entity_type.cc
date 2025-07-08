@@ -33,6 +33,26 @@ FieldTypeSet AttributeType::storable_field_types(
 std::u16string AttributeType::GetNameForI18n() const {
   return l10n_util::GetStringUTF16([&] {
     switch (name()) {
+      case AttributeTypeName::kDriversLicenseName:
+        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME;
+      case AttributeTypeName::kDriversLicenseState:
+        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kDriversLicenseNumber:
+        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME;
+      case AttributeTypeName::kDriversLicenseExpirationDate:
+        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kDriversLicenseIssueDate:
+        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kNationalIdCardName:
+        return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME;
+      case AttributeTypeName::kNationalIdCardCountry:
+        return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME;
+      case AttributeTypeName::kNationalIdCardNumber:
+        return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME;
+      case AttributeTypeName::kNationalIdCardIssueDate:
+        return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kNationalIdCardExpirationDate:
+        return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME;
       case AttributeTypeName::kPassportName:
         return IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME;
       case AttributeTypeName::kPassportNumber:
@@ -57,16 +77,6 @@ std::u16string AttributeType::GetNameForI18n() const {
         return IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME;
       case AttributeTypeName::kVehicleYear:
         return IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME;
-      case AttributeTypeName::kDriversLicenseName:
-        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME;
-      case AttributeTypeName::kDriversLicenseState:
-        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME;
-      case AttributeTypeName::kDriversLicenseNumber:
-        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME;
-      case AttributeTypeName::kDriversLicenseExpirationDate:
-        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME;
-      case AttributeTypeName::kDriversLicenseIssueDate:
-        return IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME;
     }
     NOTREACHED();
   }());
@@ -76,28 +86,39 @@ std::u16string AttributeType::GetNameForI18n() const {
 bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
   auto rank = [](const EntityType& t) constexpr {
     // Lower values indicate a higher priority.
-    // For a deterministic behavior, distinct types should have distinct ranks.
     switch (t.name()) {
+      case EntityTypeName::kDriversLicense:
+        return 4;
+      case EntityTypeName::kNationalIdCard:
+        return 2;
       case EntityTypeName::kPassport:
         return 1;
       case EntityTypeName::kVehicle:
-        return 2;
-      case EntityTypeName::kDriversLicense:
         return 3;
     }
   };
+  // For a deterministic behavior, distinct types should have distinct ranks.
+  static_assert(
+      std::ranges::all_of(DenseSet<EntityType>::all(), [&](EntityType a) {
+        return std::ranges::all_of(
+            DenseSet<EntityType>::all(),
+            [&](EntityType b) { return a == b || rank(a) != rank(b); });
+      }));
   return rank(lhs) < rank(rhs);
 }
 
 std::u16string EntityType::GetNameForI18n() const {
   switch (name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME);
-    case EntityTypeName::kDriversLicense:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
   }
   NOTREACHED();
 }

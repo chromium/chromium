@@ -147,10 +147,12 @@ void AutofillAiLogger::RecordKeyMetrics(const FormStructure& form,
          DetermineAttributeTypes(form.fields())) {
       for (const auto& [entity, fields_and_types] : entities_and_fields) {
         switch (entity.name()) {
-          case EntityTypeName::kPassport:
-            return "Passport";
           case EntityTypeName::kDriversLicense:
             return "DriversLicense";
+          case EntityTypeName::kNationalIdCard:
+            return "NationalIdCard";
+          case EntityTypeName::kPassport:
+            return "Passport";
           case EntityTypeName::kVehicle:
             return "Vehicle";
         }

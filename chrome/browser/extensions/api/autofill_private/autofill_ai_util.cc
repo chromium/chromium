@@ -94,39 +94,48 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
 
 std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
-    case EntityTypeName::kDriversLicense:
-      return l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY);
   }
   NOTREACHED();
 }
 
 std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
-    case EntityTypeName::kDriversLicense:
-      return l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY);
   }
   NOTREACHED();
 }
 
 std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY);
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY);
-    case EntityTypeName::kDriversLicense:
-      return l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY);
   }
   NOTREACHED();
 }

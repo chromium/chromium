@@ -240,9 +240,11 @@ std::vector<SuggestionWithMetadata> DedupeFillingSuggestions(
 
 Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
   switch (trigger_entity_type.name()) {
-    case EntityTypeName::kPassport:
-      return Suggestion::Icon::kIdCard;
     case EntityTypeName::kDriversLicense:
+      return Suggestion::Icon::kIdCard;
+    case EntityTypeName::kNationalIdCard:
+      return Suggestion::Icon::kIdCard;
+    case EntityTypeName::kPassport:
       return Suggestion::Icon::kIdCard;
     case EntityTypeName::kVehicle:
       return Suggestion::Icon::kVehicle;

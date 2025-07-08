@@ -123,34 +123,62 @@ class AttributeType final {
 
 constexpr AttributeType::DataType AttributeType::data_type() const {
   switch (name_) {
-    case AttributeTypeName::kPassportName:
     case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kNationalIdCardName:
+    case AttributeTypeName::kPassportName:
     case AttributeTypeName::kVehicleOwner:
       return DataType::kName;
+    case AttributeTypeName::kNationalIdCardCountry:
     case AttributeTypeName::kPassportCountry:
       return DataType::kCountry;
-    case AttributeTypeName::kPassportExpirationDate:
-    case AttributeTypeName::kPassportIssueDate:
     case AttributeTypeName::kDriversLicenseExpirationDate:
     case AttributeTypeName::kDriversLicenseIssueDate:
+    case AttributeTypeName::kNationalIdCardIssueDate:
+    case AttributeTypeName::kNationalIdCardExpirationDate:
+    case AttributeTypeName::kPassportExpirationDate:
+    case AttributeTypeName::kPassportIssueDate:
       return DataType::kDate;
-    case AttributeTypeName::kVehiclePlateState:
     case AttributeTypeName::kDriversLicenseState:
+    case AttributeTypeName::kVehiclePlateState:
       return DataType::kState;
+    case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kVehiclePlateNumber:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:
     case AttributeTypeName::kVehicleModel:
     case AttributeTypeName::kVehicleYear:
-    case AttributeTypeName::kDriversLicenseNumber:
       return DataType::kString;
+      break;
   }
   NOTREACHED();
 }
 
 constexpr FieldType AttributeType::field_type_with_tag_types() const {
   switch (name_) {
+    case AttributeTypeName::kDriversLicenseName:
+      return DRIVERS_LICENSE_NAME_TAG;
+    case AttributeTypeName::kDriversLicenseState:
+      return DRIVERS_LICENSE_REGION;
+    case AttributeTypeName::kDriversLicenseNumber:
+      return DRIVERS_LICENSE_NUMBER;
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+      return DRIVERS_LICENSE_EXPIRATION_DATE;
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return DRIVERS_LICENSE_ISSUE_DATE;
+
+    case AttributeTypeName::kNationalIdCardName:
+      return NO_SERVER_DATA;
+    case AttributeTypeName::kNationalIdCardCountry:
+      return NATIONAL_ID_CARD_ISSUING_COUNTRY;
+    case AttributeTypeName::kNationalIdCardNumber:
+      return NATIONAL_ID_CARD_NUMBER;
+    case AttributeTypeName::kNationalIdCardIssueDate:
+      return NATIONAL_ID_CARD_ISSUE_DATE;
+    case AttributeTypeName::kNationalIdCardExpirationDate:
+      return NATIONAL_ID_CARD_EXPIRATION_DATE;
+
     case AttributeTypeName::kPassportName:
       return PASSPORT_NAME_TAG;
     case AttributeTypeName::kPassportNumber:
@@ -176,17 +204,6 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
       return VEHICLE_YEAR;
     case AttributeTypeName::kVehiclePlateState:
       return VEHICLE_PLATE_STATE;
-
-    case AttributeTypeName::kDriversLicenseName:
-      return DRIVERS_LICENSE_NAME_TAG;
-    case AttributeTypeName::kDriversLicenseState:
-      return DRIVERS_LICENSE_REGION;
-    case AttributeTypeName::kDriversLicenseNumber:
-      return DRIVERS_LICENSE_NUMBER;
-    case AttributeTypeName::kDriversLicenseExpirationDate:
-      return DRIVERS_LICENSE_EXPIRATION_DATE;
-    case AttributeTypeName::kDriversLicenseIssueDate:
-      return DRIVERS_LICENSE_ISSUE_DATE;
   }
   NOTREACHED();
 }

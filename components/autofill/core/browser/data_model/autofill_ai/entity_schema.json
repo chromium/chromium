@@ -34,5 +34,20 @@
     "merge constraints": "import constraints",
     "disambiguation order": [ "Make", "Model", "Year", "Owner" ],
     "syncable": false
+  },
+  {
+    "name": "National Id Card",
+    "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
+    "obfuscated attributes": [ "Number" ],
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "disambiguation order": [ "Name", "Country" ],
+    "strike keys": [
+      [ "Number "]
+    ],
+    "syncable": false,
+    "experiment feature": "AutofillAiNationalIdCard"
   }
 ]

@@ -58,13 +58,6 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, this makes the autofill classification logic prefer the
-// AutofillAi predictions sent via the server response over local heuristic
-// predictions.
-BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
-             "AutofillAiPreferModelResponseOverHeuristics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled (and if `AutofillAiServerModel` is also enabled), this ignores
 // the `may_run_server_model` boolean sent by the Autofill server and, instead,
 // queries the server model for every encountered form that is not already
@@ -91,9 +84,14 @@ BASE_FEATURE(kAutofillAiIgnoreGeoIp,
              "AutofillAiIgnoreGeoIp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, no locale requirements are imposed for AutfillAi.
+// If enabled, no locale requirements are imposed for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreLocale,
              "AutofillAiIgnoreLocale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, AutofillAi supports national id cards.
+BASE_FEATURE(kAutofillAiNationalIdCard,
+             "AutofillAiNationalIdCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, `*_TAG` types are replaced with dynamic attribute assignments.
@@ -108,6 +106,13 @@ BASE_FEATURE(kAutofillAiIgnoreLocale,
 // TODO(crbug.com/422563282): Remove after the M140 branch point (2025-08-04).
 BASE_FEATURE(kAutofillAiNoTagTypes,
              "AutofillAiNoTagTypes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, this makes the autofill classification logic prefer the
+// AutofillAi predictions sent via the server response over local heuristic
+// predictions.
+BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
+             "AutofillAiPreferModelResponseOverHeuristics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the client may trigger the server model for AutofillAI type

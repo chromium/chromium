@@ -656,47 +656,93 @@
   </if>
 
    <!-- Entities -->
-  <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Driver’s license”.">
-    Passport
-  </message>
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Passport”.">
     Driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME" translateable="false">
+    National Id Card
+  </message>
+  <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Driver’s license”.">
+    Passport
   </message>
   <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Vehicle”.">
     Vehicle
   </message>
 
   <!-- Add entity strings -->
-  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a passport. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
-    Add passport
-  </message>
   <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a driver’s license. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY" translateable="false">
+    Add national id card
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a passport. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
+    Add passport
   </message>
   <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a vehicle. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add vehicle
   </message>
 
   <!-- Edit entity strings -->
+  <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
+    Edit driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY" translateable="false">
+    Edit national id card
+  </message>
   <message name="IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit passport
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
-    Edit driver's license
-  </message>
 
   <!-- Delete entity strings -->
+  <message name="IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a driver's license. The user opened this dialog by choosing 'Delete' from the more options menu.">
+    Delete driver's license
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY" translateable="false">
+    Delete national id card
+  </message>
   <message name="IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY" desc="A title of a dialog within settings that allows a user to delete a passport. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete passport
   </message>
   <message name="IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a vehicle. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a driver's license. The user opened this dialog by choosing 'Delete' from the more options menu.">
-    Delete driver's license
+
+    <!-- Attributes of the driver's license entity -->
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute.">
+    State
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license number attribute.">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license expiration date attribute.">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license issue date attribute.">
+    Issue date
+  </message>
+
+  <!-- Attributes of the national id card entity -->
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME" translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME" translateable="false">
+    Country
+  </message>
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME" translateable="false">
+    Expiration date
+  </message>
+  <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" translateable="false">
+    Issue date
   </message>
 
   <!-- Attributes of the passport entity -->
@@ -713,23 +759,6 @@
     Expiration date
   </message>
   <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “Issue” and Delta might label it “Date passport issue”. Once the information is saved with Autofill with AI, we just call the value “Issue date”.">
-    Issue date
-  </message>
-
-  <!-- Attributes of the driver's license entity -->
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
-    Name
-  </message>
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license region attribute.">
-    State
-  </message>
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license number attribute.">
-    Number
-  </message>
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license expiration date attribute.">
-    Expiration date
-  </message>
-  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license issue date attribute.">
     Issue date
   </message>
 
@@ -796,23 +825,30 @@
   </message>
 
   <!-- Save/ Update dialog-->
-  <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
-    Save vehicle?
-  </message>
   <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save driver's license?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" translateable="false">
+    Save national id card?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is booking a flight and filled in their passport info in a form. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save passport?
   </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their car. Now, the user is filling out a new form either with additional details associated with the car or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
-    Update vehicle?
+  <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
+    Save vehicle?
   </message>
+
   <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update driver's license?
   </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE" translateable="false">
+    Update national id card?
+  </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update passport?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their car. Now, the user is filling out a new form either with additional details associated with the car or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
+    Update vehicle?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info.">
     Save your info so that autofill can fill in more fields for you next time
