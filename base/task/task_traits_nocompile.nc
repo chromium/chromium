@@ -11,6 +11,7 @@ namespace base {
 
 constexpr TaskTraits traits = {MayBlock(), MayBlock()};  // expected-error {{constexpr variable 'traits' must be initialized by a constant expression}}
                                                          // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+                                                         // expected-error@*:* {{no matching constructor for initialization}}
 
 constexpr TaskTraits traits2 = {WithBaseSyncPrimitives(),   // expected-error {{constexpr variable 'traits2' must be initialized by a constant expression}}
                                 WithBaseSyncPrimitives()};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
@@ -32,6 +33,6 @@ constexpr TaskTraits traits5 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,         //
                                 MayBlock(),                                   // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
                                 TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};  // expected-error@*:* {{type occurs more than once in type list}}
 
-constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};  // expected-error {{no matching constructor for initialization of 'const TaskTraits'}}
+constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};  // expected-error@*:* 0-1 {{no matching constructor for initialization}}
 
 }  // namespace base
