@@ -44,6 +44,11 @@ TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
             "StartingToActOnTab[task_id=123, tab=5555]");
 }
 
+TEST_F(UiEventDebugStringTest, StoppedActingOnTab) {
+  EXPECT_EQ(DebugString(StoppedActingOnTab(Handle())),
+            "StoppedActingOnTab[tab=5555]");
+}
+
 TEST_F(UiEventDebugStringTest, MouseMove) {
   EXPECT_EQ(DebugString(MouseMove(Handle(), PointTarget())),
             "MouseMove[target=10,20]");

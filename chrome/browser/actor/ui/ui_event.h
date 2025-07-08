@@ -30,6 +30,14 @@ struct StartingToActOnTab {
   actor::TaskId task_id;
 };
 
+struct StoppedActingOnTab {
+  explicit StoppedActingOnTab(tabs::TabInterface::Handle);
+  StoppedActingOnTab(const StoppedActingOnTab&);
+  ~StoppedActingOnTab();
+
+  tabs::TabInterface::Handle tab_handle;
+};
+
 struct MouseMove {
   MouseMove(tabs::TabInterface::Handle, PageTarget);
   MouseMove(const MouseMove&);
@@ -49,8 +57,11 @@ struct MouseClick {
   MouseClickCount click_count;
 };
 
-using UiEvent =
-    std::variant<StartTask, StartingToActOnTab, MouseClick, MouseMove>;
+using UiEvent = std::variant<StartTask,
+                             StartingToActOnTab,
+                             StoppedActingOnTab,
+                             MouseClick,
+                             MouseMove>;
 
 }  // namespace actor::ui
 

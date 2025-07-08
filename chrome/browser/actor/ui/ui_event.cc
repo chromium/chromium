@@ -16,6 +16,11 @@ StartingToActOnTab::StartingToActOnTab(tabs::TabInterface::Handle th,
 StartingToActOnTab::~StartingToActOnTab() = default;
 StartingToActOnTab::StartingToActOnTab(const StartingToActOnTab&) = default;
 
+StoppedActingOnTab::StoppedActingOnTab(tabs::TabInterface::Handle th)
+    : tab_handle(th) {}
+StoppedActingOnTab::~StoppedActingOnTab() = default;
+StoppedActingOnTab::StoppedActingOnTab(const StoppedActingOnTab&) = default;
+
 MouseClick::MouseClick(tabs::TabInterface::Handle th,
                        MouseClickType ct,
                        MouseClickCount cc)

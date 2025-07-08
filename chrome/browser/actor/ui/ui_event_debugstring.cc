@@ -55,6 +55,10 @@ constexpr Visitor UiEventToDebugStringFn{
       return absl::StrFormat("StartingToActOnTab[task_id=%d, tab=%d]",
                              e.task_id.value(), e.tab_handle.raw_value());
     },
+    [](const StoppedActingOnTab& e) -> std::string {
+      return absl::StrFormat("StoppedActingOnTab[tab=%d]",
+                             e.tab_handle.raw_value());
+    },
     [](const MouseClick& e) -> std::string {
       return absl::StrFormat("MouseClick[type=%s, count=%s]",
                              DebugString(e.click_type),
