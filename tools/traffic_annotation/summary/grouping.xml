@@ -380,6 +380,7 @@ after discussions on the right group.
       <annotation id="trusted_vault_cert_request"/>
       <annotation id="keepalive_fetch_retry"/>
       <annotation id="ntp_composebox_query_controller"/>
+      <annotation id="password_change_submission_model_execution"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

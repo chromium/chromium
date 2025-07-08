@@ -513,4 +513,5 @@ Refer to README.md for content description and update process.
  <item id="keepalive_fetch_retry" added_in_milestone="138" content_hash_code="023a2a10" os_list="linux,windows,android,chromeos" file_path="content/browser/loader/keep_alive_url_loader.cc" />
  <item id="iwa_dev_tools_installation_web_bundle" added_in_milestone="139" type="partial" second_id="iwa_bundle_downloader" content_hash_code="00669d7d" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.cc" />
  <item id="ntp_composebox_query_controller" added_in_milestone="139" content_hash_code="06439b42" os_list="linux,windows,chromeos,android" file_path="components/omnibox/composebox/composebox_query_controller.cc" />
+ <item id="password_change_submission_model_execution" added_in_milestone="140" content_hash_code="05159063" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
 </annotations>

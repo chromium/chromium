@@ -138,8 +138,45 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kTextSafety:
       // TODO: b/330346344 - Add traffic annotation.
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
-      // TODO: b/380116258 - Add traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "password_change_submission_model_execution", R"(
+        semantics {
+          sender: "Automated Password Change"
+          description:
+            "Analyze page content to find elements that open and submit"
+            " password change forms for Chrome actuation."
+            " Lastly identities if the password change was successful."
+          trigger:
+            "User logged-in with a compromised credential and accepted "
+            "an option from the dialog to change password automatically."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "Title, URL, and content of the page, which may "
+            "potentially contain user input."
+          internal {
+            contacts {
+              email: "chrome-intelligence-core@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-07-03"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no dedicated setting for this feature."
+            "Users are free to choose whether to use the feature "
+            "or not when it's offered."
+          chrome_policy {
+            AutomatedPasswordChangeSettings {
+              AutomatedPasswordChangeSettings: 2
+            }
+          }
+        })");
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:
       // Used for testing purposes. No real features use this.
