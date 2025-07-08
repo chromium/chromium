@@ -17,6 +17,7 @@ found in the LICENSE file.
     android:layout_marginVertical="@dimen/improved_bookmark_row_vertical_margin"
     android:paddingStart="@dimen/improved_bookmark_row_horizontal_padding"
     android:paddingVertical="6dp"
+    android:duplicateParentState="true"
     android:background="@drawable/improved_bookmark_row_visual_background">
 
     <include layout="@layout/improved_bookmark_folder_view_layout"

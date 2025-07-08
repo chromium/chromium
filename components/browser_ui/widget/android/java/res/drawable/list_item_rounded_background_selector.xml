@@ -4,22 +4,11 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Shared base background -->
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="@macro/default_bg_color"/>
-        </shape>
-    </item>
-
-    <item>
-        <selector>
-            <item android:state_hovered="true">
-                <shape android:shape="rectangle">
-                    <solid android:color="@color/color_on_surface_with_alpha_8"/>
-                    <corners android:radius="@dimen/default_rounded_corner_radius"/>
-                </shape>
-            </item>
-        </selector>
-    </item>
-</layer-list>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_hovered="true">
+    <shape android:shape="rectangle">
+      <solid android:color="@color/color_on_surface_with_alpha_8" />
+      <corners android:radius="@dimen/focused_list_item_background_radius" />
+    </shape>
+  </item>
+</selector>

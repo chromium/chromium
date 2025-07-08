@@ -14,7 +14,7 @@ found in the LICENSE file.
     android:minHeight="64dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/list_item_rounded_background_selector"
+    android:background="@drawable/download_manager_item_background"
     app:columnCount="3"
     app:rowCount="2">
 

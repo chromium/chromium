@@ -165,6 +165,7 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
     "java/res/drawable/download_interstitial_icon.xml",
+    "java/res/drawable/download_manager_item_background.xml",
     "java/res/drawable/downloading_fill_animation_24dp.xml",
     "java/res/drawable/downloads_empty_state_illustration.xml",
     "java/res/drawable/group_card_footer_curved_border.xml",
