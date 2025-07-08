@@ -1074,6 +1074,7 @@ public final class ProductionSupportedFlagList {
                 "Enables phase 2 of using startup tasks logic for webview chromium initialization"
                     + " which also starts browser processes asynchronously, when starting webview"
                     + " asynchronously."),
+        Flag.baseFeature("ServiceWorkerAutoPreload"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
