@@ -1558,7 +1558,10 @@ public class ReadAloudController
 
     @Override
     public void onPositiveFeedback() {
-      // TODO(crbug.com/414149684): Implement once we have a proper UI for informing the user.
+      if (mPlayback == null) {
+        return;
+      }
+      mPlayback.sendFeedback(FeedbackType.POSITIVE, NegativeFeedbackReason.OTHER, mSendFeedbackCallback);
       mFeedbackType.set(FeedbackType.POSITIVE);
     }
 
