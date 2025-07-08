@@ -363,6 +363,16 @@ class SqlPersistentStoreTest : public testing::Test {
     return future.Get();
   }
 
+  // Synchronous wrapper for CalculateSizeOfEntriesBetween.
+  SqlPersistentStore::Int64OrError CalculateSizeOfEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time) {
+    base::test::TestFuture<SqlPersistentStore::Int64OrError> future;
+    store_->CalculateSizeOfEntriesBetween(initial_time, end_time,
+                                          future.GetCallback());
+    return future.Take();
+  }
+
   // Helper to read data and verify its content.
   void ReadAndVerifyData(const base::UnguessableToken& token,
                          int64_t offset,
@@ -3190,6 +3200,120 @@ TEST_F(SqlPersistentStoreTest, ReadDataCallbackNotRunOnStoreDestruction) {
   EXPECT_FALSE(callback_run);
 }
 
+TEST_F(SqlPersistentStoreTest, CalculateSizeOfEntriesBetween) {
+  CreateAndInitStore();
+
+  // Empty cache.
+  auto result =
+      CalculateSizeOfEntriesBetween(base::Time::Min(), base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 0);
+
+  const CacheEntryKey kKey1("key1");
+  const std::string kData1 = "apple";
+  const CacheEntryKey kKey2("key2");
+  const std::string kData2 = "orange";
+  const CacheEntryKey kKey3("key3");
+  const std::string kData3 = "pineapple";
+
+  const int64_t size1 =
+      kSqlBackendStaticResourceSize + kKey1.string().size() + kData1.size();
+  const int64_t size2 =
+      kSqlBackendStaticResourceSize + kKey2.string().size() + kData2.size();
+  const int64_t size3 =
+      kSqlBackendStaticResourceSize + kKey3.string().size() + kData3.size();
+
+  // Create entry 1.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time time1 = base::Time::Now();
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  WriteDataAndAssertSuccess(kKey1, token1, 0, 0, kData1, /*truncate=*/false);
+
+  // Create entry 2.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time time2 = base::Time::Now();
+  const auto token2 = CreateEntryAndGetToken(kKey2);
+  WriteDataAndAssertSuccess(kKey2, token2, 0, 0, kData2, /*truncate=*/false);
+
+  // Create entry 3.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time time3 = base::Time::Now();
+  const auto token3 = CreateEntryAndGetToken(kKey3);
+  WriteDataAndAssertSuccess(kKey3, token3, 0, 0, kData3, /*truncate=*/false);
+
+  // Total size.
+  EXPECT_EQ(GetSizeOfAllEntries(), size1 + size2 + size3);
+
+  // All entries (fast path).
+  result = CalculateSizeOfEntriesBetween(base::Time::Min(), base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size1 + size2 + size3);
+
+  // All entries (regular path).
+  result = CalculateSizeOfEntriesBetween(base::Time::Min(),
+                                         base::Time::Max() - base::Seconds(1));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size1 + size2 + size3);
+
+  // Only entry 2.
+  result = CalculateSizeOfEntriesBetween(time2, time3);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size2);
+
+  // Entries 1 and 2.
+  result = CalculateSizeOfEntriesBetween(time1, time3);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size1 + size2);
+
+  // Entries 2 and 3.
+  result = CalculateSizeOfEntriesBetween(time2, base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size2 + size3);
+
+  // No entries.
+  result = CalculateSizeOfEntriesBetween(time3 + base::Minutes(1),
+                                         base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 0);
+}
+
+TEST_F(SqlPersistentStoreTest, CalculateSizeOfEntriesBetweenOverflow) {
+  CreateAndInitStore();
+
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2");
+
+  const base::Time time1 = base::Time::Now();
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey1).has_value());
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_TRUE(CreateEntry(kKey2).has_value());
+
+  task_environment_.AdvanceClock(base::Minutes(1));
+
+  // Manually set bytes_usage to large values for both entries.
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement update_stmt(db_handle->GetUniqueStatement(
+        "UPDATE resources SET bytes_usage = ? WHERE cache_key = ?"));
+    update_stmt.BindInt64(0, std::numeric_limits<int64_t>::max() / 2);
+    update_stmt.BindString(1, kKey1.string());
+    ASSERT_TRUE(update_stmt.Run());
+    update_stmt.Reset(/*clear_bound_vars=*/true);
+
+    update_stmt.BindInt64(0, std::numeric_limits<int64_t>::max() / 2 + 100);
+    update_stmt.BindString(1, kKey2.string());
+    ASSERT_TRUE(update_stmt.Run());
+  }
+
+  // The sum of bytes_usage for both entries plus the static overhead will
+  // overflow int64_t. The ClampedNumeric should saturate at max().
+  auto result = CalculateSizeOfEntriesBetween(time1, base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), std::numeric_limits<int64_t>::max());
+}
+
 TEST_F(SqlPersistentStoreTest,
        GetEntryAvailableRangeCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();
@@ -3201,6 +3325,21 @@ TEST_F(SqlPersistentStoreTest,
         callback_run = true;
       }));
 
+  store_.reset();
+  FlushPendingTask();
+
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       CalculateSizeOfEntriesBetweenCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  bool callback_run = false;
+
+  store_->CalculateSizeOfEntriesBetween(
+      base::Time(), base::Time::Max(),
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::Int64OrError) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
 

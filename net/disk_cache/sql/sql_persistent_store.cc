@@ -324,7 +324,8 @@ class Backend {
   RangeResult GetEntryAvailableRange(const base::UnguessableToken& token,
                                      int64_t offset,
                                      int len);
-
+  int64_t CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                        base::Time end_time);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
 
@@ -373,6 +374,8 @@ class Backend {
       const base::UnguessableToken& token,
       int64_t offset,
       int len);
+  int64_t CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
+                                                base::Time end_time);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
@@ -2054,6 +2057,56 @@ RangeResult Backend::GetEntryAvailableRangeInternal(
   return RangeResult(offset, 0);
 }
 
+int64_t Backend::CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                               base::Time end_time) {
+  if (initial_time == base::Time::Min() && end_time == base::Time::Max()) {
+    return GetSizeOfAllEntries();
+  }
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
+                     "data", [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("initial_time", initial_time);
+                       dict.Add("end_time", end_time);
+                     });
+  base::ElapsedTimer timer;
+  auto result = CalculateSizeOfEntriesBetweenInternal(initial_time, end_time);
+  RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween",
+                                    timer.Elapsed(), Error::kOk);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
+                   "result", result);
+  return result;
+}
+
+int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
+                                                       base::Time end_time) {
+  // To calculate the total size of all entries whose `last_used` time falls
+  // within the range [`initial_time`, `end_time`), sums up the `bytes_usage`
+  // from the `resources` table and adds a static overhead for each entry.
+  constexpr char kSqlSelectFromResources[] =
+      // clang-format off
+      "SELECT "
+          "bytes_usage "  // 0
+      "FROM resources "
+      "WHERE "
+          "last_used>=? AND "  // 0
+          "last_used<?";       // 1
+  // clang-format on
+  // Intentionally DCHECK() for performance
+  DCHECK(db_.IsSQLValid(kSqlSelectFromResources));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectFromResources));
+  statement.BindTime(0, initial_time);
+  statement.BindTime(1, end_time);
+  base::ClampedNumeric<int64_t> total_size = 0;
+  while (statement.Step()) {
+    // `bytes_usage` includes the size of the key, header, and body data.
+    total_size += statement.ColumnInt64(0);
+    // Add the static overhead for the entry's row in the database.
+    total_size += kSqlBackendStaticResourceSize;
+  }
+  return total_size;
+}
+
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
     int64_t res_id_cursor) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
@@ -2357,7 +2410,13 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(token, offset, len)
         .Then(WrapCallback(std::move(callback)));
   }
-
+  void CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                     base::Time end_time,
+                                     Int64OrErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::CalculateSizeOfEntriesBetween)
+        .WithArgs(initial_time, end_time)
+        .Then(WrapCallback(std::move(callback)));
+  }
   void OpenLatestEntryBeforeResId(
       int64_t res_id_cursor,
       OptionalEntryInfoWithIdAndKeyCallback callback) override {

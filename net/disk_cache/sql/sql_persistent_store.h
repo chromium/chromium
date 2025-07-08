@@ -112,6 +112,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       base::OnceCallback<void(OptionalEntryInfoWithIdAndKey)>;
   using IntOrError = base::expected<int, Error>;
   using IntOrErrorCallback = base::OnceCallback<void(IntOrError)>;
+  using Int64OrError = base::expected<int64_t, Error>;
+  using Int64OrErrorCallback = base::OnceCallback<void(Int64OrError)>;
 
   // Creates a new instance of the persistent store. The returned object must be
   // initialized by calling `Initialize()`. This function never returns a null
@@ -256,6 +258,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                       int64_t offset,
                                       int len,
                                       RangeResultCallback callback) = 0;
+
+  // Calculates the total size of all entries whose `last_used` time falls
+  // within the range [`initial_time`, `end_time`). The size includes the key,
+  // header, body data, and a static overhead per entry. `callback` is invoked
+  // with the total size on success, or an error code on failure.
+  virtual void CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                             base::Time end_time,
+                                             Int64OrErrorCallback callback) = 0;
 
   // Opens the latest (highest `res_id`) cache entry that has a `res_id` less
   // than `res_id_cursor`. This method is used for iterating through entries
