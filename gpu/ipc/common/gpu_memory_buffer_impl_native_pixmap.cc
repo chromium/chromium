@@ -33,7 +33,7 @@ GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     gfx::BufferFormat format,
     DestructionCallback callback,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
-    : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
+    : GpuMemoryBufferImpl(size, format, std::move(callback)),
       pixmap_(std::move(pixmap)) {}
 
 GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;

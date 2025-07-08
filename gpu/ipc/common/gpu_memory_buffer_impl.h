@@ -35,8 +35,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat GetFormat() const override;
 
  protected:
-  GpuMemoryBufferImpl(gfx::GpuMemoryBufferId id,
-                      const gfx::Size& size,
+  GpuMemoryBufferImpl(const gfx::Size& size,
                       gfx::BufferFormat format,
                       DestructionCallback callback);
 

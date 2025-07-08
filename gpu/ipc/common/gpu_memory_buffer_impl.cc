@@ -6,8 +6,7 @@
 
 namespace gpu {
 
-GpuMemoryBufferImpl::GpuMemoryBufferImpl(gfx::GpuMemoryBufferId id,
-                                         const gfx::Size& size,
+GpuMemoryBufferImpl::GpuMemoryBufferImpl(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          DestructionCallback callback)
     : size_(size), format_(format), callback_(std::move(callback)) {}

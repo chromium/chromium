@@ -293,7 +293,7 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     gfx::DXGIHandle dxgi_handle,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool)
-    : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
+    : GpuMemoryBufferImpl(size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
       copy_native_buffer_to_shmem_callback_(
           std::move(copy_native_buffer_to_shmem_callback)),

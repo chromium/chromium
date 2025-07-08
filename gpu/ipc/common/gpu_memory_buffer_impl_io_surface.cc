@@ -50,7 +50,7 @@ GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
     DestructionCallback callback,
     gfx::GpuMemoryBufferHandle handle,
     uint32_t lock_flags)
-    : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
+    : GpuMemoryBufferImpl(size, format, std::move(callback)),
       handle_(std::move(handle)),
       lock_flags_(lock_flags) {}
 
