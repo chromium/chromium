@@ -308,6 +308,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "glic_profile_manager_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
+    "glic_user_status_interactive_uitest.cc",
     "host/glic_actor_controller_interactive_uitest.cc",
     "host/glic_annotation_manager_interactive_uitest.cc",
     "host/glic_permission_enforcement_interactive_uitest.cc",
