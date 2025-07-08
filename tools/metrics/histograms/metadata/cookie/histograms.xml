@@ -861,7 +861,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Port.ReadDiffersFromSet.{HostType}.Subsampled"
-    enum="CookieSentToSamePort" expires_after="2025-07-13">
+    enum="CookieSentToSamePort" expires_after="2025-12-13">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
