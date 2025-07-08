@@ -261,6 +261,11 @@ struct Toolbelt : Config<Toolbelt> {
   bool show_bookmarks_action_on_ntp;
   bool show_tabs_action_on_non_ntp;
   bool show_tabs_action_on_ntp;
+
+  // Whether to rebuild button row views for the toolbelt without checking
+  // the row's action count. This defaults to true and is just a kill switch
+  // in case of an unexpected performance regression (safer to merge).
+  bool rebuild_button_row_views;
 };
 
 // If enabled, adjusts the indentation of the omnibox input and matches to fix

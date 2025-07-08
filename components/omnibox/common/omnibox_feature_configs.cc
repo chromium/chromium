@@ -246,6 +246,10 @@ Toolbelt::Toolbelt() {
       base::FeatureParam<bool>(&kOmniboxToolbelt, "ShowTabsActionOnNtp",
                                enabled)
           .Get();
+  rebuild_button_row_views =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "RebuildButtonRowViews",
+                               enabled)
+          .Get();
 }
 
 DocumentProvider::DocumentProvider() {
