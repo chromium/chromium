@@ -49,6 +49,13 @@
     "expiry_milestone": 135
   },
   {
+    "name": "act-features",
+    "owners": [
+      "fmacintosh@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "adaptive-button-in-top-toolbar-page-summary",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 140

@@ -4674,6 +4674,14 @@ const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::Choice kActFeaturesChoices[] = {
+    {"Default", "", ""},
+    {"Enabled", switches::kEnableFeatures,
+     "IpProtectionUx, FingerprintingProtectionUx, ActUserBypassUx"},
+    {"Disabled", switches::kDisableFeatures,
+     "IpProtectionUx, FingerprintingProtectionUx, ActUserBypassUx"},
+};
+
 // LINT.IfChange(DataSharingVersioningChoices)
 const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
     {"Default", "", ""},
@@ -8793,6 +8801,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoHistoryDesktopDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"act-features", flag_descriptions::kActFeaturesName,
+     flag_descriptions::kActFeaturesDescription, kOsDesktop | kOsAndroid,
+     MULTI_VALUE_TYPE(kActFeaturesChoices)},
 
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
