@@ -59,9 +59,10 @@ export function getHtml(this: TraceRecorderElement) {
           ${this.traceCategories.map(category => html`
             <div class="category-row">
               <input
-                disabled
                 type="checkbox"
-                .checked="${this.isEnabled(category.name)}">
+                .checked="${this.isEnabled(category.name)}"
+                @change="${
+                  (e: Event) => this.onCategoryChange_(e, category.name)}">
               <div>${category.name}</div>
               <div>${category.tags.join(', ')}</div>
               <div>${category.description}</div>

@@ -13,7 +13,7 @@ import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import {TraceConfig} from './perfetto_config.js';
+import {TraceConfig, TraceConfig_BufferConfig_FillPolicy} from './perfetto_config.js';
 import type {TrackEventConfig} from './perfetto_config.js';
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
@@ -48,7 +48,7 @@ export class TraceRecorderElement extends CrLitElement {
 
   static override get properties() {
     return {
-      traceConfig: {type: String},
+      traceConfig: {type: Object},
       toastMessage: {type: String},
       tracingState: {type: String},
       traceCategories: {type: Array},
@@ -74,11 +74,11 @@ export class TraceRecorderElement extends CrLitElement {
   private bufferPollIntervalId_: number|null = null;
   private encodedConfigString: string = '';
 
-  protected accessor traceConfig: Uint8Array = new Uint8Array();
   protected accessor toastMessage: string = '';
   // Initialize the tracing state to IDLE.
   protected accessor tracingState: TracingState = TracingState.IDLE;
   protected accessor traceCategories: TraceCategory[] = [];
+  protected accessor traceConfig: TraceConfig|undefined;
   protected accessor trackEventConfig: TrackEventConfig|undefined;
   protected accessor categoriesExpanded_: boolean = false;
   protected accessor bufferUsage: number = 0;
@@ -140,7 +140,7 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   protected async startTracing_(): Promise<void> {
-    const bigBufferConfig = this.decodeBase64ToBigBuffer_();
+    const bigBufferConfig = this.serializeTraceConfigToBigBuffer_();
     if (!bigBufferConfig) {
       return;
     }
@@ -192,6 +192,23 @@ export class TraceRecorderElement extends CrLitElement {
       return false;
     }
     return this.trackEventConfig.enabledCategories.includes(categoryName);
+  }
+
+  protected onCategoryChange_(event: Event, categoryName: string): void {
+    if (!this.trackEventConfig?.enabledCategories) {
+      return;
+    }
+    const isChecked = (event.target as HTMLInputElement).checked;
+    const enabledSet = new Set(this.trackEventConfig.enabledCategories);
+
+    if (isChecked) {
+      enabledSet.add(categoryName);
+    } else {
+      enabledSet.delete(categoryName);
+    }
+    this.trackEventConfig.enabledCategories = [...enabledSet];
+
+    this.updateUrlFromConfig_();
   }
 
   private getArrayFromBigBuffer(bigBuffer: BigBuffer): Uint8Array {
@@ -260,15 +277,28 @@ export class TraceRecorderElement extends CrLitElement {
     return bytes;
   }
 
-  private decodeBase64ToBigBuffer_(): BigBuffer|undefined {
+  // Encode from Uint8Array into a Base64 string.
+  private uint8ArrayToBase64_(bytes: Uint8Array): string {
+    let binary = '';
+    for (const byte of bytes) {
+      binary += String.fromCharCode(byte);
+    }
+    return btoa(binary);
+  }
+
+  private serializeTraceConfigToBigBuffer_(): BigBuffer|undefined {
+    if (!this.traceConfig) {
+      return;
+    }
     let bigBuffer: BigBuffer|undefined = undefined;
     try {
+      const serializedConfig = TraceConfig.encode(this.traceConfig).finish();
       bigBuffer = {
-        bytes: Array.from(this.traceConfig),
+        bytes: Array.from(serializedConfig),
       } as BigBuffer;
       return bigBuffer;
     } catch (error) {
-      this.showToast_(`Error decoding Base64: ${error}`);
+      this.showToast_(`Error encoding: ${error}`);
     }
     return bigBuffer;
   }
@@ -297,27 +327,110 @@ export class TraceRecorderElement extends CrLitElement {
     const params = new URLSearchParams(document.location.search);
     const host = params.get('trace_config');
     const newConfig = host ?? '';
-    if (this.encodedConfigString !== newConfig) {
-      this.traceConfig = this.base64ToUint8Array_(newConfig);
-      this.encodedConfigString = newConfig;
-    }
-    this.trackEventConfig = undefined;
 
-    if (this.traceConfig.length === 0) {
+    if (this.encodedConfigString === newConfig && newConfig !== '') {
+      return;
+    }
+
+    this.encodedConfigString = newConfig;
+    this.trackEventConfig = undefined;
+    this.traceConfig = undefined;
+    const serializedConfig = this.base64ToUint8Array_(newConfig);
+
+    if (serializedConfig.length === 0) {
+      this.initializeDefaultConfig_();
       return;
     }
 
     try {
-      const traceConfigObject = TraceConfig.decode(this.traceConfig);
+      this.traceConfig = TraceConfig.decode(serializedConfig);
 
-      const trackEventDataSource = traceConfigObject.dataSources?.find(
+      const trackEventDataSource = this.traceConfig.dataSources?.find(
           ds => ds.config?.trackEventConfig !== undefined);
       if (trackEventDataSource) {
         this.trackEventConfig = trackEventDataSource.config?.trackEventConfig;
+      } else {
+        this.trackEventConfig = this.createDefaultTrackEventConfig_();
+        this.setDataSource_(this.traceConfig, this.trackEventConfig);
       }
     } catch (e) {
       this.showToast_(`Could not parse trace config: ${e}`);
     }
+  }
+
+  private updateUrlFromConfig_(): void {
+    if (!this.traceConfig) {
+      return;
+    }
+    try {
+      // Encode the modified config object back to a Uint8Array
+      const writer = TraceConfig.encode(this.traceConfig);
+
+      // Convert to Base64 and update the URL
+      const newEncodedConfigString = this.uint8ArrayToBase64_(writer.finish());
+      if (this.encodedConfigString === newEncodedConfigString) {
+        return;
+      }
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('trace_config', newEncodedConfigString);
+
+      // Update URL without reloading the page
+      history.replaceState({}, '', newUrl.toString());
+    } catch (e) {
+      this.showToast_(`Could not update trace config: ${e}`);
+    }
+  }
+
+  private initializeDefaultConfig_(): void {
+    this.traceConfig = {
+      buffers: [
+        {
+          sizeKb: 200 * 1024,
+          fillPolicy: TraceConfig_BufferConfig_FillPolicy.RING_BUFFER,
+        },
+        {
+          sizeKb: 256,
+          fillPolicy: TraceConfig_BufferConfig_FillPolicy.DISCARD,
+        },
+      ],
+      dataSources: [],
+    };
+    this.trackEventConfig = this.createDefaultTrackEventConfig_();
+    this.setDataSource_(this.traceConfig, this.trackEventConfig);
+    this.updateUrlFromConfig_();
+  }
+
+  private createDefaultTrackEventConfig_(): TrackEventConfig {
+    return {
+      enabledCategories: [],
+      disabledCategories: [],
+      enabledTags: [],
+      disabledTags: [],
+    };
+  }
+
+  private setDataSource_(
+      config: TraceConfig, trackEventConfig: TrackEventConfig): void {
+    if (!config.dataSources) {
+      this.showToast_(`Could not get Data Source from Trace Config`);
+      return;
+    }
+    config.dataSources.push(
+        // DataSource for track events
+        {
+          config: {
+            name: 'track_event',
+            targetBuffer: 0,
+            trackEventConfig: trackEventConfig,
+          },
+        },
+        // DataSource for org.chromium.trace_metadata2
+        {
+          config: {
+            name: 'org.chromium.trace_metadata2',
+            targetBuffer: 1,
+          },
+        });
   }
 }
 

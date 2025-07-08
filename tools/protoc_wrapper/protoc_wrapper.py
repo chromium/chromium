@@ -177,6 +177,7 @@ def main(argv):
     protoc_cmd += [
         "--ts_proto_out=" + options.ts_out_dir,
         "--ts_proto_opt=env=browser,esModuleInterop=true,importSuffix=.js",
+        "--ts_proto_opt=useOptionals=all",
         "--plugin=protoc-gen-ts_proto=" +
         os.path.realpath(options.protoc_gen_ts),
     ]
