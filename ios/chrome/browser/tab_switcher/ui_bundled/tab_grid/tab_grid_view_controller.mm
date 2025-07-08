@@ -66,6 +66,15 @@
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+@interface UIScrollEdgeElementContainerInteraction (Compatibility)
+- (void)_setScrollView:(UIScrollView*)scrollView;
+- (void)setScrollView:(UIScrollView*)scrollView;
+- (void)_setEdge:(UIRectEdge)edge;
+- (void)setEdge:(UIRectEdge)edge;
+@end
+#endif
+
 namespace {
 
 // Types of configurations of this view controller.
@@ -991,8 +1000,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (@available(iOS 26, *)) {
     UIScrollEdgeElementContainerInteraction* edgeEffect =
         [[UIScrollEdgeElementContainerInteraction alloc] init];
-    edgeEffect.edge = UIRectEdgeTop;
-    edgeEffect.scrollView = self.scrollView;
+    if ([edgeEffect respondsToSelector:@selector(_setScrollView:)]) {
+      [edgeEffect _setScrollView:self.scrollView];
+    } else {
+      [edgeEffect setScrollView:self.scrollView];
+    }
+    if ([edgeEffect respondsToSelector:@selector(_setEdge:)]) {
+      [edgeEffect _setEdge:UIRectEdgeTop];
+    } else {
+      [edgeEffect setEdge:UIRectEdgeTop];
+    }
     [topToolbar addInteraction:edgeEffect];
   }
 #endif
@@ -1045,8 +1062,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (@available(iOS 26, *)) {
     UIScrollEdgeElementContainerInteraction* edgeEffect =
         [[UIScrollEdgeElementContainerInteraction alloc] init];
-    edgeEffect.edge = UIRectEdgeBottom;
-    edgeEffect.scrollView = self.scrollView;
+    if ([edgeEffect respondsToSelector:@selector(_setScrollView:)]) {
+      [edgeEffect _setScrollView:self.scrollView];
+    } else {
+      [edgeEffect setScrollView:self.scrollView];
+    }
+    if ([edgeEffect respondsToSelector:@selector(_setEdge:)]) {
+      [edgeEffect _setEdge:UIRectEdgeBottom];
+    } else {
+      [edgeEffect setEdge:UIRectEdgeBottom];
+    }
     [bottomToolbar addInteraction:edgeEffect];
   }
 #endif
