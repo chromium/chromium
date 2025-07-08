@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +27,13 @@
 namespace autofill {
 
 namespace {
+
+std::u16string MaybeStripPrefix(const std::u16string& value,
+                                size_t field_max_length) {
+  return field_max_length == 0 || field_max_length > value.size()
+             ? value
+             : value.substr(value.size() - field_max_length);
+}
 
 // Looks for the day, month, or year from `attribute` to fill into `field`.
 std::optional<std::u16string> GetValueForDateSelect(
@@ -81,6 +90,13 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
       return GetStateTextForInput(value, /*country_code=*/"US",
                                   field.max_length(),
                                   /*failure_to_fill=*/nullptr);
+    case PASSPORT_NUMBER:
+    case DRIVERS_LICENSE_NUMBER:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+      // Some websites ask for "Last X numbers" of a specific ID number, this
+      // logic takes care of returning only the required suffix.
+      return MaybeStripPrefix(value, field.max_length());
     default:
       return value;
   }

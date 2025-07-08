@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -299,6 +300,83 @@ TEST_F(GetFillValueForEntityTest, DifferentEntities) {
   EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
                                   mojom::ActionPersistence::kPreview),
             u"");
+}
+
+TEST_F(GetFillValueForEntityTest, NumbersWithMaxLength) {
+  EntityInstance drivers_license = test::GetDriversLicenseEntityInstance();
+  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstance vehicle = test::GetVehicleEntityInstance();
+
+  auto drivers_license_number_field = std::make_unique<AutofillField>();
+  drivers_license_number_field->set_server_predictions(
+      {CreatePrediction(DRIVERS_LICENSE_NUMBER)});
+  auto passport_number_field = std::make_unique<AutofillField>();
+  passport_number_field->set_server_predictions(
+      {CreatePrediction(PASSPORT_NUMBER)});
+  auto license_plate_field = std::make_unique<AutofillField>();
+  license_plate_field->set_server_predictions(
+      {CreatePrediction(VEHICLE_LICENSE_PLATE)});
+  auto vin_field = std::make_unique<AutofillField>();
+  vin_field->set_server_predictions({CreatePrediction(VEHICLE_VIN)});
+
+  // Currently the fields have no max_length so the value getters should return
+  // the whole number.
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, drivers_license_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"12312345");
+  EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"123");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
+                                  mojom::ActionPersistence::kFill),
+            u"123456");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, vin_field,
+                                  mojom::ActionPersistence::kFill),
+            u"12312345");
+
+  // Now, `FormFieldData::max_length_` is set for the fields such that the
+  // numbers will need stripping.
+  drivers_license_number_field->set_max_length(3);
+  passport_number_field->set_max_length(3);
+  license_plate_field->set_max_length(3);
+  vin_field->set_max_length(3);
+
+  // It is now expected that the getters only return the last three digits of
+  // the corresponding numbers.
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, drivers_license_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"345");
+  EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"123");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
+                                  mojom::ActionPersistence::kFill),
+            u"456");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, vin_field,
+                                  mojom::ActionPersistence::kFill),
+            u"345");
+
+  // Now, `FormFieldData::max_length_` will be set to a large value so that all
+  // values fit completely.
+  drivers_license_number_field->set_max_length(100);
+  passport_number_field->set_max_length(100);
+  license_plate_field->set_max_length(100);
+  vin_field->set_max_length(100);
+
+  // It is now expected that the getters return the full value as if the
+  // `max_length` attribute was not set.
+  EXPECT_EQ(GetFillValueForEntity(drivers_license, drivers_license_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"12312345");
+  EXPECT_EQ(GetFillValueForEntity(passport, passport_number_field,
+                                  mojom::ActionPersistence::kFill),
+            u"123");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, license_plate_field,
+                                  mojom::ActionPersistence::kFill),
+            u"123456");
+  EXPECT_EQ(GetFillValueForEntity(vehicle, vin_field,
+                                  mojom::ActionPersistence::kFill),
+            u"12312345");
 }
 
 class GetFillValueForEntityStateTest : public GetFillValueForEntityTest {
