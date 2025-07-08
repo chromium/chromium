@@ -73,8 +73,9 @@ constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
 constexpr base::cstring_view kOpTypeGatherND = "GatherND";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
-constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
+constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
+constexpr base::cstring_view kOpTypeMatMul = "MatMul";
 constexpr base::cstring_view kOpTypePad = "Pad";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
@@ -1092,6 +1093,22 @@ void GraphBuilderOrt::AddLeakyReluOperation(
                         attributes);
 }
 
+void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
+  const std::string node_name = GenerateNodeName(matmul.label);
+  const std::string input_a = GetOperandNameById(matmul.a_operand_id);
+  const std::string input_b = GetOperandNameById(matmul.b_operand_id);
+  const std::string output = GetOperandNameById(matmul.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.matmul_input.SupportsAll(
+      {GetOperand(matmul.a_operand_id).descriptor,
+       GetOperand(matmul.b_operand_id).descriptor}));
+
+  std::array<const char*, 2> inputs = {input_a.c_str(), input_b.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeMatMul, node_name, inputs, outputs);
+}
+
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::vector<ScopedOrtOpAttr> attributes;
   constexpr base::cstring_view kAttrDilations = "dilations";
@@ -1620,6 +1637,10 @@ GraphBuilderOrt::BuildModel() {
         AddLeakyReluOperation(*operation->get_leaky_relu());
         break;
       }
+      case mojom::Operation::Tag::kMatmul: {
+        AddMatMulOperation(*operation->get_matmul());
+        break;
+      }
       case mojom::Operation::Tag::kPad: {
         AddPadOperation(*operation->get_pad());
         break;
@@ -1709,7 +1730,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:

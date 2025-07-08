@@ -191,6 +191,7 @@ class GraphBuilderOrt {
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
+  void AddMatMulOperation(const mojom::Matmul& matmul);
   void AddPadOperation(const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddPreluOperation(const mojom::Prelu& prelu);

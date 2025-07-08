@@ -169,7 +169,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*lstm_bias=*/{},
        /*lstm_cell_input=*/{},
        /*lstm_cell_bias=*/{},
-       /*matmul_input=*/{},
+       /*matmul_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*pad_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*average_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
