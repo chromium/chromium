@@ -20288,6 +20288,21 @@
             ]
         }
     ],
+    "RegenerateKeyForCatastrophicFailures": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RegenerateKeyForCatastrophicFailures"
+                    ]
+                }
+            ]
+        }
+    ],
     "RegisterOsUpdateHandlerWin": [
         {
             "platforms": [
