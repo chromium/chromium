@@ -42,9 +42,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
           partitioning_blob_url_closure = base::DoNothing(),
       base::RepeatingCallback<bool()> storage_access_check_closure =
           base::BindRepeating([]() -> bool { return false; }),
-      std::optional<GURL> top_level_blob_document_url =
-          std::nullopt,
-      bool partitioning_disabled_by_policy = false);
+      std::optional<GURL> top_level_blob_document_url = std::nullopt,
+      bool partitioning_disabled_by_policy = false,
+      const char* context_type_for_debugging = "",
+      base::RepeatingCallback<std::string()> storage_key_debug_string_callback =
+          base::BindRepeating([]() -> std::string { return ""; }));
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -119,6 +121,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   std::optional<GURL> top_level_blob_document_url_;
 
   const bool partitioning_disabled_by_policy_;
+
+  // TODO(crbug.com/417149687): Remove these once we've collected enough
+  // data to gauge the conditions under which origin mismatch crashes occur.
+  std::string context_type_for_debugging_;
+  base::RepeatingCallback<std::string()> storage_key_debug_string_callback_;
 
   base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
 };

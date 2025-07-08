@@ -90,7 +90,9 @@ BlobURLStoreImpl::BlobURLStoreImpl(
         partitioning_blob_url_closure,
     base::RepeatingCallback<bool()> storage_access_check_callback,
     std::optional<GURL> top_level_blob_document_url,
-    bool partitioning_disabled_by_policy)
+    bool partitioning_disabled_by_policy,
+    const char* context_type_for_debugging,
+    base::RepeatingCallback<std::string()> storage_key_debug_string_callback)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
       render_process_host_id_(render_process_host_id),
@@ -98,9 +100,11 @@ BlobURLStoreImpl::BlobURLStoreImpl(
       validity_check_behavior_(validity_check_behavior),
       partitioning_blob_url_closure_(std::move(partitioning_blob_url_closure)),
       storage_access_check_callback_(std::move(storage_access_check_callback)),
-      top_level_blob_document_url_(
-          std::move(top_level_blob_document_url)),
-      partitioning_disabled_by_policy_(partitioning_disabled_by_policy) {}
+      top_level_blob_document_url_(std::move(top_level_blob_document_url)),
+      partitioning_disabled_by_policy_(partitioning_disabled_by_policy),
+      context_type_for_debugging_(context_type_for_debugging),
+      storage_key_debug_string_callback_(
+          std::move(storage_key_debug_string_callback)) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
@@ -269,10 +273,17 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   url::Origin storage_key_origin = storage_key_.origin();
   static crash_reporter::CrashKeyString<256> origin_key("origin");
   static crash_reporter::CrashKeyString<256> url_key("url");
+  static crash_reporter::CrashKeyString<256> latest_storage_key(
+      "latest_storage_key");
+  static crash_reporter::CrashKeyString<256> context_type("context_type");
   crash_reporter::ScopedCrashKeyString scoped_origin_key(
       &origin_key, storage_key_origin.GetDebugString());
   crash_reporter::ScopedCrashKeyString scoped_url_key(
       &url_key, url.possibly_invalid_spec());
+  crash_reporter::ScopedCrashKeyString scoped_latest_storage_key(
+      &latest_storage_key, storage_key_debug_string_callback_.Run());
+  crash_reporter::ScopedCrashKeyString scoped_context_type(
+      &context_type, context_type_for_debugging_);
 
   if (!url.SchemeIsBlob()) {
     mojo::ReportBadMessage(

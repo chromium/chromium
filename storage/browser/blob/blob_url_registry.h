@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
           partitioning_blob_url_closure,
       base::RepeatingCallback<bool()> storage_access_check_callback,
       std::optional<GURL> top_level_blob_document_url,
+      const char* context_type_for_debugging,
+      base::RepeatingCallback<std::string()> storage_key_debug_string_callback,
       bool partitioning_disabled_by_policy = false);
 
   // Binds receivers corresponding to connections from renderer worker
@@ -74,6 +76,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const url::Origin& renderer_origin,
       int render_process_host_id,
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+      const char* context_type_for_debugging,
+      base::RepeatingCallback<std::string()> storage_key_debug_string_callback,
       base::RepeatingCallback<bool()> storage_access_check_callback =
           base::BindRepeating([]() -> bool { return false; }),
       bool partitioning_disabled_by_policy = false,

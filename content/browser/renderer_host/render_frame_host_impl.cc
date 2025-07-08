@@ -12836,6 +12836,15 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
           },
           weak_ptr_factory_.GetWeakPtr()),
       std::move(top_level_blob_document_url),
+      /*context_type_for_debugging=*/"Frame",
+      base::BindRepeating(
+          [](base::WeakPtr<RenderFrameHostImpl> frame) -> std::string {
+            if (!frame) {
+              return "destroyed RenderFrameHost";
+            }
+            return frame->GetStorageKey().GetDebugString();
+          },
+          weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetBrowserContext())));
 }
@@ -12848,7 +12857,16 @@ void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), GetLastCommittedOrigin(),
-      GetProcess()->GetDeprecatedID(), std::move(receiver));
+      GetProcess()->GetDeprecatedID(), std::move(receiver),
+      /*context_type_for_debugging=*/"ThreadedWorklet",
+      base::BindRepeating(
+          [](base::WeakPtr<RenderFrameHostImpl> frame) -> std::string {
+            if (!frame) {
+              return "destroyed RenderFrameHost (threaded worklet)";
+            }
+            return frame->GetStorageKey().GetDebugString();
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool RenderFrameHostImpl::IsFocused() {

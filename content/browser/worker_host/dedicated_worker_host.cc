@@ -841,6 +841,15 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
       std::move(receiver),
+      /*context_type_for_debugging=*/"Dedicated Worker",
+      base::BindRepeating(
+          [](base::WeakPtr<DedicatedWorkerHost> host) -> std::string {
+            if (!host) {
+              return "destroyed DedicatedWorkerHost";
+            }
+            return host->GetStorageKey().GetDebugString();
+          },
+          weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<DedicatedWorkerHost> host) -> bool {
             if (!host) {

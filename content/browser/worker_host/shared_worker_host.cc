@@ -618,6 +618,15 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), instance().renderer_origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      /*context_type_for_debugging=*/"Shared Worker",
+      base::BindRepeating(
+          [](base::WeakPtr<SharedWorkerHost> host) -> std::string {
+            if (!host) {
+              return "destroyed SharedWorkerHost";
+            }
+            return host->GetStorageKey().GetDebugString();
+          },
+          weak_factory_.GetWeakPtr()),
       // Storage access can only be granted to dedicated workers.
       base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(

@@ -125,8 +125,12 @@ class BlobURLStoreImplTestP
 
   mojo::PendingRemote<BlobURLStore> CreateURLStore() {
     mojo::PendingRemote<BlobURLStore> result;
-    url_registry_.AddReceiver(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
-                              result.InitWithNewPipeAndPassReceiver());
+    url_registry_.AddReceiver(
+        kStorageKey, kStorageKey.origin(), /*render_process_host_id=*/0,
+        result.InitWithNewPipeAndPassReceiver(),
+        /*context_type_for_debugging=*/"",
+        /*storage_key_debug_string_callback=*/
+        base::BindRepeating([]() -> std::string { return ""; }));
     return result;
   }
 

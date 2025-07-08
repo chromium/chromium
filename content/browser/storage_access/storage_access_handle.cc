@@ -173,6 +173,17 @@ void StorageAccessHandle::BindBlobStorage(
           // A StorageAccessHandle is not a top-level blob document, so always
           // pass std::nullopt here.
           /*top_level_blob_document_url=*/std::nullopt,
+          /*context_type_for_debugging=*/"StorageAccessHandle",
+          base::BindRepeating(
+              [](base::WeakPtr<StorageAccessHandle> handle) -> std::string {
+                if (!handle) {
+                  return "destroyed StorageAccessHandle";
+                }
+                return handle->render_frame_host()
+                    .GetStorageKey()
+                    .GetDebugString();
+              },
+              weak_factory_.GetWeakPtr()),
           /*partitioning_disabled_by_policy=*/false);
 }
 
