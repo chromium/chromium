@@ -981,6 +981,15 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       }
     }
   }
+
+  // These webkit-prefixed properties are not supported by the permission
+  // element. But since they are inherited by default, they are passed through
+  // to the internal permission text span, even if they're not on the list of
+  // allowed CSS properties.
+  // Reset them here to avoid any side effects.
+  builder.ResetTextStrokeWidth();
+  builder.ResetTextFillColor();
+  builder.ResetTextStrokeColor();
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
