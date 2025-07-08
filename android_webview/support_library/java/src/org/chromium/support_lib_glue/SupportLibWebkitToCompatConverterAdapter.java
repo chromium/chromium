@@ -14,8 +14,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 
-import androidx.annotation.RequiresApi;
-
 import com.android.webview.chromium.SafeBrowsingResponseAdapter;
 import com.android.webview.chromium.ServiceWorkerSettingsAdapter;
 import com.android.webview.chromium.WebMessagePortAdapter;
@@ -115,7 +113,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public /* SupportLibSafeBrowsingResponse */ InvocationHandler convertSafeBrowsingResponse(
             /* SafeBrowsingResponse */ Object safeBrowsingResponse) {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -125,7 +122,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public /* SafeBrowsingResponse */ Object convertSafeBrowsingResponse(
             /* SupportLibSafeBrowsingResponse */ InvocationHandler safeBrowsingResponse) {
         SupportLibSafeBrowsingResponse supportLibResponse =

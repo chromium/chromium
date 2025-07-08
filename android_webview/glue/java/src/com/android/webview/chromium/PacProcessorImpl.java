@@ -5,15 +5,11 @@
 package com.android.webview.chromium;
 
 import android.net.Network;
-import android.os.Build;
 import android.webkit.PacProcessor;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwPacProcessor;
 import org.chromium.base.library_loader.LibraryLoader;
 
-@RequiresApi(Build.VERSION_CODES.P)
 final class PacProcessorImpl implements PacProcessor {
     static {
         LibraryLoader.getInstance().ensureInitialized();

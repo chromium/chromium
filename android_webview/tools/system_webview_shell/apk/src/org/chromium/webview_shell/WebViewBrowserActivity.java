@@ -6,7 +6,6 @@ package org.chromium.webview_shell;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -154,19 +153,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            boolean checked =
-                    AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode();
-            int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
-            if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    || defaultNightMode == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) {
-                UiModeManager uiModeManager =
-                        (UiModeManager)
-                                this.getApplicationContext().getSystemService(UI_MODE_SERVICE);
-                checked = UiModeManager.MODE_NIGHT_YES == uiModeManager.getNightMode();
-            }
-            menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
-        }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on)
                     .setChecked(

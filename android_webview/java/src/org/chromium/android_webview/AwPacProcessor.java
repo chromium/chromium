@@ -10,9 +10,6 @@ import android.net.LinkAddress;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkRequest;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -25,11 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to evaluate PAC scripts. Its lifecycle is independent of
- * any Renderer, Profile, or WebView instance.
+ * Class to evaluate PAC scripts. Its lifecycle is independent of any Renderer, Profile, or WebView
+ * instance.
  */
 @JNINamespace("android_webview")
-@RequiresApi(Build.VERSION_CODES.P)
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
