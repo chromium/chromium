@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
-namespace WTF {
+namespace blink {
 
 // Sends the input data through the Unicode case-folding table.
 // Unlike normal PlainHashReader, or the ASCII lower-case lookups,
@@ -86,7 +86,7 @@ struct CaseFoldingHashReader {
     // that's not representable as a UChar.  However, since this is rare and
     // deterministic, and the result of this is merely used for hashing, go
     // ahead and clamp the value.
-    return static_cast<UChar>(blink::unicode::FoldCase(ch));
+    return static_cast<UChar>(unicode::FoldCase(ch));
   }
 };
 
@@ -150,14 +150,13 @@ class CaseFoldingHash {
   }
 
   static unsigned GetHash(const String& key) { return GetHash(key.Impl()); }
-  static unsigned GetHash(const blink::AtomicString& key) {
+  static unsigned GetHash(const AtomicString& key) {
     return GetHash(key.Impl());
   }
   static bool Equal(const String& a, const String& b) {
     return Equal(a.Impl(), b.Impl());
   }
-  static bool Equal(const blink::AtomicString& a,
-                    const blink::AtomicString& b) {
+  static bool Equal(const AtomicString& a, const AtomicString& b) {
     return (a == b) || Equal(a.Impl(), b.Impl());
   }
 
@@ -172,9 +171,6 @@ struct CaseFoldingHashTraits : HashTraits<T>, CaseFoldingHash {
   using CaseFoldingHash::kSafeToCompareToEmptyOrDeleted;
 };
 
-}  // namespace WTF
-
-using WTF::CaseFoldingHash;
-using WTF::CaseFoldingHashTraits;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_

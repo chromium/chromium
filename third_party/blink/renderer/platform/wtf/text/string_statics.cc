@@ -104,9 +104,8 @@ WTF_EXPORT unsigned ComputeHashForWideString(base::span<const UChar> str) {
     }
   }
   if (is_all_latin1) {
-    return StringHasher::ComputeHashAndMaskTop8Bits<
-        WTF::ConvertTo8BitHashReader>(reinterpret_cast<const char*>(str.data()),
-                                      str.size());
+    return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+        reinterpret_cast<const char*>(str.data()), str.size());
   } else {
     return StringHasher::ComputeHashAndMaskTop8Bits(
         reinterpret_cast<const char*>(str.data()), str.size() * 2);

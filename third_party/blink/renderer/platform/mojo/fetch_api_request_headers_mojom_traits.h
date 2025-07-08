@@ -15,14 +15,15 @@ namespace mojo {
 
 template <>
 struct StructTraits<blink::mojom::FetchAPIRequestHeadersDataView,
-                    WTF::HashMap<WTF::String,
-                                 WTF::String,
-                                 WTF::CaseFoldingHashTraits<WTF::String>>> {
-  using MapType = WTF::HashMap<WTF::String,
-                               WTF::String,
-                               WTF::CaseFoldingHashTraits<WTF::String>>;
-  static WTF::HashMap<WTF::String, WTF::String> headers(const MapType& input) {
-    WTF::HashMap<WTF::String, WTF::String> map;
+                    WTF::HashMap<blink::String,
+                                 blink::String,
+                                 blink::CaseFoldingHashTraits<blink::String>>> {
+  using MapType = WTF::HashMap<blink::String,
+                               blink::String,
+                               blink::CaseFoldingHashTraits<blink::String>>;
+  static WTF::HashMap<blink::String, blink::String> headers(
+      const MapType& input) {
+    WTF::HashMap<blink::String, blink::String> map;
     for (const auto& tuple : input)
       map.insert(tuple.key, tuple.value);
     return map;
@@ -30,7 +31,7 @@ struct StructTraits<blink::mojom::FetchAPIRequestHeadersDataView,
 
   static bool Read(blink::mojom::FetchAPIRequestHeadersDataView in,
                    MapType* out) {
-    WTF::HashMap<WTF::String, WTF::String> in_headers;
+    WTF::HashMap<blink::String, blink::String> in_headers;
     if (!in.ReadHeaders(&in_headers))
       return false;
     for (const auto& tuple : in_headers)

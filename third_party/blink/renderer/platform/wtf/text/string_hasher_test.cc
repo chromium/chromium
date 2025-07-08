@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -134,8 +134,8 @@ TEST(StringHasherTest, ContractionAndExpansion) {
     String s16 = s8;
     s16.Ensure16Bit();
     EXPECT_EQ(CaseFoldingHash::GetHash(s8), CaseFoldingHash::GetHash(s16));
-    EXPECT_EQ(WTF::GetHash(s8), WTF::GetHash(s16));
+    EXPECT_EQ(GetHash(s8), GetHash(s16));
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

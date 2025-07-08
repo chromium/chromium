@@ -34,7 +34,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 
-namespace WTF {
+namespace blink {
 
 // This HashReader is for converting 16-bit strings to 8-bit strings,
 // assuming that all characters are within Latin1 (i.e., the high bit
@@ -105,6 +105,6 @@ struct ConvertTo8BitHashReader {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CONVERT_TO_8BIT_HASH_READER_H_

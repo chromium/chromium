@@ -33,8 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/rapidhash/rapidhash.h"
 
-namespace WTF {
-
+namespace blink {
 
 class StringHasher {
   DISALLOW_NEW();
@@ -111,8 +110,6 @@ class StringHasher {
   }
 };
 
-}  // namespace WTF
-
-using WTF::StringHasher;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
