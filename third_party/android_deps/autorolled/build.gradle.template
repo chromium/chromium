@@ -34,9 +34,12 @@ dependencies {
     compileLatest 'com.google.android.material:material:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
     compileLatest 'com.google.code.gson:gson:+'
-    compileLatest 'io.grpc:grpc-android:+'
+    compileLatest 'io.grpc:grpc-binder:+'
+    compileLatest 'io.grpc:grpc-api:+'
+    compileLatest 'io.grpc:grpc-stub:+'
+    compileLatest 'io.grpc:grpc-protobuf-lite:+'
 
-    // Play services libraries
+    // Play Services & Firebase
     compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
     compileLatest "com.google.android.gms:play-services-auth-base:+"
     compileLatest "com.google.android.gms:play-services-auth-blockstore:+"
@@ -54,6 +57,7 @@ dependencies {
     compileLatest "com.google.android.gms:play-services-tasks:+"
     compileLatest "com.google.android.gms:play-services-vision-common:+"
     compileLatest "com.google.android.gms:play-services-vision:+"
+    compileLatest "com.google.firebase:firebase-messaging:+"
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
@@ -65,6 +69,7 @@ dependencies {
     compileLatest "com.google.code.findbugs:jsr305:+"
     compileLatest "com.google.j2objc:j2objc-annotations:+"
     compileLatest "org.checkerframework:checker-qual:+"
+    compileLatest "org.checkerframework:checker-util:+"
     compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
     compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
     compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
