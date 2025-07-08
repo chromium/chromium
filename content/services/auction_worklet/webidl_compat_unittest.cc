@@ -1050,16 +1050,17 @@ TEST_F(WebIDLCompatTest, PropagateErrorsToV8Timeout) {
 }
 
 TEST_F(WebIDLCompatTest, PropagateErrorsToV8ErrorMessage) {
+  v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::Context> context = v8_helper_->CreateContext();
   v8::Context::Scope ctx(context);
-  v8::TryCatch try_catch(v8_helper_->isolate());
+  v8::TryCatch try_catch(isolate);
   IdlConvert::Status::MakeErrorMessage("Bad bug.")
       .PropagateErrorsToV8(v8_helper_.get());
   EXPECT_TRUE(try_catch.HasCaught());
   EXPECT_FALSE(try_catch.HasTerminated());
-  EXPECT_EQ(
-      "undefined:0 Uncaught TypeError: Bad bug.",
-      AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+  EXPECT_EQ("undefined:0 Uncaught TypeError: Bad bug.",
+            AuctionV8Helper::FormatExceptionMessage(isolate, context,
+                                                    try_catch.Message()));
 }
 
 TEST_F(WebIDLCompatTest, PropagateErrorsToV8Exception) {
@@ -1076,9 +1077,9 @@ TEST_F(WebIDLCompatTest, PropagateErrorsToV8Exception) {
   status.PropagateErrorsToV8(v8_helper_.get());
   EXPECT_TRUE(try_catch.HasCaught());
   EXPECT_FALSE(try_catch.HasTerminated());
-  EXPECT_EQ(
-      "undefined:0 Uncaught SyntaxError: typo.",
-      AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+  EXPECT_EQ("undefined:0 Uncaught SyntaxError: typo.",
+            AuctionV8Helper::FormatExceptionMessage(isolate, context,
+                                                    try_catch.Message()));
   EXPECT_EQ("undefined:0 Uncaught SyntaxError: typo.",
             status.ConvertToErrorString(isolate));
 }

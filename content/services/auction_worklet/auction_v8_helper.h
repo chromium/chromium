@@ -427,7 +427,8 @@ class CONTENT_EXPORT AuctionV8Helper
   // Helper for formatting script name for debug messages.
   std::string FormatScriptName(v8::Local<v8::UnboundScript> script);
 
-  static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
+  static std::string FormatExceptionMessage(v8::Isolate* isolate,
+                                            v8::Local<v8::Context> context,
                                             v8::Local<v8::Message> message);
 
   void SetEagerJsCompilation(bool eagerly_compile_js) {

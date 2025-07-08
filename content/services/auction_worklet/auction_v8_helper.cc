@@ -560,8 +560,8 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   auto result = v8::ScriptCompiler::CompileUnboundScript(
       v8_isolate, &script_source, compile_options);
   if (try_catch.HasCaught()) {
-    error_out = FormatExceptionMessage(v8_isolate->GetCurrentContext(),
-                                       try_catch.Message());
+    error_out = FormatExceptionMessage(
+        v8_isolate, v8_isolate->GetCurrentContext(), try_catch.Message());
   }
 
   DCHECK(!cached_data || (script_source.GetCachedData() &&
@@ -632,7 +632,7 @@ AuctionV8Helper::Result AuctionV8Helper::RunScript(
     TimeLimit* script_timeout,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(isolate(), context->GetIsolate());
+  DCHECK_EQ(isolate(), v8::Isolate::GetCurrent());
 
   std::string script_name = FormatScriptName(script);
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
@@ -657,7 +657,8 @@ AuctionV8Helper::Result AuctionV8Helper::RunScript(
   }
 
   if (try_catch.HasCaught()) {
-    error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
+    error_out.push_back(
+        FormatExceptionMessage(isolate(), context, try_catch.Message()));
     return Result::kFailure;
   }
 
@@ -678,7 +679,7 @@ AuctionV8Helper::Result AuctionV8Helper::CallFunction(
     v8::MaybeLocal<v8::Value>& value_out,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(isolate(), context->GetIsolate());
+  DCHECK_EQ(isolate(), v8::Isolate::GetCurrent());
 
   value_out = v8::MaybeLocal<v8::Value>();
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
@@ -729,7 +730,8 @@ AuctionV8Helper::Result AuctionV8Helper::CallFunction(
     return Result::kTimeout;
   }
   if (try_catch.HasCaught()) {
-    error_out.push_back(FormatExceptionMessage(context, try_catch.Message()));
+    error_out.push_back(
+        FormatExceptionMessage(isolate(), context, try_catch.Message()));
     return Result::kFailure;
   }
   value_out = func_result;
@@ -917,20 +919,20 @@ void AuctionV8Helper::CreateIsolate() {
 
 // static
 std::string AuctionV8Helper::FormatExceptionMessage(
+    v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     v8::Local<v8::Message> message) {
   if (message.IsEmpty()) {
     return "Unknown exception.";
-  } else {
-    v8::Isolate* isolate = message->GetIsolate();
-    int line_num;
-    return base::StrCat(
-        {FormatValue(isolate, message->GetScriptResourceName()),
-         !context.IsEmpty() && message->GetLineNumber(context).To(&line_num)
-             ? std::string(":") + base::NumberToString(line_num)
-             : std::string(),
-         " ", FormatValue(isolate, message->Get()), "."});
   }
+
+  int line_num;
+  return base::StrCat(
+      {FormatValue(isolate, message->GetScriptResourceName()),
+       !context.IsEmpty() && message->GetLineNumber(context).To(&line_num)
+           ? std::string(":") + base::NumberToString(line_num)
+           : std::string(),
+       " ", FormatValue(isolate, message->Get()), "."});
 }
 
 // static

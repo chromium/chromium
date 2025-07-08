@@ -69,7 +69,8 @@ std::string IdlConvert::Status::ConvertToErrorString(
       return std::get<std::string>(value_);
     case Type::kException:
       return AuctionV8Helper::FormatExceptionMessage(
-          isolate->GetCurrentContext(), std::get<Exception>(value_).message);
+          isolate, isolate->GetCurrentContext(),
+          std::get<Exception>(value_).message);
   }
 }
 

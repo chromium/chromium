@@ -63,12 +63,13 @@ bool ExecutionModeHelper::DeepFreezeContext(
     v8::Local<v8::Context>& context,
     scoped_refptr<AuctionV8Helper> v8_helper,
     std::vector<std::string>& errors_out) {
-  v8::TryCatch try_catch(v8_helper->isolate());
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::TryCatch try_catch(isolate);
   DeepFreezeAllowAll allow_jsapiobject;
   context->DeepFreeze(&allow_jsapiobject);
   if (try_catch.HasCaught()) {
-    errors_out.push_back(
-        AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+    errors_out.push_back(AuctionV8Helper::FormatExceptionMessage(
+        isolate, context, try_catch.Message()));
     return false;
   }
   return true;
