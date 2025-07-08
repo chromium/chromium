@@ -440,7 +440,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2977350910003566746">Inapanga kulingana na mara ya mwisho kufunguliwa</translation>
 <translation id="297771753501244313">Panga kulingana na zilizofunguliwa mwisho</translation>
 <translation id="2979639724566107830">Fungua katika dirisha jipya</translation>
-<translation id="2981364137500752533">Unaweza kuwa na hadi madirisha matano.</translation>
 <translation id="2983102365694924129">Kulingana na shughuli zako kwenye tovuti. Mipangilio hii imezimwa.</translation>
 <translation id="2983398917942897288">Zisizotumika (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Jumuisha maandishi yaliyo karibu na maneno uliyoyachagua katika utafutaji kwenye Google</translation>
@@ -1806,6 +1805,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8816556050903368450">Ikiwa ni pamoja na kiungo cha: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Maudhui ya kichupo cha kukagua kwanza hayawezi kuangaliwa.</translation>
 <translation id="8820817407110198400">Alamisho</translation>
+<translation id="8824359129672223138">Unaweza kuwa na hadi madirisha <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Hakikisha kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati</translation>
 <translation id="883806473910249246">Hitilafu imetokea wakati wa kupakua maudhui.</translation>
 <translation id="8840953339110955557">Ukurasa huu huenda ukatofautiana na toleo la mtandaoni.</translation>

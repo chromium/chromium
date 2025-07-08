@@ -440,7 +440,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2977350910003566746">Sortowanie według ostatniego otwarcia</translation>
 <translation id="297771753501244313">Sortuj wg daty otwarcia</translation>
 <translation id="2979639724566107830">Otwórz w nowym oknie</translation>
-<translation id="2981364137500752533">Możesz mieć maksymalnie 5 okien.</translation>
 <translation id="2983102365694924129">Na podstawie Twojej aktywności w witrynie. To ustawienie jest wyłączone.</translation>
 <translation id="2983398917942897288">Nieaktywne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Podczas wyszukiwania słów w Google uwzględniaj otaczający je tekst</translation>
@@ -1806,6 +1805,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8816556050903368450">W tym link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
+<translation id="8824359129672223138">Maksymalna dozwolona liczba okien: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Zadbaj o to, by nigdy nie stracić dostępu do zapisanych haseł</translation>
 <translation id="883806473910249246">Podczas pobierania treści wystąpił błąd.</translation>
 <translation id="8840953339110955557">Ta strona może różnić się od wersji online.</translation>

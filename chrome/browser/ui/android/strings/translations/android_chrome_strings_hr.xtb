@@ -440,7 +440,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2977350910003566746">Sortiranje od posljednjeg otvaranja</translation>
 <translation id="297771753501244313">Poredaj od posljednjeg otvaranja</translation>
 <translation id="2979639724566107830">Otvori u novom prozoru</translation>
-<translation id="2981364137500752533">Možete imati do pet prozora.</translation>
 <translation id="2983102365694924129">Na temelju vaše aktivnosti na web-lokaciji. Postavka je isključena.</translation>
 <translation id="2983398917942897288">Neaktivno (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Uključi okolni tekst u Google pretraživanja</translation>
@@ -1806,6 +1805,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8816556050903368450">Uključujući vezu: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Sadržaj kartice pregleda nije vidljiv.</translation>
 <translation id="8820817407110198400">Oznake</translation>
+<translation id="8824359129672223138">Možete imati najviše ovoliko prozora: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Pobrinite se da uvijek možete pristupiti spremljenim zaporkama</translation>
 <translation id="883806473910249246">Prilikom preuzimanja sadržaja dogodila se pogreška.</translation>
 <translation id="8840953339110955557">Ta se stranica možda razlikuje od online verzije.</translation>

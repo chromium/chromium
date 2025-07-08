@@ -440,7 +440,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2977350910003566746">Sorterar efter senast öppnade</translation>
 <translation id="297771753501244313">Sortera efter sist öppnad</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
-<translation id="2981364137500752533">Du kan ha upp till fem fönster.</translation>
 <translation id="2983102365694924129">Baserat på din aktivitet på en webbplats. Inställningen är inaktiverad.</translation>
 <translation id="2983398917942897288">Inaktiva (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Inkludera omgivande text i sökningar på Google</translation>
@@ -1807,6 +1806,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8816556050903368450">Länk till förekomst: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Det går inte att förhandsgranska innehållet.</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
+<translation id="8824359129672223138">Du kan ha upp till <ph name="MAX_WINDOW_COUNT" /> fönster.</translation>
 <translation id="8835786707922974220">Se till att du alltid kan få åtkomst till dina sparade lösenord</translation>
 <translation id="883806473910249246">Ett fel uppstod när innehållet skulle laddas ned.</translation>
 <translation id="8840953339110955557">Sidan kan skilja sig från onlineversionen.</translation>

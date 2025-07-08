@@ -440,7 +440,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2977350910003566746">Wrthi'n trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="297771753501244313">Trefnu yn ôl agorwyd ddiwethaf</translation>
 <translation id="2979639724566107830">Agor mewn ffenestr newydd</translation>
-<translation id="2981364137500752533">Gallwch gael hyd at 5 ffenestr.</translation>
 <translation id="2983102365694924129">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="2983398917942897288">Anweithredol (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Cynnwys testun o'i amgylch mewn chwiliadau Google</translation>
@@ -1807,6 +1806,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8816556050903368450">Cynnwys y ddolen: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Nid oes modd gweld cynnwys y tab rhagweld.</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
+<translation id="8824359129672223138">Gallwch gael hyd at <ph name="MAX_WINDOW_COUNT" /> ffenestr.</translation>
 <translation id="8835786707922974220">Gwnewch yn siŵr eich bod bob amser yn gallu cael mynediad at eich cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="883806473910249246">Bu gwall wrth lawrlwytho'r cynnwys.</translation>
 <translation id="8840953339110955557">Gall y dudalen hon fod yn wahanol i'r fersiwn ar-lein.</translation>

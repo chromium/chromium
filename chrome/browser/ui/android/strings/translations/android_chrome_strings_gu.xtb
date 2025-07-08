@@ -440,7 +440,6 @@
 <translation id="2977350910003566746">'છેલ્લે ખોલાયા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="297771753501244313">છેલ્લે ખોલાયા મુજબ સૉર્ટ કરો</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
-<translation id="2981364137500752533">તમે વધુમાં વધુ 5 વિન્ડો ખોલી શકો છો.</translation>
 <translation id="2983102365694924129">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ બંધ છે.</translation>
 <translation id="2983398917942897288">નિષ્ક્રિય (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google Searchમાં આજુબાજુની ટેક્સ્ટ શામેલ કરો</translation>
@@ -1806,6 +1805,7 @@
 <translation id="8816556050903368450">આ લિંક સહિત: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
+<translation id="8824359129672223138">તમે વધુમાં વધુ <ph name="MAX_WINDOW_COUNT" /> વિન્ડો ખુલ્લી રાખી શકો છો.</translation>
 <translation id="8835786707922974220">ખાતરી કરો કે તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો</translation>
 <translation id="883806473910249246">કન્ટેન્ટ ડાઉનલોડ કરતી વખતે એક ભૂલ આવી.</translation>
 <translation id="8840953339110955557">આ પેજ ઑનલાઇન વર્ઝનથી અલગ હોય શકે છે.</translation>

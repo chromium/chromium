@@ -440,7 +440,6 @@
 <translation id="2977350910003566746">අවසන් වරට විවෘත කළ අනුව වර්ග කිරීම</translation>
 <translation id="297771753501244313">අවසන් විවෘත අනුව සුබෙදීම</translation>
 <translation id="2979639724566107830">නව කවුළුවක විවෘත කරන්න</translation>
-<translation id="2981364137500752533">ඔබට කවුළු 5ක් දක්වා තිබිය හැකිය.</translation>
 <translation id="2983102365694924129">අඩවියක ඔබේ ක්‍රියාකාරකම් මත පදනම්ව. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="2983398917942897288">අක්‍රිය (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google සෙවීම් තුළ අවට පෙළ ඇතුළත් කරන්න</translation>
@@ -1806,6 +1805,7 @@
 <translation id="8816556050903368450">සබැඳිය ඇතුළුව: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ටැබ අන්තර්ගතය පෙරදසුන් කිරීම බැලිය නොහැකිය.</translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
+<translation id="8824359129672223138">ඔබට කවුළු <ph name="MAX_WINDOW_COUNT" />ක් දක්වා තිබිය හැක.</translation>
 <translation id="8835786707922974220">ඔබට ඔබගේ සුරකින ලද මුරපදවලට සැම විට ප්‍රවේශ විය හැකි බවට සහතික කර ගන්න</translation>
 <translation id="883806473910249246">අන්තර්ගතය බාගැනිමේදී දෝෂයක් සිදු විය.</translation>
 <translation id="8840953339110955557">මෙම පිටුව සබැඳි අනුවාදයෙන් වෙනස් විය හැක.</translation>

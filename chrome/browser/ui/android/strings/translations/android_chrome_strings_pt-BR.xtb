@@ -440,7 +440,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
-<translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
 <translation id="2983398917942897288">Guias inativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
@@ -1764,7 +1763,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8585103689515290060">Preenchimento automático</translation>
 <translation id="859046281437143747">Monitore o preço com o botão "Mais opções"</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> grupo de guias excluído</translation>
-<translation id="860043288473659153">Nome do titular do cartão</translation>
+<translation id="860043288473659153">Titular</translation>
 <translation id="8602358303461588329">Fazer login no Chrome, fechada.</translation>
 <translation id="860282621117673749">Alertas de redução no preço</translation>
 <translation id="8611922158252451755">Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
@@ -1807,6 +1806,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8816556050903368450">Incluindo o link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">O conteúdo da guia de visualização não pode ser exibido.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
+<translation id="8824359129672223138">Você pode ter até <ph name="MAX_WINDOW_COUNT" /> janelas.</translation>
 <translation id="8835786707922974220">Tenha sempre acesso às suas senhas salvas</translation>
 <translation id="883806473910249246">Ocorreu um erro durante o download do conteúdo.</translation>
 <translation id="8840953339110955557">Esta página pode ser diferente da versão on-line.</translation>

@@ -440,7 +440,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2977350910003566746">Sortimine viimase avamise järgi</translation>
 <translation id="297771753501244313">Sorditud: viimati avatud</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
-<translation id="2981364137500752533">Teil võib olla kuni viis akent.</translation>
 <translation id="2983102365694924129">Põhinevad teie tegevusel konkreetsel saidil. See seade on välja lülitatud.</translation>
 <translation id="2983398917942897288">Mitteaktiivne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Kaasa ümbritsev tekst Google'i otsingutesse</translation>
@@ -1806,6 +1805,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8816556050903368450">Kaasatud link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Eelvaate vahelehe sisu ei saa vaadata.</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
+<translation id="8824359129672223138">Teil võib olla kuni <ph name="MAX_WINDOW_COUNT" /> akent.</translation>
 <translation id="8835786707922974220">Veenduge, et pääseksite alati oma salvestatud paroolidele juurde</translation>
 <translation id="883806473910249246">Sisu allalaadimisel ilmnes viga.</translation>
 <translation id="8840953339110955557">Leht võib veebiversioonist erineda.</translation>

@@ -440,7 +440,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2977350910003566746">Sorteres etter sist åpnet</translation>
 <translation id="297771753501244313">Sorter etter sist åpnet</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
-<translation id="2981364137500752533">Du kan ha opptil 5 vinduer.</translation>
 <translation id="2983102365694924129">Basert på aktiviteten din på et nettsted. Denne innstillingen er slått av.</translation>
 <translation id="2983398917942897288">Inaktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Ta med den omliggende teksten i Google-søk</translation>
@@ -1806,6 +1805,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8816556050903368450">Inkludert link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Innholdet på forhåndsvisningsfanen kan ikke vises.</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
+<translation id="8824359129672223138">Du kan ha opptil <ph name="MAX_WINDOW_COUNT" /> vinduer.</translation>
 <translation id="8835786707922974220">Sørg for at du alltid har tilgang til de lagrede passordene dine</translation>
 <translation id="883806473910249246">Det oppsto en feil under nedlastingen av innholdet.</translation>
 <translation id="8840953339110955557">Denne siden kan avvike fra nettversjonen.</translation>

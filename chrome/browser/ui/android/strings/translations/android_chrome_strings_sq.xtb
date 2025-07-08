@@ -440,7 +440,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2977350910003566746">Po renditen sipas hapjes së fundit</translation>
 <translation id="297771753501244313">Rendit sipas hapjes së fundit</translation>
 <translation id="2979639724566107830">Hape në një dritare të re</translation>
-<translation id="2981364137500752533">Mund të kesh deri në 5 dritare.</translation>
 <translation id="2983102365694924129">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është joaktiv.</translation>
 <translation id="2983398917942897288">Joaktiv (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Përfshi tekstin përreth në kërkimet e Google</translation>
@@ -1806,6 +1805,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8816556050903368450">Duke përfshirë lidhjen: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Përmbajtja e skedës së shikimit paraprak nuk është e shikueshme.</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
+<translation id="8824359129672223138">Mund të kesh deri në <ph name="MAX_WINDOW_COUNT" /> dritare.</translation>
 <translation id="8835786707922974220">Sigurohu që gjithmonë të mund të qasesh në fjalëkalimet e tua të ruajtura</translation>
 <translation id="883806473910249246">Ndodhi një gabim gjatë shkarkimit të përmbajtjes.</translation>
 <translation id="8840953339110955557">Kjo faqe mund të ndryshojë nga versioni online.</translation>

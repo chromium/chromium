@@ -440,7 +440,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2977350910003566746">Oxirgi ochilgani asosida</translation>
 <translation id="297771753501244313">Oxirgi ochilgani asosida</translation>
 <translation id="2979639724566107830">Yangi oynada ochish</translation>
-<translation id="2981364137500752533">5 tagacha oyna ochish mumkin.</translation>
 <translation id="2983102365694924129">Saytdagi harakatlaringiz asosida. Bu sozlama oʻchiq.</translation>
 <translation id="2983398917942897288">Nofaol (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google qidiruvlariga qamrovli matn kiritish</translation>
@@ -1806,6 +1805,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8816556050903368450">Bu havola bilan: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Razm solish sahifasi kontentini koʻrish imkonsiz.</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
+<translation id="8824359129672223138">Maksimum <ph name="MAX_WINDOW_COUNT" /> ta oyna ochish mumkin.</translation>
 <translation id="8835786707922974220">Saqlangan parollaringizni doim ocha olishingizni tekshiring</translation>
 <translation id="883806473910249246">Kontentni yuklab olishda xatolik yuz berdi.</translation>
 <translation id="8840953339110955557">Bu sahifa onlayn versiyasidan farq qilishi mumkin.</translation>

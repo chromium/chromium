@@ -440,7 +440,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2977350910003566746">Se sortează după data ultimei deschideri</translation>
 <translation id="297771753501244313">Sortează după data ultimei deschideri</translation>
 <translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
-<translation id="2981364137500752533">Poți deschide maximum cinci ferestre.</translation>
 <translation id="2983102365694924129">Pe baza activității tale pe un site. Setarea este dezactivată.</translation>
 <translation id="2983398917942897288">Inactive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Include text din jur în căutările de pe Google</translation>
@@ -1806,6 +1805,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8816556050903368450">Inclusiv linkul: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Conținutul filei Previzualizează nu poate fi afișat.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
+<translation id="8824359129672223138">Poți deschide maximum <ph name="MAX_WINDOW_COUNT" /> ferestre.</translation>
 <translation id="8835786707922974220">Asigură-te că ai în permanență acces la parolele salvate</translation>
 <translation id="883806473910249246">A apărut o eroare la descărcarea conținutului.</translation>
 <translation id="8840953339110955557">Această pagină poate fi diferită de versiunea online.</translation>

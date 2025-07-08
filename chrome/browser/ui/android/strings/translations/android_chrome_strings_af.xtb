@@ -440,7 +440,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2977350910003566746">Sorteer volgens laas oopgemaak</translation>
 <translation id="297771753501244313">Sorteer: laas oopgemaak</translation>
 <translation id="2979639724566107830">Maak in nuwe venster oop</translation>
-<translation id="2981364137500752533">Jy kan tot 5 vensters hê.</translation>
 <translation id="2983102365694924129">Gegrond op jou aktiwiteit op ’n werf. Hierdie instelling is af.</translation>
 <translation id="2983398917942897288">Onaktief (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Sluit omringende teks by Google-soektogte in</translation>
@@ -1806,6 +1805,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8816556050903368450">Skakel ingesluit: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
+<translation id="8824359129672223138">Jy kan tot <ph name="MAX_WINDOW_COUNT" /> vensters hê.</translation>
 <translation id="8835786707922974220">Maak seker dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
 <translation id="883806473910249246">Kon nie die inhoud aflaai nie.</translation>
 <translation id="8840953339110955557">Hierdie bladsy kan van die aanlyn weergawe verskil.</translation>

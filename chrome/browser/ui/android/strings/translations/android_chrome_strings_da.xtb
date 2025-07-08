@@ -440,7 +440,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
-<translation id="2981364137500752533">Du kan have op til 5 vinduer.</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
 <translation id="2983398917942897288">Inaktive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Medtag omgivende tekst i Google-søgninger</translation>
@@ -1806,6 +1805,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8816556050903368450">Inklusiv link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
+<translation id="8824359129672223138">Du kan have op til <ph name="MAX_WINDOW_COUNT" /> vinduer.</translation>
 <translation id="8835786707922974220">Sørg for, at du altid har adgang til dine gemte adgangskoder</translation>
 <translation id="883806473910249246">Der opstod en fejl under download af indholdet.</translation>
 <translation id="8840953339110955557">Denne side kan afvige fra onlineversionen.</translation>

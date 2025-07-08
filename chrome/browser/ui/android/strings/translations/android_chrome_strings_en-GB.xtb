@@ -440,7 +440,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2977350910003566746">Sorting by last opened</translation>
 <translation id="297771753501244313">Sort by last opened</translation>
 <translation id="2979639724566107830">Open in new window</translation>
-<translation id="2981364137500752533">You can have up to 5 windows.</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
 <translation id="2983398917942897288">Inactive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Include surrounding text in Google searches</translation>
@@ -1806,6 +1805,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8816556050903368450">Including link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8824359129672223138">You can have up to <ph name="MAX_WINDOW_COUNT" /> windows.</translation>
 <translation id="8835786707922974220">Make sure that you can always access your saved passwords</translation>
 <translation id="883806473910249246">An error occurred while downloading the content.</translation>
 <translation id="8840953339110955557">This page may differ from the online version.</translation>

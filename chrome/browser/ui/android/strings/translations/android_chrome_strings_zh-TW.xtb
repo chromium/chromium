@@ -440,7 +440,6 @@
 <translation id="2977350910003566746">依上次開啟時間排序</translation>
 <translation id="297771753501244313">依上次開啟時間排序</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
-<translation id="2981364137500752533">最多只能開啟 5 個視窗。</translation>
 <translation id="2983102365694924129">以你的網站活動做為依據。這項設定已關閉。</translation>
 <translation id="2983398917942897288">未啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">使用 Google 搜尋時納入前後文</translation>
@@ -1806,6 +1805,7 @@
 <translation id="8816556050903368450">加入連結：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">無法檢視分頁的預覽內容。</translation>
 <translation id="8820817407110198400">書籤</translation>
+<translation id="8824359129672223138">最多只能開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。</translation>
 <translation id="8835786707922974220">確保你可以隨時存取已儲存的密碼</translation>
 <translation id="883806473910249246">下載這項內容時發生錯誤。</translation>
 <translation id="8840953339110955557">這個網頁可能會和線上版本有所不同。</translation>

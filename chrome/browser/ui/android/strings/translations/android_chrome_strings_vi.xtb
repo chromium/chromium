@@ -440,7 +440,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
-<translation id="2981364137500752533">Bạn có thể mở tối đa 5 cửa sổ.</translation>
 <translation id="2983102365694924129">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang tắt.</translation>
 <translation id="2983398917942897288">Không hoạt động (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google</translation>
@@ -1806,6 +1805,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8816556050903368450">Bao gồm đường liên kết: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Không thể xem nội dung trên thẻ Xem trước.</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
+<translation id="8824359129672223138">Bạn có thể mở tối đa <ph name="MAX_WINDOW_COUNT" /> cửa sổ.</translation>
 <translation id="8835786707922974220">Đảm bảo rằng bạn luôn có thể truy cập các mật khẩu đã lưu</translation>
 <translation id="883806473910249246">Đã xảy ra lỗi khi tải nội dung xuống.</translation>
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>

@@ -440,7 +440,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
-<translation id="2981364137500752533">최대 5개의 창을 열 수 있습니다.</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2983398917942897288">비활성(<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google 검색어에 주변 텍스트 포함</translation>
@@ -1806,6 +1805,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8816556050903368450">포함된 링크: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
+<translation id="8824359129672223138">최대 <ph name="MAX_WINDOW_COUNT" />개의 창을 열 수 있습니다.</translation>
 <translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
 <translation id="883806473910249246">콘텐츠를 다운로드하는 중에 오류가 발생했습니다.</translation>
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>

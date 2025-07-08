@@ -440,7 +440,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2977350910003566746">Sortira se prema poslednjem otvaranju</translation>
 <translation id="297771753501244313">Po poslednjem otvaranju</translation>
 <translation id="2979639724566107830">Otvorite u novom prozoru</translation>
-<translation id="2981364137500752533">Možete da imate najviše 5 prozora.</translation>
 <translation id="2983102365694924129">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je isključeno.</translation>
 <translation id="2983398917942897288">Neaktivne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Uvrsti okolni tekst u Google pretrage</translation>
@@ -1806,6 +1805,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8816556050903368450">Link za uvršćivanje: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Sadržaj kartice za pregled ne može da se vidi.</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
+<translation id="8824359129672223138">Možete da imate najviše <ph name="MAX_WINDOW_COUNT" /> prozora.</translation>
 <translation id="8835786707922974220">Uverite se da uvek možete da pristupate sačuvanim lozinkama</translation>
 <translation id="883806473910249246">Došlo je do greške pri preuzimanju sadržaja.</translation>
 <translation id="8840953339110955557">Ova stranica može da se razlikuje od onlajn verzije.</translation>

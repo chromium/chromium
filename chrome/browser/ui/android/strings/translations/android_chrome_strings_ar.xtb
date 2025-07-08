@@ -441,7 +441,6 @@
 <translation id="2977350910003566746">جارٍ الترتيب حسب آخِر استخدام</translation>
 <translation id="297771753501244313">الترتيب حسب آخِر استخدام</translation>
 <translation id="2979639724566107830">الفتح في نافذة جديدة</translation>
-<translation id="2981364137500752533">يمكنك فتح 5 نوافذ بحد أقصى.</translation>
 <translation id="2983102365694924129">تستند هذه الاقتراحات إلى نشاطك على المواقع الإلكترونية. هذا الإعداد غير مفعَّل.</translation>
 <translation id="2983398917942897288">غير نشطة (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">‏تضمين النص المحيط في عمليات البحث على Google</translation>
@@ -1810,6 +1809,7 @@
 <translation id="8816556050903368450">تضمين الرابط: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">محتوى علامة تبويب المعاينة غير قابل للعرض.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
+<translation id="8824359129672223138">الحد الأقصى لعدد النوافذ التي يمكنك فتحها هو <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">ضمان إمكانية الوصول إلى كلمات المرور المحفوظة دائمًا</translation>
 <translation id="883806473910249246">حدث خطأ أثناء تنزيل المحتوى.</translation>
 <translation id="8840953339110955557">قد تختلف هذه الصفحة عن الإصدار الوارد على الإنترنت.</translation>

@@ -440,7 +440,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2977350910003566746">Mengisih mengikut terakhir dibuka</translation>
 <translation id="297771753501244313">Isih ikut terakhir dibuka</translation>
 <translation id="2979639724566107830">Buka dalam tetingkap baharu</translation>
-<translation id="2981364137500752533">Anda boleh membuka sehingga 5 tetingkap.</translation>
 <translation id="2983102365694924129">Berdasarkan aktiviti anda pada laman. Tetapan ini dimatikan.</translation>
 <translation id="2983398917942897288">Tidak aktif (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Sertakan teks sekitar dalam carian Google</translation>
@@ -1806,6 +1805,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8816556050903368450">Termasuk pautan: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Kandungan tab pratonton tidak boleh dilihat.</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
+<translation id="8824359129672223138">Anda boleh membuka maksimum <ph name="MAX_WINDOW_COUNT" /> tetingkap.</translation>
 <translation id="8835786707922974220">Pastikan anda dapat mengakses kata laluan anda yang disimpan pada bila-bila masa</translation>
 <translation id="883806473910249246">Ralat berlaku semasa memuat turun kandungan.</translation>
 <translation id="8840953339110955557">Halaman ini mungkin berbeza daripada versi dalam talian.</translation>

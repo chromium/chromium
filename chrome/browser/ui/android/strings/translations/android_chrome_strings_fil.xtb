@@ -440,7 +440,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2977350910003566746">Ibinubukod-bukod ayon sa huling binuksan</translation>
 <translation id="297771753501244313">Ayon sa huling binuksan</translation>
 <translation id="2979639724566107830">Buksan ng bagong window</translation>
-<translation id="2981364137500752533">Puwede kang magkaroon ng hanggang 5 window.</translation>
 <translation id="2983102365694924129">Batay sa iyong aktibidad sa isang site. Naka-off ang setting na ito.</translation>
 <translation id="2983398917942897288">Hindi Aktibo (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Isama ang katabing text sa mga paghahanap sa Google</translation>
@@ -1806,6 +1805,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8816556050903368450">Kasama ang link na: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Hindi puwedeng tingnan ang content ng tab na preview.</translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
+<translation id="8824359129672223138">Puwede kang magkaroon ng hanggang <ph name="MAX_WINDOW_COUNT" /> (na) window.</translation>
 <translation id="8835786707922974220">Tiyaking maa-access mo anumang oras ang iyong mga naka-save na password</translation>
 <translation id="883806473910249246">Nagka-error habang dina-download ang content.</translation>
 <translation id="8840953339110955557">Maaaring iba ang page na ito sa online na bersyon.</translation>

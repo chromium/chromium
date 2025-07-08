@@ -440,7 +440,6 @@
 <translation id="2977350910003566746">Сортування за датою останнього відкриття</translation>
 <translation id="297771753501244313">Востаннє відкриті</translation>
 <translation id="2979639724566107830">Відкрити в новому вікні</translation>
-<translation id="2981364137500752533">Ви можете відкрити не більше ніж 5 вікон.</translation>
 <translation id="2983102365694924129">На основі ваших дій на сайті. Це налаштування вимкнено.</translation>
 <translation id="2983398917942897288">Неактивні (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Враховувати контекст для пошуку в Google</translation>
@@ -1806,6 +1805,7 @@
 <translation id="8816556050903368450">Додано посилання: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Попередній перегляд вмісту вкладки не видно.</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="8824359129672223138">Максимальна кількість вікон: <ph name="MAX_WINDOW_COUNT" />.</translation>
 <translation id="8835786707922974220">Подбайте про те, щоб не втратити доступ до своїх збережених паролів</translation>
 <translation id="883806473910249246">Не вдалося завантажити вміст.</translation>
 <translation id="8840953339110955557">Ця сторінка може відрізнятися від онлайн-версії.</translation>

@@ -440,7 +440,6 @@
 <translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="297771753501244313">আগেরবার খোলার সময় অনুযায়ী সাজান</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
-<translation id="2981364137500752533">আপনি ৫টির বেশি উইন্ডো খুলতে পারবেন না।</translation>
 <translation id="2983102365694924129">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="2983398917942897288">চালু নেই (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করুন</translation>
@@ -1806,6 +1805,7 @@
 <translation id="8816556050903368450">এই লিঙ্কটি সহ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ট্যাব কন্টেন্ট প্রিভিউ করার বিকল্প উপলভ্য নেই।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8824359129672223138">আপনি <ph name="MAX_WINDOW_COUNT" />টির বেশি উইন্ডো খুলতে পারবেন না।</translation>
 <translation id="8835786707922974220">আপনার সেভ করা পাসওয়ার্ড সবসময় অ্যাক্সেস করতে পারবেন কিনা তা দেখে নিন</translation>
 <translation id="883806473910249246">কন্টেন্ট ডাউনলোড করার সময় একটি ত্রুটি ঘটেছে৷</translation>
 <translation id="8840953339110955557">এই পৃষ্ঠাটি হয়ত অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
