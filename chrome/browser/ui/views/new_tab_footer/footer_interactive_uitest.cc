@@ -29,6 +29,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalFooterElementId);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kCustomizeChromeButton{
@@ -102,6 +103,18 @@ class FooterInteractiveTest
         EnsurePresent(kSidePanelElementId),
         ExecuteJsAt(contents_id, kCustomizeChromeButton, "el => el.click()"),
         WaitForHide(kSidePanelElementId));
+  }
+
+  InteractiveTestApi::MultiStep OpenContextMenuAndSelect(
+      const ui::ElementIdentifier& menu_item_id) {
+    // Disable the "NTP overridden" dialog as it can interfere with this
+    // test.
+    extensions::SetNtpPostInstallUiEnabledForTesting(false);
+    const DeepQuery kFooterContainer = {"new-tab-footer-app", "#container"};
+    return Steps(InstrumentNonTabWebView(kLocalFooterElementId, kNtpFooterId),
+                 MoveMouseTo(kLocalFooterElementId, kFooterContainer),
+                 ClickMouse(ui_controls::RIGHT), WaitForShow(menu_item_id),
+                 SelectMenuItem(menu_item_id, InputType::kMouse));
   }
 
   new_tab_footer::NewTabFooterWebView* GetFooterView() {
@@ -181,31 +194,32 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, OpenAndCloseCustomizeChrome) {
       CloseSidePanel(kFooterElementId1));
 }
 
-// Test is flaky on Mac, possibly due to the Mac handling of context menus.
+// Context menu tests flaky on Mac, possibly due to the Mac handling of context
+// menus.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuHidesFooter) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalFooterElementId);
-
-  const DeepQuery kFooterContainer = {"new-tab-footer-app", "#container"};
-
-  // Disable the "NTP overridden" dialog as it can interfere with this
-  // test.
-  extensions::SetNtpPostInstallUiEnabledForTesting(false);
   // Override the ntp with an extension.
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension ntp.
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
-      // Right click on footer to open context menu.
-      Steps(InstrumentNonTabWebView(kLocalFooterElementId, kNtpFooterId),
-            MoveMouseTo(kLocalFooterElementId, kFooterContainer),
-            ClickMouse(ui_controls::RIGHT)),
-      // Select the "hide footer" option.
-      Steps(WaitForShow(FooterContextMenu::kHideFooterIdForTesting),
-            SelectMenuItem(FooterContextMenu::kHideFooterIdForTesting,
-                           InputType::kMouse)),
+      // Open context menu and select "hide footer" option.
+      OpenContextMenuAndSelect(FooterContextMenu::kHideFooterIdForTesting),
       // Ensure footer hides.
       WaitForHide(kLocalFooterElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
+  // Override the ntp with an extension.
+  LoadNtpOverridingExtension();
+  RunTestSequence(
+      // Open extension ntp.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open context menu and select "customize chrome" option.
+      OpenContextMenuAndSelect(
+          FooterContextMenu::kShowCustomizeChromeIdForTesting),
+      // Ensure customize chrome opens.
+      WaitForShow(kCustomizeChromeSidePanelWebViewElementId));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 

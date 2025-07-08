@@ -27,6 +27,32 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+class TestEmbedder final : public TopChromeWebUIController::Embedder {
+ public:
+  TestEmbedder() = default;
+  ~TestEmbedder() = default;
+
+  void ShowUI() override {}
+  void CloseUI() override {}
+  void HideContextMenu() override {}
+
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override {
+    context_menu_shown_ = true;
+  }
+
+  bool context_menu_shown() const { return context_menu_shown_; }
+
+  base::WeakPtr<TestEmbedder> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool context_menu_shown_;
+
+  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
+};
+
 class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   void SetUp() override {
@@ -36,10 +62,10 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    embedder_ = std::make_unique<TestEmbedder>();
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
-        document_.BindAndGetRemote(),
-        base::WeakPtr<TopChromeWebUIController::Embedder>(),
+        document_.BindAndGetRemote(), embedder_->GetWeakPtr(),
         NtpCustomBackgroundServiceFactory::GetForProfile(profile()),
         web_contents());
   }
@@ -49,6 +75,7 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  TestEmbedder& embedder() { return *embedder_; }
   NewTabFooterHandler& handler() { return *handler_; }
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -56,6 +83,7 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<NewTabFooterHandler> handler_;
   testing::NiceMock<MockNewTabFooterDocument> document_;
 };
@@ -122,4 +150,12 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, OpenManagementPage) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   const GURL expected_url = GURL(chrome::kChromeUIManagementURL);
   EXPECT_EQ(expected_url, web_contents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, ShowContextMenu) {
+  ASSERT_FALSE(embedder().context_menu_shown());
+
+  handler().ShowContextMenu(gfx::Point());
+
+  EXPECT_TRUE(embedder().context_menu_shown());
 }

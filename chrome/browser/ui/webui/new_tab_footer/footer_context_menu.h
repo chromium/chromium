@@ -13,10 +13,12 @@ namespace new_tab_footer {
 // numeric values should never be reused.
 enum class FooterContextMenuItem {
   kHideFooter = 0,
-  kMaxValue = kHideFooter,
+  kCustomizeChrome = 1,
+  kMaxValue = kCustomizeChrome,
 };
 }  // namespace new_tab_footer
 
+class BrowserWindowInterface;
 class Profile;
 
 // The context menu for the New Tab Page footer.
@@ -24,8 +26,9 @@ class FooterContextMenu : public ui::SimpleMenuModel,
                           public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHideFooterIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowCustomizeChromeIdForTesting);
 
-  explicit FooterContextMenu(Profile* profile);
+  explicit FooterContextMenu(BrowserWindowInterface* browser_);
   ~FooterContextMenu() override;
 
   FooterContextMenu(const FooterContextMenu&) = delete;
@@ -35,8 +38,9 @@ class FooterContextMenu : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  enum CommandID { COMMAND_CLOSE_FOOTER };
+  enum CommandID { COMMAND_CLOSE_FOOTER, COMMAND_SHOW_CUSTOMIZE_CHROME };
 
+  raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<Profile> profile_;
 };
 
