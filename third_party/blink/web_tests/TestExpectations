@@ -2664,6 +2664,7 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+crbug.com/404464586 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-flipY.html [ Failure ]
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.html [ Failure ]
