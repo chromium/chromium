@@ -536,6 +536,27 @@ String TrustedTypesCheckForHTML(
   NOTREACHED();
 }
 
+String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
+                                const ExecutionContext* execution_context,
+                                const char* interface_name,
+                                const char* property_name,
+                                ExceptionState& exception_state) {
+  if (!value) {
+    return TrustedTypesCheckForHTML(g_empty_string, execution_context,
+                                    interface_name, property_name,
+                                    exception_state);
+  }
+  switch (value->GetContentType()) {
+    case V8UnionStringOrTrustedHTML::ContentType::kString:
+      return TrustedTypesCheckForHTML(value->GetAsString(), execution_context,
+                                      interface_name, property_name,
+                                      exception_state);
+    case V8UnionStringOrTrustedHTML::ContentType::kTrustedHTML:
+      return value->GetAsTrustedHTML()->toString();
+  }
+  NOTREACHED();
+}
+
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                                   const ExecutionContext* execution_context,
                                   const char* interface_name,

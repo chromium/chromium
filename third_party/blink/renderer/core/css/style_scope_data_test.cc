@@ -384,7 +384,7 @@ TEST_F(StyleScopeDataTest, MutateSheet) {
 }
 
 TEST_F(StyleScopeDataTest, ShadowHost) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=host>
       <template shadowrootmode=open>
@@ -402,7 +402,7 @@ TEST_F(StyleScopeDataTest, ShadowHost) {
 }
 
 TEST_F(StyleScopeDataTest, ShadowHostDoubleScope) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=host>
       <template shadowrootmode=open>
@@ -425,7 +425,7 @@ TEST_F(StyleScopeDataTest, ShadowHostDoubleScope) {
 }
 
 TEST_F(StyleScopeDataTest, AdoptedStylesheet) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=host>
       <template shadowrootmode=open>

@@ -24,11 +24,11 @@ class ApplyBlockElementCommandTest : public EditingTestBase {};
 
 // This is a regression test for https://crbug.com/639534
 TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
-  GetDocument().head()->insertAdjacentHTML(
+  GetDocument().head()->InsertAdjacentHTMLWithoutTrustedTypes(
       "afterbegin",
       "<style> .CLASS13 { -webkit-user-modify: read-write; }</style></head>",
       ASSERT_NO_EXCEPTION);
-  GetDocument().body()->insertAdjacentHTML(
+  GetDocument().body()->InsertAdjacentHTMLWithoutTrustedTypes(
       "afterbegin",
       "\n<pre><var id='va' class='CLASS13'>\nC\n</var></pre><input />",
       ASSERT_NO_EXCEPTION);
@@ -63,7 +63,7 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
 
 // This is a regression test for https://crbug.com/660801
 TEST_F(ApplyBlockElementCommandTest, visibilityChangeDuringCommand) {
-  GetDocument().head()->insertAdjacentHTML(
+  GetDocument().head()->InsertAdjacentHTMLWithoutTrustedTypes(
       "afterbegin", "<style>li:first-child { visibility:visible; }</style>",
       ASSERT_NO_EXCEPTION);
   SetBodyContent("<ul style='visibility:hidden'><li>xyz</li></ul>");

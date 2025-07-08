@@ -38,7 +38,7 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute SlotAssignmentMode slotAssignment;
 
     // Declarative Shadow DOM getHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] HTMLString getHTML(optional GetHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
 
     // The serializable attribute controls whether the shadow root will be
     // serialized by getHTML({serializableShadowRoots:true}).
@@ -54,8 +54,8 @@ interface ShadowRoot : DocumentFragment {
     // See https://crbug.com/346835896
     [RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString referenceTarget;
 
-    [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString string);
-    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html, SetHTMLUnsafeOptions options);
+    [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) string);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, SetHTMLUnsafeOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
 
 };

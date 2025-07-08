@@ -8492,9 +8492,10 @@ void Element::insertAdjacentText(const String& where,
   InsertAdjacent(where, GetDocument().createTextNode(text), exception_state);
 }
 
-void Element::insertAdjacentHTML(const String& where,
-                                 const String& markup,
-                                 ExceptionState& exception_state) {
+void Element::InsertAdjacentHTMLWithoutTrustedTypes(
+    const String& where,
+    const String& markup,
+    ExceptionState& exception_state) {
   Node* context_node = ContextNodeForInsertion(where, this, exception_state);
   if (!context_node) {
     return;
@@ -8520,6 +8521,18 @@ void Element::insertAdjacentHTML(const String& where,
     return;
   }
   InsertAdjacent(where, fragment, exception_state);
+}
+
+void Element::insertAdjacentHTML(const String& where,
+                                 const V8UnionStringOrTrustedHTML* html,
+                                 ExceptionState& exception_state) {
+  String compliant_html =
+      TrustedTypesCheckForHTML(html, GetExecutionContext(), "Element",
+                               "insertAdjacentHTML", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  InsertAdjacentHTMLWithoutTrustedTypes(where, compliant_html, exception_state);
 }
 
 void Element::setPointerCapture(PointerId pointer_id,
@@ -12279,18 +12292,36 @@ void Element::AdjustContainerTimingIfNeededAfterChildrenChanged(
       SelfOrAncestorHasContainerTiming() /* has_container_timing */);
 }
 
-void Element::setHTMLUnsafe(const String& html,
-                            ExceptionState& exception_state) {
+void Element::SetHTMLUnsafeWithoutTrustedTypes(
+    const String& html,
+    ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
 }
 
-void Element::setHTMLUnsafe(const String& html,
+void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
+                            ExceptionState& exception_state) {
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), "Element", "setHTMLUnsafe", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
+                       ForceHtml::kForce, exception_state);
+}
+
+void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             SetHTMLUnsafeOptions* options,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), "Element", "setHTMLUnsafe", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
   SanitizerAPI::SanitizeUnsafeInternal(this, options, exception_state);
 }

@@ -118,7 +118,7 @@ TEST_F(StyleRecalcContextTest, FromAncestors) {
 }
 
 TEST_F(StyleRecalcContextTest, FromAncestors_FlatTree) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="outer_host" style="container-type:size">
       <template shadowrootmode="open">
         <div id="inner_host" style="container-type:size">

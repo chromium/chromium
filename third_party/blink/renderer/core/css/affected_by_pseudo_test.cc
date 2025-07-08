@@ -5552,7 +5552,7 @@ TEST_F(AffectedByPseudoTest, AffectedByPseudoInHasWithNestingComplexParent) {
 
 TEST_F(AffectedByPseudoTest,
        ShadowHostAffectedByFollowingNonSubjectHasInShadowTreeStyle) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="div1">
       <div id="div11">
         <template shadowrootmode="open">
@@ -5881,7 +5881,7 @@ TEST_F(AffectedByPseudoTest,
 
 TEST_F(AffectedByPseudoTest,
        ShadowHostAffectedByPrecedingNonSubjectHasInShadowTreeStyle) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="div1">
       <div id="div11">
         <template shadowrootmode="open">

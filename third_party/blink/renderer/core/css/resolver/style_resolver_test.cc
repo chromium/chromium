@@ -1123,7 +1123,7 @@ TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
 }
 
 TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
+  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=host>
       <template shadowrootmode=open>
       </template>
@@ -2091,7 +2091,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
 }
 
 TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
+  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @layer foo {
         #host { color: green; }
@@ -3647,7 +3647,7 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
 }
 
 TEST_F(StyleResolverTest, ScopedAnchorName) {
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
+  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="outer-anchor" style="anchor-name: --outer"></div>
     <style>#host::part(anchor) { anchor-name: --part; }</style>
     <div id="host">
@@ -3682,7 +3682,7 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
 }
 
 TEST_F(StyleResolverTest, ScopedPositionAnchor) {
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
+  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="outer-anchor" style="position-anchor: --outer"></div>
     <style>#host::part(anchor) { position-anchor: --part; }</style>
     <div id="host">

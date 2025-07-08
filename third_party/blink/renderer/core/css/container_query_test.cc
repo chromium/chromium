@@ -1248,7 +1248,7 @@ TEST_F(ContainerQueryTest, TreeScopedReferenceUserOrigin) {
   GetStyleEngine().InjectSheet(user_sheet_key, parsed_user_sheet,
                                WebCssOrigin::kUser);
 
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @container user-container (width >= 0) {
         div > span {

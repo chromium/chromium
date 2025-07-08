@@ -3082,7 +3082,7 @@ TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase9) {
   // relationship between shadow root and its descendant. (e.g. :host:has(.a))
 
   Document* document = &GetDocument();
-  document->body()->setHTMLUnsafe(R"HTML(
+  document->body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <!DOCTYPE html>
     <main id="main">
       <div id="host">
@@ -3189,7 +3189,7 @@ TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase10) {
   // CheckPseudoHasArgumentTraversalScope::kShadowRootFixedDepthDescendants
 
   Document* document = &GetDocument();
-  document->body()->setHTMLUnsafe(R"HTML(
+  document->body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <!DOCTYPE html>
     <main id="main">
       <div id="host">

@@ -18,6 +18,7 @@ class QualifiedName;
 class ScriptValue;
 class ScriptState;
 class V8UnionStringOrTrustedScript;
+class V8UnionStringOrTrustedHTML;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 class V8UnionTrustedScriptURLOrUSVString;
@@ -44,6 +45,12 @@ TrustedTypesCheckFor(SpecificTrustedType type,
     const char* interface_name,
     const char* property_name,
     ExceptionState& exception_state);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
+                         const ExecutionContext* execution_context,
+                         const char* interface_name,
+                         const char* property_name,
+                         ExceptionState& exception_state);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                            const ExecutionContext* execution_context,

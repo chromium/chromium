@@ -350,7 +350,7 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionUnknown) {
 }
 
 TEST_F(InspectorCSSAgentTest, SameFunctionNamesAcrossShadows) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() {
         result: 10px;

@@ -126,8 +126,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
   void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
                     ExceptionState&);
-  void setHTMLUnsafe(const String& html, ExceptionState&);
-  void setHTMLUnsafe(const String& html,
+  void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html, ExceptionState&);
+  void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                      SetHTMLUnsafeOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);

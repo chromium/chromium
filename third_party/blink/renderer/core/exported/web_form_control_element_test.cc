@@ -196,7 +196,7 @@ class WebFormControlElementGetOwningFormForAutofillTest
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInLightDom) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f>
       <input id=t1>
       <input id=t2>
@@ -217,7 +217,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInLightDomWithExplicitAssociation) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <div>
       <form id=f1>
         <input id=t1>
@@ -259,7 +259,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInShadowDomWithoutFormInShadowDom) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f1>
       <div id=host1>
         <template shadowrootmode="open">
@@ -293,7 +293,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInShadowDomWithFormInShadowDom) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f1>
       <div id=host1>
         <template shadowrootmode=open>
@@ -332,7 +332,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInShadowDomWithFormInShadowDomWithMultipleLevels) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f1>
       <div id=host1>
         <template shadowrootmode=open>
@@ -376,7 +376,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInShadowDomWithFormInShadowDomAndExplicitAssociation) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f1>
       <div id=host1>
         <template shadowrootmode=open>
@@ -425,7 +425,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
        GetOwningFormInLightDomWithSlots) {
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
     <form id=f>
       <div>
         <template shadowrootmode=open>
@@ -450,7 +450,7 @@ TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
 TEST_F(WebFormControlElementTest, FormControlTypeForAutofill) {
   using enum FormControlType;
   const Document& document = GetDocument();
-  document.body()->setHTMLUnsafe("<input id=t>");
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes("<input id=t>");
   HTMLInputElement* input = To<HTMLInputElement>(GetElementById("t"));
   WebFormControlElement control = input;
   ASSERT_TRUE(input);

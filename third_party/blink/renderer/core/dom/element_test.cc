@@ -698,7 +698,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
 
 TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
   Document& document = GetDocument();
-  document.body()->setHTMLUnsafe(R"HTML(
+  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <div id=fg2 focusgroup=extend>
         <div>

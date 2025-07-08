@@ -69,7 +69,7 @@ void SlotAssignmentTest::SetUp() {
 
 void SlotAssignmentTest::SetBody(const char* html) {
   Element* body = GetDocument().body();
-  body->setHTMLUnsafe(String::FromUTF8(html));
+  body->SetHTMLUnsafeWithoutTrustedTypes(String::FromUTF8(html));
   RemoveWhiteSpaceOnlyTextNode(*body);
 }
 

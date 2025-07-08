@@ -671,7 +671,7 @@ INSTANTIATE_TEST_SUITE_P(SelectorChecker,
 TEST_P(MatchFlagsShadowTest, Host) {
   MatchFlagsTestData param = GetParam();
 
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=host>
       <template shadowrootmode="open">
         <div></div>

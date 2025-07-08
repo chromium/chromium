@@ -343,7 +343,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupExtendsInAxis) {
 }
 
 TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div>
       <span id=item1 tabindex=0></span>
     </div>
@@ -462,7 +462,7 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
 }
 
 TEST_F(FocusgroupControllerTest, NextElement) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1></span>
       <span id=item2 tabindex=-1></span>
@@ -498,7 +498,7 @@ TEST_F(FocusgroupControllerTest, NextElement) {
 }
 
 TEST_F(FocusgroupControllerTest, PreviousElement) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1></span>
       <span id=item2 tabindex=-1></span>
@@ -529,7 +529,7 @@ TEST_F(FocusgroupControllerTest, PreviousElement) {
 }
 
 TEST_F(FocusgroupControllerTest, LastElementWithin) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1></span>
       <span id=item2 tabindex=-1></span>

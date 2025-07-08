@@ -3368,7 +3368,7 @@ TEST_F(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
 }
 
 TEST_F(DisplayLockContextTest, BlockedReattachOfSlotted) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="host">
       <template shadowrootmode="open">
         <style>
@@ -3397,7 +3397,7 @@ TEST_F(DisplayLockContextTest, BlockedReattachOfSlotted) {
 }
 
 TEST_F(DisplayLockContextTest, BlockedReattachOfShadowTree) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       .locked { content-visibility: hidden; }
     </style>

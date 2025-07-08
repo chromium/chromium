@@ -1768,7 +1768,7 @@ TEST_F(TopLevelFormsListTest, FormsInLightDomInsertionAndRemoval) {
 // Tests that top level forms inside shadow DOM are listed correctly and
 // insertion and removal updates the cache.
 TEST_F(TopLevelFormsListTest, FormsInShadowDomInsertionAndRemoval) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id="f1">
       <input type="text">
     </form>
@@ -1796,7 +1796,7 @@ TEST_F(TopLevelFormsListTest, FormsInShadowDomInsertionAndRemoval) {
 
 // Tests that nested forms across shadow DOM are ignored by `GetTopLevelForms`.
 TEST_F(TopLevelFormsListTest, GetTopLevelFormsIgnoresNestedChildren) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id="f1">
       <input type="text">
       <div id="d">

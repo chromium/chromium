@@ -45,7 +45,7 @@ void RemoveWhiteSpaceOnlyTextNodes(ContainerNode& container) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="c0">
       <div id="c00">
         <template shadowrootmode="open"></template>
@@ -133,7 +133,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="a0">
       <div id="a00"></div>
       <div id="a01"></div>
@@ -163,7 +163,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, ChildrenOf) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="a0">
       <div id="a00"></div>
       <div id="a01"></div>

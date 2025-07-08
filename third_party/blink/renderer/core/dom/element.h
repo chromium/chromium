@@ -135,6 +135,7 @@ class StyleScopeData;
 class TextVisitor;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
+class V8UnionStringOrTrustedHTML;
 class ComputedStyleBuilder;
 class StyleAdjuster;
 
@@ -1242,8 +1243,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void insertAdjacentText(const String& where,
                           const String& text,
                           ExceptionState&);
+  void InsertAdjacentHTMLWithoutTrustedTypes(const String& where,
+                                             const String& html,
+                                             ExceptionState&);
   void insertAdjacentHTML(const String& where,
-                          const String& html,
+                          const V8UnionStringOrTrustedHTML* html,
                           ExceptionState&);
 
   String GetInnerHTMLString() const;
@@ -1264,8 +1268,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // declarative shadow DOM by default, and b) will eventually have a second
   // argument to set Sanitizer parameters.
   // See https://github.com/whatwg/html/pull/9538.
-  void setHTMLUnsafe(const String& html, ExceptionState& = ASSERT_NO_EXCEPTION);
-  void setHTMLUnsafe(const String& html,
+  void SetHTMLUnsafeWithoutTrustedTypes(const String& html,
+                                        ExceptionState& = ASSERT_NO_EXCEPTION);
+  void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html, ExceptionState&);
+  void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                      SetHTMLUnsafeOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);

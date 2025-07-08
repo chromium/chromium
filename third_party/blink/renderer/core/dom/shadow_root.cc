@@ -161,11 +161,17 @@ void ShadowRoot::setInnerHTML(
   SetInnerHTMLWithoutTrustedTypes(compliant_html, exception_state);
 }
 
-void ShadowRoot::setHTMLUnsafe(const String& html,
+void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                                ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
+  String compliant_html =
+      TrustedTypesCheckForHTML(html, GetExecutionContext(), "ShadowRoot",
+                               "setHTMLUnsafe", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent,
+          compliant_html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
           Element::ForceHtml::kDontForce, exception_state)) {
     if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
@@ -175,11 +181,17 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
   }
 }
 
-void ShadowRoot::setHTMLUnsafe(const String& html,
+void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                                SetHTMLUnsafeOptions* options,
                                ExceptionState& exception_state) {
+  String compliant_html =
+      TrustedTypesCheckForHTML(html, GetExecutionContext(), "ShadowRoot",
+                               "setHTMLUnsafe", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent,
+          compliant_html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
           Element::ForceHtml::kDontForce, exception_state)) {
     if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {

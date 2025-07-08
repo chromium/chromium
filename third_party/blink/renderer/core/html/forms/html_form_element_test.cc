@@ -203,7 +203,7 @@ class HTMLAutofillContainedFormsTest : public HTMLFormElementTest {};
 
 TEST_F(HTMLAutofillContainedFormsTest, ListedElementsAfterIncludeShadowTrees) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=form1>
       <input id=input1>
       <div id=div1>
@@ -230,7 +230,7 @@ TEST_F(HTMLAutofillContainedFormsTest, ListedElementsAfterIncludeShadowTrees) {
 TEST_F(HTMLAutofillContainedFormsTest,
        ListedElementsAfterIncludeShadowTreesWithDynamicChange) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=form1>
       <input id=input1>
       <!--
@@ -279,7 +279,7 @@ TEST_F(HTMLAutofillContainedFormsTest,
 // form element.
 TEST_F(HTMLAutofillContainedFormsTest, ListedElementsIncludesOnlyDescendants) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=form1>
       <div id=div1>
         <template shadowrootmode=open>
@@ -305,7 +305,7 @@ TEST_F(HTMLAutofillContainedFormsTest, ListedElementsIncludesOnlyDescendants) {
 // included in `ListedElements` if `collect_for_autofill` is true.
 TEST_F(HTMLAutofillContainedFormsTest, ListedElementsInNestedForms) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=f1>
       <div id=shadowhost>
         <template shadowrootmode=open>
@@ -335,7 +335,7 @@ TEST_F(HTMLAutofillContainedFormsTest, ListedElementsInNestedForms) {
 // properly invalidates the caches of all ancestors.
 TEST_F(HTMLAutofillContainedFormsTest, ListedElementsInDeepNestedForms) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=f1>
       <div id=shadowhost1>
         <template shadowrootmode=open>
@@ -435,7 +435,7 @@ TEST_F(HTMLAutofillContainedFormsTest,
 // shadow DOM whose shadow hosts are descendants of `f`.
 TEST_F(HTMLAutofillContainedFormsTest, ShadowDomTreesMustBeDescendantsOfForm) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
-  body->setHTMLUnsafe(R"HTML(
+  body->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <form id=f1>
       <input id=i1>
     </form>
