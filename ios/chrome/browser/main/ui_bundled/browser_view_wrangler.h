@@ -20,6 +20,8 @@ class ProfileIOS;
 // Wrangler (a class in need of further refactoring) for handling the creation
 // and ownership of Browser instances and their associated
 // BrowserViewControllers.
+// TODO(crbug.com/429356457): Rename this class to "BrowserLifecycleManager" or
+// something and reduce scope.
 @interface BrowserViewWrangler : NSObject <BrowserProviderInterface>
 
 // Initialize a new instance of this class using `profile` as the primary

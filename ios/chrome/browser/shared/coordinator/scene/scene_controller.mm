@@ -226,10 +226,11 @@
 
 namespace {
 
-// Killswitch, can be removed around February 2024. If enabled,
-// createInitialUI will call makeKeyAndVisible before mainCoordinator start.
-// When disabled, this fix resolves a flicker when starting the app in light
-// mode
+// TODO(crbug.com/429351158): Remove
+// kMakeKeyAndVisibleBeforeMainCoordinatorStart feature. Killswitch, can be
+// removed around February 2024. If enabled, createInitialUI will call
+// makeKeyAndVisible before mainCoordinator start. When disabled, this fix
+// resolves a flicker when starting the app in light mode
 BASE_FEATURE(kMakeKeyAndVisibleBeforeMainCoordinatorStart,
              "MakeKeyAndVisibleBeforeMainCoordinatorStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -244,6 +245,8 @@ BASE_FEATURE(kForceNewTabForIntentSearch,
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome
 // commands that trigger a view controller presentation.
+// TODO(crbug.com/429351167): Find a better way to do this without the time
+// constant.
 const int64_t kExpectedTransitionDurationInNanoSeconds = 0.2 * NSEC_PER_SEC;
 
 // Used to update the current BVC mode if a new tab is added while the tab
@@ -285,6 +288,8 @@ bool IsSigninForcedByPolicy() {
 
 NSString* const kAddLotsOfTabs = @"AddLotsOfTabs";
 
+// TODO(crbug.com/429350820): Move InjectUnrealizedWebStates and related code to
+// a testing utils file.
 void InjectUnrealizedWebStates(Browser* browser, int count) {
   WebStateList* web_state_list = browser->GetWebStateList();
 
@@ -321,6 +326,7 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// TODO(crbug.com/429353384): Can InjectNTP be factored into another file?
 void InjectNTP(Browser* browser) {
   // Don't inject an NTP for an empty web state list.
   if (!browser->GetWebStateList()->count()) {
@@ -362,6 +368,8 @@ void InjectNTP(Browser* browser) {
 
 // Updates `data` with the Family Link member role associated to the primary
 // signed-in account, no-op if the account is not enrolled in Family Link.
+// TODO(crbug.com/429350831): Factor Family Link code out of SceneController if
+// possible.
 void OnListFamilyMembersResponse(
     const GaiaId& primary_account_gaia,
     UserFeedbackData* data,
@@ -381,6 +389,9 @@ void OnListFamilyMembersResponse(
 
 }  // namespace
 
+// TODO(crbug.com/429355979): Order and group methods by interface.
+// TODO(crbug.com/429354805): Add method comments(!)
+
 @interface SceneController () <AccountMenuCoordinatorDelegate,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
@@ -392,7 +403,6 @@ void OnListFamilyMembersResponse(
                                SceneURLLoadingServiceDelegate,
                                SettingsNavigationControllerDelegate,
                                TabGridCoordinatorDelegate,
-                               WebStateListObserving,
                                YoutubeIncognitoCoordinatorDelegate> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
@@ -423,6 +433,14 @@ void OnListFamilyMembersResponse(
 
   // The coordinator that manages the workflow importing data from Safari.
   SafariDataImportMainCoordinator* _safariImportCoordinator;
+
+  // JavaScript image transcoder to locally re-encode images to search.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
+
+  // A property to track the image to search after dismissing the tab switcher.
+  // This is used to ensure that the image search is only triggered when the BVC
+  // is active.
+  NSData* _imageSearchData;
 }
 
 // Navigation View controller for the settings.
@@ -480,6 +498,9 @@ void OnListFamilyMembersResponse(
 // Wrangler to handle BVC and tab model creation, access, and related logic.
 // Implements features exposed from this object through the
 // BrowserViewInformation protocol.
+// TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
+// TODO(crbug.com/429356457): Rename this to "BrowserLifecycleManager" or
+// something and reduce scope.
 @property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
 // The coordinator used to control sign-in UI flows. Lazily created the first
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
@@ -505,15 +526,7 @@ void OnListFamilyMembersResponse(
 
 @end
 
-@implementation SceneController {
-  // JavaScript image transcoder to locally re-encode images to search.
-  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
-
-  // A property to track the image to search after dismissing the tab switcher.
-  // This is used to ensure that the image search is only triggered when the BVC
-  // is active.
-  NSData* _imageSearchData;
-}
+@implementation SceneController
 
 @synthesize startupParameters = _startupParameters;
 @synthesize startupParametersAreBeingHandled =
@@ -564,6 +577,7 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - Setters and getters
 
+// TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
 - (WrangledBrowser*)mainInterface {
   return self.browserViewWrangler.mainInterface;
 }
@@ -1395,6 +1409,8 @@ void OnListFamilyMembersResponse(
     InjectNTP(browser);
   }
 
+//  TODO(crbug.com/429350820): Move InjectUnrealizedWebStates and related code
+//  to a testing utils file.
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   int tabCountToAdd =
       [[NSUserDefaults standardUserDefaults] integerForKey:kAddLotsOfTabs];
@@ -1827,6 +1843,8 @@ void OnListFamilyMembersResponse(
 
     [self showTabSwitcher];
     self.isProcessingTabSwitcherCommand = YES;
+    // TODO(crbug.com/429351167): Find a better way to do this without the time
+    // constant.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  kExpectedTransitionDurationInNanoSeconds),
                    dispatch_get_main_queue(), ^{
@@ -2208,6 +2226,8 @@ using UserFeedbackDataCallback =
   if (!self.isProcessingTabSwitcherCommand) {
     [self startVoiceSearchInCurrentBVC];
     self.isProcessingVoiceSearchCommand = YES;
+    // TODO(crbug.com/429351167): Find a better way to do this without the time
+    // constant.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  kExpectedTransitionDurationInNanoSeconds),
                    dispatch_get_main_queue(), ^{

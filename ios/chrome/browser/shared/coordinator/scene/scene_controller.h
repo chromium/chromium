@@ -30,6 +30,7 @@
     NS_DESIGNATED_INITIALIZER;
 
 // The interface provider for this scene.
+// TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
 @property(nonatomic, strong, readonly) id<BrowserProviderInterface>
     browserProviderInterface;
 
