@@ -102,7 +102,7 @@
   {
     "prefix": "attribution-reporting-debug-mode",
     "owners": [
-      "johnidel@chromium.org"
+      "apaseltiner@chromium.org"
     ],
     "platforms": [
       "Linux",
@@ -118,7 +118,7 @@
       "--enable-features=AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting",
       "--enable-blink-features=FencedFramesDefaultMode"
     ],
-    "expires": "Jul 2, 2025"
+    "expires": "Jul 2, 2026"
   },
   {
     "prefix": "attribution-reporting-in-browser-migration",
