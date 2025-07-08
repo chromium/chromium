@@ -146,7 +146,7 @@ public class Profile {
 
     @UiThread
     public void cancelPrefetch(int prefetchKey) {
-        // TODO(334016945): do the actual implementation
+        mBrowserContext.getPrefetchManager().cancelPrefetch(prefetchKey);
     }
 
     @UiThread
