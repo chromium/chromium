@@ -143,6 +143,11 @@ RealTimeUrlLookupService::GetClientMetadata() const {
   return nullptr;
 }
 
+std::string RealTimeUrlLookupService::GetContentAreaAccountEmail(
+    const GURL& tab_url) const {
+  return "";
+}
+
 void RealTimeUrlLookupService::Shutdown() {
   RealTimeUrlLookupServiceBase::Shutdown();
 

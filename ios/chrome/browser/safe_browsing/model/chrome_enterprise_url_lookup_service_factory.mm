@@ -114,6 +114,9 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       /*is_guest_session=*/false,
       base::BindRepeating(&enterprise_connectors::GetProfileEmail,
                           identity_manager),
+      // TODO(crbug.com/425370101) - Remove the empty IOS content area account email
+      // once IOS is supported.
+      base::BindRepeating([](GURL) { return std::string(); }),
       base::BindRepeating(&IsProfileAffiliated, profile),
       IsCommandLineSwitchEnabled());
 }

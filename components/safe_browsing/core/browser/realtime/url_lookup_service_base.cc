@@ -669,6 +669,11 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     *request->mutable_client_reporting_metadata() = std::move(*client_metadata);
   }
 
+  std::string content_area_account_email = GetContentAreaAccountEmail(url);
+  if (!content_area_account_email.empty()) {
+    request->set_content_area_account_email(std::move(content_area_account_email));
+  }
+
   *request->mutable_population() = get_user_population_callback_.Run();
   if (referrer_chain_provider_) {
     ReferrerChainProvider::AttributionResult attribution_result =

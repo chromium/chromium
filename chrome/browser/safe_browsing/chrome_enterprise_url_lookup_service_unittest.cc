@@ -58,6 +58,7 @@ constexpr char kRealTimeLookupUrl[] =
     "realtime";
 
 constexpr char kTestProfileEmail[] = "test@example.com";
+constexpr char kContentAreaAccountEmail[] = "area@example.com";
 
 class MockReferrerChainProvider : public ReferrerChainProvider {
  public:
@@ -184,6 +185,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         /*webui_delegate=*/nullptr, identity_test_env_.identity_manager(),
         management_service_.get(), is_off_the_record, is_guest_session,
         base::BindRepeating([]() -> std::string { return kTestProfileEmail; }),
+        base::BindRepeating([](GURL tab_url) -> std::string {
+          return kContentAreaAccountEmail;
+        }),
         base::BindRepeating([] { return true; }),
         /*is_command_line_switch_supported=*/true);
 
@@ -346,6 +350,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
         EXPECT_EQ("test@example.com", request_proto.email());
         EXPECT_EQ("dm_token", request_proto.browser_dm_token());
         EXPECT_TRUE(request_proto.has_client_reporting_metadata());
+        EXPECT_EQ(kContentAreaAccountEmail,
+                  request_proto.content_area_account_email());
         EXPECT_EQ("", request_proto.profile_dm_token());
         EXPECT_FALSE(request_proto.local_ips().empty());
         EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,

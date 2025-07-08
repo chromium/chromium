@@ -75,6 +75,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
         bool is_off_the_record,
         bool is_guest_session,
         base::RepeatingCallback<std::string()> get_profile_email_callback,
+        base::RepeatingCallback<std::string(GURL)>
+            get_content_area_account_email_callback,
         base::RepeatingCallback<bool()> is_profile_affiliated_callback,
         bool is_command_line_switch_supported)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
@@ -91,6 +93,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
       is_off_the_record_(is_off_the_record),
       is_guest_session_(is_guest_session),
       get_profile_email_callback_(get_profile_email_callback),
+      get_content_area_account_email_callback_(
+          get_content_area_account_email_callback),
       is_profile_affiliated_callback_(is_profile_affiliated_callback),
       is_command_line_switch_supported_(is_command_line_switch_supported) {}
 
@@ -255,6 +259,12 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
 std::unique_ptr<enterprise_connectors::ClientMetadata>
 ChromeEnterpriseRealTimeUrlLookupService::GetClientMetadata() const {
   return connectors_service_->BuildClientMetadata(true);
+}
+
+std::string
+ChromeEnterpriseRealTimeUrlLookupService::GetContentAreaAccountEmail(
+    const GURL& tab_url) const {
+  return get_content_area_account_email_callback_.Run(tab_url);
 }
 
 }  // namespace safe_browsing

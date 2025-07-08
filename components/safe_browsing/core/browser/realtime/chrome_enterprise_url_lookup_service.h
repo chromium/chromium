@@ -68,6 +68,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       bool is_off_the_record,
       bool is_guest_session,
       base::RepeatingCallback<std::string()> get_profile_email_callback,
+      base::RepeatingCallback<std::string(GURL)>
+          get_content_area_account_email_callback,
       base::RepeatingCallback<bool()> is_profile_affiliated_callback,
       bool is_command_line_switch_supported);
 
@@ -89,6 +91,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   std::string GetProfileDMTokenString() const override;
   std::unique_ptr<enterprise_connectors::ClientMetadata> GetClientMetadata()
       const override;
+  std::string GetContentAreaAccountEmail(const GURL& tab_url) const override;
   std::string GetMetricSuffix() const override;
   bool CanCheckUrl(const GURL& url) override;
 
@@ -126,6 +129,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Callback for accessing the profile's email.
   base::RepeatingCallback<std::string()> get_profile_email_callback_;
+
+  // Callback for accessing the content area's email. This is used for active
+  // Gaia filtering. The argument is the tab URL.
+  base::RepeatingCallback<std::string(GURL)>
+      get_content_area_account_email_callback_;
 
   // Callback returning whether the profile and browser are managed by the same
   // organization.

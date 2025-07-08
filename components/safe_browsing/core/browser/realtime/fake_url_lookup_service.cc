@@ -60,6 +60,11 @@ FakeRealTimeUrlLookupService::GetClientMetadata() const {
   return nullptr;
 }
 
+std::string safe_browsing::testing::FakeRealTimeUrlLookupService::
+    GetContentAreaAccountEmail(const GURL& tab_url) const {
+  return "content_area_account_email@gmail.com";
+}
+
 std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Mock";
 }

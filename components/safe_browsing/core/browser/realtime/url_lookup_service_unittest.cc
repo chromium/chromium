@@ -879,6 +879,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
         EXPECT_FALSE(request_proto.has_dm_token());
         EXPECT_FALSE(request_proto.has_email());
+        EXPECT_FALSE(request_proto.has_content_area_account_email());
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
         EXPECT_FALSE(request_proto.has_client_reporting_metadata());
@@ -942,6 +943,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
         EXPECT_FALSE(request_proto.has_dm_token());
         EXPECT_FALSE(request_proto.has_email());
+        EXPECT_FALSE(request_proto.has_content_area_account_email());
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
         EXPECT_FALSE(request_proto.has_client_reporting_metadata());

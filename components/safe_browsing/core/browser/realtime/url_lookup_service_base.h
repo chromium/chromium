@@ -173,6 +173,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual std::unique_ptr<enterprise_connectors::ClientMetadata>
   GetClientMetadata() const = 0;
 
+  // Returns the content area email address. This is the email address used for
+  // active Gaia filtering.
+  virtual std::string GetContentAreaAccountEmail(const GURL& tab_url) const = 0;
+
   // Returns true if `url`'s scheme can be checked, or if it should be checked
   // anyway because of "EnterpriseRealTimeUrlCheckMode".
   virtual bool CanCheckUrl(const GURL& url) = 0;
