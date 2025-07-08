@@ -673,47 +673,6 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_TRUE(geometry.is_fixed_or_sticky_position());
 }
 
-TEST(PageContentProtoUtilTest, ConvertNodeInteractionInfo) {
-  auto root_content = CreatePageContent();
-  auto text_node =
-      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
-  text_node->content_attributes->node_interaction_info =
-      blink::mojom::AIPageContentNodeInteractionInfo::New();
-  text_node->content_attributes->node_interaction_info->is_selectable = true;
-  text_node->content_attributes->node_interaction_info->is_editable = true;
-  text_node->content_attributes->node_interaction_info->can_resize_horizontal =
-      true;
-  text_node->content_attributes->node_interaction_info->can_resize_vertical =
-      true;
-  text_node->content_attributes->node_interaction_info->is_focusable = true;
-  text_node->content_attributes->node_interaction_info->is_draggable = true;
-  text_node->content_attributes->node_interaction_info->is_clickable = true;
-  root_content->root_node->children_nodes.emplace_back(std::move(text_node));
-
-  AIPageContentResult page_content;
-  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
-
-  EXPECT_EQ(page_content.proto.version(),
-            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
-  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(page_content.proto.root_node()
-                .children_nodes(0)
-                .content_attributes()
-                .attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
-  const auto& interaction_info = page_content.proto.root_node()
-                                     .children_nodes(0)
-                                     .content_attributes()
-                                     .interaction_info();
-  EXPECT_TRUE(interaction_info.is_selectable());
-  EXPECT_TRUE(interaction_info.is_editable());
-  EXPECT_TRUE(interaction_info.can_resize_horizontal());
-  EXPECT_TRUE(interaction_info.can_resize_vertical());
-  EXPECT_TRUE(interaction_info.is_focusable());
-  EXPECT_TRUE(interaction_info.is_draggable());
-  EXPECT_TRUE(interaction_info.is_clickable());
-}
-
 TEST(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
   auto root_content = CreatePageContent();
   root_content->page_interaction_info =

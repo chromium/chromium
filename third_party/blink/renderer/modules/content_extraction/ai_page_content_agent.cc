@@ -214,46 +214,44 @@ bool IsVisible(const LayoutObject& object) {
   return object.Style()->Visibility() == EVisibility::kVisible;
 }
 
-void AddClickabilityReasons(Element& element,
-                            mojom::blink::AIPageContentAttributes& attributes) {
-  auto& interaction_info = *attributes.node_interaction_info;
-
+void AddClickabilityReasons(
+    const Element& element,
+    const ax::mojom::Role role,
+    mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
   using Reason = mojom::blink::AIPageContentClickabilityReason;
 
   if (element.IsClickableFormControlNode()) {
-    interaction_info.debug_clickability_reasons.push_back(
-        Reason::kClickableControl);
+    interaction_info.clickability_reasons.push_back(Reason::kClickableControl);
   }
 
   if (element.HasJSBasedEventListeners(event_type_names::kClick)) {
-    interaction_info.debug_clickability_reasons.push_back(Reason::kClickEvents);
+    interaction_info.clickability_reasons.push_back(Reason::kClickEvents);
   }
 
   if (element.HasJSBasedEventListeners(event_type_names::kMouseover) ||
       element.HasJSBasedEventListeners(event_type_names::kMouseenter) ||
       element.HasJSBasedEventListeners(event_type_names::kMouseup) ||
       element.HasJSBasedEventListeners(event_type_names::kMousedown)) {
-    interaction_info.debug_clickability_reasons.push_back(Reason::kMouseEvents);
+    interaction_info.clickability_reasons.push_back(Reason::kMouseEvents);
   }
 
   if (element.HasJSBasedEventListeners(event_type_names::kKeydown) ||
       element.HasJSBasedEventListeners(event_type_names::kKeypress) ||
       element.HasJSBasedEventListeners(event_type_names::kKeyup)) {
-    interaction_info.debug_clickability_reasons.push_back(Reason::kKeyEvents);
+    interaction_info.clickability_reasons.push_back(Reason::kKeyEvents);
   }
 
   if (IsEditable(element)) {
-    interaction_info.debug_clickability_reasons.push_back(Reason::kEditable);
+    interaction_info.clickability_reasons.push_back(Reason::kEditable);
   }
 
   const ComputedStyle& style = element.ComputedStyleRef();
   if (style.Cursor() == ECursor::kPointer && !style.CursorIsInherited()) {
-    interaction_info.debug_clickability_reasons.push_back(
-        Reason::kCursorPointer);
+    interaction_info.clickability_reasons.push_back(Reason::kCursorPointer);
   }
 
-  if (ui::IsClickable(*attributes.aria_role)) {
-    interaction_info.debug_clickability_reasons.push_back(Reason::kAriaRole);
+  if (ui::IsClickable(role)) {
+    interaction_info.clickability_reasons.push_back(Reason::kAriaRole);
   }
 }
 
@@ -1451,54 +1449,26 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     return;
   }
 
-  node_interaction_info->is_selectable =
-      style.UsedUserSelect() != EUserSelect::kNone;
-
-  node_interaction_info->is_editable = IsEditable(*node);
-
-  if (auto* box = DynamicTo<LayoutBox>(object)) {
-    if (box->CanResize()) {
-      EResize resize = style.UsedResize();
-      node_interaction_info->can_resize_vertical =
-          resize == EResize::kVertical || resize == EResize::kBoth;
-      node_interaction_info->can_resize_horizontal =
-          resize == EResize::kHorizontal || resize == EResize::kBoth;
-    }
-  }
-
-  auto* element = DynamicTo<Element>(object.GetNode());
-  if (element) {
-    node_interaction_info->is_focusable = element->IsFocusable();
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    AddClickabilityReasons(*element, *attributes.aria_role,
+                           *node_interaction_info);
+    // TODO(khushalsagar): Remove is_clickability.
     node_interaction_info->is_clickable =
-        element->IsMaybeClickable() || ui::IsClickable(*attributes.aria_role);
-
-    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-      node_interaction_info->is_draggable = html_element->draggable();
-    }
+        !node_interaction_info->clickability_reasons.empty();
+    node_interaction_info->is_focusable = element->IsFocusable();
   }
 
   const bool needs_interaction_info =
       node_interaction_info->scroller_info ||
-      // The common case is for the content to be selectable. So assume that's
-      // the default and only force a ContentNode if we need to indicate some
-      // content is not selectable.
-      !node_interaction_info->is_selectable ||
-      node_interaction_info->is_editable ||
-      node_interaction_info->can_resize_horizontal ||
-      node_interaction_info->can_resize_vertical ||
       node_interaction_info->is_focusable ||
-      node_interaction_info->is_draggable ||
-      node_interaction_info->is_clickable ||
-      node_interaction_info->document_scoped_z_order;
+      node_interaction_info->document_scoped_z_order ||
+      !node_interaction_info->clickability_reasons.empty();
 
   if (!needs_interaction_info) {
     return;
   }
 
   attributes.node_interaction_info = std::move(node_interaction_info);
-  if (attributes.node_interaction_info->is_clickable) {
-    AddClickabilityReasons(*element, attributes);
-  }
 }
 
 AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(
