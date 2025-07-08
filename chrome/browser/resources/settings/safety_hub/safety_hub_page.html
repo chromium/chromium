@@ -97,7 +97,7 @@
       sites="[[userEducationItemList_]]">
   </settings-safety-hub-module>
 </template>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
     <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RELAUNCH]]"
         on-close="onRelaunchDialogClose" is-version-update>

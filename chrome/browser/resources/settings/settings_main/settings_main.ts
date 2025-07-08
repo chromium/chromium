@@ -20,7 +20,7 @@ import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polyme
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import type {LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {pageVisibility} from '../page_visibility.js';
@@ -40,7 +40,7 @@ function getTopLevelRoute() {
   }
 
   let guestTopLevelRoute = routes.SEARCH;
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   guestTopLevelRoute = routes.PRIVACY;
   // </if>
 
@@ -112,7 +112,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
         notify: true,
       },
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       languages_: Object,
       // </if>
     };
@@ -126,7 +126,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private showNoResultsFound_: boolean;
   declare toolbarSpinnerActive: boolean;
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   declare private languages_?: LanguagesModel;
   // </if>
 

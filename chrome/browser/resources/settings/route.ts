@@ -177,7 +177,7 @@ function createRoutes(): SettingsRoutes {
   if (!loadTimeData.getBoolean('isGuest')) {
     r.PEOPLE = r.BASIC.createSection(
         '/people', 'people', loadTimeData.getString('peoplePageTitle'));
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
     r.SIGN_OUT.isNavigableDialog = true;
     r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
@@ -215,7 +215,7 @@ function createRoutes(): SettingsRoutes {
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   if (visibility.people !== false) {
     assert(r.PEOPLE);
     r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
@@ -276,7 +276,7 @@ function createRoutes(): SettingsRoutes {
     r.LANGUAGES.hasMigratedToPlugin = true;
     r.SPELL_CHECK = r.LANGUAGES.createSection('/spellCheck', 'languages');
     r.SPELL_CHECK.hasMigratedToPlugin = true;
-    // <if expr="not chromeos_ash and not is_macosx">
+    // <if expr="not is_chromeos and not is_macosx">
     r.EDIT_DICTIONARY = r.SPELL_CHECK.createChild('/editDictionary');
     r.EDIT_DICTIONARY.hasMigratedToPlugin = true;
     // </if>
@@ -300,7 +300,7 @@ function createRoutes(): SettingsRoutes {
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   if (visibility.system !== false) {
     r.SYSTEM = r.ADVANCED.createSection(
         '/system', 'system', loadTimeData.getString('systemPageTitle'));

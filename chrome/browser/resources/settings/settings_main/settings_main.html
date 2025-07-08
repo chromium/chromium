@@ -42,7 +42,7 @@
   <managed-footnote></managed-footnote>
 </template>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
     <settings-languages languages="{{languages_}}" prefs="{{prefs}}">
     </settings-languages>
@@ -64,10 +64,10 @@
     <div slot="view" id="languages">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.LANGUAGES, lastRoute_, inSearchMode_)]]">
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
         <settings-languages-page-index></settings-languages-page-index>
 </if>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
         <settings-languages-page-index prefs="{{prefs}}"
             languages="[[languages_]]" in-search-mode="[[inSearchMode_]]">
         </settings-languages-page-index>
@@ -96,7 +96,7 @@
     </div>
   </template>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
   <template is="dom-if" if="[[showPage_(pageVisibility_.system)]]">
     <div slot="view" id="system">
       <template is="dom-if" if="[[renderPlugin_(

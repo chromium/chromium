@@ -59,7 +59,7 @@ import './site_settings/zoom_levels.js';
 import './a11y_page/live_caption_section.js';
 import './people_page/import_data_dialog.js';
 // </if>
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
@@ -68,15 +68,15 @@ import './people_page/sync_page.js';
 // Sections
 import './a11y_page/a11y_page_index.js';
 import './downloads_page/downloads_page.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import './languages_page/languages_page_index_cros.js';
 // </if>
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import './languages_page/languages.js';
 import './languages_page/languages_page_index.js';
 // </if>
 import './reset_page/reset_page.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import './system_page/system_page.js';
 
 // </if>
@@ -156,7 +156,7 @@ export {SettingsSliderElement} from './controls/settings_slider.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
 export {getLanguageHelperInstance} from './languages_page/languages.js';
 // <if expr="not is_macosx">
@@ -173,7 +173,7 @@ export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
 // </if>
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';
 export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>
@@ -263,7 +263,7 @@ export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 

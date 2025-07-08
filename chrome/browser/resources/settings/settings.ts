@@ -77,11 +77,11 @@ export {EDIT_STARTUP_URL_EVENT, SettingsStartupUrlEntryElement} from './on_start
 export {SettingsStartupUrlsPageElement} from './on_startup_page/startup_urls_page.js';
 export {StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './on_startup_page/startup_urls_page_browser_proxy.js';
 export {pageVisibility, PrivacyPageVisibility, resetPageVisibilityForTesting} from './page_visibility.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 export {SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 // </if>
 export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance_page/battery_page.js';

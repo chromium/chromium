@@ -13,11 +13,11 @@ import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import '../relaunch_confirmation_dialog.js';
 // </if>
 import '../settings_shared.css.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
@@ -78,7 +78,7 @@ export class SettingsPersonalizationOptionsElement extends
     return {
       syncStatus: Object,
 
-      // <if expr="_google_chrome and not chromeos_ash">
+      // <if expr="_google_chrome and not is_chromeos">
       // TODO(dbeam): make a virtual.* pref namespace and set/get this normally
       // (but handled differently in C++).
       metricsReportingPref_: {
@@ -141,7 +141,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   declare syncStatus: SyncStatus;
 
-  // <if expr="_google_chrome and not chromeos_ash">
+  // <if expr="_google_chrome and not is_chromeos">
   declare private metricsReportingPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   declare private showRestart_: boolean;
@@ -185,7 +185,7 @@ export class SettingsPersonalizationOptionsElement extends
   override ready() {
     super.ready();
 
-    // <if expr="_google_chrome and not chromeos_ash">
+    // <if expr="_google_chrome and not is_chromeos">
     const setMetricsReportingPref = (metricsReporting: MetricsReporting) =>
         this.setMetricsReportingPref_(metricsReporting);
     this.addWebUiListener('metrics-reporting-change', setMetricsReportingPref);
@@ -205,7 +205,7 @@ export class SettingsPersonalizationOptionsElement extends
         this.$.urlCollectionToggle.getBubbleAnchor(), {anchorPaddingTop: 10});
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   /**
    * @return the autocomplete search suggestions CrToggleElement.
    */
@@ -223,7 +223,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
   // </if>
 
-  // <if expr="_google_chrome and not chromeos_ash">
+  // <if expr="_google_chrome and not is_chromeos">
   private onMetricsReportingChange_() {
     const enabled = this.$.metricsReportingControl.checked;
     this.browserProxy_.setMetricsReportingEnabled(enabled);
@@ -262,7 +262,7 @@ export class SettingsPersonalizationOptionsElement extends
     return (pageVisibility.privacy as PrivacyPageVisibility).searchPrediction;
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private navigateTo_(url: string): void {
     window.location.href = url;
   }
@@ -282,7 +282,7 @@ export class SettingsPersonalizationOptionsElement extends
     }
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private showSpellCheckControlToggle_(): boolean {
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
@@ -290,7 +290,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
   // </if><!-- not chromeos -->
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private showSpellCheckControlLink_(): boolean {
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&

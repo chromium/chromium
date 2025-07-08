@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_toggle_button.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import './sync_account_control.js';
 // </if>
 import '../icons.html.js';
@@ -27,7 +27,7 @@ import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browse
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -44,11 +44,11 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {RouteObserverMixin} from '../router.js';
 // </if>
 
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
 
@@ -61,11 +61,11 @@ export interface SettingsPeoplePageElement {
   };
 }
 
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 const SettingsPeoplePageElementBase =
     RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
 // </if>
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 const SettingsPeoplePageElementBase =
     WebUiListenerMixin(BaseMixin(PolymerElement));
 // </if>
@@ -117,7 +117,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         },
       },
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
        */
@@ -164,7 +164,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
        */
       profileName_: String,
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       shouldShowGoogleAccount_: {
         type: Boolean,
         value: false,
@@ -189,7 +189,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           if (routes.SYNC) {
             map.set(routes.SYNC.path, '#sync-setup');
           }
-          // <if expr="not chromeos_ash">
+          // <if expr="not is_chromeos">
           if (routes.MANAGE_PROFILE) {
             map.set(
                 routes.MANAGE_PROFILE.path,
@@ -213,7 +213,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private isProfileActionable_: boolean;
   declare private profileName_: string;
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   declare storedAccounts: StoredAccount[]|null;
   declare private shouldShowGoogleAccount_: boolean;
   declare private showImportDataDialog_: boolean;
@@ -229,7 +229,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     super.connectedCallback();
 
     let useProfileNameAndIcon = true;
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // If this is SplitSettings and we have the Google Account manager,
       // prefer the GAIA name and icon.
@@ -251,7 +251,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     const handleStoredAccounts = (accounts: StoredAccount[]) => {
       this.storedAccounts = accounts;
     };
@@ -264,7 +264,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   override currentRouteChanged() {
     this.showImportDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.IMPORT_DATA;
@@ -297,7 +297,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
      * Extract first frame from image by creating a single frame PNG using
      * url as input if base64 encoded and potentially animated.
      */
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     if (info.iconUrl.startsWith('data:image/png;base64')) {
       this.profileIconUrl_ = convertImageSequenceToPng([info.iconUrl]);
       return;
@@ -307,7 +307,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     this.profileIconUrl_ = info.iconUrl;
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private async updateAccounts_() {
     const accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
@@ -340,7 +340,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private computeShouldShowGoogleAccount_(): boolean {
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
@@ -352,19 +352,19 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // </if>
 
   private onProfileClick_() {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
       OpenWindowProxyImpl.getInstance().openUrl(
           loadTimeData.getString('osSettingsAccountsPageUrl'));
     }
     // </if>
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     // </if>
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private onDisconnectDialogClosed_() {
     this.showSignoutDialog_ = false;
 
@@ -400,10 +400,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     return false;
     // </if>
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     if (this.syncStatus === undefined) {
       return false;
     }

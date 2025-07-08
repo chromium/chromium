@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // </if>
 
@@ -14,7 +14,7 @@ export interface DownloadsBrowserProxy {
 
   resetAutoOpenFileTypes(): void;
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   /**
    * @param path Path to sanitze.
    * @return string to display in UI.
@@ -36,7 +36,7 @@ export class DownloadsBrowserProxyImpl implements DownloadsBrowserProxy {
     chrome.send('resetAutoOpenFileTypes');
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   getDownloadLocationText(path: string) {
     return sendWithPromise('getDownloadLocationText', path);
   }

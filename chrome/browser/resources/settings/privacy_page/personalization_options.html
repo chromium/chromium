@@ -66,7 +66,7 @@
     </settings-toggle-button>
 </if><!-- not chromeos -->
 <if expr="_google_chrome">
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
     <!-- Ash Browser settings show a link to the OS settings instead. -->
     <cr-link-row id="metricsReportingLink" class="hr"
         label="$i18n{enablePersonalizationLogging}"
@@ -74,7 +74,7 @@
         on-click="onMetricsReportingLinkClick_" external>
     </cr-link-row>
 </if><!-- chromeos -->
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <settings-toggle-button id="metricsReportingControl"
         class="hr"
         pref="[[metricsReportingPref_]]"
@@ -97,7 +97,7 @@
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
 <if expr="_google_chrome">
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <settings-toggle-button id="spellCheckControl"
         class="hr"
         pref="{{prefs.spellcheck.use_spelling_service}}"
@@ -107,7 +107,7 @@
         hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
     </settings-toggle-button>
 </if>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
     <!-- On ChromeOS the toggle for spellcheck is shown in the OS settings,
          and Ash Browser settings show a link to the OS settings instead. -->
     <cr-link-row id="spellCheckLink"
@@ -157,7 +157,7 @@
       </settings-signout-dialog>
     </template>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
       <cr-button on-click="onRestartClick_">$i18n{restart}</cr-button>

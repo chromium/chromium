@@ -34,7 +34,7 @@ export enum RouteState {
 }
 
 let guestTopLevelRoute = routes.SEARCH;
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 guestTopLevelRoute = routes.PRIVACY;
 // </if>
 

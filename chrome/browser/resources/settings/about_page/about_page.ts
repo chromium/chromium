@@ -8,7 +8,7 @@
  */
 
 import '/shared/settings/prefs/prefs.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import '../relaunch_confirmation_dialog.js';
 // </if>
 import '../settings_page/settings_section.js';
@@ -99,7 +99,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
       promoteUpdaterStatus_: Object,
       // </if>
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       obsoleteSystemInfo_: {
         type: Object,
         value() {
@@ -125,7 +125,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     };
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   static get observers() {
     return [
       'updateShowUpdateStatus_(' +
@@ -144,7 +144,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   declare private promoteUpdaterStatus_: PromoteUpdaterStatus;
   // </if>
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   declare private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
   declare private showUpdateStatus_: boolean;
   declare private showButtonContainer_: boolean;
@@ -159,7 +159,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
 
     this.aboutBrowserProxy_.pageReady();
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     this.startListening_();
     // </if>
   }
@@ -174,7 +174,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     return '';
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private startListening_() {
     this.addWebUiListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
@@ -223,7 +223,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     this.performRestart(RestartType.RELAUNCH);
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private updateShowUpdateStatus_() {
     if (this.obsoleteSystemInfo_.endOfLine) {
       this.showUpdateStatus_ = false;
@@ -352,7 +352,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   }
   // </if>
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private shouldShowIcons_(): boolean {
     if (this.obsoleteSystemInfo_.endOfLine) {
       return true;

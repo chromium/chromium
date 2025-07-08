@@ -41,7 +41,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format off
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
 // clang-format on
@@ -49,7 +49,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import type {LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {pageVisibility} from '../page_visibility.js';
@@ -84,7 +84,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   static get properties() {
     return {
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
@@ -171,7 +171,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     ];
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   declare languages?: LanguagesModel;
   // </if>
   declare private pageVisibility_: PageVisibility;
@@ -265,7 +265,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     return request.getSearchResult();
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private onOpenChromeOsLanguagesSettingsClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('osSettingsLanguagesPageUrl'));

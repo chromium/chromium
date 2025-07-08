@@ -168,7 +168,7 @@ export class SettingsSyncControlsElement extends
     return syncAllDataTypes || dataTypeManaged;
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private hideCookieItem_(
       syncCookiesSupported: boolean, cookiesRegistered: boolean): boolean {
     return !syncCookiesSupported || !cookiesRegistered;

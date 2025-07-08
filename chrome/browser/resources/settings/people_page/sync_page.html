@@ -69,7 +69,7 @@
       }
     </style>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
@@ -221,7 +221,7 @@
         sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
           ignore-popstate show-on-attach>

@@ -114,7 +114,7 @@ export interface SettingsRoutes {
   SYSTEM: Route;
   TRIGGERED_RESET_DIALOG: Route;
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   IMPORT_DATA: Route;
   SIGN_OUT: Route;
   // </if>
