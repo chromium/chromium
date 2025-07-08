@@ -18836,21 +18836,6 @@
             ]
         }
     ],
-    "PrivacySandboxAttestationsLoadFromAPKAsset": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxAttestationsLoadFromAPKAsset"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxInternalsDevUI": [
         {
             "platforms": [
