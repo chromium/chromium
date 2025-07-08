@@ -26,6 +26,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -545,8 +546,7 @@ TEST_F(WindowAnimationsTest, ResetAnimationAfterDismissingArcPip) {
 // opacity of the new layer, but only the opacity of the old layer. The old
 // layer transform is updated manually when the animation ticks so that it
 // has the same visible bounds as the new layer.
-// Flaky on Chrome OS. https://crbug.com/1113901
-TEST_F(WindowAnimationsTest, DISABLED_CrossFadeAnimateNewLayerOnly) {
+TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -591,7 +591,7 @@ TEST_F(WindowAnimationsTest, DISABLED_CrossFadeAnimateNewLayerOnly) {
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
   EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
 
-  WaitForMilliseconds(300);
+  ui::LayerAnimationStoppedWaiter().Wait(window->layer());
   EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
 }
 
