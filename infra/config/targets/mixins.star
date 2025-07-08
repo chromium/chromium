@@ -530,6 +530,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "skylab-40-tests-per-shard",
+    skylab = targets.skylab(
+        cros_test_max_in_shard = 40,
+    ),
+)
+
+targets.mixin(
     name = "skylab-20-tests-per-shard",
     skylab = targets.skylab(
         cros_test_max_in_shard = 20,

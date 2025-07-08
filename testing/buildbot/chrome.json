@@ -20,7 +20,7 @@
     "skylab_tests": [
       {
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -45,7 +45,7 @@
       {
         "ci_only": true,
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -162,7 +162,7 @@
       },
       {
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -187,7 +187,7 @@
       {
         "ci_only": true,
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -609,7 +609,7 @@
       },
       {
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -634,7 +634,7 @@
       {
         "ci_only": true,
         "cros_board": "betty",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -1944,7 +1944,7 @@
     "skylab_tests": [
       {
         "cros_board": "reven-vmtest",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],
@@ -1969,7 +1969,7 @@
       {
         "ci_only": true,
         "cros_board": "reven-vmtest",
-        "cros_test_max_in_shard": 50,
+        "cros_test_max_in_shard": 40,
         "cros_test_names_exclude_from_file": [
           "chromeos/tast_control_disabled_tests.txt"
         ],

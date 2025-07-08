@@ -16,7 +16,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -24,7 +24,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "chromeos_chrome_criticalstaging_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -75,7 +75,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -83,7 +83,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "chromeos_chrome_criticalstaging_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -111,7 +111,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -119,7 +119,7 @@ targets.legacy_matrix_compound_suite(
         ),
         "chromeos_chrome_criticalstaging_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
