@@ -20,7 +20,6 @@ const char kIsEnterpriseAdminUser[] = "isEnterpriseAdminUser";
 const char kUseElevatedHost[] = "useElevatedHost";
 const char kIceConfig[] = "iceConfig";
 const char kAuthorizedHelper[] = "authorizedHelper";
-const char kUseCorpSessionAuthz[] = "useCorpSessionAuthz";
 const char kIsCorpUser[] = "isCorpUser";
 const char kConnectResponse[] = "connectResponse";
 

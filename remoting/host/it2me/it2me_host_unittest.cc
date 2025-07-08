@@ -309,7 +309,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
 
   PassthroughOAuthTokenGetter token_getter_;
 
-  bool use_corp_session_authz_ = false;
+  bool is_corp_user_ = false;
 
   std::string stored_access_code_;
 
@@ -434,10 +434,10 @@ void It2MeHostTest::StartHost() {
 
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,
-         base::WeakPtr<OAuthTokenGetter> token_getter,
-         bool use_corp_session_authz, ChromotingHostContext* host_context) {
+         base::WeakPtr<OAuthTokenGetter> token_getter, bool is_corp_user,
+         ChromotingHostContext* host_context) {
         auto context = std::make_unique<It2MeHost::DeferredConnectContext>();
-        context->use_corp_session_authz = use_corp_session_authz;
+        context->is_corp_user = is_corp_user;
         context->register_request =
             std::make_unique<FakeRegisterSupportHostRequest>();
         context->signaling_token_getter =
@@ -448,7 +448,7 @@ void It2MeHostTest::StartHost() {
         return context;
       },
       std::move(fake_signal_strategy), token_getter_.GetWeakPtr(),
-      use_corp_session_authz_);
+      is_corp_user_);
   it2me_host_->Connect(host_context_->Copy(), policies_->Clone(),
                        std::move(dialog_factory), weak_factory_.GetWeakPtr(),
                        std::move(create_connection_context), kTestHostUsername,
@@ -965,8 +965,8 @@ TEST_F(It2MeHostTest, UriForwardingDisallowedByDefault) {
   EXPECT_FALSE(*get_local_session_policies().allow_uri_forwarding);
 }
 
-TEST_F(It2MeHostTest, StartHost_UseCorpSessionAuthz) {
-  use_corp_session_authz_ = true;
+TEST_F(It2MeHostTest, StartHost_CorpUser_UseCorpSessionAuthz) {
+  is_corp_user_ = true;
   StartHost();
   ASSERT_EQ(last_host_state_, It2MeHostState::kReceivedAccessCode);
   // No shared secret after the support ID.
@@ -975,8 +975,8 @@ TEST_F(It2MeHostTest, StartHost_UseCorpSessionAuthz) {
   ASSERT_TRUE(has_corp_host_status_logger());
 }
 
-TEST_F(It2MeHostTest, StartHost_DoesNotUseCorpSessionAuthz) {
-  use_corp_session_authz_ = false;
+TEST_F(It2MeHostTest, StartHost_NonCorpUser_DoesNotUseCorpSessionAuthz) {
+  is_corp_user_ = false;
   StartHost();
   ASSERT_EQ(last_host_state_, It2MeHostState::kReceivedAccessCode);
   // The access code includes the shared secret so it is longer than the support

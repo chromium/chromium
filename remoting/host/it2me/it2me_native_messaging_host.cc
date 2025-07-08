@@ -107,7 +107,6 @@ CreateNativeSignalingDeferredConnectContext(
     base::WeakPtr<OAuthTokenGetter> signaling_token_getter,
     base::WeakPtr<OAuthTokenGetter> api_token_getter,
     const std::string& ftl_device_id,
-    bool use_corp_session_authz,
     bool is_corp_user,
     ChromotingHostContext* host_context) {
   std::string device_id =
@@ -116,7 +115,6 @@ CreateNativeSignalingDeferredConnectContext(
   auto connection_context =
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->is_corp_user = is_corp_user;
-  connection_context->use_corp_session_authz = use_corp_session_authz;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(signaling_token_getter,
                                               oauth_token_getter_task_runner),
@@ -350,13 +348,11 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     if (reconnect_params.has_value()) {
       ftl_device_id = reconnect_params->ftl_device_id;
     }
-    bool use_corp_session_authz =
-        message.FindBool(kUseCorpSessionAuthz).value_or(false);
     bool is_corp_user = message.FindBool(kIsCorpUser).value_or(false);
     create_connection_context = base::BindOnce(
         &CreateNativeSignalingDeferredConnectContext, task_runner(),
         signaling_token_getter_.GetWeakPtr(), api_token_getter_.GetWeakPtr(),
-        ftl_device_id, use_corp_session_authz, is_corp_user);
+        ftl_device_id, is_corp_user);
   } else {
     LOG(ERROR) << kUserName << " not found in request.";
   }

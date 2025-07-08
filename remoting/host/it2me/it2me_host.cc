@@ -313,8 +313,7 @@ void It2MeHost::ConnectOnNetworkThread(
     }
   }
 
-  if (connection_context->is_corp_user ||
-      connection_context->use_corp_session_authz) {
+  if (connection_context->is_corp_user) {
     use_corp_session_authz_ = true;
   }
 

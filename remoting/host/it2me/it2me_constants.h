@@ -42,7 +42,6 @@ extern const char kIsEnterpriseAdminUser[];
 extern const char kUseElevatedHost[];
 extern const char kIceConfig[];
 extern const char kAuthorizedHelper[];
-extern const char kUseCorpSessionAuthz[];
 extern const char kIsCorpUser[];
 // Response sent back to the client after the Connect message has been handled.
 extern const char kConnectResponse[];
