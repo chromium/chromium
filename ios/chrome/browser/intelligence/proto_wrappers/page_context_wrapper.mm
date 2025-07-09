@@ -260,6 +260,7 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
     if (!strongSelf) {
       return;
     }
+
     if ([strongSelf shouldUpdateSnapshotWithImage:image]) {
       [strongSelf updateSnapshotWithBarrier:barrier];
       return;
@@ -273,13 +274,11 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   // user was scrolling, otherwise retrieve the latest version in cache or on
   // disk.
   if (_webState->IsVisible()) {
-    raw_ptr<SnapshotTabHelper> snapshot_tab_helper =
-        SnapshotTabHelper::FromWebState(_webState.get());
     auto updateSnapshotCallback =
         base::BindOnce(^(std::optional<int> result_matches) {
-          // TODO(crbug.com/401282824): Log the matches count to measure
+          // TODO(crbug.com/401282824): Log the matches count to measure text
           // highlighting precision.
-          snapshot_tab_helper->UpdateSnapshotWithCallback(callback);
+          [weakSelf updateSnapshotWithCallback:callback];
         });
 
     // If there is text to highlight, do it before capturing the screenshot.
@@ -425,6 +424,14 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
         [strongSelf encodeImageAndSetTabScreenshot:image];
         barrier.Run();
       });
+}
+
+// Updates the current WebState's snapshot with the given callback.
+- (void)updateSnapshotWithCallback:(void (^)(UIImage*))callback {
+  if (_webState) {
+    SnapshotTabHelper::FromWebState(_webState.get())
+        ->UpdateSnapshotWithCallback(callback);
+  }
 }
 
 // Convert UIImage snapshot to PNG, and then to base64 encoded string. Set the
