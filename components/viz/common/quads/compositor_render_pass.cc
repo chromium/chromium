@@ -125,9 +125,11 @@ void CompositorRenderPass::AsValueInto(
   value->SetString("subtree_capture_id", subtree_capture_id.ToString());
   cc::MathUtil::AddToTracedValue("subtree_size", subtree_size, value);
 
+  // id.value() is a 64-bit uint even on 32-bit architectures, so
+  // using reinterpret_cast for the intentional conversion to a TracedValue::Id.
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "CompositorRenderPass",
-      reinterpret_cast<void*>(static_cast<uint64_t>(id)));
+      TracedValue::Id(reinterpret_cast<void*>(id.value())));
 }
 
 CompositorRenderPassDrawQuad*

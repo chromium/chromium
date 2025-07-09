@@ -1944,7 +1944,7 @@ void PictureLayerImpl::AsValueInto(
     MathUtil::AddToTracedValue("geometry_rect", iter.geometry_rect(), state);
 
     if (*iter)
-      viz::TracedValue::SetIDRef(*iter, state, "tile");
+      viz::TracedValue::SetIDRef(viz::TracedValue::Id(*iter), state, "tile");
 
     state->EndDictionary();
   }

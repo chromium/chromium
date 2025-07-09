@@ -45,7 +45,8 @@ DrawQuad::~DrawQuad() = default;
 
 void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("material", static_cast<int>(material));
-  TracedValue::SetIDRef(shared_quad_state, value, "shared_state");
+  TracedValue::SetIDRef(TracedValue::Id(shared_quad_state), value,
+                        "shared_state");
 
   cc::MathUtil::AddToTracedValue("content_space_rect", rect, value);
 

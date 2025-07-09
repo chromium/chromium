@@ -5,6 +5,7 @@
 #include "cc/raster/raster_source.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
@@ -168,7 +169,8 @@ bool RasterSource::HasRecordings() const {
 
 void RasterSource::AsValueInto(base::trace_event::TracedValue* array) const {
   if (display_list_.get())
-    viz::TracedValue::AppendIDRef(display_list_.get(), array);
+    viz::TracedValue::AppendIDRef(viz::TracedValue::Id(display_list_.get()),
+                                  array);
 }
 
 void RasterSource::DidBeginTracing() {

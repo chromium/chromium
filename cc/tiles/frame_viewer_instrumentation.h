@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/tile_priority.h"
+#include "components/viz/common/traced_value.h"
 
 namespace cc {
 namespace frame_viewer_instrumentation {
@@ -21,7 +22,7 @@ constexpr const char* CategoryLayerTree() {
 
 class ScopedAnalyzeTask {
  public:
-  ScopedAnalyzeTask(const void* tile_id,
+  ScopedAnalyzeTask(viz::TracedValue::Id tile_id,
                     TileResolution tile_resolution,
                     int source_frame_number,
                     int layer_id);
@@ -33,7 +34,7 @@ class ScopedAnalyzeTask {
 
 class ScopedRasterTask {
  public:
-  ScopedRasterTask(const void* tile_id,
+  ScopedRasterTask(viz::TracedValue::Id tile_id,
                    TileResolution tile_resolution,
                    int source_frame_number,
                    int layer_id);

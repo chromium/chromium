@@ -81,8 +81,10 @@ const CompositorRenderPassDrawQuad* CompositorRenderPassDrawQuad::MaterialCast(
 
 void CompositorRenderPassDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
+  // render_pass_id.value() is a 64-bit uint even on 32-bit architectures, so
+  // using reinterpret_cast for the intentional conversion to a TracedValue::Id.
   TracedValue::SetIDRef(
-      reinterpret_cast<void*>(static_cast<uint64_t>(render_pass_id)), value,
+      TracedValue::Id(reinterpret_cast<void*>(render_pass_id.value())), value,
       "render_pass_id");
   RenderPassDrawQuadInternal::ExtendValue(value);
 }

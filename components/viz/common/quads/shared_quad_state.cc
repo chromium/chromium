@@ -117,7 +117,7 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
-      this);
+      TracedValue::Id(this));
 }
 
 }  // namespace viz

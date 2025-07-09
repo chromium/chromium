@@ -26,7 +26,7 @@ const char kAnalyzeTask[] = "AnalyzeTask";
 const char kRasterTask[] = "RasterTask";
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat> TileDataAsValue(
-    const void* tile_id,
+    viz::TracedValue::Id tile_id,
     TileResolution tile_resolution,
     int source_frame_number,
     int layer_id) {
@@ -41,7 +41,7 @@ std::unique_ptr<base::trace_event::ConvertableToTraceFormat> TileDataAsValue(
 
 }  // namespace
 
-ScopedAnalyzeTask::ScopedAnalyzeTask(const void* tile_id,
+ScopedAnalyzeTask::ScopedAnalyzeTask(viz::TracedValue::Id tile_id,
                                      TileResolution tile_resolution,
                                      int source_frame_number,
                                      int layer_id) {
@@ -54,7 +54,7 @@ ScopedAnalyzeTask::~ScopedAnalyzeTask() {
   TRACE_EVENT_END0(kCategory, kAnalyzeTask);
 }
 
-ScopedRasterTask::ScopedRasterTask(const void* tile_id,
+ScopedRasterTask::ScopedRasterTask(viz::TracedValue::Id tile_id,
                                    TileResolution tile_resolution,
                                    int source_frame_number,
                                    int layer_id) {
