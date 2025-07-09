@@ -940,12 +940,12 @@ class CrossbenchTest(object):
                                                               handle,
                                                               env=env)
 
-      if return_code == 0:
+      if return_code == 0 or self.options.ignore_benchmark_exit_code:
         crossbench_result_converter.convert(
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
-      elif os.path.exists(output_paths.logs):
+      if return_code and os.path.exists(output_paths.logs):
         # To avoid printing too large log file, we print the last 100 lines.
         bottom_of_log = deque(maxlen=100)
         with open(output_paths.logs, 'r') as handle:

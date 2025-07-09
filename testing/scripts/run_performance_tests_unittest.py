@@ -165,6 +165,27 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     mock_execute_benchmark.assert_called_with('speedometer_3.0',
                                               'speedometer3.crossbench', [])
 
+  @mock.patch.object(run_performance_tests.test_env,
+                     'run_command_output_to_handle',
+                     return_value=3)
+  @mock.patch.object(run_performance_tests.crossbench_result_converter,
+                     'convert')
+  @mock.patch.object(run_performance_tests.OutputFilePaths, 'SetUp')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(os.path, 'exists', return_value=False)
+  @mock.patch('builtins.open', new_callable=mock.mock_open)
+  def testCrossbenchTestIgnoreBenchmarkExitCode(self, mock_open, mock_exists,
+                                                mock_upload, mock_setup,
+                                                mock_convert, mock_run_command):
+    del mock_open, mock_exists, mock_upload, mock_setup, mock_run_command
+    fake_args = _create_crossbench_args() + ['--ignore-benchmark-exit-code']
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    rc = run_performance_tests.CrossbenchTest(options, 'dir').execute()
+
+    self.assertEqual(rc, 0)
+    mock_convert.assert_called()
+
   def testCrossbenchTestBenchmarksException(self):
     fake_args = ['./cp.py', '--isolated-script-test-output=output']
     options = run_performance_tests.parse_arguments(fake_args)
