@@ -770,7 +770,8 @@ config("compiler") {
       "-fsplit-lto-unit",
     ]
 
-    if (thin_lto_enable_cache) {
+    # TODO(crbug.com/364987714): Re-enable ThinLTO cache on Android.
+    if (thin_lto_enable_cache && !is_android) {
       # Limit the size of the ThinLTO cache to the lesser of 10% of
       # available disk space, 40GB and 100000 files.
       cache_policy =
