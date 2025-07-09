@@ -1705,11 +1705,9 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
   if (session_service) {
-    sessions::SessionTabHelper* session_tab_helper =
-        sessions::SessionTabHelper::FromWebContents(contents);
-    session_service->SetPinnedState(session_id(),
-                                    session_tab_helper->session_id(),
-                                    tab_strip_model_->IsTabPinned(index));
+    session_service->SetPinnedState(
+        session_id(), sessions::SessionTabHelper::IdForTab(contents),
+        tab_strip_model_->IsTabPinned(index));
   }
 }
 
@@ -1733,10 +1731,9 @@ void Browser::UpdateTabGroupSessionDataForTab(
     return;
   }
 
-  sessions::SessionTabHelper* const session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(tab->GetContents());
-  session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
-                               std::move(group));
+  session_service->SetTabGroup(
+      session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
+      std::move(group));
 }
 
 void Browser::TabStripEmpty() {
@@ -3141,10 +3138,9 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   if (service && !tab_strip_model_->closing_all()) {
     service->SetSelectedTabInWindow(session_id(),
                                     tab_strip_model_->active_index());
-    sessions::SessionTabHelper* session_tab_helper =
-        sessions::SessionTabHelper::FromWebContents(new_contents);
-    service->SetLastActiveTime(session_id(), session_tab_helper->session_id(),
-                               base::Time::Now());
+    service->SetLastActiveTime(
+        session_id(), sessions::SessionTabHelper::IdForTab(new_contents),
+        base::Time::Now());
   }
 
   SearchTabHelper::FromWebContents(new_contents)->OnTabActivated();
@@ -3408,22 +3404,18 @@ void Browser::SyncHistoryWithTabs(int index) {
   for (int i = index; i < tab_strip_model_->count(); ++i) {
     WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
     if (web_contents) {
-      sessions::SessionTabHelper* session_tab_helper =
-          sessions::SessionTabHelper::FromWebContents(web_contents);
+      SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
       if (service) {
-        service->SetPinnedState(session_id(), session_tab_helper->session_id(),
+        service->SetPinnedState(session_id(), tab_id,
                                 tab_strip_model_->IsTabPinned(i));
       }
 
       if (!IsRelevantToAppSessionService(type_) && session_service) {
-        session_service->SetTabIndexInWindow(
-            session_id(), session_tab_helper->session_id(), i);
+        session_service->SetTabIndexInWindow(session_id(), tab_id, i);
 
         std::optional<tab_groups::TabGroupId> group_id =
             tab_strip_model_->GetTabGroupForTab(i);
-        session_service->SetTabGroup(session_id(),
-                                     session_tab_helper->session_id(),
-                                     std::move(group_id));
+        session_service->SetTabGroup(session_id(), tab_id, std::move(group_id));
       }
     }
   }
