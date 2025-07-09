@@ -32,6 +32,7 @@ import org.chromium.media.MediaFeatures;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.gfx.GfxSwitches;
 
@@ -1082,6 +1083,10 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
                 "Enables running native startup tasks asynchronously if WebView startup is"
                         + " asynchronous"),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING,
+                "Enables text formatting information to be surfaced as Spans on"
+                    + " AccessibilityNodeInfo text for consumption by ATs like screen readers."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
