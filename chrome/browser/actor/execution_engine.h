@@ -94,6 +94,10 @@ class ExecutionEngine {
   // Cancels any in-progress actions with the reason: "kTaskPaused".
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
+  // If there is an ongoing tool request, treat it as having failed with the
+  // given reason.
+  void FailCurrentTool(mojom::ActionResultCode reason);
+
   // Performs the next action in the current task.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
@@ -187,6 +191,10 @@ class ExecutionEngine {
   // The index of the next action that will be started when ExecuteNextAction is
   // reached.
   size_t next_action_index_ = 0;
+
+  // If set, the currently executing tool should be considered failed once it
+  // completes.
+  std::optional<mojom::ActionResultCode> external_tool_failure_reason_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

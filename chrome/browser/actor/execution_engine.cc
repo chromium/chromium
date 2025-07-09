@@ -162,6 +162,16 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   }
 }
 
+void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(reason, mojom::ActionResultCode::kOk);
+  if (state_ != State::kToolController) {
+    return;
+  }
+
+  external_tool_failure_reason_ = reason;
+}
+
 void ExecutionEngine::Act(const BrowserAction& action,
                           ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
@@ -434,6 +444,12 @@ void ExecutionEngine::FinishedUiPreTool(mojom::ActionResultPtr result) {
 void ExecutionEngine::FinishedToolController(mojom::ActionResultPtr result) {
   DCHECK_EQ(state_, State::kToolController);
   // The current action errored out. Stop the chain.
+  std::optional<mojom::ActionResultCode> external_tool_failure_reason;
+  std::swap(external_tool_failure_reason, external_tool_failure_reason_);
+  if (external_tool_failure_reason) {
+    CompleteActions(MakeResult(*external_tool_failure_reason));
+    return;
+  }
   if (!IsOk(*result)) {
     CompleteActions(std::move(result));
     return;

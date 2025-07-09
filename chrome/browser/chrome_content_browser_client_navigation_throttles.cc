@@ -71,6 +71,7 @@
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -559,5 +560,7 @@ void CreateAndAddChromeThrottlesForNavigation(
 
 #if !BUILDFLAG(IS_ANDROID)
   web_app::IsolatedWebAppThrottle::MaybeCreateAndAdd(registry);
+
+  actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

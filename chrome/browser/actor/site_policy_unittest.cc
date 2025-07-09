@@ -142,6 +142,14 @@ TEST_F(ActorSitePolicyTest, BlockInsecureHTTP) {
   CheckUrl(GURL("http://a.test/"), false);
 }
 
+TEST_F(ActorSitePolicyTest, InsecureHTTPAllowedWhenSpecified) {
+  base::test::TestFuture<bool> allowed;
+  MayActOnUrl(GURL("http://a.test/"), /*allow_insecure_http=*/true, profile(),
+              ActorKeyedService::Get(profile())->GetJournal(), TaskId(),
+              allowed.GetCallback());
+  EXPECT_TRUE(allowed.Get());
+}
+
 TEST_F(ActorSitePolicyTest, AllowAllowlistedHosts) {
   CheckUrl(GURL("https://a.test/"), true);
   CheckUrl(GURL("https://b.test/"), true);

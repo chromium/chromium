@@ -118,6 +118,7 @@ void OnOptimizationGuideDecision(
 }
 
 void MayActOnUrl(const GURL& url,
+                 bool allow_insecure_http,
                  Profile* profile,
                  std::unique_ptr<DecisionWrapper> decision_wrapper) {
   if (net::IsLocalhost(url) || url.IsAboutBlank()) {
@@ -125,8 +126,14 @@ void MayActOnUrl(const GURL& url,
     return;
   }
 
-  if (!url.SchemeIs(url::kHttpsScheme) || url.HostIsIPAddress()) {
+  if (!(url.SchemeIs(url::kHttpsScheme) ||
+        (allow_insecure_http && url.SchemeIs(url::kHttpScheme)))) {
     decision_wrapper->Reject("Wrong scheme");
+    return;
+  }
+
+  if (url.HostIsIPAddress()) {
+    decision_wrapper->Reject("IP address");
     return;
   }
 
@@ -264,12 +271,13 @@ void MayActOnTab(const tabs::TabInterface& tab,
   }
 #endif
 
-  MayActOnUrl(url,
+  MayActOnUrl(url, /*allow_insecure_http=*/false,
               Profile::FromBrowserContext(web_contents.GetBrowserContext()),
               std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
+                 bool allow_insecure_http,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
@@ -277,7 +285,7 @@ void MayActOnUrl(const GURL& url,
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
-  MayActOnUrl(url, profile, std::move(decision_wrapper));
+  MayActOnUrl(url, allow_insecure_http, profile, std::move(decision_wrapper));
 }
 
 }  // namespace actor

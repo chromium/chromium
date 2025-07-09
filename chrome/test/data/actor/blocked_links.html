@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Links To Blocked Site</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <h1>Links To Blocked Site</h1>
+    <div><a id="directToBlocked" href="#">Go to blocked site</a></div>
+    <div><a id="redirectToBlocked" href="#">Redirect to blocked site</a></div>
+    <script>
+      function setBlockedSite(url) {
+        document.getElementById('directToBlocked').href = url;
+        document.getElementById('redirectToBlocked').href = '/server-redirect?' + url;
+      }
+    </script>
+  </body>
+</html>
