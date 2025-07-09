@@ -27,6 +27,9 @@ class ReaderModeContentTabHelper
   // Loads the `content_data` in the WebState using `content_url` as URL. Does
   // nothing if the WebState was destroyed or is being destroyed.
   void LoadContent(GURL content_url, NSData* content_data);
+  // Attaches tab helpers that were available in the `original_web_state` to
+  // continue supporting a subset of WebState based features.
+  void AttachSupportedTabHelpers(web::WebState* web_state);
 
   // WebStatePolicyDecider overrides:
   void ShouldAllowRequest(NSURLRequest* request,
