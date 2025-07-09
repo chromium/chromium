@@ -1,2 +1,0 @@
-Tests screen scale factor.
-devicePixelRatio=3

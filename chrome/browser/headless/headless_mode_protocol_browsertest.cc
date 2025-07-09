@@ -319,6 +319,9 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "shared/large-browser-window-size.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowSize, "shared/change-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowState, "shared/change-window-state.js")
+
 // These currently fail on Mac, see https://crbug.com/1488010
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
@@ -343,6 +346,21 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "shared/print-to-pdf-tiny-page.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
+                            "shared/screen-details-multiple-screens.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
+                            "shared/screen-details-rotation-angle.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsPixelRatio,
+                            "shared/screen-details-pixel-ratio.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsColorDepth,
+                            "shared/screen-details-color-depth.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkArea,
+                            "shared/screen-details-work-area.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
@@ -442,5 +460,13 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomOnSecondaryScreen,
 
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomSizeMatchesWorkArea,
                             "shared/window-zoom-size-matches-work-area.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
+                            "shared/window-screen-scale-factor.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
+                            "shared/window-screen-size-orientation.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
 
 }  // namespace headless

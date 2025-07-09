@@ -1,0 +1,2 @@
+Tests screen details pixel ratio.
+colorDepth=24

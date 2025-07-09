@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={devicePixelRatio=3.0}
-//
+
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests screen scale factor.');
+      await testRunner.startBlank('Tests window screen scale factor.');
 
   const result = await session.evaluate('window.devicePixelRatio');
   testRunner.log('devicePixelRatio=' + result);
 
   testRunner.completeTest();
-})
+});

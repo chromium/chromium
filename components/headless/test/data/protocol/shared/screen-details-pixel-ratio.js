@@ -1,32 +1,34 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={rotation=180}
-//
+// META: --screen-info={devicePixelRatio=3.0}
+
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests screen rotation angle.');
+      await testRunner.startBlank('Tests screen details pixel ratio.');
 
   const HttpInterceptor =
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
 
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-  httpInterceptor.addResponse(
-      'https://example.com/index.html', `<html></html>`);
+  httpInterceptor.addResponse('https://example.com/index.html', `
+        <html><head><link rel="icon" href="data:,"></head></html>
+      `);
 
   await dp.Browser.grantPermissions({permissions: ['windowManagement']});
 
   await session.navigate('https://example.com/index.html');
 
   const result = await session.evaluateAsync(async () => {
-    const cs = (await getScreenDetails()).currentScreen;
-    return `Screen: ${cs.left},${cs.top} ${cs.width}x${cs.height}\n` +
-        `angle: ${cs.orientation.angle}`;
+    const screenDetails = await getScreenDetails();
+    const screenInfos =
+        screenDetails.screens.map(s => `colorDepth=${s.colorDepth}`);
+    return screenInfos.join('\n');
   });
 
   testRunner.log(result);
 
   testRunner.completeTest();
-})
+});

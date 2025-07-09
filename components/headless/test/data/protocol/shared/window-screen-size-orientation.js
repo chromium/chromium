@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={600x800}
-//
+
 (async function(testRunner) {
   const {session, dp} =
-      await testRunner.startBlank('Tests screen size orientation.');
+      await testRunner.startBlank('Tests window screen size orientation.');
 
   const result = await session.evaluate('window.screen.orientation.type');
   testRunner.log('orientation=' + result);
 
   testRunner.completeTest();
-})
+});

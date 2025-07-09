@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {session} = await testRunner.startBlank('Tests window outer ' +
+  const {session} = await testRunner.startBlank(
+      'Tests window outer ' +
       'size is properly adjusted by `window.resizeTo()`.');
   const initialSize = await session.evaluate('({outerWidth, outerHeight})');
   testRunner.log(initialSize, 'Outer window size (initial): ');
@@ -18,4 +19,4 @@
   const finalSize = await session.evaluate('({outerWidth, outerHeight})');
   testRunner.log(finalSize, 'Outer window size (final): ');
   testRunner.completeTest();
-})
+});

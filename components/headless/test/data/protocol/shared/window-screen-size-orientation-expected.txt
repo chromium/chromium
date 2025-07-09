@@ -1,0 +1,2 @@
+Tests window screen size orientation.
+orientation=portrait-primary

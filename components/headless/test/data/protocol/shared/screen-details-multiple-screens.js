@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={label='Screen' devicePixelRatio=3.0 colorDepth=32}
-//
+// META: --screen-info={label='1st screen'}{600x800 label='2nd screen'}
+
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
-      'Tests screen details pixel ratio and color depth.');
+      'Tests multiple screens details origin and size.');
 
   const HttpInterceptor =
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
 
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-  httpInterceptor.addResponse(
-      'https://example.com/index.html', `<html></html>`);
+  httpInterceptor.addResponse('https://example.com/index.html', `
+        <html><head><link rel="icon" href="data:,"></head></html>
+      `);
 
   await dp.Browser.grantPermissions({permissions: ['windowManagement']});
 
@@ -23,12 +24,12 @@
   const result = await session.evaluateAsync(async () => {
     const screenDetails = await getScreenDetails();
     const screenInfos = screenDetails.screens.map(
-        s => `${s.label}: colorDepth=${s.colorDepth} devicePixelRatio=${
-            s.devicePixelRatio}`);
+        s => `${s.label}: ${s.left},${s.top} ${s.width}x${s.height}` +
+            ` isPrimary=${s.isPrimary} isExtended=${s.isExtended}`);
     return screenInfos.join('\n');
   });
 
   testRunner.log(result);
 
   testRunner.completeTest();
-})
+});
