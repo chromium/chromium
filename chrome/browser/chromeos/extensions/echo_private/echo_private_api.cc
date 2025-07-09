@@ -53,6 +53,8 @@ std::string GetRegistrationCode(std::string_view type) {
     name = ash::system::kOffersCouponCodeKey;
   } else if (type == kGroupType) {
     name = ash::system::kOffersGroupCodeKey;
+  } else {
+    return std::string();
   }
 
   ash::system::StatisticsProvider* provider =
