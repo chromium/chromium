@@ -2483,7 +2483,7 @@
     },
     {
       name: "HighlightsFromPoint",
-      status: "test",
+      status: "stable",
     },
     {
       name: "HrefTranslate",
