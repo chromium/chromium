@@ -106,6 +106,7 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               {
                   .histogram_name = "ManagePasswords",
                   .type = PageActionIconType::kManagePasswords,
+                  .element_identifier = kPasswordsOmniboxKeyIconElementId,
               },
           },
       });
