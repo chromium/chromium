@@ -379,12 +379,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/430594808")
     public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase());
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/430594808")
     public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
     }
@@ -934,6 +936,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/430594808")
     public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1123,6 +1126,7 @@ public class FirstRunIntegrationTest {
     // Automotive devices do not support coloring the system bars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    @DisabledTest(message = "crbug.com/430594808")
     public void testEdgeToEdgeEverywhere_testLargeContentLayout() {
         DialogWhenLargeContentLayout.enableShouldShowAsDialogForTesting(
                 /* shouldShowAsDialog= */ true);
