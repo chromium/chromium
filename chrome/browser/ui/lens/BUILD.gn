@@ -57,6 +57,7 @@ source_set("lens") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/content_extraction/content/browser",
     "//components/endpoint_fetcher",
     "//components/find_in_page",
     "//components/lens",

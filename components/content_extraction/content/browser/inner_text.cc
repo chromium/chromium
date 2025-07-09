@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/content_extraction/inner_text.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"

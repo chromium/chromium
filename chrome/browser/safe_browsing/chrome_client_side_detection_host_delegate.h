@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/content_extraction/inner_text.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "content/public/browser/global_routing_id.h"

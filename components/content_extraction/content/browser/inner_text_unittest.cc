@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/content_extraction/inner_text.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"

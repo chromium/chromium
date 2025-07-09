@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTENT_EXTRACTION_INNER_TEXT_H_
-#define CHROME_BROWSER_CONTENT_EXTRACTION_INNER_TEXT_H_
+#ifndef COMPONENTS_CONTENT_EXTRACTION_CONTENT_BROWSER_INNER_TEXT_H_
+#define COMPONENTS_CONTENT_EXTRACTION_CONTENT_BROWSER_INNER_TEXT_H_
 
 #include <memory>
 #include <optional>
@@ -72,4 +72,4 @@ std::unique_ptr<InnerTextResult> CreateInnerTextResult(
 }  // namespace internal
 }  // namespace content_extraction
 
-#endif  // CHROME_BROWSER_CONTENT_EXTRACTION_INNER_TEXT_H_
+#endif  // COMPONENTS_CONTENT_EXTRACTION_CONTENT_BROWSER_INNER_TEXT_H_

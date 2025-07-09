@@ -86,8 +86,8 @@ source_set("impl") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/ui:ui",
+    "//components/content_extraction/content/browser",
   ]
   deps = [
     ":ai",

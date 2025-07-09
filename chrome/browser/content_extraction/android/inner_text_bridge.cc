@@ -5,7 +5,7 @@
 #include "base/android/callback_android.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/content_extraction/inner_text.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 #include "content/public/browser/render_frame_host.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

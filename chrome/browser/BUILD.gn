@@ -2173,6 +2173,7 @@ static_library("browser") {
     "//components/compose/core/browser:features",
     "//components/consent_auditor",
     "//components/content_capture/browser",
+    "//components/content_extraction/content/browser",
     "//components/content_relationship_verification",
     "//components/content_settings/browser",
     "//components/content_settings/common:mojom",

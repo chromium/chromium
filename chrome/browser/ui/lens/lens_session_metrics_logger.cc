@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/content_extraction/inner_html.h"
-#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "components/lens/lens_overlay_dismissal_source.h"

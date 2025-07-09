@@ -7561,6 +7561,10 @@ data/indexeddb/write_4mb_blob.html
 data/indexeddb/write_and_read_blob.html
 data/indexeddb/write_and_read_large_value.html
 data/infinitely_loading_image.html
+data/inner_text/subframe-a.html
+data/inner_text/subframe-b.html
+data/inner_text/test1.html
+data/inner_text/test2.html
 data/input_box.html
 data/input_in_iframe.html
 data/interaction-mq-dynamic.html

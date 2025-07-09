@@ -6,8 +6,6 @@ source_set("content_extraction") {
   sources = [
     "inner_html.cc",
     "inner_html.h",
-    "inner_text.cc",
-    "inner_text.h",
   ]
   public_deps = [ "//base" ]
   deps = [
