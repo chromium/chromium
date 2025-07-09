@@ -2659,9 +2659,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       if (const TemplateURL* starter_pack_turl =
               template_url_service->FindStarterPackTemplateURL(
                   context.enter_starter_pack_id_)) {
-        // TODO(crbug.com/422575584): Use new KeywordModeEntryMethod.
         EnterKeywordMode(
-            OmniboxEventProto::SELECT_SUGGESTION, starter_pack_turl,
+            OmniboxEventProto::TOOLBELT, starter_pack_turl,
             AutocompleteMatch::GetKeywordPlaceholder(
                 starter_pack_turl,
                 controller_->client()->IsHistoryEmbeddingsEnabled()));
