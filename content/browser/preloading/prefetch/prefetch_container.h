@@ -559,10 +559,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns request id to be used by DevTools and test utilities.
   const std::string& RequestId() const { return request_id_; }
 
-  const std::optional<PrefetchResponseSizes>& GetPrefetchResponseSizes() const {
-    return prefetch_response_sizes_;
-  }
-
   bool HasPreloadingAttempt() { return !!attempt_; }
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
@@ -817,8 +813,6 @@ class CONTENT_EXPORT PrefetchContainer {
  protected:
   // Updates metrics based on the result of the prefetch request.
   void UpdatePrefetchRequestMetrics(
-      const std::optional<network::URLLoaderCompletionStatus>&
-          completion_status,
       const network::mojom::URLResponseHead* head);
 
  private:
@@ -1004,12 +998,6 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader_;
 
   ukm::SourceId ukm_source_id_;
-
-  // The sizes information of the prefetched response.
-  std::optional<PrefetchResponseSizes> prefetch_response_sizes_;
-
-  // The amount of time it took for the prefetch to complete.
-  std::optional<base::TimeDelta> fetch_duration_;
 
   // The amount of time it took for the headers to be received.
   std::optional<base::TimeDelta> header_latency_;

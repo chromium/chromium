@@ -52,7 +52,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_util.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -541,13 +540,9 @@ PrefetchContainer::~PrefetchContainer() {
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted)));
   builder.SetLinkClicked(navigated_to_);
 
-  if (prefetch_response_sizes_) {
-    builder.SetDataLength(ukm::GetExponentialBucketMinForBytes(
-        prefetch_response_sizes_->encoded_data_length));
-  }
-
-  if (fetch_duration_) {
-    builder.SetFetchDurationMS(fetch_duration_->InMilliseconds());
+  if (GetNonRedirectResponseReader()) {
+    GetNonRedirectResponseReader()->RecordOnPrefetchContainerDestroyed(
+        base::PassKey<PrefetchContainer>(), builder);
   }
 
   if (probe_result_) {
@@ -1335,7 +1330,6 @@ void PrefetchContainer::OnPrefetchComplete(
 
   if (GetNonRedirectResponseReader()) {
     UpdatePrefetchRequestMetrics(
-        GetNonRedirectResponseReader()->GetCompletionStatus(),
         GetNonRedirectResponseReader()->GetHead());
     UpdateServingPageMetrics();
   } else {
@@ -1419,25 +1413,13 @@ void PrefetchContainer::OnPrefetchComplete(
 }
 
 void PrefetchContainer::UpdatePrefetchRequestMetrics(
-    const std::optional<network::URLLoaderCompletionStatus>& completion_status,
     const network::mojom::URLResponseHead* head) {
   DVLOG(1) << *this << "::UpdatePrefetchRequestMetrics:"
            << "head = " << head;
-  if (completion_status) {
-    prefetch_response_sizes_ = {
-        .encoded_data_length = completion_status->encoded_data_length,
-        .encoded_body_length = completion_status->encoded_body_length,
-        .decoded_body_length = completion_status->decoded_body_length,
-    };
-  }
 
   if (head)
     header_latency_ =
         head->load_timing.receive_headers_end - head->load_timing.request_start;
-
-  if (completion_status && head)
-    fetch_duration_ =
-        completion_status->completion_time - head->load_timing.request_start;
 }
 
 PrefetchContainer::ServableState PrefetchContainer::GetServableState(

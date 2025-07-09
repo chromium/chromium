@@ -16,6 +16,8 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "net/http/http_cookie_indices.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -355,6 +357,33 @@ void PrefetchResponseReader::OnComplete(
       new_load_state,
       base::BindRepeating(&PrefetchResponseReader::ForwardCompletionStatus,
                           base::Unretained(this)));
+}
+
+void PrefetchResponseReader::RecordOnPrefetchContainerDestroyed(
+    base::PassKey<PrefetchContainer>,
+    ukm::builders::PrefetchProxy_PrefetchedResource& builder) const {
+  CHECK(head_);
+  switch (load_state()) {
+    case LoadState::kResponseReceived:
+    case LoadState::kFailedResponseReceived:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
+      break;
+
+    case LoadState::kStarted:
+    case LoadState::kRedirectHandled:
+    case LoadState::kFailedRedirect:
+      NOTREACHED();
+  }
+
+  if (completion_status_) {
+    builder.SetDataLength(ukm::GetExponentialBucketMinForBytes(
+        completion_status_->encoded_data_length));
+
+    base::TimeDelta fetch_duration =
+        completion_status_->completion_time - head_->load_timing.request_start;
+    builder.SetFetchDurationMS(fetch_duration.InMilliseconds());
+  }
 }
 
 void PrefetchResponseReader::OnReceiveEarlyHints(

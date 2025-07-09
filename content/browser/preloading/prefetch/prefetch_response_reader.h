@@ -17,6 +17,10 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
+namespace ukm::builders {
+class PrefetchProxy_PrefetchedResource;
+}  // namespace ukm::builders
+
 namespace content {
 
 // This is necessary because `PrefetchContainerObserver` emulates a callback
@@ -25,6 +29,7 @@ namespace content {
 // TODO(crbug.com/400761083): Remove it.
 class PrefetchContainerObserver;
 
+class PrefetchContainer;
 class PrefetchStreamingURLLoader;
 class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
@@ -99,10 +104,6 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
-  std::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
-      const {
-    return completion_status_;
-  }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
   // True if this response had Vary: Cookie (or Vary: *), and a Cookie-Indices
@@ -114,6 +115,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // Do not call this if |VariesOnCookieIndices()| returns false.
   bool MatchesCookieIndices(
       base::span<const std::pair<std::string, std::string>> cookies) const;
+
+  void RecordOnPrefetchContainerDestroyed(
+      base::PassKey<PrefetchContainer>,
+      ukm::builders::PrefetchProxy_PrefetchedResource& builder) const;
 
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
