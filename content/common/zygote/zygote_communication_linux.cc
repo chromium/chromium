@@ -262,6 +262,7 @@ void ZygoteCommunication::Init(
   static const char* const kForwardSwitches[] = {
       sandbox::policy::switches::kAllowSandboxDebugging,
       switches::kDisableInProcessStackTraces,
+      sandbox::policy::switches::kDisableLandlockSandbox,
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
       sandbox::policy::switches::kNoSandbox,
   };

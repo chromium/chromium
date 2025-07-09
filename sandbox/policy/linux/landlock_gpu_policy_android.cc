@@ -7,11 +7,13 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/command_line.h"
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/thread_helpers.h"
+#include "sandbox/policy/switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <fcntl.h>
@@ -49,6 +51,11 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
 #if BUILDFLAG(IS_ANDROID)
   if (sandbox_type != sandbox::mojom::Sandbox::kGpu) {
     LOG(ERROR) << "Sandbox type not GPU, skipping Landlock";
+    return false;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kDisableLandlockSandbox)) {
     return false;
   }
 

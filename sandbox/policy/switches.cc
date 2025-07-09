@@ -18,6 +18,9 @@ const char kAllowSandboxDebugging[] = "allow-sandbox-debugging";
 // Disables the GPU process sandbox.
 const char kDisableGpuSandbox[] = "disable-gpu-sandbox";
 
+// Disables the Landlock sandbox (Android only).
+const char kDisableLandlockSandbox[] = "disable-landlock-sandbox";
+
 // Disables usage of the namespace sandbox.
 const char kDisableNamespaceSandbox[] = "disable-namespace-sandbox";
 

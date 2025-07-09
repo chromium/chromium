@@ -394,6 +394,8 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kDisableSharedDictionaryStorageCleanupForTesting,
       network::switches::kStoreProbabilisticRevealTokens,
       sandbox::policy::switches::kNoSandbox,
+      sandbox::policy::switches::kDisableLandlockSandbox,
+      sandbox::policy::switches::kDisableSeccompFilterSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       switches::kDisableDevShmUsage,
 #endif

@@ -72,6 +72,7 @@ const char* const kBadFlags[] = {
 
     // These flags disable sandbox-related security.
     sandbox::policy::switches::kDisableGpuSandbox,
+    sandbox::policy::switches::kDisableLandlockSandbox,
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kDisableSetuidSandbox,
     sandbox::policy::switches::kNoSandbox,

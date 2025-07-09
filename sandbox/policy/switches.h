@@ -17,6 +17,7 @@ SANDBOX_POLICY_EXPORT extern const char kServiceSandboxType[];
 // Flags owned by the service manager sandbox.
 SANDBOX_POLICY_EXPORT extern const char kAllowSandboxDebugging[];
 SANDBOX_POLICY_EXPORT extern const char kDisableGpuSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kDisableLandlockSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kDisableNamespaceSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kDisableSeccompFilterSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kDisableSetuidSandbox[];
