@@ -73,4 +73,8 @@ specific_include_rules = {
   "^new_tab_page_controller\.mm$": [
     "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
   ],
+  # TODO(crbug.com/430198461): Remove this.
+  "^new_tab_prototype_view_controller.mm$": [
+    "+ios/chrome",
+  ],
 }

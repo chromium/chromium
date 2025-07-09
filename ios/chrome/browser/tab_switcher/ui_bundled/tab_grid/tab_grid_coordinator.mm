@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/bvc_container_view_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_prototype_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_mediator.h"
@@ -917,6 +918,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)prototypeNewTabCallback {
   CHECK(IsDiamondPrototypeEnabled());
+  TabGridPage page = self.baseViewController.currentPage;
+  if (page == TabGridPageTabGroups) {
+    page = self.baseViewController.activePage;
+  }
+  Browser* browser = (page == TabGridPageRegularTabs) ? self.regularBrowser
+                                                      : self.incognitoBrowser;
+  NewTabPrototypeViewController* newTab = [[NewTabPrototypeViewController alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:browser
+                    isNewTabPage:YES
+               shouldExitTabGrid:!self.bvcContainer];
+  [self.baseViewController presentViewController:newTab
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)prototypeTabGridCallback {

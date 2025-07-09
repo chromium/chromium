@@ -57,6 +57,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",
+    "//ios/chrome/browser/ntp/ui_bundled:prototype",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/recent_tabs/ui_bundled:coordinator",
