@@ -12,16 +12,14 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper_delegate.h"
 
 @interface SafeBrowsingCoordinator () <SafeBrowsingTabHelperDelegate,
-                                       WebStateListObserving> {
-  std::unique_ptr<WebStateListObserver> _webStateListObserver;
-}
+                                       TabsDependencyInstalling>
 
 // The WebStateList that this mediator listens for any changes on the active web
 // state.
@@ -29,29 +27,28 @@
 
 @end
 
-@implementation SafeBrowsingCoordinator
+@implementation SafeBrowsingCoordinator {
+  TabsDependencyInstallerBridge _dependencyInstallerBridge;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _webStateList = browser->GetWebStateList();
-    for (int i = 0; i < _webStateList->count(); i++) {
-      web::WebState* web_state = _webStateList->GetWebStateAt(i);
-      SafeBrowsingTabHelper::FromWebState(web_state)->SetDelegate(self);
-    }
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    _webStateList->AddObserver(_webStateListObserver.get());
+    _dependencyInstallerBridge.StartObserving(
+        self, _webStateList,
+        TabsDependencyInstaller::Policy::kAccordingToFeature);
   }
   return self;
 }
 
-- (void)dealloc {
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-    _webStateListObserver = nullptr;
-    _webStateList = nullptr;
-  }
+#pragma mark - ChromeCoordinator
+
+- (void)stop {
+  // Stop observing the WebStateList before destroying the bridge object.
+  _dependencyInstallerBridge.StopObserving();
+  [super stop];
 }
 
 #pragma mark - SafeBrowsingTabHelperDelegate
@@ -79,52 +76,23 @@
   infobar_manager->AddInfoBar(std::move(infobar), /*replace_existing=*/true);
 }
 
-#pragma mark - WebStateListObserving
+#pragma mark - TabsDependencyInstalling
 
-- (void)didChangeWebStateList:(WebStateList*)webStateList
-                       change:(const WebStateListChange&)change
-                       status:(const WebStateListStatus&)status {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // Do nothing when a WebState is selected and its status is updated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      const WebStateListChangeDetach& detachChange =
-          change.As<WebStateListChangeDetach>();
-      SafeBrowsingTabHelper::FromWebState(detachChange.detached_web_state())
-          ->RemoveDelegate();
-      break;
-    }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replaceChange =
-          change.As<WebStateListChangeReplace>();
-      SafeBrowsingTabHelper::FromWebState(replaceChange.inserted_web_state())
-          ->SetDelegate(self);
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      const WebStateListChangeInsert& insertChange =
-          change.As<WebStateListChangeInsert>();
-      SafeBrowsingTabHelper::FromWebState(insertChange.inserted_web_state())
-          ->SetDelegate(self);
-      break;
-    }
-    case WebStateListChange::Type::kGroupCreate:
-      // Do nothing when a group is created.
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // Do nothing when a tab group's visual data are updated.
-      break;
-    case WebStateListChange::Type::kGroupMove:
-      // Do nothing when a tab group is moved.
-      break;
-    case WebStateListChange::Type::kGroupDelete:
-      // Do nothing when a group is deleted.
-      break;
-  }
+- (void)webStateInserted:(web::WebState*)webState {
+  SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
+}
+
+- (void)webStateRemoved:(web::WebState*)webState {
+  SafeBrowsingTabHelper::FromWebState(webState)->RemoveDelegate();
+}
+
+- (void)webStateDeleted:(web::WebState*)webState {
+  // Nothing to do.
+}
+
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive {
+  // Nothing to do.
 }
 
 @end
