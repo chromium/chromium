@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 
@@ -45,24 +46,20 @@ WebsiteSettingsInfo::WebsiteSettingsInfo(ContentSettingsType type,
       sync_status_(sync_status),
       lossy_status_(lossy_status),
       scoping_type_(scoping_type),
-      incognito_behavior_(incognito_behavior) {
-  // For legacy reasons the default value is currently restricted to be an int
-  // or none.
-  // TODO(raymes): We should migrate the underlying pref to be a dictionary
-  // rather than an int.
-  DCHECK(initial_default_value_.is_none() || initial_default_value_.is_int());
-}
+      incognito_behavior_(incognito_behavior) {}
 
 WebsiteSettingsInfo::~WebsiteSettingsInfo() = default;
 
 uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
 
-  if (sync_status_ == SYNCABLE)
+  if (sync_status_ == SYNCABLE) {
     flags |= user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;
+  }
 
-  if (lossy_status_ == LOSSY)
+  if (lossy_status_ == LOSSY) {
     flags |= PrefRegistry::LOSSY_PREF;
+  }
 
   return flags;
 }

@@ -213,6 +213,7 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kLocalFonts;
 #endif
     case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       return RequestType::kGeolocation;
     case ContentSettingsType::HAND_TRACKING:
       return RequestType::kHandTracking;
@@ -373,12 +374,14 @@ bool IsConfirmationChipSupported(RequestType for_request_type) {
 IconId GetIconId(RequestType type) {
   IconId override_id = PermissionsClient::Get()->GetOverrideIconId(type);
 #if BUILDFLAG(IS_ANDROID)
-  if (override_id)
+  if (override_id) {
     return override_id;
+  }
   return GetIconIdAndroid(type);
 #else
-  if (!override_id.is_empty())
+  if (!override_id.is_empty()) {
     return override_id;
+  }
   return GetIconIdDesktop(type);
 #endif
 }

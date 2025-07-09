@@ -36,6 +36,7 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -134,8 +135,7 @@ class MockUserModifiableProvider
 class HostContentSettingsMapTest : public testing::Test {
  public:
   HostContentSettingsMapTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void FastForwardTime(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
@@ -156,7 +156,7 @@ class HostContentSettingsMapTest : public testing::Test {
 // |content_type| so caller only need to specify it once.
 class TesterForType {
  public:
-  TesterForType(TestingProfile *profile, ContentSettingsType content_type)
+  TesterForType(TestingProfile* profile, ContentSettingsType content_type)
       : prefs_(profile->GetTestingPrefService()),
         host_content_settings_map_(
             HostContentSettingsMapFactory::GetForProfile(profile)),
@@ -491,8 +491,7 @@ TEST_F(HostContentSettingsMapTest, Observer) {
   GURL host("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
-  ContentSettingsPattern secondary_pattern =
-      ContentSettingsPattern::Wildcard();
+  ContentSettingsPattern secondary_pattern = ContentSettingsPattern::Wildcard();
   EXPECT_CALL(observer, OnContentSettingsChanged(host_content_settings_map,
                                                  ContentSettingsType::COOKIES,
                                                  false, primary_pattern,
@@ -948,7 +947,8 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
             otr_map->GetContentSetting(host, host,
                                        ContentSettingsType::MEDIASTREAM_MIC));
 
-  // GetSettingsForOneType should return preference followed by default, both inherited.
+  // GetSettingsForOneType should return preference followed by default, both
+  // inherited.
   {
     ContentSettingsForOneType otr_settings =
         otr_map->GetSettingsForOneType(ContentSettingsType::MEDIASTREAM_MIC);
@@ -987,6 +987,121 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
                                        otr_settings[1].setting_value));
+  }
+}
+class HostContentSettingsMapPermissionSettingIncognitoInheritanceTest
+    : public HostContentSettingsMapTest {
+ public:
+  HostContentSettingsMapPermissionSettingIncognitoInheritanceTest() {
+    feature_list_.InitWithFeatureState(
+        content_settings::features::kApproximateGeolocationPermission, true);
+    // Reset ContentSettingsRegistry before and after this test because the
+    // PermissionSetting registration is still behind a flag and the registry
+    // otherwise affects other tests.
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+  }
+
+  void TearDown() override {
+    HostContentSettingsMapTest::TearDown();
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(HostContentSettingsMapPermissionSettingIncognitoInheritanceTest,
+       IncognitoInheritGeolocationWithOptionPartialBlocks) {
+  // The cookie setting has an initial value of ALLOW, so all changes should be
+  // inherited from regular to incognito mode.
+  TestingProfile profile;
+  Profile* otr_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  HostContentSettingsMap* otr_map =
+      HostContentSettingsMapFactory::GetForProfile(otr_profile);
+
+  auto* permission_settings_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
+  GURL host("http://example.com/");
+  EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                host, host, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+            permission_settings_info->GetInitialDefaultSetting());
+
+  EXPECT_EQ(otr_map->GetPermissionSetting(
+                host, host, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+            permission_settings_info->GetInitialDefaultSetting());
+  {
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        permission_settings_info->delegate().ToValue(GeolocationSetting{
+            PermissionOption::kAllowed, PermissionOption::kDenied}));
+    // Confirm state
+    EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              PermissionSetting(GeolocationSetting{PermissionOption::kAllowed,
+                                                   PermissionOption::kDenied}));
+    // Should inherit partial block in incognito, but not allow.
+    EXPECT_EQ(otr_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              // TODO(crbug.com/425642101): Should be {Ask, Denied}.
+              PermissionSetting(GeolocationSetting{PermissionOption::kAllowed,
+                                                   PermissionOption::kDenied}));
+  }
+
+  {
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        permission_settings_info->delegate().ToValue(GeolocationSetting{
+            PermissionOption::kAllowed, PermissionOption::kAllowed}));
+
+    // Confirm state
+    EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              PermissionSetting(GeolocationSetting{
+                  PermissionOption::kAllowed, PermissionOption::kAllowed}));
+
+    // Should not inherit full allow in incognito
+    EXPECT_EQ(otr_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              // TODO(crbug.com/425642101): Should be {Ask, Ask}.
+
+              PermissionSetting(GeolocationSetting{
+                  PermissionOption::kAllowed, PermissionOption::kAllowed}));
+  }
+
+  {
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        permission_settings_info->delegate().ToValue(GeolocationSetting{
+            PermissionOption::kDenied, PermissionOption::kDenied}));
+
+    // Confirm state
+    EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              PermissionSetting(GeolocationSetting{PermissionOption::kDenied,
+                                                   PermissionOption::kDenied}));
+
+    // Should  inherit full block in incognito
+    EXPECT_EQ(otr_map->GetPermissionSetting(
+                  host, host,
+                  content_settings::mojom::ContentSettingsType::
+                      GEOLOCATION_WITH_OPTIONS),
+              PermissionSetting(GeolocationSetting{PermissionOption::kDenied,
+                                                   PermissionOption::kDenied}));
   }
 }
 
@@ -1601,9 +1716,9 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              host_content_settings_map->GetContentSetting(
-                  host, host, ContentSettingsType::COOKIES));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            host_content_settings_map->GetContentSetting(
+                host, host, ContentSettingsType::COOKIES));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -2127,8 +2242,9 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
     if (content_setting_registry->Get(info->type())) {
       // If no original value is available, the settings does not have any valid
       // values and no more steps are required.
-      if (!original_value.is_int())
+      if (!original_value.is_int()) {
         continue;
+      }
 
       for (int another_value = 0;
            another_value < ContentSetting::CONTENT_SETTING_NUM_SETTINGS;
@@ -2147,6 +2263,16 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
       dict.SetByDottedPath("foo.bar", 0);
       new_value = base::Value(std::move(dict));
     }
+
+    if (info->type() == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      // Validity checks fail for geolocation with a random value.
+      new_value = content_settings::PermissionSettingsRegistry::GetInstance()
+                      ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+                      ->delegate()
+                      .ToValue(GeolocationSetting{PermissionOption::kAllowed,
+                                                  PermissionOption::kAsk});
+    }
+
     // Ensure a different value is received.
     ASSERT_NE(original_value, new_value);
 
@@ -2346,9 +2472,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 // GetSettingsForOneType should also omit any settings that are already expired.
 // TODO(crbug.com/398993133): Fix flakes on some Android builders.
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms DISABLED_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms \
+  DISABLED_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
 #else
-#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms \
+  GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
 #endif
 TEST_P(HostContentSettingsMapActiveExpirationTest,
        MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {

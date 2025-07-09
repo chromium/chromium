@@ -343,8 +343,9 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
 // static
 void HostContentSettingsMap::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Ensure the content settings are all registered.
+  // Ensure the content settings and PermissionSettings are all registered.
   content_settings::ContentSettingsRegistry::GetInstance();
+  content_settings::PermissionSettingsRegistry::GetInstance();
 
   // Register the prefs for the content settings providers.
   content_settings::DefaultProvider::RegisterProfilePrefs(registry);

@@ -2604,6 +2604,7 @@ Called by update_net_error_codes.py.-->
   <int value="136" label="On-device languages downloaded by site"/>
   <int value="137" label="Translator API languages initialized by site"/>
   <int value="138" label="Suspicious notification ids"/>
+  <int value="139" label="Geolocation with options"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->

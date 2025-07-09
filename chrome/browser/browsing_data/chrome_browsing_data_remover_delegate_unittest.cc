@@ -114,6 +114,7 @@
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -3461,8 +3462,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTopicSettings) {
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_two));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       ClearPermissionPromptCounts) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
   RemovePermissionPromptCountsTest tester(GetProfile());
 
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_1(
@@ -3835,6 +3835,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       // Set default to BLOCK to be able to differentiate an exception from the
       // default.
       map->SetDefaultContentSetting(info->type(), CONTENT_SETTING_BLOCK);
+    } else if (info->type() == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      // Set valid Geolocation PermissionSetting.
+      some_value = content_settings::PermissionSettingsRegistry::GetInstance()
+                       ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+                       ->delegate()
+                       .ToValue(GeolocationSetting{PermissionOption::kAllowed,
+                                                   PermissionOption::kAsk});
     } else {
       // Other website settings only allow dictionaries.
       base::Value::Dict dict;

@@ -33,7 +33,15 @@ enum ContentSettingsType {
   // might not be worth the trouble.
   POPUPS,
 
+  // Geolocation permission state persisted as a ContentSetting
   GEOLOCATION,
+
+  // To support approximate geolocation, the permission is migrating to use
+  // permissions with options, which won't be stored as ContentSettings. Upon
+  // launch of the feature, GEOLOCATION and GEOLOCATION_WITH_OPTIONS should be
+  // merged.
+  GEOLOCATION_WITH_OPTIONS,
+
   NOTIFICATIONS,
   AUTO_SELECT_CERTIFICATE,
   MIXEDSCRIPT,

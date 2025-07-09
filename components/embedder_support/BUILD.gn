@@ -37,6 +37,7 @@ static_library("permissions") {
 
   deps = [
     "//components/background_sync",
+    "//components/content_settings/core/common",
     "//components/permissions",
     "//device/vr/buildflags",
     "//services/device/public/cpp:device_features",

@@ -57,7 +57,12 @@ struct GeolocationSetting {
   PermissionOption precise = PermissionOption::kAsk;
 
   auto operator<=>(const GeolocationSetting&) const = default;
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const GeolocationSetting& it);
 };
+
+std::ostream& operator<<(std::ostream& os, const GeolocationSetting& it);
 
 using PermissionSetting = std::variant<ContentSetting, GeolocationSetting>;
 

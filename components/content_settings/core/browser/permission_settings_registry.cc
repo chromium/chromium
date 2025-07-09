@@ -78,20 +78,19 @@ void PermissionSettingsRegistry::Init() {
   // If a permission is DELETED, please update
   // PrefProvider::DiscardOrMigrateObsoletePreferences() and
   // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
-
-  // TODO(crbug.com/425642101): Register a new content setting for advanced GEO
-  // permissions.
-
-  // EXAMPLE:
-  //   Register(ContentSettingsType::GEOLOCATION, "geolocation_with_options",
-  //   CONTENT_SETTING_ASK,
-  //            WebsiteSettingsInfo::UNSYNCABLE,
-  //            /*allowlisted_primary_schemes=*/{},
-  //            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-  //            WebsiteSettingsRegistry::DESKTOP |
-  //                WebsiteSettingsRegistry::PLATFORM_ANDROID,
-  //            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
-  //            std::make_unique<GeolocationSettingDelegate>());
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+             "geolocation-with-options",
+             GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+             WebsiteSettingsInfo::UNSYNCABLE,
+             /*allowlisted_primary_schemes=*/{},
+             WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+             WebsiteSettingsRegistry::PLATFORM_ANDROID |
+                 WebsiteSettingsRegistry::DESKTOP,
+             PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
+             std::make_unique<GeolocationSettingDelegate>());
+  }
 }
 
 void PermissionSettingsRegistry::Register(

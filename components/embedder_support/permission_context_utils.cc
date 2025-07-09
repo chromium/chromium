@@ -23,6 +23,7 @@
 #include "device/vr/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -81,7 +82,12 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           std::move(
               delegates.clipboard_sanitized_write_permission_context_delegate));
 #if BUILDFLAG(IS_ANDROID)
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
+  auto location_context_key =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          : ContentSettingsType::GEOLOCATION;
+  permission_contexts[location_context_key] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate),

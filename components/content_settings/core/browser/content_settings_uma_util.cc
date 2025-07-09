@@ -159,6 +159,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
      136},
     {ContentSettingsType::INITIALIZED_TRANSLATIONS, 137},
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, 138},
+    {ContentSettingsType::GEOLOCATION_WITH_OPTIONS, 139},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

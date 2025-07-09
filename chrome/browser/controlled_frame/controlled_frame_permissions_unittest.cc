@@ -77,6 +77,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
        i <= static_cast<int>(ContentSettingsType::kMaxValue); ++i) {
     switch (static_cast<ContentSettingsType>(i)) {
       case ContentSettingsType::GEOLOCATION:
+      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       case ContentSettingsType::NOTIFICATIONS:
       case ContentSettingsType::MIDI:
       case ContentSettingsType::MIDI_SYSEX:
