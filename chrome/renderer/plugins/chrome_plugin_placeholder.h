@@ -14,17 +14,21 @@
 #include "components/no_state_prefetch/renderer/no_state_prefetch_observer.h"
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
 #include "content/public/renderer/render_thread_observer.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "v8/include/cppgc/persistent.h"
 
 class ChromePluginPlaceholder final
-    : public plugins::LoadablePluginPlaceholder,
+    : public gin::Wrappable<ChromePluginPlaceholder>,
+      public plugins::LoadablePluginPlaceholder,
       public content::RenderThreadObserver,
       public blink::mojom::ContextMenuClient,
-      public prerender::NoStatePrefetchObserver,
-      public gin::DeprecatedWrappable<ChromePluginPlaceholder> {
+      public prerender::NoStatePrefetchObserver {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kChromePluginPlaceholder};
 
   static ChromePluginPlaceholder* CreateBlockedPlugin(
       content::RenderFrame* render_frame,
@@ -48,20 +52,21 @@ class ChromePluginPlaceholder final
       content::RenderFrame* render_frame,
       const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback);
 
-  void SetStatus(chrome::mojom::PluginStatus status);
-
- private:
   ChromePluginPlaceholder(content::RenderFrame* render_frame,
                           const blink::WebPluginParams& params,
                           const std::u16string& title);
   ~ChromePluginPlaceholder() override;
 
-  // content::LoadablePluginPlaceholder overrides.
-  blink::WebPlugin* CreatePlugin() override;
+  void SetStatus(chrome::mojom::PluginStatus status);
 
-  // gin::DeprecatedWrappable (via PluginPlaceholder) method
+  // gin::WrappableBase overrides:
+  const gin::WrapperInfo* wrapper_info() const override;
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
+
+ private:
+  // content::LoadablePluginPlaceholder overrides.
+  blink::WebPlugin* CreatePlugin() override;
 
   // WebViewPlugin::Delegate (via PluginPlaceholder) methods:
   v8::Local<v8::Value> GetV8Handle(v8::Isolate* isolate) override;
@@ -76,6 +81,7 @@ class ChromePluginPlaceholder final
                          const std::optional<blink::Impression>&) override;
 
   // prerender::NoStatePrefetchObserver methods:
+  void OnDestruct() override;
   void SetIsNoStatePrefetching(bool is_no_state_prefetching) override;
 
   chrome::mojom::PluginStatus status_;
@@ -86,6 +92,9 @@ class ChromePluginPlaceholder final
 
   mojo::AssociatedReceiver<blink::mojom::ContextMenuClient>
       context_menu_client_receiver_{this};
+
+  // Keeps `this` alive until `OnDestruct()` is called.
+  cppgc::Persistent<ChromePluginPlaceholder> self_;
 };
 
 #endif  // CHROME_RENDERER_PLUGINS_CHROME_PLUGIN_PLACEHOLDER_H_

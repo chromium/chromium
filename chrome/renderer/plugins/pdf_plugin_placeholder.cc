@@ -12,35 +12,47 @@
 #include "content/public/renderer/render_frame.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-
-gin::DeprecatedWrapperInfo PDFPluginPlaceholder::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 // static
 PDFPluginPlaceholder* PDFPluginPlaceholder::CreatePDFPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params) {
   std::string html_data = GetPDFPlaceholderHTML(params.url);
-  auto* placeholder = new PDFPluginPlaceholder(render_frame, params);
+  auto* placeholder = cppgc::MakeGarbageCollected<PDFPluginPlaceholder>(
+      render_frame->GetWebFrame()
+          ->GetAgentGroupScheduler()
+          ->Isolate()
+          ->GetCppHeap()
+          ->GetAllocationHandle(),
+      render_frame, params);
   placeholder->Init(html_data);
   return placeholder;
 }
 
 PDFPluginPlaceholder::PDFPluginPlaceholder(content::RenderFrame* render_frame,
                                            const blink::WebPluginParams& params)
-    : plugins::PluginPlaceholderBase(render_frame, params) {}
+    : plugins::PluginPlaceholderBase(render_frame, params) {
+  self_ = this;
+}
 
 PDFPluginPlaceholder::~PDFPluginPlaceholder() = default;
 
+const gin::WrapperInfo* PDFPluginPlaceholder::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 v8::Local<v8::Value> PDFPluginPlaceholder::GetV8Handle(v8::Isolate* isolate) {
-  return gin::CreateHandle(isolate, this).ToV8();
+  return GetWrapper(isolate).ToLocalChecked();
 }
 
 gin::ObjectTemplateBuilder PDFPluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
-      gin::DeprecatedWrappable<PDFPluginPlaceholder>::GetObjectTemplateBuilder(
-          isolate)
+      gin::Wrappable<PDFPluginPlaceholder>::GetObjectTemplateBuilder(isolate)
           .SetMethod<void (PDFPluginPlaceholder::*)()>(
               "openPDF", &PDFPluginPlaceholder::OpenPDFCallback);
 
@@ -52,6 +64,10 @@ gin::ObjectTemplateBuilder PDFPluginPlaceholder::GetObjectTemplateBuilder(
   }
 
   return builder;
+}
+
+void PDFPluginPlaceholder::OnDestruct() {
+  self_.Clear();
 }
 
 void PDFPluginPlaceholder::OpenPDFCallback() {

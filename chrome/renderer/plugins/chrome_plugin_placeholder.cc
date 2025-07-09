@@ -50,6 +50,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 using base::UserMetricsAction;
 using content::RenderThread;
@@ -90,9 +92,6 @@ class PlaceholderSet : public base::SupportsUserData::Data {
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 ChromePluginPlaceholder::ChromePluginPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
@@ -106,6 +105,7 @@ ChromePluginPlaceholder::ChromePluginPlaceholder(
 
   // Keep track of all placeholders associated with |render_frame|.
   PlaceholderSet::GetOrCreate(render_frame)->placeholders().insert(this);
+  self_ = this;
 }
 
 ChromePluginPlaceholder::~ChromePluginPlaceholder() {
@@ -136,10 +136,11 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
   values.Set("message", l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
   std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
-
-  // Will destroy itself when its WebViewPlugin is going away.
-  auto* placeholder = new ChromePluginPlaceholder(render_frame, params,
-                                                  params.mime_type.Utf16());
+  v8::Isolate* isolate = render_frame->GetAgentGroupScheduler().Isolate();
+  // Will be garbage collected when its WebViewPlugin is going away.
+  auto* placeholder = cppgc::MakeGarbageCollected<ChromePluginPlaceholder>(
+      isolate->GetCppHeap()->GetAllocationHandle(), render_frame, params,
+      params.mime_type.Utf16());
   placeholder->Init(html_data);
   return placeholder;
 }
@@ -172,9 +173,16 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
                                  << template_id;
   std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
-  // |blocked_plugin| will destroy itself when its WebViewPlugin is going away.
+  // |blocked_plugin| will be garbage collected when its WebViewPlugin is going
+  // away.
   ChromePluginPlaceholder* blocked_plugin =
-      new ChromePluginPlaceholder(render_frame, params, name);
+      cppgc::MakeGarbageCollected<ChromePluginPlaceholder>(
+          render_frame->GetWebFrame()
+              ->GetAgentGroupScheduler()
+              ->Isolate()
+              ->GetCppHeap()
+              ->GetAllocationHandle(),
+          render_frame, params, name);
   blocked_plugin->Init(html_data);
   blocked_plugin->SetPluginInfo(info);
   blocked_plugin->SetIdentifier(identifier);
@@ -196,6 +204,10 @@ void ChromePluginPlaceholder::ForEach(
 
 void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
   status_ = status;
+}
+
+void ChromePluginPlaceholder::OnDestruct() {
+  self_.Clear();
 }
 
 void ChromePluginPlaceholder::SetIsNoStatePrefetching(
@@ -226,7 +238,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
 
 v8::Local<v8::Value> ChromePluginPlaceholder::GetV8Handle(
     v8::Isolate* isolate) {
-  return gin::CreateHandle(isolate, this).ToV8();
+  return GetWrapper(isolate).ToLocalChecked();
 }
 
 void ChromePluginPlaceholder::ShowContextMenu(
@@ -320,11 +332,14 @@ blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {
   return nullptr;
 }
 
+const gin::WrapperInfo* ChromePluginPlaceholder::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
-      gin::DeprecatedWrappable<
-          ChromePluginPlaceholder>::GetObjectTemplateBuilder(isolate)
+      gin::Wrappable<ChromePluginPlaceholder>::GetObjectTemplateBuilder(isolate)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
               "hide", &ChromePluginPlaceholder::HideCallback)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
