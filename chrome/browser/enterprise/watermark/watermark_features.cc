@@ -10,4 +10,8 @@ BASE_FEATURE(kEnableWatermarkCustomization,
              "EnableWatermarkCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableWatermarkTestPage,
+             "EnableWatermarkTestPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_watermark

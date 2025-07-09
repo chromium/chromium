@@ -10,6 +10,7 @@
 namespace enterprise_watermark {
 
 BASE_DECLARE_FEATURE(kEnableWatermarkCustomization);
+BASE_DECLARE_FEATURE(kEnableWatermarkTestPage);
 
 }  // namespace enterprise_watermark
 
