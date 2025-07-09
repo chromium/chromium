@@ -721,8 +721,8 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
       animation, /* override_scheduled_animation= */ true);
 }
 
-// Test the case where there is a clip-path animation with two simple
-// keyframes that will not fall back to main.
+// Test the case where a transition retarget may result in the paint status not
+// being properly reset.
 TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -781,9 +781,6 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
   // Simulate another animation update that finishes the transition before
   // PreCommit has been run the first time.
   UpdateAndAdvanceTimeTo(1000);
-  GetDocument()
-      .GetDocumentAnimations()
-      .UpdateAnimationTimingForAnimationFrame();
 
   // Even though the newly-finished transition was never started on compositor,
   // the completion of it should trigger a status reset
