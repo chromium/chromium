@@ -13,6 +13,9 @@ namespace tabs_constants {
 // Keys used in serializing tab data & events.
 inline constexpr char kActiveKey[] = "active";
 inline constexpr char kFaviconUrlKey[] = "favIconUrl";
+inline constexpr char kIsWindowClosingKey[] = "isWindowClosing";
+inline constexpr char kSelectedKey[] = "selected";
+inline constexpr char kStatusKey[] = "status";
 inline constexpr char kTitleKey[] = "title";
 inline constexpr char kUrlKey[] = "url";
 inline constexpr char kPendingUrlKey[] = "pendingUrl";

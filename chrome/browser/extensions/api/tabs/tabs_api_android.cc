@@ -22,6 +22,7 @@ namespace tabs = api::tabs;
 namespace {
 
 constexpr char kNoActiveTab[] = "No active tab";
+constexpr char kInvalidArguments[] = "Invalid arguments";
 constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
 constexpr char kWindowsNotImplemented[] = "chrome.windows not implemented";
 
@@ -128,39 +129,51 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   std::optional<tabs::Create::Params> params =
       tabs::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+  if (!params) {
+    return RespondNow(Error(kInvalidArguments));
+  }
   NOTIMPLEMENTED() << "Using stub implementation and creating a new tab";
 
-  // The use of a lambda is copy-pasted from the Win/Mac/Linux implementation.
-  // It's not clear why it is needed, but it is.
-  return RespondNow([&]() -> ResponseValue {
-    // Get the tab model of the active tab.
-    content::WebContents* parent = GetActiveWebContents();
-    CHECK(parent);
-    if (!parent) {
-      return Error(kNoActiveTab);
-    }
-    TabModel* tab_model = TabModelList::GetTabModelForWebContents(parent);
-    CHECK_EQ(parent, tab_model->GetActiveWebContents());
+  // Get the tab model of the active tab.
+  content::WebContents* parent = GetActiveWebContents();
+  if (!parent) {
+    return RespondNow(Error(kNoActiveTab));
+  }
+  TabModel* const tab_model = TabModelList::GetTabModelForWebContents(parent);
+  CHECK_EQ(parent, tab_model->GetActiveWebContents());
 
-    // Create a new tab.
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(browser_context()));
-    CHECK(contents);
-    content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(TabAndroid::FromWebContents(parent),
-                         second_web_contents,
-                         /*select=*/true);
+  // Create a new tab.
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser_context()));
+  CHECK(contents);
+  content::WebContents* const second_web_contents = contents.release();
+  tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
+                       /*select=*/true);
 
-    // Add the new tab object to the result.
-    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-        ExtensionTabUtil::GetScrubTabBehavior(
-            extension(), source_context_type(), second_web_contents);
-    api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
-        second_web_contents, scrub_tab_behavior, extension());
-    base::Value::Dict result = tab_object.ToValue();
-    return has_callback() ? WithArguments(std::move(result)) : NoArguments();
-  }());
+  // Kick off navigation. See `TabsUpdateFunction::UpdateURL` for how this is
+  // done on Win/Mac/Linux.
+  content::NavigationController::LoadURLParams load_params(
+      GURL(*params->create_properties.url));
+  load_params.is_renderer_initiated = true;
+  load_params.initiator_origin = extension()->origin();
+  load_params.source_site_instance = content::SiteInstance::CreateForURL(
+      parent->GetBrowserContext(), load_params.initiator_origin->GetURL());
+  load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
+
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      second_web_contents->GetController().LoadURLWithParams(load_params);
+  if (!navigation_handle) {
+    return RespondNow(Error("Navigation rejected."));
+  }
+
+  // Add the new tab object to the result.
+  auto scrub_tab_behavior = ExtensionTabUtil::GetScrubTabBehavior(
+      extension(), source_context_type(), second_web_contents);
+  api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
+      second_web_contents, scrub_tab_behavior, extension());
+  base::Value::Dict result = tab_object.ToValue();
+  return RespondNow(has_callback() ? WithArguments(std::move(result))
+                                   : NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -527,11 +528,22 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     TabStripModel* tab_strip,
     int tab_index) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED() << "Using stub implementation of CreateTabObject";
+  NOTIMPLEMENTED() << " Using stub implementation of CreateTabObject";
   api::tabs::Tab tab_object;
   tab_object.id = GetTabId(contents);
   tab_object.index = tab_index;
   tab_object.window_id = GetWindowIdOfTab(contents);
+  tab_object.status = GetLoadingStatus(contents);
+  tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();
+  gfx::Size contents_size = contents->GetContainerBounds().size();
+  tab_object.width = contents_size.width();
+  tab_object.height = contents_size.height();
+  tab_object.url = contents->GetLastCommittedURL().spec();
+  if (auto* pending_entry = contents->GetController().GetPendingEntry()) {
+    tab_object.pending_url = pending_entry->GetVirtualURL().spec();
+  }
+  tab_object.title = base::UTF16ToUTF8(contents->GetTitle());
+  ScrubTabForExtension(extension, contents, &tab_object, scrub_tab_behavior);
   return tab_object;
 #else
   if (!tab_strip)

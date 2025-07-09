@@ -15,6 +15,8 @@ namespace extensions {
 
 using TabsApiTest = ExtensionApiTest;
 
+// Verifies basics like opening a tab and receiving an update event message.
+// This ensure most of the plumbing is hooked up in the stub.
 IN_PROC_BROWSER_TEST_F(TabsApiTest, SmokeTest) {
   ASSERT_TRUE(RunExtensionTest("tabs/smoke")) << message_;
 }
