@@ -57,8 +57,6 @@ class ActorKeyedService : public KeyedService {
 
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
   const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
-  // Stop and clear all active and inactive tasks for testing only.
-  void ResetForTesting();
 
   // Starts a new task with an execution engine and returns the new task's id.
   TaskId CreateTask();

@@ -311,7 +311,6 @@ void PageTool::Invoke(InvokeCallback callback) {
   invocation->target = ToMojo(request_->GetTarget());
   invocation->observed_target =
       ToMojoObservedToolTarget(observed_target_node_info_);
-  invocation->task_id = task_id().value();
 
   // ToolRequest params are checked for validity at creation.
   CHECK(invocation->action);
