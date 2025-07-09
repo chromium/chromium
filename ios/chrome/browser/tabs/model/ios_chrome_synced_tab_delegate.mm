@@ -14,7 +14,6 @@
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -83,7 +82,7 @@ bool ProfileHasPrimaryIdentityManaged(ProfileIOS* profile) {
 }  // namespace
 
 IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state)
-    : web_state_(web_state) {
+    : web_state_(web_state), window_id_(SessionID::InvalidValue()) {
   DCHECK(web_state);
 }
 
@@ -93,8 +92,17 @@ void IOSChromeSyncedTabDelegate::ResetCachedLastActiveTime() {
   cached_last_active_time_.reset();
 }
 
+void IOSChromeSyncedTabDelegate::SetWindowId(SessionID window_id) {
+  DCHECK(window_id.is_valid());
+  window_id_ = window_id;
+}
+
+void IOSChromeSyncedTabDelegate::ClearWindowId() {
+  window_id_ = SessionID::InvalidValue();
+}
+
 SessionID IOSChromeSyncedTabDelegate::GetWindowId() const {
-  return IOSChromeSessionTabHelper::FromWebState(web_state_)->window_id();
+  return window_id_;
 }
 
 SessionID IOSChromeSyncedTabDelegate::GetSessionId() const {

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_tab_group.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/test_session_restoration_observer.h"

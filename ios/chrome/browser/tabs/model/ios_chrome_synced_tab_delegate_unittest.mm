@@ -13,7 +13,6 @@
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/test_synced_window_delegates_getter.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -193,10 +192,9 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   web_state.SetBrowserState(profile);
   web_state.SetNavigationManager(std::move(navigation_manager));
   web_state.SetNavigationItemCount(1);
-  IOSChromeSessionTabHelper::CreateForWebState(&web_state);
   const SessionID window_id = SessionID::NewUnique();
-  IOSChromeSessionTabHelper::FromWebState(&web_state)->SetWindowID(window_id);
   IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+  IOSChromeSyncedTabDelegate::FromWebState(&web_state)->SetWindowId(window_id);
 
   IOSChromeSyncedTabDelegate* tab_delegate =
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);

@@ -28,6 +28,10 @@ class IOSChromeSyncedTabDelegate
 
   ~IOSChromeSyncedTabDelegate() override;
 
+  // Sets/clears the identifier of the window the tab is in.
+  void SetWindowId(SessionID window_id);
+  void ClearWindowId();
+
   // SyncedTabDelegate:
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
@@ -59,6 +63,9 @@ class IOSChromeSyncedTabDelegate
 
   // The associated WebState.
   const raw_ptr<web::WebState> web_state_;
+
+  // Identifier of the window the tab is in.
+  SessionID window_id_;
 
   // Cached value of last_active_time, sometimes returned instead of the
   // last_active_time from the WebState.

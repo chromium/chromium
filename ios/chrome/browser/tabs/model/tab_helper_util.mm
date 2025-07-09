@@ -98,7 +98,6 @@
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -168,10 +167,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // When a web state is presented by the BVC, AttachTabHelpers is called to
   // attach all tab helpers. (the method is idempotent, so it is okay to call it
   // multiple times for the same WebState).
-
-  // IOSChromeSessionTabHelper sets up the session ID used by other helpers,
-  // so it needs to be created before them.
-  IOSChromeSessionTabHelper::CreateForWebState(web_state);
 
   OverlayRequestQueue::CreateForWebState(web_state);
 

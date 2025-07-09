@@ -6,7 +6,6 @@
 
 #import "base/check_op.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
@@ -94,12 +93,12 @@ sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateInserted(
     web::WebState* web_state) {
-  IOSChromeSessionTabHelper::FromWebState(web_state)->SetWindowID(session_id_);
+  IOSChromeSyncedTabDelegate::FromWebState(web_state)->SetWindowId(session_id_);
 }
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateRemoved(
     web::WebState* web_state) {
-  IOSChromeSessionTabHelper::FromWebState(web_state)->ClearWindowID();
+  IOSChromeSyncedTabDelegate::FromWebState(web_state)->ClearWindowId();
 }
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateDeleted(

@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "ios_chrome_session_tab_helper.h",
-    "ios_chrome_session_tab_helper.mm",
     "ios_chrome_tab_restore_browser_agent.h",
     "ios_chrome_tab_restore_browser_agent.mm",
     "ios_chrome_tab_restore_service_client.h",

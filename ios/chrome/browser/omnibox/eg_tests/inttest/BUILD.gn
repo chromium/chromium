@@ -40,7 +40,6 @@ source_set("inttest") {
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
