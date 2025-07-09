@@ -12,7 +12,8 @@ import {getHtml} from './file_thumbnail.html.js';
 
 export interface ComposeboxFileThumbnailElement {
   $: {
-    deleteButton: HTMLElement,
+    removeImgButton: HTMLElement,
+    removePdfButton: HTMLElement,
   };
 }
 

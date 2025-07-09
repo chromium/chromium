@@ -268,6 +268,10 @@
   E_CPONLY(kColorNewTabPageComposeboxScrimBackground) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButton) \
   E_CPONLY(kColorNewTabPageComposeboxUploadButton) \
+  E_CPONLY(kColorNewTabPageComposeboxFileChipBackground) \
+  E_CPONLY(kColorNewTabPageComposeboxFileChipText) \
+  E_CPONLY(kColorNewTabPageComposeboxPdfChipIcon) \
+  E_CPONLY(kColorNewTabPageComposeboxFileImageOverlay) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
   E_CPONLY(kColorNewTabPageDialogBackground) \

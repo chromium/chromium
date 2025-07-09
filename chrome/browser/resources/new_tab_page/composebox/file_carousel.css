@@ -10,4 +10,5 @@
 :host {
   display: flex;
   width: 100%;
+  gap: 8px;
 }

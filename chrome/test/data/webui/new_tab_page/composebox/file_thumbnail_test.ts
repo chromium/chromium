@@ -25,7 +25,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert one image file.
     const thumbnail =
-        fileThumbnailElement.shadowRoot.querySelector('.thumbnail');
+        fileThumbnailElement.shadowRoot.querySelector('.img-thumbnail');
     assertTrue(!!thumbnail);
     assertEquals(thumbnail.tagName, 'IMG');
     assertEquals(
@@ -40,13 +40,30 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert one image file.
     const thumbnail =
-        fileThumbnailElement.shadowRoot.querySelector('.thumbnail');
+        fileThumbnailElement.shadowRoot.querySelector('.pdf-title');
     assertTrue(!!thumbnail);
     assertEquals(thumbnail.tagName, 'P');
     assertEquals(thumbnail.textContent, fileThumbnailElement.file.name);
   });
 
-  test('clicking delete button sends event', async () => {
+  test('clicking image delete button sends event', async () => {
+    // Arrange.
+    fileThumbnailElement.file =
+        createComposeboxFile(1, {type: 'image/jpeg', objectUrl: 'data:foo'});
+    await microtasksFinished();
+
+    // Act.
+    const deleteEventPromise =
+        eventToPromise('delete-file', fileThumbnailElement) as
+        Promise<CustomEvent>;
+    fileThumbnailElement.$.removeImgButton.click();
+
+    // Assert.
+    const deleteEvent = await deleteEventPromise;
+    assertEquals(deleteEvent.detail.uuid, '1');
+  });
+
+  test('clicking pdf delete button sends event', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(0);
     await microtasksFinished();
@@ -55,7 +72,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     const deleteEventPromise =
         eventToPromise('delete-file', fileThumbnailElement) as
         Promise<CustomEvent>;
-    fileThumbnailElement.$.deleteButton.click();
+    fileThumbnailElement.$.removePdfButton.click();
 
     // Assert.
     const deleteEvent = await deleteEventPromise;

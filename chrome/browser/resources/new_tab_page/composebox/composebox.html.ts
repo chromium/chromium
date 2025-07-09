@@ -16,6 +16,11 @@ export function getHtml(this: ComposeboxElement) {
   <div class="background"></div>
   <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}">
     <div id="inputContainer">
+      <ntp-composebox-file-carousel
+        id="carousel"
+        .files=${Array.from(this.files_.values())}
+        @delete-file=${this.onDeleteFile_}>
+      </ntp-composebox-file-carousel>
       <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"
           placeholder="$i18n{composeboxPlaceholderText}"></textarea>
@@ -52,11 +57,6 @@ export function getHtml(this: ComposeboxElement) {
       ?disabled="${!this.submitEnabled_}">
     </cr-icon-button>
   </div>
-  <ntp-composebox-file-carousel
-      id="carousel"
-      .files=${Array.from(this.files_.values())}
-      @delete-file=${this.onDeleteFile_}>
-  </ntp-composebox-file-carousel>
   <input type="file"
       accept="${this.imageFileTypes_}"
       id="imageInput"
