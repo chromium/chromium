@@ -139,12 +139,6 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUpstream);
 
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillVcnEnrollRequestTimeout);
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int>
-    kAutofillVcnEnrollRequestTimeoutMilliseconds;
-
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays;

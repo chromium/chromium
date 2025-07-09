@@ -690,23 +690,6 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillUploadCardRequestTimeout_9Seconds), nullptr}};
 // LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillUploadCardRequestTimeouts)
 
-// LINT.IfChange(AutofillVcnEnrollRequestTimeouts)
-const FeatureEntry::FeatureParam kAutofillVcnEnrollRequestTimeout_5Seconds[] = {
-    {"autofill_vcn_enroll_request_timeout_milliseconds", "5000"}};
-const FeatureEntry::FeatureParam
-    kAutofillVcnEnrollRequestTimeout_7Point5Seconds[] = {
-        {"autofill_vcn_enroll_request_timeout_milliseconds", "7500"}};
-const FeatureEntry::FeatureParam kAutofillVcnEnrollRequestTimeout_10Seconds[] =
-    {{"autofill_vcn_enroll_request_timeout_milliseconds", "10000"}};
-const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
-    {{"5 seconds", kAutofillVcnEnrollRequestTimeout_5Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_5Seconds), nullptr},
-     {"7.5 seconds", kAutofillVcnEnrollRequestTimeout_7Point5Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_7Point5Seconds), nullptr},
-     {"10 seconds", kAutofillVcnEnrollRequestTimeout_10Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_10Seconds), nullptr}};
-// LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollRequestTimeouts)
-
 // Contextual Panel flag variations.
 const FeatureEntry::FeatureParam kContextualPanelRichIPHArms[] = {
     {"entrypoint-highlight-iph", "true"},
@@ -2138,14 +2121,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillUploadCardRequestTimeout,
          kAutofillUploadCardRequestTimeoutOptions,
          "AutofillUploadCardRequestTimeout")},
-    {"autofill-vcn-enroll-request-timeout",
-     flag_descriptions::kAutofillVcnEnrollRequestTimeoutName,
-     flag_descriptions::kAutofillVcnEnrollRequestTimeoutDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillVcnEnrollRequestTimeout,
-         kAutofillVcnEnrollRequestTimeoutOptions,
-         "AutofillVcnEnrollRequestTimeout")},
     {"lens-web-page-load-optimization-enabled",
      flag_descriptions::kLensWebPageLoadOptimizationEnabledName,
      flag_descriptions::kLensWebPageLoadOptimizationEnabledDescription,

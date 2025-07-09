@@ -17,6 +17,10 @@ namespace payments {
 namespace {
 const char kEnrollRequestPath[] = "payments/apis/virtualcardservice/enroll";
 const char kUnenrollRequestPath[] = "payments/apis/virtualcardservice/unenroll";
+
+// The timeout for VCN enrollment request is 6.5 seconds (selected after
+// experimentation).
+constexpr int kVcnEnrollRequestTimeoutMilliseconds = 6500;
 }  // namespace
 
 UpdateVirtualCardEnrollmentRequest::UpdateVirtualCardEnrollmentRequest(
@@ -112,14 +116,7 @@ std::optional<base::TimeDelta> UpdateVirtualCardEnrollmentRequest::GetTimeout()
       VirtualCardEnrollmentRequestType::kEnroll) {
     return std::nullopt;
   }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVcnEnrollRequestTimeout)) {
-    return std::nullopt;
-  }
-
-  return base::Milliseconds(
-      features::kAutofillVcnEnrollRequestTimeoutMilliseconds.Get());
+  return base::Milliseconds(kVcnEnrollRequestTimeoutMilliseconds);
 }
 
 void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(

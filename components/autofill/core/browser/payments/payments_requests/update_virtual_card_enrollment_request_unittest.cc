@@ -150,34 +150,10 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, ParseResponse) {
   }
 }
 
-TEST_P(UpdateVirtualCardEnrollmentRequestTest,
-       EnrollDoesNotHaveTimeoutWithoutFlag) {
-  if (std::get<0>(GetParam()) != VirtualCardEnrollmentRequestType::kEnroll) {
-    // TODO(crbug.com/40605207): Use GTEST_SKIP once supported.
-    return;
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillVcnEnrollRequestTimeout);
-
-  // Re-create the request with the flag now set.
-  CreateRequest();
-  EXPECT_FALSE(GetRequest()->GetTimeout().has_value());
-}
-
 TEST_P(UpdateVirtualCardEnrollmentRequestTest, EnrollHasTimeoutWhenFlagSet) {
-  base::FieldTrialParams params;
-  params["autofill_vcn_enroll_request_timeout_milliseconds"] = "6000";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillVcnEnrollRequestTimeout, params);
-
-  // Re-create the request with the flag now set.
-  CreateRequest();
-
+  // Verify that enrollment request was created with client-side timeout.
   if (std::get<0>(GetParam()) == VirtualCardEnrollmentRequestType::kEnroll) {
-    EXPECT_EQ(*GetRequest()->GetTimeout(), base::Milliseconds(6000));
+    EXPECT_EQ(*GetRequest()->GetTimeout(), base::Milliseconds(6500));
   } else {
     // Currently only Enroll has a client-side timeout set.
     EXPECT_FALSE(GetRequest()->GetTimeout().has_value());

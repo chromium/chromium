@@ -4116,23 +4116,6 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillUploadCardRequestTimeout_9Seconds), nullptr}};
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillUploadCardRequestTimeouts)
 
-// LINT.IfChange(AutofillVcnEnrollRequestTimeouts)
-const FeatureEntry::FeatureParam kAutofillVcnEnrollRequestTimeout_5Seconds[] = {
-    {"autofill_vcn_enroll_request_timeout_milliseconds", "5000"}};
-const FeatureEntry::FeatureParam
-    kAutofillVcnEnrollRequestTimeout_7Point5Seconds[] = {
-        {"autofill_vcn_enroll_request_timeout_milliseconds", "7500"}};
-const FeatureEntry::FeatureParam kAutofillVcnEnrollRequestTimeout_10Seconds[] =
-    {{"autofill_vcn_enroll_request_timeout_milliseconds", "10000"}};
-const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
-    {{"5 seconds", kAutofillVcnEnrollRequestTimeout_5Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_5Seconds), nullptr},
-     {"7.5 seconds", kAutofillVcnEnrollRequestTimeout_7Point5Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_7Point5Seconds), nullptr},
-     {"10 seconds", kAutofillVcnEnrollRequestTimeout_10Seconds,
-      std::size(kAutofillVcnEnrollRequestTimeout_10Seconds), nullptr}};
-// LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillVcnEnrollRequestTimeouts)
-
 const FeatureEntry::FeatureParam
     kAutofillImprovedLabelsWithoutMainTextChanges[] = {
         {"autofill_improved_labels_without_main_text_changes", "true"},
@@ -11223,14 +11206,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillUploadCardRequestTimeout,
          kAutofillUploadCardRequestTimeoutOptions,
          "AutofillUploadCardRequestTimeout")},
-
-    {"autofill-vcn-enroll-request-timeout",
-     flag_descriptions::kAutofillVcnEnrollRequestTimeoutName,
-     flag_descriptions::kAutofillVcnEnrollRequestTimeoutDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillVcnEnrollRequestTimeout,
-         kAutofillVcnEnrollRequestTimeoutOptions,
-         "AutofillVcnEnrollRequestTimeout")},
 
     {"autofill-unmask-card-request-timeout",
      flag_descriptions::kAutofillUnmaskCardRequestTimeoutName,

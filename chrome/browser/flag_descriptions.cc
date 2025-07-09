@@ -950,13 +950,6 @@ const char kAutofillUploadCardRequestTimeoutDescription[] =
     "upload request. Upon timeout, the client will terminate the upload UI, "
     "but the request may still succeed server-side.";
 
-const char kAutofillVcnEnrollRequestTimeoutName[] =
-    "Timeout for the credit card VCN enrollment request";
-const char kAutofillVcnEnrollRequestTimeoutDescription[] =
-    "When enabled, sets a client-side timeout on the Autofill credit card "
-    "VCN enrollment request. Upon timeout, the client will terminate the VCN "
-    "enrollment UI, but the request may still succeed server-side.";
-
 const char kAutofillVcnEnrollStrikeExpiryTimeName[] =
     "Expiry duration for VCN enrollment strikes";
 const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =

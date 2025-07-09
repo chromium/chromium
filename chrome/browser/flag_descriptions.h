@@ -571,9 +571,6 @@ extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 extern const char kAutofillUploadCardRequestTimeoutName[];
 extern const char kAutofillUploadCardRequestTimeoutDescription[];
 
-extern const char kAutofillVcnEnrollRequestTimeoutName[];
-extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
-
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 
