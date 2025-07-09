@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_prototype_view_controller.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
@@ -529,7 +530,19 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - LocationBarViewControllerDelegate
 
 - (void)locationBarSteadyViewTapped {
-  [self focusOmnibox];
+  if (IsDiamondPrototypeEnabled()) {
+    NewTabPrototypeViewController* newTab =
+        [[NewTabPrototypeViewController alloc]
+            initWithBaseViewController:self.baseViewController
+                               browser:self.browser
+                          isNewTabPage:NO
+                     shouldExitTabGrid:NO];
+    [self.viewController presentViewController:newTab
+                                      animated:YES
+                                    completion:nil];
+  } else {
+    [self focusOmnibox];
+  }
 }
 
 - (void)locationBarCopyTapped {
