@@ -427,6 +427,11 @@ public class StripLayoutHelper
 
     // Close State
     private boolean mPendingMouseTabClosure;
+    // If closing the end-most tab via precision pointer, that tab's properties are stored here.
+    // These properties are used to determine how to resize the strip such that the preceding tab's
+    // close button moves to where the closing tab's close button was, if possible.
+    private @Nullable Float mClosingEndMostTabDrawX;
+    private @Nullable Float mClosingEndMostTabWidth;
 
     // Tab switch efficiency
     private @Nullable Long mTabScrollStartTime;
@@ -1521,10 +1526,10 @@ public class StripLayoutHelper
         boolean closingLastTab = mStripTabs[mStripTabs.length - 1].getTabId() == id;
 
         // 2. Rebuild the strip.
-        rebuildStripTabs(!closingLastTab, false);
+        rebuildStripTabs(!closingLastTab, /* deferAnimations= */ false);
 
         // 3. Clear pending mouse tab closure state, as we've finished processing a tab closure.
-        mPendingMouseTabClosure = false;
+        clearPendingMouseTabClosureState();
     }
 
     /**
@@ -2459,7 +2464,7 @@ public class StripLayoutHelper
         // Trigger a resize, as the pointer has left the strip, and we no longer need to suppress.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
                 && !inTabStrip) {
-            mPendingMouseTabClosure = false;
+            clearPendingMouseTabClosureState();
             computeAndUpdateTabWidth(
                     /* animate= */ true, /* deferAnimations= */ false, /* closedTab= */ null);
         }
@@ -2973,12 +2978,24 @@ public class StripLayoutHelper
         // Placeholder tabs are expected to have invalid tab ids.
         if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
         RecordUserAction.record("MobileToolbarCloseTab");
+
         int tabId = tab.getTabId();
         Tab realTab = assumeNonNull(getTabById(tabId));
         Token tabGroupId = realTab.getTabGroupId();
 
         // Set mouse tab closure state.
-        mPendingMouseTabClosure = MotionEventUtils.isPrimaryButton(motionEventButtonState);
+        if (MotionEventUtils.isPrimaryButton(motionEventButtonState)) {
+            mPendingMouseTabClosure = true;
+            boolean pendingClosureIsEndMostTab =
+                    StripLayoutUtils.findIndexForTab(mStripTabs, tabId) == (mStripTabs.length - 1);
+            if (pendingClosureIsEndMostTab) {
+                // Store the properties since the tab may be removed by the time we're resizing. We
+                // can't infer the width from #getCachedTabWidth when we're resizing, since we might
+                // call #computeAndUpdateTabWidth multiple times, changing the cached width.
+                mClosingEndMostTabDrawX = tab.getDrawX();
+                mClosingEndMostTabWidth = tab.getWidth();
+            }
+        }
 
         // Prepare close params.
         StripTabModelActionListener listener = null;
@@ -3022,6 +3039,12 @@ public class StripLayoutHelper
                 .getTabModel()
                 .getTabRemover()
                 .prepareCloseTabs(params, /* allowDialog= */ true, listener, onPreparedCallback);
+    }
+
+    private void clearPendingMouseTabClosureState() {
+        mPendingMouseTabClosure = false;
+        mClosingEndMostTabDrawX = null;
+        mClosingEndMostTabWidth = null;
     }
 
     private @Nullable StripLayoutView determineClickedView(float x, float y, int buttons) {
@@ -3226,23 +3249,27 @@ public class StripLayoutHelper
         // Update stripViews since tabs are updated.
         rebuildStripViews();
 
-        List<Animator> animationList = null;
-        // If multi-step animation is running, the resize will be handled elsewhere.
-        if (mStripTabs.length != oldTabsLength && !mMultiStepTabCloseAnimRunning) {
-            computeIdealViewPositions();
-            if (delayResize) {
-                resetResizeTimeout(/* postIfNotPresent= */ true);
-            } else {
-                finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
-                animationList =
-                        computeAndUpdateTabWidth(
-                                /* animate= */ true,
-                                /* deferAnimations= */ deferAnimations,
-                                /* closedTab= */ null);
-            }
+        // If the number of tabs did not change, no action is required. If a tab close is animating,
+        // the resize may be handled elsewhere.
+        if (mStripTabs.length == oldTabsLength
+                || mMultiStepTabCloseAnimRunning
+                || mPendingMouseTabClosure) {
+            return null;
         }
 
-        return animationList;
+        // Otherwise, animate the required width changes.
+        computeIdealViewPositions();
+        if (delayResize) {
+            resetResizeTimeout(/* postIfNotPresent= */ true);
+        } else {
+            finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
+            return computeAndUpdateTabWidth(
+                    /* animate= */ true,
+                    /* deferAnimations= */ deferAnimations,
+                    /* closedTab= */ null);
+        }
+
+        return null;
     }
 
     private String buildGroupAccessibilityDescription(StripLayoutGroupTitle groupTitle) {
@@ -3872,6 +3899,60 @@ public class StripLayoutHelper
     }
 
     /**
+     * Calculates the strip width such that it aligns with the end-most (closing) tab's far edge.
+     * This is so that the next tab's far edge will (at most) slide to this position. This will
+     * guarantee that either a) the next tab's close button will slide to where the cursor clicked
+     * or b) the tabs will expand to their max width, but won't reach the cursor. Should only be
+     * called from {@link #getStripWidthForResizing}.
+     *
+     * @param closingEndMostTabDrawX The drawX of the end-most (closing) {@link StripLayoutTab}.
+     * @param closingEndMostTabWidth The width of the end-most (closing) {@link StripLayoutTab}.
+     * @return The target available width, such that the next tab's close button will align with the
+     *     cursor, as it just clicked to close the end-most tab.
+     */
+    private float getStripWidthForEndMostTabMouseClosure(
+            float closingEndMostTabDrawX, float closingEndMostTabWidth) {
+        if (LocalizationUtils.isLayoutRtl()) {
+            return mWidth - closingEndMostTabDrawX;
+        } else {
+            return closingEndMostTabDrawX + closingEndMostTabWidth;
+        }
+    }
+
+    /**
+     * Returns the width of the tab strip when resizing the strip. Accounts for the restricted
+     * resizing when closing tabs with the mouse. Should only be called from {@link
+     * #getAvailableTabWidthForResizing}.
+     */
+    private float getStripWidthForResizing() {
+        // If we're resizing in response to a mouse click closing the end-most tab, we may restrict
+        // the resize to align the next tab's close button with the cursor.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+                && mClosingEndMostTabDrawX != null
+                && mClosingEndMostTabWidth != null) {
+            return getStripWidthForEndMostTabMouseClosure(
+                    mClosingEndMostTabDrawX, mClosingEndMostTabWidth);
+        }
+
+        // Otherwise, the entirety of the tab strip width is available.
+        return mWidth - mLeftMargin - mRightMargin;
+    }
+
+    /**
+     * Returns the available width for tabs when resizing the strip. Accounts for both tab group
+     * indicators and restricted resizing when closing tabs with the mouse.
+     */
+    private float getAvailableTabWidthForResizing() {
+        // TODO(crbug.com/419015257): Move to separate file/delegate and add tests.
+        float availableWidth = getStripWidthForResizing();
+        for (int i = 0; i < mStripGroupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            availableWidth -= (groupTitle.getWidth() - mGroupTitleOverlapWidth);
+        }
+        return availableWidth;
+    }
+
+    /**
      * Computes and updates the tab width when resizing the tab strip.
      *
      * @param animate Whether to animate the update.
@@ -3887,23 +3968,21 @@ public class StripLayoutHelper
             return null;
         }
 
-        // Suppress resizes from tab closures from mouse.
+        // Suppress resizes from tab closures from mouse. If closing the end-most tab, we may need
+        // to partially resize to align the next tab's close button with the cursor (if possible).
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
-                && mPendingMouseTabClosure) {
+                && mPendingMouseTabClosure
+                && mClosingEndMostTabDrawX == null
+                && mClosingEndMostTabWidth == null) {
             return null;
         }
 
         // Remove any queued resize messages.
         mStripTabEventHandler.removeMessages(MESSAGE_RESIZE);
 
+        // 1. Compute the number of live tabs and the available width for them.
         int numTabs = Math.max(getNumLiveTabs(), 1);
-
-        // 1. Compute the width of the available space for all tabs.
-        float stripWidth = mWidth - mLeftMargin - mRightMargin;
-        for (int i = 0; i < mStripGroupTitles.length; i++) {
-            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            stripWidth -= (groupTitle.getWidth() - mGroupTitleOverlapWidth);
-        }
+        float stripWidth = getAvailableTabWidthForResizing();
 
         // 2. Compute additional width we gain from overlapping the tabs.
         float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
