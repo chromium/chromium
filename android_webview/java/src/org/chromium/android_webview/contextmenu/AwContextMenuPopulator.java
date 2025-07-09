@@ -101,7 +101,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public boolean onItemSelected(int itemId, @Nullable ListItem unused) {
+    public boolean onItemSelected(int itemId) {
         if (itemId == R.id.contextmenu_copy_link_address) {
             mItemDelegate.onSaveToClipboard(
                     mParams.getUnfilteredLinkUrl().getSpec(),

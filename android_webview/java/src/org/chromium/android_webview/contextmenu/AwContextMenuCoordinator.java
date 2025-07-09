@@ -263,7 +263,7 @@ public class AwContextMenuCoordinator {
     private void clickItem(int id, Activity activity) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
 
-        mCurrentPopulator.onItemSelected(id, /* unused= */ null);
+        mCurrentPopulator.onItemSelected(id);
         dismiss();
     }
 

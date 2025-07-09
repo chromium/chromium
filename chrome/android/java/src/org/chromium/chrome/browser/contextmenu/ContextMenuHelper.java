@@ -28,7 +28,6 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -51,6 +50,13 @@ public class ContextMenuHelper {
     private @Nullable Runnable mOnMenuShown;
     private @Nullable Runnable mOnMenuClosed;
     private @Nullable ChipDelegate mChipDelegate;
+
+    private final Callback<Integer> mCallback =
+            (result) -> {
+                if (mCurrentPopulator == null) return;
+
+                mCurrentPopulator.onItemSelected(result);
+            };
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
         mNativeContextMenuHelper = nativeContextMenuHelper;
@@ -186,20 +192,13 @@ public class ContextMenuHelper {
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 
-        Callback<Integer> callback =
-                (result) -> {
-                    if (mCurrentPopulator == null) return;
-                    ListItem menuItem = menuCoordinator.findItem(result);
-                    mCurrentPopulator.onItemSelected(result, menuItem);
-                };
-
         if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(
                     mWindow,
                     mWebContents,
                     mCurrentContextMenuParams,
                     items,
-                    callback,
+                    mCallback,
                     mOnMenuShown,
                     mOnMenuClosed,
                     mChipDelegate);
@@ -209,7 +208,7 @@ public class ContextMenuHelper {
                     mWebContents,
                     mCurrentContextMenuParams,
                     items,
-                    callback,
+                    mCallback,
                     mOnMenuShown,
                     mOnMenuClosed);
         }

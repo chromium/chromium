@@ -614,7 +614,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public boolean onItemSelected(int itemId, @Nullable ListItem menuItem) {
+    public boolean onItemSelected(int itemId) {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             RecordUserAction.record("TabContextMenu.OpenInNewTab");
@@ -867,10 +867,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             WebContents webContents = mItemDelegate.getWebContents();
             webContents.showInterestInElement(mParams.getInterestForNodeID());
         } else {
-            if (menuItem != null && menuItem.type == ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU) {
-                // TODO(crbug.com/418807464): Implement submenu handling.
-                return true;
-            }
             assert false;
         }
 
