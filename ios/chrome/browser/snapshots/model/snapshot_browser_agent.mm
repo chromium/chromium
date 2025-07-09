@@ -88,6 +88,12 @@ void SnapshotBrowserAgent::RetrieveSnapshotWithID(
     SnapshotID snapshot_id,
     SnapshotKind snapshot_kind,
     SnapshotRetrievedBlock completion) {
+  // Fail fast if the browser agent has not been initialized yet.
+  if (!snapshot_storage_) {
+    completion(nil);
+    return;
+  }
+
   SnapshotOperation operation =
       snapshot_kind == SnapshotKindColor
           ? SnapshotOperation::kRetrieveColorSnapshot
