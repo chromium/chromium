@@ -109,6 +109,41 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                                     int64_t header_size_delta,
                                     SqlPersistentStore::ErrorCallback callback);
 
+  // Writes data to an entry's body (stream 1). This can be used to write new
+  // data, overwrite existing data, or append to the entry. The operation is
+  // scheduled via the `ExclusiveOperationCoordinator` to ensure proper
+  // serialization.
+  void WriteEntryData(const CacheEntryKey& key,
+                      const base::UnguessableToken& token,
+                      int64_t old_body_end,
+                      int64_t body_end,
+                      int64_t offset,
+                      scoped_refptr<net::IOBuffer> buffer,
+                      int buf_len,
+                      bool truncate,
+                      SqlPersistentStore::ErrorCallback callback);
+
+  // Reads data from an entry's body (stream 1). The operation is scheduled via
+  // the `ExclusiveOperationCoordinator`. `sparse_reading` controls whether
+  // gaps in the data are filled with zeros or cause the read to stop.
+  void ReadEntryData(const CacheEntryKey& key,
+                     const base::UnguessableToken& token,
+                     int64_t offset,
+                     scoped_refptr<net::IOBuffer> buffer,
+                     int buf_len,
+                     int64_t body_end,
+                     bool sparse_reading,
+                     SqlPersistentStore::IntOrErrorCallback callback);
+
+  // Finds the available contiguous range of data for a given entry. The
+  // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
+  // proper serialization.
+  void GetEntryAvailableRange(const CacheEntryKey& key,
+                              const base::UnguessableToken& token,
+                              int64_t offset,
+                              int len,
+                              RangeResultCallback callback);
+
   // Sends a dummy operation through the background task runner via the
   // operation coordinator, for unit tests.
   int FlushQueueForTest(CompletionOnceCallback callback);
@@ -136,12 +171,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     InFlightEntryModification(const base::UnguessableToken& token,
                               base::Time last_used,
                               scoped_refptr<net::GrowableIOBuffer> head);
+    InFlightEntryModification(const base::UnguessableToken& token,
+                              int64_t body_end);
     ~InFlightEntryModification();
     InFlightEntryModification(InFlightEntryModification&&);
 
     base::UnguessableToken token;
     std::optional<base::Time> last_used;
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
+    std::optional<int64_t> body_end;
   };
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
@@ -233,6 +271,43 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta,
       SqlPersistentStore::ErrorCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `WriteEntryData()`. This method is scheduled
+  // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
+  // the call to the persistent store.
+  void HandleWriteEntryDataOperation(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      int64_t old_body_end,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      bool truncate,
+      SqlPersistentStore::ErrorCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `ReadEntryData()`. This method is scheduled
+  // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
+  // the call to the persistent store.
+  void HandleReadEntryDataOperation(
+      const base::UnguessableToken& token,
+      int64_t offset,
+      scoped_refptr<net::IOBuffer> buffer,
+      int buf_len,
+      int64_t body_end,
+      bool sparse_reading,
+      SqlPersistentStore::IntOrErrorCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `GetEntryAvailableRange()`. This method is
+  // scheduled as a normal operation via the `ExclusiveOperationCoordinator`
+  // and forwards the call to the persistent store.
+  void HandleGetEntryAvailableRangeOperation(
+      const base::UnguessableToken& token,
+      int64_t offset,
+      int len,
+      RangeResultCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Applies in-flight modifications to an entry's info.

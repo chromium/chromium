@@ -58,8 +58,8 @@ inline constexpr int kSqlBackendCompatibleDatabaseVersion = 1;
 inline constexpr int kSqlBackendStaticResourceSize = 100;
 
 // Defines the number of streams supported by the SQL backend.
-// Currently, the SQL backend only supports a single stream (stream 0)
-static const int kSqlBackendStreamCount = 1;
+// The SQL backend only supports stream 0 and stream 1.
+static const int kSqlBackendStreamCount = 2;
 
 }  // namespace disk_cache
 

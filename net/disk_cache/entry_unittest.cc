@@ -42,20 +42,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Some tests use methods that are not implemented in SQLBackend. Therefore,
-// this macro is used to skip such tests.
-// TODO(crbug.com/422065015): Remove this macro once such methods are
-// implemented.
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()                                 \
-  if (GetParam() == BackendToTest::kSql) {                                    \
-    LOG(INFO) << "Skipping test for SQL backend as it's not implemented yet"; \
-    return;                                                                   \
-  }
-#else
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()
-#endif
-
 using net::test::IsError;
 using net::test::IsOk;
 
@@ -107,6 +93,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void PartialSparseEntry();
   void SparseInvalidArg();
   void SparseClipEnd(int64_t max_index, bool expected_unsupported);
+  void CacheGiantEntry();
   bool SimpleCacheMakeBadChecksumEntry(const std::string& key, int data_size);
   bool SimpleCacheThirdStreamFileExists(const char* key);
   void SyncDoomEntry(const char* key);
@@ -380,7 +367,6 @@ void DiskCacheEntryTest::InternalAsyncIO() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, InternalAsyncIO) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   InternalAsyncIO();
 }
@@ -575,7 +561,6 @@ void DiskCacheEntryTest::ExternalAsyncIO() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, ExternalAsyncIO) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   ExternalAsyncIO();
 }
@@ -995,7 +980,6 @@ TEST_F(DiskCacheEntryTest, ZeroLengthIONoBuffer) {
 }
 
 TEST_P(DiskCacheGenericEntryTest, ReadDataWithNegativeOffset) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
 
   std::string key("the first key");
@@ -1418,7 +1402,6 @@ void DiskCacheEntryTest::DoomNormalEntry() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, DoomEntry) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   DoomNormalEntry();
 }
@@ -1642,7 +1625,6 @@ void DiskCacheEntryTest::BasicSparseIO() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, BasicSparseIO) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   BasicSparseIO();
 }
@@ -1668,7 +1650,6 @@ void DiskCacheEntryTest::HugeSparseIO() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, HugeSparseIO) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   HugeSparseIO();
 }
@@ -1697,7 +1678,6 @@ void DiskCacheEntryTest::LargeOffsetSparseIO() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, LargeOffsetSparseIO) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   // The test only works on SimpleCache and Memory Cache now since other backend
   // does not support 2GB+ offset for 32 bits architecture.
   // TODO(crbug.com/391398191): Expand the test target to all cache backend.
@@ -1788,13 +1768,11 @@ void DiskCacheEntryTest::GetAvailableRangeTest() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, GetAvailableRange) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   GetAvailableRangeTest();
 }
 
 TEST_P(DiskCacheGenericEntryTest, GetAvailableRangeForLargeOffset) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   // The test only works on SimpleCache and Memory Cache now since other backend
   // does not support 2GB+ offset for 32 bits architecture.
   // TODO(crbug.com/391398191): Expand the test target to all cache backend.
@@ -2216,7 +2194,6 @@ void DiskCacheEntryTest::UpdateSparseEntry() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, UpdateSparseEntry) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   UpdateSparseEntry();
 }
@@ -2277,7 +2254,6 @@ void DiskCacheEntryTest::DoomSparseEntry() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, DoomSparseEntry) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kBlockfile) {
     UseCurrentThread();
   }
@@ -2445,7 +2421,6 @@ void DiskCacheEntryTest::PartialSparseEntry() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, PartialSparseEntry) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   PartialSparseEntry();
 }
@@ -2485,7 +2460,6 @@ void DiskCacheEntryTest::SparseInvalidArg() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, SparseInvalidArg) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
   SparseInvalidArg();
 }
@@ -2532,7 +2506,6 @@ void DiskCacheEntryTest::SparseClipEnd(int64_t max_index,
 }
 
 TEST_P(DiskCacheGenericEntryTest, SparseClipEnd) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitCache();
 
   // Blockfile refuses to deal with sparse indices over 64GiB.
@@ -2773,13 +2746,12 @@ TEST_F(DiskCacheEntryTest, KeySanityCheck3) {
   entry->Close();
 }
 
-TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
+void DiskCacheEntryTest::CacheGiantEntry() {
   const int kBufSize = 32 * 1024;
   auto buffer = CacheTestCreateAndFillBuffer(kBufSize, false);
 
-  // Make sure SimpleCache can write up to 5MiB entry even with a 20MiB cache
-  // size that Android WebView uses at the time of this test's writing.
-  SetBackendToTest(BackendToTest::kSimple);
+  // Make sure SimpleCache/SqlCache can write up to 5MiB entry even with a 20MiB
+  // cache size that Android WebView uses at the time of this test's writing.
   SetMaxSize(20 * 1024 * 1024);
   InitCache();
 
@@ -2806,6 +2778,11 @@ TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
                         kBufSize, true /* truncate */));
     entry2->Close();
   }
+}
+
+TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
+  SetBackendToTest(BackendToTest::kSimple);
+  CacheGiantEntry();
 }
 
 TEST_F(DiskCacheEntryTest, SimpleCacheReadWriteDestroyBuffer) {
@@ -4247,6 +4224,8 @@ void DiskCacheEntryTest::UseAfterBackendDestruction() {
   WriteData(entry, 1, 0, buffer.get(), kSize, false);
   ReadData(entry, 1, 0, buffer.get(), kSize);
   WriteSparseData(entry, 20000, buffer.get(), kSize);
+  int64_t start;
+  GetAvailableRange(entry, 0, 100, &start);
 
   entry->Close();
 }
@@ -5138,7 +5117,6 @@ void DiskCacheEntryTest::SparseOffset64Bit() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, SparseOffset64Bit) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   // https://crbug.com/946436 is the memory backend version.
   InitCache();
   SparseOffset64Bit();
@@ -5248,7 +5226,6 @@ void DiskCacheEntryTest::SparseReadLength0() {
 }
 
 TEST_P(DiskCacheGenericEntryTest, SparseReadLength0) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   // https://crbug.com/392690731 is the simple backend bug.
   InitCache();
   SparseReadLength0();
@@ -5710,6 +5687,15 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullSmallSpeculative) {
   histogram_tester.ExpectUniqueSample("SimpleCache.App.SyncOpenPrefetchMode",
                                       disk_cache::OPEN_PREFETCH_FULL, 1);
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+
+TEST_F(DiskCacheEntryTest, SqlCacheGiantEntry) {
+  SetBackendToTest(BackendToTest::kSql);
+  CacheGiantEntry();
+}
+
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 INSTANTIATE_TEST_SUITE_P(
     /* no name */,

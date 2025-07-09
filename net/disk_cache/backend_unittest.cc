@@ -1151,9 +1151,13 @@ TEST_F(DiskCacheTest, TruncatedIndex) {
 #endif
 
 void DiskCacheBackendTest::BackendSetSize() {
-  if (backend_to_test() == BackendToTest::kSimple) {
-    // SimpleCache has a floor on max file size, so this test doesn't work
-    // there.
+  if (backend_to_test() == BackendToTest::kSimple
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+      || backend_to_test() == BackendToTest::kSql
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+  ) {
+    // SimpleCache and SqlCache have a floor on max file size, so this test
+    // doesn't work there.
     return;
   }
 
@@ -1223,7 +1227,6 @@ void DiskCacheBackendTest::BackendSetSize() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, SetSize) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendSetSize();
 }
 
@@ -2069,7 +2072,6 @@ TEST_F(DiskCacheBackendTest, DoomEntriesSinceSparse) {
 }
 
 TEST_P(DiskCacheGenericBackendTest, DoomAllSparse) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   InitSparseCache(nullptr, nullptr);
   EXPECT_THAT(DoomAllEntries(), IsOk());
   EXPECT_EQ(0, GetEntryCount());
@@ -2254,7 +2256,6 @@ void DiskCacheBackendTest::BackendCalculateSizeOfAllEntries() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, CalculateSizeOfAllEntries) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   if (backend_to_test() == BackendToTest::kSimple) {
     // Use net::APP_CACHE to make size estimations deterministic via
     // non-optimistic writes.

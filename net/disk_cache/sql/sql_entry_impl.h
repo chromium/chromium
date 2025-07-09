@@ -98,6 +98,24 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // Updates the `last_used_` timestamp to the current time.
   void UpdateLastUsed();
 
+  // Internal implementation for writing data to stream 1. This is called by
+  // both `WriteData` and `WriteSparseData`. It forwards the write operation to
+  // the backend.
+  int WriteDataInternal(int64_t offset,
+                        IOBuffer* buf,
+                        int buf_len,
+                        CompletionOnceCallback callback,
+                        bool truncate,
+                        bool sparse_write);
+  // Internal implementation for reading data from stream 1. This is called by
+  // both `ReadData` and `ReadSparseData`. It forwards the read operation to the
+  // backend.
+  int ReadDataInternal(int64_t offset,
+                       IOBuffer* buf,
+                       int buf_len,
+                       CompletionOnceCallback callback,
+                       bool sparse_reading);
+
   base::WeakPtr<SqlBackendImpl> backend_;
 
   // The key for this cache entry.
