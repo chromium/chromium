@@ -1000,16 +1000,6 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
 }
 
 TEST_F(AILanguageModelTest, ModelDownload) {
-  EXPECT_EQ(GetAIManagerDownloadProgressObserversSize(), 0u);
-  AITestUtils::FakeMonitor mock_monitor;
-
-  EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
-  GetAIManagerRemote()->AddModelDownloadProgressObserver(
-      mock_monitor.BindNewPipeAndPassRemote());
-
-  ASSERT_TRUE(base::test::RunUntil(
-      [this] { return GetAIManagerDownloadProgressObserversSize() == 1u; }));
-
   // This is the component id of the on device model. The `AIManager` sends
   // updates for it to the `CreateMonitor`s.
   std::string model_component_id =
@@ -1017,6 +1007,22 @@ TEST_F(AILanguageModelTest, ModelDownload) {
           GetOnDeviceModelExtensionId();
   AITestUtils::FakeComponent model_component(model_component_id,
                                              kTestModelDownloadSize);
+
+  EXPECT_EQ(GetAIManagerDownloadProgressObserversSize(), 0u);
+  AITestUtils::FakeMonitor mock_monitor;
+
+  EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+      .WillOnce(
+          [&](const std::string& id, component_updater::CrxUpdateItem* item) {
+            *item = model_component.CreateUpdateItem(
+                update_client::ComponentState::kNew, 0);
+            return true;
+          });
+  GetAIManagerRemote()->AddModelDownloadProgressObserver(
+      mock_monitor.BindNewPipeAndPassRemote());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [this] { return GetAIManagerDownloadProgressObserversSize() == 1u; }));
 
   component_update_service_.SendUpdate(model_component.CreateUpdateItem(
       update_client::ComponentState::kDownloading, kTestModelDownloadSize));

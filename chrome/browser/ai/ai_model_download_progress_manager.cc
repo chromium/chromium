@@ -15,6 +15,7 @@ namespace on_device_ai {
 namespace {
 
 bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
+  // See class comment: components/update_client/component.h
   switch (item.state) {
     case update_client::ComponentState::kDownloading:
     case update_client::ComponentState::kUpdating:
@@ -28,6 +29,26 @@ bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
+    case update_client::ComponentState::kLastStatus:
+      return false;
+  }
+}
+
+bool IsAlreadyInstalled(const component_updater::CrxUpdateItem& item) {
+  // See class comment: components/update_client/component.h
+  switch (item.state) {
+    case update_client::ComponentState::kUpdated:
+    case update_client::ComponentState::kUpToDate:
+      return true;
+    case update_client::ComponentState::kNew:
+    case update_client::ComponentState::kChecking:
+    case update_client::ComponentState::kCanUpdate:
+    case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kUpdating:
+    case update_client::ComponentState::kUpdateError:
+    case update_client::ComponentState::kRun:
+    case update_client::ComponentState::kDownloadingDiff:
+    case update_client::ComponentState::kUpdatingDiff:
     case update_client::ComponentState::kLastStatus:
       return false;
   }
@@ -73,8 +94,18 @@ AIModelDownloadProgressManager::Reporter::Reporter(
       weak_ptr_factory_.GetWeakPtr()));
 
   // Don't watch any components that are already installed.
-  for (const auto& component_id : component_update_service->GetComponentIDs()) {
-    component_ids_.erase(component_id);
+  for (auto iter = component_ids_.begin(); iter != component_ids_.end();) {
+    component_updater::CrxUpdateItem item;
+    bool success = component_update_service->GetComponentDetails(*iter, &item);
+
+    // When `success` is false, it means the component hasn't been registered
+    // yet. `GetComponentDetails` doesn't fill out `item` in this case, and we
+    // can just treat the component as if it had a state of `kNew`.
+    if (success && IsAlreadyInstalled(item)) {
+      iter = component_ids_.erase(iter);
+    } else {
+      ++iter;
+    }
   }
 
   // If there are no component ids to observe, just send zero and one hundred
