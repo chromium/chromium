@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_encoder_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -318,7 +319,8 @@ TEST_P(StandardizeStringTest, ReturnsExpectedResult) {
   encoding_parameters.set_remove_chars(test_case.remove_chars);
   FieldClassificationModelEncoder encoder({}, encoding_parameters);
 
-  EXPECT_EQ(encoder.StandardizeString(test_case.input), test_case.expected);
+  EXPECT_EQ(test_api(encoder).StandardizeString(test_case.input),
+            test_case.expected);
 }
 
 }  // namespace autofill

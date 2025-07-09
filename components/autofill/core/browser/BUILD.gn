@@ -1095,6 +1095,7 @@ static_library("test_support") {
     "ml_model/autofill_ai/mock_autofill_ai_model_cache.h",
     "ml_model/autofill_ai/mock_autofill_ai_model_executor.cc",
     "ml_model/autofill_ai/mock_autofill_ai_model_executor.h",
+    "ml_model/field_classification_model_encoder_test_api.h",
     "payments/bnpl_manager_test_api.h",
     "payments/credit_card_access_manager_test_api.h",
     "payments/credit_card_access_manager_test_base.cc",

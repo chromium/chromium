@@ -78,13 +78,6 @@ class FieldClassificationModelEncoder {
   std::vector<FieldClassificationModelEncoder::TokenId> EncodeFormFeatures(
       const FormStructure& form) const;
 
-  // Standardizes a string according to encoding_parameters_:
-  //   - Optionally split on CamelCase.
-  //   - Optionally map to lowercase.
-  //   - Replace specified characters with whitespace.
-  //   - Remove specified characters.
-  std::u16string StandardizeString(std::u16string_view input) const;
-
   // Tokenizes the specific `input` to a vector of size
   // `max_tokens_per_feature`. The token IDs are looked up in token_to_id_
   // after standardizing and splitting on whitespace.
@@ -93,6 +86,8 @@ class FieldClassificationModelEncoder {
   std::vector<TokenId> EncodeAttribute(std::u16string_view input) const;
 
  private:
+  friend class FieldClassificationModelEncoderTestApi;
+
   // Returns if the model's encoding parameters specify any form level features.
   bool ShouldEncodeFormLevelFeatures() const;
 
@@ -105,6 +100,13 @@ class FieldClassificationModelEncoder {
   // a placeholder field containing information about the form-level features.
   // Only used when the model is requiring encoding form level features.
   TokenId form_cls_token() const;
+
+  // Standardizes a string according to encoding_parameters_:
+  //   - Optionally split on CamelCase.
+  //   - Optionally map to lowercase.
+  //   - Replace specified characters with whitespace.
+  //   - Remove specified characters.
+  std::u16string StandardizeString(std::u16string_view input) const;
 
   base::flat_map<std::u16string, TokenId> token_to_id_;
   optimization_guide::proto::AutofillFieldClassificationEncodingParameters
