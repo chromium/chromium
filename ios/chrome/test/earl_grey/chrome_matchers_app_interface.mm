@@ -1592,6 +1592,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuSiteInformation);
 }
 
++ (id<GREYMatcher>)translateDestinationButton {
+  return grey_accessibilityID(kToolsMenuTranslateId);
+}
+
 + (id<GREYMatcher>)whatsNewDestinationButton {
   return grey_accessibilityID(kToolsMenuWhatsNewId);
 }

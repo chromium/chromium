@@ -804,6 +804,9 @@ id<GREYMatcher> SiteInfoDestinationButton();
 // Returns a matcher for the settings destination button in the overflow menu.
 id<GREYMatcher> SettingsDestinationButton();
 
+// Returns a matcher for the translate destination button in the overflow menu.
+id<GREYMatcher> TranslateDestinationButton();
+
 // Returns a matcher for the What's New destination button in the overflow menu.
 id<GREYMatcher> WhatsNewDestinationButton();
 

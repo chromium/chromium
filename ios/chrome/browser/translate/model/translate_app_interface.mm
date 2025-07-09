@@ -169,6 +169,15 @@ class TranslateAppInterfaceHelper {
   return base::SysUTF8ToNSString(details->adopted_language);
 }
 
++ (void)setAutoTranslateFromLanguage:(NSString*)source
+                          toLanguage:(NSString*)target {
+  std::unique_ptr<translate::TranslatePrefs> prefs(
+      ChromeIOSTranslateClient::CreateTranslatePrefs(
+          chrome_test_util::GetOriginalProfile()->GetPrefs()));
+  return prefs->AddLanguagePairToAlwaysTranslateList(
+      base::SysNSStringToUTF8(source), base::SysNSStringToUTF8(target));
+}
+
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
                              toLanguage:(NSString*)target {
   std::unique_ptr<translate::TranslatePrefs> prefs(

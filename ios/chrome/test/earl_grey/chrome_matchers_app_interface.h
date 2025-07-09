@@ -732,6 +732,10 @@
 // carousel.
 + (id<GREYMatcher>)siteInfoDestinationButton;
 
+// Returns matcher for the translate destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)translateDestinationButton;
+
 // Returns matcher for the downloads destination button in the overflow menu
 // carousel.
 + (id<GREYMatcher>)downloadsDestinationButton;

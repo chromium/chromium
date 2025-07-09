@@ -953,6 +953,10 @@ id<GREYMatcher> SettingsDestinationButton() {
   return [ChromeMatchersAppInterface settingsDestinationButton];
 }
 
+id<GREYMatcher> TranslateDestinationButton() {
+  return [ChromeMatchersAppInterface translateDestinationButton];
+}
+
 id<GREYMatcher> WhatsNewDestinationButton() {
   return [ChromeMatchersAppInterface whatsNewDestinationButton];
 }
