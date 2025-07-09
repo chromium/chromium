@@ -532,6 +532,7 @@
       // When enabled, perform async IPCs from CookieJar::SetCookie to the
       // network service.
       name: "AsyncSetCookie",
+      status: "stable",
     },
     {
       name: "AttributeDirectionality",

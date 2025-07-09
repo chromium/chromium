@@ -10068,29 +10068,6 @@
             ]
         }
     ],
-    "FasterSetCookie": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AsyncGetCookiesOnSet",
-                    "enable_features": [
-                        "AsyncSetCookie",
-                        "GetCookiesOnSet"
-                    ]
-                }
-            ]
-        }
-    ],
     "FedCmIntrusionMitigation": [
         {
             "platforms": [
