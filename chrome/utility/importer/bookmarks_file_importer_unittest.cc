@@ -17,6 +17,7 @@ bool CanImportURL(const GURL& url);
 
 }  // namespace internal
 
+// TODO(crbug.com/430312165): Add more test coverage for BookmarksFileImporter.
 TEST(BookmarksFileImporterTest, CanImportURL) {
   struct TestCase {
     const std::string url;

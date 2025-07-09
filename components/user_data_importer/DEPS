@@ -5,6 +5,7 @@ include_rules = [
   "+components/autofill/core/browser/foundations",
   "+components/bookmarks/browser",
   "+components/bookmarks/test",
+  "+components/favicon_base",
   "+components/history/core/browser",
   "+components/history/core/test",
   "+components/password_manager/core/browser",
@@ -13,4 +14,3 @@ include_rules = [
   "+components/reading_list/core",
   "+mojo/public/cpp/bindings",
 ]
-

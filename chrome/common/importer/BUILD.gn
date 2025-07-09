@@ -118,3 +118,20 @@ source_set("importer") {
     "//url",
   ]
 }
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_importer_bridge.cc",
+      "mock_importer_bridge.h",
+    ]
+
+    deps = [
+      ":importer",
+      "//base",
+      "//components/user_data_importer/common",
+      "//testing/gmock",
+    ]
+  }
+}

@@ -458,13 +458,19 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
                     gfx::Image());
 
   // Read the bookmarks back in.
-  std::vector<user_data_importer::ImportedBookmarkEntry> parsed_bookmarks;
-  std::vector<user_data_importer::SearchEngineInfo> parsed_search_engines;
-  favicon_base::FaviconUsageDataList favicons;
-  user_data_importer::ContentBookmarkParser bookmark_parser;
-  bookmark_parser.Parse(base::RepeatingCallback<bool(void)>(),
-                        base::RepeatingCallback<bool(const GURL&)>(), path_,
-                        &parsed_bookmarks, &parsed_search_engines, &favicons);
+  base::test::TestFuture<
+      user_data_importer::BookmarkParser::BookmarkParsingResult>
+      bookmarks_parsed_future;
+  user_data_importer::MakeBookmarkParser()->Parse(
+      path_, bookmarks_parsed_future.GetCallback());
+  user_data_importer::BookmarkParser::BookmarkParsingResult result =
+      bookmarks_parsed_future.Take();
+
+  std::vector<user_data_importer::ImportedBookmarkEntry> parsed_bookmarks =
+      result->bookmarks;
+  std::vector<user_data_importer::SearchEngineInfo> parsed_search_engines =
+      result->search_engines;
+  favicon_base::FaviconUsageDataList favicons = result->favicons;
 
   // Check loaded favicon (url1 is represented by 4 separate bookmarks).
   EXPECT_EQ(4U, favicons.size());

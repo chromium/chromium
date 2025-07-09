@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "chrome/utility/importer/importer.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 
 // Importer for bookmarks files.
 class BookmarksFileImporter : public Importer {
@@ -22,6 +23,11 @@ class BookmarksFileImporter : public Importer {
                    ImporterBridge* bridge) override;
 
  private:
+  // Receives the result of parsing bookmarks and search engines and notifies
+  // the `bridge` of the necessary updates.
+  void OnBookmarksParsed(
+      user_data_importer::BookmarkParser::BookmarkParsingResult result);
+
   ~BookmarksFileImporter() override;
 };
 

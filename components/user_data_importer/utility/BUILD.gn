@@ -18,6 +18,7 @@ source_set("safari_data_importer") {
     ":zip_ffi_glue",
     "//base",
     "//components/bookmarks/browser",
+    "//components/favicon_base",
     "//components/history/core/browser",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",

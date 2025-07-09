@@ -340,25 +340,9 @@ void ContentBookmarkParser::Parse(
     const base::FilePath& file,
     BookmarkParser::BookmarkParsingCallback callback) {
   BookmarkParser::ParsedBookmarks parsing_result;
-  std::vector<user_data_importer::SearchEngineInfo> unused;
 
-  Parse(base::NullCallback(), base::NullCallback(), file,
-        &parsing_result.bookmarks, &unused, nullptr);
-
-  std::move(callback).Run(std::move(parsing_result));
-}
-
-// TODO(crbug.com/414604427): Refractor this method to not take as many
-// parameters.
-void ContentBookmarkParser::Parse(
-    base::RepeatingCallback<bool(void)> cancellation_callback,
-    base::RepeatingCallback<bool(const GURL&)> valid_url_callback,
-    const base::FilePath& file_path,
-    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
-    std::vector<user_data_importer::SearchEngineInfo>* search_engines,
-    favicon_base::FaviconUsageDataList* favicons) {
   std::string content;
-  base::ReadFileToString(file_path, &content);
+  base::ReadFileToString(file, &content);
   std::vector<std::string> lines = base::SplitString(
       content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -371,11 +355,8 @@ void ContentBookmarkParser::Parse(
   std::vector<std::u16string> path;
   size_t toolbar_folder_index = 0;
   std::string charset = "UTF-8";  // If no charset is specified, assume utf-8.
-  for (size_t i = 0; i < lines.size() && (cancellation_callback.is_null() ||
-                                          !cancellation_callback.Run());
-       ++i) {
-    std::string line;
-    base::TrimString(lines[i], " ", &line);
+  for (std::string& line : lines) {
+    base::TrimString(line, " ", &line);
 
     // Remove "<HR>" if |line| starts with it. "<HR>" is the bookmark entries
     // separator in Firefox that Chrome does not support. Note that there can
@@ -423,7 +404,7 @@ void ContentBookmarkParser::Parse(
       search_engine_info.url.assign(base::UTF8ToUTF16(search_engine_url));
       search_engine_info.keyword = shortcut;
       search_engine_info.display_name = title;
-      search_engines->push_back(search_engine_info);
+      parsing_result.search_engines.push_back(search_engine_info);
       continue;
     }
 
@@ -431,8 +412,7 @@ void ContentBookmarkParser::Parse(
       last_folder_is_empty = false;
     }
 
-    if (is_bookmark && post_data.empty() &&
-        (valid_url_callback.is_null() || valid_url_callback.Run(url))) {
+    if (is_bookmark && post_data.empty()) {
       if (toolbar_folder_index > path.size() && !path.empty()) {
         NOTREACHED();  // error in parsing.
       }
@@ -455,13 +435,11 @@ void ContentBookmarkParser::Parse(
         }
         entry.path.assign(path.begin(), path.end());
       }
-      bookmarks->push_back(entry);
+      parsing_result.bookmarks.push_back(entry);
 
       // Save the favicon. DataURLToFaviconUsage will handle the case where
       // there is no favicon.
-      if (favicons) {
-        DataURLToFaviconUsage(url, favicon, favicons);
-      }
+      DataURLToFaviconUsage(url, favicon, &parsing_result.favicons);
 
       continue;
     }
@@ -502,12 +480,12 @@ void ContentBookmarkParser::Parse(
             entry.in_toolbar = true;
             entry.path.assign(path.begin() + toolbar_folder_index - 1,
                               path.end());
-            bookmarks->push_back(entry);
+            parsing_result.bookmarks.push_back(entry);
           }
         } else {
           // Add this folder to the list of |bookmarks|.
           entry.path.assign(path.begin(), path.end());
-          bookmarks->push_back(entry);
+          parsing_result.bookmarks.push_back(entry);
         }
 
         // Parent folder include current one, so it's not empty.
@@ -519,6 +497,8 @@ void ContentBookmarkParser::Parse(
       }
     }
   }
+
+  std::move(callback).Run(std::move(parsing_result));
 }
 
 bool CanImportURLAsSearchEngine(const GURL& url,

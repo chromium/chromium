@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
-#include "chrome/utility/importer/nss_decryptor.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
@@ -126,7 +125,7 @@ TEST(FirefoxImporterTest, ImportHistorySchema) {
   user_data_importer::SourceProfile profile;
   profile.source_path = places_path;
   scoped_refptr<MockImporterBridge> bridge = new MockImporterBridge;
-  std::vector<ImporterURLRow> history;
+  std::vector<user_data_importer::ImporterURLRow> history;
   EXPECT_CALL(*bridge, NotifyStarted());
   EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::HISTORY));
   EXPECT_CALL(*bridge, SetHistoryItems(_, _))

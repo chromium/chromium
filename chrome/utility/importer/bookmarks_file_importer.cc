@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/types/expected_macros.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,14 +21,6 @@
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "content/public/common/url_constants.h"
-
-namespace {
-
-bool IsImporterCancelled(BookmarksFileImporter* importer) {
-  return importer->cancelled();
-}
-
-}  // namespace
 
 namespace internal {
 
@@ -94,30 +87,48 @@ void BookmarksFileImporter::StartImport(
   // The only thing this importer can import is a bookmarks file, aka
   // "favorites".
   DCHECK_EQ(user_data_importer::FAVORITES, items);
+  bridge_ = bridge;
 
   bridge->NotifyStarted();
   bridge->NotifyItemStarted(user_data_importer::FAVORITES);
 
-  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
-  std::vector<user_data_importer::SearchEngineInfo> search_engines;
-  favicon_base::FaviconUsageDataList favicons;
+  user_data_importer::MakeBookmarkParser()->Parse(
+      source_profile.source_path,
+      base::BindOnce(&BookmarksFileImporter::OnBookmarksParsed,
+                     base::Unretained(this)));
+}
 
-  user_data_importer::ContentBookmarkParser bookmark_parser;
-  bookmark_parser.Parse(
-      base::BindRepeating(IsImporterCancelled, base::Unretained(this)),
-      base::BindRepeating(internal::CanImportURL), source_profile.source_path,
-      &bookmarks, &search_engines, &favicons);
-
-  if (!bookmarks.empty() && !cancelled()) {
-    std::u16string first_folder_name =
-        bridge->GetLocalizedString(IDS_BOOKMARK_GROUP);
-    bridge->AddBookmarks(bookmarks, first_folder_name);
+void BookmarksFileImporter::OnBookmarksParsed(
+    user_data_importer::BookmarkParser::BookmarkParsingResult result) {
+  if (cancelled()) {
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+    bridge_->NotifyEnded();
+    return;
   }
-  if (!search_engines.empty())
-    bridge->SetKeywords(search_engines, false);
-  if (!favicons.empty())
-    bridge->SetFavicons(favicons);
 
-  bridge->NotifyItemEnded(user_data_importer::FAVORITES);
-  bridge->NotifyEnded();
+  ASSIGN_OR_RETURN(user_data_importer::BookmarkParser::ParsedBookmarks value,
+                   std::move(result), [this](auto) {
+                     bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+                     bridge_->NotifyEnded();
+                   });
+
+  if (!value.bookmarks.empty()) {
+    std::u16string first_folder_name =
+        bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP);
+    std::erase_if(value.bookmarks,
+                  [](user_data_importer::ImportedBookmarkEntry bookmark) {
+                    return !internal::CanImportURL(bookmark.url);
+                  });
+
+    bridge_->AddBookmarks(value.bookmarks, first_folder_name);
+  }
+  if (!value.search_engines.empty()) {
+    bridge_->SetKeywords(value.search_engines, false);
+  }
+  if (!value.favicons.empty()) {
+    bridge_->SetFavicons(value.favicons);
+  }
+
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  bridge_->NotifyEnded();
 }

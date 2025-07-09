@@ -22,6 +22,7 @@
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 
 class GURL;
 
@@ -61,6 +62,10 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
+
+  void OnBookmarksParsed(
+      user_data_importer::BookmarkParser::BookmarkParsingResult result);
+
 #if !BUILDFLAG(IS_MAC)
   void ImportPasswords();
 #endif
@@ -121,6 +126,8 @@ class FirefoxImporter : public Importer {
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif
+
+  base::WeakPtrFactory<FirefoxImporter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_FIREFOX_IMPORTER_H_
