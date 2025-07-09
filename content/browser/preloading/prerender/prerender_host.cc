@@ -567,6 +567,9 @@ bool PrerenderHost::StartPrerendering() {
     return false;
   }
 
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(created_navigation_handle.get());
+
   if (initial_navigation_id_.has_value()) {
     // In usual code path, `initial_navigation_id_` should be set by
     // PrerenderNavigationThrottle during `LoadURLWithParams` above.
@@ -574,10 +577,16 @@ bool PrerenderHost::StartPrerendering() {
              created_navigation_handle->GetNavigationId());
     CHECK(begin_params_);
     CHECK(common_params_);
-  } else {
-    // In some exceptional code path, such as the navigation failed due to CSP
-    // violations, PrerenderNavigationThrottle didn't run at this point. So,
-    // set the ID here.
+  } else if (navigation_request->state() !=
+             NavigationRequest::WAITING_FOR_RENDERER_RESPONSE) {
+    // If a same-site prerender host is reused, the BeforeUnload handler maybe
+    // called and thus to cause the NavigationRequest::BeginNavigation to be
+    // delayed. The NavigationRequest state will be
+    // NavigationRequest::WAITING_FOR_RENDERER_RESPONSE in this case. This is
+    // not an error so we will wait for the SetInitialNavigation to be called
+    // afterwards. In some exceptional code path, such as the navigation failed
+    // due to CSP violations, PrerenderNavigationThrottle didn't run at this
+    // point. So, set the ID here.
     initial_navigation_id_ = created_navigation_handle->GetNavigationId();
     // `begin_params_` and `common_params_` is null here, but it doesn't matter
     // as this branch is reached only when the initial navigation fails,
@@ -595,11 +604,6 @@ bool PrerenderHost::StartPrerendering() {
     base::debug::DumpWithoutCrashing();
   }
 
-  NavigationRequest* navigation_request =
-      NavigationRequest::From(created_navigation_handle.get());
-  // The initial navigation in the prerender frame tree should not wait for
-  // `beforeunload` in the old page, so BeginNavigation stage should be reached
-  // synchronously.
   CHECK_GE(navigation_request->state(),
            NavigationRequest::WAITING_FOR_RENDERER_RESPONSE);
   return true;
