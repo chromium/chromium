@@ -1561,6 +1561,18 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
       GetMockInputManager()->GetSupportForFrameSink(kFrameSinkIdE));
 
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdE);
+
+  // root1
+  // root2
+  // E -> A -> B -> C
+  //           + -> D
+  EXPECT_EQ(
+      GetMockInputManager()->GetRootRenderInputRouterSupport(kFrameSinkIdD),
+      GetMockInputManager()->GetSupportForFrameSink(kFrameSinkIdE));
+  EXPECT_EQ(
+      GetMockInputManager()->GetRootRenderInputRouterSupport(kFrameSinkIdA),
+      GetMockInputManager()->GetSupportForFrameSink(kFrameSinkIdE));
+
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdD);
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
