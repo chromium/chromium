@@ -17,8 +17,7 @@
 -chrome/installer/mac/third_party/
 -chromeos/assistant/internal
 -components/optimization_guide/internal/
--ios/
--ios_internal/
+-ios/third_party/
 -native_client/
 -net/third_party/
 -ppapi/
