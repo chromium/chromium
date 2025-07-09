@@ -48,21 +48,19 @@ std::string GetRegistrationCode(std::string_view type) {
   const std::string kCouponType = "COUPON_CODE";
   const std::string kGroupType = "GROUP_CODE";
 
-  ash::system::StatisticsProvider* provider =
-      ash::system::StatisticsProvider::GetInstance();
-
-  std::string result;
+  std::string_view name;
   if (type == kCouponType) {
-    const std::optional<std::string_view> offers_code =
-        provider->GetMachineStatistic(ash::system::kOffersCouponCodeKey);
-    result = std::string(offers_code.value_or(""));
+    name = ash::system::kOffersCouponCodeKey;
   } else if (type == kGroupType) {
-    const std::optional<std::string_view> offers_code =
-        provider->GetMachineStatistic(ash::system::kOffersGroupCodeKey);
-    result = std::string(offers_code.value_or(""));
+    name = ash::system::kOffersGroupCodeKey;
   }
 
-  return result;
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
+  const std::optional<std::string_view> offers_code =
+      provider->GetMachineStatistic(name);
+
+  return std::string(offers_code.value_or(""));
 }
 }  // namespace
 
