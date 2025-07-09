@@ -964,8 +964,8 @@ public class KeyboardShortcuts {
 
         RecordHistogram.recordEnumeratedHistogram(
                 AccessibilityState.isKnownScreenReaderEnabled()
-                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning2"
-                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader2",
+                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning3"
+                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader3",
                 semanticMeaning,
                 KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE);
 
