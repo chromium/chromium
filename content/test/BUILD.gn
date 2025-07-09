@@ -3028,6 +3028,7 @@ test("content_unittests") {
     sources += [
       "../browser/accessibility/ax_style_data_unittest.cc",
       "../browser/accessibility/browser_accessibility_android_unittest.cc",
+      "../browser/accessibility/text_formatting_metrics_android_unittest.cc",
       "../browser/android/nfc_host_unittest.cc",
       "../browser/attribution_reporting/attribution_input_event_tracker_android_unittest.cc",
       "../browser/attribution_reporting/attribution_os_level_manager_android_unittest.cc",

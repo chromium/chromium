@@ -34,6 +34,7 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
+#include "content/browser/accessibility/text_formatting_metrics_android.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -462,7 +463,8 @@ ScopedJavaLocalRef<jobject> ToJavaRangesMap(
                             JniWrapperType,
                             const jni_zero::JavaRef<jintArray>&,
                             const jni_zero::JavaRef<jintArray>&),
-    base::RepeatingCallback<JavaType(CppConstructableType)> to_java_map_key) {
+    base::RepeatingCallback<JavaType(CppConstructableType)> to_java_map_key,
+    int* ranges_count) {
   if (!text_style_map) {
     return nullptr;
   }
@@ -478,40 +480,48 @@ ScopedJavaLocalRef<jobject> ToJavaRangesMap(
     auto java_ends = ToJavaIntArray(env, pair.second);
     SetJavaMapValue(env, java_map, std::move(java_map_key), java_starts,
                     java_ends);
+    if (ranges_count) {
+      *ranges_count += entry.second.size();
+    }
   }
   return java_map;
 }
 
 ScopedJavaLocalRef<jobject> ToJavaFloatRangesMap(
     JNIEnv* env,
-    const std::optional<absl::flat_hash_map<float, RangePairs>>&
-        text_style_map) {
+    const std::optional<absl::flat_hash_map<float, RangePairs>>& text_style_map,
+    int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
       &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapFloatValue,
       base::BindRepeating(
-          [](float value) { return static_cast<jfloat>(value); }));
+          [](float value) { return static_cast<jfloat>(value); }),
+      ranges_count);
 }
 
 template <class T>
 ScopedJavaLocalRef<jobject> ToJavaIntRangesMap(
     JNIEnv* env,
-    const std::optional<absl::flat_hash_map<T, RangePairs>>& text_style_map) {
+    const std::optional<absl::flat_hash_map<T, RangePairs>>& text_style_map,
+    int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
       &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapIntValue,
-      base::BindRepeating([](T value) { return static_cast<jint>(value); }));
+      base::BindRepeating([](T value) { return static_cast<jint>(value); }),
+      ranges_count);
 }
 
 ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
     JNIEnv* env,
     const std::optional<absl::flat_hash_map<std::u16string, RangePairs>>&
-        text_style_map) {
+        text_style_map,
+    int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
       &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
       base::BindRepeating(&base::android::ConvertUTF16ToJavaString,
-                          base::Unretained(env)));
+                          base::Unretained(env)),
+      ranges_count);
 }
 
 }  // anonymous namespace
@@ -1353,9 +1363,14 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       }
     }
 
+    base::ElapsedTimer total_timer;
+
+    base::ElapsedTimer get_text_timer;
     std::u16string text = node->GetSubstringTextContentUTF16(
         /*min_length=*/std::nullopt, style_data.get());
+    base::TimeDelta get_text_duration = get_text_timer.Elapsed();
 
+    base::ElapsedTimer to_java_data_timer;
     ScopedJavaLocalRef<jobject> java_suggestions;
     ScopedJavaLocalRef<jobject> java_links;
     ScopedJavaLocalRef<jobject> java_text_sizes;
@@ -1366,19 +1381,29 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
     ScopedJavaLocalRef<jobject> java_font_families;
     ScopedJavaLocalRef<jobject> java_locales;
 
+    int ranges_count = 0;
     if (style_data) {
-      java_suggestions = ToJavaStringRangesMap(env, style_data->suggestions);
-      java_links = ToJavaStringRangesMap(env, style_data->links);
-      java_text_sizes = ToJavaFloatRangesMap(env, style_data->text_sizes);
-      java_text_styles = ToJavaIntRangesMap(env, style_data->text_styles);
-      java_text_positions = ToJavaIntRangesMap(env, style_data->text_positions);
-      java_fg_colors = ToJavaIntRangesMap(env, style_data->foreground_colors);
-      java_bg_colors = ToJavaIntRangesMap(env, style_data->background_colors);
-      java_font_families =
-          ToJavaCanonicalStringRangesMap(env, style_data->font_families);
-      java_locales = ToJavaCanonicalStringRangesMap(env, style_data->locales);
+      java_suggestions =
+          ToJavaStringRangesMap(env, style_data->suggestions, &ranges_count);
+      java_links = ToJavaStringRangesMap(env, style_data->links, &ranges_count);
+      java_text_sizes =
+          ToJavaFloatRangesMap(env, style_data->text_sizes, &ranges_count);
+      java_text_styles =
+          ToJavaIntRangesMap(env, style_data->text_styles, &ranges_count);
+      java_text_positions =
+          ToJavaIntRangesMap(env, style_data->text_positions, &ranges_count);
+      java_fg_colors =
+          ToJavaIntRangesMap(env, style_data->foreground_colors, &ranges_count);
+      java_bg_colors =
+          ToJavaIntRangesMap(env, style_data->background_colors, &ranges_count);
+      java_font_families = ToJavaCanonicalStringRangesMap(
+          env, style_data->font_families, &ranges_count);
+      java_locales = ToJavaCanonicalStringRangesMap(env, style_data->locales,
+                                                    &ranges_count);
     }
+    base::TimeDelta to_java_data_duration = to_java_data_timer.Elapsed();
 
+    base::ElapsedTimer set_ani_text_timer;
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
         env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
         is_link, node->IsTextField(),
@@ -1392,6 +1417,26 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         java_suggestions, java_links, java_text_sizes, java_text_styles,
         java_text_positions, java_fg_colors, java_bg_colors, java_font_families,
         java_locales);
+    base::TimeDelta set_ani_text_duration = set_ani_text_timer.Elapsed();
+
+    base::TimeDelta total_duration = total_timer.Elapsed();
+    RecordTextFormattingTextLengthHistogram(text.length(), !!style_data);
+    RecordTextFormattingDurationHistogram(TextFormattingMetric::kTotalDuration,
+                                          total_duration, !!style_data);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kGetTextContentDuration, get_text_duration,
+        !!style_data);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kToJavaDataDuration, to_java_data_duration,
+        !!style_data);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kSetAniTextDuration, set_ani_text_duration,
+        !!style_data);
+    if (style_data) {
+      RecordTextFormattingRangeCountsForTextLengthHistogram(text, ranges_count);
+      RecordTextFormattingDurationForRangeCountHistogram(ranges_count,
+                                                         total_duration);
+    }
   } else {
     ScopedJavaLocalRef<jintArray> java_suggestion_starts;
     ScopedJavaLocalRef<jintArray> java_suggestion_ends;
@@ -1399,6 +1444,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
     std::vector<int> suggestion_starts;
     std::vector<int> suggestion_ends;
     node->GetSuggestions(&suggestion_starts, &suggestion_ends);
+
+    // Starting total timer here, since we don't want to include time taken to
+    // get suggestions.
+    base::ElapsedTimer total_timer;
+    base::ElapsedTimer to_java_data_timer;
     if (suggestion_starts.size() && suggestion_ends.size()) {
       java_suggestion_starts = ToJavaIntArray(env, suggestion_starts);
       java_suggestion_ends = ToJavaIntArray(env, suggestion_ends);
@@ -1409,10 +1459,15 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       java_suggestion_text =
           base::android::ToJavaArrayOfStrings(env, suggestion_text);
     }
+    base::TimeDelta to_java_data_duration = to_java_data_timer.Elapsed();
+
+    base::ElapsedTimer get_text_timer;
+    std::u16string text = node->GetTextContentUTF16();
+    base::TimeDelta get_text_duration = get_text_timer.Elapsed();
+
+    base::ElapsedTimer set_ani_text_timer;
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
-        env, obj, info,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetTextContentUTF16()),
+        env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
         is_link
             ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
             : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
@@ -1427,6 +1482,18 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
                                                 node->GetContentDescription()),
         base::android::ConvertUTF16ToJavaString(
             env, node->GetSupplementalDescription()));
+    base::TimeDelta set_ani_text_duration = set_ani_text_timer.Elapsed();
+    base::TimeDelta total_duration = total_timer.Elapsed();
+
+    RecordTextFormattingTextLengthHistogram(text.length());
+    RecordTextFormattingDurationHistogram(TextFormattingMetric::kTotalDuration,
+                                          total_duration);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kToJavaDataDuration, to_java_data_duration);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kGetTextContentDuration, get_text_duration);
+    RecordTextFormattingDurationHistogram(
+        TextFormattingMetric::kSetAniTextDuration, set_ani_text_duration);
   }
 
   std::u16string element_id;
@@ -2367,7 +2434,8 @@ ScopedJavaLocalRef<jobject>
 WebContentsAccessibilityAndroid::ToJavaCanonicalStringRangesMap(
     JNIEnv* env,
     const std::optional<absl::flat_hash_map<std::string, RangePairs>>&
-        text_style_map) {
+        text_style_map,
+    int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
       &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
@@ -2376,7 +2444,8 @@ WebContentsAccessibilityAndroid::ToJavaCanonicalStringRangesMap(
              const std::string& value) {
             return node.GetCanonicalJNIString(env, value);
           },
-          std::ref(*this), base::Unretained(env)));
+          std::ref(*this), base::Unretained(env)),
+      ranges_count);
 }
 
 base::WeakPtr<WebContentsAccessibilityAndroid>
