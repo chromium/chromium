@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GC_PLUGIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GC_PLUGIN_H_
 
+#if defined(__clang__)
 // GC_PLUGIN_IGNORE is used to make the Blink GC plugin ignore a particular
 // class or field when checking for proper usage.  When using GC_PLUGIN_IGNORE a
 // reason must be provided as an argument. In most cases this will be a bug id
@@ -13,17 +14,22 @@
 //
 // Developer note: this macro must be kept in sync with the definition of
 // STACK_ALLOCATED_IGNORE in /base/memory/stack_allocated.h.
-#if defined(__clang__)
 #define GC_PLUGIN_IGNORE(reason)                     \
   __attribute__((annotate("blink_gc_plugin_ignore"), \
                  annotate("stack_allocated_ignore")))
+// GC_PLUGIN_IGNORE_FILE is used to make the Blink GC plugin ignore a whole
+// file. All classes, fields, methods and variables in that file will be skipped
+// by the plugin. Any incorrect usages in the file will not be reported by the
+// plugin.
+//
+// Always prefer using GC_PLUGIN_IGNORE over GC_PLUGIN_IGNORE_FILE.
+// GC_PLUGIN_IGNORE_FILE should only be used when GC_PLUGIN_IGNORE is not
+// appropriate (e.g. when using GC_PLUGIN_IGNORE results in binary size
+// regressions, etc.).
+#define GC_PLUGIN_IGNORE_FILE(reason) _Pragma("blink_gc_plugin_ignore_file")
 #else  // !defined(__clang__)
 #define GC_PLUGIN_IGNORE(reason)
+#define GC_PLUGIN_IGNORE_FILE(reason)
 #endif  // !defined(__clang__)
-
-// GC_SAFE_FIELD is used to make the Blink GC plugin ignore a particular field.
-// This must only be used when we can ensure that the pattern it is marking is
-// safe despite the exception thrown by the plugin.
-#define GC_SAFE_FIELD(reason) GC_PLUGIN_IGNORE(reason)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_GC_PLUGIN_H_

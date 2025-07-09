@@ -28,6 +28,8 @@ using conditional_t = conditional<Condition, If, Else>::type;
 #define GC_PLUGIN_IGNORE(reason) \
   __attribute__((annotate("blink_gc_plugin_ignore")))
 
+#define GC_PLUGIN_IGNORE_FILE(reason) _Pragma("blink_gc_plugin_ignore_file")
+
 #define STACK_ALLOCATED_IGNORE(reason) \
   __attribute__((annotate("stack_allocated_ignore")))
 
