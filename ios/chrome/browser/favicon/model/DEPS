@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/tabs/model/features.h",
 ]
 
 specific_include_rules = {

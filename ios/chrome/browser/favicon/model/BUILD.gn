@@ -39,6 +39,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/common/ui/favicon",
     "//ios/components/webui:url_constants",
     "//ios/web",
