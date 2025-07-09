@@ -3435,10 +3435,6 @@
       status: "stable",
     },
     {
-      name: "PaintHoldingForLocalIframes",
-      status: "stable",
-    },
-    {
       name: "PaintTimingMixin",
       status: "experimental",
     },

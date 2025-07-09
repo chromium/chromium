@@ -990,8 +990,8 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   DCHECK(!snapshot_root_layout_size_at_capture_.has_value());
   snapshot_root_layout_size_at_capture_ = GetSnapshotRootSize();
 
-  if (RuntimeEnabledFeatures::PaintHoldingForLocalIframesEnabled() &&
-      !document_->GetFrame()->IsLocalRoot()) {
+  // TODO(crbug.com/405117383): This check needs to be updated for scoped.
+  if (!document_->GetFrame()->IsLocalRoot()) {
     subframe_snapshot_layer_ = cc::ViewTransitionContentLayer::Create(
         GenerateResourceId(/*for_subframe_snapshot=*/true),
         /*is_live_content_layer=*/true);

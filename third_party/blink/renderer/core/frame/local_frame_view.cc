@@ -4557,10 +4557,8 @@ void LocalFrameView::SetThrottledForViewTransition(bool throttled) {
   throttled_for_view_transition_ = throttled;
 
   // Invalidating paint here will cause the iframe to draw with no content
-  // instead of showing old content. This will be fixed by paint holding for
-  // local iframes.
-  if (RuntimeEnabledFeatures::PaintHoldingForLocalIframesEnabled() &&
-      was_throttled != CanThrottleRendering()) {
+  // instead of showing old content.
+  if (was_throttled != CanThrottleRendering()) {
     RenderThrottlingStatusChanged();
   }
 }
