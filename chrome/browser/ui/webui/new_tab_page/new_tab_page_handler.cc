@@ -54,13 +54,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -482,6 +485,12 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
+      browser_window_changed_subscription_(
+          webui::RegisterBrowserWindowInterfaceChanged(
+              web_contents_,
+              base::BindRepeating(
+                  &NewTabPageHandler::OnBrowserWindowInterfaceChanged,
+                  base::Unretained(this)))),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
@@ -511,6 +520,8 @@ NewTabPageHandler::NewTabPageHandler(
     microsoft_auth_service_->AddObserver(this);
   }
 
+  OnBrowserWindowInterfaceChanged();
+
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     ntp_custom_background_service_->VerifyCustomBackgroundImageURL();
@@ -536,27 +547,6 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kSeedColorChangeCount,
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kNtpFooterVisible,
-      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
-                          base::Unretained(this)));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  local_state_pref_change_registrar_.Init(g_browser_process->local_state());
-  local_state_pref_change_registrar_.Add(
-      prefs::kNTPFooterManagementNoticeEnabled,
-      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
-                          base::Unretained(this)));
-  // If the management notice customization policies are hidden, we should fall
-  // back to the footer visibility set by the user.
-  local_state_pref_change_registrar_.Add(
-      prefs::kEnterpriseCustomLabelForBrowser,
-      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
-                          base::Unretained(this)));
-  local_state_pref_change_registrar_.Add(
-      prefs::kEnterpriseLogoUrlForBrowser,
-      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
-                          base::Unretained(this)));
-#endif
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -902,7 +892,21 @@ void NewTabPageHandler::UpdateModulesLoadable() {
 }
 
 void NewTabPageHandler::UpdateFooterVisibility() {
-  OnFooterVisibilityUpdated();
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    return;
+  }
+
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    // TODO(crbug.com/378475391): NTP should always load into a WebContents
+    // owned by a TabModel. Remove this once NTP loading has been restricted to
+    // browser tabs only.
+    return;
+  }
+
+  auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
+  CHECK(footer_controller);
+  OnFooterVisibilityUpdated(footer_controller->GetFooterVisible());
 }
 
 void NewTabPageHandler::MaybeShowFeaturePromo(
@@ -1266,6 +1270,10 @@ void NewTabPageHandler::FileSelectionCanceled() {
   }
 }
 
+void NewTabPageHandler::OnFooterVisibilityUpdated(bool visible) {
+  page_->FooterVisibilityUpdated(visible);
+}
+
 void NewTabPageHandler::OnLogoAvailable(
     GetDoodleCallback callback,
     search_provider_logos::LogoCallbackReason type,
@@ -1313,6 +1321,25 @@ void NewTabPageHandler::OnLogoAvailable(
   }
   doodle->description = logo->metadata.alt_text;
   std::move(callback).Run(std::move(doodle));
+}
+
+void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    return;
+  }
+
+  footer_controller_observation_.Reset();
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    // TODO(crbug.com/378475391): NTP should always load into a WebContents
+    // owned by a TabModel. Remove this once NTP loading has been restricted to
+    // browser tabs only.
+    return;
+  }
+
+  auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
+  CHECK(footer_controller);
+  footer_controller_observation_.Observe(footer_controller);
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {
@@ -1514,11 +1541,6 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
   }
 
   return state != MicrosoftAuthService::AuthState::kNone;
-}
-
-void NewTabPageHandler::OnFooterVisibilityUpdated() {
-  page_->FooterVisibilityUpdated(ntp_footer::WillShowManagementNotice(
-      GURL(chrome::kChromeUINewTabURL), web_contents_, profile_));
 }
 
 void NewTabPageHandler::ConnectToParentDocument(

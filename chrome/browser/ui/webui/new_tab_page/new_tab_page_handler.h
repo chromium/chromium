@@ -28,6 +28,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
@@ -59,6 +60,10 @@ namespace customize_chrome {
 class SidePanelController;
 }  // namespace customize_chrome
 
+namespace new_tab_footer {
+class NewTabFooterController;
+}
+
 namespace search_provider_logos {
 class LogoService;
 }  // namespace search_provider_logos
@@ -75,15 +80,17 @@ namespace ui {
 class ThemeProvider;
 }  // namespace ui
 
-class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
-                          public ui::NativeThemeObserver,
-                          public ThemeServiceObserver,
-                          public NtpCustomBackgroundServiceObserver,
-                          public NtpBackgroundServiceObserver,
-                          public ui::SelectFileDialog::Listener,
-                          public PromoServiceObserver,
-                          public optimization_guide::SettingsEnabledObserver,
-                          public MicrosoftAuthServiceObserver {
+class NewTabPageHandler
+    : public new_tab_page::mojom::PageHandler,
+      public ui::NativeThemeObserver,
+      public ThemeServiceObserver,
+      public NtpCustomBackgroundServiceObserver,
+      public NtpBackgroundServiceObserver,
+      public ui::SelectFileDialog::Listener,
+      public PromoServiceObserver,
+      public optimization_guide::SettingsEnabledObserver,
+      public MicrosoftAuthServiceObserver,
+      public new_tab_footer::NewTabFooterControllerObserver {
  public:
   NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
                         pending_page_handler,
@@ -175,8 +182,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
 
-  void OnFooterVisibilityUpdated();
-
   void SetCustomizeChromeSidePanelControllerForTesting(
       customize_chrome::SidePanelController* side_panel_controller);
 
@@ -210,10 +215,16 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
+  // new_tab_footer::NewTabFooterControllerObserver:
+  void OnFooterVisibilityUpdated(bool visible) override;
+
   void OnLogoAvailable(
       GetDoodleCallback callback,
       search_provider_logos::LogoCallbackReason type,
       const std::optional<search_provider_logos::EncodedLogo>& logo);
+
+  // Called when the embedding BrowserWindowInterface has changed.
+  void OnBrowserWindowInterfaceChanged();
 
   void LogEvent(NTPLoggingEventType event);
 
@@ -295,8 +306,13 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       promo_service_observation_{this};
   base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
       microsoft_auth_service_observation_{this};
+  base::ScopedObservation<new_tab_footer::NewTabFooterController,
+                          new_tab_footer::NewTabFooterControllerObserver>
+      footer_controller_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::Value::Dict interaction_module_id_trigger_dict_;
+  // Notifies this when the browser window context changes.
+  base::CallbackListSubscription browser_window_changed_subscription_;
 
   // TODO(crbug.com/378475391): Make this const once the TabModel is guaranteed
   // to be present during load and fixed for the NTP's lifetime.

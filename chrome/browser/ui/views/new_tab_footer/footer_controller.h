@@ -14,6 +14,8 @@ class BrowserWindowInterface;
 
 namespace new_tab_footer {
 
+class NewTabFooterControllerObserver;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum FooterNoticeItem {
@@ -32,6 +34,11 @@ class NewTabFooterController : public content::WebContentsObserver {
   ~NewTabFooterController() override;
 
   void TearDown();
+
+  bool GetFooterVisible() const;
+
+  void AddObserver(NewTabFooterControllerObserver* observer);
+  void RemoveObserver(NewTabFooterControllerObserver* observer);
 
   void SkipErrorPageCheckForTesting(bool should_skip_check) {
     skip_error_page_check_for_testing_ = should_skip_check;
@@ -56,6 +63,8 @@ class NewTabFooterController : public content::WebContentsObserver {
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
+
+  base::ObserverList<NewTabFooterControllerObserver> observers_;
 
   base::WeakPtrFactory<NewTabFooterController> weak_factory_{this};
 };

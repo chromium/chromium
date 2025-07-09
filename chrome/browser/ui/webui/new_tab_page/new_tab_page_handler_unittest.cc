@@ -52,8 +52,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -88,12 +86,6 @@
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
-#endif
 
 namespace {
 
@@ -308,8 +300,7 @@ int GetDictPrefKeyCount(Profile* profile,
 class NewTabPageHandlerTest : public testing::Test {
  public:
   NewTabPageHandlerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        profile_(
+      : profile_(
             MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper())),
         mock_ntp_custom_background_service_(profile_.get()),
         mock_promo_service_(*static_cast<MockPromoService*>(
@@ -402,7 +393,6 @@ class NewTabPageHandlerTest : public testing::Test {
   }
 
  protected:
-  ScopedTestingLocalState testing_local_state_;
   testing::NiceMock<MockPage> mock_page_;
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
@@ -1427,100 +1417,3 @@ TEST_F(NewTabPageHandlerHaTSTest, InteractedModuleDoesNotTriggerIgnoredHaTS) {
       GetDictPrefKeyCount(profile_.get(), prefs::kNtpModulesLoadedCountDict,
                           NewTabPageHandlerHaTSTest::kSampleModuleId));
 }
-
-class NewTabPageHandlerManagedTest : public NewTabPageHandlerTest {
- public:
-  NewTabPageHandlerManagedTest() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnterpriseBadgingForNtpFooter},
-        /*disabled_features=*/{});
-#endif
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that `FooterVisibilityUpdated` is called with false by default.
-TEST_F(NewTabPageHandlerManagedTest,
-       FooterVisibilityUpdatedForUnmanagedBrowser) {
-  EXPECT_CALL(mock_page_, FooterVisibilityUpdated)
-      .WillOnce([](bool is_visible) { EXPECT_FALSE(is_visible); });
-  handler_->OnFooterVisibilityUpdated();
-
-  mock_page_.FlushForTesting();
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(NewTabPageHandlerManagedTest, FooterVisibilityUpdatedForManagedBrowser) {
-  // Simulate browser management.
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile_.get()),
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-
-  EXPECT_CALL(mock_page_, FooterVisibilityUpdated)
-      .WillOnce([](bool is_visible) { EXPECT_TRUE(is_visible); });
-  handler_->OnFooterVisibilityUpdated();
-
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerManagedTest,
-       FooterVisibilityUpdatedForManagementFooterPolicy) {
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile_.get()),
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-
-  EXPECT_CALL(mock_page_, FooterVisibilityUpdated)
-      .WillOnce([](bool is_visible) { EXPECT_FALSE(is_visible); });
-  testing_local_state_.Get()->SetBoolean(
-      prefs::kNTPFooterManagementNoticeEnabled, false);
-
-  mock_page_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&mock_page_);
-}
-
-TEST_F(NewTabPageHandlerManagedTest,
-       FooterVisibilityUpdatedForNoticeCustomizationPolicy) {
-  policy::ScopedManagementServiceOverrideForTesting
-      profile_supervised_management(
-          policy::ManagementServiceFactory::GetForProfile(profile_.get()),
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-
-  bool is_visible;
-  EXPECT_CALL(mock_page_, FooterVisibilityUpdated)
-      .Times(5)
-      .WillRepeatedly(testing::Invoke(
-          [&is_visible](bool is_visible_arg) { is_visible = is_visible_arg; }));
-
-  profile_->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
-  mock_page_.FlushForTesting();
-  EXPECT_FALSE(is_visible);
-
-  testing_local_state_.Get()->SetString(prefs::kEnterpriseCustomLabelForBrowser,
-                                        "CustomLabel");
-  mock_page_.FlushForTesting();
-  EXPECT_TRUE(is_visible);
-
-  testing_local_state_.Get()->SetString(prefs::kEnterpriseCustomLabelForBrowser,
-                                        "");
-  mock_page_.FlushForTesting();
-  EXPECT_FALSE(is_visible);
-
-  testing_local_state_.Get()->SetString(prefs::kEnterpriseLogoUrlForBrowser,
-                                        "logo_url");
-  mock_page_.FlushForTesting();
-  EXPECT_TRUE(is_visible);
-
-  testing_local_state_.Get()->SetString(prefs::kEnterpriseLogoUrlForBrowser,
-                                        "");
-  mock_page_.FlushForTesting();
-  EXPECT_FALSE(is_visible);
-
-  mock_page_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&mock_page_);
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

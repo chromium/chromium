@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/common/pref_names.h"
@@ -72,6 +73,20 @@ void NewTabFooterController::TearDown() {
   browser_ = nullptr;
 }
 
+bool NewTabFooterController::GetFooterVisible() const {
+  return footer_ && footer_->GetVisible();
+}
+
+void NewTabFooterController::AddObserver(
+    NewTabFooterControllerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void NewTabFooterController::RemoveObserver(
+    NewTabFooterControllerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void NewTabFooterController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->HasCommitted() &&
@@ -101,6 +116,8 @@ void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
   } else {
     footer_->CloseUI();
   }
+  observers_.Notify(&NewTabFooterControllerObserver::OnFooterVisibilityUpdated,
+                    show);
 
   if (!log_on_load_metric) {
     return;
