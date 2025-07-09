@@ -561,7 +561,6 @@ source_set("unit_tests") {
     "peerconnection/media_stream_video_webrtc_sink_test.cc",
     "peerconnection/peer_connection_dependency_factory_test.cc",
     "peerconnection/peer_connection_tracker_test.cc",
-    "peerconnection/peer_connection_util_test.cc",
     "peerconnection/rtc_data_channel_test.cc",
     "peerconnection/rtc_encoded_audio_frame_test.cc",
     "peerconnection/rtc_encoded_audio_underlying_sink_test.cc",

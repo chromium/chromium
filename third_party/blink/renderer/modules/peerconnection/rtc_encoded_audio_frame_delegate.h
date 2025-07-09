@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
-#include "third_party/webrtc/api/units/timestamp.h"
 
 namespace blink {
 
@@ -36,10 +35,7 @@ class RTCEncodedAudioFrameDelegate
   uint32_t RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
-  base::expected<void, String> SetWebRtcFrameMetadata(
-      uint32_t rtp_timestamp,
-      std::optional<uint8_t> payload_type,
-      std::optional<webrtc::Timestamp> capture_time);
+  base::expected<void, String> SetRtpTimestamp(uint32_t timestamp);
   std::optional<uint32_t> Ssrc() const;
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;

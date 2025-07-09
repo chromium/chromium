@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
@@ -35,6 +34,8 @@ struct SetMetadataValidationOutcome {
 SetMetadataValidationOutcome IsAllowedSetMetadataChange(
     const RTCEncodedAudioFrameMetadata* current_metadata,
     const RTCEncodedAudioFrameMetadata* new_metadata) {
+  // Only changing the RTP Timestamp is supported.
+
   if (new_metadata->hasSynchronizationSource() !=
           current_metadata->hasSynchronizationSource() ||
       (new_metadata->hasSynchronizationSource() &&
@@ -49,13 +50,17 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
            new_metadata->contributingSources())) {
     return SetMetadataValidationOutcome{false, "Bad contributingSources"};
   }
+  if (new_metadata->hasPayloadType() != current_metadata->hasPayloadType() ||
+      (new_metadata->hasPayloadType() &&
+       current_metadata->payloadType() != new_metadata->payloadType())) {
+    return SetMetadataValidationOutcome{false, "Bad payloadType"};
+  }
   if (new_metadata->hasSequenceNumber() !=
           current_metadata->hasSequenceNumber() ||
       (new_metadata->hasSequenceNumber() &&
        current_metadata->sequenceNumber() != new_metadata->sequenceNumber())) {
     return SetMetadataValidationOutcome{false, "Bad sequenceNumber"};
   }
-  // TODO(https://crbug.com/420408159): Make rtpTimestamp optional.
   if (!new_metadata->hasRtpTimestamp()) {
     return SetMetadataValidationOutcome{false, "Bad rtpTimestamp"};
   }
@@ -64,13 +69,6 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
         (new_metadata->hasReceiveTime() &&
          current_metadata->receiveTime() != new_metadata->receiveTime())) {
       return SetMetadataValidationOutcome{false, "Bad receiveTime"};
-    }
-    if (new_metadata->hasSenderCaptureTimeOffset() !=
-            current_metadata->hasSenderCaptureTimeOffset() ||
-        (new_metadata->hasSenderCaptureTimeOffset() &&
-         current_metadata->senderCaptureTimeOffset() !=
-             new_metadata->senderCaptureTimeOffset())) {
-      return SetMetadataValidationOutcome{false, "Bad senderCaptureTimeOffset"};
     }
   }
   return SetMetadataValidationOutcome{true, String()};
@@ -199,22 +197,7 @@ base::expected<void, String> RTCEncodedAudioFrame::SetMetadata(
         validation.error_msg);
   }
 
-  std::optional<uint8_t> payload_type;
-  if (metadata->hasPayloadType()) {
-    payload_type = metadata->payloadType();
-  }
-
-  std::optional<webrtc::Timestamp> capture_time;
-  if (metadata->hasCaptureTime()) {
-    capture_time = webrtc::Timestamp::Micros(
-        RTCEncodedFrameTimestampToTimeTicks(execution_context,
-                                            metadata->captureTime())
-            .since_origin()
-            .InMicroseconds());
-  }
-
-  return delegate_->SetWebRtcFrameMetadata(metadata->rtpTimestamp(),
-                                           payload_type, capture_time);
+  return delegate_->SetRtpTimestamp(metadata->rtpTimestamp());
 }
 
 void RTCEncodedAudioFrame::setMetadata(ExecutionContext* execution_context,

@@ -8,9 +8,7 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -72,37 +70,13 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   }
 }
 
-base::expected<void, String>
-RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
-    uint32_t rtp_timestamp,
-    std::optional<uint8_t> payload_type,
-    std::optional<webrtc::Timestamp> capture_time) {
+base::expected<void, String> RTCEncodedAudioFrameDelegate::SetRtpTimestamp(
+    uint32_t timestamp) {
   base::AutoLock lock(lock_);
   if (!webrtc_frame_) {
     return base::unexpected("Underlying webrtc frame doesn't exist.");
   }
-
-  // Payload type always has a current value. The new metadata must match it if
-  // SetPayloadType is not supported.
-  if (payload_type.has_value() &&
-      payload_type != webrtc_frame_->GetPayloadType() &&
-      !webrtc_frame_->CanSetPayloadType()) {
-    return base::unexpected("payloadType cannot be modified");
-  }
-
-  if (capture_time != webrtc_frame_->CaptureTime() &&
-      !webrtc_frame_->CanSetCaptureTime()) {
-    return base::unexpected("captureTime cannot be modified");
-  }
-
-  webrtc_frame_->SetRTPTimestamp(rtp_timestamp);
-  if (payload_type.has_value() && webrtc_frame_->CanSetPayloadType()) {
-    webrtc_frame_->SetPayloadType(*payload_type);
-  }
-  if (webrtc_frame_->CanSetCaptureTime()) {
-    webrtc_frame_->SetCaptureTime(capture_time);
-  }
-
+  webrtc_frame_->SetRTPTimestamp(timestamp);
   return base::ok();
 }
 
@@ -144,14 +118,13 @@ std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::ReceiveTime()
 std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::CaptureTime()
     const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
+  if (!webrtc_frame_ ||
+      webrtc_frame_->GetDirection() !=
+          webrtc::TransformableFrameInterface::Direction::kReceiver) {
     return std::nullopt;
   }
-  return (webrtc_frame_->GetDirection() ==
-          webrtc::TransformableFrameInterface::Direction::kReceiver)
-             ? ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),
-                                          WebRTCFrameNtpEpoch())
-             : ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime());
+  return ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),
+                                    WebRTCFrameNtpEpoch());
 }
 
 std::optional<base::TimeDelta>
