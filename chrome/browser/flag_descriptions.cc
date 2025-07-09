@@ -1976,11 +1976,11 @@ const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "Predicts the scroll amount after the vsync time to more closely match "
     "when the frame is visible.";
 
-const char kEnableWebAppUpdateTokenParsingName[] =
-    "Enable update token parsing";
-const char kEnableWebAppUpdateTokenParsingDescription[] =
-    "Enables app updates to be detected through a change in the update token "
-    "field in the manifest";
+const char kEnableWebAppPredictableAppUpdatingName[] =
+    "Enable predictable app updating for PWAs";
+const char kEnableWebAppPredictableAppUpdatingDescription[] =
+    "Enables PWA updates to be more predictable by considering changes in icon "
+    "urls specified in the manifest";
 
 const char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
 const char kEnableZeroCopyTabCaptureDescription[] =

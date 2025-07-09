@@ -10644,6 +10644,7 @@ from previous Chrome versions.
   <int value="-1260211490" label="FastPairLowPower:disabled"/>
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259809702" label="Enable16Desks:enabled"/>
+  <int value="-1259250875" label="WebAppPredictableAppUpdating:disabled"/>
   <int value="-1258793847" label="MagicStackAndroid:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
@@ -11245,7 +11246,6 @@ from previous Chrome versions.
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
   <int value="-1037620891"
       label="EnableWebUsbOnExtensionServiceWorker:enabled"/>
-  <int value="-1037568482" label="WebAppEnableUpdateTokenParsing:disabled"/>
   <int value="-1037128156" label="HomeLauncherGestures:disabled"/>
   <int value="-1035705204" label="PwaUpdateDialogForName:disabled"/>
   <int value="-1035498688" label="TabStripStartupRefactoring:disabled"/>
@@ -11605,7 +11605,6 @@ from previous Chrome versions.
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
-  <int value="-899966044" label="WebAppEnableUpdateTokenParsing:enabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899881954"
       label="StorageAccessApiFollowsSameOriginPolicy:enabled"/>
@@ -12115,6 +12114,7 @@ from previous Chrome versions.
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
       label="DisablePeripheralDataAccessProtection:enabled"/>
+  <int value="-712797285" label="WebAppPredictableAppUpdating:enabled"/>
   <int value="-712499441"
       label="PriceTrackingSubscriptionServiceProductVersion:enabled"/>
   <int value="-711991950" label="SiteExplorationUi:enabled"/>

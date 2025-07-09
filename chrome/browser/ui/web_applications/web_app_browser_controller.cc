@@ -222,8 +222,7 @@ bool WebAppBrowserController::HasReloadButton() const {
 }
 
 bool WebAppBrowserController::HasPendingUpdate() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebAppEnableUpdateTokenParsing)) {
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
     return false;
   }
   const WebApp* app = registrar().GetAppById(app_id());

@@ -1052,11 +1052,10 @@ BASE_FEATURE(kUserMediaCaptureOnFocus,
              "UserMediaCaptureOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A feature to enable using the update token in the manifest or icon url
-// changes to detect app updates. When this is enabled, automatic icon
-// downloading is disabled.
-BASE_FEATURE(kWebAppEnableUpdateTokenParsing,
-             "WebAppEnableUpdateTokenParsing",
+// A feature to enabled updating installed PWAs more predictably by considering
+// changes in icon urls.
+BASE_FEATURE(kWebAppPredictableAppUpdating,
+             "WebAppPredictableAppUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This is intended as a kill switch for the WebOTP Service feature. To enable

@@ -1132,8 +1132,8 @@ extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
 
-extern const char kEnableWebAppUpdateTokenParsingName[];
-extern const char kEnableWebAppUpdateTokenParsingDescription[];
+extern const char kEnableWebAppPredictableAppUpdatingName[];
+extern const char kEnableWebAppPredictableAppUpdatingDescription[];
 
 extern const char kEnableZeroCopyTabCaptureName[];
 extern const char kEnableZeroCopyTabCaptureDescription[];
