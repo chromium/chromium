@@ -261,13 +261,19 @@ public class StripLayoutHelper
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                     updateGroupTextAndSharedState(mSourceTabGroupId);
-                    assumeNonNull(mTabGroupModelFilter);
-                    boolean removedLastTabInGroup =
-                            !mTabGroupModelFilter.tabGroupExists(mSourceTabGroupId);
+                    Token groupIdToHide = mGroupIdToHideSupplier.get();
+                    // TODO(crbug.com/430514194): There is a strong possibility this is never true
+                    // as didRemoveTabGroup is invoked before this and would make groupIdToHide
+                    // null.
+                    boolean removedHiddenLastTabInGroup =
+                            groupIdToHide != null
+                                    && groupIdToHide.equals(mSourceTabGroupId)
+                                    && mTabGroupModelFilter != null
+                                    && !mTabGroupModelFilter.tabGroupExists(mSourceTabGroupId);
 
                     // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
                     // state, such as confirming the group deletion.
-                    if (!removedLastTabInGroup) onTabMergeToOrMoveOutOfGroup();
+                    if (!removedHiddenLastTabInGroup) onTabMergeToOrMoveOutOfGroup();
 
                     // Expand the tab if necessary.
                     StripLayoutTab tab = findTabById(movedTab.getId());
