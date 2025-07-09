@@ -272,6 +272,8 @@ data/bear_audio_longer_than_video.ogv
 data/bear_audio_longer_than_video_vp8.ogv
 data/bear_audio_shorter_than_video.ogv
 data/bear_audio_shorter_than_video_vp8.ogv
+data/bear_av1_720p_444_10bit.ivf
+data/bear_av1_720p_444_8bit.ivf
 data/bear_dtsc.mp4
 data/bear_dtse.mp4
 data/bear_dtsx.mp4

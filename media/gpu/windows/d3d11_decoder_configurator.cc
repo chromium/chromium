@@ -126,6 +126,14 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     }
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (decoder_guid == DXVA_ModeAV1_VLD_Profile1) {
+    // AV1 profile 1 is YUV 4:4:4 only.
+    if (bit_depth == 8) {
+      decoder_dxgi_format = DXGI_FORMAT_AYUV;
+    } else if (bit_depth == 10) {
+      decoder_dxgi_format = DXGI_FORMAT_Y410;
+    }
+  }
   if (decoder_guid == GUID()) {
     if (config.profile() == HEVCPROFILE_REXT) {
       MEDIA_LOG(INFO, media_log)

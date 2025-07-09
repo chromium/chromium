@@ -385,6 +385,15 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
+  if (guid == DXVA_ModeAV1_VLD_Profile1) {
+    // AV1 profile 1 is YUV 4:4:4 only.
+    if (bit_depth == 8) {
+      decode_format = DXGI_FORMAT_AYUV;
+    } else if (bit_depth == 10) {
+      decode_format = DXGI_FORMAT_Y410;
+    }
+  }
+
   D3D12_FEATURE_DATA_VIDEO_DECODE_SUPPORT feature{
       .Configuration = {guid},
       .Width = static_cast<UINT>(config.coded_size().width()),

@@ -297,8 +297,9 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           chroma_sampling_ = new_chroma_sampling;
         }
 
-        if (chroma_sampling_ != VideoChromaSampling::k420) {
-          DVLOG(1) << "Only YUV 4:2:0 is supported";
+        if (chroma_sampling_ != VideoChromaSampling::k420 &&
+            chroma_sampling_ != VideoChromaSampling::k444) {
+          DVLOG(1) << "Only YUV 4:2:0 and YUV 4:4:4 are supported";
           return kDecodeError;
         }
 
