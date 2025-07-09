@@ -195,7 +195,7 @@ public class StatusViewTest {
                             StatusProperties.STATUS_ICON_RESOURCE,
                             new StatusIconResource(R.drawable.ic_search, 0));
                 });
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.VISIBLE, view.getVisibility());
@@ -216,7 +216,7 @@ public class StatusViewTest {
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
                 });
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.GONE, view.getVisibility());
@@ -285,7 +285,7 @@ public class StatusViewTest {
         runOnUiThreadBlocking(
                 () -> mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource));
 
-        onView(withId(R.id.location_bar_status_icon_frame))
+        onView(withId(R.id.location_bar_status_icon))
                 .check(
                         (view, e) -> {
                             assertEquals(View.VISIBLE, view.getVisibility());

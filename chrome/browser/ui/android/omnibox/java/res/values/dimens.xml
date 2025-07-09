@@ -48,7 +48,6 @@ found in the LICENSE file.
     <dimen name="incognito_badge_lateral_padding_start">4dp</dimen>
     <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>
     <dimen name="location_bar_status_icon_width">24dp</dimen>
-    <dimen name="location_bar_status_icon_bg_size">28dp</dimen>
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused">12dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused_incognito">4dp</dimen>
@@ -122,5 +121,5 @@ found in the LICENSE file.
     <!-- Button highlight dimensions. -->
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
-    <dimen name="location_bar_status_icon_area_size">32dp</dimen>
+    <dimen name="location_bar_status_icon_margin">4dp</dimen>
 </resources>
