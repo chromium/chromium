@@ -32,6 +32,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** See comments on `DesktopCapturerAndroid`. */
@@ -62,6 +63,23 @@ public class ScreenCapture implements ImageHandler.Delegate {
             this.height = height;
             this.dpi = dpi;
             this.format = format;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o instanceof CaptureState that) {
+                return width == that.width
+                        && height == that.height
+                        && dpi == that.dpi
+                        && format == that.format;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(width, height, dpi, format);
         }
     }
 
@@ -243,6 +261,15 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     private void recreateListener(CaptureState captureState) {
+        assert !mImageHandlerQueue.isEmpty();
+        // Don't recreate if the state hasn't changed.
+        if (mImageHandlerQueue
+                .get(mImageHandlerQueue.size() - 1)
+                .getCaptureState()
+                .equals(captureState)) {
+            return;
+        }
+
         final var imageHandler = createImageHandler(captureState);
 
         assert mVirtualDisplay != null;
