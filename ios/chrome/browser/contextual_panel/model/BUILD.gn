@@ -48,6 +48,7 @@ source_set("public") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

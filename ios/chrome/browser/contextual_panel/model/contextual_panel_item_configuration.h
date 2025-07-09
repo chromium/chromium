@@ -34,6 +34,9 @@ struct ContextualPanelItemConfiguration {
   bool CanShowLargeEntrypoint();
   bool CanShowEntrypointIPH();
 
+  // Returns the duration of the large entrypoint for this item.
+  base::TimeDelta GetLargeEntrypointDisplayedDuration();
+
   // The different supported image types.
   enum class EntrypointImageType {
     // The image name is a UIImage to be loaded in.
@@ -52,6 +55,10 @@ struct ContextualPanelItemConfiguration {
   // If this is the primary item in the contextual panel, then the message
   // always will be shown using a larger entrypoint.
   bool entrypoint_message_large_entrypoint_always_shown = false;
+
+  // Optional. The duration of the large entrypoint if this is the primary item.
+  // If not set, `LargeContextualPanelEntrypointDisplayedInSeconds()` is used.
+  std::optional<base::TimeDelta> large_entrypoint_displayed_duration;
 
   // Required. The string the entrypoint's badge button should have for
   // accessibility.

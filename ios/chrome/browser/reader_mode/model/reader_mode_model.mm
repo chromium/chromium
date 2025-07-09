@@ -15,6 +15,9 @@
 
 namespace {
 
+// Duration for which the large entrypoint is displayed.
+const base::TimeDelta kLargeEntrypointDisplayedDuration = base::Seconds(4);
+
 // Performs the custom Reader mode contextual chip entrypoint for `web_state`.
 void PerformReaderModeCustomEntrypointAction(
     base::WeakPtr<web::WebState> web_state) {
@@ -52,6 +55,8 @@ void HandleCurrentPageSupportsReaderModeResult(
     configuration->relevance = ContextualPanelItemConfiguration::low_relevance;
     configuration->entrypoint_custom_action = base::BindRepeating(
         &PerformReaderModeCustomEntrypointAction, web_state->GetWeakPtr());
+    configuration->large_entrypoint_displayed_duration =
+        kLargeEntrypointDisplayedDuration;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(configuration)));
