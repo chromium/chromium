@@ -36,11 +36,13 @@
 namespace {
 const char kFirstTestFeatureId[] = "feature-1";
 BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
 
-class ChromeLabsUiTest : public DialogBrowserTest {
+// Helper class for setting up Chrome Labs in browser tests. This class
+// handles the necessary setup for the Chrome Labs feature to be active and
+// provides methods for interacting with its UI.
+class ChromeLabsTestHelper {
  public:
-  ChromeLabsUiTest()
+  explicit ChromeLabsTestHelper(std::vector<LabInfo> feature_info)
       :
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         // If the channel name is empty on branded builds, STABLE is returned.
@@ -52,30 +54,27 @@ class ChromeLabsUiTest : public DialogBrowserTest {
         scoped_feature_entries_({{kFirstTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
                                   FEATURE_VALUE_TYPE(kTestFeature1)}}) {
-    std::vector<LabInfo> test_feature_info = {
-        {kFirstTestFeatureId, u"Feature 1", u"Feature description", "",
-         version_info::Channel::STABLE}};
-    scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
+    scoped_chrome_labs_model_data_.SetModelDataForTesting(
+        std::move(feature_info));
     ForceChromeLabsActivationForTesting();
   }
 
-  void SetUpOnMainThread() override {
+  // Pins the Chrome Labs button to the toolbar. Must be called from
+  // SetUpOnMainThread().
+  void PinChromeLabsButton(Browser* browser) {
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser()->profile());
+        PinnedToolbarActionsModel::Get(browser->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
     views::test::WaitForAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(browser())
+        BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()
             ->pinned_toolbar_actions_container());
   }
 
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    // Bubble bounds may exceed display's work area.
-    // https://crbug.com/893292
-    set_should_verify_dialog_bounds(false);
+  // Clicks the Chrome Labs button to show the bubble.
+  void ShowChromeLabsBubble(Browser* browser) {
     views::Button* chrome_labs_button =
-        BrowserView::GetBrowserViewForBrowser(browser())
+        BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()
             ->GetChromeLabsButton();
     views::test::ButtonTestApi(chrome_labs_button)
@@ -91,6 +90,34 @@ class ChromeLabsUiTest : public DialogBrowserTest {
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
+}  // namespace
+
+class ChromeLabsUiTest : public DialogBrowserTest {
+ public:
+  ChromeLabsUiTest() {
+    std::vector<LabInfo> test_feature_info = {
+        {kFirstTestFeatureId, u"Feature 1", u"Feature description", "",
+         version_info::Channel::STABLE}};
+    helper_ =
+        std::make_unique<ChromeLabsTestHelper>(std::move(test_feature_info));
+  }
+
+  // DialogBrowserTest:
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    helper_->PinChromeLabsButton(browser());
+  }
+  void ShowUi(const std::string& name) override {
+    // Bubble bounds may exceed display's work area.
+    // https://crbug.com/893292
+    set_should_verify_dialog_bounds(false);
+    helper_->ShowChromeLabsBubble(browser());
+  }
+
+ private:
+  std::unique_ptr<ChromeLabsTestHelper> helper_;
+};
+
 IN_PROC_BROWSER_TEST_F(ChromeLabsUiTest, InvokeUi_default) {
   set_baseline("2810222");
   ShowAndVerifyUi();
@@ -98,18 +125,7 @@ IN_PROC_BROWSER_TEST_F(ChromeLabsUiTest, InvokeUi_default) {
 
 class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
  public:
-  ChromeLabsMultipleFeaturesUiTest()
-      :
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        // If the channel name is empty on branded builds, STABLE is returned.
-        // Force the channel to be a non-stable channel otherwise Chrome Labs
-        // will not be shown.
-        channel_override_(chrome::ScopedChannelOverride(
-            chrome::ScopedChannelOverride::Channel::kDev)),
-#endif
-        scoped_feature_entries_({{kFirstTestFeatureId, "", "",
-                                  flags_ui::FlagsState::GetCurrentPlatform(),
-                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {
+  ChromeLabsMultipleFeaturesUiTest() {
     // Add a lot of features to trigger the scrolling functionality.
     // All the entries are linked to the same feature using kFirstTestFeatureId
     // since it doesn't matter what feature is linked.
@@ -127,33 +143,21 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
         {kFirstTestFeatureId, u"Feature 6", u"Feature description 6", "",
          version_info::Channel::STABLE},
     };
-    scoped_chrome_labs_model_data_.SetModelDataForTesting(
-        std::move(test_feature_info));
-    ForceChromeLabsActivationForTesting();
-  }
-
-  void SetUpOnMainThread() override {
-    PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser()->profile());
-    actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
-    views::test::WaitForAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->pinned_toolbar_actions_container());
+    helper_ =
+        std::make_unique<ChromeLabsTestHelper>(std::move(test_feature_info));
   }
 
   // DialogBrowserTest:
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    helper_->PinChromeLabsButton(browser());
+  }
   void ShowUi(const std::string& name) override {
     // Bubble bounds may exceed display's work area.
     // https://crbug.com/893292
     set_should_verify_dialog_bounds(false);
-    views::Button* chrome_labs_button =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->GetChromeLabsButton();
-    views::test::ButtonTestApi(chrome_labs_button)
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
+    helper_->ShowChromeLabsBubble(browser());
+
     // Scroll to a little after the dialog inset to ensure that scrolling does
     // not make the contents too close to the title.
     browser()
@@ -169,11 +173,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
   }
 
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  chrome::ScopedChannelOverride channel_override_;
-#endif
-  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
+  std::unique_ptr<ChromeLabsTestHelper> helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeLabsMultipleFeaturesUiTest, InvokeUi_default) {
