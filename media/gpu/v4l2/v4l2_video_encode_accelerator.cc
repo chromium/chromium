@@ -312,22 +312,24 @@ EncoderStatus V4L2VideoEncodeAccelerator::Initialize(
   driver_name_ = device_->GetDriverName();
   config_ = config;
 
-  gpu_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-                 get_command_buffer_helper_cb_)
-              -> scoped_refptr<gpu::SharedImageInterface> {
-            auto helper = get_command_buffer_helper_cb_.Run();
-            if (helper && helper->GetSharedImageStub()) {
-              return helper->GetSharedImageStub()->shared_image_interface();
-            }
-            return nullptr;
-          },
-          std::move(get_command_buffer_helper_cb_)),
-      base::BindOnce(
-          &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
-          weak_this_));
+  if (gpu_task_runner_ && get_command_buffer_helper_cb_) {
+    gpu_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+                   get_command_buffer_helper_cb)
+                -> scoped_refptr<gpu::SharedImageInterface> {
+              auto helper = get_command_buffer_helper_cb.Run();
+              if (helper && helper->GetSharedImageStub()) {
+                return helper->GetSharedImageStub()->shared_image_interface();
+              }
+              return nullptr;
+            },
+            std::move(get_command_buffer_helper_cb_)),
+        base::BindOnce(
+            &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
+            weak_this_));
+  }
 
   return {EncoderStatus::Codes::kOk};
 }
@@ -752,7 +754,7 @@ void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
 void V4L2VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(
     scoped_refptr<gpu::SharedImageInterface> sii) {
   CHECK(!sii_) << "SharedImageInterface is already set.";
-  sii_ = std::move(sii);
+  OnSharedImageInterfaceAvailable(std::move(sii));
 }
 
 VideoEncodeAccelerator::SupportedProfiles
