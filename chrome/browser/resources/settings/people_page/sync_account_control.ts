@@ -672,7 +672,8 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private computeShowSetupButtons_(): boolean {
-    return !this.hideButtons && !!this.syncStatus.firstSetupInProgress;
+    return !this.hideButtons && !!this.syncStatus &&
+        !!this.syncStatus.firstSetupInProgress;
   }
 
   private onSetupCancel_() {

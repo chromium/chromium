@@ -186,6 +186,7 @@ function createRoutes(): SettingsRoutes {
     r.SIGN_OUT.isNavigableDialog = true;
     r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
     r.IMPORT_DATA.isNavigableDialog = true;
+    r.ACCOUNT = r.PEOPLE.createChild('/account');
     // </if>
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');

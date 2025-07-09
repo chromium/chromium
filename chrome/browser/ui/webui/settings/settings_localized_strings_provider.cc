@@ -1803,6 +1803,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #else
       {"editPerson", IDS_SETTINGS_CUSTOMIZE_PROFILE},
       {"profileNameAndPicture", IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE},
+      {"accountPageTitle", IDS_SETTINGS_ACCOUNT_PAGE_TITLE},
 #endif
 
   // Manage profile strings:

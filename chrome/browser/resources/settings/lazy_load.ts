@@ -58,8 +58,7 @@ import './site_settings/zoom_levels.js';
 // <if expr="not is_chromeos">
 import './a11y_page/live_caption_section.js';
 import './people_page/import_data_dialog.js';
-// </if>
-// <if expr="not is_chromeos">
+import './people_page/account_page.js';
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
@@ -168,12 +167,9 @@ export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettin
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
-// </if>
-// <if expr="not is_chromeos">
+export {SettingsAccountPageElement} from './people_page/account_page.js';
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
-// </if>
-// <if expr="not is_chromeos">
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';
 export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>

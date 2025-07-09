@@ -188,6 +188,7 @@ build_webui_tests("build") {
     ]
   } else {
     files += [
+      "account_page_test.ts",
       "clear_browsing_data_account_indicator_test.ts",
       "default_browser_test.ts",
       "fake_language_settings_private.ts",
