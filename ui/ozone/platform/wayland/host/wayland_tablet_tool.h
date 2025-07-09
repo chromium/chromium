@@ -93,6 +93,8 @@ class WaylandTabletTool {
 
   wl::Object<zwp_tablet_tool_v2> tool_;
 
+  wl::Object<wp_cursor_shape_device_v1> cursor_shape_device_;
+
   // Stores the state of the current event frame.
   struct FrameData {
     FrameData();

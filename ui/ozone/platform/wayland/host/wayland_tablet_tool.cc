@@ -4,12 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_tablet_tool.h"
 
+#include <cursor-shape-v1-client-protocol.h>
 #include <linux/input-event-codes.h>
 #include <tablet-unstable-v2-client-protocol.h>
 
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_tablet_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -177,6 +179,18 @@ void WaylandTabletTool::ProximityIn(void* data,
                                     zwp_tablet_v2* tablet,
                                     wl_surface* surface) {
   auto* self = static_cast<WaylandTabletTool*>(data);
+  if (!self->cursor_shape_device_) {
+    if (auto* shape = self->connection_->wayland_cursor_shape()) {
+      self->cursor_shape_device_ =
+          shape->CreateTabletToolShapeDevice(self->tool_.get());
+    }
+  }
+  if (self->cursor_shape_device_) {
+    wp_cursor_shape_device_v1_set_shape(
+        self->cursor_shape_device_.get(), serial,
+        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT);
+  }
+
   if (!surface) {
     return;
   }
