@@ -9,6 +9,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 from filecmp import dircmp
+import os
 import os.path
 import subprocess
 import tempfile
@@ -57,11 +58,13 @@ def CheckGoldenFilesUpToDate(input_api, output_api):
   with tempfile.TemporaryDirectory() as tmp_dir:
     subprocess.run(['python3', generate_script, '--output-dir', tmp_dir],
                    check=True)
-    dcmp = dircmp(tmp_dir, generated_dir)
-    if len(dcmp.diff_files) == 0:
+    diff_files = []
+    for _, dcmp in dircmp(tmp_dir, generated_dir).subdirs.items():
+      diff_files += dcmp.diff_files
+    if len(diff_files) == 0:
       return []
     return [output_api.PresubmitError(
       'Bindings generated from mojo/golden/corpus differ from '
       'golden files in mojo/golden/generated. Please regenerate '
       'golden files by running: mojo/golden/generate.py',
-      items=dcmp.diff_files)]
+      items=diff_files)]
