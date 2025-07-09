@@ -886,7 +886,8 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
 
   // First, always return the `value` attribute if this is an input field.
   std::u16string value = GetValueForControl();
-  if (ShouldExposeValueAsName(value)) {
+  const bool is_non_atomic_text_field = IsNonAtomicTextField();
+  if (ShouldExposeValueAsName(value) && !is_non_atomic_text_field) {
     text = std::move(value);
     return;
   }
@@ -903,7 +904,9 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
   // In the case of accessible name from kAttribute, the aria-label will be
   // mapped to one of the container title, content description or supplemental
   // description, we should exclude aria-label from mapping to text.
-  text = IsAccessibleNameFromAttribute() ? u"" : GetNameAsString16();
+  if (!IsAccessibleNameFromAttribute() && !is_non_atomic_text_field) {
+    text = GetNameAsString16();
+  }
   if (ui::IsRangeValueSupported(GetRole())) {
     // For controls that support range values such as sliders, when a non-empty
     // name is present (e.g. a label), append this to the value so both the
@@ -920,7 +923,7 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     } else if (!value.empty()) {
       text = std::move(value);
     }
-  } else if (text.empty()) {
+  } else if (text.empty() && !is_non_atomic_text_field) {
     // When a node does not have a name (e.g. a label), use its value instead.
     text = std::move(value);
   }
@@ -971,7 +974,7 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
   // Only for roles that do not support naming with child content, we loop
   // through the children, in order to populate the visual content (use Android
   // text API), in addition to populating the aria label information.
-  if (text.size() == 0 && !ui::SupportsNamingWithChildContent(GetRole()) &&
+  if (text.empty() && !ui::SupportsNamingWithChildContent(GetRole()) &&
       ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
@@ -981,6 +984,10 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
         break;
       }
     }
+  }
+
+  if (is_non_atomic_text_field && text.empty()) {
+    text = std::move(value);
   }
 
   if (text.empty() &&
