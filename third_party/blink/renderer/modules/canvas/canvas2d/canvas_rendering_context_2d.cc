@@ -263,8 +263,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
 
-  CanvasResourceProvider* provider =
-      canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+  CanvasResourceProvider* provider = GetOrCreateCanvas2DResourceProvider();
   if (provider == nullptr) {
     return false;
   }
@@ -393,7 +392,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   } else {
     // If we have no provider, try creating one.
-    provider = canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+    provider = GetOrCreateCanvas2DResourceProvider();
     if (provider == nullptr) [[unlikely]] {
       return nullptr;
     }
@@ -654,11 +653,11 @@ bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
     return false;
   }
 
-  return !!canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+  return !!GetOrCreateCanvas2DResourceProvider();
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
-  return canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+  return GetOrCreateCanvas2DResourceProvider();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
@@ -681,7 +680,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  auto* provider = canvas()->GetOrCreateCanvasResourceProviderForCanvas2D();
+  auto* provider = GetOrCreateCanvas2DResourceProvider();
   if (!provider) {
     return nullptr;
   }
@@ -972,7 +971,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   }
 
   if (page_is_visible && element->IsHibernating()) {
-    element->GetOrCreateCanvasResourceProviderForCanvas2D();  // Rude awakening
+    GetOrCreateCanvas2DResourceProvider();  // Rude awakening
   }
 
   if (!element->IsPageVisible()) {
