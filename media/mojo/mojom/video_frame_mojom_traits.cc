@@ -370,22 +370,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    std::optional<gpu::ExportedSharedImage> exported_shared_image;
-    if (!gpu_memory_buffer_data.ReadSharedImage(&exported_shared_image)) {
-      DLOG(ERROR) << "Failed to get shared image";
-      return false;
-    }
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    if (exported_shared_image) {
-      shared_image = gpu::ClientSharedImage::ImportUnowned(
-          std::move(*exported_shared_image));
-    }
-
-    gpu::SyncToken sync_token;
-    if (!gpu_memory_buffer_data.ReadSyncToken(&sync_token)) {
-      return false;
-    }
-
     std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     if (!buffer_format) {
@@ -416,8 +400,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
-        sync_token, timestamp);
+        visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
 #else
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

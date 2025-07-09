@@ -852,30 +852,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp) {
-  return WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gpu_memory_buffer),
-      /*shared_image=*/nullptr, gpu::SyncToken(), timestamp);
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
-    const gpu::SyncToken& sync_token,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForGpuMemoryBufferInternal(
+  return CreateFrameForGpuMemoryBufferInternal(
       visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  if (shared_image) {
-    frame->acquire_sync_token_ = sync_token;
-    frame->shared_image_ = shared_image->MakeUnowned();
-  }
-  return frame;
 }
 #endif
 
