@@ -52,6 +52,8 @@ TEST_F(ContextualSearchProviderTest, LensAdActionConditions) {
     });
   };
   EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, AreLensEntrypointsVisible())
+      .WillRepeatedly(testing::Return(true));
 
   {
     AutocompleteInput input(u"nonempty input text",
@@ -126,6 +128,8 @@ TEST_F(ContextualSearchProviderTest, LensAdActionConditions) {
 
 TEST_F(ContextualSearchProviderTest, LensAdActionFillsEditAndElidesWwwOnly) {
   EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, AreLensEntrypointsVisible())
+      .WillRepeatedly(testing::Return(true));
   {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());

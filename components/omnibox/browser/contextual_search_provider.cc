@@ -219,8 +219,9 @@ struct EligibleMatchesAndActions {
                        !input.omit_asynchronous_matches();
   }
 
-  // - Show on web & SRP, but not NTP
-  // - Http, https, & local files are allowed but not other local schemes
+  // Show on web & SRP, but not NTP.
+  // Http, https, & local files are allowed but not other local schemes.
+  // Do not show if Lens is already opened.
   static bool LensEntrypointEligible(const AutocompleteInput& input,
                                      AutocompleteProviderClient* client) {
     return (omnibox::IsOtherWebPage(input.current_page_classification()) ||
@@ -228,7 +229,7 @@ struct EligibleMatchesAndActions {
                 input.current_page_classification())) &&
            (input.current_url().SchemeIsHTTPOrHTTPS() ||
             input.current_url().SchemeIs(url::kFileScheme)) &&
-           client->IsLensEnabled();
+           client->IsLensEnabled() && client->AreLensEntrypointsVisible();
   }
 
   // - Show on non-NTP depending on finch param passed in via
