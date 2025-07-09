@@ -17,6 +17,14 @@ public class ExtensionsMenuViewBinder {
         if (key == ExtensionsMenuProperties.CLOSE_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_close_button)
                     .setOnClickListener(model.get(ExtensionsMenuProperties.CLOSE_CLICK_LISTENER));
+        } else if (key == ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER) {
+            view.findViewById(R.id.extensions_menu_discover_extensions_button)
+                    .setOnClickListener(
+                            model.get(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER));
+        } else if (key == ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER) {
+            view.findViewById(R.id.extensions_menu_manage_extensions_button)
+                    .setOnClickListener(
+                            model.get(ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER));
         }
     }
 }

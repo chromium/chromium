@@ -73,6 +73,16 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                                 (view) -> {
                                     mMenuWindow.dismiss();
                                 })
+                        .with(
+                                ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER,
+                                (view) -> {
+                                    // TODO(crbug.com/419468988): Implement this.
+                                })
+                        .with(
+                                ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER,
+                                (view) -> {
+                                    // TODO(crbug.com/419468988): Implement this.
+                                })
                         .build();
 
         mChangeProcessor =

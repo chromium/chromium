@@ -5903,6 +5903,18 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Extensions strings, which are not used by chrome://extensions. -->
+      <if expr="enable_extensions_core">
+        <if expr="not use_titlecase">
+          <message name="IDS_MANAGE_EXTENSIONS" desc="The text of the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (sentence case)." formatter_data="android_java">
+            Manage extensions
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_MANAGE_EXTENSIONS" desc="The text for the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (title case).">
+            Manage Extensions
+          </message>
+        </if>
+      </if>
       <if expr="enable_extensions">
         <message name="IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE" desc="The message shown on mouseover when an extension wants to run on a specific site.">
           Wants access to this site
@@ -6032,9 +6044,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (sentence case).">
             Manage extension
           </message>
-          <message name="IDS_MANAGE_EXTENSIONS" desc="The text of the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (sentence case).">
-            Manage extensions
-          </message>
           <message name="IDS_VIEW_WEB_PERMISSIONS" desc="The text for the button in the extension context menu used to open the chrome://settings/content/siteDetails?site=xxx page and view the site details for a specific extension (sentence case).">
             View web permissions
           </message>
@@ -6132,9 +6141,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (title case).">
             Manage Extension
-          </message>
-          <message name="IDS_MANAGE_EXTENSIONS" desc="The text for the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (title case).">
-            Manage Extensions
           </message>
           <message name="IDS_VIEW_WEB_PERMISSIONS" desc="The text for the button in the extension context menu used to open the chrome://settings/content/siteDetails?site=xxx page and view the site details for a specific extension (title case).">
             View Web Permissions
@@ -6623,9 +6629,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE" desc="Text of the site permissions button when extension doesn't have site access to the site">
         No access needed
       </message>
-      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS" desc="Text of the button that opens the extensions webstore.">
-        Discover more extensions
-      </message>
+      <if expr="enable_extensions_core">
+        <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS" desc="Text of the button that opens the extensions webstore." formatter_data="android_java">
+          Discover more extensions
+        </message>
+      </if>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP" desc="Tooltip text of an extension's site permissions button.">
         Change site permissions
       </message>

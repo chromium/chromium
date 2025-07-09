@@ -14,6 +14,15 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener> CLOSE_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            DISCOVER_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            MANAGE_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CLOSE_CLICK_LISTENER};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                CLOSE_CLICK_LISTENER,
+                DISCOVER_EXTENSIONS_CLICK_LISTENER,
+                MANAGE_EXTENSIONS_CLICK_LISTENER
+            };
 }
