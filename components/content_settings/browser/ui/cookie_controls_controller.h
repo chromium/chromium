@@ -168,9 +168,6 @@ class CookieControlsController final
         ip_protection_observation_{this};
   };
 
-  // Returns whether to update the TRACKING_PROTECTION content setting.
-  bool ShouldUpdateTpContentSetting();
-
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
   void OnCookieSettingChanged() override;
