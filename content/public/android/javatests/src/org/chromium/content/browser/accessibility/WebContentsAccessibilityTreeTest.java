@@ -2664,7 +2664,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1224422")
     public void test_textColorsAndStyles() {
         performHtmlTest("text-colors-and-styles.html");
     }
