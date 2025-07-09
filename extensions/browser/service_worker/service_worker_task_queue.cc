@@ -193,6 +193,9 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
 
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
+  // We expect `ServiceWorkerState::OnStopping` to always be called before
+  // `DidStopServiceWorkerContext`.
+  CHECK(!worker_state->worker_id().has_value());
 
   if (worker_state->worker_id() != worker_id) {
     // We can see DidStopServiceWorkerContext right after DidInitialize and

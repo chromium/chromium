@@ -368,9 +368,11 @@ IN_PROC_BROWSER_TEST_F(
 // the renderer stop notification first (but it could also happen in other ways)
 // and then ensures the browser stop notification doesn't try to doubly remove
 // the `WorkerId`.
+// TODO(crbug.com/40936639): remove this test once it's confirmed that
+// OnStopping is always called before DidStopServiceWorkerContext.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerIdTrackingBrowserTest,
-    WorkerNotStalledInStopping_RemovedByRenderStopNotificationFirst) {
+    DISABLED_WorkerNotStalledInStopping_RemovedByRenderStopNotificationFirst) {
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtensionAndOpenExtensionTab());
 
   // Get the soon to be stopped ("previous") worker's information.
@@ -565,9 +567,11 @@ IN_PROC_BROWSER_TEST_P(
 // Test that if a browser stop notification is received after the render stop
 // notification (since these things can be triggered independently)
 // the worker's browser and renderer readiness information remains not ready.
+// TODO(crbug.com/40936639): remove this test once it's confirmed that
+// OnStopping is always called before DidStopServiceWorkerContext.
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStopTrackingBrowserTestWithOptimizeServiceWorkerStart,
-    OnStoppedUpdatesBrowserAndRendererState_AfterRenderStopNotification) {
+    DISABLED_OnStoppedUpdatesBrowserAndRendererState_AfterRenderStopNotification) {
   const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
   const auto kExpectedBrowserState =
       wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kActive
