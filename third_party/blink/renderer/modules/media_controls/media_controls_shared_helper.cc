@@ -55,9 +55,8 @@ bool MediaControlsSharedHelpers::TransitionEventListener::IsAttached() const {
 void MediaControlsSharedHelpers::TransitionEventListener::Invoke(
     ExecutionContext* context,
     Event* event) {
-  if (event->RawTarget() != element_) {
+  if (event->target() != element_)
     return;
-  }
 
   if (event->type() == event_type_names::kTransitionend) {
     callback_.Run();

@@ -61,7 +61,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   //         event handler given eventTarget and name.
   // Step 2. If callback is null, then return.
   v8::Local<v8::Value> listener_value =
-      GetListenerObject(*event.RawCurrentTarget());
+      GetListenerObject(*event.currentTarget());
   if (listener_value.IsEmpty() || listener_value->IsNull())
     return;
   DCHECK(HasCompiledHandler());
@@ -72,7 +72,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   // handling be false.
   const bool special_error_event_handling =
       IsA<ErrorEvent>(event) && event.type() == event_type_names::kError &&
-      event.RawCurrentTarget()->IsWindowOrWorkerGlobalScope();
+      event.currentTarget()->IsWindowOrWorkerGlobalScope();
 
   // Step 4. Process the Event object event as follows:
   //   If special error event handling is true
@@ -102,8 +102,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     // https://html.spec.whatwg.org/C/#runtime-script-errors-2
     ScriptValue error_attribute = error_event->error(script_state_of_listener);
     if (error_attribute.IsEmpty() ||
-        error_event->RawTarget()->InterfaceName() ==
-            event_target_names::kWorker) {
+        error_event->target()->InterfaceName() == event_target_names::kWorker) {
       error_attribute = ScriptValue::CreateNull(isolate);
     }
     arguments = {
@@ -132,11 +131,10 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   }
   ScriptValue result;
   if (!event_handler_
-           ->InvokeWithoutRunnabilityCheck(event.RawCurrentTarget(), arguments)
+           ->InvokeWithoutRunnabilityCheck(event.currentTarget(), arguments)
            .To(&result) ||
-      isolate->IsExecutionTerminating()) {
+      isolate->IsExecutionTerminating())
     return;
-  }
   v8::Local<v8::Value> v8_return_value = result.V8Value();
 
   // There is nothing to do if |v8_return_value| is null or undefined.

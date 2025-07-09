@@ -73,8 +73,8 @@ void ScopedEventQueue::DispatchAllEvents() {
 }
 
 void ScopedEventQueue::DispatchEvent(Event& event) const {
-  DCHECK(event.RawTarget());
-  Node* node = event.RawTarget()->ToNode();
+  DCHECK(event.target());
+  Node* node = event.target()->ToNode();
   EventDispatcher::DispatchEvent(*node, event);
 }
 
