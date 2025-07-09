@@ -5,8 +5,6 @@
 #ifndef DEVICE_FIDO_MAC_GET_ASSERTION_OPERATION_H_
 #define DEVICE_FIDO_MAC_GET_ASSERTION_OPERATION_H_
 
-#include <os/availability.h>
-
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

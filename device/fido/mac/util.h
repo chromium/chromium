@@ -6,7 +6,6 @@
 #define DEVICE_FIDO_MAC_UTIL_H_
 
 #import <Security/Security.h>
-#include <os/availability.h>
 
 #include <memory>
 #include <optional>
