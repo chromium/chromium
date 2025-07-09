@@ -426,8 +426,10 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
     mojom_out->collection_item_info->is_selected =
         proto_collection_item_info.is_selected();
   }
-  // Range info
+  // Range Info
   if (proto_in.has_range_info()) {
+    mojom_out->range_info =
+        ax::android::mojom::AccessibilityRangeInfoData::New();
     if (proto_in.range_info().min() <= proto_in.range_info().max()) {
       mojom_out->range_info->min = proto_in.range_info().min();
       mojom_out->range_info->max = proto_in.range_info().max();
