@@ -152,6 +152,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const webapps::AppId& app_id,
       Profile* profile,
       const std::string& app_name,
+      const SkBitmap& icon,
       WebInstallAppLaunchAcceptanceCallback callback) override;
 
   void PresentUserUninstallDialog(

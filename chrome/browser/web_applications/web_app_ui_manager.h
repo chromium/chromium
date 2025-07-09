@@ -27,6 +27,7 @@
 class Browser;
 class BrowserWindow;
 class Profile;
+class SkBitmap;
 
 namespace base {
 class FilePath;
@@ -285,6 +286,7 @@ class WebAppUiManager {
       const webapps::AppId& app_id,
       Profile* profile,
       const std::string& app_name,
+      const SkBitmap& icon,
       WebInstallAppLaunchAcceptanceCallback callback) = 0;
 
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if

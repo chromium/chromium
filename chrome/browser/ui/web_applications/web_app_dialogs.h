@@ -210,6 +210,7 @@ void ShowWebInstallAppLaunchDialog(
     const webapps::AppId& app_id,
     Profile* profile,
     std::string app_name,
+    const SkBitmap& icon,
     WebInstallAppLaunchAcceptanceCallback callback);
 
 // Sets whether |ShowWebInstallAppLaunchDialog| should accept immediately.

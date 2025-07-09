@@ -5,11 +5,8 @@
 #include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
@@ -24,8 +21,10 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -107,6 +106,7 @@ void ShowWebInstallAppLaunchDialog(
     const webapps::AppId& app_id,
     Profile* profile,
     std::string app_name,
+    const SkBitmap& icon,
     WebAppBackgroundAppLaunchAcceptanceCallback callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
@@ -128,14 +128,15 @@ void ShowWebInstallAppLaunchDialog(
       web_contents, std::move(callback), app_id, profile);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
+  const gfx::ImageSkia icon_skia = gfx::ImageSkia::CreateFrom1xBitmap(icon);
+  const ui::ImageModel icon_model = ui::ImageModel::FromImageSkia(icon_skia);
+
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
           .SetInternalName("WebInstallLaunchDialog")
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN_WITH))
-          // TODO(crbug.com/422940463): Show app icon in new launch dialog for
-          // background document launches.
-          // This paragraph is a placeholder for now.
+          .SetIcon(icon_model)
           .AddParagraph(ui::DialogModelLabel(base::UTF8ToUTF16(app_name)))
           .AddOkButton(base::BindOnce(&WebAppLaunchDialogDelegate::OnAccept,
                                       delegate_weak_ptr),

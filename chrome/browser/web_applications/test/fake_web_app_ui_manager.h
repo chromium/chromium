@@ -133,6 +133,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const webapps::AppId& app_id,
       Profile* profile,
       const std::string& app_name,
+      const SkBitmap& icon,
       base::OnceCallback<void(bool accepted)> callback) override;
 
   void PresentUserUninstallDialog(

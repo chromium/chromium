@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -48,6 +50,8 @@ namespace web_app {
 namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
+
+constexpr SquareSizePx kIconSizeForLaunchDialog = 32;
 
 // Checks if an app is installed based on `manifest_id`, if possible. Otherwise
 // falls back to `install_target`. Used by the background doc install path.
@@ -423,32 +427,27 @@ void WebInstallServiceImpl::OnPermissionDecided(
   }
 
   // Check if the background document is already installed so we can show the
-  // launch dialog instead of the install dialog.
+  // launch dialog instead of the install dialog. See definition for details
+  // on how we check if the app is installed.
   std::optional<webapps::AppId> app_id =
       IsAppInstalled(profile, install_target, manifest_id);
   if (app_id) {
-    // See `IsAppInstalled` for why these are unsafe accesses.
+    // See `IsAppInstalled` for why this can be unsafe.
     const GURL& installed_manifest_id =
         provider->registrar_unsafe().GetComputedManifestId(app_id.value());
     CHECK(installed_manifest_id != GURL());
 
-    // Name to display in the dialog.
-    std::string app_name =
-        provider->registrar_unsafe().GetAppShortName(app_id.value());
-    // TODO(crbug.com/422940463): Show app icon in new launch dialog for
-    // background document launches.
-
-    provider->ui_manager().TriggerLaunchDialogForBackgroundInstall(
-        web_contents, app_id.value(), profile, app_name,
+    // Get the information to display in the launch dialog.
+    provider->scheduler().FetchInstallInfoFromInstallUrl(
+        installed_manifest_id, install_target,
         base::BindOnce(
-            &WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            &WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id.value(),
             installed_manifest_id));
     return;
   }
 
-  // `install_target` was not installed locally with OS integration. Proceed
-  // with the background install.
+  // `install_target` was not installed. Proceed with the background install.
 
   // Register the background install on the current web contents.
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
@@ -459,6 +458,47 @@ void WebInstallServiceImpl::OnPermissionDecided(
       web_contents, std::move(install_tracker), install_target, manifest_id,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
+    InstallCallback callback,
+    webapps::AppId app_id,
+    const GURL& manifest_id,
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  // Choose the icon bitmap based on OS specific icon guidelines. See
+  // crbug.com/423906188 for more information. Regardless of OS, we expect an
+  // icon of size 32x32 to be available.
+  SkBitmap icon_bitmap;
+  IconBitmaps& icon_bitmaps = install_info->icon_bitmaps;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  if (icon_bitmaps.maskable.empty()) {
+    CHECK(icon_bitmaps.any.contains(kIconSizeForLaunchDialog));
+    icon_bitmap = icon_bitmaps.any[kIconSizeForLaunchDialog];
+  } else {
+    CHECK(icon_bitmaps.maskable.contains(kIconSizeForLaunchDialog));
+    icon_bitmap = icon_bitmaps.maskable[kIconSizeForLaunchDialog];
+  }
+#else
+  CHECK(icon_bitmaps.any.contains(kIconSizeForLaunchDialog));
+  icon_bitmap = icon_bitmaps.any[kIconSizeForLaunchDialog];
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+  // Name to display in the dialog.
+  std::u16string app_title = install_info->title;
+  base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
+
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  provider->ui_manager().TriggerLaunchDialogForBackgroundInstall(
+      web_contents, app_id, profile, base::UTF16ToUTF8(app_title), icon_bitmap,
+      base::BindOnce(&WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     manifest_id));
 }
 
 void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(

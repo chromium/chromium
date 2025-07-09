@@ -451,9 +451,10 @@ void WebAppUiManagerImpl::TriggerLaunchDialogForBackgroundInstall(
     const webapps::AppId& app_id,
     Profile* profile,
     const std::string& app_name,
+    const SkBitmap& icon,
     WebInstallAppLaunchAcceptanceCallback callback) {
   ShowWebInstallAppLaunchDialog(initiating_web_contents, app_id, profile,
-                                app_name, std::move(callback));
+                                app_name, icon, std::move(callback));
 }
 
 void WebAppUiManagerImpl::PresentUserUninstallDialog(
