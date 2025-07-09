@@ -972,7 +972,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder =
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSettingsSingleActivity =
-            newCachedFlag(SETTINGS_SINGLE_ACTIVITY, false);
+            newCachedFlag(
+                    SETTINGS_SINGLE_ACTIVITY,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sShowHomeButtonPolicyAndroid =
             newCachedFlag(SHOW_HOME_BUTTON_POLICY_ANDROID, false);
     public static final CachedFlag sSkipIsolatedSplitPreload =
