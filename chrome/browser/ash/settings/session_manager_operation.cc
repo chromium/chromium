@@ -19,7 +19,6 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
 
 using ownership::OwnerKeyUtil;
 using ownership::PublicKey;

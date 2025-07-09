@@ -53,7 +53,6 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
-#include "crypto/signature_creator.h"
 
 namespace em = enterprise_management;
 

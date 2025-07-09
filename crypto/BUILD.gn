@@ -60,8 +60,6 @@ component("crypto") {
     "sha2.h",
     "sign.cc",
     "sign.h",
-    "signature_creator.cc",
-    "signature_creator.h",
     "signature_verifier.cc",
     "signature_verifier.h",
     "subtle_passkey.cc",
@@ -191,7 +189,6 @@ test("crypto_unittests") {
     "secure_hash_unittest.cc",
     "sha2_unittest.cc",
     "sign_unittest.cc",
-    "signature_creator_unittest.cc",
     "signature_verifier_unittest.cc",
     "unexportable_key_unittest.cc",
   ]
