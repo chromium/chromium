@@ -48,6 +48,7 @@ class MockSharedImageInterface;
 }
 
 namespace gpu {
+class ArcSharedImageInterface;
 class ClientSharedImage;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
@@ -387,6 +388,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   scoped_refptr<SharedImageInterfaceHolder> holder_;
 
  private:
+  friend class ArcSharedImageInterface;
   friend class ClientSharedImageInterface;
   friend class GpuChannelSharedImageInterface;
   friend class SharedImageInterfaceInProcess;

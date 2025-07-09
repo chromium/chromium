@@ -143,6 +143,12 @@ component("service") {
   if (is_linux || is_chromeos) {
     sources += [ "image_transport_surface_linux.cc" ]
   }
+  if (is_chromeos) {
+    sources += [
+      "arc_shared_image_interface.cc",
+      "arc_shared_image_interface.h",
+    ]
+  }
   if (use_ozone) {
     sources += [
       "gpu_memory_buffer_factory_native_pixmap.cc",
