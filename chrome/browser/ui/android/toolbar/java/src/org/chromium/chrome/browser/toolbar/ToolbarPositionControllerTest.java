@@ -818,26 +818,55 @@ public class ToolbarPositionControllerTest {
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
         assertControlsAtBottom();
 
+        int baseTranslation = 12;
         BottomControlsLayerWithOffset toolbarLayer =
                 (BottomControlsLayerWithOffset)
                         mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
-        toolbarLayer.onBrowserControlsOffsetUpdate(12);
-        verify(mControlContainerView).setTranslationY(12);
+        toolbarLayer.onBrowserControlsOffsetUpdate(baseTranslation);
+        verify(mControlContainerView).setTranslationY(baseTranslation);
 
-        mKeyboardAccessoryHeightSupplier.set(100);
-        verify(mControlContainerView).setTranslationY(12 - 100);
-        assertEquals(12 - 100, mBottomToolbarOffsetSupplier.get().intValue());
+        final int chinHeight = 36;
+        int keybpardAccessoryHeight = 100;
+        mBottomControlsStacker.addLayer(
+                new BottomControlsLayer() {
+                    @Override
+                    public int getType() {
+                        return LayerType.BOTTOM_CHIN;
+                    }
+
+                    @Override
+                    public int getScrollBehavior() {
+                        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+                    }
+
+                    @Override
+                    public int getHeight() {
+                        return chinHeight;
+                    }
+
+                    @Override
+                    public int getLayerVisibility() {
+                        return LayerVisibility.VISIBLE;
+                    }
+                });
+        mBottomControlsStacker.requestLayerUpdate(false);
+        mKeyboardAccessoryHeightSupplier.set(keybpardAccessoryHeight);
+        verify(mControlContainerView)
+                .setTranslationY(baseTranslation - keybpardAccessoryHeight + chinHeight);
+        assertEquals(
+                baseTranslation - keybpardAccessoryHeight + chinHeight,
+                mBottomToolbarOffsetSupplier.get().intValue());
 
         mKeyboardAccessoryHeightSupplier.set(0);
-        verify(mControlContainerView, times(2)).setTranslationY(12);
+        verify(mControlContainerView, times(2)).setTranslationY(baseTranslation);
 
         mControlContainerTranslationSupplier.set(10);
-        verify(mControlContainerView).setTranslationY(22);
-        assertEquals(22, mBottomToolbarOffsetSupplier.get().intValue());
+        verify(mControlContainerView).setTranslationY(baseTranslation + 10);
+        assertEquals(baseTranslation + 10, mBottomToolbarOffsetSupplier.get().intValue());
 
         mControlContainerTranslationSupplier.set(20);
-        verify(mControlContainerView).setTranslationY(32);
-        assertEquals(32, mBottomToolbarOffsetSupplier.get().intValue());
+        verify(mControlContainerView).setTranslationY(baseTranslation + 20);
+        assertEquals(baseTranslation + 20, mBottomToolbarOffsetSupplier.get().intValue());
     }
 
     @Test

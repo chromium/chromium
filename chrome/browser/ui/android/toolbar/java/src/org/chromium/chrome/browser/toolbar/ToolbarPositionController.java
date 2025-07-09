@@ -544,10 +544,22 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private void updateViewOffset(BottomControlsLayerWithOffset layer, View viewForLayer) {
         if (mLayerVisibility != LayerVisibility.VISIBLE) return;
 
+        int keyboardAccessoryHeight = mKeyboardAccessoryHeightSupplier.get();
         int layerYOffset =
                 layer.getLayerOffsetPx()
-                        - mKeyboardAccessoryHeightSupplier.get()
+                        - keyboardAccessoryHeight
                         + mControlContainerTranslationSupplier.get();
+        int chinHeight =
+                mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_CHIN)
+                        ? mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN)
+                        : 0;
+        // The chin overlaps with the accessory when they're both visible. To avoid double counting,
+        // remove the chin's height from the final offset.
+        boolean chinVisibleWithAccessory = keyboardAccessoryHeight > 0 && chinHeight > 0;
+        if (chinVisibleWithAccessory) {
+            layerYOffset += chinHeight;
+        }
+
         viewForLayer.setTranslationY(layerYOffset);
         if (layer == mBottomToolbarLayer) {
             mBrowserControlsOffsetSupplier.set(layerYOffset);
