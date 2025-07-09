@@ -52,7 +52,12 @@ bool ScrollElasticityHelperImpl::IsUserScrollableVertical() const {
 }
 
 gfx::Vector2dF ScrollElasticityHelperImpl::StretchAmount() const {
-  return host_impl_->active_tree()->elastic_overscroll()->Current(true);
+  const ScrollNode* scroll_node =
+      host_impl_->active_tree()->InnerViewportScrollNode();
+  return host_impl_->active_tree()
+      ->property_trees()
+      ->scroll_tree()
+      .GetElasticOverscroll(*scroll_node);
 }
 
 gfx::Size ScrollElasticityHelperImpl::ScrollBounds() const {
@@ -63,12 +68,15 @@ gfx::Size ScrollElasticityHelperImpl::ScrollBounds() const {
 
 void ScrollElasticityHelperImpl::SetStretchAmount(
     const gfx::Vector2dF& stretch_amount) {
-  if (stretch_amount == StretchAmount())
+  const ScrollNode* scroll_node =
+      host_impl_->active_tree()->InnerViewportScrollNode();
+  if (!host_impl_->active_tree()
+           ->property_trees()
+           ->scroll_tree_mutable()
+           .SetElasticOverscroll(*scroll_node, stretch_amount)) {
     return;
-
-  host_impl_->active_tree()->elastic_overscroll()->SetCurrent(stretch_amount);
+  }
   host_impl_->active_tree()->set_needs_update_draw_properties();
-  host_impl_->SetNeedsCommit();
   host_impl_->SetNeedsRedraw();
   host_impl_->SetFullViewportDamage();
 }

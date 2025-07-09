@@ -122,9 +122,6 @@ struct LayerTreeUpdate {
   // Debug state for the layer tree.
   cc.mojom.LayerTreeDebugState debug_state;
 
-  // The elastic overscroll amount applied to the layer tree.
-  gfx.mojom.Vector2dF elastic_overscroll;
-
   // Display transform hint for the generated compositor frame.
   gfx.mojom.OverlayTransform display_transform_hint;
 
