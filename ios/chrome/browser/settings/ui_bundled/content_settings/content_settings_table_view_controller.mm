@@ -411,9 +411,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _miniMapShowNativeViewItem = [[TableViewSwitchItem alloc]
         initWithType:ItemTypeSettingsMiniMapShowNative];
 
-    // TODO(crbug.com/420402646): Add real strings.
-    _miniMapShowNativeViewItem.text = @"*** Mini Map String TBD ***";
-    _miniMapShowNativeViewItem.detailText = @"*** Mini Map String TBD ***";
+    _miniMapShowNativeViewItem.text =
+        l10n_util::GetNSString(IDS_IOS_MAPS_PREVIEWS_SETTING_TITLE);
     _miniMapShowNativeViewItem.on = [_miniMapShowNativeEnabled value];
     _miniMapShowNativeViewItem.accessibilityIdentifier =
         kSettingsMimiMapNativeCellId;

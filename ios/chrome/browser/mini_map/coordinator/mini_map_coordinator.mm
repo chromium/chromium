@@ -180,11 +180,11 @@
 - (void)configureForURL {
   __weak __typeof(self) weakSelf = self;
   [self.miniMapController configureURL:_url];
-  // TODO(crbug.com/422978919): put real button string
   [self.miniMapController
       configureFooterWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_MINI_MAP_FOOTER_STRING)
-      leadingButtonTitle:@"*** Turn off TBD ***"
+      leadingButtonTitle:l10n_util::GetNSString(
+                             IDS_IOS_MINI_MAP_DISABLE_PREVIEW_STRING)
       trailingButtonTitle:l10n_util::GetNSString(
                               IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
       leadingButtonAction:^(UIViewController* viewController) {
@@ -243,8 +243,10 @@
   id<SnackbarCommands> snackbarCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/422978919): put real button string
-  [snackbarCommandHandler showSnackbarWithMessage:@"*** Setting off TBD ***"
+  [snackbarCommandHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_IOS_MINI_MAP_DISABLE_PREVIEW_CONFIRMATION_STRING)
       buttonText:l10n_util::GetNSString(
                      IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_BUTTON_STRING)
       messageAction:^{
