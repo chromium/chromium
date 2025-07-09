@@ -18,7 +18,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gtk/gtk_stubs.h"
-#include "ui/gtk/ime_compat_check.h"
 
 namespace gtk {
 
@@ -122,7 +121,7 @@ bool LoadGtk4() {
   return true;
 }
 
-bool LoadGtkImpl() {
+bool LoadGtkImpl(ui::LinuxUiBackend backend) {
   // If GTK3 or GTK4 is somehow already loaded, then the preloaded library must
   // be used, because GTK3 and GTK4 have conflicting symbols and cannot be
   // loaded simultaneously.
@@ -149,15 +148,12 @@ bool LoadGtkImpl() {
     // RPM-based distributions that are supported.
     gtk_version = 4;
   }
-  // Default to GTK4 on GNOME except when IME is detected to be incompatible.
-  // Allow the command line switch to override this.
-  return gtk_version == 4 &&
-#if defined(OZONE_PLATFORM_X11)
-                 (cmd->HasSwitch(kGtkVersionFlag) ||
-                  CheckGtk4X11ImeCompatibility())
-#else
-                 true
-#endif
+  // Default to GTK4 on GNOME except on X11 where GTK IMEs are still immature.
+  // This may be enabled unconditionally when support for Ubuntu 22.04 ends,
+  // since IME issues have been addressed in later releases. Allow the command
+  // line switch to override this.
+  return gtk_version == 4 && (cmd->HasSwitch(switches::kGtkVersionFlag) ||
+                              backend == ui::LinuxUiBackend::kWayland)
              ? LoadGtk4() || LoadGtk3()
              : LoadGtk3() || LoadGtk4();
 }
@@ -169,8 +165,8 @@ gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
 
 }  // namespace
 
-bool LoadGtk() {
-  static bool loaded = LoadGtkImpl();
+bool LoadGtk(ui::LinuxUiBackend backend) {
+  static bool loaded = LoadGtkImpl(backend);
   return loaded;
 }
 
