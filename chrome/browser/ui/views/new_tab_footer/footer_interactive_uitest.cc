@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
@@ -32,10 +34,10 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalFooterElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFooterLocalElementId);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-const DeepQuery kCustomizeChromeButton{
+const DeepQuery kFooterCustomizeChromeButton{
     "new-tab-footer-app", "ntp-customize-buttons", "#customizeButton"};
 
 }  // namespace
@@ -93,18 +95,18 @@ class FooterInteractiveTest
 
   InteractiveTestApi::MultiStep OpenSidePanel(
       const ui::ElementIdentifier& contents_id) {
-    return Steps(
-        EnsureNotPresent(kSidePanelElementId),
-        ExecuteJsAt(contents_id, kCustomizeChromeButton, "el => el.click()"),
-        WaitForShow(kSidePanelElementId));
+    return Steps(EnsureNotPresent(kSidePanelElementId),
+                 ExecuteJsAt(contents_id, kFooterCustomizeChromeButton,
+                             "el => el.click()"),
+                 WaitForShow(kSidePanelElementId));
   }
 
   InteractiveTestApi::MultiStep CloseSidePanel(
       const ui::ElementIdentifier& contents_id) {
-    return Steps(
-        EnsurePresent(kSidePanelElementId),
-        ExecuteJsAt(contents_id, kCustomizeChromeButton, "el => el.click()"),
-        WaitForHide(kSidePanelElementId));
+    return Steps(EnsurePresent(kSidePanelElementId),
+                 ExecuteJsAt(contents_id, kFooterCustomizeChromeButton,
+                             "el => el.click()"),
+                 WaitForHide(kSidePanelElementId));
   }
 
   InteractiveTestApi::MultiStep OpenContextMenuAndSelect(
@@ -113,8 +115,8 @@ class FooterInteractiveTest
     // test.
     extensions::SetNtpPostInstallUiEnabledForTesting(false);
     const DeepQuery kFooterContainer = {"new-tab-footer-app", "#container"};
-    return Steps(InstrumentNonTabWebView(kLocalFooterElementId, kNtpFooterId),
-                 MoveMouseTo(kLocalFooterElementId, kFooterContainer),
+    return Steps(InstrumentNonTabWebView(kFooterLocalElementId, kNtpFooterId),
+                 MoveMouseTo(kFooterLocalElementId, kFooterContainer),
                  ClickMouse(ui_controls::RIGHT), WaitForShow(menu_item_id),
                  SelectMenuItem(menu_item_id, InputType::kMouse));
   }
@@ -250,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuHidesFooter) {
       // Open context menu and select "hide footer" option.
       OpenContextMenuAndSelect(FooterContextMenu::kHideFooterIdForTesting),
       // Ensure footer hides.
-      WaitForHide(kLocalFooterElementId));
+      WaitForHide(kFooterLocalElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
@@ -305,6 +307,28 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTest {
     incognito_scoped_browser_management_.reset();
     guest_scoped_browser_management_.reset();
     FooterInteractiveTest::TearDownOnMainThread();
+  }
+
+  InteractiveTestApi::MultiStep OpenNewTabAndWaitForFooter(const GURL& url) {
+    return Steps(
+        // Open a new tab for url.
+        AddInstrumentedTab(kNewTabElementId, url),
+        // Wait for footer to show.
+        InstrumentNonTabWebView(kFooterLocalElementId, kNtpFooterId));
+  }
+
+  void SetCustomBackground() {
+    auto* ntp_custom_background_service =
+        NtpCustomBackgroundServiceFactory::GetForProfile(browser()->profile());
+    ntp_custom_background_service->AddValidBackdropUrlForTesting(
+        GURL("https://background.com"));
+    ntp_custom_background_service->SetCustomBackgroundInfo(
+        /*background_url=*/GURL("https://background.com"),
+        /*thumbnail_url=*/GURL("https://thumbnail.com"),
+        /*attribution_line_1=*/"line 1",
+        /*attribution_line_2=*/"line 2",
+        /*action_url=*/GURL("https://action.com"),
+        /*collection_id=*/"");
   }
 
   Browser* CreateManagedGuestBrowser() {
@@ -439,6 +463,84 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
       AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
       // Ensure footer shows.
       WaitForShow(kNtpFooterId));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       CustomizeChromeButtonShowsCorrectly) {
+  const DeepQuery kNtpCustomizeChromeButton = {
+      "ntp-app", "ntp-customize-buttons", "#customizeButton"};
+  RunTestSequence(
+      // Open 1P WebUI NTP and wait for footer to show.
+      OpenNewTabAndWaitForFooter(GURL(chrome::kChromeUINewTabPageURL)),
+      // Ensure customize chrome button only shows in footer and not on NTP.
+      Steps(EnsurePresent(kFooterLocalElementId, kFooterCustomizeChromeButton),
+            EnsureNotPresent(kNewTabElementId, kNtpCustomizeChromeButton)),
+      Do([=]() {
+        // Disable management notice to hide footer.
+        g_browser_process->local_state()->SetBoolean(
+            prefs::kNTPFooterManagementNoticeEnabled, false);
+      }),
+      // Ensure footer hides.
+      WaitForHide(kNtpFooterId),
+      // Ensure customize chrome button shows in NTP.
+      WaitForElementToRender(kNewTabElementId, kNtpCustomizeChromeButton));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       ThirdPartyNtpHidesCustomizeChromeButton) {
+  RunTestSequence(
+      // Open 3P WebUI NTP and wait for footer to show.
+      OpenNewTabAndWaitForFooter(
+          GURL(chrome::kChromeUINewTabPageThirdPartyURL)),
+      // Ensure customize chrome button hides in footer.
+      EnsureNotPresent(kFooterLocalElementId, kFooterCustomizeChromeButton));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       BackgroundAttributionShowsCorrectly) {
+  const DeepQuery kNtpBackgroundAttribution = {"ntp-app",
+                                               "#backgroundImageAttribution"};
+  const DeepQuery kFooterBackgroundAttribution{
+      "new-tab-footer-app", "#backgroundAttributionContainer"};
+  RunTestSequence(
+      // Open 1P WebUI NTP and wait for footer to show.
+      OpenNewTabAndWaitForFooter(GURL(chrome::kChromeUINewTabPageURL)),
+      // Ensure background attribution shows in footer and not on NTP.
+      Steps(
+          EnsureNotPresent(kFooterLocalElementId, kFooterBackgroundAttribution),
+          EnsureNotPresent(kNewTabElementId, kNtpBackgroundAttribution)),
+      // Set a custom background.
+      Do(base::BindOnce(&FooterEnterpriseInteractiveTest::SetCustomBackground,
+                        base::Unretained(this))),
+      // Ensure background attribution shows in footer and not on NTP.
+
+      Steps(EnsurePresent(kFooterLocalElementId, kFooterBackgroundAttribution),
+            EnsureNotPresent(kNewTabElementId, kNtpBackgroundAttribution)),
+      Do([=]() {
+        // Disable management notice to hide footer.
+        g_browser_process->local_state()->SetBoolean(
+            prefs::kNTPFooterManagementNoticeEnabled, false);
+      }),
+      // Ensure footer hides.
+      WaitForHide(kNtpFooterId),
+      // Ensure background attribution shows in NTP.
+      WaitForElementToRender(kNewTabElementId, kNtpBackgroundAttribution));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       BackgroundAttributionHidesOnThirdPartyNtp) {
+  const DeepQuery kFooterBackgroundAttribution{
+      "new-tab-footer-app", "#backgroundAttributionContainer"};
+
+  RunTestSequence(
+      // Set a custom background.
+      Do(base::BindOnce(&FooterEnterpriseInteractiveTest::SetCustomBackground,
+                        base::Unretained(this))),
+      // Open 3P WebUI NTP and wait for footer to show.
+      OpenNewTabAndWaitForFooter(
+          GURL(chrome::kChromeUINewTabPageThirdPartyURL)),
+      // Ensure background attribution hides in footer.
+      EnsureNotPresent(kFooterLocalElementId, kFooterBackgroundAttribution));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
