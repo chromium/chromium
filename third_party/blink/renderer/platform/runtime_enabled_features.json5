@@ -414,6 +414,10 @@
       public: true,
     },
     {
+      name: "AliasWebkitFillAvailable",
+      status: "stable",
+    },
+    {
       name: "AlignZoomToCenter",
       status: "stable",
     },

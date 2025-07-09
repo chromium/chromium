@@ -54,7 +54,7 @@ LayoutUnit ResolveInlineLengthInternal(
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       LayoutUnit margins_to_subtract = margins.InlineSum();
-      if (length.GetType() == Length::kStretch) [[unlikely]] {
+      if (length.GetType() == Length::kStretch) {
         const LogicalBoxSides& ignore_margin_sides =
             constraint_space.IgnoreMarginsForStretch();
         margins_to_subtract = ignore_margin_sides.inline_start
@@ -62,6 +62,8 @@ LayoutUnit ResolveInlineLengthInternal(
                                   : margins.inline_start;
         margins_to_subtract +=
             ignore_margin_sides.inline_end ? LayoutUnit() : margins.inline_end;
+      } else {
+        DCHECK(!RuntimeEnabledFeatures::AliasWebkitFillAvailableEnabled());
       }
       return std::max(border_padding.InlineSum(),
                       available_size - margins_to_subtract);
@@ -195,7 +197,7 @@ LayoutUnit ResolveBlockLengthInternal(
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       LayoutUnit margins_to_subtract = margins.BlockSum();
-      if (length.GetType() == Length::kStretch) [[unlikely]] {
+      if (length.GetType() == Length::kStretch) {
         const LogicalBoxSides& ignore_margin_sides =
             constraint_space.IgnoreMarginsForStretch();
         margins_to_subtract = ignore_margin_sides.block_start
@@ -203,6 +205,8 @@ LayoutUnit ResolveBlockLengthInternal(
                                   : margins.block_start;
         margins_to_subtract +=
             ignore_margin_sides.block_end ? LayoutUnit() : margins.block_end;
+      } else {
+        DCHECK(!RuntimeEnabledFeatures::AliasWebkitFillAvailableEnabled());
       }
       return std::max(border_padding.BlockSum(),
                       available_size - margins_to_subtract);
