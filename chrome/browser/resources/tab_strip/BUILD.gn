@@ -52,6 +52,9 @@ build_webui("build") {
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/tab_strip/tab_strip.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/tabs/tabs.mojom-webui.ts",
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",

@@ -6,7 +6,9 @@ import type {Empty} from '//resources/mojo/mojo/public/mojom/base/empty.mojom-we
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {TabsObserverCallbackRouter, TabStripService} from '../tab_strip_api.mojom-webui.js';
-import type {Position, Tab, NodeId, TabsSnapshot, TabStripServiceRemote} from '../tab_strip_api.mojom-webui.js';
+import type {TabsSnapshot, TabStripServiceRemote} from '../tab_strip_api.mojom-webui.js';
+import type {Tab} from '../tab_strip_api_data_model.mojom-webui.js';
+import type {NodeId, Position} from '../tab_strip_api_types.mojom-webui.js';
 
 export interface TabStripApiProxy {
   getTabs(): Promise<TabsSnapshot>;

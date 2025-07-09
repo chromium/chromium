@@ -7,7 +7,7 @@
 
 #include <variant>
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom.h"
 
 namespace tabs_api::events {
 

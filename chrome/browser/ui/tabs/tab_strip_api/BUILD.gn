@@ -7,7 +7,12 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "tab_strip_api.mojom" ]
+  sources = [
+    "tab_strip_api.mojom",
+    "tab_strip_api_data_model.mojom",
+    "tab_strip_api_events.mojom",
+    "tab_strip_api_types.mojom",
+  ]
 
   public_deps = [
     "//chrome/browser/ui/webui/tabs:mojo_bindings",

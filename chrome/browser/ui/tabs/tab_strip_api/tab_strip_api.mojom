@@ -4,61 +4,12 @@
 
 module tabs_api.mojom;
 
-import "chrome/browser/ui/webui/tabs/tabs.mojom";
-import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom";
+import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom";
+import "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "url/mojom/url.mojom";
-
-// References a node in the tab tree. (id, type) uniquely identifies a node in
-// the tree.
-struct NodeId {
-  // The type of object referenced by the id.
-  enum Type {
-    // An unknown type. This will never be returned by the service and usually
-    // indicates an invalid argument from the client.
-    kUnknown,
-    // A content tab.
-    kContent,
-    // A collection of tabs.
-    kCollection,
-  };
-
-  // An opaque string that uniquely identifies the underlying resource. This
-  // id will be unique across all resource types. Users should not try to
-  // extrapolate any sort of pattern from this string.
-  string id;
-
-  // The type of resource referenced by this id.
-  Type type;
-};
-
-struct Tab {
-  NodeId id;
-  string title;
-  url.mojom.Url url;
-
-  // TODO(crbug.com/414630734). The favicon should be typemapped to ImageModel
-  // in c++. Leave this as a data uri for now.
-  url.mojom.Url favicon_url;
-
-  array<tabs.mojom.TabAlertState> alert_states;
-  tabs.mojom.TabNetworkState network_state;
-};
-
-// Position is an ephemeral object that should not be saved nor act as an
-// identifier. It is purely used in this API to determine the position within
-// the TabstripModel.
-struct Position {
-  // The parent of the tab. This is only set if the tab is a child of a
-  // collection.
-  // TODO(crbug.com/412935315): make this a required field. All nodes should
-  // have a parent, except for the TabStripCollection which is the root. The
-  // root should never need to be moved, doing so should trigger a CHECK error.
-  NodeId? parent_id;
-  // The index of the tab within the parent.
-  uint32 index;
-};
 
 // A snapshot of the current tabs in the tab strip.
 struct TabsSnapshot {
@@ -69,56 +20,6 @@ struct TabsSnapshot {
   // stream. This means that the ordering of the message between the remote
   // and the observation stream is preserved.
   pending_associated_receiver<TabsObserver> stream;
-};
-
-// References the TabCollection object. A TabCollection can be of various
-// `collection_types`. The `id` is used to uniquely identify the TabCollection
-// with the tree.
-struct TabCollection {
-  enum CollectionType {
-    kUnknown,
-    kTabStrip,
-    kPinned,
-    kUnpinned,
-    kTabGroup,
-    kSplitTab,
-  };
-
-  // Unique id for the specific TabCollection. The id type would be a
-  // kCollection.
-  NodeId id;
-  CollectionType collection_type;
-};
-
-// TODO(crbug.com/425652802): This should be merged with struct
-// TabGroupVisualData in
-// //chrome/browser/ui/webui/tab_strip/tab_strip.mojom and moved to
-// //components/tab_groups/public/mojom/tab_group_types.mojom
-struct TabGroupVisualData {
-  string title;
-  tab_groups.mojom.Color color;
-  bool is_collapsed;
-};
-
-// The TabCollection tree has child nodes that can be a Tab or a
-// TabCollection. This container is used to represents the child nodes of the
-// tab strip tree.
-union Container {
-  TabContainer tab_container;
-  TabCollectionContainer tab_collection_container;
-};
-
-// TabCollectionContainer represents a TabCollection's position within the tree.
-// It contains an array of elements that can be either a TabContainer or a
-// TabCollectionContainer.
-struct TabCollectionContainer {
-  TabCollection collection;
-  array<Container> elements;
-};
-
-// TabContainer represents the tab's position within the tree.
-struct TabContainer {
-  Tab tab;
 };
 
 // The TabStripService is an object that lives alongside the
@@ -165,55 +66,6 @@ interface TabStripService {
   [Sync]
   MoveTab(NodeId id, Position position)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-};
-
-// When a Tab is created, it also needs to know the position.
-// Use this container to hold tab data as well as the position the tab was
-// created in.
-struct TabCreatedContainer {
-  Tab tab;
-  Position position;
-};
-
-struct OnTabsCreatedEvent {
-  // Tab ids of the newly created tabs.
-  array<TabCreatedContainer> tabs;
-};
-
-struct OnTabsClosedEvent {
-  // Tab ids of the closed tabs.
-  array<NodeId> tabs;
-};
-
-struct OnTabDataChangedEvent {
-  // Tab data of the updated tab. For now just apply a broad update rather than
-  // granular tab data.
-  Tab tab;
-};
-
-struct OnTabGroupCreatedEvent {
-  // The ID of the newly created group.
-  NodeId group_id;
-  // The visual data of the newly created group.
-  TabGroupVisualData visual_data;
-  // Position of the group in the tab strip.
-  Position position;
-};
-
-struct OnTabGroupVisualsChangedEvent {
-  // The ID of the group whose visuals have changed.
-  NodeId group_id;
-  // The new visual data of the group.
-  TabGroupVisualData visual_data;
-};
-
-struct OnTabMovedEvent {
-  // The id of the tab that moved.
-  NodeId id;
-  // The original position.
-  Position from;
-  // The new position.
-  Position to;
 };
 
 // TODO (crbug.com/412955607)

@@ -8,12 +8,15 @@ import '../tab_group.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {getTemplate} from '../tab_list.html.js';
-import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, TabGroupVisualData as TabsAPI_TabGroupVisualData, NodeId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
-import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
-import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
-import {TabCollection_CollectionType} from '../tab_strip_api.mojom-webui.js';
 import {TabGroupElement} from '../tab_group.js';
+import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
+import {getTemplate} from '../tab_list.html.js';
+import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
+import type {TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
+import type {Container, Tab, TabCollectionContainer, TabCreatedContainer, TabGroupVisualData as TabsAPI_TabGroupVisualData} from '../tab_strip_api_data_model.mojom-webui.js';
+import {TabCollection_CollectionType} from '../tab_strip_api_data_model.mojom-webui.js';
+import type {OnTabDataChangedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '../tab_strip_api_events.mojom-webui.js';
+import type {NodeId, Position} from '../tab_strip_api_types.mojom-webui.js';
 
 import {TabElement} from './tab_playground.js';
 import type {TabStripApiProxy} from './tab_strip_api.js';
