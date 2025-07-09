@@ -1897,7 +1897,7 @@ bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     viz::RasterContextProvider* raster_context_provider,
     scoped_refptr<VideoFrame> video_frame,
-    const gpu::Mailbox& dest_mailbox,
+    scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
     const gpu::SyncToken& dest_sync_token,
     bool use_visible_rect) {
   auto* ri = raster_context_provider->RasterInterface();
@@ -1907,26 +1907,29 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   if (video_frame->HasSharedImage()) {
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
-    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+    std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+        dest_shared_image->BeginRasterAccess(ri, dest_sync_token,
+                                             /*readonly=*/false);
+    std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
         video_frame->shared_image()->BeginRasterAccess(
             ri, video_frame->acquire_sync_token(), /*readonly=*/true);
-    ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
-    ri->CopySharedImage(video_frame->shared_image()->mailbox(), dest_mailbox, 0,
-                        0, source_rect.x(), source_rect.y(),
-                        source_rect.width(), source_rect.height());
-    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    ri->CopySharedImage(video_frame->shared_image()->mailbox(),
+                        dest_shared_image->mailbox(), 0, 0, source_rect.x(),
+                        source_rect.y(), source_rect.width(),
+                        source_rect.height());
+    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
     // If VideoFrame has textures, we need to update SyncToken or to keep frame
     // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
     // This is to make sure decoder doesn't re-use frame before copy is done.
     SynchronizeVideoFrameRead(std::move(video_frame), ri,
                               raster_context_provider->ContextSupport(),
-                              std::move(ri_access));
+                              std::move(src_ri_access));
   } else {
     // TODO(vasilyt): Add caching support
     sync_token = internals::ConvertYuvVideoFrameToRgbSharedImage(
-        video_frame.get(), raster_context_provider, dest_mailbox,
-        dest_sync_token, use_visible_rect,
+        video_frame.get(), raster_context_provider,
+        dest_shared_image->mailbox(), dest_sync_token, use_visible_rect,
         /*shared_image_cache=*/nullptr);
   }
 

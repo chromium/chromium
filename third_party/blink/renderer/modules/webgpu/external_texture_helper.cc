@@ -401,12 +401,10 @@ ExternalTexture CreateExternalTexture(
     auto client_si =
         resource_provider->GetBackingClientSharedImageForExternalWrite(
             &sync_token, gpu::SharedImageUsageSet());
-    gpu::Mailbox dest_mailbox(client_si ? client_si->mailbox()
-                                        : gpu::Mailbox());
 
     // The returned sync token is from the SharedGpuContext.
     sync_token = video_renderer->CopyVideoFrameToSharedImage(
-        raster_context_provider, std::move(media_video_frame), dest_mailbox,
+        raster_context_provider, std::move(media_video_frame), client_si,
         sync_token, /*use_visible_rect=*/true);
     resource_provider->EndExternalWrite(sync_token);
   } else {
