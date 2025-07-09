@@ -27,6 +27,7 @@ enum WrappablePointerTag : uint16_t {
   kGpuBenchmarking,                    // content::GpuBenchmarking
   kNetErrorPageController,             // NetErrorPageController
   kPDFPluginPlaceholder,               // PDFPluginPlaceholder
+  kPluginPlaceholder,                  // plugins::PluginPlaceholder
   kReadAnythingAppController,          // ReadAnythingAppController
   kSearchBoxBindings,                  // SearchBoxBindings
   kSkiaBenchmarking,                   // content::SkiaBenchmarking
