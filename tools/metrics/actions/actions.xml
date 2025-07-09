@@ -45138,6 +45138,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups.ArchivedTabGroupAutoDeleted">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab group is deleted. This happens when the tab
+    group's archival time exceeds the limit for auto-deletion.
+  </description>
+</action>
+
 <action name="TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>

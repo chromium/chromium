@@ -74,6 +74,8 @@ public class SavedTabGroup {
         sb.append(color);
         sb.append(", collaborationId = ");
         sb.append(collaborationId);
+        sb.append(", archivalTimeMs = ");
+        sb.append(archivalTimeMs);
         sb.append(", # of Tabs = ");
         sb.append(savedTabs.size());
 

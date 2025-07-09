@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,6 +75,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for TabArchiver. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -900,6 +902,156 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testEligibleTabGroupsAreAutoDeleted() throws TimeoutException {
+        SavedTabGroup eligibleGroup = new SavedTabGroup();
+        eligibleGroup.syncId = "eligible_sync_id";
+        eligibleGroup.archivalTimeMs = TimeUnit.HOURS.toMillis(1);
+        SavedTabGroupTab eligibleGroupTab1 = new SavedTabGroupTab();
+        SavedTabGroupTab eligibleGroupTab2 = new SavedTabGroupTab();
+        eligibleGroup.savedTabs = Arrays.asList(eligibleGroupTab1, eligibleGroupTab2);
+
+        SavedTabGroup ineligibleGroup = new SavedTabGroup();
+        ineligibleGroup.syncId = "ineligible_sync_id";
+        ineligibleGroup.archivalTimeMs = TimeUnit.HOURS.toMillis(2);
+
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {"eligible_sync_id", "ineligible_sync_id"});
+        when(mTabGroupSyncService.getGroup("eligible_sync_id")).thenReturn(eligibleGroup);
+        when(mTabGroupSyncService.getGroup("ineligible_sync_id")).thenReturn(ineligibleGroup);
+
+        doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "TabGroups.TabGroupAutoDeleteEligibilityCheck.AfterNDays", 0, 0)
+                        .expectIntRecord("TabGroups.TabGroupAutoDeleted.TabCount", 2)
+                        .build();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setAutoDeleteEnabled(true);
+                    mTabArchiveSettings.setAutoDeleteTimeDeltaHours(1);
+                    mTabArchiver.addObserver(
+                            new TabArchiver.Observer() {
+                                @Override
+                                public void onAutodeletePassCompleted() {
+                                    callbackHelper.notifyCalled();
+                                }
+                            });
+                    mTabArchiver.doAutodeletePass();
+                });
+        callbackHelper.waitForNext();
+
+        verify(mTabGroupSyncService, times(1))
+                .updateArchivalStatus(eq("eligible_sync_id"), eq(false));
+        verify(mTabGroupSyncService, never())
+                .updateArchivalStatus(eq("ineligible_sync_id"), anyBoolean());
+        watcher.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("TabGroups.ArchivedTabGroupAutoDeleted"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testBothEligibleTabsAndTabGroupsAreAutoDeleted() throws TimeoutException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+                });
+
+        Tab tab =
+                sActivityTestRule.loadUrlInNewTab(
+                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiver.archiveAndRemoveTabs(
+                            mRegularTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false),
+                            Arrays.asList(tab));
+                    ArchivePersistedTabData.from(
+                            mArchivedTabModel.getTabAt(0),
+                            (archivedTabData) -> {
+                                assertNotNull(archivedTabData);
+                                callbackHelper.notifyCalled();
+                            });
+                });
+        callbackHelper.waitForNext();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        Tab archivedTab = mArchivedTabModel.getTabAt(0);
+
+        SavedTabGroup eligibleGroup = new SavedTabGroup();
+        eligibleGroup.syncId = "eligible_sync_id";
+        eligibleGroup.archivalTimeMs = TimeUnit.HOURS.toMillis(1);
+        SavedTabGroupTab eligibleGroupTab1 = new SavedTabGroupTab();
+        SavedTabGroupTab eligibleGroupTab2 = new SavedTabGroupTab();
+        eligibleGroup.savedTabs = Arrays.asList(eligibleGroupTab1, eligibleGroupTab2);
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"eligible_sync_id"});
+        when(mTabGroupSyncService.getGroup("eligible_sync_id")).thenReturn(eligibleGroup);
+
+        doReturn(TimeUnit.HOURS.toMillis(3)).when(mClock).currentTimeMillis();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabAutoDeleteEligibilityCheck.AfterNDays", 0)
+                        .expectIntRecords("Tabs.TabAutoDeleted.AfterNDays", 0)
+                        .expectIntRecords(
+                                "TabGroups.TabGroupAutoDeleteEligibilityCheck.AfterNDays", 0)
+                        .expectIntRecord("TabGroups.TabGroupAutoDeleted.TabCount", 2)
+                        .build();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setAutoDeleteEnabled(true);
+                    mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
+                    mTabArchiver.addObserver(
+                            new TabArchiver.Observer() {
+                                @Override
+                                public void onAutodeletePassCompleted() {
+                                    callbackHelper.notifyCalled();
+                                }
+                            });
+                    mTabArchiver.doAutodeletePass();
+                });
+
+        callbackHelper.waitForNext();
+
+        CriteriaHelper.pollInstrumentationThread(() -> mArchivedTabModel.getCount() == 0);
+        CriteriaHelper.pollInstrumentationThread(() -> archivedTab.isDestroyed());
+        assertEquals(1, mRegularTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> {
+                    ArchivePersistedTabData.from(
+                            archivedTab,
+                            (archivedTabData) -> {
+                                assertNull(archivedTabData);
+                                callbackHelper.notifyCalled();
+                            });
+                });
+        callbackHelper.waitForNext();
+
+        verify(mTabGroupSyncService, times(1))
+                .updateArchivalStatus(eq("eligible_sync_id"), eq(false));
+        watcher.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabAutoDeleted"));
+        assertEquals(1, mUserActionTester.getActionCount("TabGroups.ArchivedTabGroupAutoDeleted"));
+    }
+
+    @Test
+    @MediumTest
     public void testTabModelSelectorUninitialized() {
         doReturn(false).when(mSelector).isTabStateInitialized();
         runOnUiThreadBlocking(() -> mTabArchiver.doArchivePass(mSelector));
@@ -1166,7 +1318,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiver.deleteArchivedTabsIfEligibleAsyncImpl(
-                            Arrays.asList(archivedTab), 0, 0);
+                            Arrays.asList(archivedTab), 0, 0, new AtomicInteger(1));
                     // This should cause the callback to be destroyed, and the ptd should still
                     // exist with the value set earlier in the test.
                     mTabArchiver.destroy();

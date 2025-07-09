@@ -827,6 +827,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.AutodeletePass.DurationMs" units="ms"
+    expires_after="2025-11-09">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the duration of an auto-delete pass for tab groups.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.CloseAllArchivedTabGroups.TabGroupCount"
     units="groups" expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
@@ -1717,6 +1728,32 @@ chromium-metrics-reviews@google.com.
     includes both open and closed tab groups.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TabGroupAutoDeleted.TabCount" units="tabs"
+    expires_after="2025-11-09">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the number of tabs within a tab group that is
+    autodeleted.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TabGroupAutoDeleteEligibilityCheck.AfterNDays"
+    units="days" expires_after="2025-11-09">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how old, in days, a tab group is when it's checked
+    for auto-deletion eligibility. Recorded at startup when the archived tab
+    model is loaded and at regular intervals after that (same cadence as tabs).
+    Only recorded if tab group declutter is enabled.
   </summary>
 </histogram>
 
