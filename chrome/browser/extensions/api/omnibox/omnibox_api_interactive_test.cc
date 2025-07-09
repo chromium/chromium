@@ -326,8 +326,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
   }
 }
 
-// TODO(crbug.com/405219624): Port these tests to desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219624): Port these tests to desktop Android. Most require
+// access to the Views location bar, which is not available on Android.
 IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
   constexpr char kManifest[] =
       R"({
@@ -744,6 +745,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
               result.match_at(1).provider->type());
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
   constexpr char kManifest[] =
@@ -805,6 +807,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219624): Port these tests to desktop Android. Most require
+// access to the Views location bar, which is not available on Android.
 // Flaky on Linux TSan. https://crbug.com/1304694
 #if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_SetDefaultSuggestion DISABLED_SetDefaultSuggestion
@@ -954,6 +959,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
               result.match_at(1).provider->type());
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
   void SetUpOnMainThread() override {
@@ -1052,6 +1058,9 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
       turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219624): Port these tests to desktop Android. Most require
+// access to the Views location bar, which is not available on Android.
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   constexpr char kManifest[] =
       R"({
