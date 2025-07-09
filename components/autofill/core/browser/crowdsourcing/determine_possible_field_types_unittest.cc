@@ -26,6 +26,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+void PrintTo(const PossibleTypes& ps, std::ostream* os) {
+  auto type_to_string = [](FormatString_Type t) {
+    switch (t) {
+      case FormatString_Type_DATE:
+        return u"DATE";
+    }
+    NOTREACHED();
+  };
+  auto format_to_string =
+      [&](const std::pair<FormatString_Type, std::u16string>& format) {
+        return base::StrCat({u"{", type_to_string(format.first), u"\"",
+                             format.second, u"\"", u"}"});
+      };
+  *os << "PossibleTypes{.types = {"
+      << base::JoinString(base::ToVector(ps.types,
+                                         [](FieldType t) {
+                                           return FieldTypeToStringView(t);
+                                         }),
+                          ",")
+      << "}, .formats = {"
+      << base::JoinString(base::ToVector(ps.formats, format_to_string), u",")
+      << "}}";
+}
+
 namespace {
 
 using ::autofill::test::CreateTestFormField;
@@ -40,6 +65,14 @@ using ::testing::Not;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+
+// Matcher for `PossibleTypes::types`.
+template <typename... Ts>
+  requires(std::convertible_to<Ts, FieldType> && ...)
+Matcher<const PossibleTypes&> HasTypes(Ts&&... field_types) {
+  return Field("PossibleTypes::types", &PossibleTypes::types,
+               UnorderedElementsAre(field_types...));
+}
 
 // Fakes that a `form` has been seen (without its field value) and parsed and
 // then values have been entered. Returns the resulting FormStructure.
@@ -655,27 +688,20 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
       .issue_date = u"2010-09-01",
   });
 
-  std::vector<PossibleTypes> possible_types =
-      DeterminePossibleFieldTypesForUpload(
-          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
-          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
-          /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", "en-US",
-          form_structure->fields());
-
-  EXPECT_THAT(possible_types[0].types, UnorderedElementsAre(NAME_FIRST));
-  EXPECT_THAT(possible_types[1].types,
-              UnorderedElementsAre(NAME_LAST, NAME_LAST_SECOND));
-  EXPECT_THAT(possible_types[2].types, UnorderedElementsAre(PASSPORT_NUMBER));
-  EXPECT_THAT(possible_types[3].types,
-              UnorderedElementsAre(PASSPORT_EXPIRATION_DATE));
-  EXPECT_THAT(possible_types[4].types,
-              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
-  EXPECT_THAT(possible_types[5].types,
-              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
-  EXPECT_THAT(possible_types[6].types,
-              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
-  EXPECT_THAT(possible_types[7].types, UnorderedElementsAre(UNKNOWN_TYPE));
+  EXPECT_THAT(DeterminePossibleFieldTypesForUpload(
+                  std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+                  base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+                  /*fields_that_match_state=*/{},
+                  /*last_unlocked_credit_card_cvc=*/u"", "en-US",
+                  form_structure->fields()),
+              ElementsAre(HasTypes(NAME_FIRST),                   //
+                          HasTypes(NAME_LAST, NAME_LAST_SECOND),  //
+                          HasTypes(PASSPORT_NUMBER),              //
+                          HasTypes(PASSPORT_EXPIRATION_DATE),     //
+                          HasTypes(PASSPORT_ISSUE_DATE),          //
+                          HasTypes(PASSPORT_ISSUE_DATE),          //
+                          HasTypes(PASSPORT_ISSUE_DATE),          //
+                          HasTypes(UNKNOWN_TYPE)));
 }
 
 // Test fixture for PreProcessStateMatchingTypes().
@@ -780,7 +806,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
  public:
   struct DatesAndFormats {
     base::flat_set<data_util::Date> dates;
-    std::set<std::u16string> formats;
+    std::set<std::pair<FormatString_Type, std::u16string>> formats;
   };
 
   FindDatesAndSetFormatStringsTest() {
@@ -842,12 +868,13 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
   static auto HasDatesAndFormatStrings(
       base::span<const data_util::Date> dates,
       base::span<const std::string_view> formats) {
-    std::vector<std::u16string> u16formats = base::ToVector(
-        formats, [](std::string_view s) { return base::UTF8ToUTF16(s); });
+    auto format_pairs = base::ToVector(formats, [](std::string_view s) {
+      return Pair(FormatString_Type_DATE, base::UTF8ToUTF16(s));
+    });
     return AllOf(
         Field(&DatesAndFormats::dates, UnorderedElementsAreArray(dates)),
         Field(&DatesAndFormats::formats,
-              UnorderedElementsAreArray(u16formats)));
+              UnorderedElementsAreArray(format_pairs)));
   }
 
  private:

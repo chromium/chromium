@@ -43,7 +43,8 @@ struct PossibleTypes {
   bool known_value = false;
 
   // The format strings that match the field value.
-  std::set<std::u16string> formats;
+  // Format strings are determined only for Autofill AI dates.
+  std::set<std::pair<FormatString_Type, std::u16string>> formats;
 };
 
 // For each submitted field in the `form_structure`, determines whether

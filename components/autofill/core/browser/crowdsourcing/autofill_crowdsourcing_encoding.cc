@@ -468,13 +468,17 @@ void EncodeFormFieldsForUpload(
     }
 
     if (field_options) {
-      for (const std::u16string& format_string :
-           field_options->format_strings) {
-        DCHECK(data_util::IsValidDateFormat(format_string));
+      for (const auto& [type, string] : field_options->format_strings) {
+        DCHECK([&]() {
+          switch (type) {
+            case FormatString_Type_DATE:
+              return data_util::IsValidDateFormat(string);
+          }
+          return false;
+        }());
         auto* added_format_string = added_field->add_format_string();
-        added_format_string->set_type(FormatString_Type_DATE);
-        added_format_string->set_format_string(
-            base::UTF16ToUTF8(format_string));
+        added_format_string->set_type(type);
+        added_format_string->set_format_string(base::UTF16ToUTF8(string));
       }
     }
 

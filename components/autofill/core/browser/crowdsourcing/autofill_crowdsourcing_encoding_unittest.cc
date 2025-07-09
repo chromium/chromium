@@ -525,7 +525,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
       "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
       /*anonymous_url_collection_is_enabled=*/true);
   options.fields[form_structure->fields()[1]->global_id()].format_strings = {
-      u"DD/MM/YYYY", u"MM/DD/YYYY"};
+      {FormatString_Type_DATE, u"DD/MM/YYYY"},
+      {FormatString_Type_DATE, u"MM/DD/YYYY"}};
   options.available_field_types = {NAME_FIRST};
   options.observed_submission = true;
 

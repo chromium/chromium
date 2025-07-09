@@ -141,7 +141,7 @@ FindDatesAndSetFormatStrings(
       }
       for (auto& [date, format] :
            GetMatchingCompleteDateAndFormats(field->value())) {
-        pt.formats.insert(std::move(format));
+        pt.formats.emplace(FormatString_Type_DATE, std::move(format));
         dates.emplace_back(date, &pt);
       }
     }
@@ -170,7 +170,8 @@ FindDatesAndSetFormatStrings(
                               base::SPLIT_WANT_ALL);
         if (partial_formats.size() == 3) {
           for (size_t j = 0; j < 3; ++j) {
-            possible_types[i + j].formats.insert(std::move(partial_formats[j]));
+            possible_types[i + j].formats.emplace(
+                FormatString_Type_DATE, std::move(partial_formats[j]));
             dates.emplace_back(full_date, &possible_types[i + j]);
           }
         }
@@ -279,8 +280,8 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
   return types;
 }
 
-// Returns the FieldTypes for which the given EntityInstance has an attribute
-// whose value matches `value_u16`.
+// Scans the given `entities` for values that match `value_u16`. It adds the
+// matching `FieldType` to `PossibleTypes::types`.
 //
 // If kAutofillAiNoTagTypes is disabled:
 // This may not just include Autofill AI types like PASSPORT_NUMBER but
@@ -288,38 +289,38 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
 // NAME_FIRST.
 // TODO(crbug.com/422563282): Remove comment when cleaning up
 // kAutofillAiNoTagTypes.
-FieldTypeSet GetPossibleAutofillAiFieldTypes(
-    base::span<const EntityInstance> entities,
-    std::u16string_view value_u16,
-    const std::string& app_locale) {
+void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
+                                std::u16string_view value_u16,
+                                const std::string& app_locale,
+                                PossibleTypes& pt) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
 
   AutofillProfileComparator comparator(app_locale);
   if (comparator.HasOnlySkippableCharacters(value_u16)) {
-    return {};
+    return;
   }
 
-  std::u16string value =
+  const std::u16string& value_in_field =
       AutofillProfileComparator::NormalizeForComparison(value_u16);
-  FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
-      for (FieldType field_type : attribute.type().field_subtypes()) {
-        bool matches = comparator.Compare(
-            value,
-            attribute.GetInfo(field_type, comparator.app_locale(),
-                              std::nullopt),
-            AutofillProfileComparator::DISCARD_WHITESPACE);
-        if (matches) {
+      for (const FieldType field_type : attribute.type().field_subtypes()) {
+        const std::u16string& value_on_file = attribute.GetInfo(
+            field_type, comparator.app_locale(), std::nullopt);
+
+        // Test if `value_in_field` and `value_on_file` match.
+        bool full_match =
+            comparator.Compare(value_in_field, value_on_file,
+                               AutofillProfileComparator::DISCARD_WHITESPACE);
+        if (full_match) {
           if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-            types.insert(attribute.type().field_type());
+            pt.types.insert(attribute.type().field_type());
           }
-          types.insert(field_type);
+          pt.types.insert(field_type);
         }
       }
     }
   }
-  return types;
 }
 
 void FindAndSetPossibleDateFieldTypesAndFormatStrings(
@@ -352,7 +353,7 @@ void FindAndSetPossibleDateFieldTypesAndFormatStrings(
 
 // Matches the value from `field` against the values stored in the given
 // profiles etc.
-FieldTypeSet GetPossibleFieldTypes(
+PossibleTypes GetPossibleTypes(
     const AutofillField& field,
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
@@ -363,17 +364,17 @@ FieldTypeSet GetPossibleFieldTypes(
   std::u16string value_u16 = field.value_for_import();
   base::TrimWhitespace(value_u16, base::TRIM_ALL, &value_u16);
 
-  FieldTypeSet matching_types;
+  PossibleTypes pt;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value_u16, app_locale, &matching_types);
+    profile.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
   if (fields_that_match_state.contains(field.global_id())) {
-    matching_types.insert(ADDRESS_HOME_STATE);
+    pt.types.insert(ADDRESS_HOME_STATE);
   }
 
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value_u16, app_locale, &matching_types);
+    card.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -381,17 +382,16 @@ FieldTypeSet GetPossibleFieldTypes(
     const std::string value_u8 = base::UTF16ToUTF8(value_u16);
     for (const LoyaltyCard& card : loyalty_cards) {
       if (value_u8 == card.loyalty_card_number()) {
-        matching_types.insert(LOYALTY_MEMBERSHIP_ID);
+        pt.types.insert(LOYALTY_MEMBERSHIP_ID);
       }
     }
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
-    matching_types.insert_all(
-        GetPossibleAutofillAiFieldTypes(entities, value_u16, app_locale));
+    AddPossibleAutofillAiTypes(entities, value_u16, app_locale, pt);
   }
 
-  return matching_types;
+  return pt;
 }
 
 }  // namespace
@@ -451,10 +451,9 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   possible_types.resize(fields.size());
 
   // Most type detection happens in this loop.
-  for (auto [field, types] : base::zip(fields, possible_types)) {
-    types.types = GetPossibleFieldTypes(*field, profiles, credit_cards,
-                                        entities, loyalty_cards,
-                                        fields_that_match_state, app_locale);
+  for (auto [field, pt] : base::zip(fields, possible_types)) {
+    pt = GetPossibleTypes(*field, profiles, credit_cards, entities,
+                          loyalty_cards, fields_that_match_state, app_locale);
   }
 
   // Date detection is not part of the above loop because dates can span
