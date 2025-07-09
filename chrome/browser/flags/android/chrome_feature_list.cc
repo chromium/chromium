@@ -257,6 +257,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTReportPrerenderEvents,
     &kCCTResizableForThirdParties,
     &kCCTRevampedBranding,
+    &kCCTShowTabFix,
     &kCCTTabModalDialog,
     &kCCTToolbarRefactor,
     &kChangeUnfocusedPriority,
@@ -789,6 +790,8 @@ BASE_FEATURE(kCCTResizableForThirdParties,
 BASE_FEATURE(kCCTRevampedBranding,
              "CCTRevampedBranding",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTShowTabFix, "CCTShowTabFix", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
