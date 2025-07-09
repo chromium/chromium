@@ -388,12 +388,6 @@ extern bool UseVideoContextForMultimodalLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
 
-// Returns whether or not to send the search session and visual
-// search request ids in suggest requests from the contextual
-// search box.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlaySendLensInputsForContextualSuggest();
-
 // Returns whether or not to send the search session, visual
 // search request id, and visual interaction type in suggest requests from the
 // Lens search box. These params replace the existing "iil" image signals
@@ -417,28 +411,10 @@ extern uint32_t GetLensOverlayFileUploadLimitBytes();
 
 // Returns the number of characters to be retrieved from the PDF for generating
 // suggestions. This is a target and not a hard limit. The actual number of
-// characters returned may be more than this value since the characters are
 // rounded to the nearest page. The actual number of characters may also be
 // less than this value if the PDF is too small.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern uint32_t GetLensOverlayPdfSuggestCharacterTarget();
-
-// Returns whether to use the &vit=pdf param for the search request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UsePdfVitParam();
-
-// Returns whether to use the &vit=wp param for the search request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseWebpageVitParam();
-
-// Returns whether to use the PDF_QUERY interaction type for PDF queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UsePdfInteractionType();
-
-// Returns whether to use the WEBPAGE_QUERY interaction type for webpage
-// queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseWebpageInteractionType();
 
 // Returns the number of characters that should be present per page if the PDF
 // is not scanned. This value is compared to the average number of characters
@@ -462,11 +438,6 @@ extern bool UseInnerTextAsContext();
 // when combined with other page content types.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
-
-// Returns whether to send the client context to the cluster info request for
-// contextual suggest.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool SendClientContextToClusterInfoRequestForContextualSuggest();
 
 // Returns whether to include the Annotated Page Content from the underlying
 // page in the inner HTML requests used as page context. Must have

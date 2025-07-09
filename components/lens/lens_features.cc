@@ -323,12 +323,6 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
     &kLensOverlayLatencyOptimizations,
     "enable-early-start-query-flow-optimization", true};
 
-constexpr base::FeatureParam<bool>
-    kSendClientContextToClusterInfoRequestForContextualSuggest{
-        &kLensOverlayContextualSearchbox,
-        "send-client-context-to-cluster-info-request-for-contextual-suggest",
-        true};
-
 constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
     &kLensOverlayContextualSearchbox, "use-updated-content-fields", true};
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
@@ -346,11 +340,6 @@ constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
 constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/gsessionid"};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlaySendLensInputsForContextualSuggest{
-        &kLensOverlayContextualSearchbox,
-        "send-lens-inputs-for-contextual-suggest", true};
 
 constexpr base::FeatureParam<bool> kLensOverlaySendLensInputsForLensSuggest{
     &kLensOverlaySuggestionsMigration, "send-lens-inputs-for-lens-suggest",
@@ -393,18 +382,6 @@ constexpr base::FeatureParam<size_t> kLensOverlayPdfTextCharacterLimit{
 
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
-
-constexpr base::FeatureParam<bool> kUsePdfVitParam{
-    &kLensOverlayContextualSearchbox, "use-pdf-vit-param", true};
-
-constexpr base::FeatureParam<bool> kUseWebpageVitParam{
-    &kLensOverlayContextualSearchbox, "use-webpage-vit-param", true};
-
-constexpr base::FeatureParam<bool> kUsePdfInteractionType{
-    &kLensOverlayContextualSearchbox, "use-pdf-interaction-type", true};
-
-constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
-    &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", true};
 
 constexpr base::FeatureParam<int> kScannedPdfCharacterPerPageHeuristic{
     &kLensOverlayContextualSearchbox, "characters-per-page-heuristic", 200};
@@ -741,10 +718,6 @@ std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
 }
 
-bool GetLensOverlaySendLensInputsForContextualSuggest() {
-  return kLensOverlaySendLensInputsForContextualSuggest.Get();
-}
-
 bool GetLensOverlaySendLensInputsForLensSuggest() {
   return kLensOverlaySendLensInputsForLensSuggest.Get();
 }
@@ -771,22 +744,6 @@ uint32_t GetLensOverlayPdfSuggestCharacterTarget() {
              : 0;
 }
 
-bool UsePdfVitParam() {
-  return kUsePdfVitParam.Get();
-}
-
-bool UseWebpageVitParam() {
-  return kUseWebpageVitParam.Get();
-}
-
-bool UsePdfInteractionType() {
-  return kUsePdfInteractionType.Get();
-}
-
-bool UseWebpageInteractionType() {
-  return kUseWebpageInteractionType.Get();
-}
-
 int GetScannedPdfCharacterPerPageHeuristic() {
   return kScannedPdfCharacterPerPageHeuristic.Get();
 }
@@ -804,10 +761,6 @@ int GetLensOverlayPageContentRequestTimeoutMs() {
 
 bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
-}
-
-bool SendClientContextToClusterInfoRequestForContextualSuggest() {
-  return kSendClientContextToClusterInfoRequestForContextualSuggest.Get();
 }
 
 bool UseApcAsContext() {

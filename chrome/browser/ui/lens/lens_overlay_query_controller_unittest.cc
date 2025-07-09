@@ -161,11 +161,7 @@ const base::test::FeatureRefAndParams
     kDefaultLensOverlayContextualSearchboxParams =
         base::test::FeatureRefAndParams(
             lens::features::kLensOverlayContextualSearchbox,
-            {{"use-pdf-vit-param", "true"},
-             {"use-webpage-vit-param", "true"},
-             {"use-pdf-interaction-type", "true"},
-             {"use-webpage-interaction-type", "true"},
-             {"send-lens-inputs-for-contextual-suggest", "true"},
+            {{"send-lens-inputs-for-contextual-suggest", "true"},
              {"use-updated-content-fields", "false"},
              {"page-content-request-id-fix", "false"},
              {"send-lens-inputs-for-lens-suggest", "true"},
@@ -485,48 +481,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
     latest_suggest_inputs_ = suggest_inputs;
   }
 };
-
-TEST_F(LensOverlayQueryControllerTest,
-       SendClientContextToClusterInfoRequestForContextualSuggest_False) {
-  feature_list_.Reset();
-  base::FieldTrialParams params =
-      kDefaultLensOverlayContextualSearchboxParams.params;
-  params.insert(
-      {"send-client-context-to-cluster-info-request-for-contextual-suggest",
-       "false"});
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlayContextualSearchbox, params);
-
-  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr, bool>
-      full_image_response_future;
-  TestLensOverlayQueryController query_controller(
-      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), GetSuggestInputsCallback(), base::NullCallback(),
-      base::NullCallback(), fake_variations_client_.get(),
-      IdentityManagerFactory::GetForProfile(profile()), profile(),
-      lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false, GetGen204Controller());
-
-  // Set up the query controller responses.
-  lens::LensOverlayObjectsResponse fake_objects_response;
-  fake_objects_response.mutable_cluster_info()->set_server_session_id(
-      kTestServerSessionId);
-  query_controller.set_fake_objects_response(fake_objects_response);
-
-  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  query_controller.StartQueryFlow(
-      bitmap, GURL(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_page_contents=*/{},
-      /*primary_content_type=*/lens::MimeType::kUnknown,
-      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
-
-  ASSERT_TRUE(full_image_response_future.Wait());
-  ASSERT_FALSE(query_controller.last_cluster_info_request().has_value());
-  query_controller.EndQuery();
-}
 
 TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
@@ -863,7 +817,7 @@ TEST_F(LensOverlayQueryControllerTest,
       *query_controller.last_cluster_info_request());
   query_controller.EndQuery();
 
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       latest_suggest_inputs_.send_gsession_vsrid_for_contextual_suggest());
   ASSERT_FALSE(
       latest_suggest_inputs_.send_gsession_vsrid_vit_for_lens_suggest());

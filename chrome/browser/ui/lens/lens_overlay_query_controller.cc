@@ -181,16 +181,12 @@ std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
   switch (mime_type) {
     case lens::MimeType::kPdf:
-      if (lens::features::UsePdfVitParam()) {
-        vitValue = kPdfVisualInputTypeQueryParameterValue;
-      }
+      vitValue = kPdfVisualInputTypeQueryParameterValue;
       break;
     case lens::MimeType::kHtml:
     case lens::MimeType::kPlainText:
     case lens::MimeType::kAnnotatedPageContent:
-      if (lens::features::UseWebpageVitParam()) {
-        vitValue = kWebpageVisualInputTypeQueryParameterValue;
-      }
+      vitValue = kWebpageVisualInputTypeQueryParameterValue;
       break;
     case lens::MimeType::kUnknown:
       break;
@@ -240,17 +236,11 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
     lens::MimeType content_type) {
   switch (content_type) {
     case lens::MimeType::kPdf:
-      if (lens::features::UsePdfInteractionType()) {
-        return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
-      }
-      break;
+      return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
     case lens::MimeType::kHtml:
     case lens::MimeType::kPlainText:
     case lens::MimeType::kAnnotatedPageContent:
-      if (lens::features::UseWebpageInteractionType()) {
-        return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
-      }
-      break;
+      return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
     case lens::MimeType::kUnknown:
       break;
     case lens::MimeType::kImage:
@@ -847,8 +837,7 @@ void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
 }
 
 void LensOverlayQueryController::RunSuggestInputsCallback() {
-  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(
-      lens::features::GetLensOverlaySendLensInputsForContextualSuggest());
+  suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
   suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
       lens::features::GetLensOverlaySendLensInputsForLensSuggest());
   suggest_inputs_.set_send_vsint_for_lens_suggest(
@@ -979,22 +968,17 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
 
   HttpMethod request_method;
   std::string request_string;
-  if (lens::features::
-          SendClientContextToClusterInfoRequestForContextualSuggest()) {
-    request_method = HttpMethod::kPost;
+  request_method = HttpMethod::kPost;
 
-    // Create the client context to include in the request.
-    lens::LensOverlayClientContext client_context = CreateClientContext();
-    lens::LensOverlayServerClusterInfoRequest request;
-    request.set_enable_search_session_id(true);
-    request.set_surface(client_context.surface());
-    request.set_platform(client_context.platform());
-    request.mutable_rendering_context()->CopyFrom(
-        client_context.rendering_context());
-    CHECK(request.SerializeToString(&request_string));
-  } else {
-    request_method = HttpMethod::kGet;
-  }
+  // Create the client context to include in the request.
+  lens::LensOverlayClientContext client_context = CreateClientContext();
+  lens::LensOverlayServerClusterInfoRequest request;
+  request.set_enable_search_session_id(true);
+  request.set_surface(client_context.surface());
+  request.set_platform(client_context.platform());
+  request.mutable_rendering_context()->CopyFrom(
+      client_context.rendering_context());
+  CHECK(request.SerializeToString(&request_string));
 
   // Create the EndpointFetcher, responsible for making the request using our
   // given params. Store in class variable to keep endpoint fetcher alive until
