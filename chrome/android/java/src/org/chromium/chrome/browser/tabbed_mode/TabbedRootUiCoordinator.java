@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -150,7 +148,6 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonControllerFactory;
@@ -1503,8 +1500,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 .get()
                                 .getTabGroupModelFilterProvider()
                                 .getTabGroupModelFilter(false);
-                @TabId int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
-                if (rootId == INVALID_TAB_ID) {
+                if (!filter.tabGroupExists(tabGroupId)) {
                     // This method is only supposed to be called when the tab group is in the local
                     // model. However it's possible that something has recently changed. In which
                     // case just be defensive and give up.
@@ -1516,11 +1512,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 // remain as a safegaurd against bugs as internally it will noop if the tab switcher
                 // is already opened. It could be removed in the future with some care taken to add
                 // an assert and verify no callers are using it in an unexpected flow.
+                int tabId = filter.getGroupLastShownTabId(tabGroupId);
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
                         /* animate= */ false,
                         () -> {
-                            mTabSwitcherSupplier.get().requestOpenTabGroupDialog(rootId);
+                            mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
                         });
             }
 

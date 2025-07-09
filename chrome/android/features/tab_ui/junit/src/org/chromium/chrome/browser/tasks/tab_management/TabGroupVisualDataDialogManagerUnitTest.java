@@ -92,6 +92,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);

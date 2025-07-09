@@ -93,7 +93,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup2 = new SavedTabGroup();
         syncGroup2.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup1);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
         doAnswer(
                         invocation -> {
                             Mockito.reset(mTabGroupSyncService);
@@ -119,7 +119,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_1))
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1))
                 .thenReturn(INVALID_TAB_ID);
 
         TabSwitcherUtils.openTabGroupDialog(
@@ -138,7 +138,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
 
         TabSwitcherUtils.openTabGroupDialog(
                 SYNC_GROUP_ID1,

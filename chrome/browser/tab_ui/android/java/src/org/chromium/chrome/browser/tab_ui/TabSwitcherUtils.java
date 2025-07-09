@@ -82,9 +82,9 @@ public class TabSwitcherUtils {
             assert syncGroup.localId != null;
         }
 
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(syncGroup.localId.tabGroupId);
-        if (rootId == Tab.INVALID_TAB_ID) return;
-        requestOpenTabGroupDialog.onResult(rootId);
+        int tabId = tabGroupModelFilter.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
+        if (tabId == Tab.INVALID_TAB_ID) return;
+        requestOpenTabGroupDialog.onResult(tabId);
     }
 
     /**

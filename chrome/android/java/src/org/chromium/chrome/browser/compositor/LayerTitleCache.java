@@ -238,7 +238,7 @@ public class LayerTitleCache {
         assumeNonNull(filter);
         if (!filter.tabGroupExists(groupId)) return;
 
-        String titleString = filter.getTabGroupTitle(filter.getRootIdFromTabGroupId(groupId));
+        String titleString = filter.getTabGroupTitle(groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);
     }
 

@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
@@ -37,16 +36,15 @@ public class TabGroupCreationDialogManager {
     }
 
     private class TabGroupCreationDialogController implements Controller {
-        private final int mRootId;
+        private final Token mTabGroupId;
         private final TabGroupModelFilter mTabGroupModelFilter;
 
         private TabGroupCreationDialogController(
                 @Nullable Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
             assert tabGroupId != null;
+            assert tabGroupModelFilter.tabGroupExists(tabGroupId);
 
-            mRootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-            assert mRootId != Tab.INVALID_TAB_ID;
-
+            mTabGroupId = tabGroupId;
             mTabGroupModelFilter = tabGroupModelFilter;
         }
 
@@ -71,7 +69,7 @@ public class TabGroupCreationDialogManager {
             final @TabGroupColorId int currentColorId =
                     mTabGroupVisualDataDialogManager.getCurrentColorId();
             boolean didChangeColor = currentColorId != defaultColorId;
-            mTabGroupModelFilter.setTabGroupColor(mRootId, currentColorId);
+            mTabGroupModelFilter.setTabGroupColor(mTabGroupId, currentColorId);
 
             // Only save the group title input text if it has been changed from the suggested
             // initial title and if it is not empty.
@@ -79,7 +77,7 @@ public class TabGroupCreationDialogManager {
             String inputGroupTitle = mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
             boolean didChangeTitle = !Objects.equals(initialGroupTitle, inputGroupTitle);
             if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
-                mTabGroupModelFilter.setTabGroupTitle(mRootId, inputGroupTitle);
+                mTabGroupModelFilter.setTabGroupTitle(mTabGroupId, inputGroupTitle);
             }
 
             recordDialogSelectionHistogram(didChangeColor, didChangeTitle);

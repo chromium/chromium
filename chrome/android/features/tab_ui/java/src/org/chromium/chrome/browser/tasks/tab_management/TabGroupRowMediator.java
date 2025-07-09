@@ -253,13 +253,13 @@ class TabGroupRowMediator {
             return;
         }
 
-        int rootId = mTabGroupModelFilter.getRootIdFromTabGroupId(savedTabGroup.localId.tabGroupId);
-        assert rootId != Tab.INVALID_TAB_ID;
+        int tabId = mTabGroupModelFilter.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
+        assert tabId != Tab.INVALID_TAB_ID;
         mPaneManager.focusPane(PaneId.TAB_SWITCHER);
         TabSwitcherPaneBase tabSwitcherPaneBase =
                 (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
         assumeNonNull(tabSwitcherPaneBase);
-        boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
+        boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(tabId);
         assert success;
     }
 

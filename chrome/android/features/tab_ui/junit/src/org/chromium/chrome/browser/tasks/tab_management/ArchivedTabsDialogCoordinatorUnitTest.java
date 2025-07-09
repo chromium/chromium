@@ -345,7 +345,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupAfter);
-        when(mCurrentTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mCurrentTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mCurrentTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         when(mTabListEditorController.isVisible()).thenReturn(true);
 
         // Show the dialog.

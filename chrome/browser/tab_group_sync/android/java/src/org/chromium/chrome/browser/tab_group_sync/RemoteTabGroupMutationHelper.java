@@ -19,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -135,15 +134,15 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID of the local tab group.
      */
     public void createRemoteTabGroup(LocalTabGroupId groupId) {
-        LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + groupId.tabGroupId);
+        Token tabGroupId = groupId.tabGroupId;
+        LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + tabGroupId);
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.localId = groupId;
-        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
-        savedTabGroup.title = mTabGroupModelFilter.getTabGroupTitle(rootId);
+        savedTabGroup.title = mTabGroupModelFilter.getTabGroupTitle(tabGroupId);
         if (savedTabGroup.title == null) {
             savedTabGroup.title = new String();
         }
-        savedTabGroup.color = mTabGroupModelFilter.getTabGroupColor(rootId);
+        savedTabGroup.color = mTabGroupModelFilter.getTabGroupColor(tabGroupId);
         if (savedTabGroup.color == TabGroupColorUtils.INVALID_COLOR_ID) {
             savedTabGroup.color = TabGroupColorId.GREY;
         }
@@ -173,15 +172,15 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID the local tab group.
      */
     public void updateVisualData(LocalTabGroupId groupId) {
-        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
+        Token tabGroupId = groupId.tabGroupId;
         String title = new String();
         @TabGroupColorId int color = TabGroupColorId.GREY;
-        if (rootId != Tab.INVALID_TAB_ID) {
-            String tmpTitle = mTabGroupModelFilter.getTabGroupTitle(rootId);
+        if (mTabGroupModelFilter.tabGroupExists(tabGroupId)) {
+            String tmpTitle = mTabGroupModelFilter.getTabGroupTitle(tabGroupId);
             if (tmpTitle != null) {
                 title = tmpTitle;
             }
-            @TabGroupColorId int tmpColor = mTabGroupModelFilter.getTabGroupColor(rootId);
+            @TabGroupColorId int tmpColor = mTabGroupModelFilter.getTabGroupColor(tabGroupId);
             if (tmpColor != TabGroupColorUtils.INVALID_COLOR_ID) {
                 color = tmpColor;
             }
@@ -399,13 +398,10 @@ public class RemoteTabGroupMutationHelper {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
-                            if (mTabGroupModelFilter.getRootIdFromTabGroupId(
-                                            localTabGroupId.tabGroupId)
-                                    == TabList.INVALID_TAB_INDEX) {
+                            if (!mTabGroupModelFilter.tabGroupExists(localTabGroupId.tabGroupId)) {
                                 return;
                             }
-                            @Nullable
-                            SavedTabGroup savedGroup =
+                            @Nullable SavedTabGroup savedGroup =
                                     mTabGroupSyncService.getGroup(localTabGroupId);
                             // Don't recreate the group if the group was deleted remotely.
                             if (savedGroup != null) {

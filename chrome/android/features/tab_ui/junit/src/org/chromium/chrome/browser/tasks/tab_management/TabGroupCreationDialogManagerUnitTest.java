@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -53,8 +53,9 @@ public class TabGroupCreationDialogManagerUnitTest {
                 new TabGroupCreationDialogManager(
                         activity, mModalDialogManager, mOnTabGroupCreation);
 
-        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
-        doReturn(mProfile).when(mTabModel).getProfile();
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
     }
 
     @Test

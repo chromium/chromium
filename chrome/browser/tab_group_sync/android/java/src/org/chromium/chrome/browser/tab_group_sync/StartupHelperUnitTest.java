@@ -108,7 +108,9 @@ public class StartupHelperUnitTest {
                         mRemoteMutationHelper,
                         mPrefService);
 
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(ROOT_ID_1);
 
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);

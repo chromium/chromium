@@ -66,12 +66,12 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.getTabsInGroup(mGroupId)).thenReturn(mTabs);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(mGroupId)).thenReturn(TEST_ROOT_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_ROOT_ID);
         when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_TAB_ID1);
         when(mTabGroupModelFilter.getTabCountForGroup(mGroupId)).thenReturn(1);
-        when(mTabGroupModelFilter.getTabGroupColor(TEST_ROOT_ID)).thenReturn(TEST_COLOR);
-        when(mTabGroupModelFilter.getTabGroupTitle(TEST_ROOT_ID)).thenReturn(TEST_TITLE);
+        when(mTabGroupModelFilter.getTabGroupColor(mGroupId)).thenReturn(TEST_COLOR);
+        when(mTabGroupModelFilter.getTabGroupTitle(mGroupId)).thenReturn(TEST_TITLE);
         when(mTabModel.getTabById(TEST_TAB_ID1)).thenReturn(mTab1);
         when(mTabModel.getTabById(TEST_TAB_ID2)).thenReturn(mTab2);
 

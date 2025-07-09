@@ -1062,7 +1062,8 @@ public class TabWindowManagerImplUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
 
@@ -1107,7 +1108,7 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(mTabGroupModelFilterProvider);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
         assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));

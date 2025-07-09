@@ -52,8 +52,7 @@ public final class TabGroupSyncUtils {
      */
     public static boolean isInCurrentWindow(
             TabGroupModelFilter tabGroupModelFilter, LocalTabGroupId localId) {
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(localId.tabGroupId);
-        return rootId != Tab.INVALID_TAB_ID;
+        return tabGroupModelFilter.tabGroupExists(localId.tabGroupId);
     }
 
     private static boolean isInAnyWindow(
@@ -71,12 +70,6 @@ public final class TabGroupSyncUtils {
             TabGroupModelFilter filter, @Nullable Token tabGroupId) {
         if (tabGroupId == null || !filter.tabGroupExists(tabGroupId)) return null;
         return new LocalTabGroupId(tabGroupId);
-    }
-
-    /** Conversion method to get a root ID from a {@link LocalTabGroupId}. */
-    public static int getRootId(TabGroupModelFilter filter, LocalTabGroupId localTabGroupId) {
-        assert localTabGroupId != null;
-        return filter.getRootIdFromTabGroupId(localTabGroupId.tabGroupId);
     }
 
     /** Util method to get a {@link LocalTabGroupId} from a tab. */

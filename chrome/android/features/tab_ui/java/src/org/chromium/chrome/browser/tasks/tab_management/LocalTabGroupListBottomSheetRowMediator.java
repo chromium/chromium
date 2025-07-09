@@ -53,7 +53,6 @@ class LocalTabGroupListBottomSheetRowMediator implements TabGroupListBottomSheet
         mTabMovedCallback = tabMovedCallback;
 
         int numTabs = mTabGroupModelFilter.getTabCountForGroup(mGroupId);
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(mGroupId);
         List<GURL> urlList =
                 TabGroupFaviconCluster.buildUrlListFromFilter(mGroupId, mTabGroupModelFilter);
 
@@ -62,11 +61,11 @@ class LocalTabGroupListBottomSheetRowMediator implements TabGroupListBottomSheet
                 TabGroupRowProperties.CLUSTER_DATA,
                 new ClusterData(faviconResolver, numTabs, urlList));
         builder.with(
-                TabGroupRowProperties.COLOR_INDEX, mTabGroupModelFilter.getTabGroupColor(rootId));
+                TabGroupRowProperties.COLOR_INDEX, mTabGroupModelFilter.getTabGroupColor(groupId));
 
         TabGroupRowViewTitleData titleData =
                 new TabGroupRowViewTitleData(
-                        mTabGroupModelFilter.getTabGroupTitle(rootId),
+                        mTabGroupModelFilter.getTabGroupTitle(groupId),
                         numTabs,
                         R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
