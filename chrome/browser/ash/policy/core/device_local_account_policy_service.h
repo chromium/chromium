@@ -20,7 +20,6 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/schema_registry.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
@@ -44,7 +43,6 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
-class AffiliatedInvalidationServiceProvider;
 class DeviceLocalAccountExternalDataService;
 class DeviceManagementService;
 
@@ -70,9 +68,7 @@ class DeviceLocalAccountPolicyService {
       ash::SessionManagerClient* session_manager_client,
       ash::DeviceSettingsService* device_settings_service,
       ash::CrosSettings* cros_settings,
-      std::variant<AffiliatedInvalidationServiceProvider*,
-                   invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener,
+      invalidation::InvalidationListener* invalidation_listener,
       scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
       scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner,
       scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
@@ -152,9 +148,7 @@ class DeviceLocalAccountPolicyService {
   raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
   raw_ptr<ash::CrosSettings> cros_settings_;
-  std::variant<raw_ptr<AffiliatedInvalidationServiceProvider>,
-               raw_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_;
+  raw_ptr<invalidation::InvalidationListener> invalidation_listener_;
 
   raw_ptr<DeviceManagementService> device_management_service_;
 
