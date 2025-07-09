@@ -560,7 +560,7 @@ bool SharedImageFactory::CreateSharedImage(
   } else {
     backing = factory->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label), /*is_thread_safe=*/false,
+        std::move(debug_label), IsSharedBetweenThreads(usage),
         std::move(buffer_handle));
   }
 
