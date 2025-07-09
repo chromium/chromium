@@ -3485,6 +3485,9 @@ extern const char kNtpSafeBrowsingModuleDescription[];
 extern const char kNtpSharepointModuleName[];
 extern const char kNtpSharepointModuleDescription[];
 
+extern const char kNtpTabGroupsModuleName[];
+extern const char kNtpTabGroupsModuleDescription[];
+
 extern const char kNtpWallpaperSearchButtonName[];
 extern const char kNtpWallpaperSearchButtonDescription[];
 

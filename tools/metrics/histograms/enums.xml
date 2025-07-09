@@ -12087,6 +12087,7 @@ from previous Chrome versions.
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
   <int value="-721649087" label="HighEfficiencyModeAvailable:enabled"/>
   <int value="-721245076" label="DesktopPWAsStayInWindow:disabled"/>
+  <int value="-720324545" label="kNtpTabGroupsModule:disabled"/>
   <int value="-720304697" label="LauncherImageSearch:enabled"/>
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>
@@ -15498,6 +15499,7 @@ from previous Chrome versions.
       label="UseManagedPrintJobOptionsInPrintPreview:disabled"/>
   <int value="547170394"
       label="OmniboxAlternateMatchDescriptionSeparator:disabled"/>
+  <int value="547466346" label="kNtpTabGroupsModule:enabled"/>
   <int value="547654419" label="CrOSEnforceSystemAecAgc:enabled"/>
   <int value="547884840"
       label="AutofillEnableCardInfoRuntimeRetrieval:disabled"/>

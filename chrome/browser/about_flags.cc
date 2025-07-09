@@ -7439,6 +7439,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpSharepointModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-tab-groups-module", flag_descriptions::kNtpTabGroupsModuleName,
+     flag_descriptions::kNtpTabGroupsModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpTabGroupsModule)},
+
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,
      flag_descriptions::kNtpWallpaperSearchButtonDescription, kOsDesktop,
