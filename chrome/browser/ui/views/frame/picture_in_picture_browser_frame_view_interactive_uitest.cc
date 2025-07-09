@@ -1243,9 +1243,9 @@ resolve('denied')
 
   // Blocked LHS indicator is hidden.
   EXPECT_FALSE(permission_dashboard_view->GetVisible());
-  // TODO(crbug.com/384770168): The indicator should not be visible in PiP
-  // window.
-  EXPECT_TRUE(pip_frame_view()->HasAnyVisibleContentSettingViews());
+  // The indicator should not be visible in PiP window because it is not
+  // supported.
+  EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
 }
 
 }  // namespace

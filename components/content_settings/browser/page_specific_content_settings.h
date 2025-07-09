@@ -169,6 +169,10 @@ class PageSpecificContentSettings
     virtual content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
         content::WebContents* web_contents) = 0;
 
+    // Returns `true` if `web_contents` represents a PiP window. Returns `false`
+    // otherwise.
+    virtual bool IsPiPWindow(content::WebContents* web_contents) = 0;
+
     // Notifies the delegate a particular content settings type was allowed for
     // the first time on this page.
     virtual void OnContentAllowed(ContentSettingsType type) = 0;
