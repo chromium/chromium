@@ -21,8 +21,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-// TODO(crbug.com/427565907): Remove dependency on install utils after all
-// functions have been migrated to this file.
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -573,7 +571,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
                                                    install_info_.get());
 
   // TODO(crbug.com/40185556): Confirm incoming icons to write to install_info_.
-  // TODO(crbug.com/427565907): Move from web_app_install_utils.cc to here.
   PopulateFileHandlerInfoFromManifest(
       manifest_->file_handlers, install_info_->scope, install_info_.get());
 
