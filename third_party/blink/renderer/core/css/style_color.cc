@@ -131,13 +131,13 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
     const CSSValue& channel1,
     const CSSValue& channel2,
     const CSSValue* alpha,
-    const CSSLengthResolver& length_resolver)
+    const CSSToLengthConversionData& conversion_data)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kRelativeColor),
       origin_color_(origin_color.color_or_unresolved_color_function_),
       origin_color_type_(ResolveColorOperandType(origin_color)),
       color_interpolation_space_(color_interpolation_space) {
   auto to_channel =
-      [&length_resolver](
+      [&conversion_data](
           const CSSValue& value) -> scoped_refptr<const CalculationValue> {
     if (const CSSNumericLiteralValue* numeric =
             DynamicTo<CSSNumericLiteralValue>(value)) {
@@ -163,7 +163,9 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      return function->ToCalcValue(length_resolver);
+      // TODO(crbug.com/428657802): This is a temporary fix, we shouldn't mix
+      // SVG "user units" and <number> type, as "user units" should be zoomed.
+      return function->ToCalcValue(conversion_data.Unzoomed());
     } else {
       NOTREACHED();
     }

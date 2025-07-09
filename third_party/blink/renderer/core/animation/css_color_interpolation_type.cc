@@ -147,7 +147,7 @@ InterpolableColor* CSSColorInterpolationType::MaybeCreateInterpolableColor(
   if (state && (value.IsLightDarkValuePair() || value.IsColorMixValue() ||
                 value.IsRelativeColorValue())) {
     ResolveColorValueContext context{
-        .length_resolver = state->CssToLengthConversionData(),
+        .conversion_data = state->CssToLengthConversionData(),
         .text_link_colors = state->GetDocument().GetTextLinkColors(),
         .used_color_scheme = color_scheme,
         .color_provider = color_provider};
