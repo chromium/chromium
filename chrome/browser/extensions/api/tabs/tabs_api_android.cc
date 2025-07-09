@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/tabs/tabs_api_stub.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
 #include "base/notimplemented.h"
 #include "base/values.h"
@@ -210,6 +210,7 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
 }
 
 TabsRemoveFunction::TabsRemoveFunction() = default;
+TabsRemoveFunction::~TabsRemoveFunction() = default;
 
 ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
   std::optional<tabs::Remove::Params> params =
@@ -247,7 +248,6 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
 }
 
 ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
-
 ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 
 ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
@@ -325,6 +325,7 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
 }
 
 TabsDiscardFunction::TabsDiscardFunction() = default;
+TabsDiscardFunction::~TabsDiscardFunction() = default;
 
 ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
   std::optional<tabs::Discard::Params> params =

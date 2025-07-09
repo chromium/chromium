@@ -160,6 +160,7 @@ source_set("extensions") {
     "api/storage/sync_value_store_cache.h",
     "api/storage/syncable_settings_storage.cc",
     "api/storage/syncable_settings_storage.h",
+    "api/tabs/tabs_api.h",
     "api/tabs/tabs_constants.h",
     "api/tabs/tabs_windows_api.cc",
     "api/tabs/tabs_windows_api.h",
@@ -606,8 +607,7 @@ source_set("extensions") {
       "api/identity/identity_unimplemented_functions_android.cc",
       "api/identity/identity_unimplemented_functions_android.h",
       "api/management/chrome_management_api_delegate_android.cc",
-      "api/tabs/tabs_api_stub.cc",
-      "api/tabs/tabs_api_stub.h",
+      "api/tabs/tabs_api_android.cc",
       "api/tabs/tabs_event_router_android.cc",
       "api/tabs/tabs_event_router_android.h",
       "extension_disabled_ui_android.cc",
@@ -618,7 +618,10 @@ source_set("extensions") {
     ]
     deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
-    sources += [ "api/chrome_extensions_api_client_non_android.cc" ]
+    sources += [
+      "api/chrome_extensions_api_client_non_android.cc",
+      "api/tabs/tabs_api_non_android.cc",
+    ]
     public_deps += [ "//components/app_icon_loader" ]
     deps += [ "//chrome/browser/ui/user_education" ]
   }
@@ -760,8 +763,6 @@ source_set("extensions") {
       "api/tabs/app_base_window.h",
       "api/tabs/app_window_controller.cc",
       "api/tabs/app_window_controller.h",
-      "api/tabs/tabs_api.cc",
-      "api/tabs/tabs_api.h",
       "api/tabs/tabs_event_router.cc",
       "api/tabs/tabs_event_router.h",
       "api/tabs/windows_event_router.cc",
