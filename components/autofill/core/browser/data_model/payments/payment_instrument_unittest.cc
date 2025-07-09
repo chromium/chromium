@@ -15,7 +15,10 @@ TEST(PaymentInstrumentTest, VerifyFieldValues) {
       DenseSet<PaymentInstrument::PaymentRail>(
           {PaymentInstrument::PaymentRail::kPix,
            PaymentInstrument::PaymentRail::kUnknown}),
-      /*is_fido_enrolled=*/true);
+      /*is_fido_enrolled=*/true,
+      DenseSet<PaymentInstrument::ActionRequired>(
+          {PaymentInstrument::ActionRequired::kUnknown,
+           PaymentInstrument::ActionRequired::kAcceptTos}));
 
   EXPECT_EQ(100, payment_instrument.instrument_id());
   EXPECT_EQ(u"test_nickname", payment_instrument.nickname());
@@ -26,6 +29,10 @@ TEST(PaymentInstrumentTest, VerifyFieldValues) {
   EXPECT_TRUE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kUnknown));
   EXPECT_TRUE(payment_instrument.is_fido_enrolled());
+  EXPECT_TRUE(payment_instrument.action_required().contains(
+      PaymentInstrument::ActionRequired::kUnknown));
+  EXPECT_TRUE(payment_instrument.action_required().contains(
+      PaymentInstrument::ActionRequired::kAcceptTos));
 }
 
 TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {

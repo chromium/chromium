@@ -38,11 +38,22 @@ class PaymentInstrument final {
     kMaxValue = kCardNumber,
   };
 
-  PaymentInstrument(int64_t instrument_id,
-                    std::u16string nickname,
-                    GURL display_icon_url,
-                    DenseSet<PaymentInstrument::PaymentRail> supported_rails,
-                    bool is_fido_enrolled = false);
+  // Enum to mark additional steps needed to use this payment instrument.
+  enum class ActionRequired {
+    kUnknown = 0,
+    // The user needs to accept the relevant legal document to fix the
+    // instrument.
+    kAcceptTos = 1,
+    kMaxValue = kAcceptTos,
+  };
+
+  PaymentInstrument(
+      int64_t instrument_id,
+      std::u16string nickname,
+      GURL display_icon_url,
+      DenseSet<PaymentInstrument::PaymentRail> supported_rails,
+      bool is_fido_enrolled = false,
+      DenseSet<ActionRequired> action_required = DenseSet<ActionRequired>());
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
   ~PaymentInstrument();
@@ -54,6 +65,8 @@ class PaymentInstrument final {
   int64_t instrument_id() const { return instrument_id_; }
 
   DenseSet<PaymentRail> supported_rails() const { return supported_rails_; }
+
+  DenseSet<ActionRequired> action_required() const { return action_required_; }
 
   // Check whether the PaymentInstrument is supported for a particular rail.
   bool IsSupported(PaymentRail payment_rail) const;
@@ -80,6 +93,9 @@ class PaymentInstrument final {
 
   // Whether the device is enrolled in FIDO for this instrument.
   bool is_fido_enrolled_;
+
+  // The additional steps needed to use this payment instrument.
+  DenseSet<ActionRequired> action_required_;
 };
 
 }  // namespace autofill
