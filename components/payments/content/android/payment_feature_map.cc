@@ -38,6 +38,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidPaymentIntentsOmitDeprecatedParameters,
     &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,
+    &kAllowShowWithoutReadyToPay,
     &kReconnectOnLostConnectionToUpdatePaymentDetailsService,
     &kShowReadyToPayDebugInfo,
     &kUpdatePaymentDetailsIntentFilterInPaymentApp,
@@ -65,6 +66,9 @@ BASE_FEATURE(kGooglePayViaAndroidIntents,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmitParametersInReadyToPay,
              "OmitParametersInReadyToPay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowShowWithoutReadyToPay,
+             "AllowShowWithoutReadyToPay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService,
              "ReconnectOnLostConnectionToUpdatePaymentDetailsService",

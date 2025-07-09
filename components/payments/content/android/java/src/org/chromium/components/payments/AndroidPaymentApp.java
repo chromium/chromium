@@ -54,6 +54,7 @@ public class AndroidPaymentApp extends PaymentApp
     private final @Nullable String mIsReadyToPayServiceName;
     private final @Nullable String mPaymentDetailsUpdateServiceName;
     private final SupportedDelegations mSupportedDelegations;
+    private final boolean mAllowShowWithoutReadyToPay;
     private final boolean mShowReadyToPayDebugInfo;
     private final boolean mRemoveDeprecatedFields;
     private final int mPaymentDetailsUpdateServiceMaxRetryNumber;
@@ -65,6 +66,7 @@ public class AndroidPaymentApp extends PaymentApp
     private final @Nullable String mApplicationIdentifierToHide;
     private boolean mBypassIsReadyToPayServiceInTest;
     private boolean mIsPreferred;
+    private boolean mHasEnrolledInstrumentResult;
 
     // Set inside launchPaymentApp and used to validate the received response.
     private WebPaymentIntentHelperType.@Nullable PaymentOptions mPaymentOptions;
@@ -87,6 +89,8 @@ public class AndroidPaymentApp extends PaymentApp
      * @param isIncognito Whether the user is in incognito mode.
      * @param appToHide The identifier of the application that this app can hide.
      * @param supportedDelegations Delegations which this app can support.
+     * @param allowShowWithoutReadyToPay Whether the app can be shown regardless of the "is ready to
+     *     pay" query's result.
      * @param showReadyToPayDebugInfo Whether IS_READY_TO_PAY intent should be displayed in a debug
      *     dialog.
      * @param removeDeprecatedFields Whether intents should omit deprecated fields.
@@ -106,6 +110,7 @@ public class AndroidPaymentApp extends PaymentApp
             boolean isIncognito,
             @Nullable String appToHide,
             SupportedDelegations supportedDelegations,
+            boolean allowShowWithoutReadyToPay,
             boolean showReadyToPayDebugInfo,
             boolean removeDeprecatedFields,
             int paymentDetailsUpdateServiceMaxRetryNumber) {
@@ -128,10 +133,12 @@ public class AndroidPaymentApp extends PaymentApp
         mIsIncognito = isIncognito;
         mApplicationIdentifierToHide = appToHide;
         mSupportedDelegations = supportedDelegations;
+        mAllowShowWithoutReadyToPay = allowShowWithoutReadyToPay;
         mShowReadyToPayDebugInfo = showReadyToPayDebugInfo;
         mRemoveDeprecatedFields = removeDeprecatedFields;
         mPaymentDetailsUpdateServiceMaxRetryNumber = paymentDetailsUpdateServiceMaxRetryNumber;
         mIsPreferred = false;
+        mHasEnrolledInstrumentResult = false;
     }
 
     /** @param methodName A payment method that this app supports, e.g., "https://bobpay.com". */
@@ -346,6 +353,24 @@ public class AndroidPaymentApp extends PaymentApp
     @Override
     public boolean handlesPayerPhone() {
         return mSupportedDelegations.getPayerPhone();
+    }
+
+    @Override
+    public boolean hasEnrolledInstrument() {
+        if (mAllowShowWithoutReadyToPay) {
+            return mHasEnrolledInstrumentResult;
+        }
+
+        return super.hasEnrolledInstrument();
+    }
+
+    /**
+     * @param hasEnrolledInstrumentResult Whether the payment app can support the current payment
+     *     request.
+     */
+    void setHasEnrolledInstrument(boolean hasEnrolledInstrumentResult) {
+        if (!mAllowShowWithoutReadyToPay) return;
+        mHasEnrolledInstrumentResult = hasEnrolledInstrumentResult;
     }
 
     private static String removeUrlScheme(String url) {

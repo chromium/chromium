@@ -94,6 +94,32 @@ public class AndroidPaymentAppUnitTest {
     @SmallTest
     @Test
     @UiThreadTest
+    public void testSetHasEnrolledInstrument() throws Exception {
+        AndroidPaymentApp app =
+                createApp(
+                        /* allowShowWithoutReadyToPay= */ true,
+                        /* showReadyToPayDebugInfo= */ false);
+        Assert.assertFalse(app.hasEnrolledInstrument());
+        app.setHasEnrolledInstrument(true);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testCannotSetHasEnrolledInstrument() throws Exception {
+        AndroidPaymentApp app =
+                createApp(
+                        /* allowShowWithoutReadyToPay= */ false,
+                        /* showReadyToPayDebugInfo= */ false);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+        app.setHasEnrolledInstrument(false);
+        Assert.assertTrue(app.hasEnrolledInstrument());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
     public void testSuccessfulPayment() throws Exception {
         AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
         queryReadyToPay(app);
@@ -119,6 +145,11 @@ public class AndroidPaymentAppUnitTest {
     }
 
     private AndroidPaymentApp createApp(boolean showReadyToPayDebugInfo) {
+        return createApp(/* allowShowWithoutReadyToPay= */ false, showReadyToPayDebugInfo);
+    }
+
+    private AndroidPaymentApp createApp(
+            boolean allowShowWithoutReadyToPay, boolean showReadyToPayDebugInfo) {
         AndroidPaymentApp app =
                 new AndroidPaymentApp(
                         mLauncherMock,
@@ -132,6 +163,7 @@ public class AndroidPaymentAppUnitTest {
                         /* isIncognito= */ false,
                         /* appToHide= */ null,
                         new SupportedDelegations(),
+                        allowShowWithoutReadyToPay,
                         showReadyToPayDebugInfo,
                         /* removeDeprecatedFields= */ false,
                         /* paymentDetailsUpdateServiceMaxRetryNumber= */ 0);

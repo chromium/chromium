@@ -177,6 +177,15 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         sDownloaderForTest = downloader;
     }
 
+    /**
+     * @param bypass Whether to bypass the IS_READY_TO_PAY service in testing (by not opening a
+     *     connection to it).
+     */
+    @VisibleForTesting
+    public static void bypassIsReadyToPayServiceInTest(boolean bypass) {
+        sBypassIsReadyToPayServiceInTest = bypass;
+    }
+
     /** Do not open a connection to the IS_READY_TO_PAY service in testing. */
     @VisibleForTesting
     public static void bypassIsReadyToPayServiceInTest() {
@@ -799,7 +808,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 "Android app id \"%s\" ready to pay: \"%b\".",
                 app.getIdentifier(),
                 isReadyToPay);
-        if (isReadyToPay) mFactoryDelegate.onPaymentAppCreated(app);
+
+        app.setHasEnrolledInstrument(isReadyToPay);
+        if (isReadyToPay
+                || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)) {
+            mFactoryDelegate.onPaymentAppCreated(app);
+        }
+
         if (--mPendingIsReadyToPayQueries == 0) {
             mFactoryDelegate.onDoneCreatingPaymentApps(mFactory);
         }
@@ -871,6 +887,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             mIsOffTheRecord,
                             webAppIdCanDeduped,
                             appSupportedDelegations,
+                            PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                    PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY),
                             PaymentFeatureList.isEnabled(
                                     PaymentFeatureList.SHOW_READY_TO_PAY_DEBUG_INFO),
                             /* removeDeprecatedFields= */ PaymentFeatureList
