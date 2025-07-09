@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
@@ -48,6 +50,32 @@ bool IsUserEligibleForDiceMigration(Profile* profile) {
   // TODO(crbug.com/399838468): Add more eligibility checks, for example, when
   // was the last time the user was shown the migration dialog.
   return true;
+}
+
+void SetBannerImage(ui::DialogModel::Builder& builder,
+                    signin::IdentityManager* identity_manager) {
+  CHECK(identity_manager);
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  gfx::Image avatar_image =
+      account_info.account_image.IsEmpty()
+          // TODO(crbug.com/399838468): This is the old placeholder avatar icon.
+          // Consider using `ProfileAttributesEntry::GetAvatarIcon()` instead.
+          ? ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                profiles::GetPlaceholderAvatarIconResourceID())
+          : account_info.account_image;
+
+  // The position and size must match the implied one in the image,
+  // so these numbers are exclusively for ..._AVATAR50_X135_Y54.
+  static constexpr gfx::Point kAvatarPosition{135, 54};
+  static constexpr size_t kAvatarSize{50};
+  builder.SetBannerImage(profiles::EmbedAvatarOntoImage(
+                             IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54,
+                             avatar_image, kAvatarPosition, kAvatarSize),
+                         profiles::EmbedAvatarOntoImage(
+                             IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
+                             avatar_image, kAvatarPosition, kAvatarSize));
 }
 
 }  // namespace
@@ -96,10 +124,10 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
                           .SetId(kAcceptButtonElementId)
                           .SetLabel(l10n_util::GetStringUTF16(
                               IDS_DICE_MIGRATION_DIALOG_OK_BUTTON)));
+  SetBannerImage(builder, IdentityManagerFactory::GetForProfile(profile_));
   // TODO(crbug.com/399838468): Refine the dialog behavior.
   builder.DisableCloseOnDeactivate();
   builder.SetIsAlertDialog();
-  // TODO(crbug.com/399838468): Add a banner image.
 
   AvatarToolbarButton* avatar_button =
       BrowserView::GetBrowserViewForBrowser(browser)
