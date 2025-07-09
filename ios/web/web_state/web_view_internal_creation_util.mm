@@ -14,27 +14,10 @@
 
 namespace web {
 
-namespace {
-
-// Verifies the preconditions for creating a WKWebView. Must be called before
-// a WKWebView is allocated. Not verifying the preconditions before creating
-// a WKWebView will lead to undefined behavior.
-void VerifyWKWebViewCreationPreConditions(
-    BrowserState* browser_state,
-    WKWebViewConfiguration* configuration) {
-  DCHECK(browser_state);
-  DCHECK(configuration);
-  WKWebViewConfigurationProvider& config_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(browser_state);
-  DCHECK_EQ([config_provider.GetWebViewConfiguration() processPool],
-            [configuration processPool]);
-}
-
-}  // namespace
-
 WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
                                     BrowserState* browser_state) {
-  VerifyWKWebViewCreationPreConditions(browser_state, configuration);
+  CHECK(browser_state);
+  CHECK(configuration);
   return [[WKWebView alloc] initWithFrame:CGRectZero
                             configuration:configuration];
 }
@@ -45,7 +28,8 @@ WKWebView* BuildWKWebView(CGRect frame,
                           UserAgentType user_agent_type,
                           id<CRWInputViewProvider> input_view_provider,
                           id<CRWEditMenuBuilder> edit_menu_builder) {
-  VerifyWKWebViewCreationPreConditions(browser_state, configuration);
+  CHECK(browser_state);
+  CHECK(configuration);
 
   GetWebClient()->PreWebViewCreation();
 
