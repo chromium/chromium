@@ -33,7 +33,6 @@ class ContextMenuItemWithIconButtonProperties extends ListMenuItemProperties {
                 END_BUTTON_MENU_ID,
                 END_BUTTON_CLICK_LISTENER,
                 CLICK_LISTENER,
-                HOVER_LISTENER,
                 START_ICON_DRAWABLE
             };
 }

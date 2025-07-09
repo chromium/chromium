@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
@@ -54,8 +53,6 @@ class ContextMenuItemViewBinder {
             textView.setText(model.get(TITLE));
         } else if (propertyKey == CLICK_LISTENER) {
             itemView.setOnClickListener(model.get(CLICK_LISTENER));
-        } else if (propertyKey == HOVER_LISTENER) {
-            itemView.setOnHoverListener(model.get(HOVER_LISTENER));
         } else if (propertyKey == ENABLED) {
             view.setEnabled(model.get(ENABLED));
             itemView.setEnabled(model.get(ENABLED));
