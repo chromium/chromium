@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -95,13 +96,17 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     }
 
     /**
-     * Requests to show an eWallet FOP selector in a bottom sheet.
+     * Requests to show a payment link FOP selector in a bottom sheet.
      *
      * @param ewallets User's eWallet accounts which passed from facilitated payments client.
+     * @param apps User's installed apps which passed from facilitated payments client.
      */
     @CalledByNative
-    public void requestShowContentForEwallet(@JniType("std::vector") Object[] eWallets) {
-        mComponent.showSheetForEwallet((List<Ewallet>) (List<?>) Arrays.asList(eWallets));
+    public void requestShowContentForPaymentLink(
+            @JniType("std::vector") Object[] eWallets, Object[] apps) {
+        mComponent.showSheetForPaymentLink(
+                (List<Ewallet>) (List<?>) Arrays.asList(eWallets),
+                (List<ResolveInfo>) (List<?>) Arrays.asList(apps));
     }
 
     /**

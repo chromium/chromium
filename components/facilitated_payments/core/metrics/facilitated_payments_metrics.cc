@@ -69,7 +69,7 @@ std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
       return "Tngd";
     case PaymentLinkValidator::Scheme::kPromptPay:
       // TODO(crbug.com/427319124): Add tests for kPromptPay when adding metrics.
-      NOTREACHED();
+      return "PromptPay";
     case PaymentLinkValidator::Scheme::kInvalid:
       // This case can't happen because `kInvalid` causes an early return in
       // the PaymentLinkManager.

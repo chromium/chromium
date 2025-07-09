@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -90,13 +91,16 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
-  // Shows the user's eWallet accounts from their Google Wallet, and prompts to
-  // pay. `ewallet_suggestions` is the list of eWallets to be shown to the user
-  // for payment. `on_payment_account_selected` is the callback called with the
-  // instrument id of the eWallet account selected by the user for payment.
-  virtual void ShowEwalletPaymentPrompt(
+  // Shows the user's payment options and prompts to pay. `ewallet_suggestions`
+  // is the list of eWallets to be shown to the user for payment.
+  // `app_suggestions` is the list of packages of payment apps to be shown to
+  // the user for payment. `on_payment_account_selected` is the callback called
+  // with the instrument id of the eWallet account selected by the user for
+  // payment.
+  virtual void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected);
+      std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
+      base::OnceCallback<void(int64_t)> on_ewallet_account_selected);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
@@ -28,11 +29,14 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
               (base::span<const autofill::BankAccount> bank_account_suggestions,
                base::OnceCallback<void(int64_t)> on_payment_account_selected),
               (override));
-  MOCK_METHOD(void,
-              ShowForEwallet,
-              (base::span<const autofill::Ewallet> ewallet_suggestions,
-               base::OnceCallback<void(int64_t)> on_payment_account_selected),
-              (override));
+  MOCK_METHOD(
+      void,
+      ShowForPaymentLink,
+      (base::span<const autofill::Ewallet> ewallet_suggestions,
+       std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
+           app_suggestions,
+       base::OnceCallback<void(int64_t)> on_payment_account_selected),
+      (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
@@ -132,7 +136,7 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
 }
 
 // Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is not
-// registered when when the `ChromeFacilitatedPaymentClient` is created and the
+// registered when the `ChromeFacilitatedPaymentClient` is created and the
 // eWallet experiment is disabled.
 TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_EWalletExpOff) {
   base::test::ScopedFeatureList feature_list;
@@ -194,12 +198,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, IsInLandscapeMode) {
   base_client().IsInLandscapeMode();
 }
 
-// Test that the client forwards call to show eWallet FOP selector to the
+// Test that the client forwards call to show payment link FOP selector to the
 // controller.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
-       ShowEwalletPaymentPrompt_ControllerInvoked) {
-  EXPECT_CALL(controller(), ShowForEwallet);
-  base_client().ShowEwalletPaymentPrompt({}, base::DoNothing());
+       ShowPaymentLinkPrompt_ControllerInvoked) {
+  EXPECT_CALL(controller(), ShowForPaymentLink);
+  base_client().ShowPaymentLinkPrompt({}, {}, base::DoNothing());
 }
 
 // Test that the client forwards call to initiate Pix account linking flow to

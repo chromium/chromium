@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
@@ -26,9 +27,10 @@ void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
 
-void FacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+void FacilitatedPaymentsClient::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
-    base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
+    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
+    base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {}
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 

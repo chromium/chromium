@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -60,8 +61,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public void showSheetForEwallet(List<Ewallet> eWallets) {
-        mMediator.showSheetForEwallet(eWallets);
+    public void showSheetForPaymentLink(List<Ewallet> eWallets, List<ResolveInfo> apps) {
+        mMediator.showSheetForPaymentLink(eWallets, apps);
     }
 
     @Override

@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 
@@ -144,7 +145,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mInputProtector.markShowTime();
     }
 
-    void showSheetForEwallet(List<Ewallet> ewallets) {
+    void showSheetForPaymentLink(List<Ewallet> ewallets, List<ResolveInfo> apps) {
         mInputProtector.markShowTime();
         if (ewallets == null || ewallets.isEmpty()) {
             return;

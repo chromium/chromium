@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 namespace content {
@@ -39,9 +41,11 @@ class FacilitatedPaymentsController {
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
-  // Shows the eWallet FOP selector.
-  virtual void ShowForEwallet(
+  // Shows the payment link FOP selector.
+  virtual void ShowForPaymentLink(
       base::span<const autofill::Ewallet> ewallet_suggestions,
+      std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
+          app_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected);
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in

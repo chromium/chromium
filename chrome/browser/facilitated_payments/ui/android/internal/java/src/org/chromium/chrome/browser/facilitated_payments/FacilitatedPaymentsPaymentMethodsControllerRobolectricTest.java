@@ -233,7 +233,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCreatesModelForFopSelectorScreen_EwalletFopSelector() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
         // Verify that the bottom sheet model is updated to show the FOP selector.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -264,7 +264,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testEwalletsShown() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_2));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1, EWALLET_2), List.of());
 
         // Verify the screen contents set in the model when 2 eWallets exist.
         ModelList itemList =
@@ -294,7 +294,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleEwalletShown() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
         // Verify the screen contents set in the model when only 1 eWallet account exists.
         ModelList itemList =
@@ -309,7 +309,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoUnenrolledEwalletFirstTimeHeaderUsed() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_3));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3), List.of());
 
         // Verify the header model contains security check UI elements when only 1 eWallet account
         // exists and it is not Fido enrolled.
@@ -323,7 +323,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testMultipleEwalletsFirstTimeHeaderNotUsed() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_3, EWALLET_4));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3, EWALLET_4), List.of());
 
         // Verify the header model doesn't contain security check UI elements when multiple eWallet
         // accounts exist.
@@ -338,7 +338,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoEnrolledEwalletFirstTimeHeaderNotUsed() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
         // Verify the header model doesn't contain security check UI elements when only 1 eWallet
         // account exists and it is not Fido enrolled.
@@ -352,7 +352,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testEwalletGenericHeaderTitleUsed() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_3));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1, EWALLET_3), List.of());
 
         // Verify the header model uses the generic title when multiple providers are displayed.
         ModelList itemList =
@@ -364,7 +364,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testEwalletSpecificHeaderTitleUsed() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_2, EWALLET_3));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2, EWALLET_3), List.of());
 
         // Verify the header model uses the provider specific title when all eWallets use the same
         // provider.
@@ -459,7 +459,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoUnenrolledEwalletShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_3));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -491,7 +491,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoEnrolledEwalletShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_2));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -523,7 +523,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testMultipleEwalletsShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_3, EWALLET_4));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3, EWALLET_4), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -564,7 +564,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testShowsContinueButtonWhenOneEwallet() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
@@ -582,7 +582,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testNoContinueButtonWhenManyEwallets() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_2));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1, EWALLET_2), List.of());
 
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
@@ -603,7 +603,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testContinueButtonClickForEwallet() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
 
@@ -645,7 +645,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoUnenrolledEwalletShowManagePaymentMethodsSettingsOnFooter() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_4));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_4), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -676,7 +676,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testSingleFidoEnrolledEwalletShowManagePaymentMethodsSettingsOnFooter() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -707,7 +707,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testMultipleEwalletsShowManagePaymentMethodsSettingsOnFooter() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_3, EWALLET_2));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3, EWALLET_2), List.of());
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -756,7 +756,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testCallbackIsCalledWhenEwalletIsSelected() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
 
         Optional<PropertyModel> eWalletModel =
@@ -799,7 +799,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testNoCallbackForSelectedEwalletBeforeInputTime() {
-        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
 
         Optional<PropertyModel> eWalletModel =

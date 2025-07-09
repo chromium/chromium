@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,8 +66,9 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
                base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void,
-              ShowEwalletPaymentPrompt,
+              ShowPaymentLinkPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
+               std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
                base::OnceCallback<void(int64_t)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));

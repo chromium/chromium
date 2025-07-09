@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -44,15 +45,19 @@ void FacilitatedPaymentsController::Show(
   on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 
-void FacilitatedPaymentsController::ShowForEwallet(
+void FacilitatedPaymentsController::ShowForPaymentLink(
     base::span<const autofill::Ewallet> ewallet_suggestions,
+    std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
+        app_suggestions,
     base::OnceCallback<void(int64_t)> on_payment_account_selected) {
-  // Abort if there are no eWallets.
-  if (ewallet_suggestions.empty()) {
+  // Abort if there are no eWallets and no payment apps.
+  if (ewallet_suggestions.empty() &&
+      (app_suggestions == nullptr || app_suggestions->Size() == 0)) {
     return;
   }
 
-  view_->RequestShowContentForEwallet(std::move(ewallet_suggestions));
+  view_->RequestShowContentForPaymentLink(std::move(ewallet_suggestions),
+                                          std::move(app_suggestions));
   on_payment_account_selected_ = std::move(on_payment_account_selected);
 }
 

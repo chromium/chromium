@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
+#include <memory>
+#include <string>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/android/device_delegate_android.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
@@ -78,8 +83,10 @@ class ChromeFacilitatedPaymentsClient
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
-  void ShowEwalletPaymentPrompt(
+  void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
+      std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
+          app_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
   void ShowProgressScreen() final;
   void ShowErrorScreen() final;

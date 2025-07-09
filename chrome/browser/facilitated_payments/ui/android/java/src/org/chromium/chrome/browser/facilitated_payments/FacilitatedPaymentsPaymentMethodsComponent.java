@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,8 +68,13 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     /** Displays a Pix FOP selector in a bottom sheet. */
     void showSheetForPix(List<BankAccount> bankAccounts);
 
-    /** Displays an eWallet FOP selector in a bottom sheet. */
-    void showSheetForEwallet(List<Ewallet> eWallets);
+    /**
+     * Displays a payment link FOP (Form of Payment) selector in a bottom sheet.
+     *
+     * @param eWallets A list of eWallets.
+     * @param apps A list of {@link ResolveInfo} objects representing the payment apps.
+     */
+    void showSheetForPaymentLink(List<Ewallet> eWallets, List<ResolveInfo> apps);
 
     /** Displays a progress screen in a bottom sheet. */
     void showProgressScreen();

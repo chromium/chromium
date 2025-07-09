@@ -4,13 +4,18 @@
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/containers/span.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/android/facilitated_payments_app_info_list_android.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -54,8 +59,9 @@ void FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
       env, GetJavaBridge(), std::move(bank_accounts_array));
 }
 
-void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForEwallet(
-    base::span<const autofill::Ewallet> ewallet_suggestions) {
+void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForPaymentLink(
+    base::span<const autofill::Ewallet> ewallet_suggestions,
+    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions) {
   if (!GetJavaBridge()) {
     return;
   }
@@ -68,8 +74,13 @@ void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForEwallet(
         autofill::PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
             env, ewallet));
   }
-  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContentForEwallet(
-      env, GetJavaBridge(), std::move(ewallet_vector));
+
+  base::android::ScopedJavaLocalRef<jobjectArray> j_app_array =
+      static_cast<FacilitatedPaymentsAppInfoListAndroid*>(app_suggestions.get())
+          ->GetJavaArray();
+
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContentForPaymentLink(
+      env, GetJavaBridge(), std::move(ewallet_vector), j_app_array);
 }
 
 void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {

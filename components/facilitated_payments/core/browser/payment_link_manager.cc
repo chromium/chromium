@@ -5,9 +5,12 @@
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 
 #include <algorithm>
+#include <memory>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -15,6 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
@@ -90,8 +94,15 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
     RetrieveSupportedEwallets(payment_link_url);
   }
 
-  ShowEwalletPaymentPrompt(
-      supported_ewallets_,
+  std::unique_ptr<FacilitatedPaymentsAppInfoList> supported_apps;
+  if (CanTriggerAppPaymentFlow()) {
+    supported_apps = client_->GetDeviceDelegate()->GetSupportedPaymentApps(
+        PaymentLinkValidator().SanitizeForPaymentAppRetrieval(
+            payment_link_url));
+  }
+
+  ShowPaymentLinkPrompt(
+      supported_ewallets_, std::move(supported_apps),
       base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -162,6 +173,13 @@ void PaymentLinkManager::RetrieveSupportedEwallets(
                                scheme_);
     return;
   }
+}
+
+bool PaymentLinkManager::CanTriggerAppPaymentFlow() {
+  return base::FeatureList::IsEnabled(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+
+  // TODO(crbug.com/424264449): Add allowlist check.
 }
 
 void PaymentLinkManager::Reset() {
@@ -368,16 +386,19 @@ void PaymentLinkManager::DismissPrompt() {
   client_->DismissPrompt();
 }
 
-void PaymentLinkManager::ShowEwalletPaymentPrompt(
+void PaymentLinkManager::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
+    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
     base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
-  if (ewallet_suggestions.size() == 0) {
+  if (ewallet_suggestions.size() == 0 &&
+      (app_suggestions == nullptr || app_suggestions->Size() == 0)) {
     return;
   }
 
   ui_state_ = UiState::kFopSelector;
-  client_->ShowEwalletPaymentPrompt(std::move(ewallet_suggestions),
-                                    std::move(on_ewallet_account_selected));
+  client_->ShowPaymentLinkPrompt(std::move(ewallet_suggestions),
+                                 std::move(app_suggestions),
+                                 std::move(on_ewallet_account_selected));
 }
 
 void PaymentLinkManager::ShowProgressScreen() {

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -98,6 +99,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
                 .setAccountDisplayName("account display name 2")
                 .build()
     };
+
+    private static final ResolveInfo[] APPS = {new ResolveInfo(), new ResolveInfo()};
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -202,10 +205,10 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
-    public void requestShowContentForEwallet_callsControllerRequestShowContent() {
+    public void requestShowContentForPaymentLink_callsControllerRequestShowContent() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContentForEwallet(EWALLETS);
+        mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -214,10 +217,10 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
-    public void requestShowContentForEwallet_bottomSheetContentImplIsStubbed() {
+    public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContentForEwallet(EWALLETS);
+        mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
         ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
                 ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);
