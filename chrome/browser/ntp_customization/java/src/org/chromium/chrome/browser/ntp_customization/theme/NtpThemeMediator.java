@@ -92,6 +92,9 @@ public class NtpThemeMediator {
                             UPLOAD_IMAGE_KEY,
                             new ActivityResultContracts.GetContent(),
                             uri -> {
+                                // If users didn't select any file, the returned uri is null.
+                                if (uri == null) return;
+
                                 ShareImageFileUtils.getBitmapFromUriAsync(
                                         mContext,
                                         uri,
