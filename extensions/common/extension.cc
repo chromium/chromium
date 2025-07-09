@@ -100,13 +100,6 @@ bool IsManifestSupported(int manifest_version,
                          ManifestLocation location,
                          int creation_flags,
                          std::string* warning) {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kBlockInstallingExtensionsOnDesktopAndroid)) {
-    return false;
-  }
-#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-
   // Supported versions are always safe.
   if (manifest_version >= kMinimumSupportedManifestVersion &&
       manifest_version <= kMaximumSupportedManifestVersion) {

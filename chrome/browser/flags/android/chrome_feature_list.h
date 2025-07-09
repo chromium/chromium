@@ -63,9 +63,6 @@ BASE_DECLARE_FEATURE(kAutomotiveBackButtonBarStreamline);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBatchTabRestore);
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-BASE_DECLARE_FEATURE(kBlockInstallingExtensionsOnDesktopAndroid);
-#endif
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);

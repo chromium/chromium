@@ -138,9 +138,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-    &extensions_features::kBlockInstallingExtensionsOnDesktopAndroid,
-#endif
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBrowserControlsInViz,
     &features::kAndroidWebAppLaunchHandler,

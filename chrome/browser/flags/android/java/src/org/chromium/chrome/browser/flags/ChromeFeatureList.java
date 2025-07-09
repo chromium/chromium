@@ -268,8 +268,6 @@ public abstract class ChromeFeatureList {
     public static final String BATCH_TAB_RESTORE = "BatchTabRestore";
     public static final String BCIV_BOTTOM_CONTROLS = "AndroidBcivBottomControls";
     public static final String BIOMETRIC_AUTH_IDENTITY_CHECK = "BiometricAuthIdentityCheck";
-    public static final String BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID =
-            "BlockInstallingExtensionsOnDesktopAndroid";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
