@@ -11069,7 +11069,6 @@ from previous Chrome versions.
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1105274313"
       label="SecurePaymentConfirmationNetworkAndIssuerIcons:enabled"/>
-  <int value="-1104914981" label="frame-throttle-fps"/>
   <int value="-1104746914" label="CrostiniVirtualKeyboardSupport:enabled"/>
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
   <int value="-1104006220" label="AssistantNonPersonalizedVoiceSearch:enabled"/>
@@ -12379,6 +12378,7 @@ from previous Chrome versions.
   <int value="-613072171" label="ElementCapture:enabled"/>
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
+  <int value="-612512034" label="(Obsolete) frame-throttle-fps"/>
   <int value="-612480090" label="FasterLocationReload:enabled"/>
   <int value="-611385398" label="OmniboxNumNtpZpsRecentSearches:enabled"/>
   <int value="-610792441" label="OmniboxShowPopupOnMouseReleased:disabled"/>
