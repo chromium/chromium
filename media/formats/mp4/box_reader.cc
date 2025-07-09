@@ -138,13 +138,12 @@ BoxReader::~BoxReader() {
 }
 
 // static
-ParseResult BoxReader::ReadTopLevelBox(const uint8_t* buf,
-                                       const size_t buf_size,
+ParseResult BoxReader::ReadTopLevelBox(base::span<const uint8_t> buf,
                                        MediaLog* media_log,
                                        std::unique_ptr<BoxReader>* out_reader) {
   DCHECK(out_reader);
   std::unique_ptr<BoxReader> reader(
-      new BoxReader(buf, buf_size, media_log, false));
+      new BoxReader(buf.data(), buf.size(), media_log, false));
   RCHECK_OK_PARSE_RESULT(reader->ReadHeader());
   if (!IsValidTopLevelBox(reader->type(), media_log))
     return ParseResult::kError;
@@ -153,13 +152,12 @@ ParseResult BoxReader::ReadTopLevelBox(const uint8_t* buf,
 }
 
 // static
-ParseResult BoxReader::StartTopLevelBox(const uint8_t* buf,
-                                        const size_t buf_size,
+ParseResult BoxReader::StartTopLevelBox(base::span<const uint8_t> buf,
                                         MediaLog* media_log,
                                         FourCC* out_type,
                                         size_t* out_box_size) {
   std::unique_ptr<BoxReader> reader;
-  RCHECK_OK_PARSE_RESULT(ReadTopLevelBox(buf, buf_size, media_log, &reader));
+  RCHECK_OK_PARSE_RESULT(ReadTopLevelBox(buf, media_log, &reader));
   *out_type = reader->type();
   *out_box_size = reader->box_size();
   return ParseResult::kOk;

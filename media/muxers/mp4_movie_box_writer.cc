@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/muxers/mp4_movie_box_writer.h"
 
 #include <memory>
@@ -159,9 +154,8 @@ void Mp4MovieHeaderBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU32(0);           // reserved.
   writer.WriteU32(0);           // reserved.
 
-  for (auto* it = std::begin(kDisplayIdentityMatrix);
-       it != std::end(kDisplayIdentityMatrix); ++it) {
-    writer.WriteU32(*it);
+  for (auto element : kDisplayIdentityMatrix) {
+    writer.WriteU32(element);
   }
 
   // uint32_t type of predefined[6].
@@ -288,9 +282,8 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
   }
   writer.WriteU16(0);  // reserved.
 
-  for (auto* it = std::begin(box_->matrix); it != std::end(box_->matrix);
-       ++it) {
-    writer.WriteU32(*it);
+  for (auto element : box_->matrix) {
+    writer.WriteU32(element);
   }
 
   WriteLowHigh(writer, box_->natural_size.width());

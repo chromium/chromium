@@ -370,8 +370,8 @@ ParseResult MP4StreamParser::ParseBox() {
   }
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(buf, size, media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(
+      base::span(buf, base::checked_cast<size_t>(size)), media_log_, &reader);
   if (result != ParseResult::kOk)
     return result;
 
@@ -1221,7 +1221,9 @@ bool MP4StreamParser::ReadAndDiscardMDATsUntil(int64_t max_clear_offset) {
 
     FourCC type;
     size_t box_sz;
-    result = BoxReader::StartTopLevelBox(buf, size, media_log_, &type, &box_sz);
+    result = BoxReader::StartTopLevelBox(
+        base::span(buf, base::checked_cast<size_t>(size)), media_log_, &type,
+        &box_sz);
     if (result != ParseResult::kOk)
       break;
 

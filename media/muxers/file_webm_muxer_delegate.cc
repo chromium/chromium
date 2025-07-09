@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/muxers/file_webm_muxer_delegate.h"
 
 #include <cstdint>
@@ -56,12 +51,10 @@ bool FileWebmMuxerDelegate::Seekable() const {
 void FileWebmMuxerDelegate::ElementStartNotify(mkvmuxer::uint64 element_id,
                                                mkvmuxer::int64 position) {}
 
-mkvmuxer::int32 FileWebmMuxerDelegate::DoWrite(const void* buf,
-                                               mkvmuxer::uint32 len) {
+mkvmuxer::int32 FileWebmMuxerDelegate::DoWrite(base::span<const uint8_t> buf) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const bool success = webm_file_.WriteAtCurrentPosAndCheck(
-      base::as_bytes(base::span(static_cast<const uint8_t*>(buf), len)));
+  const bool success = webm_file_.WriteAtCurrentPosAndCheck(buf);
   LOG_IF(ERROR, !success) << "Failed to write muxer data to file.";
 
   return success ? 0 : -1;

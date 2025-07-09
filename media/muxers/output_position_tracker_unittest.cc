@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/muxers/output_position_tracker.h"
 
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -49,8 +45,8 @@ TEST(OutputPositionTrackerTest, OutputPositionTracker) {
   constexpr char kExpectedResult[] = {'a',  'b', 'c', 'a', 'b',  'c', '\0',
                                       '\0', 'a', 'b', 'c', '\0', '\0'};
   ASSERT_EQ(std::size(kExpectedResult), written_data.size());
-  EXPECT_EQ(memcmp(kExpectedResult, written_data.data(), written_data.size()),
-            0);
+  EXPECT_EQ(base::byte_span_with_nul_from_cstring(kExpectedResult),
+            base::as_byte_span(written_data));
 }
 
 }  // namespace media

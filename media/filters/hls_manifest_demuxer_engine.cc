@@ -116,11 +116,10 @@ hls::RenditionManager::CodecSupportType GetSupportedTypes(
 }
 
 HlsDemuxerStatus::Or<RelaxedParserSupportedType> CheckMP4Bytes(
-    const uint8_t* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   NullMediaLog null;
   std::unique_ptr<mp4::BoxReader> reader;
-  auto result = mp4::BoxReader::ReadTopLevelBox(data, size, &null, &reader);
+  auto result = mp4::BoxReader::ReadTopLevelBox(data, &null, &reader);
   if (result == mp4::ParseResult::kOk) {
     return RelaxedParserSupportedType::kMP4;
   }
@@ -128,8 +127,8 @@ HlsDemuxerStatus::Or<RelaxedParserSupportedType> CheckMP4Bytes(
 }
 
 HlsDemuxerStatus::Or<RelaxedParserSupportedType>
-CheckBitstreamForContainerMagic(const uint8_t* data, size_t size) {
-  CHECK_GT(size, 0lu);
+CheckBitstreamForContainerMagic(base::span<const uint8_t> data) {
+  CHECK(!data.empty());
 
   constexpr uint8_t kMP4FirstByte = 0x66;
   constexpr uint8_t kMPEGTSFirstByte = 0x47;
@@ -140,7 +139,7 @@ CheckBitstreamForContainerMagic(const uint8_t* data, size_t size) {
   switch (data[0]) {
     case kMP4FirstByte:
     case kFMP4FirstByte: {
-      return CheckMP4Bytes(data, size);
+      return CheckMP4Bytes(data);
     }
     case kID3FirstByte:
     case kAACFirstByte: {
@@ -972,8 +971,6 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
       case hls::XKeyTagMethod::kAES128:
       case hls::XKeyTagMethod::kAES256: {
         auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
-        base::span<const uint8_t> stream_data =
-            base::span(stream->raw_data(), stream->buffer_size());
         if (!maybe_iv.has_value() ||
             maybe_iv->size() != crypto::aes_cbc::kBlockSize) {
           std::move(cb).Run(
@@ -984,13 +981,12 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
         auto iv =
             base::as_byte_span(*maybe_iv).first<crypto::aes_cbc::kBlockSize>();
         auto maybe_plaintext =
-            crypto::aes_cbc::Decrypt(enc_data->GetKey(), iv, stream_data);
+            crypto::aes_cbc::Decrypt(enc_data->GetKey(), iv, stream->data());
         if (!maybe_plaintext) {
           std::move(cb).Run(HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
           return;
         }
-        std::move(cb).Run(CheckBitstreamForContainerMagic(
-            maybe_plaintext->data(), maybe_plaintext->size()));
+        std::move(cb).Run(CheckBitstreamForContainerMagic(*maybe_plaintext));
         return;
       }
       default: {
@@ -1000,8 +996,7 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
     }
   }
 
-  std::move(cb).Run(CheckBitstreamForContainerMagic(stream->raw_data(),
-                                                    stream->buffer_size()));
+  std::move(cb).Run(CheckBitstreamForContainerMagic(stream->data()));
 }
 
 void HlsManifestDemuxerEngine::OnChunkDemuxerParseWarning(

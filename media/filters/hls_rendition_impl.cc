@@ -424,8 +424,7 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
   // which that function consumes. Declaring it elsewhere would lead to a
   // potential use-after-free or stack smash.
   std::vector<uint8_t> plaintext;
-  base::span<const uint8_t> stream_data =
-      base::span(stream->raw_data(), stream->buffer_size());
+  base::span<const uint8_t> stream_data = stream->data();
 
   if (auto enc_data = segment->GetEncryptionData()) {
     switch (enc_data->GetMethod()) {

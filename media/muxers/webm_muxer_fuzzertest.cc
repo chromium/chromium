@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,6 +10,7 @@
 #include <random>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -92,12 +88,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const auto has_alpha_frame = rng() % 4;
         auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
-        auto buffer = media::DecoderBuffer::CopyFrom(
-            base::span<const uint8_t>(data, size));
+        auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str));
         if (has_alpha_frame) {
           buffer->WritableSideData().alpha_data =
-              base::HeapArray<uint8_t>::CopiedFrom(
-                  base::span<const uint8_t>(data, size));
+              base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(str));
         }
         buffer->set_is_key_frame(is_key_frame != 0 || is_first_frame);
         muxer.PutFrame(media::Muxer::EncodedFrame{parameters, std::nullopt,
@@ -117,7 +111,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
-        auto buffer = media::DecoderBuffer::CopyFrom({data, size});
+        auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str));
         buffer->set_is_key_frame(true);
         muxer.PutFrame(
             media::Muxer::EncodedFrame{params, std::nullopt, std::move(buffer)},

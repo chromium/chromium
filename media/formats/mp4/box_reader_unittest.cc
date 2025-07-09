@@ -97,22 +97,21 @@ class BoxReaderTest : public testing::Test {
     return std::vector<uint8_t>(kSkipBox, kSkipBox + sizeof(kSkipBox));
   }
 
-  void TestTopLevelBox(const uint8_t* data, size_t data_size, uint32_t fourCC) {
-    std::vector<uint8_t> buf(data, data + data_size);
+  void TestTopLevelBox(base::span<const uint8_t> data, uint32_t fourCC) {
+    std::vector<uint8_t> buf(data.size());
+    buf.assign(data.begin(), data.end());
 
     std::unique_ptr<BoxReader> reader;
-    ParseResult result =
-        BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+    ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
 
     EXPECT_EQ(result, ParseResult::kOk);
     EXPECT_TRUE(reader);
     EXPECT_EQ(fourCC, static_cast<uint32_t>(reader->type()));
-    EXPECT_EQ(reader->box_size(), data_size);
+    EXPECT_EQ(reader->box_size(), data.size());
   }
 
   template <typename ChildType>
-  void TestParsing32bitOverflow(const uint8_t* buffer,
-                                size_t size,
+  void TestParsing32bitOverflow(base::span<const uint8_t> data,
                                 const std::string& overflow_error) {
     // Wrap whatever we're passed in a dummy EMSG so we can satisfy requirements
     // for ReadTopLevelBox and to kick off parsing.
@@ -120,12 +119,12 @@ class BoxReaderTest : public testing::Test {
         0x00, 0x00, 0x00, 0x00,  // dummy size
         'e',  'm',  's',  'g',   // fourcc
     };
-    buffer_wrapper.insert(buffer_wrapper.end(), buffer, buffer + size);
+    buffer_wrapper.insert(buffer_wrapper.end(), data.begin(), data.end());
 
     // Basic check of the nested buffer size. If box_size > buffer size the test
     // will exit early (waiting for more bytes to be appended).
-    ASSERT_TRUE(base::IsValueInRangeForNumericType<uint8_t>(size));
-    ASSERT_LE(buffer[3], size);
+    ASSERT_TRUE(base::IsValueInRangeForNumericType<uint8_t>(data.size()));
+    ASSERT_LE(data[3], data.size());
 
     // Update the size (keep it simple).
     ASSERT_TRUE(
@@ -133,8 +132,8 @@ class BoxReaderTest : public testing::Test {
     buffer_wrapper[3] = buffer_wrapper.size();
 
     std::unique_ptr<BoxReader> reader;
-    ParseResult result = BoxReader::ReadTopLevelBox(
-        &buffer_wrapper[0], buffer_wrapper.size(), &media_log_, &reader);
+    ParseResult result =
+        BoxReader::ReadTopLevelBox(buffer_wrapper, &media_log_, &reader);
     EXPECT_EQ(result, ParseResult::kOk);
     EXPECT_TRUE(reader);
     EXPECT_EQ(FOURCC_EMSG, reader->type());
@@ -161,8 +160,7 @@ class BoxReaderTest : public testing::Test {
 TEST_F(BoxReaderTest, ExpectedOperationTest) {
   std::vector<uint8_t> buf = GetBuf();
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader);
 
@@ -189,8 +187,8 @@ TEST_F(BoxReaderTest, OuterTooShortTest) {
 
   // Create a soft failure by truncating the outer box.
   std::unique_ptr<BoxReader> r;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size() - 2, &media_log_, &r);
+  ParseResult result = BoxReader::ReadTopLevelBox(
+      base::span(buf).first(buf.size() - 2), &media_log_, &r);
 
   EXPECT_EQ(result, ParseResult::kNeedMoreData);
   EXPECT_FALSE(r);
@@ -202,8 +200,7 @@ TEST_F(BoxReaderTest, InnerTooLongTest) {
   // Make an inner box too big for its outer box.
   buf[25] = 1;
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
   EXPECT_EQ(result, ParseResult::kOk);
 
   SkipBox box;
@@ -225,8 +222,7 @@ TEST_F(BoxReaderTest, WrongFourCCTest) {
             HasSubstr("Invalid top-level ISO BMFF box type DALE")));
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
   EXPECT_FALSE(reader);
   EXPECT_EQ(result, ParseResult::kError);
 }
@@ -234,8 +230,7 @@ TEST_F(BoxReaderTest, WrongFourCCTest) {
 TEST_F(BoxReaderTest, ScanChildrenTest) {
   std::vector<uint8_t> buf = GetBuf();
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
 
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader->SkipBytes(16) && reader->ScanChildren());
@@ -259,8 +254,7 @@ TEST_F(BoxReaderTest, ReadAllChildrenTest) {
   // Modify buffer to exclude its last 'free' box
   buf[3] = 0x38;
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(buf, &media_log_, &reader);
   EXPECT_EQ(result, ParseResult::kOk);
 
   std::vector<PsshBox> kids;
@@ -273,7 +267,7 @@ TEST_F(BoxReaderTest, SkippingBloc) {
   static const uint8_t kData[] = {0x00, 0x00, 0x00, 0x09, 'b',
                                   'l',  'o',  'c',  0x00};
 
-  TestTopLevelBox(kData, sizeof(kData), FOURCC_BLOC);
+  TestTopLevelBox(kData, FOURCC_BLOC);
 }
 
 TEST_F(BoxReaderTest, SkippingEmsg) {
@@ -290,7 +284,7 @@ TEST_F(BoxReaderTest, SkippingEmsg) {
       0x05, 0x06, 0x07, 0x08,  // message_data[4] = 0x05060708
   };
 
-  TestTopLevelBox(kData, sizeof(kData), FOURCC_EMSG);
+  TestTopLevelBox(kData, FOURCC_EMSG);
 }
 
 TEST_F(BoxReaderTest, SkippingUuid) {
@@ -301,7 +295,7 @@ TEST_F(BoxReaderTest, SkippingUuid) {
       0x00,
   };
 
-  TestTopLevelBox(kData, sizeof(kData), FOURCC_UUID);
+  TestTopLevelBox(kData, FOURCC_UUID);
 }
 
 TEST_F(BoxReaderTest, NestedBoxWithHugeSize) {
@@ -318,8 +312,7 @@ TEST_F(BoxReaderTest, NestedBoxWithHugeSize) {
       0x00, 0x01, 0x00, 0x03, 0x00, 0x03, 0x00, 0x04, 0x05, 0x06, 0x07, 0x08};
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(kData, sizeof(kData), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
 
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader);
@@ -343,8 +336,7 @@ TEST_F(BoxReaderTest, ScanChildrenWithInvalidChild) {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(kData, sizeof(kData), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
 
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader);
@@ -364,8 +356,7 @@ TEST_F(BoxReaderTest, ReadAllChildrenWithChildLargerThanParent) {
   };
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(kData, sizeof(kData), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
 
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader);
@@ -391,8 +382,7 @@ TEST_F(BoxReaderTest, TrunSampleCount32bitOverflow) {
 
   // Verify we catch the overflow to avoid OOB reads/writes.
   TestParsing32bitOverflow<TrackFragmentRun>(
-      kData, sizeof(kData),
-      "Extreme TRUN sample count exceeds implementation limit.");
+      kData, "Extreme TRUN sample count exceeds implementation limit.");
 }
 
 TEST_F(BoxReaderTest, SaioCount32bitOverflow) {
@@ -411,7 +401,7 @@ TEST_F(BoxReaderTest, SaioCount32bitOverflow) {
 
   // Verify we catch the overflow to avoid OOB reads/writes.
   TestParsing32bitOverflow<SampleAuxiliaryInformationOffset>(
-      kData, sizeof(kData), "Extreme SAIO count exceeds implementation limit.");
+      kData, "Extreme SAIO count exceeds implementation limit.");
 }
 
 TEST_F(BoxReaderTest, ElstCount32bitOverflow) {
@@ -432,7 +422,7 @@ TEST_F(BoxReaderTest, ElstCount32bitOverflow) {
 
   // Verify we catch the overflow to avoid OOB reads/writes.
   TestParsing32bitOverflow<EditList>(
-      kData, sizeof(kData), "Extreme ELST count exceeds implementation limit.");
+      kData, "Extreme ELST count exceeds implementation limit.");
 }
 
 TEST_F(BoxReaderTest, SbgpCount32bitOverflow) {
@@ -451,7 +441,7 @@ TEST_F(BoxReaderTest, SbgpCount32bitOverflow) {
 
   // Verify we catch the overflow to avoid OOB reads/writes.
   TestParsing32bitOverflow<SampleToGroup>(
-      kData, sizeof(kData), "Extreme SBGP count exceeds implementation limit.");
+      kData, "Extreme SBGP count exceeds implementation limit.");
 }
 
 TEST_F(BoxReaderTest, SgpdCount32bitOverflow) {
@@ -470,7 +460,7 @@ TEST_F(BoxReaderTest, SgpdCount32bitOverflow) {
 
   // Verify we catch the overflow to avoid OOB reads/writes.
   TestParsing32bitOverflow<SampleGroupDescription>(
-      kData, sizeof(kData), "Extreme SGPD count exceeds implementation limit.");
+      kData, "Extreme SGPD count exceeds implementation limit.");
 }
 
 TEST_F(BoxReaderTest, OutsideOfBoxRead) {
@@ -481,8 +471,7 @@ TEST_F(BoxReaderTest, OutsideOfBoxRead) {
   };
 
   std::unique_ptr<BoxReader> reader;
-  ParseResult result =
-      BoxReader::ReadTopLevelBox(kData, sizeof(kData), &media_log_, &reader);
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
   EXPECT_EQ(result, ParseResult::kOk);
   EXPECT_TRUE(reader);
 

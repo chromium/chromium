@@ -109,8 +109,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   //
   // |buf| is retained but not owned, and must outlive the BoxReader instance.
   [[nodiscard]] static ParseResult ReadTopLevelBox(
-      const uint8_t* buf,
-      const size_t buf_size,
+      base::span<const uint8_t> buf,
       MediaLog* media_log,
       std::unique_ptr<BoxReader>* out_reader);
 
@@ -119,11 +118,11 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // box header is complete.
   //
   // |buf| is not retained.
-  [[nodiscard]] static ParseResult StartTopLevelBox(const uint8_t* buf,
-                                                    const size_t buf_size,
-                                                    MediaLog* media_log,
-                                                    FourCC* out_type,
-                                                    size_t* out_box_size);
+  [[nodiscard]] static ParseResult StartTopLevelBox(
+      base::span<const uint8_t> buf,
+      MediaLog* media_log,
+      FourCC* out_type,
+      size_t* out_box_size);
 
   // Create a BoxReader from a buffer. |buf| must be the complete buffer, as
   // errors are returned when sufficient data is not available. |buf| can start

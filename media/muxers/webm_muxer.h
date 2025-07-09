@@ -54,7 +54,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
     // Does the actual writing of |len| bytes from the given |buf| depending on
     // the mode desired by the concrete implementation of this delegate.
     // Returns 0 on success, -1 otherwise.
-    virtual mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) = 0;
+    virtual mkvmuxer::int32 DoWrite(base::span<const uint8_t> buf) = 0;
 
     SEQUENCE_CHECKER(sequence_checker_);
 

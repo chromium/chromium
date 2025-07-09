@@ -103,7 +103,7 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   std::optional<size_t> max_read_position() const { return max_read_position_; }
 
-  const uint8_t* raw_data() const { return buffer_.data(); }
+  base::span<const uint8_t> data() const { return buffer_; }
 
   uint64_t memory_usage() const { return memory_usage_; }
 

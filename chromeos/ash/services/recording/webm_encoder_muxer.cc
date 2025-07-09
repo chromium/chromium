@@ -93,15 +93,15 @@ class RecordingMuxerDelegate : public media::FileWebmMuxerDelegate {
 
  protected:
   // media::FileWebmMuxerDelegate:
-  mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) override {
-    const auto result = FileWebmMuxerDelegate::DoWrite(buf, len);
+  mkvmuxer::int32 DoWrite(base::span<const uint8_t> buf) override {
+    const auto result = FileWebmMuxerDelegate::DoWrite(buf);
     if (result != 0) {
       file_io_helper_.delegate()->NotifyFailure(
           mojom::RecordingStatus::kIoError);
       return result;
     }
 
-    file_io_helper_.OnBytesWritten(len);
+    file_io_helper_.OnBytesWritten(buf.size());
 
     return result;
   }

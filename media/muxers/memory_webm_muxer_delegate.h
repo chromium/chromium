@@ -41,7 +41,7 @@ class MEDIA_EXPORT MemoryWebmMuxerDelegate : public WebmMuxer::Delegate {
 
  protected:
   // WebmMuxerDelegate:
-  mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) override;
+  mkvmuxer::int32 DoWrite(base::span<const uint8_t> buf) override;
 
  private:
   std::vector<uint8_t> buffer_ GUARDED_BY_CONTEXT(sequence_checker_);

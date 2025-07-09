@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/muxers/mp4_muxer_delegate_fragment.h"
 
 #include "base/notreached.h"
@@ -263,8 +258,9 @@ void Mp4MuxerDelegateFragment::AddDataToMdat(
 
   // TODO(crbug.com/40273983): encoded stream needs to be movable container.
   track_data.resize(current_size + encoded_data_span.size());
-  memcpy(&track_data[current_size], encoded_data_span.data(),
-         encoded_data_span.size());
+  base::span(track_data)
+      .subspan(current_size)
+      .copy_from_nonoverlapping(encoded_data_span);
 }
 
 void Mp4MuxerDelegateFragment::AddLastTimestamp(
