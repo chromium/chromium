@@ -4801,10 +4801,6 @@ static_library("ui") {
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
       "window_name_prompt/window_name_prompt.cc",
-
-      # This test header is included because it contains forward declarations
-      # needed for "friend" statements for use in tests.
-      "translate/translate_bubble_test_utils.h",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
@@ -4908,6 +4904,10 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
+
+    # This dependency is needed because translate_bubble_view.h declares free-functions in
+    # translate_bubble_test_utils.h as `friend`.
+    deps += [ "//chrome/browser/ui/translate:test_support" ]
 
     # TODO(crbug.com/413572035): Move into build files of the actual modules depending
     # on this once they are fully modularized. eg: views/autofill, views/user_education.

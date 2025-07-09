@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 source_set("translate") {
   sources = [
     "partial_translate_bubble_model.h",
@@ -42,5 +44,15 @@ if (!is_android) {
       "//components/translate/core/browser",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("test_support") {
+    sources = [
+      # This test header is included because it contains forward declarations
+      # needed for "friend" statements for use in tests.
+      "translate_bubble_test_utils.h",
+    ]
   }
 }
