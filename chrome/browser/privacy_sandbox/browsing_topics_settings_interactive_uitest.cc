@@ -113,6 +113,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
 // (checked == false). Validate that the PS service returns only 1 blocked topic
 // with an ID of 1. Navigate to the Ad Topics Page and validate topic(1) is
 // blocked topics list.
+// TODO(https://crbug.com/430518830): Flaky on
+// linux-blink-web-tests-force-accessibility-rel
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BlockFirstTopicOnManageTopicsPage \
+  DISABLED_BlockFirstTopicOnManageTopicsPage
+#else
+#define MAYBE_BlockFirstTopicOnManageTopicsPage \
+  BlockFirstTopicOnManageTopicsPage
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                        BlockFirstTopicOnManageTopicsPage) {
   RunTestSequence(
