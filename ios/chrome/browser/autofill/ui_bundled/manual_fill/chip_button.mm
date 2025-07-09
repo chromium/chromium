@@ -23,10 +23,6 @@ constexpr CGFloat kChipHorizontalPadding = 12;
 // Keyboard Accessory Upgrade feature is enabled.
 constexpr CGFloat kChipVerticalPadding = 11.5;
 
-// Vertical margin for the button. How much bigger the tap target is. Used when
-// the Keyboard Accessory Upgrade feature is disabled.
-constexpr CGFloat kChipVerticalMargin = 4;
-
 // Minimal height and width for the button.
 constexpr CGFloat kChipMinSize = 44;
 
@@ -35,11 +31,6 @@ constexpr CGFloat kFontSize = 14;
 
 // Line spacing for the button's title.
 constexpr CGFloat kLineSpacing = 6;
-
-// Returns the vertical margin to use.
-CGFloat GetChipVerticalMargin() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? 0 : kChipVerticalMargin;
-}
 
 // Returns the horizontal padding to use.
 CGFloat GetChipHorizontalPadding() {
@@ -56,9 +47,6 @@ CGFloat GetChipVerticalPadding() {
 }  // namespace
 
 @interface ChipButton ()
-
-// Gray rounded background view which gives the aspect of a chip.
-@property(strong, nonatomic) UIView* backgroundView;
 
 // Attributes of the button's title.
 @property(strong, nonatomic) NSDictionary* titleAttributes;
@@ -93,28 +81,29 @@ CGFloat GetChipVerticalPadding() {
   [self initializeStyling];
 }
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  CGFloat height = IsKeyboardAccessoryUpgradeEnabled()
-                       ? kChipMinSize
-                       : self.backgroundView.bounds.size.height;
-  self.backgroundView.layer.cornerRadius = height / 2.0;
-}
-
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
-  self.backgroundView.backgroundColor =
+  UIButtonConfiguration* buttonConfiguration = self.configuration;
+  UIBackgroundConfiguration* backgroundConfiguration =
+      buttonConfiguration.background;
+  backgroundConfiguration.backgroundColor =
       highlighted ? [UIColor colorNamed:kGrey300Color]
                   : [UIColor colorNamed:kGrey100Color];
+  buttonConfiguration.background = backgroundConfiguration;
+  self.configuration = buttonConfiguration;
 }
 
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
-  self.backgroundView.hidden = !enabled;
   UIButtonConfiguration* buttonConfiguration = self.configuration;
   buttonConfiguration.contentInsets = enabled
                                           ? [self chipNSDirectionalEdgeInsets]
                                           : NSDirectionalEdgeInsetsZero;
+  UIBackgroundConfiguration* backgroundConfiguration =
+      buttonConfiguration.background;
+  backgroundConfiguration.backgroundColor =
+      enabled ? [UIColor colorNamed:kGrey100Color] : UIColor.clearColor;
+  buttonConfiguration.background = backgroundConfiguration;
   self.configuration = buttonConfiguration;
 }
 
@@ -168,33 +157,24 @@ CGFloat GetChipVerticalPadding() {
 }
 
 - (void)initializeStyling {
-  _backgroundView = [[UIView alloc] init];
-  _backgroundView.userInteractionEnabled = NO;
-  _backgroundView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self addSubview:_backgroundView];
-  [self sendSubviewToBack:_backgroundView];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kTextPrimaryColor];
+  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration clearConfiguration];
+  backgroundConfiguration.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  buttonConfiguration.background = backgroundConfiguration;
+  self.configuration = buttonConfiguration;
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     [NSLayoutConstraint activateConstraints:@[
-      [_backgroundView.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kChipMinSize],
-      [_backgroundView.widthAnchor
-          constraintGreaterThanOrEqualToConstant:kChipMinSize],
+      [self.heightAnchor constraintGreaterThanOrEqualToConstant:kChipMinSize],
+      [self.widthAnchor constraintGreaterThanOrEqualToConstant:kChipMinSize],
     ]];
   }
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_backgroundView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [_backgroundView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-    [_backgroundView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                              constant:GetChipVerticalMargin()],
-    [_backgroundView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor
-                       constant:-GetChipVerticalMargin()]
-  ]];
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -202,12 +182,6 @@ CGFloat GetChipVerticalPadding() {
 
   [self updateTitleLabelFont];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kTextPrimaryColor];
-  self.configuration = buttonConfiguration;
 }
 
 - (void)updateTitleLabelFont {
