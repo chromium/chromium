@@ -40,6 +40,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 // Extract only the visual features during the phishing classifier.
 BASE_DECLARE_FEATURE(kClientSideDetectionOnlyExtractVisualFeatures);
 
+BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
+
+extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
+
 // Pass the LlamaTriggerRuleInfo from RTLookupResponse to ClientPhishingRequest
 // if it exists and the force request mechanism occurs.
 BASE_DECLARE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo);

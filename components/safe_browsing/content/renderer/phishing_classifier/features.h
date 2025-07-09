@@ -73,10 +73,6 @@ class FeatureMap {
   std::unordered_map<std::string, double> features_;
 };
 
-BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
-
-extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
-
 namespace features {
 // Constants for the various feature names that we use.
 //
