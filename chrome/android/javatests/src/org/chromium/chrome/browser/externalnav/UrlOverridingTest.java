@@ -100,6 +100,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
@@ -122,7 +123,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.FencedFrameUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.NetError;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -566,6 +566,7 @@ public class UrlOverridingTest {
                 () -> {
                     tab.loadUrl(loadParams);
                 });
+        ChromeTabUtils.waitForInteractable(tab);
 
         int preClickFinishTarget = params.willLoadSubframe ? 2 : 1;
         if (finishCallback.getCallCount() < preClickFinishTarget) {
@@ -1849,9 +1850,6 @@ public class UrlOverridingTest {
                                 + 1) // xhr callback
                 .when(mSpyRedirectHandler)
                 .currentRealtime();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebContentsUtils.simulateEndOfPaintHolding(tab.getWebContents()));
 
         TouchCommon.singleClickView(tab.getView());
         // Wait for blocked Message to show.
