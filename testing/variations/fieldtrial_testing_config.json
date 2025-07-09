@@ -12483,21 +12483,6 @@
             ]
         }
     ],
-    "IOSEnterpriseRealtimeEventReporting": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseRealtimeEventReportingOnIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnterpriseRealtimeUrlFiltering": [
         {
             "platforms": [
