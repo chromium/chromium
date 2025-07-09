@@ -79,7 +79,9 @@ def add_common_args(parser):
                       dest='tests',
                       help='Name of test suite(s) to replicate. Pass multiple '
                       'times for multiple tests. Optional with the "compile" '
-                      'run mode which will compile "all".')
+                      'run mode which will compile "all". Test files can also '
+                      'be used instead of test suites to attempt to run tests '
+                      'in those files.')
   parser.add_argument('--builder',
                       '-b',
                       required=True,
