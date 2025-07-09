@@ -82,6 +82,10 @@ crbug.com/395914611 [ Mac12-arm64 ] external/wpt/css/filter-effects/backdrop-fil
 crbug.com/395914611 [ Mac13-arm64 ] external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]
 crbug.com/395914611 [ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]
 crbug.com/395914611 [ Mac15-arm64 ] external/wpt/css/filter-effects/backdrop-filter-transform.html [ Failure ]
+crbug.com/395914611 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
+crbug.com/395914611 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
+crbug.com/395914611 [ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
+crbug.com/395914611 [ Mac15-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
 # YUV edge sampling bug
 crbug.com/329041548 [ Mac12-arm64 ] media/video-colorspace-yuv422.html [ Failure ]
 crbug.com/329041548 [ Mac13-arm64 ] media/video-colorspace-yuv422.html [ Failure ]
