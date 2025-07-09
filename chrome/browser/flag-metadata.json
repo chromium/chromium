@@ -3571,10 +3571,10 @@
   {
     "name": "enable-input-device-settings-split",
     "owners": [
-      "dpad@google.com",
+      "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-input-event-logging",
