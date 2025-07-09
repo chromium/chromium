@@ -9,6 +9,8 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -159,6 +162,37 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHiddenOnNonExtensionNtp) {
       WaitForHide(kNtpFooterId));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInGuestProfile) {
+  LoadNtpOverridingExtension();
+  Browser* const guest_browser = CreateGuestBrowser();
+  ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
+
+  RunTestSequenceInContext(
+      // Run the following steps with the guest browser as the default context.
+      guest_browser->window()->GetElementContext(),
+      // Open NTP in guest profile.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Ensure footer is not present.
+      EnsureNotPresent(kNtpFooterId));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, FooterHidesInIncognito) {
+  LoadNtpOverridingExtension();
+  Browser* const incognito_browser = CreateIncognitoBrowser();
+  ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
+
+  RunTestSequenceInContext(
+      // Run the following steps with the incognito browser as the default
+      // context.
+      incognito_browser->window()->GetElementContext(),
+      // Open NTP in incognito window.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Ensure footer is not present.
+      EnsureNotPresent(kNtpFooterId));
+}
+
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
                        ExtensionAttributionTogglesVisibility) {
   LoadNtpOverridingExtension();
@@ -268,12 +302,53 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTest {
 
   void TearDownOnMainThread() override {
     scoped_browser_management_.reset();
+    incognito_scoped_browser_management_.reset();
+    guest_scoped_browser_management_.reset();
     FooterInteractiveTest::TearDownOnMainThread();
+  }
+
+  Browser* CreateManagedGuestBrowser() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath guest_path = profile_manager->GetGuestProfilePath();
+    Profile& guest_profile =
+        profiles::testing::CreateProfileSync(profile_manager, guest_path);
+    Profile* guest_profile_otr =
+        guest_profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    guest_scoped_browser_management_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(guest_profile_otr),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+    // Create browser and add tab.
+    Browser* guest_browser =
+        Browser::Create(Browser::CreateParams(guest_profile_otr, true));
+    AddBlankTabAndShow(guest_browser);
+    ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
+    return guest_browser;
+  }
+
+  Browser* CreateManagedIncognitoBrowser() {
+    Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        true));
+    incognito_scoped_browser_management_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(
+                incognito_browser->profile()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    AddBlankTabAndShow(incognito_browser);
+    ui_test_utils::BrowserActivationWaiter(incognito_browser)
+        .WaitForActivation();
+    return incognito_browser;
   }
 
  private:
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      incognito_scoped_browser_management_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      guest_scoped_browser_management_;
 };
 
 IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest, FooterShowsOnNtpOnly) {
@@ -339,4 +414,31 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
       // Ensure footer hides.
       WaitForHide(kNtpFooterId));
 }
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       FooterShowsInGuestProfile) {
+  // Create browser and add tab.
+  Browser* guest_browser = CreateManagedGuestBrowser();
+  RunTestSequenceInContext(
+      // Run the following steps with the guest browser as the default context.
+      guest_browser->window()->GetElementContext(),
+      // Open NTP in guest profile.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Ensure footer shows.
+      WaitForShow(kNtpFooterId));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       FooterShowsInIncognito) {
+  Browser* incognito_browser = CreateManagedIncognitoBrowser();
+  RunTestSequenceInContext(
+      // Run the following steps with the incognito browser as the default
+      // context.
+      incognito_browser->window()->GetElementContext(),
+      // Open NTP in incognito window.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Ensure footer shows.
+      WaitForShow(kNtpFooterId));
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
