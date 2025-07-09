@@ -58,7 +58,6 @@ void FlushAndroidCrashKeys() {
 
 static void JNI_CrashKeys_Set(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jint key,
     const base::android::JavaParamRef<jstring>& value) {
   if (value.is_null()) {

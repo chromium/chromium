@@ -28,23 +28,18 @@ class MediaRouterDialogControllerAndroid
   // Notifies the controller that user has selected a sink with |jsink_id| for
   // |source_id|.
   void OnSinkSelected(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
                       const base::android::JavaParamRef<jstring>& source_id,
                       const base::android::JavaParamRef<jstring>& jsink_id);
   // Notifies the controller that user chose to close the route.
   void OnRouteClosed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jmedia_route_id);
   // Notifies the controller that the dialog has been closed without the user
   // taking any action (e.g. closing the route or selecting a sink).
-  void OnDialogCancelled(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void OnDialogCancelled(JNIEnv* env);
   // Notifies the controller the media source URN is not supported so it could
   // properly reject the request.
-  void OnMediaSourceNotSupported(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void OnMediaSourceNotSupported(JNIEnv* env);
 
  private:
   friend class content::WebContentsUserData<MediaRouterDialogControllerAndroid>;

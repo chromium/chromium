@@ -61,12 +61,12 @@ public class ColorPickerBridge {
     }
 
     void onDialogDismissed(int newColor) {
-        ColorPickerBridgeJni.get().onColorChosen(mNativeDialog, ColorPickerBridge.this, newColor);
+        ColorPickerBridgeJni.get().onColorChosen(mNativeDialog, newColor);
     }
 
     @NativeMethods
     interface Natives {
         // Implemented in color_picker_bridge.cc
-        void onColorChosen(long nativeColorPickerBridge, ColorPickerBridge caller, int color);
+        void onColorChosen(long nativeColorPickerBridge, int color);
     }
 }

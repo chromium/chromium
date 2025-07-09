@@ -36,7 +36,6 @@ class ColorPickerBridge : public content::ColorChooser {
   ~ColorPickerBridge() override;
 
   void OnColorChosen(JNIEnv* env,
-                     const base::android::JavaRef<jobject>& obj,
                      jint color);
 
   // ColorPicker interface

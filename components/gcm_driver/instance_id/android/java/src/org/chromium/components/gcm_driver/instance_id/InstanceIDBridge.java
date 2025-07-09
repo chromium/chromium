@@ -81,8 +81,7 @@ public class InstanceIDBridge {
 
             @Override
             protected void sendResultToNative(String id) {
-                InstanceIDBridgeJni.get()
-                        .didGetID(mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, id);
+                InstanceIDBridgeJni.get().didGetID(mNativeInstanceIDAndroid, requestId, id);
             }
         }.execute();
     }
@@ -99,11 +98,7 @@ public class InstanceIDBridge {
             @Override
             protected void sendResultToNative(Long creationTime) {
                 InstanceIDBridgeJni.get()
-                        .didGetCreationTime(
-                                mNativeInstanceIDAndroid,
-                                InstanceIDBridge.this,
-                                requestId,
-                                creationTime);
+                        .didGetCreationTime(mNativeInstanceIDAndroid, requestId, creationTime);
             }
         }.execute();
     }
@@ -139,9 +134,7 @@ public class InstanceIDBridge {
 
             @Override
             protected void sendResultToNative(String token) {
-                InstanceIDBridgeJni.get()
-                        .didGetToken(
-                                mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, token);
+                InstanceIDBridgeJni.get().didGetToken(mNativeInstanceIDAndroid, requestId, token);
             }
         }.execute();
     }
@@ -174,11 +167,7 @@ public class InstanceIDBridge {
             @Override
             protected void sendResultToNative(Boolean success) {
                 InstanceIDBridgeJni.get()
-                        .didDeleteToken(
-                                mNativeInstanceIDAndroid,
-                                InstanceIDBridge.this,
-                                requestId,
-                                success);
+                        .didDeleteToken(mNativeInstanceIDAndroid, requestId, success);
             }
         }.execute();
     }
@@ -199,12 +188,7 @@ public class InstanceIDBridge {
 
             @Override
             protected void sendResultToNative(Boolean success) {
-                InstanceIDBridgeJni.get()
-                        .didDeleteID(
-                                mNativeInstanceIDAndroid,
-                                InstanceIDBridge.this,
-                                requestId,
-                                success);
+                InstanceIDBridgeJni.get().didDeleteID(mNativeInstanceIDAndroid, requestId, success);
             }
         }.execute();
     }
@@ -264,28 +248,14 @@ public class InstanceIDBridge {
 
     @NativeMethods
     interface Natives {
-        void didGetID(
-                long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId, String id);
+        void didGetID(long nativeInstanceIDAndroid, int requestId, String id);
 
-        void didGetCreationTime(
-                long nativeInstanceIDAndroid,
-                InstanceIDBridge caller,
-                int requestId,
-                long creationTime);
+        void didGetCreationTime(long nativeInstanceIDAndroid, int requestId, long creationTime);
 
-        void didGetToken(
-                long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId, String token);
+        void didGetToken(long nativeInstanceIDAndroid, int requestId, String token);
 
-        void didDeleteToken(
-                long nativeInstanceIDAndroid,
-                InstanceIDBridge caller,
-                int requestId,
-                boolean success);
+        void didDeleteToken(long nativeInstanceIDAndroid, int requestId, boolean success);
 
-        void didDeleteID(
-                long nativeInstanceIDAndroid,
-                InstanceIDBridge caller,
-                int requestId,
-                boolean success);
+        void didDeleteID(long nativeInstanceIDAndroid, int requestId, boolean success);
     }
 }

@@ -228,9 +228,7 @@ void DataSharingServiceAndroid::RemoveMember(
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-bool DataSharingServiceAndroid::IsEmptyService(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+bool DataSharingServiceAndroid::IsEmptyService(JNIEnv* env) {
   return data_sharing_service_->IsEmptyService();
 }
 

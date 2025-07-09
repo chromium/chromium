@@ -31,8 +31,7 @@ class ConfirmInfoBar : public InfoBarAndroid {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
 
-  void OnLinkClicked(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj) override;
+  void OnLinkClicked(JNIEnv* env) override;
 
   void ProcessButton(int action) override;
 };

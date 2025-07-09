@@ -22,8 +22,7 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data,
   ~CollaborationServiceAndroid() override;
 
   // CollaborationService Java API methods, implemented by native service:
-  bool IsEmptyService(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& j_caller);
+  bool IsEmptyService(JNIEnv* env);
   void StartJoinFlow(JNIEnv* env,
                      jlong delegate,
                      const base::android::JavaParamRef<jobject>& j_url);

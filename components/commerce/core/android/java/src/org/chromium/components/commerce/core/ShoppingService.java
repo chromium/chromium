@@ -196,8 +196,7 @@ public class ShoppingService {
             return;
         }
 
-        ShoppingServiceJni.get()
-                .getProductInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+        ShoppingServiceJni.get().getProductInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
     }
 
     /**
@@ -210,7 +209,7 @@ public class ShoppingService {
         if (mNativeShoppingServiceAndroid == 0) return null;
 
         return ShoppingServiceJni.get()
-                .getAvailableProductInfoForUrl(mNativeShoppingServiceAndroid, this, url);
+                .getAvailableProductInfoForUrl(mNativeShoppingServiceAndroid, url);
     }
 
     /**
@@ -226,7 +225,7 @@ public class ShoppingService {
         }
 
         ShoppingServiceJni.get()
-                .getMerchantInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+                .getMerchantInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
     }
 
     /**
@@ -243,7 +242,7 @@ public class ShoppingService {
         }
 
         ShoppingServiceJni.get()
-                .getPriceInsightsInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+                .getPriceInsightsInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
     }
 
     /**
@@ -259,7 +258,7 @@ public class ShoppingService {
         }
 
         ShoppingServiceJni.get()
-                .getDiscountInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+                .getDiscountInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
     }
 
     /**
@@ -271,14 +270,14 @@ public class ShoppingService {
     public void fetchPriceEmailPref() {
         if (mNativeShoppingServiceAndroid == 0) return;
 
-        ShoppingServiceJni.get().fetchPriceEmailPref(mNativeShoppingServiceAndroid, this);
+        ShoppingServiceJni.get().fetchPriceEmailPref(mNativeShoppingServiceAndroid);
     }
 
     /** Schedules updates for all products that the user has saved in the bookmarks system. */
     public void scheduleSavedProductUpdate() {
         if (mNativeShoppingServiceAndroid == 0) return;
 
-        ShoppingServiceJni.get().scheduleSavedProductUpdate(mNativeShoppingServiceAndroid, this);
+        ShoppingServiceJni.get().scheduleSavedProductUpdate(mNativeShoppingServiceAndroid);
     }
 
     /** Create new subscriptions in batch. */
@@ -292,7 +291,6 @@ public class ShoppingService {
         ShoppingServiceJni.get()
                 .subscribe(
                         mNativeShoppingServiceAndroid,
-                        this,
                         sub.type,
                         sub.idType,
                         sub.managementType,
@@ -314,7 +312,6 @@ public class ShoppingService {
         ShoppingServiceJni.get()
                 .unsubscribe(
                         mNativeShoppingServiceAndroid,
-                        this,
                         sub.type,
                         sub.idType,
                         sub.managementType,
@@ -336,7 +333,6 @@ public class ShoppingService {
         ShoppingServiceJni.get()
                 .isSubscribed(
                         mNativeShoppingServiceAndroid,
-                        this,
                         sub.type,
                         sub.idType,
                         sub.managementType,
@@ -356,7 +352,6 @@ public class ShoppingService {
         return ShoppingServiceJni.get()
                 .isSubscribedFromCache(
                         mNativeShoppingServiceAndroid,
-                        this,
                         sub.type,
                         sub.idType,
                         sub.managementType,
@@ -377,7 +372,7 @@ public class ShoppingService {
             return;
         }
         ShoppingServiceJni.get()
-                .getAllPriceTrackedBookmarks(mNativeShoppingServiceAndroid, this, callback);
+                .getAllPriceTrackedBookmarks(mNativeShoppingServiceAndroid, callback);
     }
 
     @CalledByNative
@@ -396,8 +391,7 @@ public class ShoppingService {
     public boolean isMerchantViewerEnabled() {
         if (mNativeShoppingServiceAndroid == 0) return false;
 
-        return ShoppingServiceJni.get()
-                .isMerchantViewerEnabled(mNativeShoppingServiceAndroid, this);
+        return ShoppingServiceJni.get().isMerchantViewerEnabled(mNativeShoppingServiceAndroid);
     }
 
     // This is a feature check for the "price insights", which will return true
@@ -406,8 +400,7 @@ public class ShoppingService {
     public boolean isPriceInsightsEligible() {
         if (mNativeShoppingServiceAndroid == 0) return false;
 
-        return ShoppingServiceJni.get()
-                .isPriceInsightsEligible(mNativeShoppingServiceAndroid, this);
+        return ShoppingServiceJni.get().isPriceInsightsEligible(mNativeShoppingServiceAndroid);
     }
 
     // This is a feature check for the "discounts on navigation", which will return true
@@ -417,7 +410,7 @@ public class ShoppingService {
         if (mNativeShoppingServiceAndroid == 0) return false;
 
         return ShoppingServiceJni.get()
-                .isDiscountEligibleToShowOnNavigation(mNativeShoppingServiceAndroid, this);
+                .isDiscountEligibleToShowOnNavigation(mNativeShoppingServiceAndroid);
     }
 
     @CalledByNative
@@ -584,27 +577,19 @@ public class ShoppingService {
     @NativeMethods
     interface Natives {
         void getProductInfoForUrl(
-                long nativeShoppingServiceAndroid,
-                ShoppingService caller,
-                GURL url,
-                ProductInfoCallback callback);
+                long nativeShoppingServiceAndroid, GURL url, ProductInfoCallback callback);
 
-        ProductInfo getAvailableProductInfoForUrl(
-                long nativeShoppingServiceAndroid, ShoppingService caller, GURL url);
+        ProductInfo getAvailableProductInfoForUrl(long nativeShoppingServiceAndroid, GURL url);
 
         void getMerchantInfoForUrl(
-                long nativeShoppingServiceAndroid,
-                ShoppingService caller,
-                GURL url,
-                MerchantInfoCallback callback);
+                long nativeShoppingServiceAndroid, GURL url, MerchantInfoCallback callback);
 
-        void fetchPriceEmailPref(long nativeShoppingServiceAndroid, ShoppingService caller);
+        void fetchPriceEmailPref(long nativeShoppingServiceAndroid);
 
-        void scheduleSavedProductUpdate(long nativeShoppingServiceAndroid, ShoppingService caller);
+        void scheduleSavedProductUpdate(long nativeShoppingServiceAndroid);
 
         void subscribe(
                 long nativeShoppingServiceAndroid,
-                ShoppingService caller,
                 int type,
                 int idType,
                 int managementType,
@@ -617,7 +602,6 @@ public class ShoppingService {
 
         void unsubscribe(
                 long nativeShoppingServiceAndroid,
-                ShoppingService caller,
                 int type,
                 int idType,
                 int managementType,
@@ -626,7 +610,6 @@ public class ShoppingService {
 
         void isSubscribed(
                 long nativeShoppingServiceAndroid,
-                ShoppingService caller,
                 int type,
                 int idType,
                 int managementType,
@@ -635,36 +618,26 @@ public class ShoppingService {
 
         boolean isSubscribedFromCache(
                 long nativeShoppingServiceAndroid,
-                ShoppingService caller,
                 int type,
                 int idType,
                 int managementType,
                 String id);
 
         void getAllPriceTrackedBookmarks(
-                long nativeShoppingServiceAndroid,
-                ShoppingService caller,
-                Callback<List<BookmarkId>> callback);
+                long nativeShoppingServiceAndroid, Callback<List<BookmarkId>> callback);
 
-        boolean isShoppingListEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
+        boolean isShoppingListEligible(long nativeShoppingServiceAndroid);
 
-        boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid, ShoppingService caller);
+        boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid);
 
         void getPriceInsightsInfoForUrl(
-                long nativeShoppingServiceAndroid,
-                ShoppingService caller,
-                GURL url,
-                PriceInsightsInfoCallback callback);
+                long nativeShoppingServiceAndroid, GURL url, PriceInsightsInfoCallback callback);
 
-        boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
+        boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid);
 
         void getDiscountInfoForUrl(
-                long nativeShoppingServiceAndroid,
-                ShoppingService caller,
-                GURL url,
-                DiscountInfoCallback callback);
+                long nativeShoppingServiceAndroid, GURL url, DiscountInfoCallback callback);
 
-        boolean isDiscountEligibleToShowOnNavigation(
-                long nativeShoppingServiceAndroid, ShoppingService caller);
+        boolean isDiscountEligibleToShowOnNavigation(long nativeShoppingServiceAndroid);
     }
 }

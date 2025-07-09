@@ -39,12 +39,12 @@ public class UpdateScheduler {
 
     /* package */ void onStartTaskWithNative() {
         assert mNativeScheduler != 0;
-        UpdateSchedulerJni.get().onStartTask(mNativeScheduler, UpdateScheduler.this);
+        UpdateSchedulerJni.get().onStartTask(mNativeScheduler);
     }
 
     /* package */ void onStopTask() {
         if (mNativeScheduler != 0) {
-            UpdateSchedulerJni.get().onStopTask(mNativeScheduler, UpdateScheduler.this);
+            UpdateSchedulerJni.get().onStopTask(mNativeScheduler);
         }
         mTaskFinishedCallback = null;
         scheduleInternal(mDelayMs);
@@ -97,8 +97,8 @@ public class UpdateScheduler {
 
     @NativeMethods
     interface Natives {
-        void onStartTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+        void onStartTask(long nativeBackgroundTaskUpdateScheduler);
 
-        void onStopTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+        void onStopTask(long nativeBackgroundTaskUpdateScheduler);
     }
 }

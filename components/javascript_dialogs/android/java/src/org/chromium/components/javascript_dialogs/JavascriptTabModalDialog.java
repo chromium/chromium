@@ -56,8 +56,7 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
         ModalDialogManager dialogManager = window.getModalDialogManager();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || dialogManager == null) {
-            JavascriptTabModalDialogJni.get()
-                    .cancel(nativeDialogPointer, JavascriptTabModalDialog.this, false);
+            JavascriptTabModalDialogJni.get().cancel(nativeDialogPointer, false);
             return;
         }
 
@@ -79,33 +78,26 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
 
     /**
      * Sends notification to native that the user accepts the dialog.
+     *
      * @param promptResult The text edited by user.
      */
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        JavascriptTabModalDialogJni.get()
-                .accept(mNativeDialogPointer, JavascriptTabModalDialog.this, promptResult);
+        JavascriptTabModalDialogJni.get().accept(mNativeDialogPointer, promptResult);
     }
 
     /** Sends notification to native that the user cancels the dialog. */
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        JavascriptTabModalDialogJni.get()
-                .cancel(mNativeDialogPointer, JavascriptTabModalDialog.this, buttonClicked);
+        JavascriptTabModalDialogJni.get().cancel(mNativeDialogPointer, buttonClicked);
     }
 
     @NativeMethods
     interface Natives {
-        void accept(
-                long nativeTabModalDialogViewAndroid,
-                JavascriptTabModalDialog caller,
-                String prompt);
+        void accept(long nativeTabModalDialogViewAndroid, String prompt);
 
-        void cancel(
-                long nativeTabModalDialogViewAndroid,
-                JavascriptTabModalDialog caller,
-                boolean buttonClicked);
+        void cancel(long nativeTabModalDialogViewAndroid, boolean buttonClicked);
     }
 }

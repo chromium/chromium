@@ -283,11 +283,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                     return;
                 }
                 CronetUploadDataStreamJni.get()
-                        .onReadSucceeded(
-                                mUploadDataStreamAdapter,
-                                CronetUploadDataStream.this,
-                                bytesRead,
-                                lastChunk);
+                        .onReadSucceeded(mUploadDataStreamAdapter, bytesRead, lastChunk);
             }
         }
     }
@@ -314,8 +310,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                 if (mUploadDataStreamAdapter == 0) {
                     return;
                 }
-                CronetUploadDataStreamJni.get()
-                        .onRewindSucceeded(mUploadDataStreamAdapter, CronetUploadDataStream.this);
+                CronetUploadDataStreamJni.get().onRewindSucceeded(mUploadDataStreamAdapter);
             }
         }
     }
@@ -484,11 +479,10 @@ public final class CronetUploadDataStream extends UploadDataSink {
                 CronetUploadDataStream caller, long length, long adapter);
 
         @NativeClassQualifiedName("CronetUploadDataStreamAdapter")
-        void onReadSucceeded(
-                long nativePtr, CronetUploadDataStream caller, int bytesRead, boolean finalChunk);
+        void onReadSucceeded(long nativePtr, int bytesRead, boolean finalChunk);
 
         @NativeClassQualifiedName("CronetUploadDataStreamAdapter")
-        void onRewindSucceeded(long nativePtr, CronetUploadDataStream caller);
+        void onRewindSucceeded(long nativePtr);
 
         @NativeClassQualifiedName("CronetUploadDataStreamAdapter")
         void destroy(long nativePtr);

@@ -41,41 +41,33 @@ class MessagingBackendServiceBridge
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Methods called from Java via JNI.
-  bool IsInitialized(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& j_caller);
+  bool IsInitialized(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForTab(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       jint j_local_tab_id,
       const base::android::JavaParamRef<jstring>& j_sync_tab_id,
       jint j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForGroup(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       const base::android::JavaParamRef<jobject>& j_local_group_id,
       const base::android::JavaParamRef<jstring>& j_sync_group_id,
       jint j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessages(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       jint j_type);
   base::android::ScopedJavaLocalRef<jobject> GetActivityLog(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       jstring j_collaboration_id);
   void ClearDirtyTabMessagesForGroup(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       const base::android::JavaParamRef<jstring>& j_collaboration_id);
   void ClearPersistentMessage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       const base::android::JavaParamRef<jstring>& j_message_id,
       jint j_type);
 
   void RunInstantaneousMessageSuccessCallback(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_caller,
       jlong j_callback,
       jboolean j_result);
 

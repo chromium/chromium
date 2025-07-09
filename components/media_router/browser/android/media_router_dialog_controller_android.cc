@@ -37,7 +37,6 @@ namespace media_router {
 
 void MediaRouterDialogControllerAndroid::OnSinkSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jsource_id,
     const JavaParamRef<jstring>& jsink_id) {
   auto start_presentation_context = std::move(start_presentation_context_);
@@ -82,7 +81,6 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
 
 void MediaRouterDialogControllerAndroid::OnRouteClosed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jmedia_route_id) {
   std::string media_route_id = ConvertJavaStringToUTF8(env, jmedia_route_id);
 
@@ -96,15 +94,12 @@ void MediaRouterDialogControllerAndroid::OnRouteClosed(
       MediaRouterAndroidDialogAction::kTerminateRoute);
 }
 
-void MediaRouterDialogControllerAndroid::OnDialogCancelled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void MediaRouterDialogControllerAndroid::OnDialogCancelled(JNIEnv* env) {
   CancelPresentationRequest();
 }
 
 void MediaRouterDialogControllerAndroid::OnMediaSourceNotSupported(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   auto request = std::move(start_presentation_context_);
   if (!request) {
     return;

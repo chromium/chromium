@@ -107,7 +107,6 @@ public class GCMDriver {
                 GCMDriverJni.get()
                         .onRegisterFinished(
                                 mNativeGCMDriverAndroid,
-                                GCMDriver.this,
                                 appId,
                                 registrationId,
                                 !registrationId.isEmpty());
@@ -132,9 +131,7 @@ public class GCMDriver {
 
             @Override
             protected void onPostExecute(Boolean success) {
-                GCMDriverJni.get()
-                        .onUnregisterFinished(
-                                mNativeGCMDriverAndroid, GCMDriver.this, appId, success);
+                GCMDriverJni.get().onUnregisterFinished(mNativeGCMDriverAndroid, appId, success);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -150,7 +147,6 @@ public class GCMDriver {
         GCMDriverJni.get()
                 .onMessageReceived(
                         sInstance.mNativeGCMDriverAndroid,
-                        sInstance,
                         message.getAppId(),
                         message.getSenderId(),
                         message.getMessageId(),
@@ -168,18 +164,12 @@ public class GCMDriver {
     @NativeMethods
     interface Natives {
         void onRegisterFinished(
-                long nativeGCMDriverAndroid,
-                GCMDriver caller,
-                String appId,
-                String registrationId,
-                boolean success);
+                long nativeGCMDriverAndroid, String appId, String registrationId, boolean success);
 
-        void onUnregisterFinished(
-                long nativeGCMDriverAndroid, GCMDriver caller, String appId, boolean success);
+        void onUnregisterFinished(long nativeGCMDriverAndroid, String appId, boolean success);
 
         void onMessageReceived(
                 long nativeGCMDriverAndroid,
-                GCMDriver caller,
                 @Nullable String appId,
                 @Nullable String senderId,
                 @Nullable String messageId,

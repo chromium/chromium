@@ -71,8 +71,7 @@ public final class DistilledPagePrefs {
     }
 
     DistilledPagePrefs(long distilledPagePrefsPtr) {
-        mDistilledPagePrefsAndroid =
-                DistilledPagePrefsJni.get().init(DistilledPagePrefs.this, distilledPagePrefsPtr);
+        mDistilledPagePrefsAndroid = DistilledPagePrefsJni.get().init(this, distilledPagePrefsPtr);
         mObserverMap = new HashMap<Observer, DistilledPagePrefsObserverWrapper>();
     }
 
@@ -86,10 +85,8 @@ public final class DistilledPagePrefs {
         DistilledPagePrefsObserverWrapper wrappedObserver =
                 new DistilledPagePrefsObserverWrapper(obs);
         DistilledPagePrefsJni.get()
-                .addObserver(
-                        mDistilledPagePrefsAndroid,
-                        DistilledPagePrefs.this,
-                        wrappedObserver.getNativePtr());
+                .addObserver(mDistilledPagePrefsAndroid, wrappedObserver.getNativePtr());
+
         mObserverMap.put(obs, wrappedObserver);
         return true;
     }
@@ -103,75 +100,59 @@ public final class DistilledPagePrefs {
         DistilledPagePrefsObserverWrapper wrappedObserver = mObserverMap.remove(obs);
         if (wrappedObserver == null) return false;
         DistilledPagePrefsJni.get()
-                .removeObserver(
-                        mDistilledPagePrefsAndroid,
-                        DistilledPagePrefs.this,
-                        wrappedObserver.getNativePtr());
+                .removeObserver(mDistilledPagePrefsAndroid, wrappedObserver.getNativePtr());
+
         wrappedObserver.destroy();
         return true;
     }
 
     public void setFontFamily(int fontFamily) {
         FontFamily.validate(fontFamily);
-        DistilledPagePrefsJni.get()
-                .setFontFamily(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, fontFamily);
+        DistilledPagePrefsJni.get().setFontFamily(mDistilledPagePrefsAndroid, fontFamily);
     }
 
     public int getFontFamily() {
-        return DistilledPagePrefsJni.get()
-                .getFontFamily(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get().getFontFamily(mDistilledPagePrefsAndroid);
     }
 
     public void setTheme(int theme) {
         Theme.validate(theme);
-        DistilledPagePrefsJni.get()
-                .setTheme(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, theme);
+        DistilledPagePrefsJni.get().setTheme(mDistilledPagePrefsAndroid, theme);
     }
 
     public int getTheme() {
-        return DistilledPagePrefsJni.get()
-                .getTheme(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get().getTheme(mDistilledPagePrefsAndroid);
     }
 
     public void setFontScaling(float scaling) {
-        DistilledPagePrefsJni.get()
-                .setFontScaling(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, scaling);
+        DistilledPagePrefsJni.get().setFontScaling(mDistilledPagePrefsAndroid, scaling);
     }
 
     public float getFontScaling() {
-        return DistilledPagePrefsJni.get()
-                .getFontScaling(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get().getFontScaling(mDistilledPagePrefsAndroid);
     }
 
     @NativeMethods
     interface Natives {
-        long init(DistilledPagePrefs caller, long distilledPagePrefPtr);
+        long init(DistilledPagePrefs self, long distilledPagePrefPtr);
 
-        void setFontFamily(
-                long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, int fontFamily);
+        void setFontFamily(long nativeDistilledPagePrefsAndroid, int fontFamily);
 
-        int getFontFamily(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
+        int getFontFamily(long nativeDistilledPagePrefsAndroid);
 
-        void setTheme(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, int theme);
+        void setTheme(long nativeDistilledPagePrefsAndroid, int theme);
 
-        int getTheme(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
+        int getTheme(long nativeDistilledPagePrefsAndroid);
 
-        void setFontScaling(
-                long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, float scaling);
+        void setFontScaling(long nativeDistilledPagePrefsAndroid, float scaling);
 
-        float getFontScaling(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
+        float getFontScaling(long nativeDistilledPagePrefsAndroid);
 
-        void addObserver(
-                long nativeDistilledPagePrefsAndroid,
-                DistilledPagePrefs caller,
-                long nativeObserverPtr);
+        void addObserver(long nativeDistilledPagePrefsAndroid, long nativeObserverPtr);
 
-        void removeObserver(
-                long nativeDistilledPagePrefsAndroid,
-                DistilledPagePrefs caller,
-                long nativeObserverPtr);
+        void removeObserver(long nativeDistilledPagePrefsAndroid, long nativeObserverPtr);
 
-        long initObserverAndroid(DistilledPagePrefsObserverWrapper caller);
+        long initObserverAndroid(DistilledPagePrefsObserverWrapper self);
 
         void destroyObserverAndroid(long nativeDistilledPagePrefsObserverAndroid);
     }

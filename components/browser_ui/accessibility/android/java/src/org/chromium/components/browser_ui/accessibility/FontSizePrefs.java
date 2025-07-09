@@ -35,8 +35,7 @@ public class FontSizePrefs {
     private final long mFontSizePrefsAndroidPtr;
 
     private FontSizePrefs(BrowserContextHandle browserContextHandle) {
-        mFontSizePrefsAndroidPtr =
-                FontSizePrefsJni.get().init(FontSizePrefs.this, browserContextHandle);
+        mFontSizePrefsAndroidPtr = FontSizePrefsJni.get().init(this, browserContextHandle);
     }
 
     /** Returns the singleton FontSizePrefs, constructing it if it doesn't already exist. */
@@ -68,7 +67,6 @@ public class FontSizePrefs {
         FontSizePrefsJni.get()
                 .setFontScaleFactor(
                         mFontSizePrefsAndroidPtr,
-                        FontSizePrefs.this,
                         ContextUtils.getApplicationContext()
                                 .getResources()
                                 .getConfiguration()
@@ -77,11 +75,10 @@ public class FontSizePrefs {
 
     @NativeMethods
     interface Natives {
-        long init(FontSizePrefs caller, BrowserContextHandle browserContextHandle);
+        long init(FontSizePrefs self, BrowserContextHandle browserContextHandle);
 
         void destroy(long nativeFontSizePrefsAndroid);
 
-        void setFontScaleFactor(
-                long nativeFontSizePrefsAndroid, FontSizePrefs caller, float fontScaleFactor);
+        void setFontScaleFactor(long nativeFontSizePrefsAndroid, float fontScaleFactor);
     }
 }

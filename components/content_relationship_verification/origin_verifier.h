@@ -35,7 +35,6 @@ class OriginVerifier {
   // if the params are null.
   bool VerifyOrigin(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& j_package_name,
       const base::android::JavaParamRef<jobjectArray>& j_fingerprints,
       const base::android::JavaParamRef<jstring>& j_origin,
@@ -47,7 +46,7 @@ class OriginVerifier {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jbrowser_context_handle);
 
-  void Destroy(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   static void ClearBrowsingData();
 

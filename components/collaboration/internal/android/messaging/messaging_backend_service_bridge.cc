@@ -81,16 +81,13 @@ MessagingBackendServiceBridge::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-bool MessagingBackendServiceBridge::IsInitialized(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller) {
+bool MessagingBackendServiceBridge::IsInitialized(JNIEnv* env) {
   return service_->IsInitialized();
 }
 
 base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForTab(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     jint j_local_tab_id,
     const base::android::JavaParamRef<jstring>& j_sync_tab_id,
     jint j_type) {
@@ -121,7 +118,6 @@ MessagingBackendServiceBridge::GetMessagesForTab(
 base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForGroup(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     const base::android::JavaParamRef<jobject>& j_local_group_id,
     const base::android::JavaParamRef<jstring>& j_sync_group_id,
     jint j_type) {
@@ -154,7 +150,6 @@ MessagingBackendServiceBridge::GetMessagesForGroup(
 base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessages(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     jint j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
   std::optional<PersistentNotificationType> type_opt = std::make_optional(type);
@@ -168,7 +163,6 @@ MessagingBackendServiceBridge::GetMessages(
 base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetActivityLog(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     jstring j_collaboration_id) {
   ActivityLogQueryParams query_params;
   query_params.collaboration_id = data_sharing::GroupId(
@@ -179,7 +173,6 @@ MessagingBackendServiceBridge::GetActivityLog(
 
 void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     const base::android::JavaParamRef<jstring>& j_collaboration_id) {
   auto collaboration_id = data_sharing::GroupId(
       base::android::ConvertJavaStringToUTF8(env, j_collaboration_id));
@@ -188,7 +181,6 @@ void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
 
 void MessagingBackendServiceBridge::ClearPersistentMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     const base::android::JavaParamRef<jstring>& j_message_id,
     jint j_type) {
   CHECK(j_message_id);
@@ -205,7 +197,6 @@ void MessagingBackendServiceBridge::ClearPersistentMessage(
 
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_caller,
     jlong j_callback,
     jboolean j_result) {
   CHECK(j_callback);

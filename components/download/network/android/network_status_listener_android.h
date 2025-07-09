@@ -32,13 +32,9 @@ class NetworkStatusListenerAndroid : public NetworkStatusListener {
   void Stop() override;
   network::mojom::ConnectionType GetConnectionType() override;
 
-  void OnNetworkStatusReady(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& jobj,
-                            jint connectionType);
+  void OnNetworkStatusReady(JNIEnv* env, jint connectionType);
 
-  void NotifyNetworkChange(JNIEnv* env,
-                           const base::android::JavaRef<jobject>& jobj,
-                           jint connectionType);
+  void NotifyNetworkChange(JNIEnv* env, jint connectionType);
 
  private:
   // The Java side object owned by this class.

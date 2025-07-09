@@ -42,7 +42,6 @@ GCMDriverAndroid::~GCMDriverAndroid() {
 
 void GCMDriverAndroid::OnRegisterFinished(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_app_id,
     const JavaParamRef<jstring>& j_registration_id,
     jboolean success) {
@@ -58,7 +57,6 @@ void GCMDriverAndroid::OnRegisterFinished(
 
 void GCMDriverAndroid::OnUnregisterFinished(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_app_id,
     jboolean success) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
@@ -72,7 +70,6 @@ void GCMDriverAndroid::OnUnregisterFinished(
 
 void GCMDriverAndroid::OnMessageReceived(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_app_id,
     const JavaParamRef<jstring>& j_sender_id,
     const JavaParamRef<jstring>& j_message_id,

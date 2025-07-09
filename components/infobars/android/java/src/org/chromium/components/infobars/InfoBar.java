@@ -217,7 +217,7 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
     @InfoBarIdentifier
     public int getInfoBarIdentifier() {
         if (mNativeInfoBarPtr == 0) return InfoBarIdentifier.INVALID;
-        return InfoBarJni.get().getInfoBarIdentifier(mNativeInfoBarPtr, InfoBar.this);
+        return InfoBarJni.get().getInfoBarIdentifier(mNativeInfoBarPtr);
     }
 
     /** @return whether the infobar actually needed closing. */
@@ -293,35 +293,36 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
 
     @Override
     public void onLinkClicked() {
-        if (mNativeInfoBarPtr != 0) InfoBarJni.get().onLinkClicked(mNativeInfoBarPtr, InfoBar.this);
+        if (mNativeInfoBarPtr != 0) InfoBarJni.get().onLinkClicked(mNativeInfoBarPtr);
     }
 
     /**
      * Performs some action related to the button being clicked.
+     *
      * @param action The type of action defined in {@link ActionType} in this class.
      */
     protected void onButtonClicked(@ActionType int action) {
         if (mNativeInfoBarPtr != 0) {
-            InfoBarJni.get().onButtonClicked(mNativeInfoBarPtr, InfoBar.this, action);
+            InfoBarJni.get().onButtonClicked(mNativeInfoBarPtr, action);
         }
     }
 
     @Override
     public void onCloseButtonClicked() {
         if (mNativeInfoBarPtr != 0 && !mIsDismissed) {
-            InfoBarJni.get().onCloseButtonClicked(mNativeInfoBarPtr, InfoBar.this);
+            InfoBarJni.get().onCloseButtonClicked(mNativeInfoBarPtr);
         }
     }
 
     @InfoBarIdentifier
     @NativeMethods
     interface Natives {
-        int getInfoBarIdentifier(long nativeInfoBarAndroid, InfoBar caller);
+        int getInfoBarIdentifier(long nativeInfoBarAndroid);
 
-        void onLinkClicked(long nativeInfoBarAndroid, InfoBar caller);
+        void onLinkClicked(long nativeInfoBarAndroid);
 
-        void onButtonClicked(long nativeInfoBarAndroid, InfoBar caller, int action);
+        void onButtonClicked(long nativeInfoBarAndroid, int action);
 
-        void onCloseButtonClicked(long nativeInfoBarAndroid, InfoBar caller);
+        void onCloseButtonClicked(long nativeInfoBarAndroid);
     }
 }

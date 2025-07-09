@@ -80,8 +80,7 @@ public class ContentViewRenderView extends FrameLayout {
         assert !getSurfaceView().getHolder().getSurface().isValid()
                 : "Surface created before native library loaded.";
         assert rootWindow != null;
-        mNativeContentViewRenderView =
-                ContentViewRenderViewJni.get().init(ContentViewRenderView.this, rootWindow);
+        mNativeContentViewRenderView = ContentViewRenderViewJni.get().init(this, rootWindow);
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
         SurfaceHolder.Callback surfaceCallback =
@@ -104,7 +103,6 @@ public class ContentViewRenderView extends FrameLayout {
                                 ContentViewRenderViewJni.get()
                                         .surfaceChanged(
                                                 mNativeContentViewRenderView,
-                                                ContentViewRenderView.this,
                                                 format,
                                                 width,
                                                 height,
@@ -121,7 +119,6 @@ public class ContentViewRenderView extends FrameLayout {
                             ContentViewRenderViewJni.get()
                                     .onPhysicalBackingSizeChanged(
                                             mNativeContentViewRenderView,
-                                            ContentViewRenderView.this,
                                             mWebContents,
                                             width,
                                             height);
@@ -131,9 +128,7 @@ public class ContentViewRenderView extends FrameLayout {
                     @Override
                     public void surfaceCreated(SurfaceHolder holder) {
                         assert mNativeContentViewRenderView != 0;
-                        ContentViewRenderViewJni.get()
-                                .surfaceCreated(
-                                        mNativeContentViewRenderView, ContentViewRenderView.this);
+                        ContentViewRenderViewJni.get().surfaceCreated(mNativeContentViewRenderView);
 
                         // On pre-M Android, layers start in the hidden state until a relayout
                         // happens.
@@ -151,8 +146,7 @@ public class ContentViewRenderView extends FrameLayout {
                     public void surfaceDestroyed(SurfaceHolder holder) {
                         assert mNativeContentViewRenderView != 0;
                         ContentViewRenderViewJni.get()
-                                .surfaceDestroyed(
-                                        mNativeContentViewRenderView, ContentViewRenderView.this);
+                                .surfaceDestroyed(mNativeContentViewRenderView);
                         if (mSurfaceId != null) {
                             SurfaceInputTransferHandlerMap.remove(mSurfaceId);
                             mSurfaceId = null;
@@ -207,8 +201,7 @@ public class ContentViewRenderView extends FrameLayout {
     public void destroy() {
         mSurfaceBridge.disconnect();
         mWindowAndroid = null;
-        ContentViewRenderViewJni.get()
-                .destroy(mNativeContentViewRenderView, ContentViewRenderView.this);
+        ContentViewRenderViewJni.get().destroy(mNativeContentViewRenderView);
         mNativeContentViewRenderView = 0;
     }
 
@@ -220,15 +213,10 @@ public class ContentViewRenderView extends FrameLayout {
             webContents.setSize(mWidth, mHeight);
             ContentViewRenderViewJni.get()
                     .onPhysicalBackingSizeChanged(
-                            mNativeContentViewRenderView,
-                            ContentViewRenderView.this,
-                            webContents,
-                            mWidth,
-                            mHeight);
+                            mNativeContentViewRenderView, webContents, mWidth, mHeight);
         }
         ContentViewRenderViewJni.get()
-                .setCurrentWebContents(
-                        mNativeContentViewRenderView, ContentViewRenderView.this, webContents);
+                .setCurrentWebContents(mNativeContentViewRenderView, webContents);
     }
 
     /**
@@ -259,9 +247,7 @@ public class ContentViewRenderView extends FrameLayout {
     public void setOverlayVideoMode(boolean enabled) {
         int format = enabled ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
         getSurfaceView().getHolder().setFormat(format);
-        ContentViewRenderViewJni.get()
-                .setOverlayVideoMode(
-                        mNativeContentViewRenderView, ContentViewRenderView.this, enabled);
+        ContentViewRenderViewJni.get().setOverlayVideoMode(mNativeContentViewRenderView, enabled);
     }
 
     @CalledByNative
@@ -312,37 +298,28 @@ public class ContentViewRenderView extends FrameLayout {
 
     @NativeMethods
     interface Natives {
-        long init(ContentViewRenderView caller, WindowAndroid rootWindow);
+        long init(ContentViewRenderView self, WindowAndroid rootWindow);
 
-        void destroy(long nativeContentViewRenderView, ContentViewRenderView caller);
+        void destroy(long nativeContentViewRenderView);
 
-        void setCurrentWebContents(
-                long nativeContentViewRenderView,
-                ContentViewRenderView caller,
-                WebContents webContents);
+        void setCurrentWebContents(long nativeContentViewRenderView, WebContents webContents);
 
         void onPhysicalBackingSizeChanged(
-                long nativeContentViewRenderView,
-                ContentViewRenderView caller,
-                WebContents webContents,
-                int width,
-                int height);
+                long nativeContentViewRenderView, WebContents webContents, int width, int height);
 
-        void surfaceCreated(long nativeContentViewRenderView, ContentViewRenderView caller);
+        void surfaceCreated(long nativeContentViewRenderView);
 
-        void surfaceDestroyed(long nativeContentViewRenderView, ContentViewRenderView caller);
+        void surfaceDestroyed(long nativeContentViewRenderView);
 
         @JniType("std::optional<int>")
         Integer surfaceChanged(
                 long nativeContentViewRenderView,
-                ContentViewRenderView caller,
                 int format,
                 int width,
                 int height,
                 Surface surface,
                 @Nullable InputTransferToken browserInputToken);
 
-        void setOverlayVideoMode(
-                long nativeContentViewRenderView, ContentViewRenderView caller, boolean enabled);
+        void setOverlayVideoMode(long nativeContentViewRenderView, boolean enabled);
     }
 }

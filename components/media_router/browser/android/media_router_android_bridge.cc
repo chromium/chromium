@@ -148,7 +148,6 @@ MediaRouterAndroidBridge::GetFlingingController(
 
 void MediaRouterAndroidBridge::OnSinksReceived(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jsource_urn,
     jint jcount) {
   std::vector<MediaSink> sinks_converted;
@@ -170,7 +169,6 @@ void MediaRouterAndroidBridge::OnSinksReceived(
 
 void MediaRouterAndroidBridge::OnRouteCreated(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jmedia_route_id,
     const JavaRef<jstring>& jsink_id,
     jint jroute_request_id,
@@ -182,7 +180,6 @@ void MediaRouterAndroidBridge::OnRouteCreated(
 
 void MediaRouterAndroidBridge::OnRouteMediaSourceUpdated(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jstring>& jmedia_route_id,
     const base::android::JavaRef<jstring>& jmedia_source_id) {
   native_media_router_->OnRouteMediaSourceUpdated(
@@ -192,7 +189,6 @@ void MediaRouterAndroidBridge::OnRouteMediaSourceUpdated(
 
 void MediaRouterAndroidBridge::OnCreateRouteRequestError(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jerror_text,
     jint jroute_request_id) {
   native_media_router_->OnCreateRouteRequestError(
@@ -201,7 +197,6 @@ void MediaRouterAndroidBridge::OnCreateRouteRequestError(
 
 void MediaRouterAndroidBridge::OnJoinRouteRequestError(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jerror_text,
     jint jroute_request_id) {
   native_media_router_->OnJoinRouteRequestError(
@@ -210,7 +205,6 @@ void MediaRouterAndroidBridge::OnJoinRouteRequestError(
 
 void MediaRouterAndroidBridge::OnRouteTerminated(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jmedia_route_id) {
   native_media_router_->OnRouteTerminated(
       ConvertJavaStringToUTF8(env, jmedia_route_id));
@@ -218,7 +212,6 @@ void MediaRouterAndroidBridge::OnRouteTerminated(
 
 void MediaRouterAndroidBridge::OnRouteClosed(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jmedia_route_id,
     const JavaRef<jstring>& jerror) {
   native_media_router_->OnRouteClosed(
@@ -230,7 +223,6 @@ void MediaRouterAndroidBridge::OnRouteClosed(
 
 void MediaRouterAndroidBridge::OnMessage(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jstring>& jmedia_route_id,
     const JavaRef<jstring>& jmessage) {
   native_media_router_->OnMessage(ConvertJavaStringToUTF8(env, jmedia_route_id),

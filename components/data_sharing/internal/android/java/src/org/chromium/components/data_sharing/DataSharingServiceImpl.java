@@ -89,7 +89,7 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @Override
     public boolean isEmptyService() {
-        return DataSharingServiceImplJni.get().isEmptyService(mNativePtr, this);
+        return DataSharingServiceImplJni.get().isEmptyService(mNativePtr);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 String memberEmail,
                 Callback<Integer> callback);
 
-        boolean isEmptyService(long nativeDataSharingServiceAndroid, DataSharingServiceImpl caller);
+        boolean isEmptyService(long nativeDataSharingServiceAndroid);
 
         DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
 

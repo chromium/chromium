@@ -81,11 +81,9 @@ void CronetUploadDataStreamAdapter::OnUploadDataStreamDestroyed() {
   // |this| is invalid here since the Java call above effectively destroys it.
 }
 
-void CronetUploadDataStreamAdapter::OnReadSucceeded(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    int bytes_read,
-    bool final_chunk) {
+void CronetUploadDataStreamAdapter::OnReadSucceeded(JNIEnv* env,
+                                                    int bytes_read,
+                                                    bool final_chunk) {
   DCHECK(bytes_read > 0 || (final_chunk && bytes_read == 0));
 
   network_task_runner_->PostTask(
@@ -93,9 +91,7 @@ void CronetUploadDataStreamAdapter::OnReadSucceeded(
                                 upload_data_stream_, bytes_read, final_chunk));
 }
 
-void CronetUploadDataStreamAdapter::OnRewindSucceeded(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+void CronetUploadDataStreamAdapter::OnRewindSucceeded(JNIEnv* env) {
   network_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&CronetUploadDataStream::OnRewindSuccess,
                                 upload_data_stream_));

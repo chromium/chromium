@@ -39,7 +39,7 @@ public class CollaborationServiceImpl implements CollaborationService {
 
     @Override
     public boolean isEmptyService() {
-        return CollaborationServiceImplJni.get().isEmptyService(mNativePtr, this);
+        return CollaborationServiceImplJni.get().isEmptyService(mNativePtr);
     }
 
     @Override
@@ -133,8 +133,7 @@ public class CollaborationServiceImpl implements CollaborationService {
 
     @NativeMethods
     interface Natives {
-        boolean isEmptyService(
-                long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
+        boolean isEmptyService(long nativeCollaborationServiceAndroid);
 
         void startJoinFlow(
                 long nativeCollaborationServiceAndroid, long delegateNativePtr, GURL url);

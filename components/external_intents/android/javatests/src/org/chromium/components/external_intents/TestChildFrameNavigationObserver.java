@@ -64,6 +64,6 @@ public class TestChildFrameNavigationObserver {
     @NativeMethods
     public interface Natives {
         void createAndAttachToNativeWebContents(
-                TestChildFrameNavigationObserver caller, WebContents webContents);
+                TestChildFrameNavigationObserver observer, WebContents webContents);
     }
 }

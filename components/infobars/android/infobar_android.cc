@@ -49,19 +49,16 @@ bool InfoBarAndroid::HasSetJavaInfoBar() const {
   return !java_info_bar_.is_null();
 }
 
-int InfoBarAndroid::GetInfoBarIdentifier(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj) {
+int InfoBarAndroid::GetInfoBarIdentifier(JNIEnv* env) {
   return delegate()->GetIdentifier();
 }
 
 void InfoBarAndroid::OnButtonClicked(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
                                      jint action) {
   ProcessButton(action);
 }
 
-void InfoBarAndroid::OnCloseButtonClicked(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+void InfoBarAndroid::OnCloseButtonClicked(JNIEnv* env) {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }

@@ -34,9 +34,8 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   void Stop() override;
 
   // JNI:
-  void OnStartTask(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj);
-  void OnStopTask(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnStartTask(JNIEnv* env);
+  void OnStopTask(JNIEnv* env);
 
  private:
   void OnStartTaskDelayed();

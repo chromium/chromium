@@ -26,7 +26,7 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // AndroidAutofillProviderBridge:
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jcaller) override;
+      const base::android::JavaRef<jobject>& obj) override;
   void SendPrefillRequest(FormDataAndroid& form) override;
   void StartAutofillSession(FormDataAndroid& form,
                             const FieldInfo& field,

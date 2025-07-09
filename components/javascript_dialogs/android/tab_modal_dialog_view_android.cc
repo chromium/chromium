@@ -66,7 +66,6 @@ std::u16string TabModalDialogViewAndroid::GetUserInput() {
 }
 
 void TabModalDialogViewAndroid::Accept(JNIEnv* env,
-                                       const JavaParamRef<jobject>&,
                                        const JavaParamRef<jstring>& prompt) {
   if (callback_on_button_clicked_) {
     std::u16string prompt_text =
@@ -77,7 +76,6 @@ void TabModalDialogViewAndroid::Accept(JNIEnv* env,
 }
 
 void TabModalDialogViewAndroid::Cancel(JNIEnv* env,
-                                       const JavaParamRef<jobject>&,
                                        jboolean button_clicked) {
   if (button_clicked) {
     if (callback_on_button_clicked_) {

@@ -96,7 +96,6 @@ void FlingingControllerBridge::RemoveMediaStatusObserver(
 
 void FlingingControllerBridge::OnMediaStatusUpdated(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_bridge,
     const base::android::JavaParamRef<jobject>& j_status) {
   if (!observer_) {
     return;

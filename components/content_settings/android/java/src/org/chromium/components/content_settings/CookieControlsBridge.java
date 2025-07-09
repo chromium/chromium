@@ -37,11 +37,7 @@ public class CookieControlsBridge {
         mObserver = observer;
         mNativeCookieControlsBridge =
                 CookieControlsBridgeJni.get()
-                        .init(
-                                CookieControlsBridge.this,
-                                webContents,
-                                originalBrowserContext,
-                                isIncognitoBranded);
+                        .init(this, webContents, originalBrowserContext, isIncognitoBranded);
     }
 
     /**
@@ -96,8 +92,7 @@ public class CookieControlsBridge {
     /** Destroys the native counterpart of this class. */
     public void destroy() {
         if (mNativeCookieControlsBridge != 0) {
-            CookieControlsBridgeJni.get()
-                    .destroy(mNativeCookieControlsBridge, CookieControlsBridge.this);
+            CookieControlsBridgeJni.get().destroy(mNativeCookieControlsBridge);
             mNativeCookieControlsBridge = 0;
         }
     }
@@ -128,7 +123,7 @@ public class CookieControlsBridge {
     @NativeMethods
     public interface Natives {
         long init(
-                CookieControlsBridge caller,
+                CookieControlsBridge self,
                 WebContents webContents,
                 @Nullable BrowserContextHandle originalContextHandle,
                 boolean isIncognitoBranded);
@@ -139,7 +134,7 @@ public class CookieControlsBridge {
                 @Nullable BrowserContextHandle originalBrowserContext,
                 boolean isIncognitoBranded);
 
-        void destroy(long nativeCookieControlsBridge, CookieControlsBridge caller);
+        void destroy(long nativeCookieControlsBridge);
 
         void setThirdPartyCookieBlockingEnabledForSite(
                 long nativeCookieControlsBridge, boolean blockCookies);

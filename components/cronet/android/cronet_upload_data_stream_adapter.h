@@ -51,11 +51,9 @@ class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
 
   // Callbacks from Java, called on some Java thread.
   void OnReadSucceeded(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
                        int bytes_read,
                        bool final_chunk);
-  void OnRewindSucceeded(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void OnRewindSucceeded(JNIEnv* env);
 
   // Destroys |this|. Can be called from any thread, but needs to be protected
   // by the adapter lock.

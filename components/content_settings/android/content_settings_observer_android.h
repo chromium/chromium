@@ -23,7 +23,7 @@ class AndroidObserver : public Observer {
 
   // Destroys the AndroidObserver object. This needs to be called on the java
   // side when the object is not in use anymore.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // content_settings::Observer:
   void OnContentSettingChanged(

@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.RequiresNonNull;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -25,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -224,7 +224,6 @@ public abstract class OriginVerifier {
                         && OriginVerifierJni.get()
                                 .verifyOrigin(
                                         mNativeOriginVerifier,
-                                        OriginVerifier.this,
                                         mPackageName,
                                         fingerprints,
                                         origin.toString(),
@@ -242,7 +241,7 @@ public abstract class OriginVerifier {
         // Only destroy native once we have no other pending verifications.
         if (!mListeners.isEmpty()) return;
         if (mNativeOriginVerifier == 0) return;
-        OriginVerifierJni.get().destroy(mNativeOriginVerifier, OriginVerifier.this);
+        OriginVerifierJni.get().destroy(mNativeOriginVerifier);
         mNativeOriginVerifier = 0;
     }
 
@@ -342,8 +341,7 @@ public abstract class OriginVerifier {
 
     /** Initialization of the native OriginVerifier. */
     public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        mNativeOriginVerifier =
-                OriginVerifierJni.get().init(OriginVerifier.this, browserContextHandle);
+        mNativeOriginVerifier = OriginVerifierJni.get().init(this, browserContextHandle);
     }
 
     public boolean isNativeOriginVerifierInitialized() {
@@ -380,17 +378,16 @@ public abstract class OriginVerifier {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        long init(OriginVerifier caller, BrowserContextHandle browserContextHandle);
+        long init(OriginVerifier self, BrowserContextHandle browserContextHandle);
 
         boolean verifyOrigin(
                 long nativeOriginVerifier,
-                OriginVerifier caller,
                 String packageName,
                 String @Nullable [] signatureFingerprint,
                 String origin,
                 String relationship,
                 @Nullable WebContents webContents);
 
-        void destroy(long nativeOriginVerifier, OriginVerifier caller);
+        void destroy(long nativeOriginVerifier);
     }
 }

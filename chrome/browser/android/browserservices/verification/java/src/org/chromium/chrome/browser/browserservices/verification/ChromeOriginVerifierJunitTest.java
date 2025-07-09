@@ -114,12 +114,11 @@ public class ChromeOriginVerifierJunitTest {
                 .when(mMockOriginVerifierJni)
                 .verifyOrigin(
                         ArgumentMatchers.anyLong(),
-                        Mockito.any(),
                         ArgumentMatchers.anyString(),
-                        Mockito.any(),
+                        ArgumentMatchers.any(),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString(),
-                        Mockito.any());
+                        ArgumentMatchers.any());
     }
 
     @Test

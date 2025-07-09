@@ -26,25 +26,18 @@ class DistilledPagePrefsAndroid {
 
   virtual ~DistilledPagePrefsAndroid();
   void SetFontFamily(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
                      jint font_family);
-  jint GetFontFamily(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  jint GetFontFamily(JNIEnv* env);
   void SetTheme(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& obj,
                 jint theme);
-  jint GetTheme(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  jint GetTheme(JNIEnv* env);
   void SetFontScaling(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
                       jfloat scaling);
-  jfloat GetFontScaling(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  jfloat GetFontScaling(JNIEnv* env);
 
   void AddObserver(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
                    jlong obs);
   void RemoveObserver(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
                       jlong obs);
 
  private:

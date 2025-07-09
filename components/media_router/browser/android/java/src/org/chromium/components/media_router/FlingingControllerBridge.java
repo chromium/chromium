@@ -59,8 +59,7 @@ public class FlingingControllerBridge implements MediaStatusObserver {
     public void onMediaStatusUpdate(MediaStatusBridge status) {
         if (mNativeFlingingControllerBridge != 0) {
             FlingingControllerBridgeJni.get()
-                    .onMediaStatusUpdated(
-                            mNativeFlingingControllerBridge, FlingingControllerBridge.this, status);
+                    .onMediaStatusUpdated(mNativeFlingingControllerBridge, status);
         }
     }
 
@@ -78,9 +77,6 @@ public class FlingingControllerBridge implements MediaStatusObserver {
 
     @NativeMethods
     interface Natives {
-        void onMediaStatusUpdated(
-                long nativeFlingingControllerBridge,
-                FlingingControllerBridge caller,
-                MediaStatusBridge status);
+        void onMediaStatusUpdated(long nativeFlingingControllerBridge, MediaStatusBridge status);
     }
 }

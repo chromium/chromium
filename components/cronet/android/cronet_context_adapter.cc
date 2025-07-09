@@ -99,7 +99,6 @@ void CronetContextAdapter::InitRequestContextOnInitThread(
 
 void CronetContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     jboolean use_local_host_requests,
     jboolean use_smaller_responses,
     jboolean disable_offline_check) {
@@ -113,17 +112,12 @@ bool CronetContextAdapter::URLRequestContextExistsForTesting(
   return context_->URLRequestContextExistsForTesting(network);  // IN-TEST
 }
 
-void CronetContextAdapter::ProvideRTTObservations(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    bool should) {
+void CronetContextAdapter::ProvideRTTObservations(JNIEnv* env, bool should) {
   context_->ProvideRTTObservations(should == JNI_TRUE);
 }
 
-void CronetContextAdapter::ProvideThroughputObservations(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    bool should) {
+void CronetContextAdapter::ProvideThroughputObservations(JNIEnv* env,
+                                                         bool should) {
   context_->ProvideThroughputObservations(should == JNI_TRUE);
 }
 
@@ -204,8 +198,7 @@ bool CronetContextAdapter::OnTunnelHeadersReceived(
       response_headers.response_code());
 }
 
-void CronetContextAdapter::Destroy(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jcaller) {
+void CronetContextAdapter::Destroy(JNIEnv* env) {
   // Deleting |context_| on client thread will post cleanup onto network thread,
   // which will in turn delete |this| on network thread.
   delete context_;
@@ -228,7 +221,6 @@ bool CronetContextAdapter::IsOnNetworkThread() const {
 
 bool CronetContextAdapter::StartNetLogToFile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jfile_name,
     jboolean jlog_all) {
   std::string file_name(
@@ -238,7 +230,6 @@ bool CronetContextAdapter::StartNetLogToFile(
 
 void CronetContextAdapter::StartNetLogToDisk(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jdir_name,
     jboolean jlog_all,
     jint jmax_size) {
@@ -246,14 +237,11 @@ void CronetContextAdapter::StartNetLogToDisk(
   context_->StartNetLogToDisk(dir_name, jlog_all == JNI_TRUE, jmax_size);
 }
 
-void CronetContextAdapter::StopNetLog(JNIEnv* env,
-                                      const JavaParamRef<jobject>& jcaller) {
+void CronetContextAdapter::StopNetLog(JNIEnv* env) {
   context_->StopNetLog();
 }
 
-void CronetContextAdapter::FlushWritePropertiesForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void CronetContextAdapter::FlushWritePropertiesForTesting(JNIEnv* env) {
   context_->FlushWritePropertiesForTesting();  // IN-TEST
 }
 

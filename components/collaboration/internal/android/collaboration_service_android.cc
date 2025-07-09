@@ -70,9 +70,7 @@ CollaborationServiceAndroid::~CollaborationServiceAndroid() {
   Java_CollaborationServiceImpl_clearNativePtr(env, java_obj_);
 }
 
-bool CollaborationServiceAndroid::IsEmptyService(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+bool CollaborationServiceAndroid::IsEmptyService(JNIEnv* env) {
   return collaboration_service_->IsEmptyService();
 }
 

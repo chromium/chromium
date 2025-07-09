@@ -64,8 +64,7 @@ ScopedJavaLocalRef<jobject> ConfirmInfoBar::CreateRenderInfoBar(
       message_text, link_text, ok_button_text, cancel_button_text);
 }
 
-void ConfirmInfoBar::OnLinkClicked(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void ConfirmInfoBar::OnLinkClicked(JNIEnv* env) {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }

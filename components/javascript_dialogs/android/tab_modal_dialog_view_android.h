@@ -43,10 +43,8 @@ class TabModalDialogViewAndroid : public TabModalDialogView {
   std::u16string GetUserInput() override;
 
   void Accept(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>&,
               const base::android::JavaParamRef<jstring>& prompt);
   void Cancel(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>&,
               jboolean button_clicked);
 
  private:

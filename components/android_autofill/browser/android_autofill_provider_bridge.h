@@ -62,7 +62,7 @@ class AndroidAutofillProviderBridge {
   // Attaches the bridge to its Java counterpart.
   virtual void AttachToJavaAutofillProvider(
       JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& jcaller) = 0;
+      const base::android::JavaRef<jobject>& obj) = 0;
 
   // Sends a prefill request to the Android Autofill framework.
   virtual void SendPrefillRequest(FormDataAndroid& form) = 0;

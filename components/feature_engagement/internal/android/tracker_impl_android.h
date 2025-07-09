@@ -73,62 +73,47 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
 
   // Tracker JNI bridge implementation.
   virtual void NotifyEvent(JNIEnv* env,
-                           const base::android::JavaRef<jobject>& jobj,
                            const base::android::JavaParamRef<jstring>& jevent);
   virtual bool ShouldTriggerHelpUi(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual base::android::ScopedJavaLocalRef<jobject>
   ShouldTriggerHelpUiWithSnooze(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual bool WouldTriggerHelpUi(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual bool HasEverTriggered(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature,
       const jboolean j_from_window);
   virtual jint GetTriggerState(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual void Dismissed(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& jobj,
                          const base::android::JavaParamRef<jstring>& jfeature);
   virtual void DismissedWithSnooze(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature,
       const jint snooze_action);
   virtual base::android::ScopedJavaLocalRef<jobject> AcquireDisplayLock(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj);
+      JNIEnv* env);
   virtual void SetPriorityNotification(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual base::android::ScopedJavaLocalRef<jstring>
-  GetPendingPriorityNotification(JNIEnv* env,
-                                 const base::android::JavaRef<jobject>& jobj);
+  GetPendingPriorityNotification(JNIEnv* env);
   virtual void RegisterPriorityNotificationHandler(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature,
       const base::android::JavaRef<jobject>& jcallback);
   virtual void UnregisterPriorityNotificationHandler(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
-  virtual bool IsInitialized(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& jobj);
+  virtual bool IsInitialized(JNIEnv* env);
   virtual void AddOnInitializedCallback(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& j_callback_obj);
 
  private:

@@ -41,7 +41,6 @@ class FlingingControllerBridge : public media::FlingingController,
   // Called by the Java side on status updates.
   void OnMediaStatusUpdated(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_bridge,
       const base::android::JavaParamRef<jobject>& j_status);
 
  private:

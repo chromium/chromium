@@ -110,7 +110,6 @@ void AppModalDialogViewAndroid::AcceptAppModalDialog() {
 
 void AppModalDialogViewAndroid::DidAcceptAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
     const JavaParamRef<jstring>& prompt,
     bool should_suppress_js_dialogs) {
   std::u16string prompt_text =
@@ -130,7 +129,6 @@ bool AppModalDialogViewAndroid::IsShowing() const {
 
 void AppModalDialogViewAndroid::DidCancelAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
     bool should_suppress_js_dialogs) {
   controller_->OnCancel(should_suppress_js_dialogs);
   delete this;

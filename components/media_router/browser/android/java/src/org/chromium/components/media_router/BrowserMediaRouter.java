@@ -131,10 +131,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
                     .onSinksReceived(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            sourceId,
-                            allSinksPerSource.size());
+                            mNativeMediaRouterAndroidBridge, sourceId, allSinksPerSource.size());
         }
     }
 
@@ -150,7 +147,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
             BrowserMediaRouterJni.get()
                     .onRouteCreated(
                             mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
                             mediaRouteId,
                             mediaSinkId,
                             requestId,
@@ -163,10 +159,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
                     .onCreateRouteRequestError(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            errorText,
-                            requestId);
+                            mNativeMediaRouterAndroidBridge, errorText, requestId);
         }
     }
 
@@ -174,11 +167,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void onJoinRouteRequestError(String errorText, int requestId) {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
-                    .onJoinRouteRequestError(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            errorText,
-                            requestId);
+                    .onJoinRouteRequestError(mNativeMediaRouterAndroidBridge, errorText, requestId);
         }
     }
 
@@ -186,8 +175,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void onRouteTerminated(String mediaRouteId) {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
-                    .onRouteTerminated(
-                            mNativeMediaRouterAndroidBridge, BrowserMediaRouter.this, mediaRouteId);
+                    .onRouteTerminated(mNativeMediaRouterAndroidBridge, mediaRouteId);
         }
         mRouteIdsToProviders.remove(mediaRouteId);
     }
@@ -196,11 +184,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void onRouteClosed(String mediaRouteId, @Nullable String error) {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
-                    .onRouteClosed(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            mediaRouteId,
-                            error);
+                    .onRouteClosed(mNativeMediaRouterAndroidBridge, mediaRouteId, error);
         }
         mRouteIdsToProviders.remove(mediaRouteId);
     }
@@ -209,11 +193,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void onMessage(String mediaRouteId, String message) {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
-                    .onMessage(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            mediaRouteId,
-                            message);
+                    .onMessage(mNativeMediaRouterAndroidBridge, mediaRouteId, message);
         }
     }
 
@@ -222,10 +202,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
         if (mNativeMediaRouterAndroidBridge != 0) {
             BrowserMediaRouterJni.get()
                     .onRouteMediaSourceUpdated(
-                            mNativeMediaRouterAndroidBridge,
-                            BrowserMediaRouter.this,
-                            mediaRouteId,
-                            mediaSourceId);
+                            mNativeMediaRouterAndroidBridge, mediaRouteId, mediaSourceId);
         }
     }
 
@@ -454,53 +431,29 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     @NativeMethods
     interface Natives {
-        void onSinksReceived(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String sourceUrn,
-                int count);
+        void onSinksReceived(long nativeMediaRouterAndroidBridge, String sourceUrn, int count);
 
         void onRouteCreated(
                 long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
                 String mediaRouteId,
                 String mediaSinkId,
                 int createRouteRequestId,
                 boolean wasLaunched);
 
         void onCreateRouteRequestError(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String errorText,
-                int requestId);
+                long nativeMediaRouterAndroidBridge, String errorText, int requestId);
 
         void onJoinRouteRequestError(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String errorText,
-                int requestId);
+                long nativeMediaRouterAndroidBridge, String errorText, int requestId);
 
-        void onRouteTerminated(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String mediaRouteId);
+        void onRouteTerminated(long nativeMediaRouterAndroidBridge, String mediaRouteId);
 
         void onRouteClosed(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String mediaRouteId,
-                @Nullable String message);
+                long nativeMediaRouterAndroidBridge, String mediaRouteId, @Nullable String message);
 
-        void onMessage(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String mediaRouteId,
-                String message);
+        void onMessage(long nativeMediaRouterAndroidBridge, String mediaRouteId, String message);
 
         void onRouteMediaSourceUpdated(
-                long nativeMediaRouterAndroidBridge,
-                BrowserMediaRouter caller,
-                String mediaRouteId,
-                String mediaSourceId);
+                long nativeMediaRouterAndroidBridge, String mediaRouteId, String mediaSourceId);
     }
 }

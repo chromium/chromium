@@ -45,7 +45,6 @@ OriginVerifier::~OriginVerifier() = default;
 
 bool OriginVerifier::VerifyOrigin(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_package_name,
     const JavaParamRef<jobjectArray>& j_fingerprints,
     const JavaParamRef<jstring>& j_origin,
@@ -101,8 +100,7 @@ jlong OriginVerifier::Init(
   return reinterpret_cast<intptr_t>(native_verifier);
 }
 
-void OriginVerifier::Destroy(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& obj) {
+void OriginVerifier::Destroy(JNIEnv* env) {
   delete this;
 }
 

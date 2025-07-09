@@ -37,17 +37,14 @@ class GCMDriverAndroid : public GCMDriver,
   // Methods called from Java via JNI:
   void OnRegisterFinished(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& app_id,
       const base::android::JavaParamRef<jstring>& registration_id,
       jboolean success);
   void OnUnregisterFinished(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
                             const base::android::JavaParamRef<jstring>& app_id,
                             jboolean success);
   void OnMessageReceived(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& app_id,
       const base::android::JavaParamRef<jstring>& sender_id,
       const base::android::JavaParamRef<jstring>& j_message_id,

@@ -53,13 +53,13 @@ public abstract class ContentSettingsObserver {
     public void destroy() {
         assert !mIsDestroyed : "This observer is already destroyed.";
         mIsDestroyed = true;
-        ContentSettingsObserverJni.get().destroy(mNativeAndroidObserver, this);
+        ContentSettingsObserverJni.get().destroy(mNativeAndroidObserver);
     }
 
     @NativeMethods
     interface Natives {
-        long init(ContentSettingsObserver caller, BrowserContextHandle contextHandle);
+        long init(ContentSettingsObserver self, BrowserContextHandle contextHandle);
 
-        void destroy(long nativeAndroidObserver, ContentSettingsObserver caller);
+        void destroy(long nativeAndroidObserver);
     }
 }

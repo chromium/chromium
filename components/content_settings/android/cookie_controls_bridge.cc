@@ -120,8 +120,7 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
 
 CookieControlsBridge::~CookieControlsBridge() = default;
 
-void CookieControlsBridge::Destroy(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void CookieControlsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 

@@ -24,21 +24,22 @@
 #include "components/embedder_support/android/view_jni_headers/ContentViewRenderView_jni.h"
 
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace embedder_support {
 
 ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
-                                             jobject obj,
+                                             const JavaRef<jobject>& obj,
                                              gfx::NativeWindow root_window)
-    : root_window_(root_window), current_surface_format_(0) {
-  java_obj_.Reset(env, obj);
-}
+    : java_obj_(env, obj),
+      root_window_(root_window),
+      current_surface_format_(0) {}
 
 ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
-static jlong JNI_ContentViewRenderView_Init(
+jlong JNI_ContentViewRenderView_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jroot_window_android) {
@@ -49,14 +50,12 @@ static jlong JNI_ContentViewRenderView_Init(
   return reinterpret_cast<intptr_t>(content_view_render_view);
 }
 
-void ContentViewRenderView::Destroy(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj) {
+void ContentViewRenderView::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void ContentViewRenderView::SetCurrentWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents) {
   InitCompositor();
   content::WebContents* web_contents =
@@ -68,7 +67,6 @@ void ContentViewRenderView::SetCurrentWebContents(
 
 void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jint width,
     jint height) {
@@ -78,14 +76,12 @@ void ContentViewRenderView::OnPhysicalBackingSizeChanged(
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
 
-void ContentViewRenderView::SurfaceCreated(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
+void ContentViewRenderView::SurfaceCreated(JNIEnv* env) {
   current_surface_format_ = 0;
   InitCompositor();
 }
 
-void ContentViewRenderView::SurfaceDestroyed(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
+void ContentViewRenderView::SurfaceDestroyed(JNIEnv* env) {
   // When we switch from Chrome to other app we can't detach child surface
   // controls because it leads to a visible hole: b/157439199. To avoid this we
   // don't detach surfaces if the surface is going to be destroyed, they will be
@@ -98,7 +94,6 @@ void ContentViewRenderView::SurfaceDestroyed(JNIEnv* env,
 
 std::optional<int> ContentViewRenderView::SurfaceChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jint format,
     jint width,
     jint height,
@@ -115,10 +110,7 @@ std::optional<int> ContentViewRenderView::SurfaceChanged(
   return surface_handle;
 }
 
-void ContentViewRenderView::SetOverlayVideoMode(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    bool enabled) {
+void ContentViewRenderView::SetOverlayVideoMode(JNIEnv* env, bool enabled) {
   compositor_->SetRequiresAlphaChannel(enabled);
   compositor_->SetBackgroundColor(enabled ? SK_ColorTRANSPARENT
                                           : SK_ColorWHITE);

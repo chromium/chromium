@@ -145,7 +145,6 @@ CronetURLRequestAdapter::~CronetURLRequestAdapter() {
 
 jboolean CronetURLRequestAdapter::SetHttpMethod(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jmethod) {
   std::string method(base::android::ConvertJavaStringToUTF8(env, jmethod));
   return request_->SetHttpMethod(method) ? JNI_TRUE : JNI_FALSE;
@@ -153,7 +152,6 @@ jboolean CronetURLRequestAdapter::SetHttpMethod(
 
 jboolean CronetURLRequestAdapter::AddRequestHeader(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jname,
     const JavaParamRef<jstring>& jvalue) {
   std::string name(base::android::ConvertJavaStringToUTF8(env, jname));
@@ -166,14 +164,12 @@ void CronetURLRequestAdapter::SetUpload(
   request_->SetUpload(std::move(upload));
 }
 
-void CronetURLRequestAdapter::Start(JNIEnv* env,
-                                    const JavaParamRef<jobject>& jcaller) {
+void CronetURLRequestAdapter::Start(JNIEnv* env) {
   request_->Start();
 }
 
 void CronetURLRequestAdapter::GetStatus(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jstatus_listener) {
   base::android::ScopedJavaGlobalRef<jobject> status_listener_ref;
   status_listener_ref.Reset(env, jstatus_listener);
@@ -182,15 +178,12 @@ void CronetURLRequestAdapter::GetStatus(
                                      status_listener_ref));
 }
 
-void CronetURLRequestAdapter::FollowDeferredRedirect(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+void CronetURLRequestAdapter::FollowDeferredRedirect(JNIEnv* env) {
   request_->FollowDeferredRedirect();
 }
 
 jboolean CronetURLRequestAdapter::ReadData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jbyte_buffer,
     jint jposition,
     jint jlimit) {
@@ -205,7 +198,6 @@ jboolean CronetURLRequestAdapter::ReadData(
 }
 
 void CronetURLRequestAdapter::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& jcaller,
                                       jboolean jsend_on_canceled) {
   // Destroy could be called from any thread, including network thread (if
   // posting task to executor throws an exception), but is posted, so |this|

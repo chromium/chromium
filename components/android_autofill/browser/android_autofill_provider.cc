@@ -148,8 +148,8 @@ AndroidAutofillProvider::~AndroidAutofillProvider() = default;
 
 void AndroidAutofillProvider::AttachToJavaAutofillProvider(
     JNIEnv* env,
-    const JavaRef<jobject>& jcaller) {
-  bridge_->AttachToJavaAutofillProvider(env, jcaller);
+    const base::android::JavaRef<jobject>& obj) {
+  bridge_->AttachToJavaAutofillProvider(env, obj);
 }
 
 void AndroidAutofillProvider::RenderFrameDeleted(

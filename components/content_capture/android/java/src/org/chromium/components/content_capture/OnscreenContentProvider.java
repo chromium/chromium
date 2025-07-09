@@ -244,7 +244,7 @@ public class OnscreenContentProvider {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(OnscreenContentProvider caller, @Nullable WebContents webContents);
+        long init(OnscreenContentProvider self, @Nullable WebContents webContents);
 
         void onWebContentsChanged(
                 long nativeOnscreenContentProviderAndroid, @Nullable WebContents webContents);

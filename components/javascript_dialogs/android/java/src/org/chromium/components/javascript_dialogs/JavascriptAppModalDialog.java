@@ -89,9 +89,7 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
         Context context = window.getContext().get();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || window.getModalDialogManager() == null) {
-            JavascriptAppModalDialogJni.get()
-                    .didCancelAppModalDialog(
-                            nativeDialogPointer, JavascriptAppModalDialog.this, false);
+            JavascriptAppModalDialogJni.get().didCancelAppModalDialog(nativeDialogPointer, false);
             return;
         }
 
@@ -110,11 +108,7 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
             JavascriptAppModalDialogJni.get()
-                    .didAcceptAppModalDialog(
-                            mNativeDialogPointer,
-                            JavascriptAppModalDialog.this,
-                            promptResult,
-                            suppressDialogs);
+                    .didAcceptAppModalDialog(mNativeDialogPointer, promptResult, suppressDialogs);
         }
     }
 
@@ -122,8 +116,7 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
             JavascriptAppModalDialogJni.get()
-                    .didCancelAppModalDialog(
-                            mNativeDialogPointer, JavascriptAppModalDialog.this, suppressDialogs);
+                    .didCancelAppModalDialog(mNativeDialogPointer, suppressDialogs);
         }
     }
 
@@ -135,15 +128,9 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @NativeMethods
     interface Natives {
         void didAcceptAppModalDialog(
-                long nativeAppModalDialogViewAndroid,
-                JavascriptAppModalDialog caller,
-                String prompt,
-                boolean suppress);
+                long nativeAppModalDialogViewAndroid, String prompt, boolean suppress);
 
-        void didCancelAppModalDialog(
-                long nativeAppModalDialogViewAndroid,
-                JavascriptAppModalDialog caller,
-                boolean suppress);
+        void didCancelAppModalDialog(long nativeAppModalDialogViewAndroid, boolean suppress);
 
         JavascriptAppModalDialog getCurrentModalDialog();
     }

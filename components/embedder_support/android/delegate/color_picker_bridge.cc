@@ -29,7 +29,7 @@ ColorPickerBridge::ColorPickerBridge(
   // End with the initial color if no window was found.
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   if (!window_android) {
-    OnColorChosen(env, j_color_chooser_, initial_color);
+    OnColorChosen(env, initial_color);
     return;
   }
 
@@ -39,7 +39,7 @@ ColorPickerBridge::ColorPickerBridge(
 
   // End with the initial color if the bridge creation failed.
   if (j_color_chooser_.is_null()) {
-    OnColorChosen(env, j_color_chooser_, initial_color);
+    OnColorChosen(env, initial_color);
     return;
   }
 
@@ -69,9 +69,7 @@ void ColorPickerBridge::SetSelectedColor(SkColor color) {
   // we don't support that for now.
 }
 
-void ColorPickerBridge::OnColorChosen(JNIEnv* env,
-                                      const JavaRef<jobject>& obj,
-                                      jint color) {
+void ColorPickerBridge::OnColorChosen(JNIEnv* env, jint color) {
   web_contents_->DidChooseColorInColorChooser(color);
   web_contents_->DidEndColorChooser();
 }

@@ -154,9 +154,7 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
     public void onNetworkStatusReady(int connectionType) {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr != 0) {
-            NetworkStatusListenerAndroidJni.get()
-                    .onNetworkStatusReady(
-                            mNativePtr, NetworkStatusListenerAndroid.this, connectionType);
+            NetworkStatusListenerAndroidJni.get().onNetworkStatusReady(mNativePtr, connectionType);
         }
     }
 
@@ -165,21 +163,14 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
         ThreadUtils.assertOnUiThread();
         if (mNativePtr != 0) {
             NetworkStatusListenerAndroidJni.get()
-                    .notifyNetworkChange(
-                            mNativePtr, NetworkStatusListenerAndroid.this, newConnectionType);
+                    .notifyNetworkChange(mNativePtr, newConnectionType);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void onNetworkStatusReady(
-                long nativeNetworkStatusListenerAndroid,
-                NetworkStatusListenerAndroid caller,
-                int connectionType);
+        void onNetworkStatusReady(long nativeNetworkStatusListenerAndroid, int connectionType);
 
-        void notifyNetworkChange(
-                long nativeNetworkStatusListenerAndroid,
-                NetworkStatusListenerAndroid caller,
-                int connectionType);
+        void notifyNetworkChange(long nativeNetworkStatusListenerAndroid, int connectionType);
     }
 }
