@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -2495,7 +2496,7 @@ void TabRestorer::DoRestoreTab(Profile* profile, SessionID session_id) {
     return;
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
   BrowserLiveTabContext* context =
-      browser ? browser->live_tab_context() : nullptr;
+      browser ? browser->GetFeatures().live_tab_context() : nullptr;
   if (session_id.is_valid()) {
     service->RestoreEntryById(context, session_id,
                               WindowOpenDisposition::UNKNOWN);

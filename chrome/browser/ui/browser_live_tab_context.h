@@ -9,39 +9,46 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/sessions/core/live_tab_context.h"
+#include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
+class TabStripModel;
 
 namespace base {
 class Uuid;
-}
+}  // namespace base
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace gfx {
 class Rect;
-}
+}  // namespace gfx
+
+namespace ui {
+class BaseWindow;
+}  // namespace ui
 
 // Implementation of LiveTabContext which uses an instance of
 // Browser in order to fulfil its duties.
 class BrowserLiveTabContext : public sessions::LiveTabContext {
  public:
-  explicit BrowserLiveTabContext(Browser* browser) : browser_(browser) {}
+  explicit BrowserLiveTabContext(BrowserWindowInterface* browser);
 
   BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
   BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
 
-  ~BrowserLiveTabContext() override = default;
+  ~BrowserLiveTabContext() override;
 
   // Overridden from LiveTabContext:
   void ShowBrowserWindow() override;
@@ -107,7 +114,13 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       Profile* profile);
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
+  const raw_ref<TabStripModel> tab_strip_model_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<ui::BaseWindow> base_window_;
+  const sessions::SessionWindow::WindowType window_type_;
+  const std::string app_name_;
+  const SessionID session_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIVE_TAB_CONTEXT_H_

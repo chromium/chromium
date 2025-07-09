@@ -277,7 +277,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
   CHECK(service);
-  sessions::LiveTabContext* context = browser_->live_tab_context();
+  sessions::LiveTabContext* context =
+      browser_->GetFeatures().live_tab_context();
   CHECK(context);
 
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(

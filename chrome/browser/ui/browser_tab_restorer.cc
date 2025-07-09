@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
@@ -110,7 +111,10 @@ void RestoreTab(Browser* browser) {
   }
 
   if (service->IsLoaded()) {
-    service->RestoreMostRecentEntry(browser->live_tab_context());
+    sessions::LiveTabContext* const live_tab_context =
+        browser->GetFeatures().live_tab_context();
+    CHECK(live_tab_context);
+    service->RestoreMostRecentEntry(live_tab_context);
     return;
   }
 

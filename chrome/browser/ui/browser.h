@@ -65,7 +65,6 @@
 
 class BackgroundContents;
 class BrowserActions;
-class BrowserLiveTabContext;
 class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
@@ -479,7 +478,6 @@ class Browser : public TabStripModelObserver,
   bool should_trigger_session_restore() const {
     return should_trigger_session_restore_;
   }
-  BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
   const web_app::AppBrowserController* app_controller() const {
     return app_controller_.get();
   }
@@ -1354,9 +1352,6 @@ class Browser : public TabStripModelObserver,
 
   // Dialog box used for opening and saving files.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  // Helper which implements the LiveTabContext interface.
-  std::unique_ptr<BrowserLiveTabContext> live_tab_context_;
 
   // Helper which handles bookmark app specific browser configuration.
   // This must be initialized before |command_controller_| to ensure the correct

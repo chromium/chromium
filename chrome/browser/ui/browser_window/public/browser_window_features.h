@@ -25,6 +25,7 @@ class BreadcrumbManagerBrowserAgent;
 class Browser;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
+class BrowserLiveTabContext;
 class BrowserLocationBarModelDelegate;
 class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
@@ -381,6 +382,8 @@ class BrowserWindowFeatures {
     return content_setting_bubble_model_delegate_.get();
   }
 
+  BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -535,6 +538,9 @@ class BrowserWindowFeatures {
   // Helper which implements the ContentSettingBubbleModel interface.
   std::unique_ptr<BrowserContentSettingBubbleModelDelegate>
       content_setting_bubble_model_delegate_;
+
+  // Helper which implements the LiveTabContext interface.
+  std::unique_ptr<BrowserLiveTabContext> live_tab_context_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>

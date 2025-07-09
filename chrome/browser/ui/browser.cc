@@ -627,7 +627,6 @@ Browser::Browser(const CreateParams& params)
           params.initial_visible_on_all_workspaces_state),
       creation_source_(params.creation_source),
       unload_controller_(this),
-      live_tab_context_(new BrowserLiveTabContext(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
       browser_actions_(new BrowserActions(*this)),
       command_controller_(new chrome::BrowserCommandController(this)),
@@ -744,12 +743,6 @@ Browser::~Browser() {
 
   if (service) {
     service->WindowClosed(session_id_);
-  }
-
-  sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(profile());
-  if (tab_restore_service) {
-    tab_restore_service->BrowserClosed(live_tab_context());
   }
 
   profile_pref_registrar_.Reset();
@@ -1365,7 +1358,7 @@ void Browser::OnWindowClosing() {
 #endif
 
   if (tab_restore_service && notify_restore_service) {
-    tab_restore_service->BrowserClosing(live_tab_context());
+    tab_restore_service->BrowserClosing(GetFeatures().live_tab_context());
   }
 
   BrowserList::NotifyBrowserCloseStarted(this);
