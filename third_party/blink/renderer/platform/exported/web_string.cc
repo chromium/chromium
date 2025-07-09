@@ -168,7 +168,7 @@ WebString::operator WTF::String() const {
   return impl_.get();
 }
 
-WebString::operator WTF::StringView() const {
+WebString::operator StringView() const {
   return StringView(impl_.get());
 }
 

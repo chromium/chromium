@@ -443,9 +443,4 @@ WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
 
 }  // namespace blink
 
-// TODO(crbug.com/422768753): Remove this `using` directive.
-namespace WTF {
-using blink::StringView;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_

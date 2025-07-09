@@ -10,6 +10,8 @@
 
 namespace WTF {
 
+using blink::StringView;
+
 TEST(IntegerToStringConversionTest, SimpleIntConversion) {
   const IntegerToStringConverter<int> conv(100500);
   EXPECT_EQ(StringView(conv.Span()), StringView("100500"));

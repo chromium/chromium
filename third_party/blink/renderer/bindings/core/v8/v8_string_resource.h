@@ -138,7 +138,7 @@ class V8StringResource {
   ExternalMode mode_;
   String string_;
 
-  mutable WTF::StringView::StackBackingStore backing_store_;
+  mutable StringView::StackBackingStore backing_store_;
 };
 
 template <>

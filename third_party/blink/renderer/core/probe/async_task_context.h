@@ -34,7 +34,7 @@ class CORE_EXPORT AsyncTaskContext {
 
   // Schedules this async task with the ThreadDebugger. `Schedule` can be called
   // once and only once per AsyncTaskContext instance.
-  void Schedule(ExecutionContext* context, const WTF::StringView& name);
+  void Schedule(ExecutionContext* context, const StringView& name);
 
   // Explicitly cancel this async task. No `AsyncTasks`s must be created with
   // this context after `Cancel` was called.

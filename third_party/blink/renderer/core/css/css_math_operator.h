@@ -48,8 +48,8 @@ enum class CSSMathOperator {
 };
 
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token);
-WTF::StringView ToString(CSSMathOperator);
-WTF::StringView ToRoundingStrategyString(CSSMathOperator);
+StringView ToString(CSSMathOperator);
+StringView ToRoundingStrategyString(CSSMathOperator);
 
 bool IsComparison(CSSMathOperator);
 

@@ -58,7 +58,6 @@ class TextPosition;
 // TODO(crbug.com/422768753): Remove these `using` directives.
 using blink::String;
 using blink::StringImpl;
-using blink::StringView;
 
 }  // namespace WTF
 
