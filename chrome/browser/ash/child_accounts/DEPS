@@ -33,6 +33,7 @@ specific_include_rules = {
     "+chrome/browser/ash/login/users",
     "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/extensions/extension_service_test_with_install.h",
+    "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
     "+chrome/browser/extensions/test_extension_system.h",
     "+chrome/browser/prefs",
     "+chrome/browser/ui/ash/shelf",

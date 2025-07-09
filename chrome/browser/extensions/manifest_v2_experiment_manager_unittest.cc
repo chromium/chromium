@@ -88,7 +88,8 @@ class ManifestV2ExperimentManagerWarningUnitTest
   ManifestV2ExperimentManagerWarningUnitTest()
       : ManifestV2ExperimentManagerUnitTestBase(
             {extensions_features::kExtensionManifestV2DeprecationWarning},
-            {extensions_features::kExtensionManifestV2Disabled}) {}
+            {extensions_features::kExtensionManifestV2Disabled,
+             extensions_features::kExtensionManifestV2Unsupported}) {}
   ~ManifestV2ExperimentManagerWarningUnitTest() override = default;
 };
 
@@ -101,7 +102,8 @@ class ManifestV2ExperimentManagerDisabledUnitTest
       : ManifestV2ExperimentManagerUnitTestBase(
             {},
             {extensions_features::kExtensionManifestV2DeprecationWarning,
-             extensions_features::kExtensionManifestV2Disabled}) {}
+             extensions_features::kExtensionManifestV2Disabled,
+             extensions_features::kExtensionManifestV2Unsupported}) {}
   ~ManifestV2ExperimentManagerDisabledUnitTest() override = default;
 };
 
@@ -113,7 +115,7 @@ class ManifestV2ExperimentManagerDisableWithReEnableUnitTest
   ManifestV2ExperimentManagerDisableWithReEnableUnitTest()
       : ManifestV2ExperimentManagerUnitTestBase(
             {extensions_features::kExtensionManifestV2Disabled},
-            {}) {}
+            {extensions_features::kExtensionManifestV2Unsupported}) {}
   ~ManifestV2ExperimentManagerDisableWithReEnableUnitTest() override = default;
 };
 
@@ -126,7 +128,7 @@ class ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest
       : ManifestV2ExperimentManagerUnitTestBase(
             {extensions_features::kExtensionManifestV2Disabled,
              extensions_features::kExtensionManifestV2DeprecationWarning},
-            {}) {}
+            {extensions_features::kExtensionManifestV2Unsupported}) {}
   ~ManifestV2ExperimentManagerDisableWithReEnableAndWarningUnitTest() override =
       default;
 };

@@ -345,7 +345,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtension) {
   constexpr char kManifest[] = R"({
         "name": "Test",
         "version": "1",
-        "manifest_version": 2
+        "manifest_version": 3
       })";
   extension_directory.WriteManifest(kManifest);
   extensions::ChromeTestExtensionLoader loader(profile());
@@ -382,7 +382,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   constexpr char kManifest[] = R"({
         "name": "Test",
         "version": "1",
-        "manifest_version": 2
+        "manifest_version": 3
       })";
   extension_directory.WriteManifest(kManifest);
   extensions::ChromeTestExtensionLoader loader(profile());
@@ -394,14 +394,11 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   ClickPinButton(menu_item);
 
   // Replace the extension's valid manifest with one containing errors. In this
-  // case, the error is that both the 'browser_action' and 'page_action' keys
-  // are specified instead of only one.
+  // case, the error is that the version key is invalid.
   constexpr char kManifestWithErrors[] = R"({
         "name": "Test",
-        "version": "1",
-        "manifest_version": 2,
-        "page_action" : {},
-        "browser_action" : {}
+        "version": 1,
+        "manifest_version": 3
       })";
   extension_directory.WriteManifest(kManifestWithErrors);
 

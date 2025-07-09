@@ -57,8 +57,8 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccess) {
       R"({
            "name": "foo",
            "version": "1.0",
-           "manifest_version": 2,
-           "permissions": ["<all_urls>"]
+           "manifest_version": 3,
+           "host_permissions": ["<all_urls>"]
          })";
 
   TestExtensionDir dir;
@@ -113,8 +113,8 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
       R"({
            "name": "foo",
            "version": "1.0",
-           "manifest_version": 2,
-           "permissions": ["<all_urls>"]
+           "manifest_version": 3,
+           "host_permissions": ["<all_urls>"]
          })";
 
   TestExtensionDir dir;

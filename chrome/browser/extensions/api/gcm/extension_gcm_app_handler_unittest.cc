@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -452,6 +453,10 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<FakeExtensionGCMAppHandler> gcm_app_handler_;
   gcm::GCMClient::Result registration_result_ = gcm::GCMClient::UNKNOWN_ERROR;
   gcm::GCMClient::Result unregistration_result_ = gcm::GCMClient::UNKNOWN_ERROR;
+
+  // TODO(https://crbug.com/40804030): Migrate this to only rely on MV3
+  // extensions.
+  ScopedTestMV2Enabler mv2_enabler_;
 };
 
 TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {

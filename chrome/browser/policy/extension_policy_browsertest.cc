@@ -398,10 +398,10 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
 }  // namespace

@@ -591,8 +591,9 @@ class ExtensionInstallStatusTestWithoutMv2Deprecation
     // This test assumes MV2 is not blocked by Chrome. Versions with MV2
     // blocked by Chrome are exercised in
     // `ExtensionInstallStatusTestWithMV2Deprecation`.
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionManifestV2Disabled);
+    feature_list_.InitWithFeatures(
+        {}, {extensions_features::kExtensionManifestV2Disabled,
+             extensions_features::kExtensionManifestV2Unsupported});
   }
   ExtensionInstallStatusTestWithoutMv2Deprecation(
       const ExtensionInstallStatusTestWithoutMv2Deprecation&) = delete;
@@ -724,8 +725,17 @@ class ExtensionInstallStatusTestWithMV2Deprecation
       public testing::WithParamInterface<bool> {
  public:
   ExtensionInstallStatusTestWithMV2Deprecation() {
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionManifestV2Disabled, GetParam());
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features(
+        {extensions_features::kExtensionManifestV2Unsupported});
+    if (GetParam()) {
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+    } else {
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~ExtensionInstallStatusTestWithMV2Deprecation() override = default;
 
