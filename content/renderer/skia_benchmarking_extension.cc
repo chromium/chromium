@@ -24,8 +24,8 @@
 #include "content/renderer/render_thread_impl.h"
 #include "gin/arguments.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "skia/ext/benchmarking_canvas.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -42,8 +42,10 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
@@ -117,9 +119,6 @@ class PicturePlaybackController : public SkPicture::AbortCallback {
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo SkiaBenchmarking::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 // static
 void SkiaBenchmarking::Install(blink::WebLocalFrame* frame) {
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
@@ -130,15 +129,13 @@ void SkiaBenchmarking::Install(blink::WebLocalFrame* frame) {
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<SkiaBenchmarking> controller =
-      gin::CreateHandle(isolate, new SkiaBenchmarking());
-  if (controller.IsEmpty())
-    return;
+  auto* controller = cppgc::MakeGarbageCollected<SkiaBenchmarking>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  v8::Local<v8::Object> wrapper =
+      controller->GetWrapper(isolate).ToLocalChecked();
 
   v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
-  chrome
-      ->Set(context, gin::StringToV8(isolate, "skiaBenchmarking"),
-            controller.ToV8())
+  chrome->Set(context, gin::StringToV8(isolate, "skiaBenchmarking"), wrapper)
       .Check();
 }
 
@@ -159,12 +156,11 @@ SkiaBenchmarking::SkiaBenchmarking() {
   Initialize();
 }
 
-SkiaBenchmarking::~SkiaBenchmarking() {}
+SkiaBenchmarking::~SkiaBenchmarking() = default;
 
 gin::ObjectTemplateBuilder SkiaBenchmarking::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<SkiaBenchmarking>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::Wrappable<SkiaBenchmarking>::GetObjectTemplateBuilder(isolate)
       .SetMethod("rasterize", &SkiaBenchmarking::Rasterize)
       .SetMethod("getOps", &SkiaBenchmarking::GetOps)
       .SetMethod("getOpTimings", &SkiaBenchmarking::GetOpTimings)
@@ -353,6 +349,10 @@ void SkiaBenchmarking::GetInfo(gin::Arguments* args) {
       .Check();
 
   args->Return(result);
+}
+
+const gin::WrapperInfo* SkiaBenchmarking::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 }  // namespace content

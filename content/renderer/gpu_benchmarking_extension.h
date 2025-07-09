@@ -24,18 +24,21 @@ namespace content {
 class RenderFrameImpl;
 
 // gin class for gpu benchmarking
-class GpuBenchmarking : public gin::DeprecatedWrappable<GpuBenchmarking> {
+class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kGpuBenchmarking};
 
   GpuBenchmarking(const GpuBenchmarking&) = delete;
   GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
 
   static void Install(base::WeakPtr<RenderFrameImpl> frame);
 
- private:
+  // Make public for cppgc::MakeGarbageCollected.
   explicit GpuBenchmarking(base::WeakPtr<RenderFrameImpl> frame);
   ~GpuBenchmarking() override;
+
+ private:
   void EnsureRemoteInterface();
 
   // gin::Wrappable.
@@ -113,6 +116,8 @@ class GpuBenchmarking : public gin::DeprecatedWrappable<GpuBenchmarking> {
   // Returns true if the argument is a CanvasImageSource whose image data is
   // stored on the GPU.
   bool IsAcceleratedCanvasImageSource(gin::Arguments* args);
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   base::WeakPtr<RenderFrameImpl> render_frame_;
   mojo::Remote<mojom::InputInjector> input_injector_;

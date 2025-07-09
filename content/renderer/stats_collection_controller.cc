@@ -11,18 +11,16 @@
 #include "base/strings/string_util.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/renderer/render_thread_impl.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace content {
-
-// static
-gin::DeprecatedWrapperInfo StatsCollectionController::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 // static
 void StatsCollectionController::Install(blink::WebLocalFrame* frame) {
@@ -34,25 +32,21 @@ void StatsCollectionController::Install(blink::WebLocalFrame* frame) {
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<StatsCollectionController> controller =
-      gin::CreateHandle(isolate, new StatsCollectionController());
-  if (controller.IsEmpty())
-    return;
+  auto* controller = cppgc::MakeGarbageCollected<StatsCollectionController>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  v8::Local<v8::Object> wrapper =
+      controller->GetWrapper(isolate).ToLocalChecked();
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "statsCollectionController"),
-            controller.ToV8())
+            wrapper)
       .Check();
 }
 
-StatsCollectionController::StatsCollectionController() {}
-
-StatsCollectionController::~StatsCollectionController() {}
-
 gin::ObjectTemplateBuilder StatsCollectionController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<
-             StatsCollectionController>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<StatsCollectionController>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("getHistogram", &StatsCollectionController::GetHistogram)
       .SetMethod("getBrowserHistogram",
                  &StatsCollectionController::GetBrowserHistogram);
@@ -78,6 +72,10 @@ std::string StatsCollectionController::GetBrowserHistogram(
       histogram_name, &histogram_json);
 
   return histogram_json;
+}
+
+const gin::WrapperInfo* StatsCollectionController::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 }  // namespace content
