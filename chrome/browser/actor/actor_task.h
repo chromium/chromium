@@ -23,7 +23,7 @@ class ExecutionEngine;
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
-  ActorTask();
+  ActorTask() = delete;
   explicit ActorTask(std::unique_ptr<ExecutionEngine> execution_engine);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;

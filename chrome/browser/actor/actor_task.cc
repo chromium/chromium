@@ -13,7 +13,6 @@
 
 namespace actor {
 
-ActorTask::ActorTask() = default;
 ActorTask::ActorTask(std::unique_ptr<ExecutionEngine> execution_engine)
     : execution_engine_(std::move(execution_engine)) {
   execution_engine_->SetOwner(this);
