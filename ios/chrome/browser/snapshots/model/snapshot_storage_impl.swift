@@ -16,12 +16,6 @@ let kLRUCacheBaseCapacity = 6
 // feature.
 let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
 
-// Additional capacity of elements that the LRU cache can hold before starting to evict elements
-// when the Tab Group feature is enabled.
-//
-// A tab group cell requests up to 7 snapshots from the first item.
-let kLRUCacheAdditionalCapacityForTabGroupEnabled = 7
-
 // A class providing an in-memory and on-disk storage of tab snapshots.
 // A snapshot is a full-screen image of the contents of the page at the current scroll offset and
 // zoom level, used to stand in for the WKWebView if it has been purged from memory or when quickly
@@ -76,10 +70,6 @@ let kLRUCacheAdditionalCapacityForTabGroupEnabled = 7
       // determine the cache size should sync with IsPinnedTabsEnabled() in
       // ios/chrome/browser/tabs/model/features.h.
       cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled
-    }
-    if IsLargeCapacityInSnapshotLRUCacheEnabled() {
-      // Add more capacity to LRUCache when the feature flag is enabled. The feature depends on the tab group feature.
-      cacheSize += kLRUCacheAdditionalCapacityForTabGroupEnabled
     }
     self.init(
       lruCache: SnapshotLRUCache(size: cacheSize), storageDirectoryUrl: storageDirectoryUrl,

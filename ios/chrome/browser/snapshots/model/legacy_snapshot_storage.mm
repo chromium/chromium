@@ -43,12 +43,6 @@ const NSUInteger kLRUCacheBaseCapacity = 6;
 // for pinned tabs feature.
 const NSUInteger kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4;
 
-// Additional capacity of elements that the LRU cache can hold before starting
-// to evict elements when the Tab Group feature is enabled.
-//
-// A tab group cell requests up to 7 snapshots from the first item.
-const NSUInteger kLRUCacheAdditionalCapacityForTabGroupEnabled = 7;
-
 // Convert `wrappers` to a vector of SnapshotID.
 std::vector<SnapshotID> ToSnapshotIDs(NSArray<SnapshotIDWrapper*>* wrappers) {
   std::vector<SnapshotID> snapshot_ids;
@@ -64,9 +58,6 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
   NSUInteger cacheSize = kLRUCacheBaseCapacity;
   if (IsPinnedTabsEnabled()) {
     cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled;
-  }
-  if (IsLargeCapacityInSnapshotLRUCacheEnabled()) {
-    cacheSize += kLRUCacheAdditionalCapacityForTabGroupEnabled;
   }
   return [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
 }

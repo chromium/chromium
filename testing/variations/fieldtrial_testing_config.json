@@ -14007,21 +14007,6 @@
             ]
         }
     ],
-    "LargeCapacityInSnapshotLRUCache": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LargeCapacityInSnapshotLRUCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "LayoutNGShapeCacheWebview": [
         {
             "platforms": [
