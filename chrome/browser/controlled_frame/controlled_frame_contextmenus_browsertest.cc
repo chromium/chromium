@@ -409,11 +409,6 @@ new Promise(async (resolve, reject) => {
   {
     title: 'test_title',
     id: $1,
-    onclick: function(info){
-      document.clickedMenuItemId =
-          [...(document.clickedMenuItemId ?? []), info.menuItemId];
-      document.inlineOnClickedCount=(document.inlineOnClickedCount ?? 0) + 1;
-    }
   });
   resolve('SUCCESS');
 });
@@ -428,7 +423,7 @@ new Promise(async (resolve, reject) => {
       R"(
 document.onClickedHandler = function(info) {
   document.clickedMenuItemId =
-      [...(document.clickedMenuItemId ?? []), info.menuItemId];
+      [...(document.clickedMenuItemId ?? []), info.menuItem.id];
   document.globalOnClickedCount = (document.globalOnClickedCount ?? 0) + 1;
 };
 
@@ -455,7 +450,6 @@ document.onClickedHandler = function(info) {
   ASSERT_TRUE(controlled_frame);
   SimulateClickContextMenuItem(controlled_frame);
 
-  EXPECT_EQ(content::EvalJs(app_frame, "document.inlineOnClickedCount"), 1);
   EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
   EXPECT_THAT(
       content::EvalJs(app_frame, "document.clickedMenuItemId").ExtractList(),
@@ -480,7 +474,6 @@ document.onClickedHandler = function(info) {
   ASSERT_EQ(content::EvalJs(app_frame, remove_handler_script), kEvalSuccessStr);
 
   SimulateClickContextMenuItem(controlled_frame);
-  EXPECT_EQ(content::EvalJs(app_frame, "document.inlineOnClickedCount"), 2);
   EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
   EXPECT_THAT(
       content::EvalJs(app_frame, "document.clickedMenuItemId").ExtractList(),

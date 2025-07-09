@@ -18,6 +18,43 @@ const WebViewContextMenusImpl =
     require('chromeWebView').WebViewContextMenusImpl;
 const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
 
+function identity(value) {
+  return value;
+}
+
+function ensureString(value) {
+  return String(value);
+}
+
+function extractAndMapValues(obj, mapping) {
+  const mapped = {__proto__: null};
+  for (const [key, value] of $Object.entries(obj)) {
+    if (key in mapping) {
+      $Object.defineProperty(mapped, key, {
+        __proto__: null,
+        value: mapping[key](value),
+        enumerable: true,
+        configurable: true,
+      });
+    }
+  }
+  return mapped;
+}
+
+function renameObjectKeys(obj, mapping) {
+  for (const [oldKey, newKey] of $Object.entries(mapping)) {
+    if (oldKey in obj) {
+      $Object.defineProperty(obj, newKey, {
+        __proto__: null,
+        value: obj[oldKey],
+        enumerable: true,
+        configurable: true,
+      });
+      delete obj[oldKey];
+    }
+  }
+}
+
 function ControlledFrameContextMenusImpl(webView, viewInstanceId) {
   this.viewInstanceId_ = viewInstanceId;
   $Function.apply(WebViewContextMenusImpl, this, [webView, viewInstanceId]);
@@ -99,10 +136,45 @@ function createEventInfo(contextMenusEventName) {
   };
 }
 
-function webifyEventDetails(event) {
-  // TODO(crbug.com/429109629): Clarify the changes needed for the event and
-  // implement them.
-  return event;
+function webifyClickEventDetails(details) {
+  const webDetails = extractAndMapValues(details, {
+    frameId: identity,
+    frameUrl: identity,
+    pageUrl: identity,
+    editable: identity,
+    linkUrl: identity,
+    mediaType: identity,
+    selectionText: identity,
+    srcUrl: identity,
+  });
+
+  const webMenuItem = extractAndMapValues(details, {
+    menuItemId: ensureString,
+    parentMenuId: ensureString,
+    checked: identity,
+    wasChecked: identity,
+  });
+
+  renameObjectKeys(webMenuItem, {
+    __proto__: null,
+    menuItemId: 'id',
+  });
+
+  $Object.defineProperty(webDetails, 'menuItem', {
+    __proto__: null,
+    value: new MenuItemDetails(webMenuItem),
+    enumerable: true,
+    configurable: true,
+  });
+
+  renameObjectKeys(webDetails, {
+    __proto__: null,
+    frameUrl: 'frameURL',
+    pageUrl: 'pageURL',
+    linkUrl: 'linkURL',
+    srcUrl: 'srcURL',
+  });
+  return webDetails;
 }
 
 class ControlledFrameContextMenus extends EventTarget {
@@ -163,13 +235,15 @@ class ControlledFrameContextMenus extends EventTarget {
 
   #onEvent(type, listener, details) {
     let menuEvent;
-    const webDetails = webifyEventDetails(details);
     switch (type) {
       case 'show':
-        menuEvent = new ShowEvent(webDetails);
+        // No mapping needed for the show event as it is speced as a plain
+        // event.
+        menuEvent = new Event('show');
         break;
       case 'click':
-        menuEvent = new ClickEvent(webDetails);
+        menuEvent =
+            new ContextMenusClickEvent(webifyClickEventDetails(details));
         break;
     }
 
@@ -181,15 +255,14 @@ class ControlledFrameContextMenus extends EventTarget {
   }
 }
 
-class ShowEvent extends Event {
+class MenuItemDetails {
   constructor(details) {
-    super('show');
     $Object.assign(this, details);
     $Object.freeze(this);
   }
 }
 
-class ClickEvent extends Event {
+class ContextMenusClickEvent extends Event {
   constructor(details) {
     super('click');
     $Object.assign(this, details);
