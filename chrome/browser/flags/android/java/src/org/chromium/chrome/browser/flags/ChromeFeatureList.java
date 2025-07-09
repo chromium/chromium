@@ -630,6 +630,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY = "TabStripMouseCloseResizeDelay";
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
+    public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID =
@@ -1289,6 +1290,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
+            newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =

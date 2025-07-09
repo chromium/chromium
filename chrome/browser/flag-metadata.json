@@ -9301,6 +9301,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "tab-storage-sqlite-prototype",
+    "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-strip-context-menu-android",
     "owners": [ "jhimawan@google.com", "nemco@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

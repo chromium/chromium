@@ -14556,6 +14556,7 @@ from previous Chrome versions.
   <int value="200711930" label="PictureInPictureShowWindowAnimation:disabled"/>
   <int value="201203491"
       label="ReduceUserAgentAndroidVersionDeviceModel:enabled"/>
+  <int value="201274915" label="TabStorageSqlitePrototype:enabled"/>
   <int value="201343576" label="enable-password-change-support:enabled"/>
   <int value="201641586"
       label="CrOSLateBootCrasOutputPluginProcessor:disabled"/>
@@ -18723,6 +18724,7 @@ from previous Chrome versions.
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
   <int value="1727201171" label="EventBasedLogUpload:enabled"/>
   <int value="1728616693" label="WebRtcWgcRequireBorder:disabled"/>
+  <int value="1728763346" label="TabStorageSqlitePrototype:disabled"/>
   <int value="1728816382" label="SeaPenEnterprise:disabled"/>
   <int value="1729485335" label="CastMessageLogging:disabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>

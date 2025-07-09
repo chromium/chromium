@@ -7221,6 +7221,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(tabs::kSplitTabStrip)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"tab-storage-sqlite-prototype",
+     flag_descriptions::kTabStorageSqlitePrototypeName,
+     flag_descriptions::kTabStorageSqlitePrototypeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStorageSqlitePrototype)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kSidePanelResizingFlagId,
      flag_descriptions::kSidePanelResizingName,

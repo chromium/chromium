@@ -3848,6 +3848,10 @@ const char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
     "Pure refactoring, no user-visible behavioral changes are included.";
 
+const char kTabStorageSqlitePrototypeName[] = "Tab Storage SQLite Prototype";
+const char kTabStorageSqlitePrototypeDescription[] =
+    "Enables a prototype for using SQLite for tab storage.";
+
 const char kDynamicSearchUpdateAnimationName[] =
     "Dynamic Search Result Update Animation";
 const char kDynamicSearchUpdateAnimationDescription[] =

@@ -393,6 +393,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabletTabStripAnimation,
     &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabStateFlatBuffer,
+    &kTabStorageSqlitePrototype,
     &kTabStripContextMenuAndroid,
     &kTabStripDensityChangeAndroid,
     &kTabStripGroupDragDropAndroid,
@@ -1303,6 +1304,10 @@ BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
 BASE_FEATURE(kTabStateFlatBuffer,
              "TabStateFlatBuffer",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStorageSqlitePrototype,
+             "TabStorageSqlitePrototype",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripContextMenuAndroid,
              "TabStripContextMenuAndroid",

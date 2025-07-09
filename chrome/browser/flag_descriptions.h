@@ -2202,6 +2202,9 @@ extern const char kScrollableTabStripOverflowDescription[];
 extern const char kSplitTabStripName[];
 extern const char kSplitTabStripDescription[];
 
+extern const char kTabStorageSqlitePrototypeName[];
+extern const char kTabStorageSqlitePrototypeDescription[];
+
 extern const char kDynamicSearchUpdateAnimationName[];
 extern const char kDynamicSearchUpdateAnimationDescription[];
 
