@@ -143,9 +143,6 @@ extern const char kAndroidWebAppLaunchHandlerDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kIgnoreDeviceFlexArcEnabledPolicyName[];
-extern const char kIgnoreDeviceFlexArcEnabledPolicyDescription[];
-
 extern const char kAnnotatorModeName[];
 extern const char kAnnotatorModeDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)

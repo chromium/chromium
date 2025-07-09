@@ -225,11 +225,6 @@ const char kAndroidWebAppLaunchHandlerDescription[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
-    "Ignore VPN Apps Enabling on ChromeOS Flex";
-const char kIgnoreDeviceFlexArcEnabledPolicyDescription[] =
-    "Allows users to disable VPN app enabling on ChromeOS Flex devices.";
-
 const char kAnnotatorModeName[] = "Enable annotator tool";
 const char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
