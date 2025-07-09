@@ -100,7 +100,6 @@ chrome/test/data/dromaeo
 chrome/test/data/dromaeo/lib
 chrome/test/data/extensions/good
 chrome/test/data/extensions/manifest_tests
-chrome/test/data/extensions/permissions/allowlist
 chrome/test/data/mac_installer
 chrome/test/data/safe_browsing
 chrome/test/data/safe_browsing/download_protection
