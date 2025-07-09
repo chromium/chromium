@@ -520,8 +520,6 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -545,6 +543,10 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             return std::make_unique<NiceMock<MockSession>>(&session_);
           }));
 
+  // Caller is responsible to call ResetOnDeviceSession() before calling
+  // InquireOnDeviceModel again.
+  ASSERT_TRUE(delegate_->ResetOnDeviceSession());
+
   base::test::TestFuture<std::optional<IntelligentScanResult>> future2;
   delegate_->InquireOnDeviceModel("", future2.GetCallback());
 
@@ -552,10 +554,6 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 2);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 2);
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", false, 1);
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -732,29 +730,18 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ResetOnDeviceSession) {
   EnableOnDeviceModelWithSession();
 
-  base::test::TestFuture<std::optional<IntelligentScanResult>> future;
-  delegate_->InquireOnDeviceModel("", future.GetCallback());
-
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 0);
-
-  delegate_->ResetOnDeviceSession(/*inquiry_complete=*/false);
-
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 1);
-}
-
-TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
-       ResetOnDeviceSession_HistogramNotLoggedIfInquiryComplete) {
-  EnableOnDeviceModelWithSession();
+  bool did_reset = delegate_->ResetOnDeviceSession();
+  EXPECT_FALSE(did_reset);
 
   base::test::TestFuture<std::optional<IntelligentScanResult>> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
 
-  delegate_->ResetOnDeviceSession(/*inquiry_complete=*/true);
+  EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
 
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", true, 0);
+  did_reset = delegate_->ResetOnDeviceSession();
+  EXPECT_TRUE(did_reset);
+
+  EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
 }
 
 class

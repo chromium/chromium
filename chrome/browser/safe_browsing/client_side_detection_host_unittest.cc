@@ -274,7 +274,7 @@ class MockIntelligentScanDelegate
               InquireOnDeviceModel,
               (std::string, InquireOnDeviceModelDoneCallback),
               (override));
-  MOCK_METHOD(void, ResetOnDeviceSession, (bool), (override));
+  MOCK_METHOD(bool, ResetOnDeviceSession, (), (override));
 };
 
 }  // namespace
@@ -1033,6 +1033,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
       PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification", false,
+      1);
 }
 
 TEST_F(ClientSideDetectionHostTest,

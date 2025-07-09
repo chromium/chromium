@@ -26,9 +26,8 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
   return;
 }
 
-void ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession(
-    bool inquiry_complete) {
-  return;
+bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession() {
+  return false;
 }
 
 }  // namespace safe_browsing

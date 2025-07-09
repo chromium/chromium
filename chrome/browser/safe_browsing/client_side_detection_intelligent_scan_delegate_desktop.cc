@@ -36,11 +36,6 @@ void LogOnDeviceModelDownloadSuccess(bool success) {
                             success);
 }
 
-void LogOnDeviceModelSessionAliveOnNewRequest(bool is_alive) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", is_alive);
-}
-
 void LogOnDeviceModelSessionCreationSuccess(bool success) {
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", success);
@@ -143,14 +138,9 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::InquireOnDeviceModel(
     return;
   }
 
-  // Close off the previous session if session's model execution from a previous
-  // call into InquireOnDeviceModel is still happening.
-  if (session_) {
-    LogOnDeviceModelSessionAliveOnNewRequest(true);
-    session_.reset();
-  } else {
-    LogOnDeviceModelSessionAliveOnNewRequest(false);
-  }
+  // The caller of this function is responsible for calling ResetOnDeviceSession
+  // before calling this function again.
+  CHECK(!session_);
 
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
 
@@ -215,7 +205,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::ModelExecutionCallback(
 
   // Reset session immediately so that future inference is not affected by the
   // old context.
-  ResetOnDeviceSession(/*inquiry_complete=*/true);
+  ResetOnDeviceSession();
 
   LogOnDeviceModelCallbackStateOnSuccessfulResponse(
       !!inquire_on_device_model_callback_);
@@ -228,14 +218,12 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::ModelExecutionCallback(
   }
 }
 
-void ClientSideDetectionIntelligentScanDelegateDesktop::ResetOnDeviceSession(
-    bool inquiry_complete) {
+bool ClientSideDetectionIntelligentScanDelegateDesktop::ResetOnDeviceSession() {
+  bool did_reset_session = !!session_;
   if (session_) {
     session_.reset();
-    if (!inquiry_complete) {
-      LogOnDeviceModelSessionAliveOnNewRequest(true);
-    }
   }
+  return did_reset_session;
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::
@@ -259,9 +247,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 void ClientSideDetectionIntelligentScanDelegateDesktop::
     StopListeningToOnDeviceModelUpdate() {
   on_device_model_available_ = false;
-  if (session_) {
-    session_.reset();
-  }
+  ResetOnDeviceSession();
   if (!observing_on_device_model_availability_) {
     return;
   }

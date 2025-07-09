@@ -37,10 +37,12 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) override;
   void InquireOnDeviceModel(std::string rendered_texts,
                             InquireOnDeviceModelDoneCallback callback) override;
-  void ResetOnDeviceSession(bool inquiry_complete) override;
+  bool ResetOnDeviceSession() override;
 
   // KeyedService implementation.
   void Shutdown() override;
+
+  bool IsSessionAliveForTesting() { return !!session_; }
 
  private:
   void OnPrefsUpdated();

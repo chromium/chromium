@@ -764,7 +764,10 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   // Cancel any ongoing on device sessions.
-  intelligent_scan_delegate_->ResetOnDeviceSession(/*inquiry_complete=*/false);
+  bool did_reset_session = intelligent_scan_delegate_->ResetOnDeviceSession();
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
+      did_reset_session);
 
   // If we navigate away and there currently is a pending phishing report
   // request we have to cancel it to make sure we don't display an interstitial
