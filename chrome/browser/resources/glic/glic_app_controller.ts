@@ -41,11 +41,13 @@ interface PageElementTypes {
   offlinePanel: HTMLElement;
   errorPanel: HTMLElement;
   unavailablePanel: HTMLElement;
+  disabledByAdminPanel: HTMLElement;
   signInPanel: HTMLElement;
   guestPanel: HTMLElement;
   webviewHeader: HTMLDivElement;
   webviewContainer: HTMLDivElement;
   profilePickerButton: HTMLButtonElement;
+  disabledByAdminCloseButton: HTMLButtonElement;
   signInButton: HTMLButtonElement;
   unresponsiveOverlay: HTMLElement;
 }
@@ -57,7 +59,7 @@ const $: PageElementTypes = new Proxy({}, {
 });
 
 type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
-    'unavailablePanel'|'signInPanel';
+    'unavailablePanel'|'disabledByAdminPanel'|'signInPanel';
 
 interface StateDescriptor {
   onEnter?: () => void;
@@ -133,6 +135,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
     $.profilePickerButton.addEventListener('click', () => {
       this.openProfilePicker();
+    });
+    $.disabledByAdminCloseButton.addEventListener('click', () => {
+      this.browserProxy.handler.closePanel();
     });
     $.signInButton.addEventListener('click', () => {
       this.signIn();
@@ -289,6 +294,17 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       },
     ],
     [
+      WebUiState.kDisabledByAdmin,
+      {
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showPanel('disabledByAdminPanel');
+            },
+      },
+    ],
+    [
       WebUiState.kReady,
       {
         onEnter: () => {
@@ -357,6 +373,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       case ProfileReadyState.kIneligible:
       case ProfileReadyState.kUnknownError:
         this.setState(WebUiState.kUnavailable);
+        return;
+      case ProfileReadyState.kDisabledByAdmin:
+        this.setState(WebUiState.kDisabledByAdmin);
         return;
       case ProfileReadyState.kSignInRequired:
         this.setState(WebUiState.kSignIn);
@@ -613,6 +632,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         case ProfileReadyState.kUnknownError:
         case ProfileReadyState.kIneligible:
           this.setState(WebUiState.kUnavailable);
+          break;
+        case ProfileReadyState.kDisabledByAdmin:
+          this.setState(WebUiState.kDisabledByAdmin);
           break;
         case ProfileReadyState.kSignInRequired:
           this.setState(WebUiState.kSignIn);

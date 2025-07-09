@@ -130,7 +130,11 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
 }
 
 mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
-  if (!IsEnabledAndConsentForProfile(profile)) {
+  const ProfileEnablement enablement = EnablementForProfile(profile);
+  if (enablement.DisallowedByAdmin()) {
+    return mojom::ProfileReadyState::kDisabledByAdmin;
+  }
+  if (!enablement.IsEnabledAndConsented()) {
     return mojom::ProfileReadyState::kIneligible;
   }
 

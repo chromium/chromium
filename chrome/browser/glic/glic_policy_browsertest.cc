@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-    app_observer.Wait(mojom::WebUiState::kUnavailable);
+    app_observer.Wait(mojom::WebUiState::kDisabledByAdmin);
   }
 
   // Re-enable the policy.
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-    app_observer.Wait(mojom::WebUiState::kUnavailable);
+    app_observer.Wait(mojom::WebUiState::kDisabledByAdmin);
   }
 
   // Enable the policy at runtime
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
             profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return service->host().GetPrimaryWebUiState() ==
-           mojom::WebUiState::kUnavailable;
+           mojom::WebUiState::kDisabledByAdmin;
   })) << "Timed out waiting for unavailable state. Current state: "
       << service->host().GetPrimaryWebUiState();
   ASSERT_TRUE(service->window_controller().IsShowing());
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   run_loop.Run();
   ClickElementWithId(
       service->window_controller().GetGlicView()->GetWebContents(),
-      "profilePickerButton");
+      "disabledByAdminCloseButton");
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !service->window_controller().IsShowing();
   })) << "Timed out waiting for glic to close";

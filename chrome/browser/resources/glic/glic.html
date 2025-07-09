@@ -71,6 +71,23 @@
       </div>
     </div>
   </section>
+  <section hidden class="dialog panel" id="disabledByAdminPanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="cr:domain"></cr-icon></div>
+        <p class="headline">$i18n{disabledByAdminNoticeHeader}</p>
+        <p>$i18n{disabledByAdminNotice}</p>
+        <cr-button class="tonal-button" id="disabledByAdminCloseButton"
+          role="button">$i18n{disabledByAdminNoticeCloseButton}</cr-button>
+      </div>
+    </div>
+  </section>
   <section hidden class="dialog panel" id="signInPanel">
     <div class="container">
       <div class="header">

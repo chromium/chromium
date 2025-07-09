@@ -209,6 +209,15 @@ found in the LICENSE file.
       <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the profile picker.">
         Choose another profile
       </message>
+      <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" translateable="false" desc="This is the text of the glic disabled by admin notice.">
+        Contact your administrator for more information
+      </message>
+      <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" translateable="false" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
+        Got it
+      </message>
+      <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic disabled by admin notice.">
+        Glic is disabled by your organization
+      </message>
 
       <!-- Experimental Glic settings -->
       <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">

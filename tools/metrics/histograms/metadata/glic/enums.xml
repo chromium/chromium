@@ -407,6 +407,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="The sign-in panel is displayed"/>
   <int value="11"
       label="Web view is displayed, but it is displaying an error page"/>
+  <int value="12" label="Glic is disabled by the administrator"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->

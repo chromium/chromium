@@ -124,6 +124,11 @@ webview:not([hidden]) {
   color: var(--color--error);
 }
 
+#disabledByAdminPanel .notice .icon {
+  /* This isn't considered an error, so use primary color. */
+  color: var(--color--primary);
+}
+
 .dialog p {
   margin: 0 0 8px;
 }
