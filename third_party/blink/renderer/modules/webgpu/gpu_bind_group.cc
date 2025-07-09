@@ -7,13 +7,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubuffer_gpubufferbinding_gpuexternaltexture_gpusampler_gputextureview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubuffer_gpubufferbinding_gpuexternaltexture_gpusampler_gputexture_gputextureview.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_sampler.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -47,6 +48,12 @@ wgpu::BindGroupEntry AsDawnType(
       dawn_binding.sampler =
           AsDawnType(webgpu_binding->resource()->GetAsGPUSampler());
       break;
+    case V8GPUBindingResource::ContentType::kGPUTexture: {
+      wgpu::Texture texture =
+          AsDawnType(webgpu_binding->resource()->GetAsGPUTexture());
+      dawn_binding.textureView = texture.CreateView();
+      break;
+    }
     case V8GPUBindingResource::ContentType::kGPUTextureView:
       dawn_binding.textureView =
           AsDawnType(webgpu_binding->resource()->GetAsGPUTextureView());

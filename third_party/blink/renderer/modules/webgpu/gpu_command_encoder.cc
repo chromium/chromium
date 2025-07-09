@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_writes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_buffer_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_texture_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gputexture_gputextureview.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -28,6 +29,18 @@
 
 namespace blink {
 
+wgpu::TextureView GetTextureView(
+    V8UnionGPUTextureOrGPUTextureView* textureOrView) {
+  switch (textureOrView->GetContentType()) {
+    case V8UnionGPUTextureOrGPUTextureView::ContentType::kGPUTexture: {
+      wgpu::Texture texture = AsDawnType(textureOrView->GetAsGPUTexture());
+      return texture.CreateView();
+    }
+    case V8UnionGPUTextureOrGPUTextureView::ContentType::kGPUTextureView:
+      return AsDawnType(textureOrView->GetAsGPUTextureView());
+  }
+}
+
 bool ConvertToDawn(const GPURenderPassColorAttachment* in,
                    wgpu::RenderPassColorAttachment* out,
                    ExceptionState& exception_state) {
@@ -35,7 +48,7 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
   DCHECK(out);
 
   *out = {
-      .view = in->view()->GetHandle(),
+      .view = GetTextureView(in->view()),
       .loadOp = AsDawnEnum(in->loadOp()),
       .storeOp = AsDawnEnum(in->storeOp()),
   };
@@ -43,7 +56,7 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
     out->depthSlice = in->depthSlice();
   }
   if (in->hasResolveTarget()) {
-    out->resolveTarget = in->resolveTarget()->GetHandle();
+    out->resolveTarget = GetTextureView(in->resolveTarget());
   }
   if (in->hasClearValue() &&
       !ConvertToDawn(in->clearValue(), &out->clearValue, exception_state)) {
@@ -147,7 +160,7 @@ wgpu::RenderPassDepthStencilAttachment AsDawnType(
   DCHECK(webgpu_desc);
 
   wgpu::RenderPassDepthStencilAttachment dawn_desc = {
-      .view = webgpu_desc->view()->GetHandle(),
+      .view = GetTextureView(webgpu_desc->view()),
       // NaN is the default value in Dawn
       .depthClearValue = webgpu_desc->getDepthClearValueOr(
           std::numeric_limits<float>::quiet_NaN()),
