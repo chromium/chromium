@@ -1374,28 +1374,6 @@ gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
 #endif
 }
 
-std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
-    const {
-  if (wrapped_frame_) {
-    return wrapped_frame_->MapGMBOrSharedImage();
-  }
-  if (is_mappable_si_enabled_) {
-    // If MappableSI is used, there must be a shared image.
-    CHECK(HasSharedImage());
-    if (auto mapping = shared_image_->Map()) {
-      return base::WrapUnique(
-          new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
-    }
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_memory_buffer_ && gpu_memory_buffer_->Map()) {
-    return base::WrapUnique(
-        new VideoFrame::ScopedMapping(gpu_memory_buffer_.get(), nullptr));
-  }
-#endif
-  return nullptr;
-}
-
 void VideoFrame::MapGMBOrSharedImageAsync(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb) const {
@@ -1974,53 +1952,82 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize() const {
   return CalculatePlaneSize(layout_);
 }
 
-VideoFrame::ScopedMapping::ScopedMapping(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
-    : gpu_memory_buffer_(gpu_memory_buffer),
-      scoped_mapping_(std::move(scoped_mapping)) {
-  // It should be backed by either one below.
-  CHECK_NE(!!gpu_memory_buffer, !!scoped_mapping_);
-}
-
-VideoFrame::ScopedMapping::~ScopedMapping() {
-  if (gpu_memory_buffer_) {
-    gpu_memory_buffer_->Unmap();
+class ScopedMappingImpl : public VideoFrame::ScopedMapping {
+ public:
+  ScopedMappingImpl(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
+      : gpu_memory_buffer_(gpu_memory_buffer),
+        scoped_mapping_(std::move(scoped_mapping)) {
+    // It should be backed by either one below.
+    CHECK_NE(!!gpu_memory_buffer, !!scoped_mapping_);
   }
+
+  ~ScopedMappingImpl() override {
+    if (gpu_memory_buffer_) {
+      gpu_memory_buffer_->Unmap();
+    }
+  }
+
+  uint8_t* Memory(uint32_t plane_index) override {
+    return static_cast<uint8_t*>(
+        gpu_memory_buffer_
+            ? gpu_memory_buffer_->memory(plane_index)
+            : scoped_mapping_->GetMemoryForPlane(plane_index).data());
+  }
+
+  base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) override {
+    return gpu_memory_buffer_ ? gpu_memory_buffer_->memory_span(plane_index)
+                              : scoped_mapping_->GetMemoryForPlane(plane_index);
+  }
+
+  size_t Stride(uint32_t plane_index) override {
+    return gpu_memory_buffer_ ? base::checked_cast<size_t>(
+                                    gpu_memory_buffer_->stride(plane_index))
+                              : scoped_mapping_->Stride(plane_index);
+  }
+
+  gfx::Size Size() override {
+    return gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
+                              : scoped_mapping_->Size();
+  }
+
+ private:
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* gpu_memory_buffer_ = nullptr;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
+};
+
+std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
+    const {
+  if (wrapped_frame_) {
+    return wrapped_frame_->MapGMBOrSharedImage();
+  }
+  if (is_mappable_si_enabled_) {
+    // If MappableSI is used, there must be a shared image.
+    CHECK(HasSharedImage());
+    if (auto mapping = shared_image_->Map()) {
+      return base::WrapUnique(
+          new ScopedMappingImpl(nullptr, std::move(mapping)));
+    }
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (gpu_memory_buffer_ && gpu_memory_buffer_->Map()) {
+    return base::WrapUnique(
+        new ScopedMappingImpl(gpu_memory_buffer_.get(), nullptr));
+  }
+#endif
+  return nullptr;
 }
 
-uint8_t* VideoFrame::ScopedMapping::Memory(uint32_t plane_index) {
-  return static_cast<uint8_t*>(
-      gpu_memory_buffer_
-          ? gpu_memory_buffer_->memory(plane_index)
-          : scoped_mapping_->GetMemoryForPlane(plane_index).data());
-}
-
-base::span<uint8_t> VideoFrame::ScopedMapping::GetMemoryAsSpan(
-    uint32_t plane_index) {
-  return gpu_memory_buffer_ ? gpu_memory_buffer_->memory_span(plane_index)
-                            : scoped_mapping_->GetMemoryForPlane(plane_index);
-}
-
-size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
-  return gpu_memory_buffer_ ? base::checked_cast<size_t>(
-                                  gpu_memory_buffer_->stride(plane_index))
-                            : scoped_mapping_->Stride(plane_index);
-}
-
-gfx::Size VideoFrame::ScopedMapping::Size() {
-  return gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
-                            : scoped_mapping_->Size();
-}
 #if BUILDFLAG(IS_CHROMEOS)
 void VideoFrame::MakeScopedMappingForGpuMemoryBuffer(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb,
     bool success) const {
-  std::move(result_cb).Run(success
-                               ? base::WrapUnique(new VideoFrame::ScopedMapping(
-                                     gpu_memory_buffer_.get(), nullptr))
-                               : nullptr);
+  std::move(result_cb).Run(success ? base::WrapUnique(new ScopedMappingImpl(
+                                         gpu_memory_buffer_.get(), nullptr))
+                                   : nullptr);
 }
 #endif
 
@@ -2028,10 +2035,9 @@ void VideoFrame::WrapScopedSharedImageMapping(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb,
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const {
-  std::move(result_cb).Run(mapping
-                               ? base::WrapUnique(new VideoFrame::ScopedMapping(
-                                     nullptr, std::move(mapping)))
-                               : nullptr);
+  std::move(result_cb).Run(mapping ? base::WrapUnique(new ScopedMappingImpl(
+                                         nullptr, std::move(mapping)))
+                                   : nullptr);
 }
 
 }  // namespace media
