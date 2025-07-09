@@ -12,14 +12,11 @@
 #include "base/tracing/perfetto_task_runner.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_NACL)
-#include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
-#endif
 
 namespace base::tracing {
 

@@ -1828,10 +1828,6 @@ bool TestLauncher::Init(CommandLine* command_line) {
   results_tracker_.AddGlobalTag("OS_MAC");
 #endif
 
-#if BUILDFLAG(IS_NACL)
-  results_tracker_.AddGlobalTag("OS_NACL");
-#endif
-
 #if BUILDFLAG(IS_OPENBSD)
   results_tracker_.AddGlobalTag("OS_OPENBSD");
 #endif

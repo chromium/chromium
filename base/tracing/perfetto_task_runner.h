@@ -16,13 +16,13 @@
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/base/task_runner.h"
 
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Needed for base::FileDescriptorWatcher::Controller and for implementing
 // AddFileDescriptorWatch & RemoveFileDescriptorWatch.
 #include <map>
 
 #include "base/files/file_descriptor_watcher_posix.h"
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 namespace base {
 namespace tracing {
@@ -76,7 +76,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
   std::vector<DeferredTask> deferred_delayed_tasks_;
   bool defer_delayed_tasks_;
 
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // FDControllerAndCallback keeps track of the state of FD watching:
   // * |controller| has value: FD watching is added. |callback| is nullopt.
   // * |controller| is nullptr: FD watching is pending for add. |callback| has
@@ -92,7 +92,7 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
     ~FDControllerAndCallback();
   };
   std::map<int, FDControllerAndCallback> fd_controllers_;
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   WeakPtrFactory<PerfettoTaskRunner> weak_factory_{this};
 };

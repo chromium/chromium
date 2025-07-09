@@ -350,11 +350,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
       mem_type_(memory.type),
       mem_size_(checked_cast<uint32_t>(size)),
       mem_page_(checked_cast<uint32_t>((page_size ? page_size : size))),
-#if BUILDFLAG(IS_NACL)
-      vm_page_size_(4096U),  // SysInfo is not built for NACL.
-#else
       vm_page_size_(SysInfo::VMAllocationGranularity()),
-#endif
       access_mode_(access_mode) {
   // These asserts ensure that the structures are 32/64-bit agnostic and meet
   // all the requirements of use within the allocator. They access private
@@ -705,14 +701,12 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
       // TODO(crbug.com/40064026): With the current state of the code, this
       // code path should not be reached. However, crash reports have been
       // hinting that it is. Add crash keys to investigate this.
-#if !BUILDFLAG(IS_NACL)
       const auto* allocator = GlobalHistogramAllocator::Get();
       SCOPED_CRASH_KEY_STRING256(
           PMA, "file_name",
           allocator && allocator->HasPersistentLocation()
               ? allocator->GetPersistentLocation().BaseName().AsUTF8Unsafe()
               : "N/A");
-#endif  // !BUILDFLAG(IS_NACL)
       // It is not thread-safe to read from the block header.
       this->DumpWithoutCrashing(/*ref=*/freeptr,
                                 /*expected_type=*/type_id,
@@ -1029,7 +1023,6 @@ void PersistentMemoryAllocator::DumpWithoutCrashing(
     [[maybe_unused]] uint32_t expected_type,
     [[maybe_unused]] size_t expected_size,
     [[maybe_unused]] bool dump_block_header) const {
-#if !BUILDFLAG(IS_NACL)
   SCOPED_CRASH_KEY_STRING32(PMA, "name", Name());
   SCOPED_CRASH_KEY_NUMBER(PMA, "memory_size", size());
   SCOPED_CRASH_KEY_NUMBER(PMA, "page_size", page_size());
@@ -1058,7 +1051,6 @@ void PersistentMemoryAllocator::DumpWithoutCrashing(
                             block ? NumberToString(block->type_id) : unknown);
   SCOPED_CRASH_KEY_STRING32(PMA, "block_next",
                             block ? NumberToString(block->next) : unknown);
-#endif  // !BUILDFLAG(IS_NACL)
   ::base::debug::DumpWithoutCrashing();
 }
 
@@ -1190,7 +1182,6 @@ bool ReadOnlySharedPersistentMemoryAllocator::IsSharedMemoryAcceptable(
   return IsMemoryAcceptable(memory.memory(), memory.size(), 0, true);
 }
 
-#if !BUILDFLAG(IS_NACL)
 //----- FilePersistentMemoryAllocator ------------------------------------------
 
 FilePersistentMemoryAllocator::FilePersistentMemoryAllocator(
@@ -1275,7 +1266,6 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
 #error Unsupported OS.
 #endif
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 //----- DelayedPersistentAllocation --------------------------------------------
 
@@ -1344,7 +1334,6 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   // reached. Getting here means the is some corruption or error in the
   // allocator and/or the allocated block.
 
-#if !BUILDFLAG(IS_NACL)
   // There are many crash reports containing the `kBlockCookieAllocated` magic
   // value in `ref`. This value is used to indicate that a given block in
   // persistent memory was successfully allocated, so it should not appear as a
@@ -1370,7 +1359,6 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
           : "N/A");
   SCOPED_CRASH_KEY_BOOL(PMA, "ref_found", ref_found);
   SCOPED_CRASH_KEY_BOOL(PMA, "race_detected", race_detected);
-#endif  // !BUILDFLAG(IS_NACL)
 
   // The allocator has detected a corrupt/invalid reference. This is not fatal.
   // Capture the current state to a crash dump so the circumstances can be

@@ -12,10 +12,6 @@
 #include "build/build_config.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
-#if BUILDFLAG(IS_NACL)
-#error "string_view_rust.h included under IS_NACL"
-#endif
-
 namespace base {
 
 // Create a Rust str from a std::string_view. This will call std::abort

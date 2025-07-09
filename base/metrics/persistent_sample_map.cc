@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -19,10 +20,6 @@
 #include "base/metrics/sample_map_iterator.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
-
-#if !BUILDFLAG(IS_NACL)
-#include "base/debug/crash_logging.h"
-#endif
 
 namespace base {
 
@@ -76,7 +73,8 @@ void PersistentSampleMap::Accumulate(Sample32 value, Count32 count) {
 }
 
 Count32 PersistentSampleMap::GetCount(Sample32 value) const {
-  const std::atomic<Count32>* const count_pointer = GetSampleCountStorage(value);
+  const std::atomic<Count32>* const count_pointer =
+      GetSampleCountStorage(value);
   return count_pointer ? count_pointer->load(std::memory_order_relaxed) : 0;
 }
 
@@ -147,10 +145,8 @@ PersistentSampleMap::CreatePersistentRecord(
 
   if (!allocator->IsFull()) {
     const bool corrupt = allocator->IsCorrupt();
-#if !BUILDFLAG(IS_NACL)
     // TODO(crbug.com/40064026): Remove.
     SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted", corrupt);
-#endif  // !BUILDFLAG(IS_NACL)
     DUMP_WILL_BE_NOTREACHED() << "corrupt=" << corrupt;
   }
   return 0;

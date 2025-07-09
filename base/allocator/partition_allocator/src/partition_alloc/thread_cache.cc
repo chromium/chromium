@@ -382,9 +382,6 @@ void ThreadCache::RemoveTombstoneForTesting() {
 
 // static
 void ThreadCache::Init(PartitionRoot* root) {
-#if PA_BUILDFLAG(IS_NACL)
-  static_assert(false, "PartitionAlloc isn't supported for NaCl");
-#endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
            ThreadCache::kLargeSizeThreshold);
   PA_CHECK(root->buckets[largest_active_bucket_index_].slot_size ==

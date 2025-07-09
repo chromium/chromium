@@ -61,7 +61,6 @@ class PersistentHistogramStorageTest : public testing::Test {
   FilePath test_storage_dir_;
 };
 
-#if !BUILDFLAG(IS_NACL)
 TEST_F(PersistentHistogramStorageTest, HistogramWriteTest) {
   auto persistent_histogram_storage =
       std::make_unique<PersistentHistogramStorage>(
@@ -121,6 +120,5 @@ TEST_F(PersistentHistogramStorageTest, TimeCreationTest) {
   }
   EXPECT_EQ(num_files, kNumStorageInstances);
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

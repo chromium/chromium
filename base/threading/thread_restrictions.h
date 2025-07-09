@@ -508,7 +508,7 @@ class Thread;
 
 // NaCL doesn't support stack capture.
 // Android can hang in stack capture (crbug.com/959139).
-#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES() false
 #else
 // Stack capture is slow. Only enable it in developer builds, to avoid user

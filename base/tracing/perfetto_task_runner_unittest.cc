@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -150,7 +150,7 @@ TEST_F(PerfettoTaskRunnerTest, SequentialTasks) {
   wait_for_tasks.Run();
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 // Tests file descriptor reuse that causes crashes.
 TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
   int sockets[2];

@@ -8,8 +8,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_NACL) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE) && \
-    BUILDFLAG(IS_ANDROID)
+#if (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE) && BUILDFLAG(IS_ANDROID)
 
 namespace base::i18n {
 

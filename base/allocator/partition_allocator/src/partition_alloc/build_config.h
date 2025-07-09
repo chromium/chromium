@@ -17,7 +17,7 @@
 //
 // Operating system:
 //   IS_IOS / IS_AIX / IS_ASMJS / IS_FREEBSD / IS_FUCHSIA / IS_LINUX / IS_MAC /
-//   IS_NACL / IS_NETBSD / IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WIN
+//   IS_NETBSD / IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WIN
 //
 // Operating system family:
 //   IS_APPLE / IS_BSD / IS_POSIX
@@ -55,10 +55,7 @@
 // IWYU pragma: always_keep
 
 // A set of macros to use for platform detection.
-#if defined(__native_client__)
-// __native_client__ must be first, so that other IS_ defines are not set.
-#define PA_IS_NACL
-#elif PA_BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 // The IS_ANDROID PA_BUILDFLAG macro is defined in buildflags.h.
 //
 // PartitionAlloc's embedders (Chromium, Dawn, Pdfium, Skia) define different
@@ -119,10 +116,10 @@
 #define PA_IS_BSD
 #endif
 
-#if defined(PA_IS_AIX) || defined(PA_IS_ASMJS) || defined(PA_IS_FREEBSD) ||   \
-    defined(PA_IS_IOS) || defined(PA_IS_LINUX) || defined(PA_IS_CHROMEOS) ||  \
-    defined(PA_IS_MAC) || defined(PA_IS_NACL) || defined(PA_IS_NETBSD) ||     \
-    defined(PA_IS_OPENBSD) || defined(PA_IS_QNX) || defined(PA_IS_SOLARIS) || \
+#if defined(PA_IS_AIX) || defined(PA_IS_ASMJS) || defined(PA_IS_FREEBSD) ||  \
+    defined(PA_IS_IOS) || defined(PA_IS_LINUX) || defined(PA_IS_CHROMEOS) || \
+    defined(PA_IS_MAC) || defined(PA_IS_NETBSD) || defined(PA_IS_OPENBSD) || \
+    defined(PA_IS_QNX) || defined(PA_IS_SOLARIS) ||                          \
     PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_CHROMEOS)
 #define PA_IS_POSIX
 #endif
@@ -448,13 +445,6 @@
 #define PA_BUILDFLAG_INTERNAL_IS_MAC() (0)
 #endif
 #undef PA_IS_MAC
-
-#if defined(PA_IS_NACL)
-#define PA_BUILDFLAG_INTERNAL_IS_NACL() (1)
-#else
-#define PA_BUILDFLAG_INTERNAL_IS_NACL() (0)
-#endif
-#undef PA_IS_NACL
 
 #if defined(PA_IS_NETBSD)
 #define PA_BUILDFLAG_INTERNAL_IS_NETBSD() (1)

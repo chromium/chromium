@@ -283,12 +283,10 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-#if !BUILDFLAG(IS_NACL)
   // Returns a ScopedCrashKeyString that sets the crash key with the time since
   // last critical memory pressure signal.
   [[nodiscard]] debug::ScopedCrashKeyString
   GetTimeSinceLastCriticalMemoryPressureCrashKey();
-#endif
 
   // Invoke base::debug::DumpWithoutCrashing() insuring that the stack frame
   // right under it in the trace belongs to HangWatcher for easier attribution.

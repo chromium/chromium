@@ -636,11 +636,9 @@ PersistentSampleVector::PersistentSampleVector(
     // once investigation is complete.
     if (result != MountExistingCountsStorageResult::kSucceeded &&
         result != MountExistingCountsStorageResult::kNothingToRead) {
-#if !BUILDFLAG(IS_NACL)
       SCOPED_CRASH_KEY_STRING64("PSV", "name", name);
       SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
                               persistent_counts_.reference());
-#endif
       debug::DumpWithoutCrashing();
     }
   }

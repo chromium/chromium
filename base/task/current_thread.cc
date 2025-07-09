@@ -122,8 +122,6 @@ bool CurrentThread::ApplicationTasksAllowedInNativeNestedLoop() const {
   return current_->IsTaskExecutionAllowedInNativeNestedLoop();
 }
 
-#if !BUILDFLAG(IS_NACL)
-
 //------------------------------------------------------------------------------
 // CurrentUIThread
 
@@ -194,8 +192,6 @@ void CurrentUIThread::RemoveMessagePumpObserver(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#endif  // !BUILDFLAG(IS_NACL)
-
 //------------------------------------------------------------------------------
 // CurrentIOThread
 
@@ -216,8 +212,6 @@ bool CurrentIOThread::IsSet() {
 MessagePumpForIO* CurrentIOThread::GetMessagePumpForIO() const {
   return static_cast<MessagePumpForIO*>(current_->GetMessagePump());
 }
-
-#if !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
 bool CurrentIOThread::RegisterIOHandler(HANDLE file,
@@ -256,8 +250,6 @@ bool CurrentIOThread::WatchMachReceivePort(
                                                      delegate);
 }
 #endif
-
-#endif  // !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_FUCHSIA)
 // Additional watch API for native platform resources.

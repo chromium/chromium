@@ -575,7 +575,7 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   ASSERT_NE(child_crash_addr_2, child_crash_addr_3);
 #endif  // defined(OFFICIAL_BUILD)
 }
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS) && \
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS) && \
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
 
 int g_child_crash_pipe;

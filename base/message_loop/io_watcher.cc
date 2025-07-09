@@ -22,7 +22,6 @@ IOWatcher* IOWatcher::Get() {
   return CurrentThread::Get()->GetIOWatcher();
 }
 
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(IS_WIN)
 bool IOWatcher::RegisterIOHandler(HANDLE file,
                                   MessagePumpForIO::IOHandler* handler) {
@@ -62,6 +61,5 @@ bool IOWatcher::WatchZxHandle(
   return WatchZxHandleImpl(handle, persistent, signals, controller, delegate);
 }
 #endif
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

@@ -583,7 +583,6 @@ void HangWatcher::CreateHangWatcherInstance() {
   ANNOTATE_LEAKING_OBJECT_PTR(g_instance);
 }
 
-#if !BUILDFLAG(IS_NACL)
 debug::ScopedCrashKeyString
 HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
   DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
@@ -615,7 +614,6 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
                        time_since_last_critical_memory_pressure.InSeconds()));
   }
 }
-#endif
 
 std::string HangWatcher::GetTimeSinceLastSystemPowerResumeCrashKeyValue()
     const {
@@ -1011,7 +1009,6 @@ void HangWatcher::DoDumpWithoutCrashing(
   capture_in_progress_.store(true, std::memory_order_relaxed);
   base::AutoLock scope_lock(capture_lock_);
 
-#if !BUILDFLAG(IS_NACL)
   const std::string list_of_hung_thread_ids =
       watch_state_snapshot.PrepareHungThreadListCrashKey();
 
@@ -1030,7 +1027,6 @@ void HangWatcher::DoDumpWithoutCrashing(
 
   SCOPED_CRASH_KEY_BOOL("HangWatcher", "shutting-down",
                         g_shutting_down.load(std::memory_order_relaxed));
-#endif
 
   // To avoid capturing more than one hang that blames a subset of the same
   // threads it's necessary to keep track of what is the furthest deadline

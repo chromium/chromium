@@ -26,8 +26,6 @@
 
 namespace base {
 
-#if !BUILDFLAG(IS_NACL)
-
 namespace {
 
 class FdWatchControllerPosixTest : public testing::Test,
@@ -699,7 +697,5 @@ TEST_P(FdWatchControllerPosixTest, TimerThenIoEvent) {
 }
 
 }  // namespace
-
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

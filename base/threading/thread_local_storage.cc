@@ -467,9 +467,7 @@ bool ThreadLocalStorage::HasBeenDestroyed() {
 void ThreadLocalStorage::Slot::Initialize(TLSDestructorFunc destructor) {
   // The heap sampler uses TLS internally. Disable allocation sampling before
   // allocating TLS-internal structures, to safeguard against reentrancy.
-#if BUILDFLAG(IS_NACL)
-  // Heap sampler isn't built under NACL.
-#elif BUILDFLAG(IS_IOS) && !PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && !PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Heap sampler is only built on IOS when the allocator shim is enabled.
 #else
   base::PoissonAllocationSampler::ScopedMuteThreadSamples mute_heap_sampler;

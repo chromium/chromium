@@ -31,9 +31,9 @@ PerfettoTaskRunner::PerfettoTaskRunner(
 
 PerfettoTaskRunner::~PerfettoTaskRunner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   fd_controllers_.clear();
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::PostTask(std::function<void()> task) {
@@ -77,7 +77,7 @@ bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
 void PerfettoTaskRunner::AddFileDescriptorWatch(
     perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!base::Contains(fd_controllers_, fd));
   // Set up the |fd| in the map to signal intent to add a watch. We need to
@@ -102,22 +102,22 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
       },
       base::Unretained(this), fd, std::move(callback)));
   task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
-#else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#else   // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(base::Contains(fd_controllers_, fd));
   // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
   // it's pending.
   fd_controllers_.erase(fd);
-#else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#else   // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::ResetTaskRunner(
@@ -130,13 +130,13 @@ void PerfettoTaskRunner::ResetTaskRunner(
   deferred_delayed_tasks_.clear();
 }
 
-#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 PerfettoTaskRunner::FDControllerAndCallback::FDControllerAndCallback() =
     default;
 
 PerfettoTaskRunner::FDControllerAndCallback::~FDControllerAndCallback() =
     default;
-#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 PerfettoTaskRunner::DeferredTask::DeferredTask(std::function<void()> task,
                                                uint32_t delay)
