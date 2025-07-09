@@ -62,6 +62,10 @@ class BwgTabHelper : public web::WebStateObserver,
 
   friend class web::WebStateUserData<BwgTabHelper>;
 
+  // Adding BwgTabHelperTest as a friend to facilitate validation of behavior in
+  // tests.
+  friend class BwgTabHelperTest;
+
   // Creates a new BWG session in the prefs, or updates an existing one, with
   // the current timestamp.
   void CreateOrUpdateSessionInPrefs(std::string client_id,
