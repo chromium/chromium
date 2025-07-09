@@ -179,6 +179,7 @@ class GraphBuilderOrt {
   void AddClampOperation(const mojom::Clamp& clamp);
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
+  void AddCumulativeSumOperation(const mojom::CumulativeSum& cumulative_sum);
   void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
                                  base::cstring_view op_type);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);

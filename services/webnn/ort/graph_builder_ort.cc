@@ -67,6 +67,7 @@ constexpr base::cstring_view kOpTypeClamp = "Clip";
 constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
+constexpr base::cstring_view kOpTypeCumulativeSum = "CumSum";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
 constexpr base::cstring_view kOpTypeGather = "Gather";
 constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
@@ -638,6 +639,34 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
                             attributes);
       break;
   }
+}
+
+void GraphBuilderOrt::AddCumulativeSumOperation(
+    const mojom::CumulativeSum& cumulative_sum) {
+  const std::string node_name = GenerateNodeName(cumulative_sum.label);
+  const std::string input = GetOperandNameById(cumulative_sum.input_operand_id);
+  const std::string output =
+      GetOperandNameById(cumulative_sum.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.cumulative_sum_input.Supports(
+      GetOperand(cumulative_sum.input_operand_id).descriptor));
+
+  const std::string axis =
+      CreateScalarInitializer(base::checked_cast<int64_t>(cumulative_sum.axis));
+
+  constexpr base::cstring_view kAttrExclusive = "exclusive";
+  constexpr base::cstring_view kAttrReverse = "reverse";
+  std::array<ScopedOrtOpAttr, 2> attributes = {
+      model_editor_.CreateAttribute(
+          kAttrExclusive,
+          base::checked_cast<int64_t>(cumulative_sum.exclusive)),
+      model_editor_.CreateAttribute(
+          kAttrReverse, base::checked_cast<int64_t>(cumulative_sum.reversed))};
+
+  std::array<const char*, 2> inputs = {input.c_str(), axis.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeCumulativeSum, node_name, inputs, outputs,
+                        attributes);
 }
 
 // TODO(crbug.com/426228071): Eliminate redundant cast ops for bool and uint8
@@ -1580,6 +1609,10 @@ GraphBuilderOrt::BuildModel() {
         AddConv2dOperation(*operation->get_conv2d());
         break;
       }
+      case mojom::Operation::Tag::kCumulativeSum: {
+        AddCumulativeSumOperation(*operation->get_cumulative_sum());
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
         break;
@@ -1719,7 +1752,6 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kGru:
