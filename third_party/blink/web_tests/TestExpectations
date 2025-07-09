@@ -6632,12 +6632,8 @@ crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unha
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
 # To-be-fixed tests from the IndexedDB SQLite virtual suite.
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/exceptions.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-long-queue.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/open-ordering.html [ Crash ]
-# Gardener 2025-07-01
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/transaction-complete-with-js-recursion-cross-frame.html [ Crash Pass ]
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/transaction-complete-with-js-recursion.html [ Crash Pass ]
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]

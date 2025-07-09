@@ -822,7 +822,6 @@ Status DatabaseConnection::CommitTransactionPhaseTwo(
     return Status::OK();
   }
   TRANSIENT_CHECK(active_rw_transaction_->Commit());
-  active_rw_transaction_.reset();
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_snapshot_.reset();
@@ -844,13 +843,26 @@ void DatabaseConnection::RollBackTransaction(
   blob_write_callback_ = BlobWriteCallback();
 
   active_rw_transaction_->Rollback();
-  active_rw_transaction_.reset();
 
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_ = *std::move(metadata_snapshot_);
     metadata_snapshot_.reset();
   }
+}
+
+void DatabaseConnection::EndTransaction(
+    base::PassKey<BackingStoreTransactionImpl>,
+    const BackingStoreTransactionImpl& transaction) {
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
+    return;
+  }
+
+  // The transaction may have been committed, rolled back, or neither. If
+  // neither, this will cause a rollback, although this should only occur if
+  // there were no statements executed anyway.
+  CHECK(active_rw_transaction_);
+  active_rw_transaction_.reset();
 }
 
 Status DatabaseConnection::SetDatabaseVersion(

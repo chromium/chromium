@@ -18,7 +18,12 @@ BackingStoreTransactionImpl::BackingStoreTransactionImpl(
     blink::mojom::IDBTransactionMode mode)
     : db_(std::move(db)), durability_(durability), mode_(mode) {}
 
-BackingStoreTransactionImpl::~BackingStoreTransactionImpl() = default;
+BackingStoreTransactionImpl::~BackingStoreTransactionImpl() {
+  // If locks are non-empty then the transaction was begun.
+  if (!locks_.empty()) {
+    db_->EndTransaction(PassKey(), *this);
+  }
+}
 
 void BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
   locks_ = std::move(locks);

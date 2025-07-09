@@ -94,6 +94,12 @@ class DatabaseConnection {
       const BackingStoreTransactionImpl& transaction);
   void RollBackTransaction(base::PassKey<BackingStoreTransactionImpl>,
                            const BackingStoreTransactionImpl& transaction);
+  // It's possible that a BackingStoreTransactionImpl is created, and Begin() is
+  // called, but it's never used. In this case, neither Commit nor Rollback will
+  // be called. This method will be called every time a transaction that was
+  // begun is being destroyed.
+  void EndTransaction(base::PassKey<BackingStoreTransactionImpl>,
+                      const BackingStoreTransactionImpl& transaction);
 
   Status SetDatabaseVersion(base::PassKey<BackingStoreTransactionImpl>,
                             int64_t version);
