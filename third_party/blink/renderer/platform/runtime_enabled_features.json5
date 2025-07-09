@@ -4656,6 +4656,10 @@
       status: "test",
     },
     {
+      name: "TabSizeAncestor",
+      status: "stable",
+    },
+    {
       name: "TabWidthNegativePosition",
       status: "stable",
     },

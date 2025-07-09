@@ -1941,15 +1941,18 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     const InlineItemsData& items_data;
     wtf_size_t next_item_index = 0;
     const LineBreaker::MaxSizeCache& max_size_cache;
+    const InlineNode& node;
     FloatsMaxSize* floats;
     bool is_after_break = true;
     wtf_size_t annotation_nesting_level = 0;
 
     explicit MaxSizeFromMinSize(const InlineItemsData& items_data,
                                 const LineBreaker::MaxSizeCache& max_size_cache,
+                                const InlineNode& node,
                                 FloatsMaxSize* floats)
         : items_data(items_data),
           max_size_cache(max_size_cache),
+          node(node),
           floats(floats) {}
 
     // Add all text items up to |end|. The line break results for min size
@@ -1994,9 +1997,11 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       AddTextUntil(item.Index());
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
-      const Font* font = style.GetFont();
-      const SimpleFontData* font_data = font->PrimaryFont();
       const TabSize& tab_size = style.GetTabSize();
+      const Font* font = RuntimeEnabledFeatures::TabSizeAncestorEnabled()
+                             ? &node.FontForTab()
+                             : style.GetFont();
+      const SimpleFontData* font_data = font->PrimaryFont();
       // Sync with `ShapeResult::CreateForTabulationCharacters()`.
       TextRunLayoutUnit glyph_advance = TextRunLayoutUnit::FromFloatRound(
           font->TabWidth(font_data, tab_size, position));
@@ -2092,7 +2097,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
   FloatsMaxSize floats_max_size(float_input);
   bool can_compute_max_size_from_min_size = true;
-  MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
+  MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache, node,
                                             &floats_max_size);
 
   LineInfo line_info;
@@ -2249,6 +2254,16 @@ const HeapVector<SvgTextContentRange>& InlineNode::SvgTextPathRangeList()
     const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->text_path_range_list;
+}
+
+const Font& InlineNode::FontForTab() const {
+  const Node* layout_box_node = GetDOMNode();
+  const bool is_first_letter_pceudo_element =
+      layout_box_node && layout_box_node->IsFirstLetterPseudoElement();
+  const Font* font = is_first_letter_pceudo_element ? Style().ContainerFont()
+                                                    : Style().GetFont();
+  DCHECK(font);
+  return *font;
 }
 
 void InlineNode::AdjustFontForTextCombineUprightAll() const {

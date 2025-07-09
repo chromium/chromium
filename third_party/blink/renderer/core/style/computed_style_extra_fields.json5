@@ -410,6 +410,17 @@
       invalidate: ["reshape"],
     },
     {
+      name: "ContainerFont",
+      field_template: "pointer",
+      field_group: "inherited",
+      include_paths: ["third_party/blink/renderer/platform/fonts/font.h"],
+      type_name: "Font",
+      inherited: true,
+      default_value: "nullptr",
+      wrapper_pointer_name: "Member",
+      invalidate: ["reshape"],
+    },
+    {
       name: "TextAutosizingMultiplier",
       inherited: true,
       field_template: "primitive",

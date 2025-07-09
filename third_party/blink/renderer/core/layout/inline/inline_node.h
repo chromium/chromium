@@ -133,6 +133,8 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   // This function is available after PrepareLayout(), only for SVG <text>.
   const HeapVector<SvgTextContentRange>& SvgTextPathRangeList() const;
 
+  const Font& FontForTab() const;
+
   String ToString() const;
 
   struct FloatingObject {
