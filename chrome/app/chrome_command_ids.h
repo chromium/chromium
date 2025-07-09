@@ -88,7 +88,8 @@
 #define IDC_COPY_URL                    34060
 #define IDC_OPEN_IN_CHROME              34061
 #define IDC_WEB_APP_SETTINGS            34062
-#define IDC_WEB_APP_MENU_APP_INFO    34063
+#define IDC_WEB_APP_MENU_APP_INFO       34063
+#define IDC_WEB_APP_UPGRADE_DIALOG      34064
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands

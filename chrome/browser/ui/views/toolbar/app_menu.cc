@@ -1533,6 +1533,10 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         }
         break;
       }
+      case IDC_WEB_APP_UPGRADE_DIALOG: {
+        add_menu_row_background(12, ui::kColorAppMenuUpgradeRowBackground);
+        break;
+      }
       case IDC_SET_BROWSER_AS_DEFAULT: {
         // Only highlight the default browser item when it is first in the
         // AppMenu.

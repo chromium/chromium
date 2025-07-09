@@ -3658,6 +3658,17 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
 
+      <if expr="use_titlecase">
+        <message name="IDS_REVIEW_APP_UPDATE" desc="In Title Case: Menu text for reviewing a pending update for the current web app.">
+          Review App Update
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_REVIEW_APP_UPDATE" desc="Menu text for reviewing a pending update for the current web app.">
+          Review app update
+        </message>
+      </if>
+
       <!-- "Application Information" dialog -->
       <if expr="not use_titlecase">
         <message name="IDS_APPLICATION_INFO_WEB_STORE_LINK" desc="Text for the link that opens the app or extension in the Web Store..">

@@ -382,6 +382,10 @@ gfx::ImageSkia WebAppBrowserController::GetFallbackHomeTabIcon() const {
   return provider_->icon_manager().GetFaviconImageSkia(app_id());
 }
 
+gfx::ImageSkia WebAppBrowserController::GetAppMenuIcon() const {
+  return provider_->icon_manager().GetFaviconImageSkia(app_id());
+}
+
 ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
   return GetWindowAppIcon();
 }

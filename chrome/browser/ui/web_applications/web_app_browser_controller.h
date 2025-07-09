@@ -75,6 +75,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasMinimalUiButtons() const override;
   gfx::ImageSkia GetHomeTabIcon() const;
   gfx::ImageSkia GetFallbackHomeTabIcon() const;
+  gfx::ImageSkia GetAppMenuIcon() const;
   ui::ImageModel GetWindowAppIcon() const override;
   ui::ImageModel GetWindowIcon() const override;
   std::optional<SkColor> GetThemeColor() const override;

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -81,6 +84,8 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
     case IDC_OPEN_IN_CHROME: {
       return ShouldAllowOpenInChrome(browser());
     }
+    case IDC_WEB_APP_UPGRADE_DIALOG:
+      return true;
 #if BUILDFLAG(IS_CHROMEOS)
     case chromeos::MoveToDesksMenuModel::kMenuCommandId:
       return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
@@ -120,6 +125,11 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
         AppMenuModel::ExecuteCommand(command_id, event_flags);
       }
       break;
+    case IDC_WEB_APP_UPGRADE_DIALOG:
+      CHECK(base::FeatureList::IsEnabled(
+          features::kWebAppPredictableAppUpdating));
+      NOTIMPLEMENTED();
+      break;
     default:
       AppMenuModel::ExecuteCommand(command_id, event_flags);
       break;
@@ -127,6 +137,28 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void WebAppMenuModel::Build() {
+  CHECK(browser()->app_controller());
+  web_app::WebAppBrowserController* app_controller =
+      browser()->app_controller()->AsWebAppBrowserController();
+  if (app_controller && app_controller->HasPendingUpdate()) {
+    CHECK(
+        base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating));
+    AddSeparator(ui::SPACING_SEPARATOR);
+    gfx::ImageSkia icon = app_controller->GetAppMenuIcon();
+    ui::ImageModel update_icon;
+    if (!icon.isNull()) {
+      update_icon = ui::ImageModel::FromImageSkia(icon);
+    }
+    if (update_icon.IsEmpty()) {
+      update_icon = ui::ImageModel::FromVectorIcon(
+          kBrowserToolsUpdateChromeRefreshIcon,
+          ui::kColorMenuIconOnEmphasizedBackground, kDefaultIconSize);
+    }
+    AddItemWithStringIdAndIcon(IDC_WEB_APP_UPGRADE_DIALOG,
+                               IDS_REVIEW_APP_UPDATE, update_icon);
+    AddSeparator(ui::SPACING_SEPARATOR);
+  }
+
   AddItemWithStringId(IDC_WEB_APP_MENU_APP_INFO,
                       IDS_APP_CONTEXT_MENU_SHOW_INFO);
   size_t app_info_index = GetItemCount() - 1;
@@ -135,8 +167,7 @@ void WebAppMenuModel::Build() {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  bool is_isolated_web_app = browser()->app_controller() &&
-                             browser()->app_controller()->IsIsolatedWebApp();
+  bool is_isolated_web_app = browser()->app_controller()->IsIsolatedWebApp();
 
   if (web_contents) {
     std::u16string display_text =
