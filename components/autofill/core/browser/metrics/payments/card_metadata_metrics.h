@@ -70,8 +70,13 @@ enum class CardBenefitFormEvent {
   // A suggestion of a masked server card with a benefit available was selected.
   kSuggestionWithBenefitSelected = 2,
 
-  // TODO(crbug.com/417228483): "3" is reserved for
-  // `kSuggestionWithoutBenefitSelected`.
+  // `kSuggestionWithoutBenefitSelected` was planned to be an enum with the
+  // value "3". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was selected, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitSelectedWithMultipleServerCards` is
+  // already being logged for this.
 
   // A suggestion of a masked server card with a benefit available was selected
   // when the user had two or more server cards.
@@ -85,8 +90,13 @@ enum class CardBenefitFormEvent {
   // A suggestion of a masked server card with a benefit available was filled.
   kSuggestionWithBenefitFilled = 6,
 
-  // TODO(crbug.com/417323667): "7" is reserved for
-  // `kSuggestionWithoutBenefitFilled`.
+  // `kSuggestionWithoutBenefitFilled` was planned to be an enum with the
+  // value "7". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was filled, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitFilledWithMultipleServerCards` is
+  // already being logged for this.
 
   // A suggestion of a masked server card with a benefit available was filled
   // when the user had two or more server cards.
@@ -101,8 +111,13 @@ enum class CardBenefitFormEvent {
   // submitted.
   kSuggestionWithBenefitSubmitted = 10,
 
-  // TODO(crbug.com/417323667): "11" is reserved for
-  // `kSuggestionWithoutBenefitSubmitted`.
+  // `kSuggestionWithoutBenefitSubmitted` was planned to be an enum with the
+  // value "11". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was submitted, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitSubmittedWithMultipleServerCards` is
+  // already being logged for this.
 
   // A suggestion of a masked server card with a benefit available was submitted
   // when the user had two or more server cards.
