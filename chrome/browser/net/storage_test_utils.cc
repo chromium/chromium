@@ -4,6 +4,9 @@
 
 #include "chrome/browser/net/storage_test_utils.h"
 
+#include <string>
+
+#include "base/strings/strcat.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace storage::test {
@@ -57,9 +60,11 @@ void SetStorageForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : GetStorageTypesForFrame(include_cookies)) {
-    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "set" + data_type + "()";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected[data_type] = expected_to_be_set;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
@@ -71,9 +76,11 @@ void SetStorageForWorker(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : kStorageTypesForWorker) {
-    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "set" + data_type + "()";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected[data_type] = true;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
@@ -86,9 +93,11 @@ void ExpectStorageForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : GetStorageTypesForFrame(false)) {
-    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "has" + data_type + "();";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
@@ -101,9 +110,11 @@ void ExpectStorageForWorker(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : kStorageTypesForWorker) {
-    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "has" + data_type + "();";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
@@ -115,9 +126,11 @@ void SetCrossTabInfoForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected;
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "set" + data_type + "()";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected[data_type] = true;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
@@ -130,9 +143,11 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
   base::flat_map<std::string, bool> actual;
   base::flat_map<std::string, bool> expected_elts;
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
-                                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                            .ExtractBool();
+    std::string script = "has" + data_type + "();";
+    SCOPED_TRACE(base::StrCat({"Executing \"", script, "\""}));
+    actual[data_type] =
+        content::EvalJs(frame, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractBool();
     expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
