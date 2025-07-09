@@ -60,6 +60,13 @@ ReferenceOpenOutcome MapStreamOpenOutcomeToReferenceOpenOutcome(
       return ReferenceOpenOutcome::STREAM_OPEN_ERROR;
   }
 }
+
+ReferenceOpenOutcome ReportOpenResult(ReferenceOpenOutcome outcome) {
+  base::UmaHistogramEnumeration("Media.Audio.LoopbackReference.OpenResult",
+                                outcome);
+  return outcome;
+}
+
 }  // namespace
 
 class LoopbackReferenceStreamIdProvider {
@@ -115,7 +122,10 @@ class LoopbackReferenceManagerCore
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     EnsureLoopbackStreamClosed();
     // If the error callback has been used, there has been an error.
-    if (!on_error_callback_) {
+    bool had_runtime_error = !on_error_callback_;
+    base::UmaHistogramBoolean("Media.Audio.LoopbackReference.HadRuntimeError",
+                              had_runtime_error);
+    if (had_runtime_error) {
       for (ReferenceOutput::Listener* listener : listeners_) {
         listener->OnReferenceStreamError();
       }
@@ -286,11 +296,11 @@ class LoopbackReferenceProvider : public ReferenceSignalProvider {
                                       const std::string& device_id) final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     if (core_) {
-      return core_->StartListening(listener, device_id);
+      return ReportOpenResult(core_->StartListening(listener, device_id));
     }
     // If the core no longer exists, it must have been destroyed due to an
     // error.
-    return ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR;
+    return ReportOpenResult(ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR);
   }
 
   void StopListening(ReferenceOutput::Listener* listener) final {

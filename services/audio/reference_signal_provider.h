@@ -14,26 +14,33 @@ namespace audio {
 // Interface to start/stop listening to a device's reference output.
 class ReferenceSignalProvider {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReferenceOpenOutcome)
   enum class ReferenceOpenOutcome {
     // The reference stream is functioning and delivering audio to the listener.
-    SUCCESS,
+    SUCCESS = 0,
 
     // Failed to create reference stream
-    STREAM_CREATE_ERROR,
+    STREAM_CREATE_ERROR = 1,
 
     // Failed to open reference stream
-    STREAM_OPEN_ERROR,
+    STREAM_OPEN_ERROR = 2,
 
     // Failed to create reference stream due to lack of system permissions
-    STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR,
+    STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR = 3,
 
     // Failed to create reference stream due to device in use by another app
-    STREAM_OPEN_DEVICE_IN_USE_ERROR,
+    STREAM_OPEN_DEVICE_IN_USE_ERROR = 4,
 
     // Failed to start listening because the reference stream has had an error
     // and has shut down.
-    STREAM_PREVIOUS_ERROR,
+    STREAM_PREVIOUS_ERROR = 5,
+
+    kMaxValue = STREAM_PREVIOUS_ERROR,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml)
 
   virtual ~ReferenceSignalProvider() = default;
 

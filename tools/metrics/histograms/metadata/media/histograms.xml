@@ -1035,6 +1035,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.LoopbackReference.HadRuntimeError"
+    enum="BooleanRuntimeError" expires_after="2026-07-03">
+  <owner>henrika@google.com</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports if a loopback AEC reference audio input stream was closed due to a
+    runtime error or not. Only supported on Windows and Mac.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.LoopbackReference.OpenResult"
+    enum="ReferenceOpenOutcome" expires_after="2026-07-03">
+  <owner>henrika@google.com</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports success/error cases for opening a loopback AEC reference audio input
+    stream on Windows or Mac.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Mac.AggregateDeviceCompositionPropertyIsNull"
     enum="Boolean" expires_after="2026-02-20">
   <owner>agpalak@chromium.org</owner>

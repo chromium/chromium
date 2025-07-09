@@ -114,13 +114,18 @@ class MockListener : public ReferenceOutput::Listener {
 class LoopbackReferenceManagerTest : public ::testing::Test {
  public:
   LoopbackReferenceManagerTest()
-      : loopback_reference_manager_(&audio_manager_) {}
+      : loopback_reference_manager_(
+            std::make_unique<LoopbackReferenceManager>(&audio_manager_)) {}
 
   LoopbackReferenceManagerTest(const LoopbackReferenceManagerTest&) = delete;
   LoopbackReferenceManagerTest& operator=(const LoopbackReferenceManagerTest&) =
       delete;
 
-  ~LoopbackReferenceManagerTest() override { audio_manager_.Shutdown(); }
+  ~LoopbackReferenceManagerTest() override {
+    // Ensure the loopback manager is destroyed before audio_manager_
+    loopback_reference_manager_.reset();
+    audio_manager_.Shutdown();
+  }
 
  protected:
   // Helper to quickly setup the mock expectations for creating a new loopback
@@ -143,7 +148,7 @@ class LoopbackReferenceManagerTest : public ::testing::Test {
           {},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   StrictMock<LocalMockAudioManager> audio_manager_;
-  LoopbackReferenceManager loopback_reference_manager_;
+  std::unique_ptr<LoopbackReferenceManager> loopback_reference_manager_;
 
   const media::AudioParameters loopback_params_ =
       media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -203,7 +208,7 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(loopback_params_);
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream.
   EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
@@ -286,9 +291,9 @@ TEST_F(LoopbackReferenceManagerTest,
 
   // These should use he same underlying stream.
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_1 =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_2 =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream. This should only
   // happen once, even with two providers.
@@ -346,7 +351,7 @@ TEST_F(LoopbackReferenceManagerTest,
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(loopback_params_);
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
   StrictMock<MockListener> mock_listener;
 
   // --- First listen cycle ---
@@ -390,7 +395,8 @@ TEST_F(LoopbackReferenceManagerTest,
 
 TEST_F(LoopbackReferenceManagerTest, StreamCreateError) {
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
       .WillOnce(Return(loopback_params_));
@@ -411,6 +417,16 @@ TEST_F(LoopbackReferenceManagerTest, StreamCreateError) {
   ReferenceOpenOutcome outcome = reference_signal_provider->StartListening(
       &mock_listener, output_device_id_);
   EXPECT_EQ(outcome, ReferenceOpenOutcome::STREAM_CREATE_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.LoopbackReference.OpenResult",
+      static_cast<int>(ReferenceOpenOutcome::STREAM_CREATE_ERROR), 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.LoopbackReference.HadRuntimeError", 0);
+  // Destroy the loopback manager explicitly to trigger the destructor which
+  // should generate a histogram.
+  loopback_reference_manager_.reset();
+  histogram_tester.ExpectBucketCount(
+      "Media.Audio.LoopbackReference.HadRuntimeError", false, 1);
 }
 
 void LoopbackReferenceManagerTest::TestStreamOpenError(
@@ -418,7 +434,8 @@ void LoopbackReferenceManagerTest::TestStreamOpenError(
     ReferenceOpenOutcome expected_reference_open_outcome) {
   StrictMock<MockAudioInputStream> mock_input_stream;
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
       .WillOnce(Return(loopback_params_));
@@ -442,6 +459,11 @@ void LoopbackReferenceManagerTest::TestStreamOpenError(
   ReferenceOpenOutcome outcome = reference_signal_provider->StartListening(
       &mock_listener, output_device_id_);
   EXPECT_EQ(outcome, expected_reference_open_outcome);
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.LoopbackReference.OpenResult",
+      static_cast<int>(expected_reference_open_outcome), 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.LoopbackReference.HadRuntimeError", 0);
 }
 
 TEST_F(LoopbackReferenceManagerTest, StreamOpenError) {
@@ -463,12 +485,13 @@ TEST_F(LoopbackReferenceManagerTest, StreamOpenDeviceInUseError) {
 TEST_F(LoopbackReferenceManagerTest, OnReferenceStreamError) {
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(loopback_params_);
+  base::HistogramTester histogram_tester;
 
   // These should use he same underlying core.
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_1 =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_2 =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream.
   std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_1 =
@@ -513,7 +536,7 @@ TEST_F(LoopbackReferenceManagerTest, OnReferenceStreamError) {
 
   // Get a new ReferenceSignalProvider after the error has been processed.
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_3 =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_2 =
       ExpectCreateLoopbackStream(1000001);
@@ -526,6 +549,15 @@ TEST_F(LoopbackReferenceManagerTest, OnReferenceStreamError) {
                                                           output_device_id_));
     reference_signal_provider_3->StopListening(&temp_mock_listener);
   }
+
+  histogram_tester.ExpectBucketCount(
+      "Media.Audio.LoopbackReference.OpenResult",
+      static_cast<int>(ReferenceOpenOutcome::SUCCESS), 3);
+  histogram_tester.ExpectBucketCount(
+      "Media.Audio.LoopbackReference.OpenResult",
+      static_cast<int>(ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.LoopbackReference.HadRuntimeError", true, 1);
 }
 
 TEST_F(LoopbackReferenceManagerTest, StopListeningAfterOnError) {
@@ -534,7 +566,7 @@ TEST_F(LoopbackReferenceManagerTest, StopListeningAfterOnError) {
 
   // These should use he same underlying core.
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream.
   std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
@@ -604,7 +636,7 @@ TEST_F(LoopbackReferenceManagerTest, DeliversAudioOnAudioThread) {
       media::AudioBus::Create(loopback_params_);
 
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream.
   std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
@@ -646,7 +678,7 @@ TEST_F(LoopbackReferenceManagerTest, DeliversErrorsOnMainThread) {
       media::AudioBus::Create(loopback_params_);
 
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
-      loopback_reference_manager_.GetReferenceSignalProvider();
+      loopback_reference_manager_->GetReferenceSignalProvider();
 
   // Setup the expectations for starting the loopback stream.
   std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =

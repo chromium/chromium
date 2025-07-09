@@ -279,6 +279,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Had missing callbacks"/>
 </enum>
 
+<enum name="BooleanRuntimeError">
+  <int value="0" label="Runtime error"/>
+  <int value="1" label="No runtime error"/>
+</enum>
+
 <enum name="BreakoutBoxUsage">
   <int value="0" label="ReadableVideo"/>
   <int value="1" label="ReadableVideoWorker"/>
@@ -1857,6 +1862,15 @@ chromium-metrics-reviews@google.com.
 <enum name="ReasonToClearRenderBuffer">
   <int value="0" label="Video frame with out-of-order timestamp."/>
   <int value="1" label="Call to UpdateCurrentFrame() is overdue."/>
+</enum>
+
+<enum name="ReferenceOpenOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Stream create error"/>
+  <int value="2" label="Stream open error"/>
+  <int value="3" label="System permissions error"/>
+  <int value="4" label="Device in use error"/>
+  <int value="5" label="Previous stream error"/>
 </enum>
 
 <enum name="RemotingCompatibility">
