@@ -39,6 +39,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/limits.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
@@ -559,6 +560,17 @@ int SpeechRecognitionManagerImpl::CreateSession(
     if (config.recognition_context.has_value()) {
       error = media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported;
     }
+  }
+
+  if (audio_forwarder_config.has_value() &&
+      (audio_forwarder_config.value().sample_rate >
+           media::limits::kMaxSampleRate ||
+       audio_forwarder_config.value().sample_rate <
+           media::limits::kMinSampleRate ||
+       audio_forwarder_config.value().channel_count <= 0 ||
+       audio_forwarder_config.value().channel_count >
+           media::limits::kMaxChannels)) {
+    error = media::mojom::SpeechRecognitionErrorCode::kAudioCapture;
   }
 
   // Throw the error and do not create the session if error is found.
