@@ -3937,7 +3937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheetV3.Triggered" enum="Boolean"
-    expires_after="2025-08-03">
+    expires_after="2026-02-26">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
