@@ -42,6 +42,7 @@ source_set("items") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",

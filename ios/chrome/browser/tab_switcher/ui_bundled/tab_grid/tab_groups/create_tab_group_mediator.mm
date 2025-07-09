@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
@@ -79,7 +80,8 @@
                                         _webStateList)];
     [_consumer setTabsCount:_identifiers.size()];
     _tabImagesConfigurator =
-        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(
+            faviconLoader, SnapshotBrowserAgent::FromBrowser(browser));
     ProfileIOS* profile = browser->GetProfile();
     BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
@@ -144,7 +146,8 @@
     _scopedWebStateListObservation->AddObservation(_webStateList);
     _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup];
     _tabImagesConfigurator =
-        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(
+            faviconLoader, SnapshotBrowserAgent::FromBrowser(browser));
 
     __weak CreateTabGroupMediator* weakSelf = self;
 

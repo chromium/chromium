@@ -6,7 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/barrier_closure.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -19,8 +23,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
@@ -47,6 +53,9 @@ GURL GURLWithIndex(int index) {
   return GURL("http://test/url" + base::NumberToString(index));
 }
 
+// The identifier where snapshots are saved.
+const char kIdentifier[] = "Identifier";
+
 // Returns a FakeDropSession for the given `web_state`.
 FakeDropSession* FakeDropSessionWithWebState(web::WebState* web_state) {
   UIDragItem* drag_item = CreateTabDragItem(web_state);
@@ -54,6 +63,19 @@ FakeDropSession* FakeDropSessionWithWebState(web::WebState* web_state) {
       [[FakeDropSession alloc] initWithItems:@[ drag_item ]];
   return drop_session;
 }
+
+// A test WebStateListDelegate that install a SnapshotTabHelper when a
+// WebState is inserted.
+class TestWebStateListDelegate : public WebStateListDelegate {
+ public:
+  void WillAddWebState(web::WebState* web_state) override {
+    CHECK(web_state->IsRealized());
+    SnapshotTabHelper::CreateForWebState(web_state);
+  }
+
+  void WillActivateWebState(web::WebState* web_state) override {}
+  void WillRemoveWebState(web::WebState* web_state) override {}
+};
 
 }  // namespace
 
@@ -63,13 +85,21 @@ class PinnedTabsMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
 
-    regular_browser_ = std::make_unique<TestBrowser>(profile_.get());
-    incognito_browser_ =
-        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+    regular_browser_ = std::make_unique<TestBrowser>(
+        profile_.get(), std::make_unique<TestWebStateListDelegate>());
+    incognito_browser_ = std::make_unique<TestBrowser>(
+        profile_->GetOffTheRecordProfile(),
+        std::make_unique<TestWebStateListDelegate>());
 
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(regular_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
+
+    const auto kAllBrowsers = BrowserList::BrowserType::kAll;
+    for (Browser* browser : browser_list_->BrowsersOfType(kAllBrowsers)) {
+      SnapshotBrowserAgent::CreateForBrowser(browser);
+      SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(kIdentifier);
+    }
 
     scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
     scene_loader_->current_browser_ = regular_browser_.get();
@@ -414,18 +444,15 @@ TEST_F(PinnedTabsMediatorTest, FetchTabSnapshotAndFavicon) {
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = fake_web_state.get();
-  SnapshotTabHelper::CreateForWebState(web_state);
   WebStateTabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
-  __block int completion_block_called = 0;
-  auto completion_block = ^(TabSwitcherItem* inner_item,
-                            TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
-    completion_block_called++;
-    ASSERT_LE(completion_block_called, 2);
-  };
-  [mediator_ fetchTabSnapshotAndFavicon:item completion:completion_block];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), ^bool() {
-        return completion_block_called == 2;
-      }));
+
+  // Expects the completion to be called twice.
+  base::RunLoop run_loop;
+  auto barrier = base::CallbackToBlock(
+      base::IgnoreArgs<TabSwitcherItem*, TabSnapshotAndFavicon*>(
+          base::BarrierClosure(2, run_loop.QuitClosure())));
+
+  [mediator_ fetchTabSnapshotAndFavicon:item completion:barrier];
+  run_loop.Run();
 }

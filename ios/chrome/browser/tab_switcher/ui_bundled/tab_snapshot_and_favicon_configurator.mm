@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/item_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/util/image_util.h"
+#import "ios/web/public/web_state.h"
 #import "ui/gfx/favicon_size.h"
 
 namespace {
@@ -139,8 +142,10 @@ class TabSnapshotAndFaviconConfigurator::TabSwitcherItemRequestInfo
 };
 
 TabSnapshotAndFaviconConfigurator::TabSnapshotAndFaviconConfigurator(
-    FaviconLoader* favicon_loader)
-    : favicon_loader_(favicon_loader) {
+    FaviconLoader* favicon_loader,
+    SnapshotBrowserAgent* snapshot_browser_agent)
+    : favicon_loader_(favicon_loader),
+      snapshot_browser_agent_(snapshot_browser_agent) {
   group_item_fetches_ = [[NSMutableDictionary alloc] init];
 }
 
@@ -241,8 +246,9 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconInternal(
   TabSnapshotAndFavicon* tab_snapshot_and_favicon =
       [[TabSnapshotAndFavicon alloc] init];
 
-  if (request_info.ShouldFetchSnapshot()) {
-    SnapshotTabHelper::FromWebState(web_state)->RetrieveColorSnapshot(
+  if (request_info.ShouldFetchSnapshot() && snapshot_browser_agent_) {
+    snapshot_browser_agent_->RetrieveSnapshotWithID(
+        SnapshotID(web_state->GetUniqueIdentifier()), SnapshotKindColor,
         ^(UIImage* snapshot) {
           tab_snapshot_and_favicon.snapshot = snapshot;
           completion(tab_snapshot_and_favicon);

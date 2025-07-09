@@ -213,7 +213,8 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
       }
     }
     _tabImagesConfigurator =
-        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(
+            faviconLoader, SnapshotBrowserAgent::FromBrowser(browser));
   } else {
     _webStateList = nullptr;
     _profile = nullptr;

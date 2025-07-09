@@ -11,6 +11,7 @@
 #import "base/memory/weak_ptr.h"
 
 class FaviconLoader;
+class SnapshotBrowserAgent;
 @class TabGroupItem;
 @class TabGroupItemFetchInfo;
 @class TabSnapshotAndFavicon;
@@ -34,7 +35,9 @@ class TabSnapshotAndFaviconConfigurator {
 
   // The `favicon_loader` can be `nullptr` to disable fetching favicons via
   // Google servers.
-  explicit TabSnapshotAndFaviconConfigurator(FaviconLoader* favicon_loader);
+  explicit TabSnapshotAndFaviconConfigurator(
+      FaviconLoader* favicon_loader,
+      SnapshotBrowserAgent* snapshot_browser_agent);
   TabSnapshotAndFaviconConfigurator(const TabSnapshotAndFaviconConfigurator&) =
       delete;
   TabSnapshotAndFaviconConfigurator& operator=(
@@ -112,6 +115,7 @@ class TabSnapshotAndFaviconConfigurator {
       TabSnapshotAndFavicon* tab_snapshot_and_favicon);
 
   raw_ptr<FaviconLoader> favicon_loader_ = nullptr;
+  raw_ptr<SnapshotBrowserAgent> snapshot_browser_agent_ = nullptr;
 
   // Stores the TabGroupItemFetchInfo of in-progress TabGroupItem fetch
   // requests, keyed by the item's tabGroupIdentifier. This is used to cancel

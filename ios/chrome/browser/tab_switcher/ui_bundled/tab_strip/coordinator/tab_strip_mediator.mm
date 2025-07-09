@@ -321,7 +321,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _consumer = consumer;
     _messagingService = messagingService;
     _tabImagesConfigurator =
-        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader,
+                                                            nullptr);
     if (_messagingService) {
       _messagingBackendServiceBridge =
           std::make_unique<MessagingBackendServiceBridge>(self);
