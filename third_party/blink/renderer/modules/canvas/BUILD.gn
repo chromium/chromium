@@ -50,8 +50,6 @@ blink_modules_sources("canvas") {
     "imagebitmap/image_bitmap_factories.h",
     "imagebitmap/image_bitmap_rendering_context.cc",
     "imagebitmap/image_bitmap_rendering_context.h",
-    "imagebitmap/image_bitmap_rendering_context_base.cc",
-    "imagebitmap/image_bitmap_rendering_context_base.h",
     "imagebitmap/image_bitmap_source_util.cc",
     "imagebitmap/image_bitmap_source_util.h",
     "offscreencanvas/offscreen_canvas_module.cc",
