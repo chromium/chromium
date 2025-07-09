@@ -208,6 +208,8 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/edge_to_edge/internal:java",
     "//chrome/browser/ui/android/ephemeraltab:java",
+    "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/extensions:test_support_java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats/test:test_support_java",

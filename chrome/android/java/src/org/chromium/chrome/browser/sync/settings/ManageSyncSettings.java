@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
@@ -1269,8 +1269,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     /** Returns whether the extensions sync item should be shown. */
     private boolean shouldShowExtensionsItem() {
-        return ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID);
+        return ExtensionUi.isEnabled(getProfile());
     }
 }

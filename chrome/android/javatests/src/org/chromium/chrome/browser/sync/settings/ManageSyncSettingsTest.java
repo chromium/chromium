@@ -87,7 +87,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -129,14 +131,8 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
-// Hide the extensions item because most tests are for mobile Android where extensions aren't
-// supported. This prevents having to maintain two sets of screenshots for render tests.
-@EnableFeatures({ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID})
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 7;
-
-    /** Maps selected types to their UI element IDs. */
-    private Map<Integer, String> mUiDataTypes;
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -193,6 +189,10 @@ public class ManageSyncSettingsTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
+    @Rule
+    public final FakeExtensionUiBackendRule mFakeExtensionUiBackendRule =
+            new FakeExtensionUiBackendRule();
+
     @Mock private UnifiedConsentServiceBridge.Natives mUnifiedConsentServiceBridgeMock;
     @Mock private RegionalCapabilitiesService mRegionalCapabilities;
     @Mock private GoogleActivityController mGoogleActivityController;
@@ -220,24 +220,10 @@ public class ManageSyncSettingsTest {
 
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
 
-        mUiDataTypes = new HashMap<>();
-        mUiDataTypes.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        mUiDataTypes.put(UserSelectableType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS);
-        if (shouldShowExtensionsItem()) {
-            mUiDataTypes.put(
-                    UserSelectableType.EXTENSIONS, ManageSyncSettings.PREF_SYNC_EXTENSIONS);
-        }
-        mUiDataTypes.put(
-                UserSelectableType.PAYMENTS, ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
-        mUiDataTypes.put(UserSelectableType.HISTORY, ManageSyncSettings.PREF_SYNC_HISTORY);
-        mUiDataTypes.put(UserSelectableType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS);
-        mUiDataTypes.put(
-                UserSelectableType.READING_LIST, ManageSyncSettings.PREF_SYNC_READING_LIST);
-        mUiDataTypes.put(UserSelectableType.TABS, ManageSyncSettings.PREF_SYNC_RECENT_TABS);
-        mUiDataTypes.put(UserSelectableType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
-            mUiDataTypes.put(UserSelectableType.APPS, ManageSyncSettings.PREF_SYNC_APPS);
-        }
+        // Disable the extension UI by default because most tests are for mobile Android where
+        // extensions are not supported. This prevents having to maintain two sets of screenshots
+        // for render tests. Individual tests may override it.
+        ThreadUtils.runOnUiThreadBlocking(() -> mFakeExtensionUiBackendRule.setEnabled(false));
 
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
     }
@@ -258,11 +244,13 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    @DisableFeatures({
-        ChromeFeatureList.LINKED_SERVICES_SETTING,
-        ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID
-    })
+    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testAccountSettingsView() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mFakeExtensionUiBackendRule.setEnabled(
+                                ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS));
+
         // The types that should be default-enabled in transport mode depend on various flags.
         Set<String> expectedEnabledTypes =
                 new HashSet<>(
@@ -1582,8 +1570,7 @@ public class ManageSyncSettingsTest {
 
     /** Returns whether the extensions sync item should be shown. */
     private boolean shouldShowExtensionsItem() {
-        return ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.BLOCK_INSTALLING_EXTENSIONS_ON_DESKTOP_ANDROID);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ExtensionUi.isEnabled(ProfileManager.getLastUsedRegularProfile()));
     }
 }
