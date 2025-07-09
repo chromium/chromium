@@ -546,6 +546,12 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
     return EmptyPromise();
   }
 
+  // Log the usage of generateRequest().
+  EncryptedMediaUtils::ReportUsage(EmeApiType::kGenerateRequest,
+                                   GetExecutionContext(), config_.key_system,
+                                   config_.use_hardware_secure_codecs,
+                                   IsPersistentSessionType(session_type_));
+
   // 7. Let init data be a copy of the contents of the initData parameter.
   DOMArrayBuffer* init_data_buffer =
       DOMArrayBuffer::Create(init_data.ByteSpan());
