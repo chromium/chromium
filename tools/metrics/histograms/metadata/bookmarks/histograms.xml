@@ -261,12 +261,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Clone.NumCloned" units="bookmarks"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Records the number of bookmarks that were selected when a clone operation
     starts. It doesn't include the children included in folder copies.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -298,10 +301,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EditURLSource" enum="BookmarkEditSource"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
-  <summary>Records the edit action users take on their bookmarks.</summary>
+  <summary>
+    Records the edit action users take on their bookmarks.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
@@ -329,17 +337,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.MobileBookmarkManager.DisplayOptionUsed"
     enum="MobileBookmarkManagerBookmarkRowDisplayPref"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Records when a user interacts with the display options in the mobile
-    bookmarks manager. There is a gap in data between Jan-Sept 2024.
+    bookmarks manager.
+
+    Warning: this histogram was expired from 2024-01-01 to 2024-10-01; data may
+    be missing. Warning: this histogram was expired from 2025-03-02 to
+    2025-07-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.FilterShown"
-    enum="MobileBookmarkManagerFilter" expires_after="2025-10-12">
+    enum="MobileBookmarkManagerFilter" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -350,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.FilterUsed2"
-    enum="MobileBookmarkManagerFilter" expires_after="2025-11-30">
+    enum="MobileBookmarkManagerFilter" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -360,18 +372,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.SortOptionUsed"
-    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2025-03-02">
+    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Records when a user interacts with the sort options in the mobile bookmarks
     manager.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.{BookmarkType}"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -379,6 +394,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded when multi-selection is opened from the bookmark manager. Possible
     that the selection is only 1 bookmark.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
   <token key="BookmarkType">
     <variant name="Normal" summary="a normal bookmark."/>
@@ -388,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MultipleOpened.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -397,6 +415,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded when multi-selection is opened from the bookmark manager. Possible
     that the selection is only 1 bookmark.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -413,7 +434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -450,7 +471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceLastUsed" units="days"
-    expires_after="2025-12-14">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -473,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
-    expires_after="2025-11-09">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -483,22 +504,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Logs the number of read items shown in the reading list on the Android
     Bookmarks page when it is opened.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfUnreadItems" units="items"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Logs the number of unread items shown in the reading list on the Android
     Bookmarks page when it is opened.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -514,12 +541,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.RemovedSource" enum="BookmarkEditSource"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
-    Records the source when a bookmark is removed. Gap in data reporting for
-    May-Sept 2024.
+    Records the source when a bookmark is removed.
+
+    Warning: this histogram was expired from 2024-05-01 to 2024-10-01; data may
+    be missing. Warning: this histogram was expired from 2025-03-02 to
+    2025-07-08; data may be missing.
   </summary>
 </histogram>
 
@@ -571,18 +601,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeSinceLastScheduledSave" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Time delta between bookmark file saves, recorded when a save occurs.
-    Recorded on the first save as the time since startup. Gap in data between
-    July-Sept 2024.
+    Recorded on the first save as the time since startup.
+
+    Warning: this histogram was expired from 2024-07-01 to 2024-10-01; data may
+    be missing. Warning: this histogram was expired from 2025-03-02 to
+    2025-07-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -597,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays"
-    units="days" expires_after="2025-03-02">
+    units="days" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -614,11 +647,14 @@ chromium-metrics-reviews@google.com.
     Opening a guest session (guest profile) also causes an emit to this
     histogram under certain enterpise configurations where guest sessions can
     have bookmarks.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlySavedBookmarkInDays"
-    units="days" expires_after="2025-03-02">
+    units="days" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -635,11 +671,14 @@ chromium-metrics-reviews@google.com.
     Opening a guest session (guest profile) also causes an emit to this
     histogram under certain enterpise configurations where guest sessions can
     have bookmarks.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays"
-    units="days" expires_after="2025-03-02">
+    units="days" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -657,12 +696,14 @@ chromium-metrics-reviews@google.com.
     histogram under certain enterpise configurations where guest sessions can
     have bookmarks.
 
-    Gap in data between July-Sept 2024.
+    Warning: this histogram was expired from 2024-07-01 to 2024-10-01; data may
+    be missing. Warning: this histogram was expired from 2025-03-02 to
+    2025-07-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded3" units="days"
-    expires_after="2025-03-02">
+    expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -673,6 +714,9 @@ chromium-metrics-reviews@google.com.
     histogram even though guest sessions don't typically allow bookmarks. (The
     value emitted is typically zero.) Under certain enterpise configuration,
     guest sessions can have bookmarks.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -749,12 +793,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Utilization.OnProfileLoad.TotalUnused"
-    units="Bookmarks" expires_after="2025-03-02">
+    units="Bookmarks" expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     The total number of bookmarks that haven't been opened. Recorded on profile
     load.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-07-08; data may
+    be missing.
   </summary>
 </histogram>
 
