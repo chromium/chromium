@@ -244,8 +244,7 @@ void GlicActorController::ActImpl(
   actor::ExecutionEngine::ActionResultCallback action_callback =
       base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
                      task->id(), options, std::move(callback));
-
-  GetExecutionEngine()->Act(action, std::move(action_callback));
+  task->Act(action, std::move(action_callback));
 }
 
 void GlicActorController::OnActionFinished(

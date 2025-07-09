@@ -97,10 +97,6 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  ExecutionEngine& execution_engine() {
-    return *actor_task().GetExecutionEngine();
-  }
-
   ActorTask& actor_task() {
     return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
   }
@@ -114,7 +110,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     BrowserAction action = MakeClick(*main_frame(), dom_node_id.value());
     action.set_task_id(task_id_.value());
     TestFuture<mojom::ActionResultPtr> result;
-    execution_engine().Act(action, result.GetCallback());
+    actor_task().Act(action, result.GetCallback());
     if (expected_code == mojom::ActionResultCode::kOk) {
       ExpectOkResult(result);
     } else {
@@ -195,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
 
   // Execute the action
   TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  actor_task().Act(action, result.GetCallback());
   ExpectOkResult(result);
 
   // Check background color changed to green
@@ -272,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
 
   // Execute the actions.
   TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(actions, result.GetCallback());
+  actor_task().Act(actions, result.GetCallback());
 
   // Check that the action succeeded.
   ExpectOkResult(result);

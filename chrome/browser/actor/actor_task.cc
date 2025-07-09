@@ -9,6 +9,9 @@
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {
@@ -35,6 +38,7 @@ ActorTask::State ActorTask::GetState() const {
 
 void ActorTask::SetState(State state) {
   using enum State;
+  VLOG(1) << "ActorTask state change: " << state_ << " -> " << state;
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>>
       allowed_transitions(base::StateTransitions<State>({
@@ -53,6 +57,36 @@ void ActorTask::SetState(State state) {
 
   state_ = state;
   task_state_change_callback_list_.Notify(id_, state_);
+}
+
+void ActorTask::Act(const optimization_guide::proto::BrowserAction& action,
+                    ActionResultCallback callback) {
+  if (state_ == State::kPausedByClient) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused));
+    return;
+  }
+  SetState(State::kActing);
+  execution_engine_->Act(action, base::BindOnce(&ActorTask::OnFinishedAct,
+                                                weak_ptr_factory_.GetWeakPtr(),
+                                                std::move(callback)));
+}
+
+void ActorTask::Act(const optimization_guide::proto::Actions& actions,
+                    ActionResultCallback callback) {
+  SetState(State::kActing);
+  execution_engine_->Act(actions, base::BindOnce(&ActorTask::OnFinishedAct,
+                                                 weak_ptr_factory_.GetWeakPtr(),
+                                                 std::move(callback)));
+}
+
+void ActorTask::OnFinishedAct(ActionResultCallback callback,
+                              mojom::ActionResultPtr result) {
+  if (state_ != State::kActing) {
+    std::move(callback).Run(MakeErrorResult());
+    return;
+  }
+  SetState(State::kReflecting);
+  std::move(callback).Run(std::move(result));
 }
 
 void ActorTask::Stop() {

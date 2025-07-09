@@ -10,8 +10,11 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -23,6 +26,8 @@ class ExecutionEngine;
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
+  using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+
   ActorTask() = delete;
   explicit ActorTask(std::unique_ptr<ExecutionEngine> execution_engine);
   ActorTask(const ActorTask&) = delete;
@@ -50,6 +55,12 @@ class ActorTask {
   void SetState(State state);
 
   base::Time GetEndTime() const;
+
+  void Act(const optimization_guide::proto::BrowserAction& action,
+           ActionResultCallback callback);
+
+  void Act(const optimization_guide::proto::Actions& actions,
+           ActionResultCallback callback);
 
   // Sets State to kFinished and cancels any pending actions.
   void Stop();
@@ -91,6 +102,9 @@ class ActorTask {
   }
 
  private:
+  void OnFinishedAct(ActionResultCallback callback,
+                     mojom::ActionResultPtr result);
+
   State state_ = State::kCreated;
 
   // The time at which the task was completed or cancelled.
@@ -108,6 +122,8 @@ class ActorTask {
   using TaskStateChangeCallbackList =
       base::RepeatingCallbackList<void(TaskId, ActorTask::State)>;
   TaskStateChangeCallbackList task_state_change_callback_list_;
+
+  base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& os, const ActorTask::State& state);

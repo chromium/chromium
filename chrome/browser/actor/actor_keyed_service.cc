@@ -119,10 +119,10 @@ void ActorKeyedService::ExecuteAction(
     return;
   }
 #if BUILDFLAG(ENABLE_GLIC)
-  task->GetExecutionEngine()->Act(
-      std::move(action), base::BindOnce(&ActorKeyedService::OnActionFinished,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        std::move(callback), action.task_id()));
+  task->Act(std::move(action),
+            base::BindOnce(&ActorKeyedService::OnActionFinished,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           action.task_id()));
 #endif
 }
 
@@ -275,7 +275,7 @@ void ActorKeyedService::PerformActions(
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
-  task->GetExecutionEngine()->Act(
+  task->Act(
       std::move(actions),
       base::BindOnce(&ActorKeyedService::OnActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
