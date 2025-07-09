@@ -2805,12 +2805,12 @@
   {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 139
+    "expiry_milestone": 143
   },
   {
     "name": "enable-bound-session-credentials-software-keys-for-manual-testing",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 139
+    "expiry_milestone": 143
   },
   {
     "name": "enable-brightness-control-in-settings",
