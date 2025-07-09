@@ -180,6 +180,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // Ensure that the ClientSI holds the correct texture target (which is *not*
     // the texture target that ClientSharedImage would compute internally for
     // these parameters).
+    // TODO(crbug.com/428380012): The size passed here must match the
+    // size used for creating shared image on GPU.
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         sii->NotifyMailboxAdded(
             mailbox_, viz::SinglePlaneFormat::kBGRA_8888, natural_size_,
@@ -205,7 +207,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       base::BindPostTask(
           media_task_runner_,
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),
-      natural_size_, gfx::Rect(natural_size_), natural_size_,
+      shared_image->size(), gfx::Rect(natural_size_), natural_size_,
       base::TimeDelta());
 
   frame->set_color_space(shared_image->color_space());
