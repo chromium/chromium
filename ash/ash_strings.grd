@@ -4474,6 +4474,9 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen with Google Lens.">
         Search my screen with Google Lens
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION_ALT" desc="Label for accelerator action - Search my screen. Does not mention Google Lens in case the default search engine is not set to Google.">
+        Search my screen
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_LEFT" desc="Label for accelerator action - Tiled resize window toward the left.">
         Tiled resize window toward the left
       </message>
@@ -6916,6 +6919,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON" desc="The accessible name and tooltip of the search button for the Sunfish feature. ">
         Search my screen with Google Lens
+      </message>
+      <message name="IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON_NON_GOOGLE" desc="The accessible name and tooltip of the search button for the Sunfish feature when Google is not set as the default search engine.">
+        Search my screen
       </message>
       <message name="IDS_ASH_SUNFISH_EDUCATE_TOAST_MESSAGE" desc="The message shown in a toast window to educate the user about the Sunfish feature.">
         Select anything on your screen to search, copy text, and more

@@ -566,7 +566,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
        {AcceleratorAction::kStartSunfishSession,
         AcceleratorLayoutDetails(
             AcceleratorAction::kStartSunfishSession,
-            IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION_ALT,
             mojom::AcceleratorCategory::kGeneral,
             mojom::AcceleratorSubcategory::kGeneralControls,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,

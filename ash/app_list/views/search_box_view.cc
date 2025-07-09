@@ -570,10 +570,6 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   views::ImageButton* sunfish_button = CreateSunfishButton(base::BindRepeating(
       &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
   sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
-  std::u16string sunfish_button_label(
-      l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON));
-  sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
-  sunfish_button->SetTooltipText(sunfish_button_label);
   // Update the visibility based on the search box model.
   SunfishButtonVisibilityChanged();
 
@@ -1802,6 +1798,11 @@ void SearchBoxView::SunfishButtonVisibilityChanged() {
             is_sunfish_icon ? kLensColorIcon : kScannerIcon,
             kColorAshButtonIconColor,
             is_sunfish_icon ? kLensColorIconSize : GetSearchBoxIconSize()));
+    std::u16string sunfish_button_label(l10n_util::GetStringUTF16(
+        is_sunfish_icon ? IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON
+                        : IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON_NON_GOOGLE));
+    sunfish_button()->GetViewAccessibility().SetName(sunfish_button_label);
+    sunfish_button()->SetTooltipText(sunfish_button_label);
   }
 }
 
