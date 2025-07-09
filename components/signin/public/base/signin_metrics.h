@@ -296,11 +296,12 @@ enum class AccessPoint : int {
   kEnterpriseManagementDisclaimerAtStartup = 86,
   // Access point for the enterprise management disclaimer after browser focus.
   kEnterpriseManagementDisclaimerAfterBrowserFocus = 87,
+  // Access point for the enterprise management disclaimer after sign-in.
+  kEnterpriseManagementDisclaimerAfterSignin = 88,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue =
-      kEnterpriseManagementDisclaimerAfterBrowserFocus,  // This must be last.
+  kMaxValue = kEnterpriseManagementDisclaimerAfterSignin,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

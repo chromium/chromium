@@ -49,8 +49,8 @@
 ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
     Profile* profile)
     : profile_(*profile), state_(std::make_unique<ResetableState>()) {
-  CHECK(base::FeatureList::IsEnabled(
-      switches::kEnforceManagementDisclaimerAtStartup));
+  CHECK(base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer));
+
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
 
@@ -61,6 +61,15 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
 
 ProfileManagementDisclaimerService::~ProfileManagementDisclaimerService() =
     default;
+
+base::ScopedClosureRunner ProfileManagementDisclaimerService::
+    DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset() {
+  enable_management_disclaimer_on_primary_account_change_ = false;
+  return base::ScopedClosureRunner(
+      base::BindOnce(&ProfileManagementDisclaimerService::
+                         SetEnableManagementDisclaimerOnPrimaryAccountChange,
+                     weak_ptr_factory_.GetWeakPtr(), true));
+}
 
 ProfileManagementDisclaimerService::ResetableState::ResetableState() = default;
 
@@ -106,6 +115,9 @@ void ProfileManagementDisclaimerService::
     MaybeShowEnterpriseManagementDisclaimer(
         const CoreAccountId& account_id,
         signin_metrics::AccessPoint access_point) {
+  if (account_id.empty()) {
+    return;
+  }
   // We should always know the access point that triggered the profile creation.
   CHECK_NE(access_point, signin_metrics::AccessPoint::kUnknown);
   state_->access_point = access_point;
@@ -127,11 +139,6 @@ void ProfileManagementDisclaimerService::
   }
 
   AccountInfo info = GetExtendedAccountInfo(account_id);
-  // No primary account, return.
-  if (info.account_id.empty()) {
-    Reset();
-    return;
-  }
 
   // Account info is not yet available, wait for extended account info.
   if (info.IsManaged() == signin::Tribool::kUnknown) {
@@ -192,6 +199,20 @@ void ProfileManagementDisclaimerService::Reset() {
   state_ = std::make_unique<ResetableState>();
 }
 
+void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (!enable_management_disclaimer_on_primary_account_change_) {
+    return;
+  }
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+  MaybeShowEnterpriseManagementDisclaimer(
+      event.GetCurrentState().primary_account.account_id,
+      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAfterSignin);
+}
+
 void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   if (info.account_id != state_->account_id) {
@@ -211,16 +232,13 @@ void ProfileManagementDisclaimerService::OnBrowserSetLastActive(
   if (browser->profile() != &profile_.get()) {
     return;
   }
-
-  if (!state_->account_id.empty()) {
-    MaybeShowEnterpriseManagementDisclaimer(state_->account_id,
-                                            state_->access_point);
-    return;
-  }
-
-  // Maybe show the disclaimer for the primary account.
-  MaybeShowEnterpriseManagementDisclaimer(
-      GetPrimaryAccountInfo().account_id,
-      signin_metrics::AccessPoint::
-          kEnterpriseManagementDisclaimerAfterBrowserFocus);
+  CoreAccountId account_id = state_->account_id.empty()
+                                 ? GetPrimaryAccountInfo().account_id
+                                 : state_->account_id;
+  signin_metrics::AccessPoint access_point =
+      state_->access_point != signin_metrics::AccessPoint::kUnknown
+          ? state_->access_point
+          : signin_metrics::AccessPoint::
+                kEnterpriseManagementDisclaimerAfterBrowserFocus;
+  MaybeShowEnterpriseManagementDisclaimer(account_id, access_point);
 }

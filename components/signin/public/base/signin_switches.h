@@ -205,7 +205,7 @@ BASE_DECLARE_FEATURE(kChromeIdentitySurvey);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnforceManagementDisclaimerAtStartup);
+BASE_DECLARE_FEATURE(kEnforceManagementDisclaimer);
 #endif
 
 }  // namespace switches

@@ -27,8 +27,7 @@ ProfileManagementDisclaimerServiceFactory::GetInstance() {
 
 bool ProfileManagementDisclaimerServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
-  return base::FeatureList::IsEnabled(
-      switches::kEnforceManagementDisclaimerAtStartup);
+  return base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer);
 }
 
 ProfileManagementDisclaimerServiceFactory::
@@ -44,8 +43,7 @@ ProfileManagementDisclaimerServiceFactory::
 std::unique_ptr<KeyedService> ProfileManagementDisclaimerServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnforceManagementDisclaimerAtStartup)) {
+  if (!base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
     return nullptr;
   }
   return std::make_unique<ProfileManagementDisclaimerService>(

@@ -268,9 +268,11 @@ BASE_FEATURE(kChromeIdentitySurvey,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables the management disclaimer for managed signed profiles. All signed in
 // profiles that never saw the management disclaimer will be shown the
-// management disclaimer when they open Chrome.
-BASE_FEATURE(kEnforceManagementDisclaimerAtStartup,
-             "EnforceManagementDisclaimerAtStartup",
+// management disclaimer when they open Chrome. Every time the primary signed in
+// account changes to a managed account, the management disclaimer will be
+// shown. This is only for desktop platforms.
+BASE_FEATURE(kEnforceManagementDisclaimer,
+             "EnforceManagementDisclaimer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
