@@ -516,7 +516,7 @@ class PasswordManagerTestBase : public testing::Test {
   void TearDown() override {
     // The PasswordManager may own objects that keep raw pointers for the
     // password store - therefore reset it first.
-    manager_.reset();
+    ResetManager();
     mock_match_helper_ = nullptr;
     if (account_store_) {
       account_store_->ShutdownOnUIThread();
@@ -524,6 +524,14 @@ class PasswordManagerTestBase : public testing::Test {
     }
     store_->ShutdownOnUIThread();
     store_ = nullptr;
+  }
+
+  void ResetManager() {
+    // A member of `PasswordAutofillManager` (`UndoPasswordChangeController`)
+    // may keep a pointer to `PasswordFormCache` to unsubscribe from observing
+    // parsed forms. This call should happen before the cache is destroyed.
+    password_autofill_manager_.reset();
+    manager_.reset();
   }
 
   // Whether to set up the account-scoped PasswordStore.
@@ -995,7 +1003,7 @@ TEST_P(PasswordManagerTest,
                                     {form_data.renderer_id()}, {});
 
   // Delete password manager to record metrics.
-  manager_.reset();
+  ResetManager();
 
   // Verify that the filling assistance is correctly recorded as manually
   // autofilled.
@@ -1706,7 +1714,7 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   task_environment_.RunUntilIdle();
   // Objects owned by the manager may keep references to the store - therefore
   // destroy the manager prior to store destruction.
-  manager_.reset();
+  ResetManager();
   store->ShutdownOnUIThread();
 }
 
@@ -1744,7 +1752,7 @@ TEST_P(PasswordManagerTest,
   task_environment_.RunUntilIdle();
   // Objects owned by the manager may keep references to the store - therefore
   // destroy the manager prior to store destruction.
-  manager_.reset();
+  ResetManager();
   store->ShutdownOnUIThread();
 }
 
@@ -1843,7 +1851,7 @@ TEST_P(PasswordManagerTest,
   task_environment_.RunUntilIdle();
   // Objects owned by the manager may keep references to the store - therefore
   // destroy the manager prior to store destruction.
-  manager_.reset();
+  ResetManager();
   store->ShutdownOnUIThread();
 }
 
@@ -1882,7 +1890,7 @@ TEST_P(PasswordManagerTest,
   task_environment_.RunUntilIdle();
   // Objects owned by the manager may keep references to the store - therefore
   // destroy the manager prior to store destruction.
-  manager_.reset();
+  ResetManager();
   store->ShutdownOnUIThread();
 }
 #endif
@@ -1922,7 +1930,7 @@ TEST_P(PasswordManagerTest, BrokenPasswordStorePreventsMutingCredentials) {
   task_environment_.RunUntilIdle();
   // Objects owned by the manager may keep references to the store - therefore
   // destroy the manager prior to store destruction.
-  manager_.reset();
+  ResetManager();
   store->ShutdownOnUIThread();
 }
 
@@ -3330,7 +3338,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving) {
   // Two PasswordFormManagers instances hold references to a shared
   // PasswordFormMetrics recorder. These need to be freed to flush the metrics
   // into the test_ukm_recorder.
-  manager_.reset();
+  ResetManager();
   form_manager_to_save.reset();
 
   // Verify that the last state is recorded.
@@ -6358,7 +6366,7 @@ TEST_P(PasswordManagerTest, FormSubmittedRecordsSubmission) {
 
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormSubmissionsVsSavePrompts",
       metrics_util::SaveFlowStep::kFormSubmitted, 1);
@@ -6398,7 +6406,7 @@ TEST_P(PasswordManagerTest, FormClearedRecordsSubmission) {
 
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormSubmissionsVsSavePrompts",
       metrics_util::SaveFlowStep::kFormSubmitted, 1);
@@ -6418,7 +6426,7 @@ TEST_P(PasswordManagerTest, DynamicFormSubmissionRecordsSubmission) {
 
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormSubmissionsVsSavePrompts",
       metrics_util::SaveFlowStep::kFormSubmitted, 1);
@@ -6441,7 +6449,7 @@ TEST_P(PasswordManagerTest,
 
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormSubmissionsVsSavePrompts", 0);
 }
@@ -6469,7 +6477,7 @@ TEST_P(PasswordManagerTest, FormSubmittedDoesntRecordSubmissionIfBlocklisted) {
   OnPasswordFormSubmitted(form.form_data);
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormSubmissionsVsSavePrompts", 0);
 }
@@ -6493,7 +6501,7 @@ TEST_P(PasswordManagerTest,
 
   // Reset the manager to also cause the form manager to reset which leads
   // to the metrics being recorded.
-  manager_.reset();
+  ResetManager();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.FormSubmissionsVsSavePrompts", 0);
 }
