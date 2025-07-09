@@ -202,6 +202,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Otherwise, return a nullptr.
   views::Widget* GetDialogWidget();
 
+  // Returns whether the dialog widget exists and is visible.
+  bool IsDialogWidgetVisible() const;
+
   // Called when the tab will be removed from the window.
   // Public for testing.
   void WillDetach(tabs::TabInterface* tab,

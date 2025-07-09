@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
+#include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
@@ -23,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace webid {
@@ -43,11 +46,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
             /*url_loader_factory=*/nullptr,
             content::RelyingPartyData(/*rp_for_display=*/u"",
                                       /*iframe_for_display=*/u""),
-            /*device_scale_factor=*/1.f) {
-    // This matches behavior of the production code, which implicitly passes
-    // ownership of the view to the widget via DialogDelegate superclass.
-    SetOwnedByWidget(OwnedByWidgetPassKey());
-  }
+            /*device_scale_factor=*/1.f) {}
+
   enum class SheetType {
     kAccountPicker,
     kConfirmAccount,
@@ -174,14 +174,48 @@ class FakeTabInterface : public tabs::MockTabInterface {
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
 
-  void SetIsActivated(bool active) { is_activated = active; }
-  bool IsActivated() const override { return is_activated; }
+  base::CallbackListSubscription RegisterDidActivate(
+      DidActivateCallback callback) override;
+  base::CallbackListSubscription RegisterWillDeactivate(
+      WillDeactivateCallback callback) override;
+  void SetIsActivated(bool active);
+  bool IsActivated() const override { return is_activated_; }
   bool CanShowModalUI() const override { return true; }
 
  private:
+  using DidActivateCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidActivateCallbackList did_enter_foreground_callback_list_;
+
+  using WillDeactivateCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  WillDeactivateCallbackList will_enter_background_callback_list_;
+
   raw_ptr<content::WebContents> contents_;
-  bool is_activated = true;
+  bool is_activated_ = true;
 };
+
+void FakeTabInterface::SetIsActivated(bool active) {
+  if (is_activated_ != active) {
+    if (!active) {
+      will_enter_background_callback_list_.Notify(this);
+    }
+    is_activated_ = active;
+    if (active) {
+      did_enter_foreground_callback_list_.Notify(this);
+    }
+  }
+}
+
+base::CallbackListSubscription FakeTabInterface::RegisterDidActivate(
+    DidActivateCallback callback) {
+  return did_enter_foreground_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription FakeTabInterface::RegisterWillDeactivate(
+    WillDeactivateCallback callback) {
+  return will_enter_background_callback_list_.Add(std::move(callback));
+}
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
 class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
@@ -195,6 +229,11 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
         .WillByDefault(testing::Return(false));
     SetInputEventActivationProtectorForTesting(std::move(input_protector));
+  }
+  ~TestFedCmAccountSelectionView() override {
+    if (auto* widget = GetDialogWidget()) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    }
   }
 
   TestFedCmAccountSelectionView(const TestFedCmAccountSelectionView&) = delete;
@@ -228,7 +267,9 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     } else {
       *out_dialog_type = FedCmAccountSelectionView::DialogType::BUBBLE;
     }
-    return new TestAccountSelectionView(this);
+    account_selection_view_owned_ =
+        std::make_unique<TestAccountSelectionView>(this);
+    return account_selection_view_owned_.get();
   }
 
   bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
@@ -239,6 +280,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  private:
   blink::mojom::RpContext rp_context_;
   raw_ptr<FedCmAccountSelectionViewDesktopTest> test_;
+  std::unique_ptr<TestAccountSelectionView> account_selection_view_owned_;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -519,13 +561,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   }
 
   void TabWillEnterBackground(TestFedCmAccountSelectionView* view) {
-    view->TabWillEnterBackground(tab_interface_.get());
     tab_interface_->SetIsActivated(false);
   }
 
   void TabForegrounded(TestFedCmAccountSelectionView* view) {
     tab_interface_->SetIsActivated(true);
-    view->TabForegrounded(tab_interface_.get());
   }
 
   content::WebContents* test_web_contents() { return test_web_contents_.get(); }
@@ -681,10 +721,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // views::Widget in this case.
   TabWillEnterBackground(controller.get());
   Show(*controller, accounts_, blink::mojom::RpMode::kPassive, new_accounts_);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   TabForegrounded(controller.get());
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
@@ -919,7 +959,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     OpenLoginToIdpPopup(controller.get());
 
     // When pop-up window is shown, mismatch dialog should be hidden.
-    EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
     // Emulate user completing the sign-in flow and IdP prompts closing the
     // pop-up window.
@@ -927,7 +967,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Mismatch dialog should remain hidden because it has not been updated to
     // an accounts dialog yet.
-    EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
     histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
@@ -942,7 +982,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Accounts dialog should now be visible. One account is logged in, so no
     // back button is shown.
-    EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_TRUE(controller->IsDialogWidgetVisible());
     EXPECT_FALSE(controller->GetTestView()->show_back_button_);
   }
 
@@ -971,7 +1011,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     OpenLoginToIdpPopup(controller.get());
 
     // When pop-up window is shown, mismatch dialog should be hidden.
-    EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // mismatch dialog to an accounts dialog.
@@ -979,7 +1019,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
     // Accounts dialog should remain hidden because the pop-up window has not
     // been closed yet.
-    EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
     histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus."
@@ -992,7 +1032,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
     controller->CloseModalDialog();
 
     // Accounts dialog should now be visible.
-    EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+    EXPECT_TRUE(controller->IsDialogWidgetVisible());
   }
 
   histogram_tester_->ExpectTotalCount(
@@ -1133,14 +1173,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
 
   // Mismatch dialog should be hidden because pop-up window is open.
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate IdentityProvider.close() being called in the pop-up window.
   controller->CloseModalDialog();
 
   // Mismatch dialog should remain hidden because it has not been updated to an
   // accounts dialog yet.
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate another mismatch so we need to show the mismatch dialog again.
   controller->ShowFailureDialog(
@@ -1148,7 +1188,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata());
 
   // Mismatch dialog is visible again.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that RP context is properly set for the mismatch UI.
@@ -1198,10 +1238,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
   Show(*controller, accounts_, blink::mojom::RpMode::kPassive, new_accounts_);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   TabForegrounded(controller.get());
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
 }
@@ -1228,16 +1268,16 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // should remain hidden because the mismatch dialog has not been updated into
   // an accounts dialog yet.
   TabWillEnterBackground(controller.get());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
   TabForegrounded(controller.get());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
   Show(*controller, accounts_, blink::mojom::RpMode::kPassive, new_accounts_);
 
   // The widget should now be visible.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
 }
@@ -1459,7 +1499,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
   OpenLoginToIdpPopup(controller.get());
 
   // Modal remains visible.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate the user clicking "use another account button" again. This should
   // not crash.
@@ -1481,13 +1521,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   OpenLoginToIdpPopup(controller.get());
 
   // Modal remains visible.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate user closing the pop-up window.
   controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Modal remains visible.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate the user clicking "use another account button" again. This should
   // not crash.
@@ -1508,7 +1548,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
   OpenLoginToIdpPopup(controller.get());
 
   // Modal remains visible.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate the user clicking "cancel" button. This should close the widget.
   controller->OnCloseButtonClicked(CreateMouseEvent());
@@ -1519,7 +1559,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
 TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogShown) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that RP context is properly set for the error dialog.
@@ -1551,7 +1591,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogGotItClicked) {
   // Trigger error dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate user clicking on "got it" button in the error dialog.
   controller->OnGotIt(CreateMouseEvent());
@@ -1568,7 +1608,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogMoreDetailsClicked) {
   // Trigger error dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowErrorDialog();
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate user clicking on "more details" button in the error dialog.
   controller->OnMoreDetails(CreateMouseEvent());
@@ -1941,14 +1981,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        ActiveModeLoadingModalNotHiddenDuringLoginToIdP) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kActive);
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
 
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that opening an IDP sign-in pop-up during the loading modal, then
@@ -2187,19 +2227,19 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        ResizeWebContentsChangesDialogVisibility) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate that the web contents is too small to fit the dialog, hiding the
   // dialog.
   controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate that the web contents is big enough to fit the dialog, showing the
   // dialog.
   controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that resizing web contents in different web contents visibility
@@ -2213,47 +2253,47 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user changing tabs, hiding the dialog.
   TabWillEnterBackground(controller.get());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user resizing the window, making the web contents too small to fit
   // the dialog. The dialog should remain hidden.
   controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should remain hidden because the web contents is still too small to fit the
   // dialog.
   TabForegrounded(controller.get());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user resizing the window, making the web contents is big enough to
   // fit the dialog. The dialog should now be visible.
   controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 
   // Emulate user resizing the window, making the web contents too small to fit
   // the dialog. The dialog should be hidden.
   controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/false);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user changing tabs, the dialog should remain hidden.
   TabWillEnterBackground(controller.get());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user resizing the window, making the web contents big enough to fit
   // the dialog. The dialog should remain hidden because the user is on a
   // different tab.
   controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/false);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should now be visible.
   TabForegrounded(controller.get());
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that changing visibility from hidden to visible, also updates the
@@ -2268,13 +2308,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user changing tabs, hiding the dialog.
   TabWillEnterBackground(controller.get());
   EXPECT_FALSE(controller->dialog_position_updated_);
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user changing back to the tab containing the dialog, updating the
   // dialog position.
   TabForegrounded(controller.get());
   EXPECT_TRUE(controller->dialog_position_updated_);
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Test that the fields API (request_permission={}) correctly hides the
@@ -2384,7 +2424,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(controller->dialog_position_updated_);
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 // Tests that closing the use other account button does not close a FedCM
@@ -2397,13 +2437,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   OpenLoginToIdpPopup(controller.get());
   // The dialog is not closed but is hidden.
   EXPECT_FALSE(controller->GetDialogWidget()->IsClosed());
-  EXPECT_FALSE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user closing the pop-up window.
   controller->GetPopupWindowForTesting()->WebContentsDestroyed();
 
   // Dialog should reappear once the popup window is destroyed.
-  EXPECT_TRUE(controller->GetDialogWidget()->IsVisible());
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {

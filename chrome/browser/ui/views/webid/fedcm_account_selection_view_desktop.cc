@@ -943,6 +943,10 @@ views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
   return dialog_widget_.get();
 }
 
+bool FedCmAccountSelectionView::IsDialogWidgetVisible() const {
+  return dialog_widget_ && dialog_widget_->IsVisible();
+}
+
 std::unique_ptr<views::Widget> FedCmAccountSelectionView::CreateDialogWidget() {
   std::unique_ptr<views::Widget> dialog_widget;
   if (dialog_type_ == DialogType::BUBBLE) {

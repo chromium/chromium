@@ -250,7 +250,6 @@ class SubAppsInstallDialogController;
 
 namespace webid {
 class AccountSelectionModalView;
-class TestAccountSelectionView;
 }  // namespace webid
 
 namespace views {
@@ -444,7 +443,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::web_app::IsolatedWebAppInstallerViewController;
     friend class ::web_app::SubAppsInstallDialogController;
     friend class ::webid::AccountSelectionModalView;
-    friend class ::webid::TestAccountSelectionView;
 
     OwnedByWidgetPassKey() = default;
   };
