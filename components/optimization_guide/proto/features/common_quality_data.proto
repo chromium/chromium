@@ -431,7 +431,8 @@ message InteractionInfo {
   // If this node is detected to be is_clickable, provides the reason which
   // caused that.
   // Note: This may not capture all the reasons.
-  repeated ClickabilityReason debug_clickability_reasons = 14;
+  // Deprecated: Use clickability_reasons instead.
+  repeated ClickabilityReason debug_clickability_reasons = 14 [deprecated = true];
 
   // Provides signals which indicate whether the node is actionable. The action
   // may be triggered by clicking or hovering on the element.
