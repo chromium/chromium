@@ -480,31 +480,27 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
         plane_size.width() * VideoFrame::BytesPerElement(*format, plane);
   }
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
-  bool is_native_buffer =
-      (gpu_memory_buffer->GetType() != gfx::SHARED_MEMORY_BUFFER);
-  if (is_native_buffer) {
-    const auto gmb_handle = gpu_memory_buffer->CloneHandle();
-    if (gmb_handle.is_null() ||
-        gmb_handle.native_pixmap_handle().planes.empty()) {
-      DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
-      return nullptr;
-    }
-    const gfx::NativePixmapHandle& native_pixmap_handle =
-        gmb_handle.native_pixmap_handle();
-    if (native_pixmap_handle.planes.size() != num_planes) {
-      DLOG(ERROR) << "Invalid number of planes="
-                  << native_pixmap_handle.planes.size()
-                  << ", expected num_planes=" << num_planes;
-      return nullptr;
-    }
-    for (size_t i = 0; i < num_planes; ++i) {
-      const auto& plane = native_pixmap_handle.planes[i];
-      planes[i].stride = plane.stride;
-      planes[i].offset = plane.offset;
-      planes[i].size = plane.size;
-    }
-    modifier = native_pixmap_handle.modifier;
+  const auto gmb_handle = gpu_memory_buffer->CloneHandle();
+  if (gmb_handle.is_null() ||
+      gmb_handle.native_pixmap_handle().planes.empty()) {
+    DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
+    return nullptr;
   }
+  const gfx::NativePixmapHandle& native_pixmap_handle =
+      gmb_handle.native_pixmap_handle();
+  if (native_pixmap_handle.planes.size() != num_planes) {
+    DLOG(ERROR) << "Invalid number of planes="
+                << native_pixmap_handle.planes.size()
+                << ", expected num_planes=" << num_planes;
+    return nullptr;
+  }
+  for (size_t i = 0; i < num_planes; ++i) {
+    const auto& plane = native_pixmap_handle.planes[i];
+    planes[i].stride = plane.stride;
+    planes[i].offset = plane.offset;
+    planes[i].size = plane.size;
+  }
+  modifier = native_pixmap_handle.modifier;
 
   const auto layout = VideoFrameLayout::CreateWithPlanes(
       *format, coded_size, std::move(planes),
