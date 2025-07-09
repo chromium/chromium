@@ -27,6 +27,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -96,7 +97,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -536,12 +536,11 @@ device::LargeBlob CompressLargeBlob(base::span<const uint8_t> blob) {
   data_decoder::Gzipper gzipper;
   std::vector<uint8_t> compressed;
   base::RunLoop run_loop;
-  gzipper.Deflate(
-      blob, base::BindLambdaForTesting(
-                [&](std::optional<mojo_base::BigBuffer> result) {
-                  compressed = device::fido_parsing_utils::Materialize(*result);
-                  run_loop.Quit();
-                }));
+  gzipper.Deflate(blob, base::BindLambdaForTesting(
+                            [&](std::optional<mojo_base::BigBuffer> result) {
+                              compressed = base::ToVector(*result);
+                              run_loop.Quit();
+                            }));
   run_loop.Run();
   return device::LargeBlob(std::move(compressed), blob.size());
 }
@@ -555,7 +554,7 @@ std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
       base::BindLambdaForTesting(
           [&](std::optional<mojo_base::BigBuffer> result) {
             if (result) {
-              uncompressed = device::fido_parsing_utils::Materialize(*result);
+              uncompressed = base::ToVector(*result);
             } else {
               // Magic value to indicate failure.
               const char kErrorMsg[] = "decompress error";
@@ -10668,8 +10667,7 @@ static std::vector<uint8_t> HashPRFInput(base::span<const uint8_t> input) {
   constexpr char kPrefix[] = "WebAuthn PRF";
   hash_input.insert(hash_input.end(), std::begin(kPrefix), std::end(kPrefix));
   hash_input.insert(hash_input.end(), std::begin(input), std::end(input));
-  return device::fido_parsing_utils::Materialize(
-      crypto::SHA256Hash(hash_input));
+  return base::ToVector(crypto::SHA256Hash(hash_input));
 }
 
 static std::tuple<PublicKeyCredentialRequestOptionsPtr,
@@ -10708,9 +10706,8 @@ BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
   options->extensions->prf_inputs = std::move(prf_inputs);
   options->user_verification = device::UserVerificationRequirement::kRequired;
 
-  return std::make_tuple(std::move(options),
-                         device::fido_parsing_utils::Materialize(output1),
-                         device::fido_parsing_utils::Materialize(output2));
+  return std::make_tuple(std::move(options), base::ToVector(output1),
+                         base::ToVector(output2));
 }
 
 TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFGetAssertion) {

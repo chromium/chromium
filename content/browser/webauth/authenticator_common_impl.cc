@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -77,7 +78,6 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -490,12 +490,10 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
     base::span<const uint8_t> results) {
   auto prf_values = blink::mojom::PRFValues::New();
   DCHECK(results.size() == 32 || results.size() == 64);
-  // Using `.split_at<32>()` would cause the subsequent `Materialize()` call to
-  // return a `std::array`, resulting in an extra copy.
-  const auto [first, second] = results.split_at(32u);
-  prf_values->first = device::fido_parsing_utils::Materialize(first);
+  const auto [first, second] = results.split_at<32>();
+  prf_values->first = base::ToVector(first);
   if (!second.empty()) {
-    prf_values->second = device::fido_parsing_utils::Materialize(second);
+    prf_values->second = base::ToVector(second);
   }
 
   return prf_values;
@@ -3190,7 +3188,7 @@ void AuthenticatorCommonImpl::UpdateChallengeFromUrl(
     return;
   }
 
-  params.challenge = device::fido_parsing_utils::Materialize(*challenge);
+  params.challenge = base::ToVector(*challenge);
   req_state_->client_data_json = BuildClientDataJson(std::move(params));
   std::get<device::CtapGetAssertionRequest>(req_state_->ctap_request)
       .SetClientDataJson(req_state_->client_data_json);

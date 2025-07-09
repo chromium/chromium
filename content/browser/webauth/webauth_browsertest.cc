@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stdint.h>
 
 #include <cstring>
@@ -20,6 +15,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -739,8 +735,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     device::PublicKeyCredentialDescriptor descriptor(
         device::CredentialType::kPublicKey,
-        device::fido_parsing_utils::Materialize(
-            device::test_data::kTestGetAssertionCredentialId),
+        base::ToVector(device::test_data::kTestGetAssertionCredentialId),
         transports);
     credentials.push_back(descriptor);
 
@@ -1234,9 +1229,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, HybridRecognised) {
       kCredentialId, "acme.com"));
 
   GetParameters parameters;
-  for (const char* const transport_str : {"hybrid", "cable", "usb"}) {
+  for (std::string_view transport_str : {"hybrid", "cable", "usb"}) {
     SCOPED_TRACE(transport_str);
-    const bool should_fail = (strcmp(transport_str, "usb") == 0);
+    const bool should_fail = transport_str == "usb";
 
     parameters.allow_credentials =
         "[{"
@@ -1925,12 +1920,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Timeout) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
-  const uint8_t kCredentialId[] = {0x61, 0x6C, 0x6C, 0x6F, 0x77, 0x65,
-                                   0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
-                                   0x6E, 0x74, 0x69, 0x61, 0x6C};
+  constexpr auto kCredentialId = std::to_array<uint8_t>(
+      {0x61, 0x6C, 0x6C, 0x6F, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
+       0x6E, 0x74, 0x69, 0x61, 0x6C});
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      device::fido_parsing_utils::Materialize(base::span(kCredentialId)),
-      "foo.com"));
+      base::ToVector(kCredentialId), "foo.com"));
 
   GetParameters parameters;
   parameters.user_verification = "discouraged";
@@ -2006,15 +2000,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
     auto make_credential_request = BuildBasicCreateOptions();
     device::PublicKeyCredentialDescriptor excluded_credential(
         device::CredentialType::kPublicKey,
-        device::fido_parsing_utils::Materialize(
-            device::test_data::kCtap2MakeCredentialCredentialId),
+        base::ToVector(device::test_data::kCtap2MakeCredentialCredentialId),
         std::vector<device::FidoTransportProtocol>{
             device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
     make_credential_request->exclude_credentials.push_back(excluded_credential);
 
     ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
-        device::fido_parsing_utils::Materialize(
-            device::test_data::kCtap2MakeCredentialCredentialId),
+        base::ToVector(device::test_data::kCtap2MakeCredentialCredentialId),
         make_credential_request->relying_party.id));
 
     TestCreateFuture create_future;
@@ -2033,8 +2025,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestGetAssertion) {
     virtual_device_factory->SetSupportedProtocol(protocol);
     auto get_assertion_request_params = BuildBasicGetOptions();
     ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
-        device::fido_parsing_utils::Materialize(
-            device::test_data::kTestGetAssertionCredentialId),
+        base::ToVector(device::test_data::kTestGetAssertionCredentialId),
         get_assertion_request_params->relying_party_id));
 
     TestGetFuture get_future;
@@ -2105,8 +2096,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
   blink::mojom::PublicKeyCredentialRequestOptionsPtr
       get_assertion_request_params = BuildBasicGetOptions();
   ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
-      device::fido_parsing_utils::Materialize(
-          device::test_data::kTestGetAssertionCredentialId),
+      base::ToVector(device::test_data::kTestGetAssertionCredentialId),
       get_assertion_request_params->relying_party_id));
 
   TestGetFuture get_future;
