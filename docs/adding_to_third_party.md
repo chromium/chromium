@@ -489,6 +489,17 @@ line to separate the data for each package:
 -------------------- DEPENDENCY DIVIDER --------------------
 ```
 
+# Vulnerability Cover {#vulnerability-cover}
+
+All dependencies _must_ provide sufficient metadata to enable vulnerability scanning:
+* `URL` and (`Version` or `Revision`) match upstream identifiers (git, package manager, etc); or
+* `CPEPrefix` and `Version`.
+
+There are limited exceptions for dependencies matching:
+* `Update Mechanism: Static[.HardFork]`
+* `URL: Google Internal`
+* `URL: This is the canonical public repository`
+
 # Get a review
 
 All third party additions and substantive changes like re-licensing need the
