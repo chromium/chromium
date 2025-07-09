@@ -95,6 +95,7 @@ class ProtocWrapperTest(unittest.TestCase):
     mock_call.assert_called_once_with([
         '/foo/protoc', '--ts_proto_out=./bar',
         '--ts_proto_opt=env=browser,esModuleInterop=true,importSuffix=.js',
+        '--ts_proto_opt=useOptionals=all',
         '--plugin=protoc-gen-ts_proto=/foo/protoc-gen-ts_proto', '--proto_path',
         '.', './foo.proto'
     ])
