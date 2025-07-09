@@ -2633,13 +2633,17 @@ if (is_win) {
     common_optimize_on_ldflags += [ "-Wl,--gc-sections" ]
   }
 
-  # We cannot rely on errno being set after math functions,
-  # especially since glibc does not set it. Thus, use -fno-math-errno
-  # so that the compiler knows it can inline math functions.
-  # Note that this is different from -ffast-math (even though -ffast-math
-  # implies -fno-math-errno), which also allows a number of unsafe
-  # optimizations.
-  common_optimize_on_cflags += [ "-fno-math-errno" ]
+  # Do not add -fno-math-errno when `is_debug` is true and `use_libcxx_modules` is true,
+  # as this flag is incompatible with debug builds using modules.
+  if (!is_debug || !use_libcxx_modules) {
+    # We cannot rely on errno being set after math functions,
+    # especially since glibc does not set it. Thus, use -fno-math-errno
+    # so that the compiler knows it can inline math functions.
+    # Note that this is different from -ffast-math (even though -ffast-math
+    # implies -fno-math-errno), which also allows a number of unsafe
+    # optimizations.
+    common_optimize_on_cflags += [ "-fno-math-errno" ]
+  }
 }
 
 config("default_stack_frames") {
