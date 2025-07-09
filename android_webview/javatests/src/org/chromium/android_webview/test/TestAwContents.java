@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
 import org.chromium.android_webview.AwBrowserContext;
@@ -82,5 +83,9 @@ public class TestAwContents extends AwContents {
 
     public void setShouldBlockSpecialFileUrls(boolean shouldBlock) {
         getSettings().setBlockSpecialFileUrls(shouldBlock);
+    }
+
+    public void setFaviconForTesting(Bitmap bitmap) {
+        super.mFavicon = bitmap;
     }
 }

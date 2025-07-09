@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -41,12 +42,21 @@ public class AwContextMenuHeaderCoordinator {
         return model;
     }
 
-    PropertyModel getModel() {
+    @VisibleForTesting
+    public PropertyModel getModel() {
         return mModel;
     }
 
     public String getTitle() {
         return mModel.get(AwContextMenuHeaderProperties.TITLE);
+    }
+
+    public static void setCachedFaviconForTesting(Pair<String, Drawable> favicon) {
+        sCachedFavicon = favicon;
+    }
+
+    public @Nullable static Pair<String, Drawable> getCachedFaviconForTesting() {
+        return sCachedFavicon;
     }
 
     /**

@@ -154,7 +154,8 @@ public final class ContextMenuUtils {
      * @param containerView The container {@link View} for the context menu.
      * @return A point representing the [x, y] coordinates of the touch point.
      */
-    private static Point getTouchPointCoordinates(
+    @VisibleForTesting
+    static Point getTouchPointCoordinates(
             Context context,
             Window window,
             ContextMenuParams params,

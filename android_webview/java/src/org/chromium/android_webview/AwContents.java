@@ -450,7 +450,7 @@ public class AwContents implements SmartClipProvider {
     private @RendererPriority int mRendererPriority;
     private boolean mRendererPriorityWaivedWhenNotVisible;
 
-    private Bitmap mFavicon;
+    protected Bitmap mFavicon;
     private boolean mHasRequestedVisitedHistoryFromClient;
     // Whether this WebView is a popup.
     private boolean mIsPopupWindow;

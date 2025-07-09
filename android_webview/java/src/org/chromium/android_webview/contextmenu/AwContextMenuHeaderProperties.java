@@ -10,8 +10,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+/** Properties for the context menu header. This class is public for testing purposes. */
 @NullMarked
-class AwContextMenuHeaderProperties {
+public class AwContextMenuHeaderProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> HEADER_ICON =
             new WritableObjectPropertyKey<>();
