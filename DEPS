@@ -1326,7 +1326,7 @@ deps = {
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
           # 129.0.6651.0
-          'version': 'IrAigaqukp1GbaksroZcR3Jo0oOYKg9kzatjzNNbXKQC',
+          'version': 'version:2@140.0.7272.0',
         },
       ],
   },
