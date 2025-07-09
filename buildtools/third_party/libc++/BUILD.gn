@@ -172,6 +172,90 @@ if (use_libcxx_modules) {
         ":sysroot",
       ]
     }
+  } else if (is_android) {
+    textual_module("sysroot_ctype") {
+      public_deps = [ ":sysroot" ]
+    }
+
+    textual_module("sysroot_errno") {
+      public_deps = [ ":sysroot" ]
+    }
+
+    sysroot_modules("sysroot_features") {
+    }
+
+    textual_module("sysroot_fenv") {
+      public_deps = [ ":sysroot" ]
+    }
+
+    textual_module("sysroot_inttypes") {
+      public_deps = [
+        ":_Builtin_stdint",
+        ":sysroot_features",
+      ]
+    }
+
+    textual_module("sysroot_limits") {
+      public_deps = [ ":sysroot_features" ]
+    }
+
+    textual_module("sysroot_math") {
+      public_deps = [ ":sysroot_stdlib" ]
+    }
+
+    textual_module("sysroot_stdatomic") {
+      # stdatomic includes libc++'s <atomic>
+      public_deps = [ ":std" ]
+    }
+
+    textual_module("sysroot_stdint") {
+      public_deps = [
+        ":_Builtin_stddef",
+        ":sysroot_features",
+      ]
+    }
+
+    alias("sysroot_stdlib") {
+      actual = [ ":sysroot" ]
+    }
+
+    textual_module("sysroot_string") {
+      public_deps = [
+        ":_Builtin_stddef",
+        ":sysroot",
+      ]
+    }
+
+    textual_module("sysroot_uchar") {
+      public_deps = [
+        ":_Builtin_stddef",
+        ":sysroot",
+      ]
+    }
+
+    textual_module("sysroot_wctype") {
+      public_deps = [ ":sysroot" ]
+    }
+
+    alias("sysroot_wchar") {
+      actual = [ ":sysroot" ]
+    }
+
+    sysroot_modules("sysroot") {
+      public_deps = [
+        ":_Builtin_limits",
+        ":_Builtin_stdarg",
+        ":_Builtin_stddef",
+        ":_Builtin_stdint",
+      ]
+    }
+
+    alias("all_sysroot") {
+      actual = [
+        ":sysroot_features",
+        ":sysroot",
+      ]
+    }
   } else if (is_mac) {
     template("DarwinBasic_modules") {
       modulemap(target_name) {
