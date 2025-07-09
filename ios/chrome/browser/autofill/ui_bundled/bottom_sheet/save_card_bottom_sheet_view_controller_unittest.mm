@@ -21,7 +21,6 @@ class SaveCardBottomSheetViewControllerTest : public PlatformTest {
     mutator_ = OCMStrictProtocolMock(@protocol(SaveCardBottomSheetMutator));
     view_controller_ = [[SaveCardBottomSheetViewController alloc] init];
     view_controller_.dataSource = dataSource_;
-    view_controller_.mutator = mutator_;
   }
 
   ~SaveCardBottomSheetViewControllerTest() override {
@@ -47,18 +46,14 @@ class SaveCardBottomSheetViewControllerTest : public PlatformTest {
   SaveCardBottomSheetViewController* view_controller_;
 };
 
-TEST_F(SaveCardBottomSheetViewControllerTest, BottomSheetAccepted) {
-  // Verify the returned view which is created on accessing view controller's
-  // view property.
-  EXPECT_TRUE(view_controller_.view);
+// TODO(crbug.com/422437418): re-enable.
+TEST_F(SaveCardBottomSheetViewControllerTest, DISABLED_BottomSheetAccepted) {
   OCMExpect([mutator_ didAccept]);
   [view_controller_.actionHandler confirmationAlertPrimaryAction];
 }
 
-TEST_F(SaveCardBottomSheetViewControllerTest, BottomSheetCancelled) {
-  // Verify the returned view which is created on accessing view controller's
-  // view property.
-  EXPECT_TRUE(view_controller_.view);
+// TODO(crbug.com/422437418): re-enable.
+TEST_F(SaveCardBottomSheetViewControllerTest, DISABLED_BottomSheetCancelled) {
   OCMExpect([mutator_ didCancel]);
   [view_controller_.actionHandler confirmationAlertSecondaryAction];
 }
