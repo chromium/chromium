@@ -114,7 +114,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
   void SetUp() override {
     device_management_service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
-    UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
+    BrowserPolicyConnector::SetDeviceManagementServiceForTesting(
         &device_management_service_);
 
     pref_service_ = TestingApplicationContext::GetGlobal()->GetLocalState();
@@ -148,8 +148,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
     user_policy_signin_service_.reset();
     manager_->Shutdown();
 
-    UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
-        nullptr);
+    BrowserPolicyConnector::SetDeviceManagementServiceForTesting(nullptr);
 
     profile_.reset();
     TestingApplicationContext::GetGlobal()

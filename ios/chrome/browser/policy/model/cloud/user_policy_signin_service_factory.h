@@ -16,7 +16,6 @@ class PrefRegistrySyncable;
 
 namespace policy {
 
-class DeviceManagementService;
 class UserPolicySigninService;
 
 // Singleton that owns all UserPolicySigninServices and creates/deletes them as
@@ -32,12 +31,6 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the instance of UserPolicySigninService for the `context`.
   static UserPolicySigninService* GetForProfile(ProfileIOS* profile);
-
-  // Allows setting a mock DeviceManagementService for tests. Does not take
-  // ownership, and should be reset to nullptr at the end of the test.
-  // Set this before an instance is built for a Profile.
-  static void SetDeviceManagementServiceForTesting(
-      DeviceManagementService* device_management_service);
 
  protected:
   // BrowserStateKeyedServiceFactory implementation:

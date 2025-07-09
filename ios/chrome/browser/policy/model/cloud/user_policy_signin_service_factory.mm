@@ -17,12 +17,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-
-policy::DeviceManagementService* g_device_management_service_for_testing = NULL;
-
-}  // namespace
-
 namespace policy {
 
 UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
@@ -46,12 +40,6 @@ UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
   return base::Singleton<UserPolicySigninServiceFactory>::get();
 }
 
-// static
-void UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
-    DeviceManagementService* device_management_service) {
-  g_device_management_service_for_testing = device_management_service;
-}
-
 std::unique_ptr<KeyedService>
 UserPolicySigninServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
@@ -62,8 +50,8 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
   DCHECK(connector);
 
   DeviceManagementService* device_management_service =
-      g_device_management_service_for_testing
-          ? g_device_management_service_for_testing
+      connector->GetTestDeviceManagementService()
+          ? connector->GetTestDeviceManagementService()
           : connector->device_management_service();
   DCHECK(device_management_service);
 
