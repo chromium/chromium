@@ -298,6 +298,7 @@ class WaylandConnection {
   struct wl_callback* GetSyncCallback();
 
   gl::EGLDisplayPlatform GetNativeDisplay();
+  void SetRenderNodePath(base::ScopedFD& drm_fd, const char* render_node_path);
 
   struct wl_registry* GetRegistry();
 

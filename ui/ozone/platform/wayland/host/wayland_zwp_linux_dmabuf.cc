@@ -5,11 +5,15 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 
 #include <drm_fourcc.h>
+#include <fcntl.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
+#include <xf86drm.h>
 
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -18,7 +22,13 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 3;
+constexpr uint32_t kMaxVersion = 4;
+
+struct DrmDeviceDeleter {
+  void operator()(drmDevice* device) { drmFreeDevice(&device); }
+};
+using ScopedDrmDevice = std::unique_ptr<drmDevice, DrmDeviceDeleter>;
+
 }  // namespace
 
 // static
@@ -59,9 +69,31 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
   zwp_linux_dmabuf_v1_add_listener(zwp_linux_dmabuf_.get(), &kDmabufListener,
                                    this);
 
+  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
+      ZWP_LINUX_DMABUF_V1_GET_DEFAULT_FEEDBACK_SINCE_VERSION) {
+    zwp_linux_dmabuf_feedback_.reset(
+        zwp_linux_dmabuf_v1_get_default_feedback(zwp_linux_dmabuf_.get()));
+    static constexpr zwp_linux_dmabuf_feedback_v1_listener
+        kDmabufFeedbackListener = {
+            .done = &OnDone,
+            .format_table = &OnFormatTable,
+            .main_device = &OnMainDevice,
+            .tranche_done = &OnTrancheDone,
+            .tranche_target_device = &OnTrancheTargetDevice,
+            .tranche_formats = &OnTrancheFormats,
+            .tranche_flags = &OnTrancheFlags,
+        };
+    zwp_linux_dmabuf_feedback_v1_add_listener(zwp_linux_dmabuf_feedback_.get(),
+                                              &kDmabufFeedbackListener, this);
+  }
+
   // A roundtrip after binding guarantees that the client has received all
   // supported formats.
-  connection_->RoundTripQueue();
+  base::ElapsedTimer timer;
+  do {
+    connection_->RoundTripQueue();
+  } while (zwp_linux_dmabuf_feedback_.get() &&
+           timer.Elapsed() < base::Milliseconds(500));
 }
 
 WaylandZwpLinuxDmabuf::~WaylandZwpLinuxDmabuf() = default;
@@ -187,6 +219,79 @@ void WaylandZwpLinuxDmabuf::OnFailed(void* data,
   if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     self->NotifyRequestCreateBufferDone(params, nullptr);
   }
+}
+
+void WaylandZwpLinuxDmabuf::OnDone(void* data,
+                                   zwp_linux_dmabuf_feedback_v1* feedback) {
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
+    self->zwp_linux_dmabuf_feedback_.reset();
+  }
+}
+
+void WaylandZwpLinuxDmabuf::OnFormatTable(
+    void* data,
+    zwp_linux_dmabuf_feedback_v1* feedback,
+    int32_t fd,
+    uint32_t size) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
+                                         zwp_linux_dmabuf_feedback_v1* feedback,
+                                         struct wl_array* device) {
+#if defined(WAYLAND_GBM)
+  auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
+  if (!self) {
+    return;
+  }
+
+  CHECK_EQ(device->size, sizeof(dev_t));
+  // SAFETY: wl_array is managed by wayland connection that invokes this
+  // listener, and the CHECK above ensures there is 1 element in the wl_array.
+  dev_t main_device = UNSAFE_BUFFERS(reinterpret_cast<dev_t*>(device->data)[0]);
+  drmDevicePtr raw_device;
+  drmGetDeviceFromDevId(main_device, 0, &raw_device);
+  ScopedDrmDevice drm_device(raw_device);
+
+  if (!drm_device || !(drm_device->available_nodes & 1 << DRM_NODE_RENDER)) {
+    return;
+  }
+  CHECK(drm_device->nodes);
+
+  // SAFETY: drmDevice.nodes is a DRM_NODE_MAX sized array.
+  const char* drm_device_path =
+      UNSAFE_BUFFERS((drm_device.get()->nodes[DRM_NODE_RENDER]));
+  base::ScopedFD drm_fd(open(drm_device_path, O_RDWR));
+
+  self->connection_->SetRenderNodePath(drm_fd, drm_device_path);
+#endif  // defined(WAYLAND_GBM)
+}
+
+void WaylandZwpLinuxDmabuf::OnTrancheDone(
+    void* data,
+    zwp_linux_dmabuf_feedback_v1* feedback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandZwpLinuxDmabuf::OnTrancheTargetDevice(
+    void* data,
+    zwp_linux_dmabuf_feedback_v1* feedback,
+    struct wl_array* device) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandZwpLinuxDmabuf::OnTrancheFormats(
+    void* data,
+    zwp_linux_dmabuf_feedback_v1* feedback,
+    struct wl_array* indices) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandZwpLinuxDmabuf::OnTrancheFlags(
+    void* data,
+    zwp_linux_dmabuf_feedback_v1* feedback,
+    uint32_t flags) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace ui

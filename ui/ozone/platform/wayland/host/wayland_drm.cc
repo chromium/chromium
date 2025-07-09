@@ -145,15 +145,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
   }
 
 #if defined(WAYLAND_GBM)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kRenderNodeOverride)) {
-    TRACE_EVENT("wayland", "scoped attempt of gbm_create_device");
-    ScopedGbmDevice gbm_device(gbm_create_device(drm_fd.get()));
-    if (gbm_device) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-          switches::kRenderNodeOverride, drm_device_path);
-    }
-  }
+  connection_->SetRenderNodePath(drm_fd, drm_device_path);
 #endif  // defined(WAYLAND_GBM)
 
   if (drmGetNodeTypeFromFd(drm_fd.get()) != DRM_NODE_PRIMARY) {
