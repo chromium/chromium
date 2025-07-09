@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
+
+#include <string>
+
+#include "base/strings/utf_string_conversions.h"
+
+namespace autofill {
+
+AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive() = default;
+
+AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
+    const std::u16string& name,
+    const std::u16string& value)
+    : name_(name), value_(value) {}
+
+AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
+    const std::string& name,
+    const std::string& value)
+    : name_(base::UTF8ToUTF16(name)), value_(base::UTF8ToUTF16(value)) {}
+
+AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
+    const AutocompleteKeyLabelSensitive& key)
+    : name_(key.name()), value_(key.value()) {}
+
+AutocompleteKeyLabelSensitive::~AutocompleteKeyLabelSensitive() = default;
+
+AutocompleteEntryLabelSensitive::AutocompleteEntryLabelSensitive() = default;
+
+AutocompleteEntryLabelSensitive::AutocompleteEntryLabelSensitive(
+    const AutocompleteKeyLabelSensitive& key,
+    base::Time date_created,
+    base::Time date_last_used)
+    : key_(key), date_created_(date_created), date_last_used_(date_last_used) {}
+
+AutocompleteEntryLabelSensitive::~AutocompleteEntryLabelSensitive() = default;
+
+}  // namespace autofill
