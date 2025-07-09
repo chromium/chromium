@@ -313,19 +313,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
-    expires_after="2025-12-28">
-  <owner>leimy@chromium.org</owner>
-  <owner>fergal@chromium.org</owner>
-  <owner>src/chrome/browser/ai/OWNERS</owner>
-  <summary>
-    This is recorded each time when the prompt JavaScript API is invoked. This
-    can be used to measure the number of calls of each API within a particular
-    time period.
-  </summary>
-  <token key="SessionType" variants="SessionType"/>
-</histogram>
-
 <histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
     expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>

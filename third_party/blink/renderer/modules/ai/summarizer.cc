@@ -183,9 +183,8 @@ ScriptPromise<IDLString> Summarizer::summarize(
     const String& writing_task,
     const SummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
-  return AIWritingAssistanceBase::execute(
-      script_state, writing_task, options, exception_state,
-      AIMetrics::AIAPI::kSummarizerSummarize);
+  return AIWritingAssistanceBase::execute(script_state, writing_task, options,
+                                          exception_state);
 }
 
 ReadableStream* Summarizer::summarizeStreaming(
@@ -193,9 +192,8 @@ ReadableStream* Summarizer::summarizeStreaming(
     const String& writing_task,
     const SummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
-  return AIWritingAssistanceBase::executeStreaming(
-      script_state, writing_task, options, exception_state,
-      AIMetrics::AIAPI::kSummarizerSummarizeStreaming);
+  return AIWritingAssistanceBase::executeStreaming(script_state, writing_task,
+                                                   options, exception_state);
 }
 
 ScriptPromise<IDLDouble> Summarizer::measureInputUsage(

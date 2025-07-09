@@ -26,35 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(AIAPI) -->
-
-<enum name="AIAPI">
-  <int value="0" label="ai.canCreateSession"/>
-  <int value="1" label="ai.createSession"/>
-  <int value="2" label="ai.prompt"/>
-  <int value="3" label="ai.promptStreaming"/>
-  <int value="4" label="ai.defaultTestSessionOptions"/>
-  <int value="5" label="ai.sessionDestroy"/>
-  <int value="6" label="ai.sessionClone"/>
-  <int value="7" label="ai.textModelInfo"/>
-  <int value="8" label="ai.sessionSummarize"/>
-  <int value="9" label="ai.sessionSummarizeStreaming"/>
-  <int value="10" label="AIWriter.write"/>
-  <int value="11" label="AIWriter.writeStreaming"/>
-  <int value="12" label="AIRewriter.rewrite"/>
-  <int value="13" label="AIRewriter.rewriteStreaming"/>
-  <int value="14" label="ai.summarizer.summarize"/>
-  <int value="15" label="ai.summarizer.summarizeStreaming"/>
-  <int value="16" label="ai.summarizer.create"/>
-  <int value="17" label="ai.summarizer.destroy"/>
-  <int value="18" label="ai.assistant.countPromptTokens"/>
-  <int value="19" label="AIProofreader.proofread"/>
-  <int value="20" label="AIProofreader.create"/>
-  <int value="21" label="AIProofreader.destroy"/>
-</enum>
-
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
-
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
 <enum name="AIModelStreamingResponseStatus">

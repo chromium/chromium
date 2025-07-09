@@ -430,9 +430,6 @@ ScriptPromise<LanguageModel> LanguageModel::create(
   }
 
   LogCreateOptionMetrics(*options, "create");
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kCreateSession);
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
   if (!ai_manager_remote.is_connected()) {
@@ -493,9 +490,6 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   }
 
   LogCreateOptionMetrics(*options, "availability");
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kCanCreateSession);
   auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
   if (!sampling_params_or_exception.has_value()) {
     resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
@@ -586,9 +580,6 @@ ScriptPromise<IDLString> LanguageModel::prompt(
   if (!processed_constraint.has_value()) {
     return EmptyPromise();
   }
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionPrompt);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
@@ -626,9 +617,6 @@ ReadableStream* LanguageModel::promptStreaming(
   if (!processed_constraint.has_value()) {
     return nullptr;
   }
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionPromptStreaming);
 
   // Use WrapPersistent() to make sure LanguageModel is not garbage collected
   // during the response.
@@ -809,10 +797,6 @@ ScriptPromise<LanguageModel> LanguageModel::clone(
     return EmptyPromise();
   }
 
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionClone);
-
   ScriptPromiseResolver<LanguageModel>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageModel>>(script_state);
   auto promise = resolver->Promise();
@@ -843,10 +827,6 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();
   }
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionCountPromptTokens);
 
   ScriptPromiseResolver<IDLDouble>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
@@ -881,10 +861,6 @@ void LanguageModel::destroy(ScriptState* script_state,
     ThrowInvalidContextException(exception_state);
     return;
   }
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kLanguageModel),
-                                AIMetrics::AIAPI::kSessionDestroy);
 
   if (language_model_remote_) {
     language_model_remote_->Destroy();

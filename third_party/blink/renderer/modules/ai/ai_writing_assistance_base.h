@@ -227,8 +227,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   ScriptPromise<IDLString> execute(ScriptState* script_state,
                                    const String& input,
                                    const ExecuteOptions* options,
-                                   ExceptionState& exception_state,
-                                   AIMetrics::AIAPI metric_api_name) {
+                                   ExceptionState& exception_state) {
     if (!script_state->ContextIsValid()) {
       ThrowInvalidContextException(exception_state);
       return ScriptPromise<IDLString>();
@@ -246,9 +245,6 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<IDLString>();
     }
 
-    base::UmaHistogramEnumeration(
-        AIMetrics::GetAIAPIUsageMetricName(metric_session_type_),
-        metric_api_name);
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
         static_cast<int>(input.CharactersSizeInBytes()));
@@ -281,8 +277,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   ReadableStream* executeStreaming(ScriptState* script_state,
                                    const String& input,
                                    const ExecuteOptions* options,
-                                   ExceptionState& exception_state,
-                                   AIMetrics::AIAPI metric_api_name) {
+                                   ExceptionState& exception_state) {
     if (!script_state->ContextIsValid()) {
       ThrowInvalidContextException(exception_state);
       return nullptr;
@@ -300,9 +295,6 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return nullptr;
     }
 
-    base::UmaHistogramEnumeration(
-        AIMetrics::GetAIAPIUsageMetricName(metric_session_type_),
-        metric_api_name);
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
         static_cast<int>(input.CharactersSizeInBytes()));
@@ -383,10 +375,6 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       ThrowInvalidContextException(exception_state);
       return;
     }
-
-    base::UmaHistogramEnumeration(
-        AIMetrics::GetAIAPIUsageMetricName(metric_session_type_),
-        AIMetrics::AIAPI::kSessionDestroy);
 
     destruction_abort_controller_->abort(script_state);
     DestroyImpl();

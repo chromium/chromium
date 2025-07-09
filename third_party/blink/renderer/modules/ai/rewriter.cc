@@ -182,8 +182,7 @@ ScriptPromise<IDLString> Rewriter::rewrite(
     const RewriterRewriteOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::execute(script_state, writing_task, options,
-                                          exception_state,
-                                          AIMetrics::AIAPI::kRewriterRewrite);
+                                          exception_state);
 }
 
 ReadableStream* Rewriter::rewriteStreaming(
@@ -191,9 +190,8 @@ ReadableStream* Rewriter::rewriteStreaming(
     const String& writing_task,
     const RewriterRewriteOptions* options,
     ExceptionState& exception_state) {
-  return AIWritingAssistanceBase::executeStreaming(
-      script_state, writing_task, options, exception_state,
-      AIMetrics::AIAPI::kRewriterRewriteStreaming);
+  return AIWritingAssistanceBase::executeStreaming(script_state, writing_task,
+                                                   options, exception_state);
 }
 
 ScriptPromise<IDLDouble> Rewriter::measureInputUsage(

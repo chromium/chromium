@@ -105,7 +105,7 @@ void WriterBase::RecordCreateOptionMetrics(
       break;
   }
   std::string metric_name =
-      AIMetrics::GetAIAPIUsageMetricName(WriterBase ::GetSessionType());
+      AIMetrics::GetAIAPIUsageMetricName(WriterBase::GetSessionType());
   base::UmaHistogramEnumeration(
       base::StrCat({metric_name, ".", function_name, ".CoreOptionTone"}),
       tone_metric);
@@ -176,17 +176,15 @@ ScriptPromise<IDLString> Writer::write(ScriptState* script_state,
                                        const WriterWriteOptions* options,
                                        ExceptionState& exception_state) {
   return AIWritingAssistanceBase::execute(script_state, writing_task, options,
-                                          exception_state,
-                                          AIMetrics::AIAPI::kWriterWrite);
+                                          exception_state);
 }
 
 ReadableStream* Writer::writeStreaming(ScriptState* script_state,
                                        const String& writing_task,
                                        const WriterWriteOptions* options,
                                        ExceptionState& exception_state) {
-  return AIWritingAssistanceBase::executeStreaming(
-      script_state, writing_task, options, exception_state,
-      AIMetrics::AIAPI::kWriterWriteStreaming);
+  return AIWritingAssistanceBase::executeStreaming(script_state, writing_task,
+                                                   options, exception_state);
 }
 
 ScriptPromise<IDLDouble> Writer::measureInputUsage(

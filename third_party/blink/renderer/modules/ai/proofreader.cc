@@ -156,9 +156,6 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
     return ScriptPromise<ProofreadResult>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kProofreader),
-      AIMetrics::AIAPI::kProofreaderProofread);
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kProofreader),
                              static_cast<int>(input.CharactersSizeInBytes()));
@@ -204,10 +201,6 @@ void Proofreader::destroy(ScriptState* script_state,
     ThrowInvalidContextException(exception_state);
     return;
   }
-
-  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
-                                    AIMetrics::AISessionType::kProofreader),
-                                AIMetrics::AIAPI::kSessionDestroy);
 
   remote_.reset();
 }
