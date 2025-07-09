@@ -2224,8 +2224,6 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
   auto* incognito_map = HostContentSettingsMapFactory::GetForProfile(
       profile.GetPrimaryOTRProfile(/*create_if_needed=*/true));
   auto* registry = content_settings::WebsiteSettingsRegistry::GetInstance();
-  auto* content_setting_registry =
-      content_settings::ContentSettingsRegistry::GetInstance();
 
   GURL url("https://example.com");
   ContentSettingsPattern pattern = ContentSettingsPattern::FromURL(url);
@@ -2238,41 +2236,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
     base::Value original_value =
         regular_map->GetWebsiteSetting(url, url, info->type(), &setting_info);
     // Get a different valid value for incognito mode.
-    base::Value new_value;
-    if (content_setting_registry->Get(info->type())) {
-      // If no original value is available, the settings does not have any valid
-      // values and no more steps are required.
-      if (!original_value.is_int()) {
-        continue;
-      }
-
-      for (int another_value = 0;
-           another_value < ContentSetting::CONTENT_SETTING_NUM_SETTINGS;
-           another_value++) {
-        if (another_value != original_value.GetInt() &&
-            content_setting_registry->Get(info->type())
-                ->IsSettingValid(static_cast<ContentSetting>(another_value))) {
-          new_value = base::Value(another_value);
-          break;
-        }
-      }
-      ASSERT_NE(new_value.type(), base::Value::Type::NONE)
-          << "Every content setting should have at least two values.";
-    } else {
-      base::Value::Dict dict;
-      dict.SetByDottedPath("foo.bar", 0);
-      new_value = base::Value(std::move(dict));
+    base::Value new_value =
+        content_settings::TestUtils::GetSomeValue(info->type());
+    if (new_value.is_none()) {
+      continue;
     }
-
-    if (info->type() == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-      // Validity checks fail for geolocation with a random value.
-      new_value = content_settings::PermissionSettingsRegistry::GetInstance()
-                      ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
-                      ->delegate()
-                      .ToValue(GeolocationSetting{PermissionOption::kAllowed,
-                                                  PermissionOption::kAsk});
-    }
-
     // Ensure a different value is received.
     ASSERT_NE(original_value, new_value);
 

@@ -11,6 +11,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content_settings {
 
@@ -50,6 +51,10 @@ class TestUtils {
       HostContentSettingsMap* map,
       std::unique_ptr<content_settings::ObservableProvider> provider,
       content_settings::ProviderType type);
+
+  // Returns some value that is valid for content_type and different from the
+  // default value.
+  static base::Value GetSomeValue(ContentSettingsType content_type);
 };
 
 }  // namespace content_settings

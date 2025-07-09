@@ -122,6 +122,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
@@ -3789,8 +3790,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
   auto* registry = content_settings::WebsiteSettingsRegistry::GetInstance();
-  auto* content_setting_registry =
-      content_settings::ContentSettingsRegistry::GetInstance();
 
   auto* history_service =
       HistoryServiceFactory::GetForProfileWithoutCreating(profile);
@@ -3803,10 +3802,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 
   // List of types that don't have to be deletable.
   static const ContentSettingsType non_deletable_types[] = {
-      // Doesn't allow any values.
-      ContentSettingsType::PROTOCOL_HANDLERS,
-      // Doesn't allow any values.
-      ContentSettingsType::MIXEDSCRIPT,
       // Only policy provider sets exceptions for this type.
       ContentSettingsType::AUTO_SELECT_CERTIFICATE,
 
@@ -3820,34 +3815,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
     if (base::Contains(non_deletable_types, info->type())) {
       continue;
     }
-    base::Value some_value;
-    auto* content_setting = content_setting_registry->Get(info->type());
-    if (content_setting) {
-      // Content Settings only allow integers.
-      if (content_setting->IsSettingValid(CONTENT_SETTING_ALLOW)) {
-        some_value = base::Value(CONTENT_SETTING_ALLOW);
-      } else {
-        ASSERT_TRUE(content_setting->IsSettingValid(CONTENT_SETTING_ASK));
-        some_value = base::Value(CONTENT_SETTING_ASK);
-      }
-      ASSERT_TRUE(content_setting->IsDefaultSettingValid(CONTENT_SETTING_BLOCK))
-          << info->name();
-      // Set default to BLOCK to be able to differentiate an exception from the
-      // default.
-      map->SetDefaultContentSetting(info->type(), CONTENT_SETTING_BLOCK);
-    } else if (info->type() == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-      // Set valid Geolocation PermissionSetting.
-      some_value = content_settings::PermissionSettingsRegistry::GetInstance()
-                       ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
-                       ->delegate()
-                       .ToValue(GeolocationSetting{PermissionOption::kAllowed,
-                                                   PermissionOption::kAsk});
-    } else {
-      // Other website settings only allow dictionaries.
-      base::Value::Dict dict;
-      dict.Set("foo", 42);
-      some_value = base::Value(std::move(dict));
+    base::Value some_value =
+        content_settings::TestUtils::GetSomeValue(info->type());
+    if (some_value.is_none()) {
+      // Some settings don't allow any values.
+      continue;
     }
+    base::Value initial_value = map->GetWebsiteSetting(url, url, info->type());
+    ASSERT_EQ(initial_value, info->initial_default_value());
+    ASSERT_NE(some_value, initial_value);
+
     // Create an exception.
     map->SetWebsiteSettingDefaultScope(url, url, info->type(),
                                        some_value.Clone());
@@ -3871,14 +3848,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       continue;
     }
     base::Value value = map->GetWebsiteSetting(url, url, info->type());
-
-    if (value.is_int()) {
-      EXPECT_EQ(CONTENT_SETTING_BLOCK, value.GetInt())
-          << "Not deleted: " << info->name() << " value: " << value;
-    } else {
-      EXPECT_TRUE(value.is_none())
-          << "Not deleted: " << info->name() << " value: " << value;
+    if (value.is_none()) {
+      continue;
     }
+
+    EXPECT_EQ(info->initial_default_value(), value)
+        << "Not deleted: " << info->name() << " value: " << value;
   }
 }
 

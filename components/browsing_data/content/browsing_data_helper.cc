@@ -10,6 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
@@ -145,9 +147,20 @@ void RemoveEmbedderCookieData(
 void RemoveSiteSettingsData(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             HostContentSettingsMap* host_content_settings_map) {
+  // TODO(crbug.com/425642101): Remove this when content settings are registered
+  // as permission settings.
   const auto* registry =
       content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
+    host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+        info->website_settings_info()->type(), delete_begin, delete_end,
+        HostContentSettingsMap::PatternSourcePredicate());
+  }
+
+  const auto* permission_settings_registry =
+      content_settings::PermissionSettingsRegistry::GetInstance();
+  for (const content_settings::PermissionSettingsInfo* info :
+       *permission_settings_registry) {
     host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
         info->website_settings_info()->type(), delete_begin, delete_end,
         HostContentSettingsMap::PatternSourcePredicate());
@@ -169,13 +182,6 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SERIAL_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
-
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
-    host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::GEOLOCATION_WITH_OPTIONS, delete_begin, delete_end,
-        HostContentSettingsMap::PatternSourcePredicate());
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
