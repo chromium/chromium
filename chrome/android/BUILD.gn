@@ -289,6 +289,10 @@ if (_is_default_toolchain) {
     if (enable_screen_capture) {
       deps += [ "//chrome/browser:screen_capture_java_resources" ]
     }
+
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/ui/android/extensions:java_resources" ]
+    }
   }
 
   android_resources("java_overlay_resources") {

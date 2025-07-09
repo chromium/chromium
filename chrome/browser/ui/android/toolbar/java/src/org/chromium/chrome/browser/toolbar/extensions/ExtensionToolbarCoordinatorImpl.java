@@ -18,8 +18,8 @@ import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The implementation of {@link ExtensionToolbarCoordinator}. */
@@ -47,6 +47,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
+        extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
         mExtensionActionListCoordinator =
                 new ExtensionActionListCoordinator(

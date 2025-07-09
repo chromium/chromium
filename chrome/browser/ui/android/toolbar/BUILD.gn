@@ -366,25 +366,11 @@ android_resources("java_resources") {
     "java/res/xml/address_bar_settings.xml",
   ]
 
-  if (enable_extensions_core) {
-    sources += [
-      "java/res/drawable/chrome_extension.xml",
-      "java/res/drawable/extensions_menu_bg_tinted.xml",
-      "java/res/layout/extension_action_button.xml",
-      "java/res/layout/extension_toolbar_container.xml",
-      "java/res/layout/extensions_menu.xml",
-    ]
-  }
-
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/styles/android:java_resources",
   ]
-
-  # Prevent the build script from failing for false positives from
-  # conditionally-included extension-related resources.
-  allow_missing_resources = true
 }
 
 robolectric_library("junit") {

@@ -15,7 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
