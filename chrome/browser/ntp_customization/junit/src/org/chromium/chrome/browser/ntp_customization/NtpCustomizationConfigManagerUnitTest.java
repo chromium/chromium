@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 
@@ -40,58 +41,68 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Captor private ArgumentCaptor<BitmapDrawable> mBitmapDrawableCaptor;
 
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
-    private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance());
     }
 
     @After
     public void tearDown() {
         // Clean up listeners to not affect other tests.
         mNtpCustomizationConfigManager.removeListener(mListener);
+        mNtpCustomizationConfigManager.setBackgroundImageDrawableForTesting(null);
+
+        // Removes the newly generated file and cleans up SharedPreference.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationUtils.deleteBackgroundImageFileImpl();
     }
 
     @Test
     public void testOnBackgroundChanged_withBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
-        Bitmap bitmap = createBitmap();
+        verify(mListener).onBackgroundChanged(eq(null));
+        clearInvocations(mListener);
 
-        mNtpCustomizationConfigManager.onBackgroundChanged(mContext, bitmap);
+        Bitmap bitmap = createBitmap();
+        mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
 
         assertNotNull(mNtpCustomizationConfigManager.getBackgroundImageDrawable());
         assertEquals(
                 bitmap, mNtpCustomizationConfigManager.getBackgroundImageDrawable().getBitmap());
 
         verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
-        assertNotNull(mBitmapDrawableCaptor.getValue());
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
     }
 
     @Test
     public void testOnBackgroundChanged_withNullBitmap() {
         mNtpCustomizationConfigManager.addListener(mListener);
+        verify(mListener).onBackgroundChanged(eq(null));
+        clearInvocations(mListener);
 
-        mNtpCustomizationConfigManager.onBackgroundChanged(mContext, null);
+        mNtpCustomizationConfigManager.onBackgroundChanged(null);
 
-        assertNull(mNtpCustomizationConfigManager.getBackgroundImageDrawable());
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
-        assertNull(mBitmapDrawableCaptor.getValue());
+        verify(mListener).onBackgroundChanged(eq(null));
     }
 
     @Test
     public void testAddAndRemoveListener() {
+        // Verifies that onBackgroundChanged() is called for the listener when it is added.
         mNtpCustomizationConfigManager.addListener(mListener);
+        verify(mListener).onBackgroundChanged(eq(null));
+        clearInvocations(mListener);
+
         Bitmap bitmap = createBitmap();
-
-        mNtpCustomizationConfigManager.onBackgroundChanged(mContext, bitmap);
+        mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
         verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
+        assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
 
+        clearInvocations(mListener);
         mNtpCustomizationConfigManager.removeListener(mListener);
-        mNtpCustomizationConfigManager.onBackgroundChanged(mContext, null);
-        verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
+        mNtpCustomizationConfigManager.onBackgroundChanged(null);
+        verify(mListener, never()).onBackgroundChanged(any());
     }
 
     private Bitmap createBitmap() {

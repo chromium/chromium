@@ -100,7 +100,7 @@ public class NtpThemeMediator {
                                         uri,
                                         bitmap -> {
                                             mNtpCustomizationConfigManager.onBackgroundChanged(
-                                                    mContext, bitmap);
+                                                    bitmap);
                                         });
                             });
         }
@@ -157,7 +157,7 @@ public class NtpThemeMediator {
     void handleChromeDefaultSectionClick(View view) {
         updateTrailingIconVisibilityForSectionType(CHROME_DEFAULT);
 
-        mNtpCustomizationConfigManager.onBackgroundChanged(mContext, /* imageBitmap= */ null);
+        mNtpCustomizationConfigManager.onBackgroundChanged(/* bitmap= */ null);
     }
 
     @VisibleForTesting

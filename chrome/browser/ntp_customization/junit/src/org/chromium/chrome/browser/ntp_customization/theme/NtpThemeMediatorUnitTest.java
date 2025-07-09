@@ -122,7 +122,7 @@ public class NtpThemeMediatorUnitTest {
         createMediator(/* shouldShowAlone= */ true);
 
         mMediator.handleChromeDefaultSectionClick(mView);
-        verify(mNtpCustomizationConfigManager).onBackgroundChanged(eq(mActivity), eq(null));
+        verify(mNtpCustomizationConfigManager).onBackgroundChanged(eq(null));
     }
 
     @Test

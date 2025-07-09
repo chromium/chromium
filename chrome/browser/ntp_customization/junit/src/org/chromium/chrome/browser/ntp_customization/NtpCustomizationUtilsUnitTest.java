@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
+
+import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,6 +21,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+
+import java.io.File;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,5 +75,44 @@ public class NtpCustomizationUtilsUnitTest {
 
         resId = getBackground(listSize, listSize - 1);
         assertEquals(R.drawable.ntp_customization_bottom_sheet_list_item_background_bottom, resId);
+    }
+
+    @Test
+    public void testGetAndSetNtpBackgroundImageType() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        assertEquals(
+                NtpBackgroundImageType.DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
+
+        @NtpBackgroundImageType
+        int imageType = NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+        NtpCustomizationUtils.setNtpBackgroundImageType(imageType);
+
+        assertEquals(imageType, NtpCustomizationUtils.getNtpBackgroundImageType());
+    }
+
+    @Test
+    public void testDeleteBackgroundImageFile() {
+        // Saves the bitmap to a file on the disk.
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        NtpCustomizationUtils.saveBackgroundImageFile(bitmap);
+
+        File file = NtpCustomizationUtils.getBackgroundImageFile();
+        assertTrue(file.exists());
+
+        NtpCustomizationUtils.deleteBackgroundImageFileImpl();
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void testSaveAndReadBackgroundImage() {
+        // Saves the bitmap to a file on the disk.
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        NtpCustomizationUtils.saveBackgroundImageFile(bitmap);
+
+        // Reads the bitmap from the file.
+        Bitmap bitmapResult = NtpCustomizationUtils.readNtpBackgroundImageImpl();
+
+        // Verifies that the bitmap read from the file matches the original bitmap.
+        assertTrue(bitmap.sameAs(bitmapResult));
     }
 }

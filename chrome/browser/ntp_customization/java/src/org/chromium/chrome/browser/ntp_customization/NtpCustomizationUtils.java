@@ -15,19 +15,51 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.Browser;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.concurrent.Executor;
 
 /** Utility class of the NTP customization. */
 @NullMarked
 public class NtpCustomizationUtils {
 
+    @IntDef({
+        NtpBackgroundImageType.DEFAULT,
+        NtpBackgroundImageType.IMAGE_FROM_DISK,
+        NtpBackgroundImageType.COLOR_COLOR,
+        NtpBackgroundImageType.CHROME_THEME
+    })
+    public @interface NtpBackgroundImageType {
+        int DEFAULT = 0;
+        int IMAGE_FROM_DISK = 1;
+        int COLOR_COLOR = 2;
+        int CHROME_THEME = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
+    @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
+    private static final String TAG = "NtpCustomization";
 
     /**
      * Every list in NTP customization bottom sheets should use this function to get the background
@@ -125,13 +157,123 @@ public class NtpCustomizationUtils {
     }
 
     /**
+     * Sets the NTP's background image type.
+     *
+     * @param imageType The new image type.
+     */
+    public static void setNtpBackgroundImageType(@NtpBackgroundImageType int imageType) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE, imageType);
+    }
+
+    /** Gets the current NTP's background image type. */
+    public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                NtpBackgroundImageType.DEFAULT);
+    }
+
+    /**
      * Saves the background image if it isn't null, otherwise removes the file.
      *
-     * @param context The current context.
      * @param backgroundImageBitmap The bitmap of the background image.
      */
-    public static void updateBackgroundImageFile(
-            Context context, @Nullable Bitmap backgroundImageBitmap) {
-        // TODO(https://crbug.com/423579377) Implement here.
+    public static void updateBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
+        if (backgroundImageBitmap == null) {
+            NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
+            deleteBackgroundImageFile();
+            return;
+        }
+
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        new BackgroundOnlyAsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                saveBackgroundImageFile(backgroundImageBitmap);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting
+    static void saveBackgroundImageFile(Bitmap backgroundImageBitmap) {
+        File file = getBackgroundImageFile();
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            backgroundImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+        } catch (IOException e) {
+            Log.i(TAG, "Failed to save background image to: " + file.getAbsolutePath());
+        }
+    }
+
+    /** Returns the file to save the NTP's background image. */
+    @VisibleForTesting
+    static File getBackgroundImageFile() {
+        return new File(
+                ContextUtils.getApplicationContext().getFilesDir(), NTP_BACKGROUND_IMAGE_FILE);
+    }
+
+    @VisibleForTesting
+    static void deleteBackgroundImageFile() {
+        new BackgroundOnlyAsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                deleteBackgroundImageFileImpl();
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting
+    static void deleteBackgroundImageFileImpl() {
+        File file = getBackgroundImageFile();
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    /**
+     * Loads the NTP's background bitmap image from disk.
+     *
+     * @param callback The callback to notice when the image is loaded.
+     * @param executor The executor for the loading task.
+     */
+    public static void readNtpBackgroundImage(
+            Callback<@Nullable Bitmap> callback, Executor executor) {
+        new AsyncTask<Bitmap>() {
+            @Override
+            // The return value of the super class doesn't have @Nullable annotation.
+            @SuppressWarnings("NullAway")
+            protected Bitmap doInBackground() {
+                return readNtpBackgroundImageImpl();
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap == null) {
+                    callback.onResult(null);
+                    return;
+                }
+                callback.onResult(bitmap);
+            }
+        }.executeOnExecutor(executor);
+    }
+
+    @VisibleForTesting
+    static @Nullable Bitmap readNtpBackgroundImageImpl() {
+        File file = getBackgroundImageFile();
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        return BitmapFactory.decodeFile(file.getPath(), null);
+    }
+
+    public static void resetSharedPreferenceForTesting() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
     }
 }
