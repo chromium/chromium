@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/android/android_image_reader_compat.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -38,14 +37,10 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
   switch (overlay_mode) {
     case VideoFrameFactory::OverlayMode::kDontRequestPromotionHints:
     case VideoFrameFactory::OverlayMode::kRequestPromotionHints:
-      return base::android::EnableAndroidImageReader()
-                 ? gpu::TextureOwner::Mode::kAImageReaderInsecure
-                 : gpu::TextureOwner::Mode::kSurfaceTextureInsecure;
+      return gpu::TextureOwner::Mode::kAImageReaderInsecure;
     case VideoFrameFactory::OverlayMode::kSurfaceControlSecure:
-      CHECK(base::android::EnableAndroidImageReader());
       return gpu::TextureOwner::Mode::kAImageReaderSecureSurfaceControl;
     case VideoFrameFactory::OverlayMode::kSurfaceControlInsecure:
-      CHECK(base::android::EnableAndroidImageReader());
       return gpu::TextureOwner::Mode::kAImageReaderInsecureSurfaceControl;
   }
 

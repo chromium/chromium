@@ -100,20 +100,9 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
     scoped_refptr<RefCountedLock> drdc_lock,
     TextureOwnerCodecType type_for_metrics) {
   auto texture = CreateTexture(context_state.get());
-  switch (mode) {
-    case Mode::kAImageReaderInsecure:
-    case Mode::kAImageReaderInsecureSurfaceControl:
-    case Mode::kAImageReaderSecureSurfaceControl:
-      return new ImageReaderGLOwner(std::move(texture), mode,
-                                    std::move(context_state),
-                                    std::move(drdc_lock), type_for_metrics);
-    case Mode::kSurfaceTextureInsecure:
-      DCHECK(!drdc_lock);
-      return new SurfaceTextureGLOwner(std::move(texture),
-                                       std::move(context_state));
-  }
-
-  NOTREACHED();
+  return new ImageReaderGLOwner(std::move(texture), mode,
+                                std::move(context_state), std::move(drdc_lock),
+                                type_for_metrics);
 }
 
 GLuint TextureOwner::GetTextureId() const {

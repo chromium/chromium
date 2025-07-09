@@ -63,8 +63,7 @@ class GPU_GLES2_EXPORT TextureOwner
   enum class Mode {
     kAImageReaderInsecure,
     kAImageReaderInsecureSurfaceControl,
-    kAImageReaderSecureSurfaceControl,
-    kSurfaceTextureInsecure
+    kAImageReaderSecureSurfaceControl
   };
 
   static scoped_refptr<TextureOwner> Create(

@@ -1136,8 +1136,6 @@ component("base") {
     sources += [
       "android/android_hardware_buffer_compat.cc",
       "android/android_hardware_buffer_compat.h",
-      "android/android_image_reader_compat.cc",
-      "android/android_image_reader_compat.h",
       "android/android_info.cc",
       "android/android_info.h",
       "android/android_input_receiver_compat.cc",

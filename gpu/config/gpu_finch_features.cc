@@ -15,7 +15,6 @@
 #include "ui/gl/gl_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
@@ -531,11 +530,10 @@ bool IsUsingVulkan() {
 
 bool IsUsingThreadSafeMediaForWebView() {
 #if BUILDFLAG(IS_ANDROID)
-  // SurfaceTexture can't be thread-safe. Also thread safe media code currently
+  // Thread safe media code currently
   // requires AImageReader max size to be at least 2 since one image could be
   // accessed by each gpu thread in webview.
-  if (!base::android::EnableAndroidImageReader() ||
-      LimitAImageReaderMaxSizeToOne()) {
+  if (LimitAImageReaderMaxSizeToOne()) {
     return false;
   }
 
@@ -672,12 +670,10 @@ bool IsDrDcEnabled() {
     return false;
   }
 
-  // DrDc is supported on android MediaPlayer and MCVD path only when
-  // AImageReader is enabled. Also DrDc requires AImageReader max size to be
+  // DrDc requires AImageReader max size to be
   // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
   // only 1 image.
-  if (!base::android::EnableAndroidImageReader() ||
-      LimitAImageReaderMaxSizeToOne()) {
+  if (LimitAImageReaderMaxSizeToOne()) {
     return false;
   }
 
@@ -776,11 +772,6 @@ bool IsAndroidSurfaceControlEnabled() {
   if (!gfx::SurfaceControl::IsSupported())
     return false;
 
-  // We can use surface control only with AImageReader.
-  if (!base::android::EnableAndroidImageReader()) {
-    return false;
-  }
-
   // SurfaceControl requires at least 3 frames in flight.
   if (LimitAImageReaderMaxSizeToOne())
     return false;
@@ -856,7 +847,6 @@ bool IncreaseBufferCountForHighFrameRate() {
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SdkVersion::SDK_VERSION_R &&
       IsAndroidSurfaceControlEnabled() &&
-      base::android::EnableAndroidImageReader() &&
       base::SysInfo::AmountOfPhysicalMemoryMB() > RAM_8GB_CUTOFF;
   return increase;
 }

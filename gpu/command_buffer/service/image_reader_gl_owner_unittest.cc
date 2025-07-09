@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/android_image_reader_compat.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -34,9 +33,6 @@ class ImageReaderGLOwnerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    if (!IsImageReaderSupported())
-      return;
-
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     display_ = gl::init::InitializeGLOneOffPlatformImplementation(
@@ -91,10 +87,6 @@ class ImageReaderGLOwnerTest : public testing::Test {
     gl::init::ShutdownGL(display_, false);
   }
 
-  bool IsImageReaderSupported() const {
-    return base::android::EnableAndroidImageReader();
-  }
-
   scoped_refptr<TextureOwner> image_reader_;
   GLuint texture_id_ = 0;
 
@@ -107,16 +99,10 @@ class ImageReaderGLOwnerTest : public testing::Test {
 };
 
 TEST_F(ImageReaderGLOwnerTest, ImageReaderObjectCreation) {
-  if (!IsImageReaderSupported())
-    return;
-
   ASSERT_TRUE(image_reader_);
 }
 
 TEST_F(ImageReaderGLOwnerTest, ScopedJavaSurfaceCreation) {
-  if (!IsImageReaderSupported())
-    return;
-
   gl::ScopedJavaSurface temp = image_reader_->CreateJavaSurface();
   ASSERT_TRUE(temp.IsValid());
 }
@@ -124,9 +110,6 @@ TEST_F(ImageReaderGLOwnerTest, ScopedJavaSurfaceCreation) {
 // Verify that ImageReaderGLOwner creates a bindable GL texture, and deletes
 // it during destruction.
 TEST_F(ImageReaderGLOwnerTest, GLTextureIsCreatedAndDestroyed) {
-  if (!IsImageReaderSupported())
-    return;
-
   // |texture_id| should not work anymore after we delete image_reader_.
   image_reader_ = nullptr;
   EXPECT_FALSE(abstract_texture_);
@@ -134,18 +117,12 @@ TEST_F(ImageReaderGLOwnerTest, GLTextureIsCreatedAndDestroyed) {
 
 // Make sure that image_reader_ remembers the correct context and surface.
 TEST_F(ImageReaderGLOwnerTest, ContextAndSurfaceAreCaptured) {
-  if (!IsImageReaderSupported())
-    return;
-
   ASSERT_EQ(context_, image_reader_->GetContext());
   ASSERT_EQ(context_->default_surface(), image_reader_->GetSurface());
 }
 
 // Verify that destruction works even if some other context is current.
 TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
-  if (!IsImageReaderSupported())
-    return;
-
   scoped_refptr<gl::GLSurface> new_surface(new gl::PbufferGLSurfaceEGL(
       gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   new_surface->Initialize();
@@ -170,9 +147,6 @@ TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
 // The max number of images used by the ImageReader must be 2 for non-Surface
 // control except for certain devices for which it is limited to 1.
 TEST_F(ImageReaderGLOwnerTest, MaxImageExpectation) {
-  if (!IsImageReaderSupported())
-    return;
-
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
             features::LimitAImageReaderMaxSizeToOne() ? 1 : 2);
@@ -187,9 +161,6 @@ class ImageReaderGLOwnerSecureSurfaceControlTest
 };
 
 TEST_F(ImageReaderGLOwnerSecureSurfaceControlTest, CreatesSecureAImageReader) {
-  if (!IsImageReaderSupported())
-    return;
-
   ASSERT_TRUE(image_reader_);
   auto* a_image_reader = static_cast<ImageReaderGLOwner*>(image_reader_.get())
                              ->image_reader_for_testing();
@@ -201,8 +172,6 @@ TEST_F(ImageReaderGLOwnerSecureSurfaceControlTest, CreatesSecureAImageReader) {
 // The max number of images used by the ImageReader must be 3 for Surface
 // control.
 TEST_F(ImageReaderGLOwnerSecureSurfaceControlTest, MaxImageExpectation) {
-  if (!IsImageReaderSupported())
-    return;
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
             features::IncreaseBufferCountForHighFrameRate() ? 5 : 3);
@@ -219,8 +188,6 @@ class ImageReaderGLOwnerInsecureSurfaceControlTest
 // The max number of images used by the ImageReader must be 3 for Surface
 // control.
 TEST_F(ImageReaderGLOwnerInsecureSurfaceControlTest, MaxImageExpectation) {
-  if (!IsImageReaderSupported())
-    return;
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
             features::IncreaseBufferCountForHighFrameRate() ? 5 : 3);
