@@ -7601,6 +7601,48 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, AltSvcQuicPreconnect) {
   EXPECT_EQ(requester3.negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
+// Regression test for crbug.com/430364749. When a limit-ignoring request
+// triggers an Alt-Svc QUIC preconnect, the corresponding AttemptManager should
+// clean up the limit-ignoring preconnect job.
+TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
+       AltSvcQuicPreconnectIgnoreLimit) {
+  resolver()
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder(kDefaultDestination).Build();
+
+  // First stream request completes with SpdySession.
+  RequestStreamToCreateSpdySession(stream_key);
+
+  // Set up QUIC Alt-Svc and QUIC data for preconnect.
+  SetQuicAlternativeService(stream_key);
+  AddQuicData();
+
+  SetAltSvcQuicPreconnectCallback();
+
+  // Second limit-ignoring request should use existing SpdySession but trigger
+  // QUIC preconnect.
+  StreamRequester requester2(stream_key);
+  requester2.set_load_flags(LOAD_IGNORE_LIMITS)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoHTTP2);
+
+  EXPECT_THAT(WaitForAltSvcQuicPreconnectCompletion(), IsOk());
+
+  // Third request should use the preconnected QUIC session.
+  StreamRequester requester3(stream_key);
+  requester3.set_quic_version(quic_version()).RequestStream(pool());
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+  EXPECT_EQ(requester3.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
 // Test that multiple Alt-Svc QUIC preconnects are coalesced and only one
 // QUIC attempt is triggered.
 TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, AltSvcQuicMutiplePreconnects) {

@@ -1651,6 +1651,7 @@ void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(
     raw_ptr<Job> job,
     int rv) {
   Job* raw_job = job.get();
+  limit_ignoring_jobs_.erase(raw_job);
   notified_jobs_.emplace(std::move(job));
   TRACE_EVENT_INSTANT("net.stream",
                       "AttemptManager::NotifyJobOfPreconnectComplete", track_,
