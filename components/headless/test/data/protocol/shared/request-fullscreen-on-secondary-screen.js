@@ -16,10 +16,9 @@
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, bp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-
+  httpInterceptor.addFavIconResponse('https://example.com');
   httpInterceptor.addResponse('https://example.com/index.html', `
     <html>
-      <head><link rel="icon" href="data:,"></head>
       <body>
         <div id="fullscreen-div">The element.</div>
       </body>

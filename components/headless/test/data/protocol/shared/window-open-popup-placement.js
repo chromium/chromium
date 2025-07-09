@@ -21,10 +21,9 @@
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, bp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
-
+  httpInterceptor.addFavIconResponse('https://example.com');
   httpInterceptor.addResponse('https://example.com/index.html', `
       <html>
-      <head><link rel="icon" href="data:,"></head>
       <script>
           const popup = window.open('/page2.html', '_blank',
               'popup, left=10, top=20, width=600, height=400');

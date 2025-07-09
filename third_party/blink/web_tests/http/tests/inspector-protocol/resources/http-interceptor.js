@@ -15,7 +15,7 @@
   constructor(testRunner, dp) {
     this.testRunner_ = testRunner;
     this.dp_ = dp;
-    this.disabledRequestedUrlsLogging = false;
+    this.disableRequestedUrlsLogging = false;
     this.responses_ = new Map();
     this.requestedUrls_ = [];
     this.requestedMethods_ = [];
@@ -39,7 +39,7 @@
 
       var response = this.responses_.get(url);
       if (response) {
-        if (!this.disabledRequestedUrlsLogging) {
+        if (!this.disableRequestedUrlsLogging) {
           this.testRunner_.log(`requested url: ${url}`);
         }
       } else {
@@ -68,7 +68,7 @@
    *     otherwise.
    */
   setDisableRequestedUrlsLogging(value) {
-    this.disabledRequestedUrlsLogging = value;
+    this.disableRequestedUrlsLogging = value;
   }
 
   /**
@@ -92,6 +92,22 @@
       }
     }
     this.responses_.set(url, {body, headers, responseCode, responsePhrase});
+  }
+
+  /**
+   * Adds favicon request handler that returns transparent 1x1 GIF image by
+   * default.
+   */
+  addFavIconResponse(url, image, type) {
+    while (url.endsWith('/')) {
+      url = url.slice(0, -1);
+    }
+    image = image || 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    type = type || 'image/gif';
+    this.addResponse(url + '/favicon.ico', image, [
+      `HTTP/1.1 200 OK`,
+      `Content-Type: ` + type,
+    ]);
   }
 
   /**
