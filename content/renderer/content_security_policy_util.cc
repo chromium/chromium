@@ -41,8 +41,9 @@ network::mojom::CSPSourceListPtr BuildCSPSourceList(
       source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,
-      source_list.allow_dynamic, source_list.allow_unsafe_hashes,
-      source_list.report_sample, source_list.report_hash_algorithm);
+      source_list.allow_dynamic, source_list.allow_dynamic_url,
+      source_list.allow_unsafe_hashes, source_list.report_sample,
+      source_list.report_hash_algorithm);
 }
 
 std::vector<blink::WebString> ToVectorOfWebStrings(
@@ -82,6 +83,7 @@ blink::WebCSPSourceList ToWebCSPSourceList(
       source_list->allow_wasm_eval,
       source_list->allow_wasm_unsafe_eval,
       source_list->allow_dynamic,
+      source_list->allow_dynamic_url,
       source_list->allow_unsafe_hashes,
       source_list->report_sample,
       source_list->report_hash_algorithm};

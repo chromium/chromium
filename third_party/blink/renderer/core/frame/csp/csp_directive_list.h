@@ -122,6 +122,11 @@ bool CSPDirectiveListAllowDynamic(
     CSPDirectiveName directive_type);
 
 CORE_EXPORT
+bool CSPDirectiveListAllowDynamicUrl(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    CSPDirectiveName directive_type);
+
+CORE_EXPORT
 bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     const network::mojom::blink::CSPHashSource& hash_value,

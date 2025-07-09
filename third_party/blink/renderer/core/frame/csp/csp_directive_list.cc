@@ -325,6 +325,19 @@ bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
   return !directive || directive->allow_dynamic;
 }
 
+bool CheckDynamicUrl(const network::mojom::blink::CSPSourceList* directive,
+                     CSPDirectiveName effective_type) {
+  // 'strict-dynamic-url' only applies to scripts
+  if (effective_type != CSPDirectiveName::ScriptSrc &&
+      effective_type != CSPDirectiveName::ScriptSrcV2 &&
+      effective_type != CSPDirectiveName::ScriptSrcAttr &&
+      effective_type != CSPDirectiveName::ScriptSrcElem &&
+      effective_type != CSPDirectiveName::WorkerSrc) {
+    return false;
+  }
+  return !directive || directive->allow_dynamic_url;
+}
+
 bool IsMatchingNoncePresent(
     const network::mojom::blink::CSPSourceList* directive,
     const String& nonce) {
@@ -1015,9 +1028,14 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
       return CSPCheckResult::Allowed();
     }
     if (base::FeatureList::IsEnabled(
-            network::features::kCSPScriptSrcHashesInV1) &&
-        CheckURLHash(url_before_redirects, directive.source_list)) {
-      return CSPCheckResult::Allowed();
+            network::features::kCSPScriptSrcHashesInV1)) {
+      if (parser_disposition == kNotParserInserted &&
+          CSPDirectiveListAllowDynamicUrl(csp, type)) {
+        return CSPCheckResult::Allowed();
+      }
+      if (CheckURLHash(url_before_redirects, directive.source_list)) {
+        return CSPCheckResult::Allowed();
+      }
     }
   }
 
@@ -1117,6 +1135,13 @@ bool CSPDirectiveListAllowDynamic(
     CSPDirectiveName directive_type) {
   return CheckDynamic(OperativeDirective(csp, directive_type).source_list,
                       directive_type);
+}
+
+bool CSPDirectiveListAllowDynamicUrl(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    CSPDirectiveName directive_type) {
+  return CheckDynamicUrl(OperativeDirective(csp, directive_type).source_list,
+                         directive_type);
 }
 
 bool CSPDirectiveListIsObjectRestrictionReasonable(
