@@ -258,6 +258,7 @@ void ComponentInstallerTest::RunThreads() {
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
   update_client::Unpacker::Unpack(
+      "jebgalgnebhfojomionfpkfelancnnkf",
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
       crx_path, config_->GetUnzipperFactory()->Create(),
       crx_file::VerifierFormat::CRX3,

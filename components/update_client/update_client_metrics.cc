@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace update_client::metrics {
@@ -23,6 +24,18 @@ void RecordUpdateCheckResult(UpdateCheckResult result) {
 
 void RecordComponentUpdated() {
   base::UmaHistogramBoolean("UpdateClient.Component.Updated", true);
+}
+
+void RecordCRXDownloadTime(base::TimeDelta time, const std::string& app_id) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"UpdateClient.DownloadTime.", app_id}), time);
+  base::UmaHistogramMediumTimes("UpdateClient.DownloadTime", time);
+}
+
+void RecordCRXUnzipTime(base::TimeDelta time, const std::string& app_id) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"UpdateClient.UnzipTime.", app_id}), time);
+  base::UmaHistogramMediumTimes("UpdateClient.UnzipTime", time);
 }
 
 }  // namespace update_client::metrics

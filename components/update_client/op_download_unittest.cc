@@ -125,7 +125,7 @@ class OpDownloadTest : public testing::Test {
   void Download(scoped_refptr<Configurator> config,
                 int64_t length,
                 const std::string& hash) {
-    DownloadOperation(config,
+    DownloadOperation(config, "appid",
                       base::BindRepeating([](const base::FilePath&) -> int64_t {
                         return 100'000'000;  // 100 MiB
                       }),

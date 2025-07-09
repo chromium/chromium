@@ -6,6 +6,7 @@
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_METRICS_H_
 
 #include <cstddef>
+#include <string>
 
 #include "base/time/time.h"
 
@@ -27,6 +28,10 @@ void RecordCRXDownloadComplete(bool had_error);
 void RecordUpdateCheckResult(UpdateCheckResult result);
 
 void RecordComponentUpdated();
+
+void RecordCRXDownloadTime(base::TimeDelta time, const std::string& app_id);
+
+void RecordCRXUnzipTime(base::TimeDelta time, const std::string& app_id);
 
 }  // namespace update_client::metrics
 

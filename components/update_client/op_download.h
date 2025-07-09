@@ -35,6 +35,7 @@ class Configurator;
 // is started on.
 base::OnceClosure DownloadOperation(
     scoped_refptr<Configurator> config,
+    const std::string& id,
     base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space,
     bool is_foreground,
     const std::vector<GURL>& urls,

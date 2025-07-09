@@ -272,7 +272,7 @@ std::queue<Operation> MakeOperations(
       }
       ops.push(SkipIfCached(
           cache_check,
-          base::BindOnce(&DownloadOperation, config, get_available_space,
+          base::BindOnce(&DownloadOperation, config, id, get_available_space,
                          is_foreground, operation.urls, operation.size,
                          operation.sha256_out, event_adder, state_tracker,
                          download_progress_callback)));

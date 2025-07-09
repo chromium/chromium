@@ -705,7 +705,8 @@ void UpdaterUtilApp::UnpackCRX() {
       ->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &update_client::Unpacker::Unpack, std::vector<uint8_t>(),
+              &update_client::Unpacker::Unpack,
+              /*app_id=*/"", std::vector<uint8_t>(),
               base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
                   kUnpackSwitch),
               base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
