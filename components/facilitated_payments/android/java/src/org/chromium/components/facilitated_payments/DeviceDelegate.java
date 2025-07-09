@@ -28,7 +28,7 @@ public class DeviceDelegate {
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     // Deeplink to the Pix account linking page on Google Wallet.
     private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount";
+            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
     // Minimum Google Wallet version that supports Pix account linking.
     private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 931593518;
 

@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference;
 public class DeviceDelegateTest {
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount";
+            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
