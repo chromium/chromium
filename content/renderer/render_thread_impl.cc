@@ -198,7 +198,6 @@
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)
-#include "content/common/external_ipc_dumper.h"
 #include "mojo/public/cpp/bindings/message_dumper.h"
 #endif
 
@@ -596,9 +595,6 @@ void RenderThreadImpl::Init() {
   if (command_line.HasSwitch(switches::kIpcDumpDirectory)) {
     base::FilePath dump_directory =
         command_line.GetSwitchValuePath(switches::kIpcDumpDirectory);
-    IPC::ChannelProxy::OutgoingMessageFilter* filter =
-        LoadExternalIPCDumper(dump_directory);
-    GetChannel()->set_outgoing_message_filter(filter);
     mojo::MessageDumper::SetMessageDumpDirectory(dump_directory);
   }
 #endif

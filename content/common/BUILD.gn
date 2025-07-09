@@ -403,14 +403,6 @@ source_set("common") {
     deps += [ "//media/gpu" ]
   }
 
-  if (enable_ipc_fuzzer) {
-    configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
-    sources += [
-      "external_ipc_dumper.cc",
-      "external_ipc_dumper.h",
-    ]
-  }
-
   if (is_fuchsia) {
     sources += [ "font_list_fuchsia.cc" ]
     deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fdio" ]
