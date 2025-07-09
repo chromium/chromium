@@ -6,6 +6,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
@@ -19,6 +20,7 @@
 #include "components/version_info/channel.h"
 #include "components/webui/flags/feature_entry_macros.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -80,6 +82,8 @@ class ChromeLabsTestHelper {
     views::test::ButtonTestApi(chrome_labs_button)
         .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
+    EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+        kToolbarChromeLabsBubbleElementId));
   }
 
  private:
@@ -91,6 +95,35 @@ class ChromeLabsTestHelper {
 };
 
 }  // namespace
+
+class ChromeLabsBrowserTest : public InProcessBrowserTest {
+ public:
+  ChromeLabsBrowserTest() {
+    std::vector<LabInfo> test_feature_info = {
+        {kFirstTestFeatureId, u"Feature 1", u"Feature description", "",
+         version_info::Channel::STABLE}};
+    helper_ =
+        std::make_unique<ChromeLabsTestHelper>(std::move(test_feature_info));
+  }
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    helper_->PinChromeLabsButton(browser());
+  }
+
+  void ShowBubble() { helper_->ShowChromeLabsBubble(browser()); }
+
+ private:
+  std::unique_ptr<ChromeLabsTestHelper> helper_;
+};
+
+// Asserts the browser process does not crash if the browser window is closed
+// while the labs bubble is open.
+IN_PROC_BROWSER_TEST_F(ChromeLabsBrowserTest, ClosesWithoutCrashing) {
+  ShowBubble();
+  CloseBrowserSynchronously(browser());
+}
 
 class ChromeLabsUiTest : public DialogBrowserTest {
  public:

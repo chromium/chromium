@@ -193,10 +193,12 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
   if (chrome_labs_action_item_.get()) {
     chrome_labs_action_item_.get()->SetIsShowingBubble(false);
 
-    BrowserView::GetBrowserViewForBrowser(browser_)
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
-        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
+    if (BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser_)) {
+      browser_view->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
+    }
   }
 }
 
