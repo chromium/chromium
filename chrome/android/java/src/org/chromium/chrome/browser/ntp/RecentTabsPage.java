@@ -14,10 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -40,6 +40,7 @@ import org.chromium.ui.base.ViewUtils;
  * The native recent tabs page. Lists recently closed tabs, open windows and tabs from the user's
  * synced devices, and snapshot documents sent from Chrome to Mobile in an expandable list view.
  */
+@NullMarked
 public class RecentTabsPage
         implements NativePage,
                 ExpandableListView.OnChildClickListener,
@@ -52,7 +53,7 @@ public class RecentTabsPage
                 BrowserControlsStateProvider.Observer,
                 TouchEnabledDelegate {
     private final Activity mActivity;
-    @Nullable private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ExpandableListView mListView;
     private final String mTitle;
     private final ViewGroup mView;
@@ -72,8 +73,8 @@ public class RecentTabsPage
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
-    private SmoothTransitionDelegate mSmoothTransitionDelegate;
-    private EdgeToEdgePadAdjuster mPadAdjuster;
+    private @Nullable SmoothTransitionDelegate mSmoothTransitionDelegate;
+    private @Nullable EdgeToEdgePadAdjuster mPadAdjuster;
     private boolean mIsTouchEnabled = true;
 
     /**
@@ -194,6 +195,7 @@ public class RecentTabsPage
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         assert !mIsAttachedToWindow : "Destroy called before removed from window";
         mRecentTabsManager.destroy();
@@ -280,7 +282,7 @@ public class RecentTabsPage
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, @Nullable ContextMenuInfo menuInfo) {
         // Would prefer to have this context menu view managed internal to RecentTabsGroupView
         // Unfortunately, setting either onCreateContextMenuListener or onLongClickListener
         // disables the native onClick (expand/collapse) behaviour of the group view.
@@ -291,6 +293,7 @@ public class RecentTabsPage
         // from the user, and then keep a boolean internally to disable click events during a long
         // press.
         menu.clear();
+        if (menuInfo == null) return;
 
         ExpandableListView.ExpandableListContextMenuInfo info =
                 (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
@@ -360,6 +363,8 @@ public class RecentTabsPage
     }
 
     private void updateMargins() {
+        if (mBrowserControlsStateProvider == null) return;
+
         final View recentTabsRoot = mView.findViewById(R.id.recent_tabs_root);
         final int topControlsHeight = mBrowserControlsStateProvider.getTopControlsHeight();
         final int contentOffset = mBrowserControlsStateProvider.getContentOffset();

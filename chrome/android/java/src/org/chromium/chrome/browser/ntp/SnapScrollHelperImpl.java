@@ -4,19 +4,23 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.SnapScrollHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** This class handles snap scroll for the search box on a {@link NewTabPage}. */
+@NullMarked
 public class SnapScrollHelperImpl implements SnapScrollHelper {
     private static final long SNAP_SCROLL_DELAY_MS = 30;
 
@@ -28,7 +32,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     private final int mSearchBoxTransitionStartOffset;
     private final int mSearchBoxTransitionEndOffset;
 
-    private View mView;
+    private @Nullable View mView;
     private boolean mPendingSnapScroll;
     private int mLastScrollY = -1;
 
@@ -62,7 +66,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
      * @param view The view on which this class needs to handle snap scroll.
      */
     @Override
-    public void setView(@NonNull View view) {
+    public void setView(View view) {
         if (mView != null) {
             mPendingSnapScroll = false;
             mLastScrollY = -1;
@@ -75,6 +79,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         @SuppressLint("ClickableViewAccessibility")
         View.OnTouchListener onTouchListener =
                 (v, event) -> {
+                    assumeNonNull(mView);
                     mView.removeCallbacks(mSnapScrollRunnable);
 
                     if (event.getActionMasked() == MotionEvent.ACTION_CANCEL
@@ -97,6 +102,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
 
         mLastScrollY = scrollY;
         if (mPendingSnapScroll) {
+            assumeNonNull(mView);
             mView.removeCallbacks(mSnapScrollRunnable);
             mView.postDelayed(mSnapScrollRunnable, SNAP_SCROLL_DELAY_MS);
         }
@@ -108,10 +114,12 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
      * update the search box position if necessary. This is used whenever {@link #handleScroll()} is
      * not reliable (e.g. when an item is dismissed, the items at the top of the viewport might not
      * move, and onScrolled() might not be called).
+     *
      * @param update Whether a new callback to update search box should be posted to {@link #mView}.
      */
     @Override
     public void resetSearchBoxOnScroll(boolean update) {
+        assumeNonNull(mView);
         mView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
         if (update) mView.post(mUpdateSearchBoxOnScrollRunnable);
     }

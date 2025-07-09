@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -27,6 +30,8 @@ import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -54,9 +59,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Row adapter for presenting recently closed tabs, synced tabs from other devices, the sync or
- * sign in promo, and currently open tabs (only in document mode) in a grouped list view.
+ * Row adapter for presenting recently closed tabs, synced tabs from other devices, the sync or sign
+ * in promo, and currently open tabs (only in document mode) in a grouped list view.
  */
+@NullMarked
 public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private static final int MAX_NUM_FAVICONS_TO_CACHE = 128;
 
@@ -159,7 +165,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
          * @param childPosition The position for which to return the child.
          * @return The child at the position childPosition.
          */
-        Object getChild(int childPosition) {
+        @Nullable Object getChild(int childPosition) {
             return null;
         }
 
@@ -180,12 +186,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 LayoutInflater inflater = LayoutInflater.from(mActivity);
                 childView = inflater.inflate(R.layout.recent_tabs_list_item, parent, false);
 
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.iconView = childView.findViewById(R.id.row_icon);
-                viewHolder.textView = childView.findViewById(R.id.title_row);
-                viewHolder.domainView = childView.findViewById(R.id.domain_row);
-                viewHolder.imageView = childView.findViewById(R.id.recent_tabs_favicon);
-                viewHolder.itemLayout = childView.findViewById(R.id.recent_tabs_list_item_layout);
+                ViewHolder viewHolder = new ViewHolder(childView);
                 childView.setTag(viewHolder);
             }
 
@@ -270,7 +271,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     /** A group containing all the tabs associated with a foreign session from a synced device. */
     class ForeignSessionGroup extends Group {
         private final ForeignSession mForeignSession;
-        private ForeignSessionTab mLongPressedRow;
+        private @Nullable ForeignSessionTab mLongPressedRow;
 
         ForeignSessionGroup(ForeignSession foreignSession) {
             mForeignSession = foreignSession;
@@ -296,7 +297,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public ForeignSessionTab getChild(int childPosition) {
+        public @Nullable ForeignSessionTab getChild(int childPosition) {
             for (ForeignSessionWindow window : mForeignSession.windows) {
                 if (childPosition < window.tabs.size()) {
                     return window.tabs.get(childPosition);
@@ -304,12 +305,12 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 childPosition -= window.tabs.size();
             }
             assert false;
-            return null;
+            return assertNonNull(null);
         }
 
         @Override
         public void configureChildView(int childPosition, ViewHolder viewHolder) {
-            ForeignSessionTab sessionTab = getChild(childPosition);
+            ForeignSessionTab sessionTab = assumeNonNull(getChild(childPosition));
             String url = sessionTab.url.getSpec();
             String text = TextUtils.isEmpty(sessionTab.title) ? url : sessionTab.title;
             viewHolder.textView.setText(text);
@@ -359,6 +360,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     OtherSessionsActions.LINK_CLICKED,
                     OtherSessionsActions.NUM_ENTRIES);
             ForeignSessionTab foreignSessionTab = getChild(childPosition);
+            assumeNonNull(foreignSessionTab);
             mRecentTabsManager.openForeignSessionTab(
                     mForeignSession, foreignSessionTab, WindowOpenDisposition.CURRENT_TAB);
             return true;
@@ -399,6 +401,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         @Override
         public void openItem(int windowDisposition) {
+            assumeNonNull(mLongPressedRow);
             mRecentTabsManager.openForeignSessionTab(
                     mForeignSession, mLongPressedRow, windowDisposition);
         }
@@ -546,7 +549,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     class RecentlyClosedTabsGroup extends Group {
         @StringRes static final int ID_OPEN_IN_NEW_TAB = R.string.contextmenu_open_in_new_tab;
         @StringRes static final int ID_REMOVE_ALL = R.string.remove_all;
-        private RecentlyClosedEntry mLongPressedRow;
+        private @Nullable RecentlyClosedEntry mLongPressedRow;
 
         @Override
         public @GroupType int getGroupType() {
@@ -635,7 +638,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public RecentlyClosedEntry getChild(int childPosition) {
+        public @Nullable RecentlyClosedEntry getChild(int childPosition) {
             if (isHistoryLink(childPosition)) return null;
             return mRecentTabsManager.getRecentlyClosedEntries().get(childPosition);
         }
@@ -669,7 +672,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.itemLayout.setMinimumHeight(
                     res.getDimensionPixelSize(
                             R.dimen.recent_tabs_foreign_session_group_item_height));
-            RecentlyClosedEntry entry = getChild(childPosition);
+            RecentlyClosedEntry entry = assumeNonNull(getChild(childPosition));
             if (!(entry instanceof RecentlyClosedTab)) {
                 int tabCount = 0;
                 if (entry instanceof RecentlyClosedGroup) {
@@ -746,6 +749,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 return true;
             }
             RecentlyClosedEntry entry = getChild(childPosition);
+            assumeNonNull(entry);
             if (entry instanceof RecentlyClosedTab) {
                 mRecentTabsManager.openRecentlyClosedTab(
                         (RecentlyClosedTab) entry, WindowOpenDisposition.CURRENT_TAB);
@@ -768,6 +772,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         @Override
         public void openItem(int windowDisposition) {
+            assumeNonNull(mLongPressedRow);
             mRecentTabsManager.openRecentlyClosedTab(
                     (RecentlyClosedTab) mLongPressedRow, windowDisposition);
         }
@@ -889,12 +894,20 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * favicon image callback; so that we can make sure we load the correct favicon.
      */
     private static class ViewHolder {
-        public ImageView iconView;
-        public TextView textView;
-        public TextView domainView;
-        public ImageView imageView;
-        public View itemLayout;
-        public FaviconImageCallback imageCallback;
+        public final ImageView iconView;
+        public final TextView textView;
+        public final TextView domainView;
+        public final ImageView imageView;
+        public final View itemLayout;
+        public @Nullable FaviconImageCallback imageCallback;
+
+        public ViewHolder(View view) {
+            iconView = view.findViewById(R.id.row_icon);
+            textView = view.findViewById(R.id.title_row);
+            domainView = view.findViewById(R.id.domain_row);
+            imageView = view.findViewById(R.id.recent_tabs_favicon);
+            itemLayout = view.findViewById(R.id.recent_tabs_list_item_layout);
+        }
     }
 
     private void loadTabCount(final ViewHolder viewHolder, int tabCount) {
@@ -915,16 +928,18 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private void loadFavicon(
             final ViewHolder viewHolder, final GURL url, @FaviconLocality int locality) {
         Drawable image;
+        ImageView imageView = viewHolder.imageView;
         if (url == null) {
             // URL is null for print jobs, for example.
             image = mDefaultFaviconHelper.getDefaultFaviconDrawable(mActivity, url, true);
         } else {
-            image = mFaviconCaches.get(locality).getFaviconImage(url);
+            image = assumeNonNull(mFaviconCaches.get(locality)).getFaviconImage(url);
             if (image == null) {
                 FaviconImageCallback imageCallback =
                         new FaviconImageCallback() {
                             @Override
-                            public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
+                            public void onFaviconAvailable(
+                                    @Nullable Bitmap bitmap, @Nullable GURL iconUrl) {
                                 if (this != viewHolder.imageCallback) return;
                                 Drawable faviconDrawable =
                                         FaviconUtils.getIconDrawableWithFilter(
@@ -935,7 +950,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                                 mActivity,
                                                 mFaviconSize);
                                 mFaviconCaches.get(locality).putFaviconImage(url, faviconDrawable);
-                                viewHolder.imageView.setImageDrawable(faviconDrawable);
+                                imageView.setImageDrawable(faviconDrawable);
                             }
                         };
                 viewHolder.imageCallback = imageCallback;
@@ -952,7 +967,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 image = mDefaultFaviconHelper.getDefaultFaviconDrawable(mActivity, url, true);
             }
         }
-        viewHolder.imageView.setImageDrawable(image);
+        imageView.setImageDrawable(image);
     }
 
     @Override
@@ -1000,7 +1015,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
+    public @Nullable Object getChild(int groupPosition, int childPosition) {
         return getGroup(groupPosition).getChild(childPosition);
     }
 

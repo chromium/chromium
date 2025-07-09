@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.view.ViewGroup;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
@@ -45,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Provides the domain logic and data for RecentTabsPage and RecentTabsRowAdapter. */
+@NullMarked
 public class RecentTabsManager
         implements SyncService.SyncStateChangedListener,
                 SignInStateObserver,
@@ -58,15 +63,15 @@ public class RecentTabsManager
 
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT = 5;
 
-    private static RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
+    private static @Nullable RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
 
     private final Profile mProfile;
     private final Tab mActiveTab;
     private final TabModelSelector mTabModelSelector;
     private final Runnable mShowHistoryManager;
-    private final SigninPromoCoordinator mSigninPromoCoordinator;
+    private final @Nullable SigninPromoCoordinator mSigninPromoCoordinator;
 
-    private TabModel mTabModel;
+    private @Nullable TabModel mTabModel;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
     private List<ForeignSession> mForeignSessions;
@@ -74,8 +79,8 @@ public class RecentTabsManager
     private RecentTabsPagePrefs mPrefs;
     private RecentlyClosedTabManager mRecentlyClosedTabManager;
     private SigninManager mSignInManager;
-    private UpdatedCallback mUpdatedCallback;
-    private View mSigninPromoView;
+    private @Nullable UpdatedCallback mUpdatedCallback;
+    private @Nullable View mSigninPromoView;
     private boolean mShouldShowPromo;
     private boolean mIsDestroyed;
 
@@ -119,7 +124,7 @@ public class RecentTabsManager
                 sRecentlyClosedTabManagerForTests != null
                         ? sRecentlyClosedTabManagerForTests
                         : new RecentlyClosedBridge(profile, tabModelSelector);
-        mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mSignInManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         AccountPickerBottomSheetStrings bottomSheetStrings =
@@ -145,7 +150,7 @@ public class RecentTabsManager
         } else {
             mSigninPromoCoordinator = null;
         }
-        mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
         updateRecentlyClosedEntries();
@@ -195,6 +200,7 @@ public class RecentTabsManager
     /**
      * Should be called when this object is no longer needed. Performs necessary listener tear down.
      */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mIsDestroyed = true;
 
@@ -232,7 +238,9 @@ public class RecentTabsManager
 
     private void updateRecentlyClosedEntries() {
         mRecentlyClosedEntries =
-                mRecentlyClosedTabManager.getRecentlyClosedEntries(RECENTLY_CLOSED_MAX_ENTRY_COUNT);
+                assumeNonNull(
+                        mRecentlyClosedTabManager.getRecentlyClosedEntries(
+                                RECENTLY_CLOSED_MAX_ENTRY_COUNT));
         for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
             if (entry instanceof RecentlyClosedTab
                     && !mTabSessionIdsRestored.containsKey(entry.getSessionId())) {
@@ -454,6 +462,7 @@ public class RecentTabsManager
 
     private boolean calculateShouldShowPromo() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            assumeNonNull(mSigninPromoCoordinator);
             return mSigninPromoCoordinator.canShowPromo();
         } else {
             return mSyncPromoController.canShowSyncPromo();
@@ -481,6 +490,7 @@ public class RecentTabsManager
 
     View getSigninPromoView(ViewGroup parent) {
         if (mSigninPromoView == null) {
+            assumeNonNull(mSigninPromoCoordinator);
             mSigninPromoView = mSigninPromoCoordinator.buildPromoView(parent);
             mSigninPromoCoordinator.setView(mSigninPromoView);
         }
@@ -550,7 +560,8 @@ public class RecentTabsManager
         return mTabModel;
     }
 
-    public static void setRecentlyClosedTabManagerForTests(RecentlyClosedTabManager manager) {
+    public static void setRecentlyClosedTabManagerForTests(
+            @Nullable RecentlyClosedTabManager manager) {
         sRecentlyClosedTabManagerForTests = manager;
         ResettersForTesting.register(() -> sRecentlyClosedTabManagerForTests = null);
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.LayoutInflater;
@@ -12,6 +14,8 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,10 +34,11 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Provides functionality when the user interacts with the Incognito NTP. */
+@NullMarked
 public class IncognitoNewTabPage extends BasicNativePage
         implements InvalidationAwareThumbnailProvider {
 
-    private static IncognitoNewTabPageManager sIncognitoNtpManagerForTesting;
+    private static @Nullable IncognitoNewTabPageManager sIncognitoNtpManagerForTesting;
     private final Activity mActivity;
     private final Profile mProfile;
     private final int mIncognitoNtpBackgroundColor;
@@ -44,9 +49,9 @@ public class IncognitoNewTabPage extends BasicNativePage
     private boolean mIsLoaded;
 
     private final IncognitoNewTabPageManager mIncognitoNewTabPageManager;
-    private IncognitoCookieControlsManager mCookieControlsManager;
-    private IncognitoCookieControlsManager.Observer mCookieControlsObserver;
-    private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable IncognitoCookieControlsManager mCookieControlsManager;
+    private IncognitoCookieControlsManager.@Nullable Observer mCookieControlsObserver;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -113,6 +118,7 @@ public class IncognitoNewTabPage extends BasicNativePage
     // NativePage overrides
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         assert !ViewCompat.isAttachedToWindow(getView())
                 : "Destroy called before removed from window";
@@ -205,6 +211,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
             @Override
             public boolean shouldCaptureThumbnail() {
+                assumeNonNull(mCookieControlsManager);
                 return mCookieControlsManager.shouldCaptureThumbnail();
             }
 
@@ -222,7 +229,9 @@ public class IncognitoNewTabPage extends BasicNativePage
             @Override
             public void destroy() {
                 if (mCookieControlsManager != null) {
-                    mCookieControlsManager.removeObserver(mCookieControlsObserver);
+                    if (mCookieControlsObserver != null) {
+                        mCookieControlsManager.removeObserver(mCookieControlsObserver);
+                    }
                     mCookieControlsManager.destroy();
                 }
             }
@@ -235,7 +244,8 @@ public class IncognitoNewTabPage extends BasicNativePage
     }
 
     /** Set a stubbed {@link IncognitoNewTabPageManager} for testing. */
-    public static void setIncognitoNtpManagerForTesting(IncognitoNewTabPageManager manager) {
+    public static void setIncognitoNtpManagerForTesting(
+            @Nullable IncognitoNewTabPageManager manager) {
         sIncognitoNtpManagerForTesting = manager;
         ResettersForTesting.register(() -> sIncognitoNtpManagerForTesting = null);
     }

@@ -18,10 +18,12 @@ public class HomeSurfaceTracker {
 
     /**
      * Updates the Tab of the home surface NTP and the last active Tab it tracks.
+     *
      * @param homeSurfaceTab The Tab of the home surface NTP
      * @param tabToTrack The last active Tab that the home surface NTP tracks.
      */
-    public void updateHomeSurfaceAndTrackingTabs(Tab homeSurfaceTab, Tab tabToTrack) {
+    public void updateHomeSurfaceAndTrackingTabs(
+            @Nullable Tab homeSurfaceTab, @Nullable Tab tabToTrack) {
         mHomeSurfaceTab = homeSurfaceTab;
         mLastActiveTabToTrack = tabToTrack;
     }

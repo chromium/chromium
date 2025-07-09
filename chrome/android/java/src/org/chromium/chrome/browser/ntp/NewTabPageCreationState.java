@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** UserData that tracks the creation state of a new tab page. */
+@NullMarked
 public class NewTabPageCreationState implements UserData {
-    private static NewTabPageCreationState sInstanceForTesting;
+    private static @Nullable NewTabPageCreationState sInstanceForTesting;
 
     private boolean mIsNewlyCreated;
     private boolean mNtpLoaded;
@@ -60,11 +64,11 @@ public class NewTabPageCreationState implements UserData {
     private void maybeFocusOmnibox() {
         if (mIsNewlyCreated && mNtpLoaded) {
             mIsNewlyCreated = false;
-            mNewTabPageManager.focusSearchBox(false, null);
+            assumeNonNull(mNewTabPageManager).focusSearchBox(false, null);
         }
     }
 
-    static void setInstanceForTesting(NewTabPageCreationState instance) {
+    static void setInstanceForTesting(@Nullable NewTabPageCreationState instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }

@@ -81,7 +81,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private @Nullable ImageFetcher mImageFetcher;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
-    private final LogoCoordinator.VisibilityObserver mVisibilityObserver;
+    private final LogoCoordinator.@Nullable VisibilityObserver mVisibilityObserver;
     private final CachedTintedBitmap mDefaultGoogleLogo;
     private boolean mShouldShowLogo;
     private boolean mIsLoadPending;
@@ -109,13 +109,15 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             Callback<LoadUrlParams> logoClickedCallback,
             PropertyModel logoModel,
             Callback<Logo> onLogoAvailableCallback,
-            VisibilityObserver visibilityObserver,
+            @Nullable VisibilityObserver visibilityObserver,
             CachedTintedBitmap defaultGoogleLogo) {
         mContext = context;
         mLogoModel = logoModel;
         mLogoClickedCallback = logoClickedCallback;
         mVisibilityObserver = visibilityObserver;
-        mVisibilityObservers.addObserver(mVisibilityObserver);
+        if (mVisibilityObserver != null) {
+            mVisibilityObservers.addObserver(mVisibilityObserver);
+        }
         mDefaultGoogleLogo = defaultGoogleLogo;
         mLogoModel.set(LogoProperties.LOGO_AVAILABLE_CALLBACK, onLogoAvailableCallback);
     }

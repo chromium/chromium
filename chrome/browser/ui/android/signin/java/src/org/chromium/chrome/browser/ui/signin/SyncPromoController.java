@@ -353,6 +353,7 @@ public class SyncPromoController {
 
     /**
      * Sets up the sync promo view.
+     *
      * @param profileDataCache The {@link ProfileDataCache} that stores profile data.
      * @param view The {@link PersonalizedSigninPromoView} that should be set up.
      * @param listener The {@link SyncPromoController.OnDismissListener} to be set to the view.
@@ -360,7 +361,7 @@ public class SyncPromoController {
     public void setUpSyncPromoView(
             ProfileDataCache profileDataCache,
             PersonalizedSigninPromoView view,
-            SyncPromoController.OnDismissListener listener) {
+            SyncPromoController.@Nullable OnDismissListener listener) {
         final IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);

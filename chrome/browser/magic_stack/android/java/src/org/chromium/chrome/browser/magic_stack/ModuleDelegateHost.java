@@ -16,7 +16,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public interface ModuleDelegateHost {
     /** Gets the starting position of the context menu which is shown by long clicking a module. */
-    Point getContextMenuStartPoint();
+    @Nullable Point getContextMenuStartPoint();
 
     /** Gets the instance of {@link UiConfig} of the host surface. */
     @Nullable UiConfig getUiConfig();

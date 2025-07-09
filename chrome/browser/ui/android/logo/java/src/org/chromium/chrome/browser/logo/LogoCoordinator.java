@@ -9,6 +9,7 @@ import android.view.View.MeasureSpec;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -45,7 +46,7 @@ public class LogoCoordinator {
             Callback<LoadUrlParams> logoClickedCallback,
             LogoView logoView,
             Callback<Logo> onLogoAvailableCallback,
-            VisibilityObserver visibilityObserver) {
+            @Nullable VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);

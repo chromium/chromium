@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -13,9 +15,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Helper class to track creating new tabs with a NewTabPage. */
+@NullMarked
 public class NewTabPageCreationTracker {
     private final TabModelSelector mTabModelSelector;
-    private TabCreationRecorder mTabCreationRecorder;
+    private @Nullable TabCreationRecorder mTabCreationRecorder;
 
     /**
      * Constructor.

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -21,7 +23,6 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -41,6 +42,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
@@ -121,6 +125,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** Provides functionality when the user interacts with the NTP. */
+@NullMarked
 public class NewTabPage
         implements NativePage,
                 InvalidationAwareThumbnailProvider,
@@ -156,13 +161,13 @@ public class NewTabPage
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
     private NewTabPageLayout mNewTabPageLayout;
-    private TabObserver mTabObserver;
-    private LifecycleObserver mLifecycleObserver;
+    private @Nullable TabObserver mTabObserver;
+    private @Nullable LifecycleObserver mLifecycleObserver;
     protected boolean mSearchProviderHasLogo;
     protected boolean mIsDefaultSearchEngineGoogle;
 
-    protected OmniboxStub mOmniboxStub;
-    private VoiceRecognitionHandler mVoiceRecognitionHandler;
+    protected @Nullable OmniboxStub mOmniboxStub;
+    private @Nullable VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     // The timestamp at which the constructor was called.
     protected final long mConstructedTimeNs;
@@ -183,22 +188,22 @@ public class NewTabPage
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
-    private SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
-    private ViewGroup mSingleTabCardContainer;
-    @Nullable private HomeModulesCoordinator mHomeModulesCoordinator;
-    @Nullable private ViewGroup mHomeModulesContainer;
+    private @Nullable SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
+    private @Nullable ViewGroup mSingleTabCardContainer;
+    private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
+    private @Nullable ViewGroup mHomeModulesContainer;
     private final ObservableSupplierImpl<Tab> mMostRecentTabSupplier =
             new ObservableSupplierImpl<>();
-    @Nullable private Point mContextMenuStartPosition;
+    private @Nullable Point mContextMenuStartPosition;
 
     private final Activity mActivity;
-    @Nullable private final HomeSurfaceTracker mHomeSurfaceTracker;
+    private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsInNightMode;
-    @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
+    private final @Nullable OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
-    @Nullable private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
-    private NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
+    private @Nullable SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
+    private @Nullable NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
 
     private final CallbackController mCallbackController = new CallbackController();
 
@@ -246,7 +251,8 @@ public class NewTabPage
                         long mStart;
 
                         @Override
-                        public void onResult(Integer result) {
+                        public void onResult(@Nullable Integer result) {
+                            assumeNonNull(result);
                             if (result == RestoringState.WAITING_TO_RESTORE) {
                                 mStart = TimeUtils.currentTimeMillis();
                             } else if (result == RestoringState.RESTORED) {
@@ -373,7 +379,7 @@ public class NewTabPage
         }
 
         @Override
-        public void focusSearchBox(boolean beginVoiceSearch, String pastedText) {
+        public void focusSearchBox(boolean beginVoiceSearch, @Nullable String pastedText) {
             if (mIsDestroyed) return;
             FeedReliabilityLogger feedReliabilityLogger =
                     mFeedSurfaceProvider.getReliabilityLogger();
@@ -404,9 +410,10 @@ public class NewTabPage
             return getNewTabPageForCurrentTab() == NewTabPage.this;
         }
 
-        private NewTabPage getNewTabPageForCurrentTab() {
+        private @Nullable NewTabPage getNewTabPageForCurrentTab() {
             Tab currentTab = mActivityTabProvider.get();
-            NativePage nativePage = currentTab != null ? currentTab.getNativePage() : null;
+            if (currentTab == null) return null;
+            NativePage nativePage = currentTab.getNativePage();
             return (nativePage instanceof NewTabPage) ? (NewTabPage) nativePage : null;
         }
 
@@ -650,7 +657,7 @@ public class NewTabPage
                 windowAndroid,
                 mIsTablet,
                 mTabStripHeightSupplier,
-                () -> mTemplateUrlService.getComposeplateUrl());
+                () -> assumeNonNull(mTemplateUrlService.getComposeplateUrl()));
 
         initializeHomeModules();
 
@@ -672,6 +679,7 @@ public class NewTabPage
      * @param edgeToEdgeControllerSupplier The supplier to {@link EdgeToEdgeController}.
      * @param startupMetricsTracker Used to record NTP startup metric.
      */
+    @EnsuresNonNull({"mNewTabPageLayout", "mFeedSurfaceProvider"})
     protected void initializeMainView(
             Activity activity,
             WindowAndroid windowAndroid,
@@ -747,6 +755,7 @@ public class NewTabPage
             mContextMenuStartPosition =
                     ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
             if (isTrackingTabReady) {
+                assumeNonNull(mHomeSurfaceTracker);
                 // Case 2) on home surface NTP via back operations.
                 showMagicStack(mHomeSurfaceTracker.getLastActiveTabToTrack());
             } else if (mTab.getLaunchType() != TabLaunchType.FROM_STARTUP) {
@@ -754,6 +763,7 @@ public class NewTabPage
                 showMagicStack(null);
             }
         } else if (isTrackingTabReady) { // On NTP home surface with magic stack disabled.
+            assumeNonNull(mHomeSurfaceTracker);
             showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
         }
 
@@ -1012,7 +1022,8 @@ public class NewTabPage
         if (tab.getWebContents() == null) return "";
         NavigationController controller = tab.getWebContents().getNavigationController();
         int index = controller.getLastCommittedEntryIndex();
-        return controller.getEntryExtraData(index, key);
+        String value = controller.getEntryExtraData(index, key);
+        return value != null ? value : "";
     }
 
     /**
@@ -1032,6 +1043,7 @@ public class NewTabPage
     // NativePage overrides
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         assert !mIsDestroyed;
         assert !ViewCompat.isAttachedToWindow(getView())
@@ -1173,7 +1185,7 @@ public class NewTabPage
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return !(mTab != null && DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()))
+        return !(mTab != null && DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroidChecked()))
                 && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
 
@@ -1194,7 +1206,7 @@ public class NewTabPage
                 .getActionDelegateForTesting(); // IN-TEST
     }
 
-    TabObserver getTabObserverForTesting() {
+    @Nullable TabObserver getTabObserverForTesting() {
         return mTabObserver;
     }
 
@@ -1212,12 +1224,10 @@ public class NewTabPage
     }
 
     /**
-     * Shows the home surface UI on this NTP.
-     * TODO(crbug.com/40263286): Investigate better solution to show Home surface UI on NTP upon
-     * creation.
-     * to show Home surface UI on NTP upon creation.
+     * Shows the home surface UI on this NTP. TODO(crbug.com/40263286): Investigate better solution
+     * to show Home surface UI on NTP upon creation. to show Home surface UI on NTP upon creation.
      */
-    public void showHomeSurfaceUi(Tab mostRecentTab) {
+    public void showHomeSurfaceUi(@Nullable Tab mostRecentTab) {
         if (mSingleTabSwitcherCoordinator == null) {
             initializeSingleTabCard(mostRecentTab);
         } else {
@@ -1230,8 +1240,8 @@ public class NewTabPage
      *
      * @param mostRecentTab The last shown Tab if exists. It is non null for NTP home surface only.
      */
-    public void showMagicStack(Tab mostRecentTab) {
-        if (mModuleRegistrySupplier.get() == null) {
+    public void showMagicStack(@Nullable Tab mostRecentTab) {
+        if (mModuleRegistrySupplier == null || mModuleRegistrySupplier.get() == null) {
             return;
         }
 
@@ -1246,7 +1256,7 @@ public class NewTabPage
     }
 
     /** Show the module when the current new tab page is been used as the home surface. */
-    private void initializeSingleTabCard(Tab mostRecentTab) {
+    private void initializeSingleTabCard(@Nullable Tab mostRecentTab) {
         if (mostRecentTab == null || UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
             return;
         }
@@ -1278,6 +1288,7 @@ public class NewTabPage
      * Initializes the magic stack to show home modules on the current new tab page which is used as
      * the home surface.
      */
+    @EnsuresNonNull({"mHomeModulesContainer", "mHomeModulesCoordinator"})
     private void initializeMagicStack() {
         mHomeModulesContainer =
                 (ViewGroup)
@@ -1294,10 +1305,11 @@ public class NewTabPage
                         mNewTabPageLayout,
                         HomeModulesConfigManager.getInstance(),
                         profileSupplier,
-                        mModuleRegistrySupplier.get());
+                        assumeNonNull(mModuleRegistrySupplier).get());
     }
 
     private void onMagicStackShown(boolean isVisible) {
+        assumeNonNull(mHomeModulesContainer);
         mHomeModulesContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -1339,9 +1351,11 @@ public class NewTabPage
     /** Destroy the single tab card on the {@link NewTabPageLayout}. */
     @VisibleForTesting
     void destroySingleTabCard() {
-        mSingleTabCardContainer.removeAllViews();
-        mSingleTabSwitcherCoordinator.hide();
-        mSingleTabSwitcherCoordinator.destroy();
+        if (mSingleTabCardContainer != null) mSingleTabCardContainer.removeAllViews();
+        if (mSingleTabSwitcherCoordinator != null) {
+            mSingleTabSwitcherCoordinator.hide();
+            mSingleTabSwitcherCoordinator.destroy();
+        }
         mSingleTabSwitcherCoordinator = null;
     }
 
@@ -1350,12 +1364,12 @@ public class NewTabPage
     }
 
     @Override
-    public Point getContextMenuStartPoint() {
+    public @Nullable Point getContextMenuStartPoint() {
         return mContextMenuStartPosition;
     }
 
     @Override
-    public UiConfig getUiConfig() {
+    public @Nullable UiConfig getUiConfig() {
         return mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null;
     }
 
@@ -1428,7 +1442,7 @@ public class NewTabPage
         return mSmoothTransitionDelegate;
     }
 
-    public SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
+    public @Nullable SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
         return mSmoothTransitionDelegate;
     }
 }

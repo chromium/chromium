@@ -142,7 +142,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
      *
      * @param mostRecentTab The most recent Tab to track.
      */
-    public void show(Tab mostRecentTab) {
+    public void show(@Nullable Tab mostRecentTab) {
         show(true, mostRecentTab);
     }
 
