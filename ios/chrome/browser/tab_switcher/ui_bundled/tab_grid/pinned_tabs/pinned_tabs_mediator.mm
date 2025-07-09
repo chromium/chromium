@@ -106,8 +106,6 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
         std::make_unique<base::ScopedMultiSourceObservation<
             web::WebState, web::WebStateObserver>>(
             _webStateObserverBridge.get());
-    _tabImagesConfigurator =
-        std::make_unique<TabSnapshotAndFaviconConfigurator>(nullptr);
   }
   return self;
 }
@@ -120,14 +118,20 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
   _browser = browser;
 
-  _webStateList = browser ? browser->GetWebStateList() : nullptr;
-  _URLLoader = browser ? UrlLoadingBrowserAgent::FromBrowser(browser) : nullptr;
+  if (browser) {
+    _webStateList = browser->GetWebStateList();
+    _URLLoader = UrlLoadingBrowserAgent::FromBrowser(browser);
+    _tabImagesConfigurator =
+        std::make_unique<TabSnapshotAndFaviconConfigurator>(nullptr);
 
-  if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
 
     [self addWebStateObservations];
     [self populateConsumerItems];
+  } else {
+    _webStateList = nullptr;
+    _URLLoader = nullptr;
+    _tabImagesConfigurator.reset();
   }
 }
 
