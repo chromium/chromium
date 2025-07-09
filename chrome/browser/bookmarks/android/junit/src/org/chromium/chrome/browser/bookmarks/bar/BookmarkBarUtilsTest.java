@@ -13,7 +13,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -249,20 +248,6 @@ public class BookmarkBarUtilsTest {
 
         BookmarkBarUtils.toggleSettingEnabled(mProfile);
         assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
-    }
-
-    @Test
-    @SmallTest
-    public void testAddAndRemoveSettingObserver() {
-        verifyNoMoreInteractions(mPrefChangeRegistrar);
-
-        BookmarkBarUtils.addSettingObserver(mPrefChangeRegistrar, mPrefObserver);
-        verify(mPrefChangeRegistrar).addObserver(Pref.SHOW_BOOKMARK_BAR, mPrefObserver);
-        verifyNoMoreInteractions(mPrefChangeRegistrar);
-
-        BookmarkBarUtils.removeSettingObservers(mPrefChangeRegistrar);
-        verify(mPrefChangeRegistrar).removeObserver(Pref.SHOW_BOOKMARK_BAR);
-        verifyNoMoreInteractions(mPrefChangeRegistrar);
     }
 
     @Test

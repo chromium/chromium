@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -142,31 +141,6 @@ public class BookmarkBarUtils {
         final var prefService = getPrefService(profile);
         prefService.setBoolean(
                 Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
-    }
-
-    /**
-     * Registers an observer to be notified of changes to the bookmark bar user setting.
-     *
-     * @param registrar The registrar with which to register the observer.
-     * @param observer The observer to be notified of changes.
-     */
-    public static void addSettingObserver(PrefChangeRegistrar registrar, PrefObserver observer) {
-        registrar.addObserver(Pref.SHOW_BOOKMARK_BAR, observer);
-        if (sSettingObserverCacheForTesting != null) {
-            sSettingObserverCacheForTesting.add(observer);
-        }
-    }
-
-    /**
-     * Removes all observers from being notified of changes to the bookmark bar user setting.
-     *
-     * @param registrar The registrar from which to unregistar all observers.
-     */
-    public static void removeSettingObservers(PrefChangeRegistrar registrar) {
-        registrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
-        if (sSettingObserverCacheForTesting != null) {
-            sSettingObserverCacheForTesting.clear();
-        }
     }
 
     /**
