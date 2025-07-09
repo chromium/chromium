@@ -1827,21 +1827,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             viewStub.setInflatedId(R.id.bookmark_bar);
             parent.addView(viewStub, index, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
-
-        updateTopControlsHeight();
     }
 
     private void updateBookmarkBarIfNecessary(boolean visible) {
         if (visible) {
-            // We create the BookmarkBar, but we do not update the Top Controls height here since
-            // the view's height requires a layout pass to be correct (until then it will return the
-            // intrinsic height, and being a LinearLayout inside a WRAP_CONTENT ViewStub, this will
-            // be 0). The BookmarkBarCoordinator adds a LayoutChangeListener to the view; during
-            // onLayoutChange we will have the correct height and update the top controls then.
             createBookmarkBarIfNecessary();
         } else {
             destroyBookmarkBarIfNecessary();
         }
+        updateTopControlsHeight();
     }
 
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
