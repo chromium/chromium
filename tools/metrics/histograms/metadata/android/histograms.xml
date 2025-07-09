@@ -1199,6 +1199,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessBinding.BinderIPC.Count" units="calls"
+    expires_after="2026-01-04">
+  <owner>kawasin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the number of BindService.doBindService() calls. This is emitted
+    every 5 minutes on Chrome on Android while in the foreground.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.TotalConnections"
     units="connections" expires_after="2026-01-04">
   <owner>ckitagawa@chromium.org</owner>

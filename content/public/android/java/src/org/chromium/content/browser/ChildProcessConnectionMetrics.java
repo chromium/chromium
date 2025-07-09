@@ -11,6 +11,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.process_launcher.BindService;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -43,6 +44,7 @@ public class ChildProcessConnectionMetrics {
     private final Set<ChildProcessConnection> mConnections = new ArraySet<>();
     private final Random mRandom = new Random();
     private final Runnable mEmitMetricsRunnable;
+    private final Runnable mEmitBinderIpcCountRunnable;
 
     @VisibleForTesting
     ChildProcessConnectionMetrics() {
@@ -51,6 +53,11 @@ public class ChildProcessConnectionMetrics {
                     emitMetrics();
                     postEmitMetrics(REGULAR_EMISSION_DELAY_MS);
                 };
+        mEmitBinderIpcCountRunnable =
+                () -> {
+                    emitBinderIpcCount();
+                    postEmitBinderIpcCount();
+                };
     }
 
     public static ChildProcessConnectionMetrics getInstance() {
@@ -58,6 +65,7 @@ public class ChildProcessConnectionMetrics {
         if (sInstance == null) {
             sInstance = new ChildProcessConnectionMetrics();
             sInstance.registerActivityStateListenerAndStartEmitting();
+            BindService.setEnableCounting(true);
         }
         return sInstance;
     }
@@ -90,9 +98,17 @@ public class ChildProcessConnectionMetrics {
         LauncherThread.postDelayed(mEmitMetricsRunnable, getTimeDelayMs(meanDelayMs));
     }
 
+    private void postEmitBinderIpcCount() {
+        // Unlike emitMetrics(), which takes snapshots of the connections and is valid whenever it
+        // is taken, emitBinderIpcCount() need to be emitted in every fixed duration because it
+        // counts the number of IPC calls during the fixed duration.
+        LauncherThread.postDelayed(mEmitBinderIpcCountRunnable, REGULAR_EMISSION_DELAY_MS);
+    }
+
     private void startEmitting() {
         assert ThreadUtils.runningOnUiThread();
         postEmitMetrics(INITIAL_EMISSION_DELAY_MS);
+        postEmitBinderIpcCount();
     }
 
     private void cancelEmitting() {
@@ -100,6 +116,7 @@ public class ChildProcessConnectionMetrics {
         LauncherThread.post(
                 () -> {
                     LauncherThread.removeCallbacks(mEmitMetricsRunnable);
+                    LauncherThread.removeCallbacks(mEmitBinderIpcCountRunnable);
                 });
     }
 
@@ -225,5 +242,12 @@ public class ChildProcessConnectionMetrics {
                 "Android.ChildProcessBinding.ContentWaivedConnections", contentWaivedBindingCount);
         RecordHistogram.recordCount100Histogram(
                 "Android.ChildProcessBinding.WaivableConnections", waivableBindingCount);
+    }
+
+    private void emitBinderIpcCount() {
+        assert LauncherThread.runningOnLauncherThread();
+        int bindServiceCount = BindService.getAndResetBindServiceCount();
+        RecordHistogram.recordCount100000Histogram(
+                "Android.ChildProcessBinding.BinderIPC.Count", bindServiceCount);
     }
 }
