@@ -2403,6 +2403,7 @@ static void RecordUsageAndDeprecationsOneSelector(
     const CSSParserContext* context,
     bool* has_visited_pseudo) {
   std::optional<WebFeature> feature;
+  std::optional<WebDXFeature> webdx_feature;
   switch (selector->GetPseudoType()) {
     case CSSSelector::kPseudoAny:
       feature = WebFeature::kCSSSelectorPseudoAny;
@@ -2501,6 +2502,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoNot:
       feature = WebFeature::kCSSSelectorPseudoNot;
       break;
+    case CSSSelector::kPseudoAutofill:
+      webdx_feature = WebDXFeature::kAutofill;
+      break;
     default:
       break;
   }
@@ -2510,6 +2514,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     } else {
       context->Count(*feature);
     }
+  }
+  if (webdx_feature.has_value()) {
+    context->Count(*webdx_feature);
   }
   if (selector->Relation() == CSSSelector::kIndirectAdjacent) {
     context->Count(WebFeature::kCSSSelectorIndirectAdjacent);

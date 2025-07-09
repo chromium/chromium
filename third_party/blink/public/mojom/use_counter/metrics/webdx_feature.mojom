@@ -411,6 +411,7 @@ enum WebDXFeature {
   kMetaApplicationTitle = 349,
   kDialogClosedby = 350,
   kFontFamilyMath = 351,
+  kAutofill = 352,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
