@@ -57,6 +57,11 @@ source_set("internal") {
       "//ui/base/unowned_user_data",
     ]
 
+    if (is_win) {
+      deps +=
+          [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
+    }
+
     if (is_win || is_mac) {
       deps += [ "//chrome/browser/ui/pdf/infobar" ]
     }

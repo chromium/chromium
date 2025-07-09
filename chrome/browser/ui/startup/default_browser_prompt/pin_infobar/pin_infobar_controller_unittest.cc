@@ -29,6 +29,23 @@ namespace default_browser {
 
 namespace {
 
+// Helper function that invokes `MaybeShowInfoBarForBrowser` and waits for it to
+// run a "done" callback. Returns the value passed to the callback.
+bool MaybeShowInfoBarForBrowserAndWait(
+    base::WeakPtr<BrowserWindowInterface> browser,
+    bool another_infobar_shown) {
+  bool did_show_infobar = false;
+  base::RunLoop run_loop;
+  auto done_callback = base::BindLambdaForTesting([&](bool value) {
+    did_show_infobar = value;
+    run_loop.Quit();
+  });
+  PinInfoBarController::MaybeShowInfoBarForBrowser(
+      browser, std::move(done_callback), another_infobar_shown);
+  run_loop.Run();
+  return did_show_infobar;
+}
+
 // Helper function that calls `OnShouldOfferToPinResult`, waits for it to run,
 // and returns the result.
 bool OnShouldOfferToPinResultAndWait(PinInfoBarController& controller,
@@ -105,6 +122,20 @@ class PinInfoBarControllerTest : public testing::Test {
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
+
+// Don't show the infobar if another infobar was already shown.
+TEST_F(PinInfoBarControllerTest, DontShowIfAnotherInfoBarShown) {
+  EXPECT_FALSE(MaybeShowInfoBarForBrowserAndWait(
+      browser_window_interface()->GetWeakPtr(),
+      /*another_infobar_shown=*/true));
+}
+
+// `MaybeShowInfoBarForBrowser()` should handle a null browser.
+TEST_F(PinInfoBarControllerTest, DontCrashIfBrowserNull) {
+  EXPECT_FALSE(
+      MaybeShowInfoBarForBrowserAndWait(nullptr,
+                                        /*another_infobar_shown=*/false));
+}
 
 // Don't show the infobar if the browser type is not normal.
 TEST_F(PinInfoBarControllerTest, DontShowIfBrowserNotNormal) {

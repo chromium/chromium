@@ -63,7 +63,14 @@ void PinInfoBarController::MaybeShowInfoBarForBrowser(
     base::WeakPtr<BrowserWindowInterface> browser,
     base::OnceCallback<void(bool)> done_callback,
     bool another_infobar_shown) {
-  NOTIMPLEMENTED();
+  // Don't show the infobar if a higher priority infobar has been shown or might
+  // be about to show, to avoid asking too many similar questions in a session.
+  if (another_infobar_shown || !browser) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+  browser->GetFeatures().pin_infobar_controller()->MaybeShowInfoBar(
+      std::move(done_callback));
 }
 
 void PinInfoBarController::MaybeShowInfoBar(

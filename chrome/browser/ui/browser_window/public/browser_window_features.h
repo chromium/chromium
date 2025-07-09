@@ -60,6 +60,9 @@ class TranslateBubbleController;
 class UpgradeNotificationController;
 
 #if BUILDFLAG(IS_WIN)
+namespace default_browser {
+class PinInfoBarController;
+}  // namespace default_browser
 class WindowsTaskbarIconUpdater;
 #endif
 
@@ -189,6 +192,12 @@ class BrowserWindowFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   pdf::infobar::PdfInfoBarController* pdf_infobar_controller() {
     return pdf_infobar_controller_.get();
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  default_browser::PinInfoBarController* pin_infobar_controller() {
+    return pin_infobar_controller_.get();
   }
 #endif
 
@@ -423,6 +432,11 @@ class BrowserWindowFeatures {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<default_browser::PinInfoBarController>
+      pin_infobar_controller_;
 #endif
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;

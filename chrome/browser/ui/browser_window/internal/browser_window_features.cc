@@ -110,6 +110,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 #include "chrome/browser/ui/views/frame/windows_taskbar_icon_updater.h"
 #endif
 
@@ -245,6 +246,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
     pdf_infobar_controller_ =
         std::make_unique<pdf::infobar::PdfInfoBarController>(browser);
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar)) {
+    pin_infobar_controller_ =
+        std::make_unique<default_browser::PinInfoBarController>(browser);
   }
 #endif
 

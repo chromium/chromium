@@ -36,6 +36,10 @@
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -206,6 +210,15 @@ void AddInfoBarsIfNecessary(Browser* browser,
         browser->GetWeakPtr());
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar)) {
+    default_browser_prompt_shown_callback = base::BindOnce(
+        &default_browser::PinInfoBarController::MaybeShowInfoBarForBrowser,
+        browser->GetWeakPtr(),
+        std::move(default_browser_prompt_shown_callback));
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // The default browser prompt should only be shown after the first run.
   if (is_first_run == chrome::startup::IsFirstRun::kNo) {
