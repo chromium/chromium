@@ -8984,6 +8984,21 @@
             ]
         }
     ],
+    "EdgeToEdgeTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250709",
+                    "enable_features": [
+                        "EdgeToEdgeTablet"
+                    ]
+                }
+            ]
+        }
+    ],
     "EducationalTipModule": [
         {
             "platforms": [

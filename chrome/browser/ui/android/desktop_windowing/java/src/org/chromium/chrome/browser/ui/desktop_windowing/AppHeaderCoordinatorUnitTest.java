@@ -51,6 +51,8 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -492,6 +494,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
     public void overlappingKeyboard_SwitchToAndFromDesktopWindowingMode() {
         verifyDesktopWindowingDisabled(
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
@@ -531,6 +534,47 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void overlappingKeyboard_SwitchToAndFromDesktopWindowingMode_E2ETabletEnabled() {
+        verifyDesktopWindowingDisabled(
+                /* error= */ "DesktopWindowing should exit when no insets is supplied.");
+
+        // Simulate overlapping keyboard.
+        var insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        assertNotEquals(
+                "Ime insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals("Root view bottom should not be padded.", 0, mSpyRootView.getPaddingBottom());
+
+        // Simulate switching to desktop windowing mode.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+        insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        assertEquals(
+                "Ime insets should be not consumed when E2E is active.",
+                Insets.of(0, 0, 0, KEYBOARD_INSET),
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        verifyDesktopWindowingEnabled();
+        assertEquals(
+                "Root view bottom padding should be not padded again when E2E is active.",
+                0,
+                mSpyRootView.getPaddingBottom());
+
+        // Simulate switching out of desktop windowing mode.
+        setupWithNoCaptionInsets();
+        notifyInsetsRectConsumer();
+        insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        assertNotEquals(
+                "Ime insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                "Root view bottom padding should be reset.", 0, mSpyRootView.getPaddingBottom());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
     public void overlappingKeyboard_MoveDesktopWindow() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
@@ -560,6 +604,37 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void overlappingKeyboard_MoveDesktopWindow_E2ETabletEnabled() {
+        // Simulate switching to desktop windowing mode.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        // Simulate overlapping keyboard.
+        var insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        assertEquals(
+                "Ime insets should be not consumed when E2E is active.",
+                Insets.of(0, 0, 0, KEYBOARD_INSET),
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                "Root view bottom padding should be not updated when E2E is active.",
+                0,
+                mSpyRootView.getPaddingBottom());
+
+        // Simulate moving a desktop window that causes the keyboard inset to be updated.
+        insets = applyWindowInsets(KEYBOARD_INSET + 100, UNSPECIFIED_INSET);
+        assertEquals(
+                "Ime insets should be not consumed when E2E is active.",
+                Insets.of(0, 0, 0, KEYBOARD_INSET + 100),
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                "Root view bottom padding should be not padded again when E2E is active.",
+                0,
+                mSpyRootView.getPaddingBottom());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
     public void overlappingNavBar_SwitchToAndFromDesktopWindowingMode() {
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing mode should be disabled initially.");
@@ -599,6 +674,47 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void overlappingNavBar_SwitchToAndFromDesktopWindowingMode_E2ETabletEnabled() {
+        verifyDesktopWindowingDisabled(
+                /* error= */ "Desktop windowing mode should be disabled initially.");
+
+        // Simulate overlapping nav bar bottom inset.
+        var insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
+        assertNotEquals(
+                "Nav bar insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals("Root view bottom should not be padded.", 0, mSpyRootView.getPaddingBottom());
+
+        // Simulate switching to desktop windowing mode.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
+        assertEquals(
+                "Nav bar insets should be not consumed when E2E is active.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
+        verifyDesktopWindowingEnabled();
+        assertEquals(
+                "Root view should be not padded again when E2E is active.",
+                0,
+                mSpyRootView.getPaddingBottom());
+
+        // Simulate switching out of desktop windowing mode.
+        setupWithNoCaptionInsets();
+        notifyInsetsRectConsumer();
+        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
+        assertNotEquals(
+                "Nav bar insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                "Root view bottom padding should be reset.", 0, mSpyRootView.getPaddingBottom());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
     public void overlappingNavBar_MoveDesktopWindow() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
@@ -624,6 +740,33 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void overlappingNavBar_MoveDesktopWindow_E2ETabletEnabled() {
+        // Simulate switching to desktop windowing mode.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        // Simulate overlapping nav bar bottom inset.
+        var insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
+        assertEquals(
+                "Nav bar insets should not be consumed when E2E is active.",
+                Insets.of(0, 0, 0, NAV_BAR_INSET),
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+
+        // Simulate moving a desktop window that causes the nav bar inset to be updated.
+        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET - 10);
+        assertEquals(
+                "Nav bar insets should not be consumed when E2E is active.",
+                Insets.of(0, 0, 0, NAV_BAR_INSET - 10),
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                "Root view should be not padded again when E2E is active.",
+                0,
+                mSpyRootView.getPaddingBottom());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
     public void overlappingKeyboardAndNavBar() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
@@ -634,6 +777,21 @@ public class AppHeaderCoordinatorUnitTest {
         assertEquals(
                 "Root view bottom padding should be updated.",
                 KEYBOARD_INSET,
+                mSpyRootView.getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void overlappingKeyboardAndNavBar_E2ETabletEnabled() {
+        // Simulate switching to desktop windowing mode.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        // Simulate overlapping keyboard and nav bar bottom insets.
+        applyWindowInsets(KEYBOARD_INSET, NAV_BAR_INSET);
+        assertEquals(
+                "Root view bottom padding should not be padded again when E2E is active.",
+                0,
                 mSpyRootView.getPaddingBottom());
     }
 

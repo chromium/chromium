@@ -790,11 +790,24 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(qualifiers = "xlarge")
-    public void disabledWhenNotPhone() {
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void disabledWhenNotPhoneAndTabletFeatureDisabled() {
         // Even these always-draw flags do not override the device abilities.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Even the always-draw flags do not override the device abilities.
         assertFalse(
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
+                        Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
+    }
+
+    @Test
+    @Config(qualifiers = "xlarge")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void enabledOnTabletWhenFeatureEnabled() {
+        // Even these always-draw flags do not override the device abilities.
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        // Even the always-draw flags do not override the device abilities.
+        assertTrue(
                 EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
