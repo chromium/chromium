@@ -915,6 +915,10 @@ id<GREYMatcher> UseSuggestedPasswordMatcher() {
   return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
 }
 
+id<GREYMatcher> ToolbarButtonWithID(NSString* button_id) {
+  return [ChromeMatchersAppInterface toolbarButtonWithID:button_id];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {

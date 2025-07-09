@@ -137,11 +137,9 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
 
 // Assert the `button_id` toolbar button is visible.
 void AssertToolbarButtonVisibleWithID(NSString* button_id) {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"UIToolbar")),
-                                          nil)]
+  id<GREYMatcher> toolbarButtonMatcher =
+      chrome_test_util::ToolbarButtonWithID(button_id);
+  [[EarlGrey selectElementWithMatcher:toolbarButtonMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

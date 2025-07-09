@@ -744,6 +744,10 @@ id<GREYMatcher> ActivityViewHeader(NSString* url_host, NSString* page_title);
 // Returns a matcher for the button to accept the generated password.
 id<GREYMatcher> UseSuggestedPasswordMatcher();
 
+// Matcher for Toolbar element item corresponding to the given accessibility ID
+// `button_id`.
+id<GREYMatcher> ToolbarButtonWithID(NSString* button_id);
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.

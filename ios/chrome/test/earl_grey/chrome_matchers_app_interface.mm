@@ -1539,6 +1539,21 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       SafetyCheckTableViewController.accessibilityIdentifier);
 }
 
++ (id<GREYMatcher>)toolbarButtonWithID:(NSString*)buttonID {
+  if (!iOS26_OR_ABOVE()) {
+    return grey_allOf(grey_accessibilityID(buttonID),
+                      grey_ancestor(grey_kindOfClassName(@"UIToolbar")), nil);
+  }
+
+  id<GREYMatcher> toolbarButtonMatcher =
+      grey_allOf(grey_accessibilityID(buttonID),
+                 grey_anyOf(grey_kindOfClassName(@"_UIButtonBarButton"),
+                            grey_kindOfClassName(@"UIButton"), nil),
+                 nil);
+  return grey_allOf(grey_descendant(toolbarButtonMatcher),
+                    grey_accessibilityID(@"Toolbar"), nil);
+}
+
 #pragma mark - Overflow Menu Destinations
 
 + (id<GREYMatcher>)bookmarksDestinationButton {

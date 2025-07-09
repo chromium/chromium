@@ -744,6 +744,10 @@
 // carousel.
 + (id<GREYMatcher>)whatsNewDestinationButton;
 
+// Matcher for Toolbar element item corresponding to the given accessibility ID
+// `button_id`.
++ (id<GREYMatcher>)toolbarButtonWithID:(NSString*)button_id;
+
 #pragma mark - Overflow Menu Actions
 
 // Returns matcher for the settings action button in the overflow menu
