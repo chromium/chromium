@@ -1509,12 +1509,12 @@ TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
   ASSERT_TRUE(transition);
 
   UpdateAllLifecyclePhasesForTest();
-  auto layer = transition->GetSubframeSnapshotLayer();
+  auto layer = transition->GetScopeSnapshotLayer();
   ASSERT_TRUE(layer);
   EXPECT_TRUE(layer->is_live_content_layer_for_testing());
 
   child_document.GetPage()->GetChromeClient().WillCommitCompositorFrame();
-  auto new_layer = transition->GetSubframeSnapshotLayer();
+  auto new_layer = transition->GetScopeSnapshotLayer();
   ASSERT_TRUE(new_layer);
   EXPECT_NE(layer, new_layer);
   EXPECT_FALSE(new_layer->is_live_content_layer_for_testing());

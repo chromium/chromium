@@ -839,8 +839,8 @@ viz::ViewTransitionElementResourceId ViewTransition::GetSnapshotId(
 }
 
 const scoped_refptr<cc::ViewTransitionContentLayer>&
-ViewTransition::GetSubframeSnapshotLayer() const {
-  return style_tracker_->GetSubframeSnapshotLayer();
+ViewTransition::GetScopeSnapshotLayer() const {
+  return style_tracker_->GetScopeSnapshotLayer();
 }
 
 PaintPropertyChangeType ViewTransition::UpdateCaptureClip(
@@ -961,8 +961,8 @@ void ViewTransition::PauseRendering() {
   if (has_document_scope_ &&
       rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
     document_->View()->SetThrottledForViewTransition(true);
-    style_tracker_->DidThrottleLocalSubframeRendering();
   }
+  style_tracker_->PauseRendering();
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
                                     this);

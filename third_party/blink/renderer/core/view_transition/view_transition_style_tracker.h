@@ -131,9 +131,8 @@ class ViewTransitionStyleTracker
   // is initiated.
   void Abort();
 
-  // Notifies when rendering is throttled for the local subframe associated with
-  // this transition.
-  void DidThrottleLocalSubframeRendering();
+  // Notifies when rendering is paused.
+  void PauseRendering();
 
   // Returns the snapshot ID to identify the render pass based image produced by
   // this Element. Returns an invalid ID if this element is not participating in
@@ -142,8 +141,8 @@ class ViewTransitionStyleTracker
 
   // The layer used to paint the old Document rendered in a LocalFrame subframe
   // until the new Document can start rendering.
-  const scoped_refptr<cc::ViewTransitionContentLayer>&
-  GetSubframeSnapshotLayer() const;
+  const scoped_refptr<cc::ViewTransitionContentLayer>& GetScopeSnapshotLayer()
+      const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |view_transition_name|. The |pseudo_id| must be a ::transition* element.
@@ -256,6 +255,8 @@ class ViewTransitionStyleTracker
       const StyleViewTransitionGroup& group) const;
 
   AtomicString GenerateAutoName(Element&, const TreeScope*, bool allow_from_id);
+
+  bool NeedsSnapshotForCapture() const;
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
@@ -390,7 +391,7 @@ class ViewTransitionStyleTracker
   gfx::Transform ComputeTransformForParticipant(const LayoutObject&) const;
 
   viz::ViewTransitionElementResourceId GenerateResourceId(
-      bool for_subframe_snapshot = false) const;
+      bool for_scope_snapshot = false) const;
 
   void SnapBrowserControlsToFullyShown();
 
@@ -464,7 +465,7 @@ class ViewTransitionStyleTracker
 
   // Set if this transition is in a LocalFrame sub-frame, when the capture is
   // initiated until the start phase of the animation.
-  scoped_refptr<cc::ViewTransitionContentLayer> subframe_snapshot_layer_;
+  scoped_refptr<cc::ViewTransitionContentLayer> scope_snapshot_layer_;
 
   // Returns true if GetViewTransitionState() has already been called. This is
   // used only to enforce additional captures don't happen after that.

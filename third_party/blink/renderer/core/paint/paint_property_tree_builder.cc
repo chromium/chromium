@@ -1947,6 +1947,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
 void FragmentPaintPropertyTreeBuilder::
     UpdateViewTransitionSubframeRootEffect() {
   if (NeedsPaintPropertyUpdate()) {
+    // TODO(crbug.com/405117383): Update for scoped.
     const bool needs_node =
         object_.IsLayoutView() && IsInLocalSubframe(object_) &&
         ViewTransitionUtils::GetTransition(object_.GetDocument());
@@ -1962,7 +1963,7 @@ void FragmentPaintPropertyTreeBuilder::
           CompositorElementIdNamespace::kViewTransitionSubframeRoot);
       if (const auto& layer =
               ViewTransitionUtils::GetTransition(object_.GetDocument())
-                  ->GetSubframeSnapshotLayer()) {
+                  ->GetScopeSnapshotLayer()) {
         state.view_transition_element_resource_id =
             layer->ViewTransitionResourceId();
       }
