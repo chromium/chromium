@@ -483,7 +483,7 @@ void FederatedAuthRequestImpl::RequestToken(
         CompleteRequestWithError(
             FederatedAuthRequestResult::kSilentMediationFailure,
             TokenStatus::kSilentMediationFailure,
-            /*should_delay_callback=*/false);
+            /*should_delay_callback=*/true);
         return;
       }
 
@@ -1053,8 +1053,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       // following without privacy cost:
       // 1. Reject the promise immediately without delay
       // 2. Not to show any UI to respect `mediation: silent`
-      // TODO(crbug.com/40266561): validate the statement above with
-      // stakeholders
       render_frame_host().AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Silent mediation issue: the user has used FedCM with multiple "
@@ -1062,7 +1060,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       CompleteRequestWithError(
           FederatedAuthRequestResult::kSilentMediationFailure,
           TokenStatus::kSilentMediationFailure,
-          /*should_delay_callback=*/false);
+          /*should_delay_callback=*/true);
       return;
     }
 
