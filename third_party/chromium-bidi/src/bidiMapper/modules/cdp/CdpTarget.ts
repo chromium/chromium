@@ -308,6 +308,7 @@ export class CdpTarget {
         frame.id,
         frame.parentId,
         parentBrowsingContext.userContext,
+        this.#userContextConfig,
         parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,

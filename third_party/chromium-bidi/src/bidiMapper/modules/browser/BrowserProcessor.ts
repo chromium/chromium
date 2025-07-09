@@ -110,6 +110,10 @@ export class BrowserProcessor {
       context.browserContextId,
     ).acceptInsecureCerts = params['acceptInsecureCerts'];
 
+    this.#userContextStorage.getConfig(
+      context.browserContextId,
+    ).userPromptHandler = params['unhandledPromptBehavior'];
+
     return {
       userContext: context.browserContextId,
     };

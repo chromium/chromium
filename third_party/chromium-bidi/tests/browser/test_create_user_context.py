@@ -16,7 +16,8 @@
 import pytest
 from anys import ANY_STR
 from test_helpers import (ANY_UUID, AnyExtending, execute_command,
-                          read_JSON_message, send_JSON_command)
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -255,3 +256,91 @@ async def test_browser_create_user_context_accept_insecure_certs_respected(
             'message': 'net::ERR_CERT_AUTHORITY_INVALID',
             'type': 'error',
         })
+
+
+# All the combinations will be tested in WPT, keep only a few cases here to save
+# runtime.
+@pytest.mark.asyncio
+@pytest.mark.parametrize("behavior", [None, "accept"])
+@pytest.mark.parametrize("default", [None, "ignore"])
+@pytest.mark.parametrize("prompt_type", ["alert"])
+async def test_browser_create_user_context_unhandled_prompt_behavior(
+        websocket, prompt_type, behavior, default, create_context):
+    PROMPT_MESSAGE = "SOME MESSAGE"
+
+    unhandled_prompt_behavior = {}
+
+    if behavior is not None:
+        unhandled_prompt_behavior[prompt_type] = behavior
+    if default is not None:
+        unhandled_prompt_behavior["default"] = default
+
+    user_context = await execute_command(
+        websocket, {
+            "method": "browser.createUserContext",
+            "params": {
+                "unhandledPromptBehavior": unhandled_prompt_behavior
+            }
+        })
+
+    context_id = await create_context(
+        user_context_id=user_context["userContext"])
+
+    await subscribe(websocket, [
+        "browsingContext.userPromptOpened", "browsingContext.userPromptClosed"
+    ])
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""{prompt_type}('{PROMPT_MESSAGE}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
+            }
+        })
+    response = await wait_for_event(websocket,
+                                    "browsingContext.userPromptOpened")
+    if behavior is not None:
+        expected_handler = behavior
+    elif default is not None:
+        expected_handler = default
+    else:
+        expected_handler = 'dismiss'
+
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.userPromptOpened",
+        "params": {
+            "context": context_id,
+            "type": prompt_type,
+            'handler': expected_handler,
+            "message": PROMPT_MESSAGE,
+            **({
+                "defaultValue": ""
+            } if prompt_type == "prompt" else {}),
+        }
+    }
+
+    if expected_handler == 'ignore':
+        # Dismiss the prompt manually.
+        await send_JSON_command(
+            websocket, {
+                "method": "browsingContext.handleUserPrompt",
+                "params": {
+                    "context": context_id,
+                    "accept": False
+                }
+            })
+    response = await wait_for_event(websocket,
+                                    "browsingContext.userPromptClosed")
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.userPromptClosed",
+        "params": {
+            "context": context_id,
+            "accepted": expected_handler == 'accept',
+            "type": prompt_type
+        }
+    }
