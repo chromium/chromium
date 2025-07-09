@@ -7589,7 +7589,7 @@
 <translation id="635609604405270300">保持裝置開啟</translation>
 <translation id="6356537493253478650">穩重</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
-<translation id="6356718524173428713">向上捲動即可將頁面向下移動</translation>
+<translation id="6356718524173428713">向上捲動將頁面往下移</translation>
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
 <translation id="6357305427698525450">部分支援連結將仍會在 <ph name="APP_NAME" /> 或 <ph name="APP_NAME_2" /> 中開啟。</translation>
 <translation id="6357750620525943720">其他穩定識別碼 (例如：雜湊或 UUID)</translation>
@@ -11192,7 +11192,7 @@
 <translation id="8893928184421379330">很抱歉，系統無法識別 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="8894761918470382415">周邊裝置的資料存取保護</translation>
 <translation id="8895454554629927345">書籤清單</translation>
-<translation id="8896830132794747524">滑鼠移動得越快，游標就移動得越遠</translation>
+<translation id="8896830132794747524">滑鼠移得越快，游標就越遠</translation>
 <translation id="8897537894864195436">在擁有「<ph name="APP_NAME" />」密鑰的裝置上，用鏡頭掃瞄此 QR 碼</translation>
 <translation id="8898786835233784856">選取下一個分頁</translation>
 <translation id="8898790559170352647">加入 Microsoft 帳戶</translation>
