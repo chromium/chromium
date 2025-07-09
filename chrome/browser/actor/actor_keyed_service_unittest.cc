@@ -4,10 +4,12 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 
+#include <memory>
 #include <optional>
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -46,7 +48,10 @@ class ActorKeyedServiceTest : public testing::Test {
 // Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  actor_service->AddActiveTask(std::make_unique<ActorTask>());
+  std::unique_ptr<ExecutionEngine> execution_engine =
+      std::make_unique<ExecutionEngine>(profile());
+  actor_service->AddActiveTask(
+      std::make_unique<ActorTask>(std::move(execution_engine)));
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
   EXPECT_EQ(actor_service->GetActiveTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
@@ -55,7 +60,10 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 // Stops a task.
 TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>());
+  std::unique_ptr<ExecutionEngine> execution_engine =
+      std::make_unique<ExecutionEngine>(profile());
+  TaskId id = actor_service->AddActiveTask(
+      std::make_unique<ActorTask>(std::move(execution_engine)));
   actor_service->StopTask(id);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
   ASSERT_EQ(actor_service->GetInactiveTasks().size(), 1u);

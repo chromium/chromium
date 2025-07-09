@@ -15,13 +15,15 @@ namespace actor {
 
 ActorTask::ActorTask() = default;
 ActorTask::ActorTask(std::unique_ptr<ExecutionEngine> execution_engine)
-    : execution_engine_(std::move(execution_engine)) {
-  execution_engine_->SetOwner(this);
-}
+    : execution_engine_(std::move(execution_engine)) {}
 ActorTask::~ActorTask() = default;
 
 void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {
   id_ = id;
+}
+
+void ActorTask::SetIdForTesting(int id) {
+  id_ = TaskId(id);
 }
 
 ExecutionEngine* ActorTask::GetExecutionEngine() const {

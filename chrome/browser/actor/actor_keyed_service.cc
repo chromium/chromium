@@ -69,6 +69,7 @@ TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TaskId task_id = next_task_id_.GenerateNextId();
   last_created_task_id_ = task_id;
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
+  task->GetExecutionEngine()->SetOwner(task.get());
   active_tasks_[task_id] = std::move(task);
   return task_id;
 }
@@ -90,6 +91,14 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks()
     inactive_tasks[id] = task.get();
   }
   return inactive_tasks;
+}
+
+void ActorKeyedService::ResetForTesting() {
+  for (auto it = active_tasks_.begin(); it != active_tasks_.end();) {
+    StopTask((it++)->first);
+  }
+  active_tasks_.clear();
+  inactive_tasks_.clear();
 }
 
 void ActorKeyedService::ExecuteAction(

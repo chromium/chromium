@@ -32,6 +32,8 @@ class ActorTask {
   // Can only be called by ActorKeyedService
   void SetId(base::PassKey<ActorKeyedService>, TaskId id);
   TaskId id() const { return id_; }
+  // Can only be called by unit tests.
+  void SetIdForTesting(int id);
 
   // Once state leaves kCreated it should never go back. One state enters
   // kFinished it should never change. We may want to add a kCancelled in the
