@@ -73,6 +73,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // enabled as part of the FLEDGE origin trial.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowURNsInIframes);
 
+#if BUILDFLAG(IS_ANDROID)
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopWebPrefsLargeDisplays);
+#endif
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDisplayWarningDeprecateURNIframesUseFencedFrames);
 

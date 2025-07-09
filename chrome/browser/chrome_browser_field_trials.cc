@@ -25,6 +25,7 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/variations/feature_overrides.h"
 #include "components/version_info/version_info.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/background_thread_pool_field_trial.h"
@@ -124,6 +125,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // should be the exception, and not the norm. Instead, you should place the
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
+
+  // If enabled, then use desktop page webprefs for Android devices that have
+  // large displays, specifically tablets and desktops.
+  feature_overrides.EnableFeature(
+      blink::features::kAndroidDesktopWebPrefsLargeDisplays);
 
   // If enabled, render processes associated only with tabs in unfocused windows
   // will be downgraded to "vis" priority, rather than remaining at "fg". This
