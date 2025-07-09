@@ -287,11 +287,7 @@ base::OnceClosure ShowDeviceChooserDialog(
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
-  if (browser->window()->IsActive()) {
-    widget->Show();
-  } else {
-    widget->ShowInactive();
-  }
+  widget->Show();
 
   // If we're opening this device chooser dialog on a picture-in-picture window,
   // then our widget is also always-on-top and needs to be tracked by the
