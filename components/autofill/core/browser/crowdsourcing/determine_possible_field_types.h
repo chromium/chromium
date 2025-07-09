@@ -38,10 +38,6 @@ struct PossibleTypes {
   // The FieldTypes for which data on file matches the field's value.
   FieldTypeSet types;
 
-  // Indicates if the value is a known CVC value.
-  // TODO(crbug.com/429655113): Do we need this? If not, remove.
-  bool known_value = false;
-
   // The format strings that match the field value.
   // Format strings are determined only for Autofill AI dates.
   std::set<std::pair<FormatString_Type, std::u16string>> formats;

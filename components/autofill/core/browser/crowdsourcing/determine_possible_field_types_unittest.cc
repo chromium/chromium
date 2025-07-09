@@ -92,13 +92,11 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
     base::span<const PossibleTypes> possible_types,
     size_t field_index,
-    FieldType type,
-    bool known_value) {
+    FieldType type) {
   EXPECT_LT(field_index, possible_types.size());
   for (size_t i = 0; i < possible_types.size(); i++) {
     if (i == field_index) {
       EXPECT_THAT(possible_types[i].types, ElementsAre(type)) << "i=" << i;
-      EXPECT_EQ(possible_types[i].known_value, known_value) << "i=" << i;
     } else {
       EXPECT_THAT(possible_types[i].types, Not(Contains(type))) << "i=" << i;
     }
@@ -417,8 +415,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
           form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
-                                               CREDIT_CARD_VERIFICATION_CODE,
-                                               /*known_value=*/true);
+                                               CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // Expiration year field was detected by the server. The other field with a
@@ -459,8 +456,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
-                                               CREDIT_CARD_VERIFICATION_CODE,
-                                               /*known_value=*/false);
+                                               CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // Tests if the CVC field is heuristically detected if it appears after the
@@ -501,8 +497,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
-                                               CREDIT_CARD_VERIFICATION_CODE,
-                                               /*known_value=*/false);
+                                               CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // Tests if the CVC field is heuristically detected if it contains a value which
@@ -542,8 +537,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
-                                               CREDIT_CARD_VERIFICATION_CODE,
-                                               /*known_value=*/false);
+                                               CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // Tests if no CVC field is heuristically detected due to the missing of a
@@ -652,8 +646,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
           form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
-                                               LOYALTY_MEMBERSHIP_ID,
-                                               /*known_value=*/false);
+                                               LOYALTY_MEMBERSHIP_ID);
 }
 
 // Tests if the Autofill AI field types are crowdsourced.

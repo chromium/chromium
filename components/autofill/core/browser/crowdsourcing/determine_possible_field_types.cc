@@ -183,9 +183,6 @@ FindDatesAndSetFormatStrings(
 
 // Adds `CREDIT_CARD_VERIFICATION_CODE` to the possible types of fields whose
 // value is `last_unlocked_credit_card_cvc` or looks like a CVC.
-//
-// In the former case, `kKnownValue` is added to the property mask.
-// TODO(crbug.com/429655113): Do we need this? If not, remove.
 void FindAndSetPossibleCvcFieldTypes(
     std::u16string_view last_unlocked_credit_card_cvc,
     base::span<const std::unique_ptr<AutofillField>> fields,
@@ -195,7 +192,6 @@ void FindAndSetPossibleCvcFieldTypes(
       if (last_unlocked_credit_card_cvc ==
           base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL)) {
         pt.types.insert(CREDIT_CARD_VERIFICATION_CODE);
-        pt.known_value = true;
         return;
       }
     }

@@ -268,10 +268,6 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 
             for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
-              if (pt.known_value) {
-                field->set_properties_mask(field->properties_mask() |
-                                           FieldPropertiesFlags::kKnownValue);
-              }
             }
 
             EncodeUploadRequestOptions options;
