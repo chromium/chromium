@@ -5,8 +5,12 @@
 package org.chromium.content_public.browser.media.capture;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -62,12 +66,16 @@ public class ImageHandlerTest {
     }
 
     private Image createMockImage() {
+        return createMockImage(TEST_TIMESTAMP);
+    }
+
+    private Image createMockImage(long timestamp) {
         final Image image = mock(Image.class);
         final Plane plane = mock(Plane.class);
         when(image.getPlanes()).thenReturn(new Plane[] {plane});
         when(image.getFormat()).thenReturn(PixelFormat.RGBA_8888);
         when(image.getCropRect()).thenReturn(TEST_CROP_RECT);
-        when(image.getTimestamp()).thenReturn(TEST_TIMESTAMP);
+        when(image.getTimestamp()).thenReturn(timestamp);
         return image;
     }
 
@@ -101,7 +109,177 @@ public class ImageHandlerTest {
         // Image should be closed now.
         verify(image).close();
         assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verifyNoMoreInteractions(mDelegate);
+    }
 
+    @Test
+    public void testCloseWithNoAcquiredImagesClosesImmediately() {
+        mImageHandler.close();
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testCloseWithAcquiredImagesClosesOnRelease() throws Exception {
+        final Image image = createMockImage();
+        final Plane plane = image.getPlanes()[0];
+
+        onImageAvailable(image);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(TEST_TIMESTAMP),
+                        eq(plane),
+                        eq(TEST_CROP_RECT));
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Close while the image is still acquired.
+        mImageHandler.close();
+
+        verify(mImageReader, never()).close();
+        assertTrue(mImageHandler.isClosingForTesting());
+        verify(mDelegate, never()).onClose(any());
+
+        // Release the image, we should close now.
+        releaseCb.getValue().run();
+
+        verify(image).close();
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testCloseWithMultipleImagesClosesOnAllReleased() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Image image2 = createMockImage(/* timestamp= */ 2L);
+        final Plane plane1 = image1.getPlanes()[0];
+        final Plane plane2 = image2.getPlanes()[0];
+        final ArgumentCaptor<Runnable> releaseCb1 = ArgumentCaptor.forClass(Runnable.class);
+        final ArgumentCaptor<Runnable> releaseCb2 = ArgumentCaptor.forClass(Runnable.class);
+
+        // Acquire two images.
+        onImageAvailable(image1);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler), releaseCb1.capture(), eq(1L), eq(plane1), any());
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        onImageAvailable(image2);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler), releaseCb2.capture(), eq(2L), eq(plane2), any());
+        assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Try to close the ImageHandler. We should not close until all have been released.
+        mImageHandler.close();
+
+        assertTrue(mImageHandler.isClosingForTesting());
+        verify(mImageReader, never()).close();
+        verify(mDelegate, never()).onClose(any());
+
+        // Release the second image.
+        releaseCb2.getValue().run();
+
+        verify(image2).close();
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+        assertTrue(mImageHandler.isClosingForTesting());
+        verify(mImageReader, never()).close();
+        verify(mDelegate, never()).onClose(any());
+
+        // Check we didn't try to acquire more images on release (we are closing).
+        verify(mImageReader, times(2)).acquireLatestImage();
+
+        // Release the first image.
+        releaseCb1.getValue().run();
+
+        // We should close the ImageHandler now.
+        verify(image1).close();
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testOnImageAvailableWhileClosingCanStillAcquire() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Image image2 = createMockImage(/* timestamp= */ 2L);
+        final Plane plane1 = image1.getPlanes()[0];
+        final Plane plane2 = image2.getPlanes()[0];
+        final ArgumentCaptor<Runnable> releaseCb1 = ArgumentCaptor.forClass(Runnable.class);
+        final ArgumentCaptor<Runnable> releaseCb2 = ArgumentCaptor.forClass(Runnable.class);
+
+        // Acquire one image.
+        onImageAvailable(image1);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler), releaseCb1.capture(), eq(1L), eq(plane1), any());
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Close the ImageHandler.
+        mImageHandler.close();
+        assertTrue(mImageHandler.isClosingForTesting());
+        verify(mImageReader, never()).close();
+
+        // We should be able to acquire the next image. This is because we want to keep providing
+        // frames if the producer keeps producing them. When we recreate the ImageHandler we may get
+        // a few extra frames from the producer until it switches over to using the new Surface.
+        onImageAvailable(image2);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler), releaseCb2.capture(), eq(2L), eq(plane2), any());
+        assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
+
+        // We should still be closing.
+        assertTrue(mImageHandler.isClosingForTesting());
+        verify(mImageReader, never()).close();
+
+        // Release the first image.
+        releaseCb1.getValue().run();
+        verify(image1).close();
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+        verify(mImageReader, never()).close();
+
+        // Release the second image and the ImageHandler should close.
+        releaseCb2.getValue().run();
+        verify(image2).close();
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testCloseNowClosesImmediately() throws Exception {
+        final Image image = createMockImage();
+        final Plane plane = image.getPlanes()[0];
+
+        // Acquire an `Image`.
+        onImageAvailable(image);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(TEST_TIMESTAMP),
+                        eq(plane),
+                        eq(TEST_CROP_RECT));
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Closing should close the underlying `ImageReader`, even though we have not released
+        // `image`.
+        mImageHandler.closeNow();
+
+        verify(mImageReader).close();
+        verify(mDelegate).onClose(eq(mImageHandler));
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
         verifyNoMoreInteractions(mDelegate);
     }
 }
