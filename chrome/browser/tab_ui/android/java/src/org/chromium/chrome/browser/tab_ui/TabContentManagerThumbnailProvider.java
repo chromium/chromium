@@ -12,6 +12,7 @@ import android.util.Size;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 
 /** {@link ThumbnailProvider} adapter for {@link TabContentManager}. */
 @NullMarked
@@ -27,13 +28,13 @@ public class TabContentManagerThumbnailProvider implements ThumbnailProvider {
 
     @Override
     public void getTabThumbnailWithCallback(
-            int tabId,
+            MultiThumbnailMetadata metadata,
             Size thumbnailSize,
             boolean isSelected,
             Callback<@Nullable Drawable> callback) {
 
         mTabContentManager.getTabThumbnailWithCallback(
-                tabId, thumbnailSize, adaptCallback(callback));
+                metadata.tabId, thumbnailSize, adaptCallback(callback));
     }
 
     private static Callback<@Nullable Bitmap> adaptCallback(Callback<@Nullable Drawable> callback) {

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -250,7 +251,10 @@ public class StripDragShadowViewUnitTest {
         verify(mMockTabContentManager, never()).getTabThumbnailWithCallback(anyInt(), any(), any());
         verify(mMockMultiThumbnailCardProvider)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID), any(Size.class), eq(false), any(Callback.class));
+                        any(MultiThumbnailMetadata.class),
+                        any(Size.class),
+                        eq(false),
+                        any(Callback.class));
     }
 
     @Test

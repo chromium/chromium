@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -38,6 +39,8 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
+
+import java.util.Collections;
 
 /** Tests for the thumbnail view in Grid Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -51,7 +54,8 @@ public class TabSwitcherThumbnailTest {
     private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
                     (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
-                    Tab.INVALID_TAB_ID);
+                    new MultiThumbnailMetadata(
+                            Tab.INVALID_TAB_ID, Collections.emptyList(), false, false, null));
     private RegularNewTabPageStation mNtp;
 
     @Before

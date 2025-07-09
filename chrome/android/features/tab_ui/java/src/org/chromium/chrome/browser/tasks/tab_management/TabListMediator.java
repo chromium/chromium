@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
@@ -129,6 +130,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -3150,11 +3152,24 @@ class TabListMediator implements TabListNotificationHandler {
         @Nullable ThumbnailFetcher oldFetcher = model.get(THUMBNAIL_FETCHER);
         if (oldFetcher != null) oldFetcher.cancel();
 
-        @Nullable
-        ThumbnailFetcher newFetcher =
-                tabId == Tab.INVALID_TAB_ID
-                        ? null
-                        : new ThumbnailFetcher(mThumbnailProvider, tabId);
+        @Nullable ThumbnailFetcher newFetcher = null;
+        if (tabId != Tab.INVALID_TAB_ID) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            Tab tab = filter.getTabModel().getTabById(tabId);
+            assumeNonNull(tab);
+            boolean isInTabGroup = filter.tabGroupExists(tab.getTabGroupId());
+            final @Nullable @TabGroupColorId Integer tabGroupColor =
+                    isInTabGroup ? filter.getTabGroupColorWithFallback(tab.getTabGroupId()) : null;
+            newFetcher =
+                    new ThumbnailFetcher(
+                            mThumbnailProvider,
+                            new MultiThumbnailMetadata(
+                                    tabId,
+                                    Collections.emptyList(),
+                                    isInTabGroup,
+                                    filter.getTabModel().isIncognitoBranded(),
+                                    tabGroupColor));
+        }
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 

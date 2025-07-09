@@ -23,11 +23,11 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 
 /** Unit tests for {@link ThumbnailFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ThumbnailFetcherUnitTest {
-    private static final int TAB_ID = 123;
     private static final Size SIZE = new Size(378, 987);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -36,18 +36,23 @@ public class ThumbnailFetcherUnitTest {
     @Mock private Callback<Drawable> mCallback;
     @Mock private Callback<Drawable> mCallback2;
     @Mock private Drawable mDrawable;
+    @Mock private MultiThumbnailMetadata mMultiThumbnailMetadata;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
 
     @Test
     public void testFetch() {
-        ThumbnailFetcher fetcher = new ThumbnailFetcher(mThumbnailProvider, TAB_ID);
+        ThumbnailFetcher fetcher =
+                new ThumbnailFetcher(mThumbnailProvider, mMultiThumbnailMetadata);
 
         boolean isSelected = true;
         fetcher.fetch(SIZE, isSelected, mCallback);
         verify(mThumbnailProvider)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID), eq(SIZE), eq(isSelected), mCallbackCaptor.capture());
+                        eq(mMultiThumbnailMetadata),
+                        eq(SIZE),
+                        eq(isSelected),
+                        mCallbackCaptor.capture());
 
         mCallbackCaptor.getValue().onResult(mDrawable);
         verify(mCallback).onResult(mDrawable);
@@ -55,13 +60,17 @@ public class ThumbnailFetcherUnitTest {
 
     @Test
     public void testCancel() {
-        ThumbnailFetcher fetcher = new ThumbnailFetcher(mThumbnailProvider, TAB_ID);
+        ThumbnailFetcher fetcher =
+                new ThumbnailFetcher(mThumbnailProvider, mMultiThumbnailMetadata);
 
         boolean isSelected = true;
         fetcher.fetch(SIZE, isSelected, mCallback);
         verify(mThumbnailProvider)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID), eq(SIZE), eq(isSelected), mCallbackCaptor.capture());
+                        eq(mMultiThumbnailMetadata),
+                        eq(SIZE),
+                        eq(isSelected),
+                        mCallbackCaptor.capture());
 
         fetcher.cancel();
 
@@ -71,19 +80,26 @@ public class ThumbnailFetcherUnitTest {
 
     @Test
     public void testDoubleFetchCancelsFirst() {
-        ThumbnailFetcher fetcher = new ThumbnailFetcher(mThumbnailProvider, TAB_ID);
+        ThumbnailFetcher fetcher =
+                new ThumbnailFetcher(mThumbnailProvider, mMultiThumbnailMetadata);
 
         boolean isSelected = true;
         fetcher.fetch(SIZE, isSelected, mCallback);
         verify(mThumbnailProvider)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID), eq(SIZE), eq(isSelected), mCallbackCaptor.capture());
+                        eq(mMultiThumbnailMetadata),
+                        eq(SIZE),
+                        eq(isSelected),
+                        mCallbackCaptor.capture());
 
         isSelected = false;
         fetcher.fetch(SIZE, isSelected, mCallback2);
         verify(mThumbnailProvider)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID), eq(SIZE), eq(isSelected), mCallbackCaptor.capture());
+                        eq(mMultiThumbnailMetadata),
+                        eq(SIZE),
+                        eq(isSelected),
+                        mCallbackCaptor.capture());
 
         for (var callback : mCallbackCaptor.getAllValues()) {
             callback.onResult(mDrawable);

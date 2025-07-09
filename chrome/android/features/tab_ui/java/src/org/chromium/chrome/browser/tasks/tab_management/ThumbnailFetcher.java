@@ -12,6 +12,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 
 /**
  * The object to set to {@link TabProperties#THUMBNAIL_FETCHER} for the TabGridViewBinder to obtain
@@ -20,16 +21,16 @@ import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 @NullMarked
 public class ThumbnailFetcher {
     private final ThumbnailProvider mThumbnailProvider;
-    private final int mTabId;
+    private final MultiThumbnailMetadata mMultiThumbnailMetadata;
     private @Nullable CallbackController mCurrentCallbackController;
 
     /**
      * @param thumbnailProvider The mechanism to send callbacks to to provide thumbnails.
-     * @param tabId The ID of the tab to fetch a thumbnail for.
+     * @param metadata The metadata of the tab or group to fetch a thumbnail for.
      */
-    ThumbnailFetcher(ThumbnailProvider thumbnailProvider, int tabId) {
+    ThumbnailFetcher(ThumbnailProvider thumbnailProvider, MultiThumbnailMetadata metadata) {
         mThumbnailProvider = thumbnailProvider;
-        mTabId = tabId;
+        mMultiThumbnailMetadata = metadata;
     }
 
     /**
@@ -41,7 +42,10 @@ public class ThumbnailFetcher {
      */
     void fetch(Size thumbnailSize, boolean isSelected, Callback<@Nullable Drawable> callback) {
         mThumbnailProvider.getTabThumbnailWithCallback(
-                mTabId, thumbnailSize, isSelected, createCancelableCallback(callback));
+                mMultiThumbnailMetadata,
+                thumbnailSize,
+                isSelected,
+                createCancelableCallback(callback));
     }
 
     /** Cancel any ongoing fetches. */

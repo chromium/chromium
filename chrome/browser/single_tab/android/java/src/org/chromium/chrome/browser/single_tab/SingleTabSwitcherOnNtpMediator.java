@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetadata;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -44,6 +45,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplaySt
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /** Mediator of the single tab switcher in the new tab page on tablet. */
 @NullMarked
@@ -251,7 +254,12 @@ public class SingleTabSwitcherOnNtpMediator {
         }
 
         mThumbnailProvider.getTabThumbnailWithCallback(
-                mMostRecentTab.getId(),
+                new MultiThumbnailMetadata(
+                        mMostRecentTab.getId(),
+                        List.of(mMostRecentTab.getUrl()),
+                        mMostRecentTab.getTabGroupId() != null,
+                        mMostRecentTab.isIncognitoBranded(),
+                        /* tabGroupColor= */ null),
                 mThumbnailSize,
                 /* isSelected= */ false,
                 (@Nullable Drawable tabThumbnail) -> {

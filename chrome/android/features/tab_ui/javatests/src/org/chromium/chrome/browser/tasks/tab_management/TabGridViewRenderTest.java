@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -45,6 +46,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /** Render tests for PriceCardView. */
@@ -70,7 +72,8 @@ public class TabGridViewRenderTest {
     private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
                     (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
-                    Tab.INVALID_TAB_ID);
+                    new MultiThumbnailMetadata(
+                            Tab.INVALID_TAB_ID, Collections.emptyList(), false, false, null));
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =

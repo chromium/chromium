@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
@@ -118,6 +119,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -196,7 +198,7 @@ public class TabListViewHolderTest {
                     new ThumbnailProvider() {
                         @Override
                         public void getTabThumbnailWithCallback(
-                                int tabId,
+                                MultiThumbnailMetadata metadata,
                                 Size thumbnailSize,
                                 boolean isSelected,
                                 Callback<Drawable> callback) {
@@ -209,7 +211,8 @@ public class TabListViewHolderTest {
                             callback.onResult(new BitmapDrawable(bitmap));
                         }
                     },
-                    Tab.INVALID_TAB_ID);
+                    new MultiThumbnailMetadata(
+                            Tab.INVALID_TAB_ID, Collections.emptyList(), false, false, null));
     private final AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
     private final TabListMediator.TabActionListener mMockCloseListener =
