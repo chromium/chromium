@@ -175,11 +175,12 @@ class FaceGazeIntegrationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/388867838): Add manifest v3 variant when migration is
-// complete.
 INSTANTIATE_TEST_SUITE_P(ManifestV2,
                          FaceGazeIntegrationTest,
                          ::testing::Values(ManifestVersion::kTwo));
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         FaceGazeIntegrationTest,
+                         ::testing::Values(ManifestVersion::kThree));
 
 IN_PROC_BROWSER_TEST_P(FaceGazeIntegrationTest, UpdateCursorLocation) {
   utils()->EnableFaceGaze(Config().Default());
