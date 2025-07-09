@@ -9,11 +9,9 @@
         android:supportsInlineSuggestions="true"
         android:settingsActivity="org.chromium.example.android_autofill.SettingsActivity"
         android:passwordsActivity="org.chromium.example.android_autofill.MainActivity">
-    <!-- Uncomment any chrome version below to use enable autofill via accessibility.
-    <compatibility-package android:name="com.android.chrome" android:maxLongVersionCode="1000000000" />
-    <compatibility-package android:name="com.chrome.beta" android:maxLongVersionCode="1000000000" />
-    <compatibility-package android:name="com.chrome.dev" android:maxLongVersionCode="1000000000" />
-    <compatibility-package android:name="com.chrome.canary" android:maxLongVersionCode="1000000000" />
-    <compatibility-package android:name="com.google.android.apps.chrome" android:maxLongVersionCode="1000000000" />
-    -->
+    <compatibility-package android:name="com.android.chrome" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.beta" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.dev" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.canary" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.google.android.apps.chrome" android:maxLongVersionCode="711900039" />
 </autofill-service>
