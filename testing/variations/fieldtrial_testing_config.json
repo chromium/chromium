@@ -26447,6 +26447,23 @@
             ]
         }
     ],
+    "WebGPUUseSpirv14": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseSpirv14"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUUseVulkanMemoryModel": [
         {
             "platforms": [
