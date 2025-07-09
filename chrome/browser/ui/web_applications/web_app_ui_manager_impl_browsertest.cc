@@ -134,8 +134,17 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 
 // Tests that the callback is correctly called when there is more than one
 // app window.
-IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
-                       NotifyOnAllAppWindowsClosed_MultipleOpenedWindows) {
+// TODO(crbug.com/430477111): flaky on Mac13 Tests builder.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NotifyOnAllAppWindowsClosed_MultipleOpenedWindows \
+  DISABLED_NotifyOnAllAppWindowsClosed_MultipleOpenedWindows
+#else
+#define MAYBE_NotifyOnAllAppWindowsClosed_MultipleOpenedWindows \
+  NotifyOnAllAppWindowsClosed_MultipleOpenedWindows
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppUiManagerImplBrowserTest,
+    MAYBE_NotifyOnAllAppWindowsClosed_MultipleOpenedWindows) {
   webapps::AppId foo_app_id = InstallWebApp(GURL("https://example.com"));
   webapps::AppId bar_app_id = InstallWebApp(GURL("https://example2.com"));
 
