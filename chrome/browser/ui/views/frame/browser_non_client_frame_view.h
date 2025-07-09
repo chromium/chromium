@@ -118,7 +118,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   // Returns true if strokes (outlines/separators) should be drawn around tabs.
   // This is generally true, but false for some web apps that don't have a tab
   // strip.
-  virtual bool CanDrawStrokes() const;
+  bool CanDrawStrokes() const;
 
   // Returns the color that should be used for text and icons in the title bar
   // (e.g., the window title and caption button icons).
