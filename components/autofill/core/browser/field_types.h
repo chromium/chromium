@@ -693,8 +693,6 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   return fields;
 }();
 
-bool IsDateFieldType(FieldType field_type);
-
 constexpr FieldTypeSet FieldTypesOfGroup(FieldTypeGroup group) {
   FieldTypeSet fields_matching_group;
   for (FieldType field_type : kAllFieldTypes) {

@@ -39,6 +39,9 @@ bool IsAlternativeNameType(FieldType type);
 // TODO(crbug.com/422563282): Remove when cleaning up kAutofillAiNoTagTypes.
 bool IsTagType(FieldType type);
 
+// Indicates whether the FieldType's domain are dates (year, month, day).
+bool IsDateFieldType(FieldType field_type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
