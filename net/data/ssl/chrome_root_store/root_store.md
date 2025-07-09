@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 21
+Version: 22
 
 [TOC]
 
@@ -62,7 +62,6 @@ a1339d33281a0b56e557d3d32b1ce7f9367eb094bd5fa72a7e5004c8ded7cafe | CN=SZAFIR ROO
 beb00b30839b9bc32c32e4447905950641f26421b15ed089198b518ae2ea1b99 | CN=e-Szigno Root CA 2017,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937 | 2017-08-22 | 2042-08-22
 358df39d764af9e1b766e9c972df352ee15cfac227af6ad1d70e8e4a6edcba02 | CN=Microsoft ECC Root Certificate Authority 2017,O=Microsoft Corporation,C=US | 2019-12-18 | 2042-07-18
 c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0 | CN=Microsoft RSA Root Certificate Authority 2017,O=Microsoft Corporation,C=US | 2019-12-18 | 2042-07-18
-6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98 | CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók (Certification Services),O=NetLock Kft.,L=Budapest,C=HU | 2008-12-11 | 2028-12-06
 6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6 | CN=OISTE WISeKey Global Root GB CA,OU=OISTE Foundation Endorsed,O=WISeKey,C=CH | 2014-12-01 | 2039-12-01
 8560f91c3624daba9570b5fea0dbe36ff11a8323be9486854fb3f34a5571198d | CN=OISTE WISeKey Global Root GC CA,OU=OISTE Foundation Endorsed,O=WISeKey,C=CH | 2017-05-09 | 2042-05-09
 85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86 | CN=QuoVadis Root CA 2,O=QuoVadis Limited,C=BM | 2006-11-24 | 2031-11-24
@@ -95,7 +94,6 @@ cbb9c44d84b8043e1050ea31a69f514955d7bfd2e2c6b49301019ad61d9f5058 | CN=GlobalSign
 4fa3126d8d3a11d1c4855a4f807cbad6cf919d3a5a88b03bea2c6372d93c40c9 | CN=GlobalSign Root R46,O=GlobalSign nv-sa,C=BE | 2019-03-20 | 2046-03-20
 3f99cc474acfce4dfed58794665e478d1547739f2e780f1bb4ca9b133097d401 | CN=HARICA TLS ECC Root CA 2021,O=Hellenic Academic and Research Institutions CA,C=GR | 2021-02-19 | 2045-02-13
 d95d0e8eda79525bf9beb11b14d2100d3294985f0c62d9fabd9cd999eccb7b1d | CN=HARICA TLS RSA Root CA 2021,O=Hellenic Academic and Research Institutions CA,C=GR | 2021-02-19 | 2045-02-13
-f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31
 69729b8e15a86efc177a57afb7171dfc64add28c2fca8cf1507e34453ccb1470 | CN=ISRG Root X2,O=Internet Security Research Group,C=US | 2020-09-04 | 2040-09-17
 88f438dcf8ffd1fa8f429115ffe5f82ae1e06e0c70c375faad717b34a49e7265 | CN=NAVER Global Root Certification Authority,O=NAVER BUSINESS PLATFORM Corp.,C=KR | 2017-08-18 | 2037-08-18
 242b69742fcb1e5b2abf98898b94572187544e5b4d9911786573621f6a74b82c | CN=Telia Root CA v2,O=Telia Finland Oyj,C=FI | 2018-11-29 | 2043-11-29
@@ -116,6 +114,8 @@ c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383 | CN=Sectigo Pu
 c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143 | CN=SSL.com TLS ECC Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
 8faf7d2e2cb4709bb8e0b33666bf75a5dd45b5de480f8ea8d4bfe6bebc17f2ed | CN=SSL.com TLS RSA Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
 3f63bb2814be174ec8b6439cf08d6d56f0b7c405883a5648a334424d6b3ec558 | CN=TWCA CYBER Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2022-11-22 | 2047-11-22
+c0076b9ef0531fb1a656d67c4ebe97cd5dbaa41ef44598acc2489878c92d8711 | CN=TrustAsia TLS ECC Root CA,O=TrustAsia Technologies\, Inc.,C=CN | 2024-05-15 | 2044-05-15
+06c08d7dafd876971eb1124fe67f847ec0c7a158d3ea53cbe940e2ea9791f4c3 | CN=TrustAsia TLS RSA Root CA,O=TrustAsia Technologies\, Inc.,C=CN | 2024-05-15 | 2044-05-15
 ## Constrained Roots
 To learn more about constraints applied to certificates included in the Chrome Root Store, click [here](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md).
 
@@ -124,10 +124,8 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5 | OU=ePKI Root Certification Authority,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2004-12-20 | 2034-12-20
 02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5 | CN=Entrust Root Certification Authority - EC1,OU=See www.entrust.net/legal-terms+OU=(c) 2012 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2012-12-18 | 2037-12-18
 0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7 | CN=AffirmTrust Commercial,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
-0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b | CN=AffirmTrust Networking,O=AffirmTrust,C=US | 2010-01-29 | 2030-12-31
 43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339 | CN=Entrust Root Certification Authority - G2,OU=See www.entrust.net/legal-terms+OU=(c) 2009 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2009-07-07 | 2030-12-07
-70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a | CN=AffirmTrust Premium,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
 73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c | CN=Entrust Root Certification Authority,OU=www.entrust.net/CPS is incorporated by reference+OU=(c) 2006 Entrust\, Inc.,O=Entrust\, Inc.,C=US | 2006-11-27 | 2026-11-27
-bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423 | CN=AffirmTrust Premium ECC,O=AffirmTrust,C=US | 2010-01-29 | 2040-12-31
 db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88 | CN=Entrust Root Certification Authority - G4,OU=See www.entrust.net/legal-terms+OU=(c) 2015 Entrust\, Inc. - for authorized use only,O=Entrust\, Inc.,C=US | 2015-05-27 | 2037-12-27
-9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a | CN=GLOBALTRUST 2020,O=e-commerce monitoring GmbH,C=AT | 2020-02-10 | 2040-06-10
+6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98 | CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók (Certification Services),O=NetLock Kft.,L=Budapest,C=HU | 2008-12-11 | 2028-12-06
+f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31

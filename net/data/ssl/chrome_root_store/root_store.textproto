@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 21
+version_major: 22
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -107,10 +107,10 @@ trust_anchors {
   sha256_hex: "c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5"
   constraints: {
     sct_not_after_sec: 1754006399
-    min_version: "135"
+    min_version: "139"
   }
   constraints: {
-    max_version_exclusive: "135"
+    max_version_exclusive: "139"
   }
 }
 
@@ -249,21 +249,6 @@ trust_anchors {
   }
 }
 
-# CN=AffirmTrust Networking, O=AffirmTrust, C=US
-# https://networking.affirmtrust.com:4431
-# Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b"
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1731369599
-    min_version: "131"
-  }
-  constraints: {
-    max_version_exclusive: "131"
-  }
-}
-
 # CN=Entrust Root Certification Authority - G2, OU=(c) 2009 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
 # https://validg2.entrust.net
 # Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
@@ -279,41 +264,11 @@ trust_anchors {
   }
 }
 
-# CN=AffirmTrust Premium, O=AffirmTrust, C=US
-# https://premium.affirmtrust.com:4432/
-# Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a"
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1731369599
-    min_version: "131"
-  }
-  constraints: {
-    max_version_exclusive: "131"
-  }
-}
-
 # CN=Entrust Root Certification Authority, OU=(c) 2006 Entrust, Inc., OU=www.entrust.net/CPS is incorporated by reference, O=Entrust, Inc., C=US
 # https://www.entrust.net/
 # Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1731369599
-    min_version: "131"
-  }
-  constraints: {
-    max_version_exclusive: "131"
-  }
-}
-
-# CN=AffirmTrust Premium ECC, O=AffirmTrust, C=US
-# https://premiumecc.affirmtrust.com:4433/
-# Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423"
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1731369599
@@ -474,9 +429,17 @@ trust_anchors {
 
 # CN=NetLock Arany (Class Gold) Főtanúsítvány, OU=Tanúsítványkiadók (Certification Services), O=NetLock Kft., L=Budapest, C=HU
 # https://valid.ev.tanusitvany.hu
+# Constraint date: Thu Jul 31 2025 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1754006399
+    min_version: "139"
+  }
+  constraints: {
+    max_version_exclusive: "139"
+  }
 }
 
 # CN=OISTE WISeKey Global Root GB CA, OU=OISTE Foundation Endorsed, O=WISeKey, C=CH
@@ -667,17 +630,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# CN=GLOBALTRUST 2020, O=e-commerce monitoring GmbH, C=AT
-# https://testok-2020-server-qualified-ev-1.e-monitoring.at/
-# Constraint date: Sun Jun 30, 2024 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a"
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1719791999
-  }
-}
-
 # CN=HARICA TLS ECC Root CA 2021, O=Hellenic Academic and Research Institutions CA, C=GR
 # https://tls-ecc-valid-ev.root2021.harica.gr
 trust_anchors {
@@ -693,8 +645,16 @@ trust_anchors {
 }
 
 # CN=HiPKI Root CA - G1, O=Chunghwa Telecom Co., Ltd., C=TW
+# Constraint date: Thu Jul 31 2025 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc"
+  constraints: {
+    sct_not_after_sec: 1754006399
+    min_version: "139"
+  }
+  constraints: {
+    max_version_exclusive: "139"
+  }
 }
 
 # CN=ISRG Root X2, O=Internet Security Research Group, C=US
@@ -807,6 +767,20 @@ trust_anchors {
 # CN=TWCA CYBER Root CA, OU=Root CA, O=TAIWAN-CA, C=TW
 trust_anchors {
   sha256_hex: "3f63bb2814be174ec8b6439cf08d6d56f0b7c405883a5648a334424d6b3ec558"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=TrustAsia TLS ECC Root CA, O=TrustAsia Technologies, Inc., C=CN
+# https://ev-ecctls-valid.trustasia.com 
+trust_anchors {
+  sha256_hex: "c0076b9ef0531fb1a656d67c4ebe97cd5dbaa41ef44598acc2489878c92d8711"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=TrustAsia TLS RSA Root CA, O=TrustAsia Technologies, Inc., C=CN
+# https://ev-rsatls-valid.trustasia.com 
+trust_anchors {
+  sha256_hex: "06c08d7dafd876971eb1124fe67f847ec0c7a158d3ea53cbe940e2ea9791f4c3"
   ev_policy_oids: "2.23.140.1.1"
 }
 
