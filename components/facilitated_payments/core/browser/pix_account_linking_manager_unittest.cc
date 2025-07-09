@@ -191,10 +191,24 @@ TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
   manager()->MaybeShowPixAccountLinkingPrompt();
 }
 
+TEST_F(PixAccountLinkingManagerTest, DismissPrompt) {
+  // Verify that the prompt dismissal is triggered only once despite multiple
+  // calls to `DismissPrompt`.
+  EXPECT_CALL(client(), DismissPrompt);
+
+  // The show method is called so the internal UI state is correctly set.
+  manager()->MaybeShowPixAccountLinkingPrompt();
+  test_api().DismissPrompt();
+  // This call should not trigger prompt dismissal again.
+  test_api().DismissPrompt();
+}
+
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(client(), DismissPrompt);
   EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage);
 
+  // The show method is called so the internal UI state is correctly set.
+  manager()->MaybeShowPixAccountLinkingPrompt();
   test_api().OnAccepted();
 }
 
@@ -205,6 +219,8 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
 
   EXPECT_CALL(client(), DismissPrompt);
 
+  // The show method is called so the internal UI state is correctly set.
+  manager()->MaybeShowPixAccountLinkingPrompt();
   test_api().OnDeclined();
 
   // Verify that declining the prompt disables the account linking user pref.

@@ -34,9 +34,12 @@ class PixAccountLinkingManager {
  private:
   friend class PixAccountLinkingManagerTestApi;
 
-  // Sets the UI event listener and triggers showing the Pix account linking
-  // prompt.
+  // Sets the UI event listener, sets the internal UI state, and triggers
+  // showing the Pix account linking prompt if the user is eligible.
   void ShowPixAccountLinkingPromptIfEligible();
+
+  // Sets the internal UI state and triggers dismissal.
+  void DismissPrompt();
 
   void OnAccepted();
 
@@ -59,6 +62,10 @@ class PixAccountLinkingManager {
   // optional to be able to differentiate between the case where the server
   // response is not received yet.
   std::optional<bool> is_eligible_for_pix_account_linking_ = std::nullopt;
+
+  // True when the Pix account linking prompt is being shown to the user. Used
+  // to catch instances where the prompt is unexpectedly closed.
+  bool is_prompt_showing_ = false;
 
   base::WeakPtrFactory<PixAccountLinkingManager> weak_ptr_factory_{this};
 };

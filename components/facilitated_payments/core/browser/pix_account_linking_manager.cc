@@ -17,7 +17,13 @@ PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
     : client_(CHECK_DEREF(client)) {}
 
-PixAccountLinkingManager::~PixAccountLinkingManager() = default;
+PixAccountLinkingManager::~PixAccountLinkingManager() {
+  if (is_prompt_showing_) {
+    // The prompt closed unexpectedly, so the internal state is not updated. The
+    // event listener would log metrics accordingly.
+    client_->DismissPrompt();
+  }
+}
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   if (!client_->GetDeviceDelegate()->IsPixAccountLinkingSupported()) {
@@ -66,6 +72,7 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
+  is_prompt_showing_ = true;
   client_->ShowPixAccountLinkingPrompt(
       base::BindOnce(&PixAccountLinkingManager::OnAccepted,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -73,15 +80,23 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void PixAccountLinkingManager::DismissPrompt() {
+  if (!is_prompt_showing_) {
+    return;
+  }
+  is_prompt_showing_ = false;
+  client_->DismissPrompt();
+}
+
 void PixAccountLinkingManager::OnAccepted() {
   // TODO(crbug.com/419108993): Add metrics.
-  client_->DismissPrompt();
+  DismissPrompt();
   client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage();
 }
 
 void PixAccountLinkingManager::OnDeclined() {
   // TODO(crbug.com/419108993): Add metrics.
-  client_->DismissPrompt();
+  DismissPrompt();
   client_->GetPaymentsDataManager()
       ->SetFacilitatedPaymentsPixAccountLinkingUserPref(/* enabled= */ false);
 }
@@ -89,18 +104,26 @@ void PixAccountLinkingManager::OnDeclined() {
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
+      CHECK(is_prompt_showing_);
       // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
       // prompt shown.
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
+      if (is_prompt_showing_) {
+        // TODO(crbug.com/419108993): Log that the prompt was closed
+        // unexpectedly.
+      }
       // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
       // prompt closed not by user.
+      is_prompt_showing_ = false;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
+      CHECK(is_prompt_showing_);
       // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
       // prompt closed by user.
+      is_prompt_showing_ = false;
       break;
     }
     default:

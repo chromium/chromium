@@ -23,6 +23,7 @@ class PixAccountLinkingManagerTestApi {
   ~PixAccountLinkingManagerTestApi() = default;
 
   // Calls the underlying PixAccountLinkingManager's private methods.
+  void DismissPrompt() { manager_->DismissPrompt(); }
   void OnAccepted() { manager_->OnAccepted(); }
   void OnDeclined() { manager_->OnDeclined(); }
 
