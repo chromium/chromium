@@ -26,6 +26,7 @@ class PixAccountLinkingManagerTestApi {
   void DismissPrompt() { manager_->DismissPrompt(); }
   void OnAccepted() { manager_->OnAccepted(); }
   void OnDeclined() { manager_->OnDeclined(); }
+  void Reset() { manager_->Reset(); }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;

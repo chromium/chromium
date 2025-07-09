@@ -34,6 +34,8 @@ class PixAccountLinkingManager {
  private:
   friend class PixAccountLinkingManagerTestApi;
 
+  void Reset();
+
   // Sets the UI event listener, sets the internal UI state, and triggers
   // showing the Pix account linking prompt if the user is eligible.
   void ShowPixAccountLinkingPromptIfEligible();

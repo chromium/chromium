@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 
 #include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -26,10 +27,11 @@ PixAccountLinkingManager::~PixAccountLinkingManager() {
 }
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
+  // Reset to default state to prepare for a new account linking flow.
+  Reset();
   if (!client_->GetDeviceDelegate()->IsPixAccountLinkingSupported()) {
     return;
   }
-
   if (!client_->GetPaymentsDataManager()
            ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
     return;
@@ -59,6 +61,20 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   client_->GetDeviceDelegate()->SetOnReturnToChromeCallback(base::BindOnce(
       &PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible,
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PixAccountLinkingManager::Reset() {
+  is_eligible_for_pix_account_linking_ = std::nullopt;
+  if (is_prompt_showing_) {
+    // This should NOT happen as the account linking flow cannot be triggered
+    // when the bottom sheet is open.
+    // TODO(crbug.com/427597144): Replace with CHECK(!is_prompt_showing_) in
+    // MaybeShowPixAccountLinkingPrompt after M144.
+    base::debug::DumpWithoutCrashing();
+    client_->DismissPrompt();
+  }
+  is_prompt_showing_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {

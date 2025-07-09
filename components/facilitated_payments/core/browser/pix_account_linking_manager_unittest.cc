@@ -228,4 +228,44 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
       pref_service_.get()));
 }
 
+TEST_F(PixAccountLinkingManagerTest, Reset_PromptShowing_TriggersDismissal) {
+  manager()->MaybeShowPixAccountLinkingPrompt();
+
+  EXPECT_CALL(client(), DismissPrompt());
+
+  test_api().Reset();
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       Reset_NoPromptShowing_DoesNotTriggerDismissal) {
+  EXPECT_CALL(client(), DismissPrompt).Times(0);
+
+  test_api().Reset();
+}
+
+// During the account linking flow, the only async calls are server call to get
+// eligibility, and waiting for user to complete payment and return to Chrome.
+// Since these happen in parallel, and the latter call happens last, it is
+// sufficient to test the latter for invalidated weak pointer.
+TEST_F(PixAccountLinkingManagerTest,
+       Reset_BeforeReturningToChrome_PromptNotShown) {
+  base::OnceClosure on_return_to_chrome_callback;
+  // Override the default behavior of SetOnReturnToChromeCallback to capture the
+  // callback and simulate an async response.
+  ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+      .WillByDefault(testing::Invoke([&](base::OnceClosure callback) {
+        on_return_to_chrome_callback = std::move(callback);
+      }));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+  // Reset() is called before the user returns to Chrome. This should invalidate
+  // the weak pointer for the callback.
+  test_api().Reset();
+  // The user returns to Chrome.
+  ASSERT_TRUE(on_return_to_chrome_callback);
+  std::move(on_return_to_chrome_callback).Run();
+}
+
 }  // namespace payments::facilitated
