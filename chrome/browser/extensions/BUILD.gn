@@ -160,6 +160,7 @@ source_set("extensions") {
     "api/storage/sync_value_store_cache.h",
     "api/storage/syncable_settings_storage.cc",
     "api/storage/syncable_settings_storage.h",
+    "api/tabs/tabs_api.cc",
     "api/tabs/tabs_api.h",
     "api/tabs/tabs_constants.h",
     "api/tabs/tabs_windows_api.cc",

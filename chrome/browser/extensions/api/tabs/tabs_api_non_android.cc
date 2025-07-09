@@ -1236,28 +1236,6 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
                             tab_strip, tab_strip->active_index()))));
 }
 
-ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
-  std::optional<tabs::GetAllInWindow::Params> params =
-      tabs::GetAllInWindow::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  // windowId defaults to "current" window.
-  int window_id = extension_misc::kCurrentWindowId;
-  if (params->window_id) {
-    window_id = *params->window_id;
-  }
-
-  std::string error;
-  WindowController* window_controller =
-      ExtensionTabUtil::GetControllerFromWindowID(
-          ChromeExtensionFunctionDetails(this), window_id, &error);
-  if (!window_controller) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  return RespondNow(WithArguments(
-      window_controller->CreateTabList(extension(), source_context_type())));
-}
-
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   std::optional<tabs::Query::Params> params =
       tabs::Query::Params::Create(args());

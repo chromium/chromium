@@ -102,13 +102,6 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
-  std::optional<tabs::GetAllInWindow::Params> params =
-      tabs::GetAllInWindow::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   std::optional<tabs::Query::Params> params =
       tabs::Query::Params::Create(args());
