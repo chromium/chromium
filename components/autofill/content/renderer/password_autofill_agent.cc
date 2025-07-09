@@ -1056,9 +1056,9 @@ void PasswordAutofillAgent::SubmitFormWithEnter(
   }
 
   WebFormElement form = input_element.GetOwningFormForAutofill();
-  // If there is no <form> element owning the input, we can't guarantee Enter
-  // will work.
-  if (!form) {
+  // If there is no <form> element with an action attribute owning the input, we
+  // can't guarantee Enter will work.
+  if (!form || form.Action().IsNull() || form.Action().IsEmpty()) {
     std::move(callback).Run(false);
     return;
   }

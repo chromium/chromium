@@ -287,21 +287,30 @@ const char kPasswordChangeWithoutFormHTML[] =
     "</DIV>";
 
 const char kPasswordChangeFormWithoutSubmitHTML[] =
-    "<DIV>"
+    "<FORM name='ChangeWithUsernameForm' action='http://www.bidule.com'>"
     "  <INPUT type='text' id='username'/>"
     "  <INPUT type='password' id='password'/>"
     "  <INPUT type='password' id='newpassword'/>"
     "  <INPUT type='password' id='confirmpassword'/>"
-    "</DIV>";
+    "</FORM>";
 
 const char kPasswordChangeFormSubmitDisabledHTML[] =
-    "<DIV>"
+    "<FORM name='ChangeWithUsernameForm' action='http://www.bidule.com'>"
     "  <INPUT type='text' id='username'/>"
     "  <INPUT type='password' id='password'/>"
     "  <INPUT type='password' id='newpassword'/>"
     "  <INPUT type='password' id='confirmpassword'/>"
     "  <INPUT type='submit' value='Change pwd' disabled/>"
-    "</DIV>";
+    "</FORM>";
+
+const char kPasswordChangeFormWithoutActionHTML[] =
+    "<FORM name='ChangeWithUsernameForm'>"
+    "  <INPUT type='text' id='username'/>"
+    "  <INPUT type='password' id='password'/>"
+    "  <INPUT type='password' id='newpassword'/>"
+    "  <INPUT type='password' id='confirmpassword'/>"
+    "  <INPUT type='submit' value='Change pwd'/>"
+    "</FORM>";
 
 const char kCreditCardFormHTML[] =
     "<FORM name='ChangeWithUsernameForm' action='http://www.bidule.com'>"
@@ -5290,6 +5299,21 @@ TEST_F(PasswordAutofillAgentTest,
        SubmitChangePasswordFailedWhenSubmitElementDisabled) {
   LoadHTML(kPasswordChangeFormSubmitDisabledHTML);
   UpdateUrlForHTML(kPasswordChangeFormSubmitDisabledHTML);
+
+  WebInputElement password = GetInputElementByID("password");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(false));
+  ASSERT_FALSE(fake_driver_.called_password_form_submitted());
+  password_autofill_agent_->SubmitFormWithEnter(
+      autofill::form_util::GetFieldRendererId(password), mock_reply.Get());
+  EXPECT_FALSE(fake_driver_.called_password_form_submitted());
+}
+
+TEST_F(PasswordAutofillAgentTest,
+       SubmitChangePasswordFailedWhenFormHasNoAction) {
+  LoadHTML(kPasswordChangeFormWithoutActionHTML);
+  UpdateUrlForHTML(kPasswordChangeFormWithoutActionHTML);
 
   WebInputElement password = GetInputElementByID("password");
 
