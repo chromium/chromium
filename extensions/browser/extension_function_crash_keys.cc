@@ -33,7 +33,7 @@ struct CallInfo {
 // - API A start (2)
 // - API A end (2)
 // This will report crash keys in the order (API A, API B) even though the most
-// recent API A call has completed. This seemms OK because it's true that API A
+// recent API A call has completed. This seems OK because it's true that API A
 // was the most recently called. It also avoids storing a stack of all in-flight
 // API calls with per-call IDs to match them up. During startup when extensions
 // are initializing there can be hundreds of in-flight calls.
