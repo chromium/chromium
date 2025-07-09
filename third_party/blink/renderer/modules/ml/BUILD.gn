@@ -28,6 +28,8 @@ blink_modules_sources("ml") {
     "webnn/ml_graph_transform/ml_graph_transformer.h",
     "webnn/ml_graph_transform/pipeline.cc",
     "webnn/ml_graph_transform/pipeline.h",
+    "webnn/ml_graph_transform/qdq_detection_transformer.cc",
+    "webnn/ml_graph_transform/qdq_detection_transformer.h",
     "webnn/ml_graph_transform/transpose_elimination_transformer.cc",
     "webnn/ml_graph_transform/transpose_elimination_transformer.h",
     "webnn/ml_graph_type_converter.cc",

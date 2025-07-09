@@ -14,11 +14,8 @@ void TransposeEliminationTransformer::Transform(
     MLNamedOperands& named_outputs) {
   HeapVector<Member<MLOperator>> sorted_operators =
       GetOperatorsInTopologicalOrder(named_outputs);
-  HeapHashSet<Member<const MLOperator>> graph_output_operators;
-  for (auto& named_output : named_outputs) {
-    MLOperand* output_operand = named_output.second.Get();
-    graph_output_operators.insert(output_operand->Operator());
-  }
+  HeapHashSet<Member<const MLOperator>> graph_output_operators =
+      GetGraphOutputOperators(named_outputs);
   for (auto& op : sorted_operators) {
     // HandleTranspose will only remove operators before "op", so the for loop
     // is safe to continue.
@@ -93,6 +90,7 @@ void TransposeEliminationTransformer::HandleTranspose(
     MLOperator* transpose,
     HeapHashSet<Member<const MLOperator>>& graph_output_operators,
     MLNamedOperands& named_outputs) {
+  CHECK_EQ(transpose->Kind(), webnn::mojom::blink::Operation::Tag::kTranspose);
   auto optional_front_transpose = TryFindEliminatableFrontTranspose(transpose);
   if (!optional_front_transpose.has_value()) {
     return;

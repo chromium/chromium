@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TRANSFORM_ML_GRAPH_TRANSFORMER_H_
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -51,14 +52,27 @@ class MODULES_EXPORT MLGraphTransformer
       MLOperand* old_operand,
       const Vector<uint32_t>& new_shape);
 
+  static MLOperand* ReplaceOperandWithNewDataType(
+      MLOperand* old_operand,
+      webnn::OperandDataType new_data_type);
+
  protected:
+  static HeapHashSet<Member<const MLOperator>> GetGraphOutputOperators(
+      const MLNamedOperands& named_outputs);
+
   const ExceptionState GetExceptionState();
+
+  static void DebugPrint(const MLNamedOperands& named_outputs);
 
   Member<MLGraphBuilder> graph_builder_;
 
  private:
   static MLOperand* CloneOperandAndResetShape(const MLOperand* operand,
                                               const Vector<uint32_t>& shape);
+
+  static MLOperand* CloneOperandAndResetDataType(
+      const MLOperand* operand,
+      webnn::OperandDataType data_type);
 
   static void ReplaceOperand(MLOperand* old_operand, MLOperand* new_operand);
 };

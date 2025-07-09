@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/pipeline.h"
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/layout_transformer.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/transpose_elimination_transformer.h"
 
 namespace blink {
@@ -18,8 +19,13 @@ void MLGraphTransformPipeline::Trace(Visitor* visitor) const {
 }
 
 void MLGraphTransformPipeline::InitTransformers(MLGraphBuilder* graph_builder) {
+  // Required transformers for backends to consume the graph.
   transformers_.push_back(
       MakeGarbageCollected<LayoutTransformer>(graph_builder));
+
+  // Non-essential transformers. For better performance.
+  transformers_.push_back(
+      MakeGarbageCollected<QDQDetectionTransformer>(graph_builder));
   transformers_.push_back(
       MakeGarbageCollected<TransposeEliminationTransformer>(graph_builder));
 }

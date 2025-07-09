@@ -440,6 +440,7 @@ MLOperand* LayoutTransformer::InsertOutputTranspose(
 
 template <typename MLConv2dOptionsType>
 MLOperand* LayoutTransformer::HandleConv2d(MLOperator* conv2d) {
+  CHECK_EQ(conv2d->Kind(), webnn::mojom::blink::Operation::Tag::kConv2d);
   auto* options = static_cast<MLConv2dOptionsType*>(conv2d->Options());
   CHECK(options);
   webnn::ContextProperties context_properties =
@@ -503,6 +504,8 @@ template MLOperand* LayoutTransformer::HandleConv2d<MLConvTranspose2dOptions>(
     MLOperator* conv2d);
 
 MLOperand* LayoutTransformer::HandleResample2d(MLOperator* resample2d) {
+  CHECK_EQ(resample2d->Kind(),
+           webnn::mojom::blink::Operation::Tag::kResample2d);
   auto* options = static_cast<MLResample2dOptions*>(resample2d->Options());
   CHECK(options);
   webnn::ContextProperties context_properties =
@@ -558,6 +561,8 @@ MLOperand* LayoutTransformer::HandleResample2d(MLOperator* resample2d) {
 }
 
 MLOperand* LayoutTransformer::HandleBatchNormalization(MLOperator* batch_norm) {
+  CHECK_EQ(batch_norm->Kind(),
+           webnn::mojom::blink::Operation::Tag::kBatchNormalization);
   auto* options =
       static_cast<MLBatchNormalizationOptions*>(batch_norm->Options());
   CHECK(options);
@@ -596,6 +601,8 @@ MLOperand* LayoutTransformer::HandleBatchNormalization(MLOperator* batch_norm) {
 
 MLOperand* LayoutTransformer::HandleInstanceNormalization(
     MLOperator* instance_norm) {
+  CHECK_EQ(instance_norm->Kind(),
+           webnn::mojom::blink::Operation::Tag::kInstanceNormalization);
   auto* options =
       static_cast<MLInstanceNormalizationOptions*>(instance_norm->Options());
   CHECK(options);
@@ -628,6 +635,7 @@ MLOperand* LayoutTransformer::HandleInstanceNormalization(
 }
 
 MLOperand* LayoutTransformer::HandlePool2d(MLOperator* pool2d) {
+  CHECK_EQ(pool2d->Kind(), webnn::mojom::blink::Operation::Tag::kPool2d);
   auto* options = static_cast<MLPool2dOptions*>(pool2d->Options());
   CHECK(options);
   webnn::ContextProperties context_properties =

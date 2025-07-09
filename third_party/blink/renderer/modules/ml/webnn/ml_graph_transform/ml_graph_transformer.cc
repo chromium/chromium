@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/ml_graph_transformer.h"
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
 namespace blink {
@@ -105,6 +106,24 @@ MLOperand* MLGraphTransformer::CloneOperandAndResetShape(
 }
 
 // static
+MLOperand* MLGraphTransformer::CloneOperandAndResetDataType(
+    const MLOperand* operand,
+    webnn::OperandDataType data_type) {
+  auto descriptor = webnn::OperandDescriptor::Create(
+      operand->Builder()->GetContext()->GetProperties(), data_type,
+      operand->Shape(), /*label=*/"");
+  CHECK(descriptor.has_value());
+  CHECK_EQ(operand->NumberOfElements(), descriptor->NumberOfElements());
+
+  MLOperand* clone = MakeGarbageCollected<MLOperand>(
+      operand->Builder(), operand->Kind(), descriptor.value());
+
+  clone->operator_ = operand->Operator();
+  clone->dependent_operators_ = operand->dependent_operators_;
+  return clone;
+}
+
+// static
 void MLGraphTransformer::ReplaceOperand(MLOperand* old_operand,
                                         MLOperand* new_operand) {
   auto* op = old_operand->Operator();
@@ -134,9 +153,74 @@ MLOperand* MLGraphTransformer::ReplaceOperandWithNewShape(
   return new_operand;
 }
 
+MLOperand* MLGraphTransformer::ReplaceOperandWithNewDataType(
+    MLOperand* old_operand,
+    webnn::OperandDataType new_data_type) {
+  auto* new_operand = CloneOperandAndResetDataType(old_operand, new_data_type);
+  ReplaceOperand(old_operand, new_operand);
+  return new_operand;
+}
+
 const ExceptionState MLGraphTransformer::GetExceptionState() {
   auto* isolate = graph_builder_->GetExecutionContext()->GetIsolate();
   return ExceptionState(isolate);
+}
+
+// static
+HeapHashSet<Member<const MLOperator>>
+MLGraphTransformer::GetGraphOutputOperators(
+    const MLNamedOperands& named_outputs) {
+  HeapHashSet<Member<const MLOperator>> graph_output_operators;
+  for (const auto& named_output : named_outputs) {
+    MLOperand* output_operand = named_output.second.Get();
+    graph_output_operators.insert(output_operand->Operator());
+  }
+  return graph_output_operators;
+}
+
+// static
+void MLGraphTransformer::DebugPrint(const MLNamedOperands& named_outputs) {
+  HeapVector<Member<MLOperator>> sorted_operators =
+      GetOperatorsInTopologicalOrder(named_outputs);
+
+  size_t id = 0;
+
+  HeapHashMap<Member<const MLOperand>, size_t> input_constant_operand_ids;
+
+  HeapHashMap<Member<const MLOperator>, size_t> operator_ids;
+
+  DLOG(INFO) << "MLGraphTransformer Debug Print:\n";
+
+  for (auto& op : sorted_operators) {
+    for (auto& input : op->Inputs()) {
+      if (input->Kind() == webnn::mojom::blink::Operand::Kind::kInput) {
+        if (!input_constant_operand_ids.Contains(input)) {
+          input_constant_operand_ids.insert(input, ++id);
+          DLOG(INFO) << "#" << id << " Input: " << input->Name() << "\n";
+        }
+      } else if (input->Kind() == webnn::mojom::Operand_Kind::kConstant) {
+        if (!input_constant_operand_ids.Contains(input)) {
+          input_constant_operand_ids.insert(input, ++id);
+          DLOG(INFO) << "#" << id << " Constant" << "\n";
+        }
+      }
+    }
+
+    String opname = MLOperator::OperatorKindToString(op->Kind(), op->SubKind());
+    operator_ids.insert(op, ++id);
+    DLOG(INFO) << "#" << id << " " << opname.Utf8() << " (";
+    for (auto& input : op->Inputs()) {
+      if (input->Kind() == webnn::mojom::Operand_Kind::kInput ||
+          input->Kind() == webnn::mojom::Operand_Kind::kConstant) {
+        DLOG(INFO) << "#" << input_constant_operand_ids.at(input) << " ";
+      } else {
+        DLOG(INFO) << "#" << operator_ids.at(input->Operator()) << " ";
+      }
+    }
+    DLOG(INFO) << ")\n";
+  }
+
+  DLOG(INFO) << "\n\n";
 }
 
 }  // namespace blink
