@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -142,6 +143,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"deleteFlowHeader", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE},
       {"delete", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM},
       {"previewA11yName", IDS_DATA_SHARING_PREVIEW_A11Y_NAME},
+      {"sharingDisabledDescription",
+       IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_HEADER},
 
       // dynamic messages:
       {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},

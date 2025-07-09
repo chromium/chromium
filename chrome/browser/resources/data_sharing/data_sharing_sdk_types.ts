@@ -128,6 +128,7 @@ export const enum StaticMessageKey {
   GROUP_FULL_TITLE,
   GROUP_FULL_CONTENT,
   YOUR_GROUP_IS_FULL_DESCRIPTION,
+  SHARING_DISABLED_DESCRIPTION,
   ACTIVITY_LOGS,
 
   CLOSE_FLOW_HEADER,
@@ -193,6 +194,8 @@ export declare interface DataSharingSdkGroupMember {
   role: DataSharingMemberRole;
   avatarUrl: string;
   givenName: string;
+  createdAtTimeMs: number;
+  lastUpdatedAtTimeMs: number;
 }
 export declare interface CreateGroupParams {
   displayName: string;
@@ -292,6 +295,7 @@ export declare interface RunManageFlowParams extends DataSharingSdkGroupId {
   activityLogCallback?: () => void;
   logger?: Logger;
   showLeaveDialogAtStartup?: boolean;
+  isSharingDisabled?: boolean;
 }
 export declare interface RunCloseFlowParams extends DataSharingSdkGroupId {
   parent: HTMLElement;

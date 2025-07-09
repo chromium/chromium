@@ -33,6 +33,8 @@ const groupMemberMapFunction =
           role: 'member',
           avatarUrl: 'http://example.com',
           givenName: 'MEMBER_NAME',
+          createdAtTimeMs: 0,
+          lastUpdatedAtTimeMs: 0,
         },
       ],
       formerMembers: [
@@ -43,6 +45,8 @@ const groupMemberMapFunction =
           role: 'former_member',
           avatarUrl: 'http://example2.com',
           givenName: 'MEMBER_NAME2',
+          createdAtTimeMs: 0,
+          lastUpdatedAtTimeMs: 0,
         },
       ],
     });

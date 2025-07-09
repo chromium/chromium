@@ -22,6 +22,8 @@ inline const std::string_view kQueryParamGroupId = "group_id";
 inline const std::string_view kQueryParamTokenSecret = "token_secret";
 inline const std::string_view kQueryParamTabGroupId = "tab_group_id";
 inline const std::string_view kQueryParamTabGroupTitle = "tab_group_title";
+inline const std::string_view kQueryParamIsDisabledForPolicy =
+    "is_disabled_for_policy";
 
 // Possible values of kQueryParamFlow in url.
 inline const std::string_view kFlowShare = "share";
@@ -30,6 +32,10 @@ inline const std::string_view kFlowManage = "manage";
 inline const std::string_view kFlowDelete = "delete";
 inline const std::string_view kFlowLeave = "leave";
 inline const std::string_view kFlowClose = "close";
+
+// Possible values of kQueryParamIsDisabledByPolicy.
+inline const std::string_view kTrue = "true";
+inline const std::string_view kFalse = "false";
 
 enum FlowType {
   kShare,

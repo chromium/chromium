@@ -139,7 +139,7 @@ suite('Start flows', () => {
 
   test('Manage flow', async () => {
     DataSharingApp.setUrlForTesting(
-        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id&tab_group_id=fake_id');
+        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id&is_disabled_for_policy=true&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
@@ -148,6 +148,8 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
+    assertEquals(
+        true, testDataSharingSdk.getArgs('runManageFlow')[0].isSharingDisabled);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });

@@ -37,6 +37,8 @@ suite('MojomConversionUtilsTest', () => {
         role: DataSharingMemberRoleEnum.INVITEE,
         avatarUrl,
         givenName,
+        createdAtTimeMs: 0,
+        lastUpdatedAtTimeMs: 0,
       }],
       formerMembers: [{
         focusObfuscatedGaiaId: formerGaiaId,
@@ -45,6 +47,8 @@ suite('MojomConversionUtilsTest', () => {
         role: DataSharingMemberRoleEnum.FORMER_MEMBER,
         avatarUrl: formerAvatarUrl,
         givenName: formerGivenName,
+        createdAtTimeMs: 0,
+        lastUpdatedAtTimeMs: 0,
       }],
     });
 

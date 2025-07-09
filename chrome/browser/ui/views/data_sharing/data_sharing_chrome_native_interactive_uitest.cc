@@ -185,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
            fake_collab_id.value() + "&" +
            std::string(data_sharing::kQueryParamTabGroupId) + "=" +
            group_id.ToString() + "&" +
-           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
-           fake_tab_group_title);
+           std::string(data_sharing::kQueryParamIsDisabledForPolicy) + "=" +
+           "false" + "&" + std::string(data_sharing::kQueryParamTabGroupTitle) +
+           "=" + fake_tab_group_title);
 
   auto expected_leave_flow_url =
       GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
