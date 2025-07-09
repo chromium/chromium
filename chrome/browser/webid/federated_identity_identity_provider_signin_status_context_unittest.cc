@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -156,8 +156,20 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   base::Value::List returned_accounts_idp_b =
       context()->GetAccounts(kIdpOriginB);
   EXPECT_EQ(1U, returned_accounts_idp_b.size());
-  EXPECT_EQ(*returned_accounts_idp_b[0].GetDict().FindString("name"),
+
+  base::Value::Dict& account_dict = returned_accounts_idp_b[0].GetDict();
+  EXPECT_EQ(*account_dict.FindString(content::webid::kAccountIdKey),
+            kAccountB.id);
+  EXPECT_EQ(*account_dict.FindString(content::webid::kAccountNameKey),
             kAccountB.name);
+  EXPECT_EQ(*account_dict.FindString(content::webid::kAccountEmailKey),
+            kAccountB.email);
+  EXPECT_TRUE(kAccountB.given_name);
+  EXPECT_EQ(*account_dict.FindString(content::webid::kAccountGivenNameKey),
+            kAccountB.given_name.value());
+  EXPECT_TRUE(kAccountB.picture && !kAccountB.picture->is_empty());
+  EXPECT_EQ(*account_dict.FindString(content::webid::kAccountPictureKey),
+            kAccountB.picture.value().spec());
   EXPECT_TRUE(context()->GetSigninStatus(kIdpOriginB).value_or(false));
 }
 

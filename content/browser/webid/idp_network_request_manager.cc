@@ -27,6 +27,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/webid/constants.h"
 #include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -115,20 +116,6 @@ constexpr char kClientMatchesTopFrameOriginKey[] =
 // Accounts endpoint response keys.
 constexpr char kAccountsKey[] = "accounts";
 constexpr char kIdpBrandingKey[] = "branding";
-
-// Keys in 'account' dictionary in accounts endpoint.
-constexpr char kAccountIdKey[] = "id";
-constexpr char kAccountEmailKey[] = "email";
-constexpr char kAccountNameKey[] = "name";
-constexpr char kAccountPhoneNumberKey[] = "tel";
-constexpr char kAccountUsernameKey[] = "username";
-constexpr char kAccountGivenNameKey[] = "given_name";
-constexpr char kAccountPictureKey[] = "picture";
-constexpr char kAccountApprovedClientsKey[] = "approved_clients";
-constexpr char kHintsKey[] = "login_hints";
-constexpr char kDomainHintsKey[] = "domain_hints";
-constexpr char kLabelsKey[] = "labels";
-constexpr char kLabelHintsKey[] = "label_hints";
 
 // Keys in 'branding' 'icons' dictionary in config for the IDP icon and client
 // metadata endpoint for the RP icon.
@@ -240,16 +227,16 @@ std::string ExtractString(const base::Value::Dict& response, const char* key) {
 
 IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
                                        const std::string& client_id) {
-  auto* id = account.FindString(kAccountIdKey);
-  auto* email = account.FindString(kAccountEmailKey);
-  auto* name = account.FindString(kAccountNameKey);
-  auto* phone = account.FindString(kAccountPhoneNumberKey);
-  auto* username = account.FindString(kAccountUsernameKey);
-  auto* given_name = account.FindString(kAccountGivenNameKey);
-  auto* picture = account.FindString(kAccountPictureKey);
-  auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
+  auto* id = account.FindString(webid::kAccountIdKey);
+  auto* email = account.FindString(webid::kAccountEmailKey);
+  auto* name = account.FindString(webid::kAccountNameKey);
+  auto* phone = account.FindString(webid::kAccountPhoneNumberKey);
+  auto* username = account.FindString(webid::kAccountUsernameKey);
+  auto* given_name = account.FindString(webid::kAccountGivenNameKey);
+  auto* picture = account.FindString(webid::kAccountPictureKey);
+  auto* approved_clients = account.FindList(webid::kAccountApprovedClientsKey);
   std::vector<std::string> account_hints;
-  auto* hints = account.FindList(kHintsKey);
+  auto* hints = account.FindList(webid::kHintsKey);
   if (hints) {
     for (const base::Value& entry : *hints) {
       if (entry.is_string()) {
@@ -258,7 +245,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     }
   }
   std::vector<std::string> domain_hints;
-  auto* domain_hints_list = account.FindList(kDomainHintsKey);
+  auto* domain_hints_list = account.FindList(webid::kDomainHintsKey);
   if (domain_hints_list) {
     for (const base::Value& entry : *domain_hints_list) {
       if (entry.is_string()) {
@@ -270,9 +257,9 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   std::vector<std::string> labels;
   const base::ListValue* labels_list = nullptr;
   if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-    labels_list = account.FindList(kLabelHintsKey);
+    labels_list = account.FindList(webid::kLabelHintsKey);
   } else {
-    labels_list = account.FindList(kLabelsKey);
+    labels_list = account.FindList(webid::kLabelsKey);
   }
   if (labels_list) {
     for (const base::Value& entry : *labels_list) {

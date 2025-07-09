@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/constants.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -42,24 +42,18 @@ const char kIdpSigninOptionsExpirationKey[] = "expiration";
 // purpose of expiration.
 const char kIdpSigninOptionsLastModifiedKey[] = "last-modified";
 
-// Keys for account properties within LoginStatusOptions accounts list.
-const char kId[] = "id";
-const char kEmail[] = "email";
-const char kName[] = "name";
-const char kGivenName[] = "given-name";
-const char kPicture[] = "picture";
-
 base::Value::Dict DictFromAccount(const LoginStatusAccount& account) {
   base::Value::Dict dict;
-  dict.Set(kId, account.id);
-  dict.Set(kEmail, account.email);
-  dict.Set(kName, account.name);
+  dict.Set(content::webid::kAccountIdKey, account.id);
+  dict.Set(content::webid::kAccountEmailKey, account.email);
+  dict.Set(content::webid::kAccountNameKey, account.name);
   if (account.given_name.has_value()) {
-    dict.Set(kGivenName, account.given_name.value());
+    dict.Set(content::webid::kAccountGivenNameKey, account.given_name.value());
   }
 
   if (account.picture.has_value()) {
-    dict.Set(kPicture, account.picture.value().spec());
+    dict.Set(content::webid::kAccountPictureKey,
+             account.picture.value().spec());
   }
   return dict;
 }

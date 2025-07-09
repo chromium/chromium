@@ -521,6 +521,7 @@ source_set("browser_sources") {
     "web_ui_url_loader_factory.h",
     "webauthn_security_utils.cc",
     "webauthn_security_utils.h",
+    "webid/constants.h",
     "webrtc_event_logger.cc",
     "webrtc_event_logger.h",
     "webrtc_log.cc",
