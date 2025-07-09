@@ -6514,9 +6514,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- End Deprecated Apps Deletion Dialog strings. -->
 
       <!-- Extensions Menu bubble -->
-      <message name="IDS_EXTENSIONS_MENU_TITLE" desc="Title of the Extensions Menu">
-        Extensions
-      </message>
+      <if expr="enable_extensions_core">
+        <message name="IDS_EXTENSIONS_MENU_TITLE" desc="Title of the Extensions Menu" formatter_data="android_java">
+          Extensions
+        </message>
+      </if>
       <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP" desc="Title of the context menu for individual extensions in the Extensions Menu">
           More options
       </message>

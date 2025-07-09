@@ -105,12 +105,15 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/chrome_extension.xml",
     "java/res/drawable/extensions_menu_bg_tinted.xml",
+    "java/res/drawable/ic_close.xml",
     "java/res/layout/extension_action_button.xml",
     "java/res/layout/extension_toolbar_container.xml",
     "java/res/layout/extensions_menu.xml",
+    "java/res/layout/extensions_menu_header.xml",
   ]
 
   deps = [
+    "//chrome/app:java_strings_grd",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/styles/android:java_resources",

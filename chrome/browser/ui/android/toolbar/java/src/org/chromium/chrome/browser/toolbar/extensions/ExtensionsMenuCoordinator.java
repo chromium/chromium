@@ -17,6 +17,8 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -27,6 +29,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final ListMenuButton mExtensionsMenuButton;
     private final AnchoredPopupWindow mMenuWindow;
     private final View mContentView;
+    private final PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * Constructor.
@@ -62,6 +65,19 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                             mContentView,
                             anchoredViewRectProvider);
         }
+
+        PropertyModel model =
+                new PropertyModel.Builder(ExtensionsMenuProperties.ALL_KEYS)
+                        .with(
+                                ExtensionsMenuProperties.CLOSE_CLICK_LISTENER,
+                                (view) -> {
+                                    mMenuWindow.dismiss();
+                                })
+                        .build();
+
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        model, mContentView, ExtensionsMenuViewBinder::bind);
     }
 
     /** Shows the extensions menu. */
@@ -70,5 +86,12 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mChangeProcessor.destroy();
+    }
+
+    @VisibleForTesting
+    View getContentView() {
+        return mContentView;
+    }
 }

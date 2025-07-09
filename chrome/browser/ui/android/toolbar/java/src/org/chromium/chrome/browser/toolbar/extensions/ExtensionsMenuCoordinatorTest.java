@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
@@ -48,5 +49,14 @@ public class ExtensionsMenuCoordinatorTest {
     public void testShowMenu() {
         mExtensionsMenuCoordinator.showMenu();
         verify(mMenuWindow).show();
+    }
+
+    @Test
+    public void testCloseMenu() {
+        mExtensionsMenuCoordinator
+                .getContentView()
+                .findViewById(R.id.extensions_menu_close_button)
+                .performClick();
+        verify(mMenuWindow).dismiss();
     }
 }
