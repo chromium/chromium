@@ -16013,21 +16013,6 @@
             ]
         }
     ],
-    "OfflineItemsInNotifications": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OfflineItemsInNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "OidcAuthProfileManagement": [
         {
             "platforms": [
