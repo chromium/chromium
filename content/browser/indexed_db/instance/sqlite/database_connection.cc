@@ -746,8 +746,14 @@ void DatabaseConnection::BeginTransaction(
   }
   CHECK(!active_rw_transaction_);
   active_rw_transaction_ = std::make_unique<sql::Transaction>(db_.get());
-  // TODO(crbug.com/40253999): Set the appropriate value for `PRAGMA
-  // synchronous` based on `transaction.durability()`.
+  if (transaction.durability() ==
+      blink::mojom::IDBTransactionDurability::Strict) {
+    TRANSIENT_CHECK(db_->Execute("PRAGMA synchronous=FULL"));
+  } else {
+    // WAL mode is guaranteed to be consistent only with synchronous=NORMAL or
+    // higher: https://www.sqlite.org/pragma.html#pragma_synchronous.
+    TRANSIENT_CHECK(db_->Execute("PRAGMA synchronous=NORMAL"));
+  }
   // TODO(crbug.com/40253999): How do we surface the error if this call fails?
   TRANSIENT_CHECK(active_rw_transaction_->Begin());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
