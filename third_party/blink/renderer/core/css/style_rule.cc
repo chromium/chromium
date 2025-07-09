@@ -180,9 +180,6 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->TraceAfterDispatch(visitor);
       return;
-    case kContents:
-      To<StyleRuleContentsStatement>(this)->TraceAfterDispatch(visitor);
-      return;
     case kPositionTry:
       To<StyleRulePositionTry>(this)->TraceAfterDispatch(visitor);
       return;
@@ -276,9 +273,6 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->~StyleRuleApplyMixin();
       return;
-    case kContents:
-      To<StyleRuleContentsStatement>(this)->~StyleRuleContentsStatement();
-      return;
     case kPositionTry:
       To<StyleRulePositionTry>(this)->~StyleRulePositionTry();
       return;
@@ -332,7 +326,6 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kFunction:
     case kMixin:
     case kApplyMixin:
-    case kContents:
     case kCustomMedia:
       NOTREACHED();
     case kContainer:
@@ -457,7 +450,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kCharset:
     case kMixin:
     case kApplyMixin:
-    case kContents:
     case kCustomMedia:
       NOTREACHED();
   }
@@ -672,7 +664,6 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       return this;
     case kMixin:
     case kApplyMixin:
-    case kContents:
       // The parent pointers in mixins don't really matter;
       // they are always replaced during application anyway.
       return this;
@@ -1060,15 +1051,11 @@ void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(fake_parent_rule_);
 }
 
+StyleRuleApplyMixin::StyleRuleApplyMixin(AtomicString name)
+    : StyleRuleBase(kApplyMixin), name_(std::move(name)) {}
+
 void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(fake_parent_rule_for_declarations_);
-}
-
-void StyleRuleContentsStatement::TraceAfterDispatch(
-    blink::Visitor* visitor) const {
-  StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(fake_parent_rule_for_fallback_);
 }
 
 StyleRuleCustomMedia::StyleRuleCustomMedia(AtomicString name,

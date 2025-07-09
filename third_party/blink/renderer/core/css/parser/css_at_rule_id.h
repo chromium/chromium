@@ -60,7 +60,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleFunction,
   kCSSAtRuleMixin,
   kCSSAtRuleApplyMixin,
-  kCSSAtRuleContents,
   kCSSAtRuleCustomMedia,
 
   kCount  // Must go last.

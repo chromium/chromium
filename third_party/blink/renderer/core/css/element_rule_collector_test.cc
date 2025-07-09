@@ -44,7 +44,7 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
                          /*mixins=*/{}, kRuleHasNoSpecialState,
-                         /*within_mixin=*/nullptr);
+                         /*within_mixin=*/false);
   rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
@@ -360,7 +360,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
         sheet->ParserContext(), sheet, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, selector + " { color: green }"));
     rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium, /*mixins=*/{},
-                       kRuleHasNoSpecialState, /*within_mixin=*/nullptr);
+                       kRuleHasNoSpecialState, /*within_mixin=*/false);
 
     MatchResult result;
     ElementResolveContext context{element};

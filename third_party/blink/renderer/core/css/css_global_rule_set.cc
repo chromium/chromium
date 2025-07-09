@@ -31,7 +31,7 @@ void CSSGlobalRuleSet::InitWatchedSelectorsRuleSet(Document& document) {
   for (unsigned i = 0; i < watched_selectors.size(); ++i) {
     watched_selectors_rule_set_->AddStyleRule(
         watched_selectors[i], /*parent_rule=*/nullptr, *medium,
-        /*mixins=*/{}, kRuleHasNoSpecialState, /*within_mixin=*/nullptr);
+        /*mixins=*/{}, kRuleHasNoSpecialState, /*within_mixin=*/false);
   }
 }
 
@@ -50,7 +50,7 @@ void CSSGlobalRuleSet::UpdateDocumentRulesSelectorsRuleSet(Document& document) {
     document_rules_selectors_rule_set_->AddStyleRule(
         selector, /*parent_rule=*/nullptr, *medium, /*mixins=*/{},
         kRuleHasNoSpecialState,
-        /*within_mixin=*/nullptr);
+        /*within_mixin=*/false);
   }
   document_rules_selectors_rule_set_->CompactRulesIfNeeded();
 }
