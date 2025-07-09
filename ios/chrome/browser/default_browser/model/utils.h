@@ -313,16 +313,9 @@ bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 // see another one.
 bool UserInFullscreenPromoCooldown();
 
-// Returns YES if the user has seen a non-modal promo recently, and shouldn't
-// see another one.
-bool UserInNonModalPromoCooldown();
-
 // List of all key used to store data in NSUserDefaults. Still used as key
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
-
-// Returns the impression limit for the non-modal default browser promo.
-int GetNonModalDefaultBrowserPromoImpressionLimit();
 
 // Returns true if it was determined that the user is eligible for the
 // post restore default browser promo.

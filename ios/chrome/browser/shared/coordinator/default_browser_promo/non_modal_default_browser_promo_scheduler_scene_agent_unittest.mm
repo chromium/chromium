@@ -891,11 +891,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundingDoesNotRecordIfCannotDisplayPromo) {
   base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
 
-  // Make sure the impression limit is met.
-  for (int i = 0; i < GetNonModalDefaultBrowserPromoImpressionLimit(); i++) {
-    LogUserInteractionWithNonModalPromo(i);
-  }
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(

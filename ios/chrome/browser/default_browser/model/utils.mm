@@ -65,9 +65,6 @@ constexpr base::TimeDelta kLatestURLOpenForDefaultBrowser = base::Days(21);
 // Cool down between fullscreen promos.
 constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
 
-// Cool down between non-modal promos.
-constexpr base::TimeDelta kNonModalPromoCoolDown = base::Days(14);
-
 // Short cool down between promos.
 constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 
@@ -258,17 +255,6 @@ bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
 
   const base::Time time = base::Time::FromNSDate(date);
   return base::Time::Now() - time > delay;
-}
-
-// Copy the NSDate object in NSUserDefaults from the origin key to the
-// destination key. Does nothing if the origin key is empty.
-void CopyNSDateFromKeyToKey(NSString* originKey, NSString* destinationKey) {
-  NSDate* origin_date = GetObjectFromStorageForKey<NSDate>(originKey);
-  if (!origin_date) {
-    return;
-  }
-
-  SetObjectIntoStorageForKey(destinationKey, origin_date);
 }
 
 // Returns number of events logged for key occuring less than `delay` in the
@@ -677,23 +663,6 @@ bool UserInFullscreenPromoCooldown() {
       kLastTimeUserInteractedWithFullscreenPromo, ComputeCooldown());
 }
 
-bool UserInNonModalPromoCooldown() {
-  NSDate* last_interaction = GetObjectFromStorageForKey<NSDate>(
-      kLastTimeUserInteractedWithNonModalPromo);
-
-  // Sets the last non-modal promo interaction to the same value as last
-  // fullscreen promo interaction if no non-modal interaction is found. This is
-  // to allow a smooth transition to the cooldown period separation between the
-  // two promo types.
-  if (!last_interaction) {
-    CopyNSDateFromKeyToKey(kLastTimeUserInteractedWithFullscreenPromo,
-                           kLastTimeUserInteractedWithNonModalPromo);
-  }
-
-  return HasRecordedEventForKeyLessThanDelay(
-      kLastTimeUserInteractedWithNonModalPromo, kNonModalPromoCoolDown);
-}
-
 // Visible for testing.
 NSString* const kDefaultBrowserUtilsKey = @"DefaultBrowserUtils";
 
@@ -719,17 +688,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   ];
 
   return keysForTesting;
-}
-
-int GetNonModalDefaultBrowserPromoImpressionLimit() {
-  int limit = kNonModalDefaultBrowserPromoImpressionLimitParam.Get();
-
-  // The histogram only supports up to 10 impressions.
-  if (limit > 10) {
-    limit = 10;
-  }
-
-  return limit;
 }
 
 bool IsPostRestoreDefaultBrowserEligibleUser() {

@@ -132,43 +132,6 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
 }
 
-// Tests cooldown between non-modal promos with a prior non-modal promo
-// interaction.
-TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
-  EXPECT_FALSE(UserInNonModalPromoCooldown());
-
-  ResetStorageAndSetTimestampForKey(kLastTimeUserInteractedWithNonModalPromo,
-                                    base::Time::Now());
-
-  EXPECT_TRUE(UserInNonModalPromoCooldown());
-}
-
-// Tests cooldown between non-modal promos without a prior non-modal promo
-// interaction, but with a fullscreen promo interaction.
-TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
-  EXPECT_FALSE(UserInNonModalPromoCooldown());
-
-  ResetStorageAndSetTimestampForKey(kLastTimeUserInteractedWithFullscreenPromo,
-                                    base::Time::Now());
-
-  EXPECT_TRUE(UserInNonModalPromoCooldown());
-}
-
-// Tests logging user interactions with a non-modal promo.
-TEST_F(DefaultBrowserUtilsTest, LogNonModalUserInteractionCooldown) {
-  EXPECT_FALSE(UserInNonModalPromoCooldown());
-
-  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount());
-  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
-  EXPECT_TRUE(UserInNonModalPromoCooldown());
-  EXPECT_FALSE(UserInFullscreenPromoCooldown());
-
-  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount());
-  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
-  EXPECT_TRUE(UserInNonModalPromoCooldown());
-  EXPECT_FALSE(UserInFullscreenPromoCooldown());
-}
-
 // Tests logging user interactions with a non-modal promo multiple times with
 // the same current interactions count doesn't over-increment the value.
 TEST_F(DefaultBrowserUtilsTest,

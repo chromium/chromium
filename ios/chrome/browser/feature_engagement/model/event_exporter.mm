@@ -67,7 +67,7 @@ void EventExporter::ExportEvents(ExportEventsCallback callback) {
 
   // Migrate the default browser's non-modal promo events.
   // TODO(crbug.com/391166425): Clean up the non-modal promo migration code.
-  if (IsNonModalPromoMigrationEnabled() && !IsNonModalPromoMigrationDone()) {
+  if (!IsNonModalPromoMigrationDone()) {
     NSDate* last_interaction = LastTimeUserInteractedWithNonModalPromo();
     if (last_interaction && UserInteractionWithNonModalPromoCount() > 0) {
       const NSInteger count = UserInteractionWithNonModalPromoCount();

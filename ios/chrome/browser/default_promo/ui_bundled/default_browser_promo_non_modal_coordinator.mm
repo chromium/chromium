@@ -132,11 +132,9 @@
 - (void)infobarWasDismissed {
   self.bannerViewController = nil;
 
-  if (IsNonModalPromoMigrationEnabled()) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(self.profile);
-    tracker->Dismissed(GetFeatureForPromoReason(_promoReason));
-  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  tracker->Dismissed(GetFeatureForPromoReason(_promoReason));
 
   id<DefaultBrowserPromoNonModalCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
