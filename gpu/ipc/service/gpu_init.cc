@@ -1290,9 +1290,7 @@ bool GpuInit::InitializeDawn() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   dawn_context_provider_ = gpu::DawnContextProvider::Create(
-      gpu_preferences_, validate_adapter_fn,
-      GpuDriverBugWorkarounds(
-          gpu_feature_info_.enabled_gpu_driver_bug_workarounds));
+      gpu_preferences_, gpu_feature_info_, validate_adapter_fn);
   if (dawn_context_provider_) {
     return true;
   }

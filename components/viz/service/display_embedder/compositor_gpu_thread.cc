@@ -38,14 +38,9 @@
 namespace viz {
 
 // static
-std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
+std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
     const CreateParams& params) {
   DCHECK(params.gpu_channel_manager);
-
-  if (!features::IsDrDcEnabled() ||
-      params.gpu_channel_manager->gpu_driver_bug_workarounds().disable_drdc) {
-    return nullptr;
-  }
 
 #if DCHECK_IS_ON()
 #if BUILDFLAG(IS_ANDROID)
@@ -197,6 +192,7 @@ CompositorGpuThread::GetSharedContextState() {
 #endif
       /*peak_memory_monitor=*/
       gpu_channel_manager_->peak_memory_monitor(),
+      /*direct_rendering_display_compositor_enabled=*/true,
       /*created_on_compositor_gpu_thread=*/true);
 
   auto gles2_feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(

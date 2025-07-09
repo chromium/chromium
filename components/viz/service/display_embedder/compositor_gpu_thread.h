@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
 #endif
   };
 
-  static std::unique_ptr<CompositorGpuThread> MaybeCreate(
+  static std::unique_ptr<CompositorGpuThread> Create(
       const CreateParams& params);
 
   // Disallow copy and assign.

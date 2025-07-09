@@ -428,13 +428,13 @@ bool DawnContextProvider::DefaultValidateAdapterFn(wgpu::BackendType,
 class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                           public base::trace_event::MemoryDumpProvider {
  public:
-  DawnSharedContext() = default;
+  explicit DawnSharedContext(bool thread_safe_graphite_context);
 
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
-                  DawnContextProvider::ValidateAdapterFn validate_adapter_fn,
-                  const GpuDriverBugWorkarounds& gpu_driver_workarounds);
+                  const GpuFeatureInfo& gpu_feature_info,
+                  DawnContextProvider::ValidateAdapterFn validate_adapter_fn);
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
@@ -483,6 +483,8 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   GraphiteSharedContext* GetGraphiteSharedContext() const {
     return graphite_shared_context_.get();
   }
+
+  bool thread_safe_graphite_context() { return thread_safe_graphite_context_; }
 
  private:
   friend class base::RefCountedThreadSafe<DawnSharedContext>;
@@ -587,7 +589,17 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   mutable base::Lock context_lost_lock_;
   std::optional<error::ContextLostReason> context_lost_reason_
       GUARDED_BY(context_lost_lock_);
+
+  // If true, both GpuMain and CompositorGpuThread share the same
+  // GraphiteSharedContext. GraphiteSharedContext was created during
+  // DawnSharedContext initialization. If false, DawnContextProvider owns
+  // GraphiteSharedContext and each DawnContextProvider (ie. each thread) has
+  // its own GraphiteSharedContext.
+  const bool thread_safe_graphite_context_;
 };
+
+DawnSharedContext::DawnSharedContext(bool thread_safe_graphite_context)
+    : thread_safe_graphite_context_(thread_safe_graphite_context) {}
 
 DawnSharedContext::~DawnSharedContext() {
   if (device_) {
@@ -644,8 +656,8 @@ bool DawnSharedContext::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
-    DawnContextProvider::ValidateAdapterFn validate_adapter_fn,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+    const GpuFeatureInfo& gpu_feature_info,
+    DawnContextProvider::ValidateAdapterFn validate_adapter_fn) {
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
@@ -667,6 +679,8 @@ bool DawnSharedContext::Initialize(
   toggles_desc.enabledToggleCount = enabled_toggles.size();
   toggles_desc.disabledToggleCount = disabled_toggles.size();
 
+  const GpuDriverBugWorkarounds gpu_driver_workarounds(
+      gpu_feature_info.enabled_gpu_driver_bug_workarounds);
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = backend_type;
   adapter_options.forceFallbackAdapter = force_fallback_adapter;
@@ -856,7 +870,7 @@ bool DawnSharedContext::Initialize(
     registered_memory_dump_provider_ = true;
   }
 
-  if (features::IsGraphiteContextThreadSafe()) {
+  if (thread_safe_graphite_context_) {
     skgpu::graphite::DawnBackendContext backend_context;
     backend_context.fInstance = GetInstance();
     backend_context.fDevice = device_;
@@ -1052,23 +1066,29 @@ bool DawnSharedContext::OnMemoryDump(
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
-    ValidateAdapterFn validate_adapter_fn,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+    const GpuFeatureInfo& gpu_feature_info,
+    ValidateAdapterFn validate_adapter_fn) {
   return DawnContextProvider::CreateWithBackend(
       GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      validate_adapter_fn, gpu_driver_workarounds);
+      gpu_feature_info, validate_adapter_fn);
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
-    ValidateAdapterFn validate_adapter_fn,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
-  auto dawn_shared_context = base::MakeRefCounted<DawnSharedContext>();
+    const GpuFeatureInfo& gpu_feature_info,
+    ValidateAdapterFn validate_adapter_fn) {
+  bool thread_safe_graphite_context =
+      gpu_feature_info.status_values
+              [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
+          gpu::kGpuFeatureStatusEnabled &&
+      features::IsGraphiteContextThreadSafe();
+  auto dawn_shared_context =
+      base::MakeRefCounted<DawnSharedContext>(thread_safe_graphite_context);
   if (!dawn_shared_context->Initialize(backend_type, force_fallback_adapter,
-                                       gpu_preferences, validate_adapter_fn,
-                                       gpu_driver_workarounds)) {
+                                       gpu_preferences, gpu_feature_info,
+                                       validate_adapter_fn)) {
     return nullptr;
   }
 
@@ -1115,12 +1135,7 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
 
 bool DawnContextProvider::InitializeGraphiteContext(
     const skgpu::graphite::ContextOptions& context_options) {
-  // When is_thread_safe is true, both GpuMain and CompositorGpuThread share the
-  // same GraphiteSharedContext. GraphiteSharedContext was created during
-  // DawnSharedContext initialization. Just use it here. When is_thread_safe is
-  // false, DawnContextProvider owns GraphiteSharedContext and each
-  // DawnContextProvider (ie. each thread) has its own GraphiteSharedContext.
-  if (features::IsGraphiteContextThreadSafe()) {
+  if (dawn_shared_context_->thread_safe_graphite_context()) {
     return dawn_shared_context_->GetGraphiteSharedContext();
   }
 
@@ -1170,7 +1185,7 @@ std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
 }
 
 GraphiteSharedContext* DawnContextProvider::GetGraphiteSharedContext() const {
-  if (features::IsGraphiteContextThreadSafe()) {
+  if (dawn_shared_context_->thread_safe_graphite_context()) {
     // Both threads shares the same GraphiteSharedContext. DawnSharedContext
     // owns GraphiteSharedContext
     return dawn_shared_context_->GetGraphiteSharedContext();

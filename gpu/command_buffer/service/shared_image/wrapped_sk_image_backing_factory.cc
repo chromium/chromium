@@ -83,9 +83,7 @@ WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
     : SharedImageBackingFactory(GetSupportedUsage(context_state.get())),
       context_state_(std::move(context_state)),
       use_graphite_(context_state_->graphite_shared_context()),
-      is_drdc_enabled_(
-          features::IsDrDcEnabled() &&
-          !context_state_->feature_info()->workarounds().disable_drdc),
+      is_drdc_enabled_(context_state_->is_drdc_enabled()),
       graphite_supports_compressed_textures_(
           GraphiteSupportsCompressedTextures(context_state_.get())) {}
 

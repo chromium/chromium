@@ -43,6 +43,9 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGPU);
   list->AddSupportedFeature("skia_graphite", GPU_FEATURE_TYPE_SKIA_GRAPHITE);
   list->AddSupportedFeature("webnn", GPU_FEATURE_TYPE_WEBNN);
+  list->AddSupportedFeature(
+      "direct_rendering_display_compositor",
+      GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR);
   return list;
 }
 

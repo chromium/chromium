@@ -270,6 +270,7 @@ SharedContextState::SharedContextState(
     viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
     scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    bool direct_rendering_display_compositor_enabled,
     bool created_on_compositor_gpu_thread,
     const GrContextOptionsProvider* gr_context_options_provider)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
@@ -295,6 +296,7 @@ SharedContextState::SharedContextState(
       dawn_context_provider_(dawn_context_provider),
       gr_context_options_provider_(gr_context_options_provider),
       created_on_compositor_gpu_thread_(created_on_compositor_gpu_thread),
+      is_drdc_enabled_(direct_rendering_display_compositor_enabled),
       share_group_(std::move(share_group)),
       context_(context),
       real_context_(std::move(context)),
@@ -455,7 +457,6 @@ bool SharedContextState::InitializeSkia(
     gpu::raster::GrShaderCache* cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-  is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
 
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback

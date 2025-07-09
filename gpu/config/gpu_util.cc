@@ -304,6 +304,25 @@ GpuFeatureStatus GetWebNNFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
+GpuFeatureStatus GetDrDCFeatureStatus(const std::set<int>& blocklisted_features,
+                                      GpuFeatureStatus graphite_status) {
+  if (blocklisted_features.count(
+          GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR)) {
+    return kGpuFeatureStatusDisabled;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // GetSkiaGraphiteFeatureStatus should be called before reaching here.
+  DCHECK_NE(kGpuFeatureStatusUndefined, graphite_status);
+  if (graphite_status != gpu::kGpuFeatureStatusEnabled) {
+    return kGpuFeatureStatusDisabled;
+  }
+#endif
+
+  return features::IsDrDcEnabled() ? kGpuFeatureStatusEnabled
+                                   : kGpuFeatureStatusDisabled;
+}
+
 void SetProcessGlWorkaroundsFromGpuFeatures(
     const GpuFeatureInfo& gpu_feature_info) {
   const auto is_enabled =
@@ -451,6 +470,9 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       kGpuFeatureStatusSoftware;
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -485,6 +507,9 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       kGpuFeatureStatusSoftware;
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -587,6 +612,11 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       GetWebNNFeatureStatus(blocklisted_features);
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      GetDrDCFeatureStatus(
+          blocklisted_features,
+          gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE]);
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);

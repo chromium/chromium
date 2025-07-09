@@ -803,10 +803,9 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
              context_state_->IsGraphiteDawnVulkan()) {
     // Vulkan currently doesn't support single-component cross-thread shared
     // images for WebView.
-    const bool is_drdc =
-        features::IsDrDcEnabled() && !workarounds_.disable_drdc;
     shared_image_caps.disable_one_component_textures =
-        display_compositor_on_another_thread && !is_drdc;
+        display_compositor_on_another_thread &&
+        !context_state_->is_drdc_enabled();
   }
 
 #if BUILDFLAG(IS_MAC)

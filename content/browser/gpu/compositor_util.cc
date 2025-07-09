@@ -200,8 +200,11 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       false);
   features.emplace_back("raw_draw",
                         GetFakeFeatureStatus(::features::IsUsingRawDraw()));
-  features.emplace_back("direct_rendering_display_compositor",
-                        GetFakeFeatureStatus(::features::IsDrDcEnabled()));
+  features.emplace_back(
+      "direct_rendering_display_compositor",
+      SafeGetFeatureStatus(
+          gpu_feature_info,
+          gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR));
   features.emplace_back(
       "webgpu",
       SafeGetFeatureStatus(

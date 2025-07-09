@@ -102,6 +102,9 @@ GPU_BLOCKLIST_FEATURE_TEST(SkiaGraphite, GPU_FEATURE_TYPE_SKIA_GRAPHITE)
 
 GPU_BLOCKLIST_FEATURE_TEST(WebNN, GPU_FEATURE_TYPE_WEBNN)
 
+GPU_BLOCKLIST_FEATURE_TEST(CompositorGpuThread,
+                           GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR)
+
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks software_rendering_list.json

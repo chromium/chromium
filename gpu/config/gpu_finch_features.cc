@@ -662,6 +662,10 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   return base::FeatureList::IsEnabled(features::kSkiaGraphite);
 }
 
+// Do not use IsDrDcEnabled() to check whether the DrDC thread is running, as
+// this does not include checks for the block list and graphite dawn. Instead,
+// use gpu_feature_info.status_values
+// [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR].
 bool IsDrDcEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   // Enabled on android P+.
@@ -711,14 +715,6 @@ bool IsDrDcEnabled() {
   // in crashes when enabled together with DrDc. Re-enable DrDc after
   // crbug.com/380295059 is fixed if it is shown beneficial on desktop.
   if (build_info->is_desktop()) {
-    return false;
-  }
-
-#elif BUILDFLAG(IS_MAC)
-  if (!IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
-    return false;
-  }
-  if (base::mac::MacOSVersion() < 13'00'00) {
     return false;
   }
 #endif
@@ -893,8 +889,7 @@ BASE_FEATURE(kGraphiteContextIsThreadSafe,
 #endif
 
 bool IsGraphiteContextThreadSafe() {
-  return base::FeatureList::IsEnabled(features::kGraphiteContextIsThreadSafe) &&
-         features::IsDrDcEnabled();
+  return base::FeatureList::IsEnabled(features::kGraphiteContextIsThreadSafe);
 }
 
 BASE_FEATURE(kWebGPUCompatibilityMode,

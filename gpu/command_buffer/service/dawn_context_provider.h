@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
@@ -42,16 +43,14 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   // fail.
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences,
-      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn,
-      const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds());
+      const GpuFeatureInfo& gpu_feature_info,
+      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
       bool force_fallback_adapter,
       const GpuPreferences& gpu_preferences,
-      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn,
-      const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds());
+      const GpuFeatureInfo& gpu_feature_info,
+      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
 
   // Creates a new context provider for use on a different thread that shares
   // the wgpu::Device/Adapter/Instance with `existing`.

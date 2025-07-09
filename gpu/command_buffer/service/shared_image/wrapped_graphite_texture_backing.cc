@@ -159,7 +159,8 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
 
   // TODO:crbug.com/427657657 - Implement a generic solution to handle all
   // SkImage release callbacks through GraphiteSharedContext.
-  if (is_thread_safe() || features::IsGraphiteContextThreadSafe()) {
+  if (is_thread_safe() || (context_state_->is_drdc_enabled() &&
+                           features::IsGraphiteContextThreadSafe())) {
     // If the backing is thread safe then it may be destroyed on a different
     // thread. Store the task runner so textures can be destroyed on the same
     // thread they were created on.

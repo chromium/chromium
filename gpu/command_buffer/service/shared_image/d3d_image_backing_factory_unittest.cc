@@ -487,8 +487,8 @@ class D3DImageBackingFactoryTest
     if (gr_context_type == GrContextType::kGraphiteDawn)
     {
       dawn_context_provider_ = DawnContextProvider::Create(
-          GpuPreferences(), DawnContextProvider::DefaultValidateAdapterFn,
-          workarounds);
+          GpuPreferences(), GpuFeatureInfo(),
+          DawnContextProvider::DefaultValidateAdapterFn);
     }
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
