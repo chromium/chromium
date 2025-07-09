@@ -4642,29 +4642,11 @@ ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
 }
 
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
-  if (const AtomicString& has_popup =
-          AriaTokenAttribute(html_names::kAriaHaspopupAttr)) {
-    if (EqualIgnoringASCIICase(has_popup, "false"))
-      return ax::mojom::blink::HasPopup::kFalse;
-
-    if (EqualIgnoringASCIICase(has_popup, "listbox"))
-      return ax::mojom::blink::HasPopup::kListbox;
-
-    if (EqualIgnoringASCIICase(has_popup, "tree"))
-      return ax::mojom::blink::HasPopup::kTree;
-
-    if (EqualIgnoringASCIICase(has_popup, "grid"))
-      return ax::mojom::blink::HasPopup::kGrid;
-
-    if (EqualIgnoringASCIICase(has_popup, "dialog"))
-      return ax::mojom::blink::HasPopup::kDialog;
-
-    // To provide backward compatibility with ARIA 1.0 content,
-    // user agents MUST treat an aria-haspopup value of true
-    // as equivalent to a value of menu.
-    if (EqualIgnoringASCIICase(has_popup, "true") ||
-        EqualIgnoringASCIICase(has_popup, "menu"))
-      return ax::mojom::blink::HasPopup::kMenu;
+  auto* element = GetElement();
+  auto has_popup_from_attribute =
+      element ? HasPopupFromAttribute(*element) : std::nullopt;
+  if (has_popup_from_attribute) {
+    return *has_popup_from_attribute;
   }
 
   // ARIA 1.1 default value of haspopup for combobox is "listbox".

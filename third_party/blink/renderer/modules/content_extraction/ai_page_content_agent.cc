@@ -253,6 +253,10 @@ void AddClickabilityReasons(
   if (ui::IsClickable(role)) {
     interaction_info.clickability_reasons.push_back(Reason::kAriaRole);
   }
+
+  if (AXObject::HasPopupFromAttribute(element)) {
+    interaction_info.clickability_reasons.push_back(Reason::kAriaHasPopup);
+  }
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {

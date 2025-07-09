@@ -40,6 +40,8 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER;
     case blink::mojom::AIPageContentClickabilityReason::kAriaRole:
       return optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE;
+    case blink::mojom::AIPageContentClickabilityReason::kAriaHasPopup:
+      return optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP;
   }
   NOTREACHED();
 }

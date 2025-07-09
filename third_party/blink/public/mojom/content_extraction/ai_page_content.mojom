@@ -140,6 +140,10 @@ enum AIPageContentClickabilityReason {
 
   // The node has a clickable aria role.
   kAriaRole,
+
+  // The node has the aria-haspopup attribute indicating it opens a popup on
+  // activation.
+  kAriaHasPopup,
 };
 
 struct AIPageContentNodeInteractionInfo {

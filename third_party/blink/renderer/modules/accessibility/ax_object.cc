@@ -538,6 +538,28 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
   return aria_rowtext_attr;
 }
 
+const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
+                                                const AtomicString& value) {
+  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
+  if (attribute == html_names::kAriaAutocompleteAttr ||
+      attribute == html_names::kAriaCheckedAttr ||
+      attribute == html_names::kAriaCurrentAttr ||
+      attribute == html_names::kAriaHaspopupAttr ||
+      attribute == html_names::kAriaInvalidAttr ||
+      attribute == html_names::kAriaLiveAttr ||
+      attribute == html_names::kAriaOrientationAttr ||
+      attribute == html_names::kAriaPressedAttr ||
+      attribute == html_names::kAriaRelevantAttr ||
+      attribute == html_names::kAriaSortAttr) {
+    // These properties support a list of tokens, and "undefined"/"" is
+    // equivalent to not setting the attribute.
+    return value.empty() || value == undefined_value ? g_null_atom : value;
+  }
+  DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
+                   "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
+  return value;
+}
+
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -1265,25 +1287,7 @@ bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
 
 const AtomicString& AXObject::AriaTokenAttribute(
     const QualifiedName& attribute) const {
-  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
-  const AtomicString& value = AriaAttribute(attribute);
-  if (attribute == html_names::kAriaAutocompleteAttr ||
-      attribute == html_names::kAriaCheckedAttr ||
-      attribute == html_names::kAriaCurrentAttr ||
-      attribute == html_names::kAriaHaspopupAttr ||
-      attribute == html_names::kAriaInvalidAttr ||
-      attribute == html_names::kAriaLiveAttr ||
-      attribute == html_names::kAriaOrientationAttr ||
-      attribute == html_names::kAriaPressedAttr ||
-      attribute == html_names::kAriaRelevantAttr ||
-      attribute == html_names::kAriaSortAttr) {
-    // These properties support a list of tokens, and "undefined"/"" is
-    // equivalent to not setting the attribute.
-    return value.empty() || value == undefined_value ? g_null_atom : value;
-  }
-  DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
-                   "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
-  return value;
+  return AriaTokenAttributeFromValue(attribute, AriaAttribute(attribute));
 }
 
 // static
@@ -6090,6 +6094,47 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
 
 ax::mojom::blink::HasPopup AXObject::HasPopup() const {
   return ax::mojom::blink::HasPopup::kFalse;
+}
+
+// static
+std::optional<ax::mojom::blink::HasPopup> AXObject::HasPopupFromAttribute(
+    const Element& element) {
+  auto has_popup = AriaTokenAttributeFromValue(
+      html_names::kAriaHaspopupAttr,
+      AriaAttribute(element, html_names::kAriaHaspopupAttr));
+  if (!has_popup) {
+    return std::nullopt;
+  }
+
+  if (EqualIgnoringASCIICase(has_popup, "false")) {
+    return ax::mojom::blink::HasPopup::kFalse;
+  }
+
+  if (EqualIgnoringASCIICase(has_popup, "listbox")) {
+    return ax::mojom::blink::HasPopup::kListbox;
+  }
+
+  if (EqualIgnoringASCIICase(has_popup, "tree")) {
+    return ax::mojom::blink::HasPopup::kTree;
+  }
+
+  if (EqualIgnoringASCIICase(has_popup, "grid")) {
+    return ax::mojom::blink::HasPopup::kGrid;
+  }
+
+  if (EqualIgnoringASCIICase(has_popup, "dialog")) {
+    return ax::mojom::blink::HasPopup::kDialog;
+  }
+
+  // To provide backward compatibility with ARIA 1.0 content,
+  // user agents MUST treat an aria-haspopup value of true
+  // as equivalent to a value of menu.
+  if (EqualIgnoringASCIICase(has_popup, "true") ||
+      EqualIgnoringASCIICase(has_popup, "menu")) {
+    return ax::mojom::blink::HasPopup::kMenu;
+  }
+
+  return std::nullopt;
 }
 
 ax::mojom::blink::IsPopup AXObject::IsPopup() const {

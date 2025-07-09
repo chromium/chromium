@@ -396,7 +396,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS,
           optimization_guide::proto::CLICKABILITY_REASON_EDITABLE,
           optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
-          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP));
   EXPECT_THAT(
       button_node.content_attributes()
           .interaction_info()
@@ -408,7 +409,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS,
           optimization_guide::proto::CLICKABILITY_REASON_EDITABLE,
           optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
-          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP));
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
