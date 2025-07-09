@@ -1194,18 +1194,6 @@ static_library("ui") {
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",
       "unload_controller.h",
-      "user_education/polling_idle_observer.cc",
-      "user_education/polling_idle_observer.h",
-      "user_education/recent_session_observer_impl.cc",
-      "user_education/recent_session_observer_impl.h",
-      "user_education/recent_session_policy.cc",
-      "user_education/recent_session_policy.h",
-      "user_education/show_promo_in_page.cc",
-      "user_education/show_promo_in_page.h",
-      "user_education/start_tutorial_in_page.cc",
-      "user_education/start_tutorial_in_page.h",
-      "user_education/user_education_types.cc",
-      "user_education/user_education_types.h",
       "views/eye_dropper/eye_dropper.cc",
       "views/eye_dropper/eye_dropper.h",
       "views/file_system_access/file_system_access_scroll_panel.cc",
@@ -1849,6 +1837,10 @@ static_library("ui") {
       # TODO(crbug.com/430013958): Remove this circular dependency when
       # `translate_bubble_factory.cc` stop including c/b/ui/browser_window.h.
       "//chrome/browser/ui/translate:impl",
+
+      # TODO(crbug.com/430078439): Remove this circular dependency when
+      # .cc files stop including browser.h, browser_window.h and browser_navigator.h.
+      "//chrome/browser/ui/user_education:impl",
     ]
 
     if (is_mac) {
