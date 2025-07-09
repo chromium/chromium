@@ -1098,10 +1098,29 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     The new enumeration of how many times users enter keyword hint mode
-    &quot;Search ___ for:&quot; and how. Note that we don't recognize the
-    changing of the keyword itself as entering keyword mode, if the user never
-    left keyword mode e.g. if the user was arrowing around the suggestions, so
-    we'll preserve the original keyword mode entry method in this case.
+    &quot;Search ___ for:&quot; and how. Changing the keyword after entering
+    keyword mode will re-log this metric.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.EnteredKeywordModeWithInput"
+    enum="OmniboxEnteredKeywordMode2" expires_after="2025-11-16">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Counts how many times users entered keyword mode with each entry method,
+    just like Omnibox.EnteredKeywordMode2, but logged only when the user has
+    additional input text after entering keyword mode. In many cases, some input
+    is required to enter keyword mode, for example by typing a keyword and then
+    accepting it with tab or space. But then once in keyword mode, the input
+    field again appears empty. This histogram will not log in such cases. It
+    will only log when some extra input remains after entering keyword mode.
+    Some examples of how this could happen: 1) Invoking an omnibox toolbelt
+    action after typing a query like 'hi'. 2) Backing up the cursor and
+    inserting a space afer the 'm' in 'google.comhi'. 3) Typing 'hi' and then
+    pressing Ctrl+K. In these cases, the additional 'hi' text remains after the
+    omnibox enters keyword mode, so this histogram will be logged. Changing the
+    keyword after entering keyword mode will re-log this metric.
   </summary>
 </histogram>
 

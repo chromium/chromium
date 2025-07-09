@@ -130,6 +130,11 @@ const char kOmniboxFocusResultedInNavigation[] =
 // enum XML file.
 const char kEnteredKeywordModeHistogram[] = "Omnibox.EnteredKeywordMode2";
 
+// Like `kEnteredKeywordModeHistogram` but only logged when user has additional
+// text input at the time keyword mode was entered.
+const char kEnteredKeywordModeWithInputHistogram[] =
+    "Omnibox.EnteredKeywordModeWithInput";
+
 // Histogram name which counts the number of times the user completes a search
 // in keyword mode, enumerated by how they enter keyword mode.
 const char kAcceptedKeywordSuggestionHistogram[] =
@@ -147,10 +152,16 @@ const char kKeywordModeUsageByEngineTypeAcceptedHistogramName[] =
 
 void EmitEnteredKeywordModeHistogram(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* turl) {
+    const TemplateURL* turl,
+    bool entered_with_input) {
   UMA_HISTOGRAM_ENUMERATION(
       kEnteredKeywordModeHistogram, static_cast<int>(entry_method),
       static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+  if (entered_with_input) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kEnteredKeywordModeWithInputHistogram, static_cast<int>(entry_method),
+        static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+  }
 
   if (turl != nullptr) {
     base::UmaHistogramEnumeration(
@@ -713,7 +724,8 @@ void OmniboxEditModel::EnterKeywordMode(
     }
   }
 
-  EmitEnteredKeywordModeHistogram(entry_method, template_url);
+  EmitEnteredKeywordModeHistogram(entry_method, template_url,
+                                  !user_text_.empty());
 }
 
 void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
@@ -825,7 +837,7 @@ bool OmniboxEditModel::AcceptKeyword(
   const TemplateURL* turl =
       controller_->client()->GetTemplateURLService()->GetTemplateURLForKeyword(
           keyword_);
-  EmitEnteredKeywordModeHistogram(entry_method, turl);
+  EmitEnteredKeywordModeHistogram(entry_method, turl, !user_text_.empty());
   return true;
 }
 
@@ -1415,7 +1427,8 @@ bool OmniboxEditModel::OnAfterPossibleChange(
     const TemplateURL* turl = controller_->client()
                                   ->GetTemplateURLService()
                                   ->GetTemplateURLForKeyword(keyword_);
-    EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl);
+    EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl,
+                                    !user_text_.empty());
     allow_exact_keyword_match_ = false;
   }
 
