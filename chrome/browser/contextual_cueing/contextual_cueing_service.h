@@ -41,6 +41,8 @@ enum class GlicNudgeActivity;
 
 namespace contextual_cueing {
 
+class ZeroStateSuggestionsRequest;
+
 using GlicSuggestionsCallbackList =
     base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
 using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
@@ -99,6 +101,14 @@ class ContextualCueingService
       std::optional<std::vector<std::string>> supported_tools,
       GlicSuggestionsCallback callback);
 
+  // Returns zero state suggestions for pinned tabs as represented by
+  // `pinned_web_contents`. Virtual for testing.
+  virtual void GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      std::vector<content::WebContents*> pinned_web_contents,
+      bool is_fre,
+      std::optional<std::vector<std::string>> supported_tools,
+      GlicSuggestionsCallback callback);
+
  private:
   // page_content_annotations::PageContentExtractionService::Observer:
   void OnPageContentExtracted(
@@ -112,6 +122,13 @@ class ContextualCueingService
   // Returns true if the given url is of a page type eligible for contextual
   // suggestions.
   bool IsPageTypeEligibleForContextualSuggestions(GURL url) const;
+
+  // Utility method to create the initial zero state suggestions request.
+  std::unique_ptr<ZeroStateSuggestionsRequest> MakeZeroStateSuggestionsRequest(
+      const std::vector<content::WebContents*>& web_contents_list,
+      bool is_fre,
+      std::optional<std::vector<std::string>> supported_tools,
+      bool is_focused_tab);
 
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;
@@ -133,6 +150,10 @@ class ContextualCueingService
 
   // Maintains the recently visited origins along with their nudge cap tracking.
   base::LRUCache<url::Origin, NudgeCapTracker> recent_visited_origins_;
+
+  // Holds the latest pinned tabs zero state suggestions request.
+  std::unique_ptr<ZeroStateSuggestionsRequest>
+      pinned_tabs_zero_state_suggestions_request_;
 
   raw_ptr<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_ = nullptr;

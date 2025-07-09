@@ -13,6 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -441,6 +442,134 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(std::nullopt, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
+                       NonMSBBFlowContextualNotAllowedForAllPinnedTabs) {
+  base::HistogramTester histogram_tester;
+
+  SetUpOnDemandHints(url(), /*allow_contextual=*/false, /*suggestions=*/{});
+  GURL url2 =
+      embedded_test_server()->GetURL("/optimization_guide/hellow_world.html");
+  SetUpOnDemandHints(url2, /*allow_contextual=*/false, /*suggestions=*/{});
+  SetUpSuccessfulModelExecution();
+
+  // Navigate in one tab.
+  auto* initial_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+
+  // Navigate to a new URL in a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+          {initial_web_contents, web_contents2}, /*is_fre=*/false,
+          /*supported_tools=*/{}, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
+                       NonMSBBFlowContextualAllowedForOnePinnedTab) {
+  base::HistogramTester histogram_tester;
+
+  SetUpOnDemandHints(url(), /*allow_contextual=*/true, /*suggestions=*/{});
+  GURL url2 =
+      embedded_test_server()->GetURL("/optimization_guide/hellow_world.html");
+  SetUpOnDemandHints(url2, /*allow_contextual=*/false, /*suggestions=*/{});
+  SetUpSuccessfulModelExecution();
+
+  // Navigate in one tab.
+  auto* initial_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+
+  // Navigate to a new URL in a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+          {initial_web_contents, web_contents2}, /*is_fre=*/false,
+          /*supported_tools=*/{}, future.GetCallback());
+  EXPECT_EQ(3u, future.Get().value().size());
+  EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+  EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+  EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
+                       AllPinnedTabsIneligibleForContextual) {
+  base::HistogramTester histogram_tester;
+
+  // Open 2 tabs with new tab page.
+  chrome::NewTab(browser());
+  auto* initial_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  chrome::NewTab(browser());
+  auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  SetUpSuccessfulModelExecution();
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+          {initial_web_contents, web_contents2}, /*is_fre=*/false,
+          /*supported_tools=*/{}, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+      "ZeroStateSuggestions",
+      0);
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
+  base::HistogramTester histogram_tester;
+
+  GURL url2 =
+      embedded_test_server()->GetURL("/optimization_guide/hellow_world.html");
+  SetUpSuccessfulModelExecution();
+
+  // Navigate in one tab.
+  auto* initial_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+
+  // Navigate to a new URL in a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+          {initial_web_contents, web_contents2}, /*is_fre=*/false,
+          /*supported_tools=*/{}, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(3u, future.Get().value().size());
+  EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+  EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+  EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
 }  // namespace contextual_cueing

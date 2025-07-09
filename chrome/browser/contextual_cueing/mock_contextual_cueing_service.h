@@ -38,6 +38,12 @@ class MockContextualCueingService : public ContextualCueingService {
                bool,
                std::optional<std::vector<std::string>>,
                GlicSuggestionsCallback));
+  MOCK_METHOD(void,
+              GetContextualGlicZeroStateSuggestionsForPinnedTabs,
+              (std::vector<content::WebContents*>,
+               bool,
+               std::optional<std::vector<std::string>>,
+               GlicSuggestionsCallback));
 };
 
 }  // namespace contextual_cueing

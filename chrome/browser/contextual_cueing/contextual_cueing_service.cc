@@ -62,6 +62,21 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
 }
 
+void OnSuggestionsReceived(
+    base::TimeTicks fetch_begin_time,
+    GlicSuggestionsCallback callback,
+    std::optional<std::vector<std::string>> suggestions) {
+  base::UmaHistogramTimes(suggestions
+                              ? "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.ValidSuggestions"
+                              : "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.EmptySuggestions",
+                          base::TimeTicks::Now() - fetch_begin_time);
+
+  std::move(callback).Run(suggestions);
+}
+#endif
+
 base::Value::List ConvertSupportedToolsToPrefValue(
     const std::vector<std::string>& supported_tools) {
   base::Value::List pref_tools;
@@ -100,22 +115,6 @@ void PopulateSupportedToolsForRequest(
   *out_request->mutable_supported_tools() = {req_supported_tools.begin(),
                                              req_supported_tools.end()};
 }
-
-void OnSuggestionsReceived(
-    base::TimeTicks fetch_begin_time,
-    GlicSuggestionsCallback callback,
-    std::optional<std::vector<std::string>> suggestions) {
-  base::UmaHistogramTimes(suggestions
-                              ? "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.ValidSuggestions"
-                              : "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.EmptySuggestions",
-                          base::TimeTicks::Now() - fetch_begin_time);
-
-  std::move(callback).Run(suggestions);
-}
-
-#endif
 
 }  // namespace
 
@@ -337,6 +336,31 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
 #endif
 }
 
+std::unique_ptr<ZeroStateSuggestionsRequest>
+ContextualCueingService::MakeZeroStateSuggestionsRequest(
+    const std::vector<content::WebContents*>& web_contents_list,
+    bool is_fre,
+    std::optional<std::vector<std::string>> supported_tools,
+    bool is_focused_tab) {
+  // Construct base request proto.
+  optimization_guide::proto::ZeroStateSuggestionsRequest request_proto;
+  request_proto.set_is_fre(is_fre);
+  if (g_browser_process) {
+    request_proto.set_locale(g_browser_process->GetApplicationLocale());
+  }
+  PopulateSupportedToolsForRequest(supported_tools, pref_service_,
+                                   &request_proto);
+  // Instantiate the one-of to indicate the request type.
+  if (is_focused_tab) {
+    request_proto.mutable_page_context();
+  } else {
+    request_proto.mutable_page_context_list();
+  }
+
+  return std::make_unique<ZeroStateSuggestionsRequest>(
+      optimization_guide_keyed_service_, request_proto, web_contents_list);
+}
+
 void ContextualCueingService::
     GetContextualGlicZeroStateSuggestionsForFocusedTab(
         content::WebContents* web_contents,
@@ -361,30 +385,57 @@ void ContextualCueingService::
     return;
   }
 
-  // Construct base request proto.
-  optimization_guide::proto::ZeroStateSuggestionsRequest request_proto;
-  request_proto.set_is_fre(is_fre);
-  if (g_browser_process) {
-    request_proto.set_locale(g_browser_process->GetApplicationLocale());
-  }
-  PopulateSupportedToolsForRequest(supported_tools, pref_service_,
-                                   &request_proto);
-  // Instantiate the one-of to indicate it's a request for a focused tab.
-  request_proto.mutable_page_context();
-
   // Add callback to new request or existing one if already have one for
   // the page associated with `web_contents`.
   auto* zss_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
       web_contents->GetPrimaryPage());
   auto* zss_request_ptr = zss_data->focused_tab_request();
   if (!zss_request_ptr) {
-    auto zss_request = std::make_unique<ZeroStateSuggestionsRequest>(
-        optimization_guide_keyed_service_, request_proto,
-        std::vector<content::WebContents*>({web_contents}));
+    auto zss_request = MakeZeroStateSuggestionsRequest(
+        {web_contents}, is_fre, supported_tools, /*is_focused_tab=*/true);
     zss_request_ptr = zss_request.get();
     zss_data->set_focused_tab_request(std::move(zss_request));
   }
   zss_request_ptr->AddCallback(base::BindOnce(
+      &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
+}
+
+void ContextualCueingService::
+    GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+        std::vector<content::WebContents*> pinned_web_contents,
+        bool is_fre,
+        std::optional<std::vector<std::string>> supported_tools,
+        GlicSuggestionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Remove all ineligible pages from list.
+  std::erase_if(pinned_web_contents, [&](const auto* web_contents) {
+    return !IsPageTypeEligibleForContextualSuggestions(
+        web_contents->GetLastCommittedURL());
+  });
+  if (pinned_web_contents.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (!IsGlicTabContextEnabled(pref_service_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Initiate request for suggestions for pinned tabs.
+  pinned_tabs_zero_state_suggestions_request_ = MakeZeroStateSuggestionsRequest(
+      pinned_web_contents, is_fre, supported_tools, /*is_focused_tab=*/false);
+  pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
 #else
   std::move(callback).Run(std::nullopt);
