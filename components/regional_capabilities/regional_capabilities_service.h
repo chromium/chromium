@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/regional_capabilities/program_settings.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -27,6 +29,7 @@ struct PrepopulatedEngine;
 namespace regional_capabilities {
 
 class CountryIdHolder;
+enum class Program;
 
 // Service for managing the state related to Search Engine Choice (mostly
 // for the country information).
@@ -116,18 +119,29 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesServiceTest,
+                           GetActiveProgram_CommandLineOverride);
+
+  // Returns how features should adjust themselves based on the active country
+  // or program.
+  const ProgramSettings& GetActiveProgramSettings();
+
   country_codes::CountryId GetCountryIdInternal();
 
-  void InitializeCountryIdCache();
+  void EnsureRegionalScopeCacheInitialized();
   std::optional<country_codes::CountryId> GetPersistedCountryId();
   void TrySetPersistedCountryId(country_codes::CountryId country_id);
 
   const raw_ref<PrefService> profile_prefs_;
   const std::unique_ptr<Client> client_;
 
-  // Used to ensure that the value returned from `GetCountryId` never changes
-  // in runtime (different runs can still return different values, though).
+  // -- Regional scope cache --
+  // Used to ensure that the value returned from associated getters doesn't
+  // change at runtime (different runs can still return different values,
+  // though).
   std::optional<country_codes::CountryId> country_id_cache_;
+  std::optional<raw_ref<const ProgramSettings>> program_settings_cache_;
+  // -- cache end --
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

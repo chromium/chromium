@@ -1,0 +1,29 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_REGIONAL_CAPABILITIES_PROGRAM_SETTINGS_H_
+#define COMPONENTS_REGIONAL_CAPABILITIES_PROGRAM_SETTINGS_H_
+
+namespace regional_capabilities {
+
+// Describes how search engines should be listed.
+enum class SearchEngineListType {
+  // The top 5 (at most) engines of the current country's list should be used,
+  // in the order specified by the regional settings.
+  kTopFive,
+  // The list of search engines should be fully shuffled.
+  kShuffled,
+};
+
+// Describes how features should adjust themselves based on the program.
+struct ProgramSettings {
+  SearchEngineListType search_engine_list_type;
+};
+
+extern const ProgramSettings kWaffleSettings;
+extern const ProgramSettings kDefaultSettings;
+
+}  // namespace regional_capabilities
+
+#endif  // COMPONENTS_REGIONAL_CAPABILITIES_PROGRAM_SETTINGS_H_

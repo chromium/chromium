@@ -21,7 +21,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/regional_capabilities/eea_countries_ids.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
@@ -160,7 +160,9 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
   }
 
   return base::ToVector(
-      regional_capabilities::GetPrepopulatedEngines(country_id, prefs),
+      regional_capabilities::GetPrepopulatedEngines(
+          country_id, prefs,
+          regional_capabilities::SearchEngineListType::kTopFive),
       &PrepopulatedEngineToTemplateURLData);
 }
 

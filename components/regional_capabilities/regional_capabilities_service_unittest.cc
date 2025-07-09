@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -76,6 +77,8 @@ constexpr CountryId kBelgiumCountryId = CountryId("BE");
 CountryId GetCountryId(RegionalCapabilitiesService& service) {
   return service.GetCountryId().GetForTesting();
 }
+
+}  // namespace
 
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
  public:
@@ -164,6 +167,27 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryIdCommandLineOverride) {
       "RegionalCapabilities.PersistedCountryMatching", 0);
   histogram_tester().ExpectTotalCount(
       "RegionalCapabilities.LoadedCountrySource", 0);
+}
+
+TEST_F(RegionalCapabilitiesServiceTest, GetActiveProgram_CommandLineOverride) {
+  // The command line value bypasses the country ID cache and does not
+  // require recreating the service.
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+
+  SetCommandLineCountry("FR");
+  EXPECT_EQ(&service->GetActiveProgramSettings(), &kWaffleSettings);
+
+  SetCommandLineCountry("US");
+  EXPECT_EQ(&service->GetActiveProgramSettings(), &kDefaultSettings);
+
+  SetCommandLineCountry("??");
+  EXPECT_EQ(&service->GetActiveProgramSettings(), &kDefaultSettings);
+
+  SetCommandLineCountry(switches::kDefaultListCountryOverride);
+  EXPECT_EQ(&service->GetActiveProgramSettings(), &kWaffleSettings);
+
+  SetCommandLineCountry(switches::kEeaListCountryOverride);
+  EXPECT_EQ(&service->GetActiveProgramSettings(), &kWaffleSettings);
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_FetchedSync) {
@@ -347,5 +371,4 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   EXPECT_TRUE(service->IsInEeaCountry());
 }
 
-}  // namespace
 }  // namespace regional_capabilities

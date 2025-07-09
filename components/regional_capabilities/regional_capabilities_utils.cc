@@ -14,6 +14,7 @@
 #include "base/containers/to_vector.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/eea_countries_ids.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -54,15 +55,7 @@ void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
 }  // namespace
 
 bool IsEeaCountry(country_codes::CountryId country_id) {
-  // The `HasSearchEngineCountryListOverride()` check is here for compatibility
-  // with the way EEA presence was checked from `search_engines`. But it should
-  // logically be done only when the EEA presence is checked specifically for
-  // the current profile country.
-  // TODO(crbug.com/328040066): Move this check to
-  // `RegionalCapabilitiesService::IsInEeaCountry()`.
-  return HasSearchEngineCountryListOverride()
-             ? true
-             : kEeaChoiceCountriesIds.contains(country_id);
+  return kEeaChoiceCountriesIds.contains(country_id);
 }
 
 std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
@@ -97,18 +90,26 @@ bool HasSearchEngineCountryListOverride() {
 
 std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
     CountryId country_id,
-    PrefService& prefs) {
+    PrefService& prefs,
+    SearchEngineListType search_engine_list_type) {
   const RegionalSettings& regional_settings = GetRegionalSettings(country_id);
   std::vector<const PrepopulatedEngine*> engines;
 
-  if (regional_capabilities::IsEeaCountry(country_id)) {
-    engines = base::ToVector(regional_settings.search_engines);
-    ShufflePrepopulatedEngines(engines, prefs);
-  } else {
-    size_t num_top_engines = std::min(regional_settings.search_engines.size(),
-                                      kTopSearchEnginesThreshold);
-    engines = base::ToVector(
-        base::span(regional_settings.search_engines).first(num_top_engines));
+  switch (search_engine_list_type) {
+    case SearchEngineListType::kTopFive: {
+      // Some regional lists can have more (e.g. EEA lists) or fewer (e.g. the
+      // default) than 5 entries.
+      size_t num_top_engines = std::min(regional_settings.search_engines.size(),
+                                        kTopSearchEnginesThreshold);
+      engines = base::ToVector(
+          base::span(regional_settings.search_engines).first(num_top_engines));
+      break;
+    }
+    case SearchEngineListType::kShuffled: {
+      engines = base::ToVector(regional_settings.search_engines);
+      ShufflePrepopulatedEngines(engines, prefs);
+      break;
+    }
   }
 
   return engines;

@@ -5,9 +5,11 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -15,11 +17,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -121,6 +125,41 @@ CountryId SelectCountryId(std::optional<CountryId> persisted_country,
   return persisted_country.value();
 }
 
+const ProgramSettings* CountryIdToProgram(CountryId country_id) {
+  if (regional_capabilities::IsEeaCountry(country_id)) {
+    return &kWaffleSettings;
+  }
+
+  return &kDefaultSettings;
+}
+
+const ProgramSettings* CountryOverrideToProgram(
+    SearchEngineCountryOverride country_override) {
+  return std::visit(
+      absl::Overload{
+          [](CountryId country_id) { return CountryIdToProgram(country_id); },
+          [](SearchEngineCountryListOverride list_override) {
+            switch (list_override) {
+              case SearchEngineCountryListOverride::kEeaAll:
+              case SearchEngineCountryListOverride::kEeaDefault:
+                return &kWaffleSettings;
+            }
+          },
+      },
+      country_override);
+}
+
+CountryId CountryOverrideToCountryId(
+    SearchEngineCountryOverride country_override) {
+  return std::visit(absl::Overload{
+                        [](CountryId country_id) { return country_id; },
+                        [](SearchEngineCountryListOverride list_override) {
+                          return CountryId();
+                        },
+                    },
+                    country_override);
+}
+
 }  // namespace
 
 RegionalCapabilitiesService::RegionalCapabilitiesService(
@@ -135,23 +174,6 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif
-}
-
-CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
-  std::optional<SearchEngineCountryOverride> country_override =
-      GetSearchEngineCountryOverride();
-  if (country_override.has_value()) {
-    if (std::holds_alternative<CountryId>(country_override.value())) {
-      return std::get<CountryId>(country_override.value());
-    }
-    return CountryId();
-  }
-
-  if (!country_id_cache_.has_value()) {
-    InitializeCountryIdCache();
-  }
-
-  return country_id_cache_.value();
 }
 
 CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
@@ -172,14 +194,53 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
     }
   }
 
-  return GetPrepopulatedEngines(GetCountryIdInternal(), profile_prefs_.get());
+  return GetPrepopulatedEngines(
+      GetCountryIdInternal(), profile_prefs_.get(),
+      GetActiveProgramSettings().search_engine_list_type);
 }
 
 bool RegionalCapabilitiesService::IsInEeaCountry() {
-  return regional_capabilities::IsEeaCountry(GetCountryIdInternal());
+  // Feature behaviour was directly based on the current country, as a
+  // decentralised way to express a concept we are now framing as "program
+  // settings". Here we check for the program reference directly as command line
+  // overrides may be setting a program with a separate country engine list
+  // override.
+  // TODO(crbug.com/328040066): Introduce granular program settings APIs and
+  // deprecate `IsInEeaCountry()` in favour of these.
+  return &GetActiveProgramSettings() == &kWaffleSettings;
 }
 
-void RegionalCapabilitiesService::InitializeCountryIdCache() {
+const ProgramSettings& RegionalCapabilitiesService::GetActiveProgramSettings() {
+  if (std::optional<SearchEngineCountryOverride> country_override =
+          GetSearchEngineCountryOverride();
+      country_override.has_value()) {
+    return CHECK_DEREF(CountryOverrideToProgram(country_override.value()));
+  }
+
+  EnsureRegionalScopeCacheInitialized();
+
+  return program_settings_cache_->get();
+}
+
+CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
+  std::optional<SearchEngineCountryOverride> country_override =
+      GetSearchEngineCountryOverride();
+  if (country_override.has_value()) {
+    return CountryOverrideToCountryId(country_override.value());
+  }
+
+  EnsureRegionalScopeCacheInitialized();
+  return country_id_cache_.value();
+}
+
+void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
+  // The regional scope cache is made of these 2 values, their presence has to
+  // be consistent.
+  CHECK_EQ(country_id_cache_.has_value(), program_settings_cache_.has_value());
+  if (country_id_cache_.has_value() && program_settings_cache_.has_value()) {
+    return;
+  }
+
   std::optional<CountryId> persisted_country_id = GetPersistedCountryId();
 
   // Fetches the device country using `Client::FetchCountryId()`. Upon
@@ -212,6 +273,8 @@ void RegionalCapabilitiesService::InitializeCountryIdCache() {
 
   country_id_cache_ =
       SelectCountryId(persisted_country_id, current_device_country);
+  program_settings_cache_ =
+      CHECK_DEREF(CountryIdToProgram(country_id_cache_.value()));
 }
 
 void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
