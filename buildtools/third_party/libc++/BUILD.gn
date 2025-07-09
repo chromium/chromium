@@ -342,7 +342,10 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_intrinsics") {
-    public_deps = [ ":sysroot_stdlib" ]
+    public_deps = [
+      ":std_core",
+      ":sysroot_stdlib",
+    ]
   }
 
   builtin_modules("_Builtin_inttypes") {
