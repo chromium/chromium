@@ -300,6 +300,55 @@ class VisitDatabase {
                                          VisitVector* visits);
 
   // Called by the derived classes to migrate the older visits table which
+  // don't have visit_duration column yet.
+  bool MigrateVisitsWithoutDuration();
+
+  // Called by the derived classes to migrate the older visits table which
+  // don't have incremented_omnibox_typed_score column yet.
+  bool MigrateVisitsWithoutIncrementedOmniboxTypedScore();
+
+  // Called by the derived classes to migrate the older visits table which
+  // don't have publicly_routable column yet.
+  bool MigrateVisitsWithoutPubliclyRoutableColumn();
+
+  // Called by the derived classes to do early checks before migrating the older
+  // visits table's floc_allowed (for historical reasons named
+  // "publicly_routable" in the schema) column to another table.
+  bool CanMigrateFlocAllowed();
+
+  // Called by the derived classes to migrate the older visits table which
+  // which doesn't have `opener_visit` column and also drops `publicly_routable`
+  // column which is no longer used.
+  bool MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn();
+
+  // Called by the derived classes to migrate the older visits table which
+  // which aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
+  // ensures the existence of the `originator_cache_guid` and
+  // `originator_visit_id` columns.
+  bool MigrateVisitsAutoincrementIdAndAddOriginatorColumns();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `originator_from_visit` and `originator_opener_visit`
+  // columns.
+  bool MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns();
+
+  // Return true if the visits table's schema contains "AUTOINCREMENT".
+  // false if table do not contain AUTOINCREMENT, or the table is not created.
+  bool VisitTableContainsAutoincrement();
+
+  // A subprocedure in the process of migration to version 40.
+  bool GetAllVisitedURLRowidsForMigrationToVersion40(
+      std::vector<URLID>* visited_url_rowids_sorted);
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `is_known_to_sync` column.
+  bool MigrateVisitsAddIsKnownToSyncColumn();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `consider_for_ntp_most_visited` column.
+  bool MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn();
+
+  // Called by the derived classes to migrate the older visits table which
   // doesn't have the `external_referrer_url` column.
   bool MigrateVisitsAddExternalReferrerUrlColumn();
 
