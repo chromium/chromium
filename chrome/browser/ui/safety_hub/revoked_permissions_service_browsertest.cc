@@ -809,9 +809,9 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
-  // Set up a proposed revoked notification.
+  // Set up a revoked notification.
   DisruptiveNotificationRevocationEntry proposed_entry(
-      /*revocation_state=*/DisruptiveNotificationRevocationState::kProposed,
+      /*revocation_state=*/DisruptiveNotificationRevocationState::kRevoked,
       /*site_engagement=*/0.0,
       /*daily_notification_count=*/5,
       /*timestamp=*/base::Time::Now() - base::Days(3));
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
   // reported again.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(
-      1u, recorder_
+      2u, recorder_
               ->GetEntriesByName("SafetyHub.DisruptiveNotificationRevocations."
                                  "FalsePositiveInteraction")
               .size());
@@ -919,12 +919,5 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
 
   auto revocation_entries = recorder_->GetEntriesByName(
       "SafetyHub.DisruptiveNotificationRevocations.FalsePositiveRevocation");
-  ASSERT_EQ(1u, revocation_entries.size());
-  auto* revocation_entry = revocation_entries[0].get();
-  recorder_->ExpectEntryMetric(revocation_entry, "DaysSinceRevocation", 3);
-  recorder_->ExpectEntryMetric(revocation_entry, "PageVisitCount", 0);
-  recorder_->ExpectEntryMetric(revocation_entry, "NotificationClickCount", 1);
-  recorder_->ExpectEntryMetric(revocation_entry, "NewSiteEngagement", 2.0);
-  recorder_->ExpectEntryMetric(revocation_entry, "OldSiteEngagement", 0.0);
-  recorder_->ExpectEntryMetric(revocation_entry, "DailyAverageVolume", 5);
+  ASSERT_EQ(0u, revocation_entries.size());
 }

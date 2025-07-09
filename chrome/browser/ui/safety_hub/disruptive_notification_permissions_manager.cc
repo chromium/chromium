@@ -34,6 +34,9 @@
 
 namespace {
 
+using RevocationState =
+    DisruptiveNotificationPermissionsManager::RevocationState;
+
 constexpr char kRevokedStatusDictKeyStr[] = "revoked_status";
 constexpr char kAcknowledgedStr[] = "acknowledged";
 constexpr char kIgnoreStr[] = "ignore";
@@ -56,23 +59,54 @@ base::TimeDelta GetRevocationsLifetime() {
       kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
 }
 
-std::optional<DisruptiveNotificationPermissionsManager::RevocationState>
-GetRevocationState(const base::Value::Dict& dict) {
+std::optional<RevocationState> GetRevocationState(
+    const base::Value::Dict& dict) {
   const std::string* revocation_state =
       dict.FindString(kRevokedStatusDictKeyStr);
   if (!revocation_state) {
     return std::nullopt;
   } else if (*revocation_state == kProposedStr) {
-    return DisruptiveNotificationPermissionsManager::RevocationState::kProposed;
+    return RevocationState::kProposed;
   } else if (*revocation_state == kAcknowledgedStr) {
-    return DisruptiveNotificationPermissionsManager::RevocationState::
-        kAcknowledged;
+    return RevocationState::kAcknowledged;
   } else if (*revocation_state == kRevokeStr) {
-    return DisruptiveNotificationPermissionsManager::RevocationState::kRevoked;
+    return RevocationState::kRevoked;
   } else if (*revocation_state == kIgnoreStr) {
-    return DisruptiveNotificationPermissionsManager::RevocationState::kIgnore;
+    return RevocationState::kIgnore;
   } else {
     return std::nullopt;
+  }
+}
+
+bool IsSiteEngagementScoreLow(double site_engagement_score) {
+  return site_engagement_score <=
+         features::kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore
+             .Get();
+}
+
+bool IsDailyNotificationCountHigh(int daily_notification_count) {
+  return daily_notification_count >=
+         features::
+             kSafetyHubDisruptiveNotificationRevocationMinNotificationCount
+                 .Get();
+}
+
+bool IsNotificationDisruptive(double site_engagement_score,
+                              int daily_notification_count) {
+  return IsSiteEngagementScoreLow(site_engagement_score) &&
+         IsDailyNotificationCountHigh(daily_notification_count);
+}
+
+std::string_view GetRevocationStateString(RevocationState revocation_state) {
+  switch (revocation_state) {
+    case RevocationState::kRevoked:
+      return "Revoked";
+    case RevocationState::kAcknowledged:
+      return "Acknowledged";
+    case RevocationState::kIgnore:
+      return "Regranted";
+    case RevocationState::kProposed:
+      return "Proposed";
   }
 }
 
@@ -181,22 +215,21 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
   base::TimeDelta lifetime;
   base::Value::Dict dict;
   switch (entry.revocation_state) {
-    case DisruptiveNotificationPermissionsManager::RevocationState::kProposed:
+    case RevocationState::kProposed:
       revocation_state_string = kProposedStr;
       dict.Set(
           kVersionStr,
           features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
               .Get());
       break;
-    case DisruptiveNotificationPermissionsManager::RevocationState::kRevoked:
+    case RevocationState::kRevoked:
       revocation_state_string = kRevokeStr;
       lifetime = GetRevocationsLifetime();
       break;
-    case DisruptiveNotificationPermissionsManager::RevocationState::kIgnore:
+    case RevocationState::kIgnore:
       revocation_state_string = kIgnoreStr;
       break;
-    case DisruptiveNotificationPermissionsManager::RevocationState::
-        kAcknowledged:
+    case RevocationState::kAcknowledged:
       revocation_state_string = kAcknowledgedStr;
       lifetime = GetRevocationsLifetime();
       break;
@@ -310,9 +343,12 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
     auto it = notification_count_map.find(
         std::make_pair(item.primary_pattern, item.secondary_pattern));
-    int notification_count =
+    const int notification_count =
         it != notification_count_map.end() ? it->second : 0;
-    bool is_disruptive = IsNotificationDisruptive(url, notification_count);
+    const double site_engagement_score =
+        site_engagement_service_->GetScore(url);
+    const bool is_disruptive =
+        IsNotificationDisruptive(site_engagement_score, notification_count);
 
     // Now check if we already have a revocation entry for this url and process
     // it.
@@ -334,6 +370,25 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         case RevocationState::kProposed:
           if (!is_disruptive) {
             // Not disruptive anymore, clean up proposed revocation.
+            base::UmaHistogramCustomCounts(
+                base::StrCat(
+                    {"Settings.SafetyHub.DisruptiveNotificationRevocations."
+                     "NotDisruptiveAnymore.DaysSinceProposedRevocation"}),
+                (clock_->Now() - revocation_entry->timestamp).InDays(), 1, 30,
+                30);
+            if (!IsSiteEngagementScoreLow(site_engagement_score)) {
+              base::UmaHistogramCounts100(
+                  "Settings.SafetyHub.DisruptiveNotificationRevocations."
+                  "NotDisruptiveAnymore.SiteEngagementIncreased",
+                  site_engagement_service_->GetScore(url));
+            }
+            if (!IsDailyNotificationCountHigh(notification_count)) {
+              base::UmaHistogramCounts100(
+                  "Settings.SafetyHub.DisruptiveNotificationRevocations."
+                  "NotDisruptiveAnymore.NotificationCountDecreased",
+                  notification_count);
+            }
+
             ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
           } else {
             if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun
@@ -406,21 +461,8 @@ void DisruptiveNotificationPermissionsManager::ReportDailyRunMetrics() {
       continue;
     }
 
-    std::string_view revocation_state;
-    switch (revocation_entry.revocation_state) {
-      case RevocationState::kRevoked:
-        revocation_state = "Revoked";
-        break;
-      case RevocationState::kAcknowledged:
-        revocation_state = "Acknowledged";
-        break;
-      case RevocationState::kIgnore:
-        revocation_state = "Regranted";
-        break;
-      case RevocationState::kProposed:
-        revocation_state = "Proposed";
-        break;
-    }
+    std::string_view revocation_state =
+        GetRevocationStateString(revocation_entry.revocation_state);
 
     std::string_view site_engagement;
     double score = site_engagement_service_->GetScore(url);
@@ -660,20 +702,6 @@ void DisruptiveNotificationPermissionsManager::RestoreDeletedRevokedPermission(
   ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, *revocation_entry);
 }
 
-bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
-    const GURL& url,
-    int daily_notification_count) {
-  const bool low_site_engagement_score =
-      site_engagement_service_->GetScore(url) <=
-      features::kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore
-          .Get();
-  const bool high_daily_notification_count =
-      daily_notification_count >=
-      features::kSafetyHubDisruptiveNotificationRevocationMinNotificationCount
-          .Get();
-  return low_site_engagement_score && high_daily_notification_count;
-}
-
 // static
 void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
     Profile* profile,
@@ -692,23 +720,14 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       ContentSettingHelper(*hcsm).GetRevocationEntry(url);
   if (!revocation_entry ||
       (revocation_entry->revocation_state != RevocationState::kProposed &&
-       revocation_entry->revocation_state != RevocationState::kRevoked) ||
-      revocation_entry->has_reported_false_positive) {
+       revocation_entry->revocation_state != RevocationState::kRevoked)) {
     return;
   }
 
   base::TimeDelta delta_since_proposed_revocation =
       base::Time::Now() - revocation_entry->timestamp;
-
-  // Don't report any false positive metrics after the threshold.
   const int days_since_proposed_revocation =
       delta_since_proposed_revocation.InDays();
-  const int max_days =
-      features::kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
-          .Get();
-  if (days_since_proposed_revocation > max_days) {
-    return;
-  }
 
   const double old_site_engagement_score = revocation_entry->site_engagement;
   const double new_site_engagement_score =
@@ -726,10 +745,13 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
           .SetOldSiteEngagement(old_site_engagement_score)
           .SetDailyAverageVolume(revocation_entry->daily_notification_count)
           .Record(ukm::UkmRecorder::Get());
+
+  std::string_view revocation_state =
+      GetRevocationStateString(revocation_entry->revocation_state);
   base::UmaHistogramEnumeration(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositiveInteraction",
-      reason);  // kPageVisit or kNotificationClick
+      base::StrCat({"Settings.SafetyHub.DisruptiveNotificationRevocations.",
+                    revocation_state, ".FalsePositiveInteraction"}),
+      reason);
 
   switch (reason) {
     case FalsePositiveReason::kPageVisit:
@@ -741,6 +763,22 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       break;
   }
   ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
+
+  // Only report false positive revocations for already revoked permissions.
+  // Proposals for revocation permissions will be cleaned up in the main check
+  // if the site is not disruptive anymore.
+  if (revocation_entry->revocation_state != RevocationState::kRevoked ||
+      revocation_entry->has_reported_false_positive) {
+    return;
+  }
+
+  // Don't report any false positive revocations after the threshold.
+  const int max_days =
+      features::kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
+          .Get();
+  if (days_since_proposed_revocation > max_days) {
+    return;
+  }
 
   // Only report false positive revocations after the min cooldown period has
   // passed.

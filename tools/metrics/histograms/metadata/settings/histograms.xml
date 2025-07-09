@@ -989,18 +989,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositiveInteraction"
-    enum="DisruptiveNotificationFalsePositiveReason" expires_after="2026-02-26">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the interactions with sites that were previously
-    marked for revocation of disruptive notifications. The metric is reported
-    when the interaction with the site occurs.
-  </summary>
-</histogram>
-
-<histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.HasReportedMetricsBeforeRevocation"
     units="count" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
@@ -1012,6 +1000,44 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     delayed to report the proposed metric when a notification is shown. After
     the cooldown runs out, the revocation will happen even without reporting
     metrics.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.DaysSinceProposedRevocation"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the days since proposed revocation for sites that
+    were previously marked for revocation of disruptive notifications but are
+    not classified as disruptive anymore (due to site engagement score increase
+    or decline in the daily average notification count).
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.NotificationCountDecreased"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the new daily average notification count (over
+    the last 7 days) for sites that were previously marked for revocation of
+    disruptive notifications but are not classified as disruptive anymore, due
+    to the notification count decrease.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.SiteEngagementIncreased"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the new site engagement score for sites that were
+    previously marked for revocation of disruptive notifications but are not
+    classified as disruptive anymore, due to the site engagement score increase.
   </summary>
 </histogram>
 
@@ -1100,6 +1126,22 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     the revocation was proposed.
   </summary>
   <token key="RegrantType" variants="RegrantType"/>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.{RevocationState}.FalsePositiveInteraction"
+    enum="DisruptiveNotificationFalsePositiveReason" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks the distribution of the interactions with sites that were previously
+    marked for revocation of disruptive notifications. The metric is reported
+    when the interaction with the site occurs.
+  </summary>
+  <token key="RevocationState">
+    <variant name="Proposed"/>
+    <variant name="Revoked"/>
+  </token>
 </histogram>
 
 <histogram name="Settings.SafetyHub.EntryPointImpression"

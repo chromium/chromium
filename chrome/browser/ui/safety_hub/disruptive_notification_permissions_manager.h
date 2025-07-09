@@ -247,10 +247,6 @@ class DisruptiveNotificationPermissionsManager
   // revoke and reports metrics.
   void RevokeNotifications(const GURL& url, RevocationEntry revocation_entry);
 
-  // Whether the notification is disruptive based on the site engagement score
-  // for the URL and the daily average notification count.
-  bool IsNotificationDisruptive(const GURL& url, int daily_notification_count);
-
   // Displays the safety hub notification informing the users about revoked
   // notification permissions.
   void DisplayNotification();
