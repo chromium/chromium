@@ -22,6 +22,7 @@ source_set("diamond") {
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",

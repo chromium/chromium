@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 BASE_FEATURE(kEnhancedCalendar,
              "EnhancedCalendar",
@@ -24,6 +25,9 @@ const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
 
 bool IsPageActionMenuEnabled() {
+  if (IsDiamondPrototypeEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
