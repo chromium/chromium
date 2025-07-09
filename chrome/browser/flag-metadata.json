@@ -260,6 +260,11 @@
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130
   },
+    {
+    "name": "android-open-incognito-as-window",
+    "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 150
+  },
   {
     "name": "android-open-pdf-inline",
     "owners": [ "shuyng@google.com", "qinmin@chromium.org", "clank-large-form-factors@google.com" ],

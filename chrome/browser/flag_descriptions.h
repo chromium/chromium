@@ -128,6 +128,11 @@ extern const char kAndroidNativePagesInNewTabDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidOpenIncognitoAsWindowName[];
+extern const char kAndroidOpenIncognitoAsWindowDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidProgressBarVisualUpdateName[];
 extern const char kAndroidProgressBarVisualUpdateDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

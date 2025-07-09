@@ -203,6 +203,13 @@ const char kAndroidNativePagesInNewTabDescription[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAndroidOpenIncognitoAsWindowName[] =
+    "Open incognito tabs in new window";
+const char kAndroidOpenIncognitoAsWindowDescription[] =
+    "Open regular and incognito tabs in separate windows.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const char kAndroidProgressBarVisualUpdateName[] =
     "Enable updated progress bar";
 const char kAndroidProgressBarVisualUpdateDescription[] =

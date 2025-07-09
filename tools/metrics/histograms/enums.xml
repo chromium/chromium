@@ -9261,6 +9261,7 @@ from previous Chrome versions.
   <int value="-1768672408" label="ChromeDuplex:disabled"/>
   <int value="-1768308156" label="OmniboxDedupeGoogleDriveURLs:enabled"/>
   <int value="-1767470652" label="out-of-process-pdf"/>
+  <int value="-1767373226" label="AndroidOpenIncognitoAsWindow:enabled"/>
   <int value="-1766791501" label="WebUITabStrip:enabled"/>
   <int value="-1766648764" label="OmniboxShortBookmarkSuggestions:disabled"/>
   <int value="-1766564847" label="WindowLayoutMenu:enabled"/>
@@ -15779,6 +15780,7 @@ from previous Chrome versions.
   <int value="652290286" label="AccessibilityPageZoomEnhancements:disabled"/>
   <int value="652561231" label="CustomContextMenu:enabled"/>
   <int value="653308913" label="ServiceWorkerSubresourceFilter:enabled"/>
+  <int value="653738854" label="AndroidOpenIncognitoAsWindow:disabled"/>
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>
   <int value="654199907" label="AllowSyncXHRInPageDismissal:disabled"/>
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>

@@ -209,6 +209,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidProgressBarVisualUpdate,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOmniboxFocusedNewTabPage,
+    &kAndroidOpenIncognitoAsWindow,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
     &kAndroidTabGroupsColorUpdateGM3,
@@ -588,6 +589,10 @@ BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
 
 BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage,
              "AndroidOmniboxFocusedNewTabPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidOpenIncognitoAsWindow,
+             "AndroidOpenIncognitoAsWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidOpenPdfInlineBackport,
