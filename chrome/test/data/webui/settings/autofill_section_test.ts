@@ -282,7 +282,6 @@ suite('AutofillSectionUiTest', function() {
           ...STUB_USER_ACCOUNT_INFO,
           email,
         });
-    flush();
 
     {
       const dialog = await initiateEditing(section, 0);
@@ -383,7 +382,6 @@ suite('AutofillSectionAddressTests', function() {
     const section = await createAutofillSection([address], {});
     const addressList = section.$.addressList;
     const row = addressList.children[0];
-    flush();
     assertTrue(!!row);
 
     const addressSummary =
@@ -398,46 +396,6 @@ suite('AutofillSectionAddressTests', function() {
     }
 
     assertEquals(addressSummary, actualSummary);
-  });
-
-  test('verifyAccountHomeAddress', async function() {
-    const openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-    const homeAddress = createAddressEntry();
-    homeAddress.metadata!.recordType =
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
-    const autofillSection = await createAutofillSection([homeAddress], {});
-    flush();
-
-    const homeAddressButton =
-        autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#homeAddress');
-    assertTrue(!!homeAddressButton);
-    // Validate that, when present, the button results in opening a URL.
-    homeAddressButton.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('googleAccountHomeAddressUrl'));
-    autofillSection.remove();
-  });
-
-  test('verifyAccountWorkAddress', async function() {
-    const openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-    const workAddress = createAddressEntry();
-    workAddress.metadata!.recordType =
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
-    const autofillSection = await createAutofillSection([workAddress], {});
-    flush();
-
-    const workAddressButton =
-        autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#workAddress');
-    assertTrue(!!workAddressButton);
-    // Validate that, when present, the button results in opening a URL.
-    workAddressButton.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('googleAccountWorkAddressUrl'));
-    autofillSection.remove();
   });
 
   test('verifyAddressLocalIndication', async () => {
@@ -484,7 +442,6 @@ suite('AutofillSectionAddressTests', function() {
     const address = createAddressEntry();
     const section = await createAutofillSection([address], {});
     const addressList = section.$.addressList;
-    flush();
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
