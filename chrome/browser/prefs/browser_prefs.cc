@@ -1027,6 +1027,14 @@ inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
 inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
     "google.services.second_last_gaia_id";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 07/2025.
+inline constexpr char kAssistantNumSessionsWhereOnboardingShown[] =
+    "ash.assistant.num_sessions_where_onboarding_shown";
+inline constexpr char kAssistantTimeOfLastInteraction[] =
+    "ash.assistant.time_of_last_interaction";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1431,6 +1439,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
   registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
                                std::string());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 07/2025.
+  registry->RegisterIntegerPref(kAssistantNumSessionsWhereOnboardingShown, 0);
+  registry->RegisterTimePref(kAssistantTimeOfLastInteraction, base::Time());
+#endif
 }
 
 }  // namespace
@@ -2675,6 +2689,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2025.
   profile_prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
   profile_prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 07/2025.
+  profile_prefs->ClearPref(kAssistantNumSessionsWhereOnboardingShown);
+  profile_prefs->ClearPref(kAssistantTimeOfLastInteraction);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

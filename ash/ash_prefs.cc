@@ -129,7 +129,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AppListNudgeController::RegisterProfilePrefs(registry);
   AshAcceleratorConfiguration::RegisterProfilePrefs(registry);
-  AssistantControllerImpl::RegisterProfilePrefs(registry);
   AutozoomControllerImpl::RegisterProfilePrefs(registry);
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);

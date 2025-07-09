@@ -25,8 +25,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
-class PrefRegistrySimple;
-
 namespace display {
 enum class TabletState;
 }  // namespace display
@@ -62,8 +60,6 @@ class AssistantInteractionControllerImpl
       const AssistantInteractionControllerImpl&) = delete;
 
   ~AssistantInteractionControllerImpl() override;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Provides a pointer to the |assistant| owned by AssistantService.
   void SetAssistant(assistant::Assistant* assistant);

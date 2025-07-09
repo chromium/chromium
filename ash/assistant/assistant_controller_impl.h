@@ -44,8 +44,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class PrefRegistrySimple;
-
 namespace ash {
 
 class ASH_EXPORT AssistantControllerImpl
@@ -65,8 +63,6 @@ class ASH_EXPORT AssistantControllerImpl
   AssistantControllerImpl& operator=(const AssistantControllerImpl&) = delete;
 
   ~AssistantControllerImpl() override;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::AssistantVolumeControl> receiver);

@@ -20,8 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
-class PrefRegistrySimple;
-
 namespace chromeos {
 namespace assistant {
 namespace mojom {
@@ -50,8 +48,6 @@ class ASH_EXPORT AssistantUiControllerImpl
       delete;
 
   ~AssistantUiControllerImpl() override;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Provides a pointer to the |assistant| owned by AssistantService.
   void SetAssistant(assistant::Assistant* assistant);

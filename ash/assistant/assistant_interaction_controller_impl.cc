@@ -94,13 +94,6 @@ AssistantInteractionControllerImpl::~AssistantInteractionControllerImpl() {
     assistant_->RemoveAssistantInteractionSubscriber(this);
 }
 
-// static
-void AssistantInteractionControllerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kAssistantTimeOfLastInteraction,
-                             base::Time());
-}
-
 void AssistantInteractionControllerImpl::SetAssistant(
     assistant::Assistant* assistant) {
   if (assistant_)

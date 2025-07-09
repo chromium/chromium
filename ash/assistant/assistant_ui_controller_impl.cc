@@ -73,13 +73,6 @@ AssistantUiControllerImpl::~AssistantUiControllerImpl() {
   model_.RemoveObserver(this);
 }
 
-// static
-void AssistantUiControllerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kAssistantNumSessionsWhereOnboardingShown, 0);
-}
-
 void AssistantUiControllerImpl::SetAssistant(assistant::Assistant* assistant) {
   assistant_ = assistant;
 }

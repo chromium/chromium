@@ -62,13 +62,6 @@ AssistantControllerImpl::AssistantControllerImpl() {
 
 AssistantControllerImpl::~AssistantControllerImpl() = default;
 
-// static
-void AssistantControllerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  AssistantInteractionControllerImpl::RegisterProfilePrefs(registry);
-  AssistantUiControllerImpl::RegisterProfilePrefs(registry);
-}
-
 void AssistantControllerImpl::BindReceiver(
     mojo::PendingReceiver<mojom::AssistantVolumeControl> receiver) {
   if (assistant_volume_control_receiver_.is_bound()) {
