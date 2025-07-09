@@ -356,6 +356,7 @@
 //media/test/data/eme_player_js/widevine_player.js
 //media/test/data/eme_remove_session_test.html
 //media/test/data/encrypted_frame_size_change.html
+//media/test/data/extra-nalu.ts
 //media/test/data/four-colors-aspect-4x3.mp4
 //media/test/data/four-colors-av1.mp4
 //media/test/data/four-colors-hevc.mp4

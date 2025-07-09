@@ -1852,3 +1852,14 @@ Video stream for testing reference frame scaling in AV1 files where resolution c
 
 ### hls/ directory
 This directory contains all the HLS files needed to run pipeline integration tests against the HLS demuxer. The readme file in this directory contains specific steps to regenerate media and manifest files.
+
+### extra-nalu.ts
+This is a file more-or-less hand crafted with the `dd` tool from a file scraped
+from a website in https://issues.chromium.org/issues/427774381. I had to find a
+few places where I could cut the file on TS packet boundaries while preserving
+the important H264 NAL Units inside those packets. Then I stiched together those
+TS packets and to create a file which has a NALU sequence:
+AUD-SEI-SPS-PPS-IDR-AUD-nIDR
+and then I doubled the file by concatenating itself to it's own end. The h264
+megablocks inside are also scrambled up intentionally. This process was very
+manual.

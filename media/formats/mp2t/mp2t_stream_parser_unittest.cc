@@ -596,5 +596,11 @@ TEST_F(Mp2tStreamParserTest, PrepareForHLSSampleAES) {
   EXPECT_NE(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
 }
 
+TEST_F(Mp2tStreamParserTest, MultipleSPSPPSBeforeSlice) {
+  InitializeParser();
+  ParseMpeg2TsFile("extra-nalu.ts", 2048);
+  parser_->Flush();
+}
+
 }  // namespace mp2t
 }  // namespace media

@@ -294,6 +294,7 @@ bool EsParserH264::ParseFromEsQueue() {
 
   // At this point, we know we have a full access unit.
   bool is_key_frame = false;
+  bool has_slice_nalu = false;
   int pps_id_for_access_unit = -1;
 
   auto eq_queue_span = es_queue_->DataAt(current_access_unit_pos_);
@@ -346,6 +347,7 @@ bool EsParserH264::ParseFromEsQueue() {
       }
       case H264NALU::kIDRSlice:
       case H264NALU::kNonIDRSlice: {
+        has_slice_nalu = true;
         is_key_frame = (nalu.nal_unit_type == H264NALU::kIDRSlice);
         DVLOG(LOG_LEVEL_ES) << "NALU: slice IDR=" << is_key_frame;
         H264SliceHeader shdr;
@@ -374,9 +376,11 @@ bool EsParserH264::ParseFromEsQueue() {
     }
   }
 
-  // Emit a frame and move the stream to the next AUD position.
-  RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,
-                   is_key_frame, pps_id_for_access_unit));
+  if (has_slice_nalu) {
+    // Emit a frame and move the stream to the next AUD position.
+    RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size, is_key_frame,
+                     pps_id_for_access_unit));
+  }
   current_access_unit_pos_ = next_access_unit_pos_;
   es_queue_->Trim(current_access_unit_pos_);
 
