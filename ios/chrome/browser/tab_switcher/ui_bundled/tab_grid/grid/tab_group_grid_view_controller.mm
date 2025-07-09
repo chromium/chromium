@@ -49,10 +49,15 @@
 }
 
 - (void)setActivitySummaryCellText:(NSString*)text {
+  if ([_activitySummaryCellText isEqualToString:text]) {
+    return;
+  }
   _activitySummaryCellText = [text copy];
 
   if (text) {
     [self addOrUpdateActivitySummaryCell];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    text);
   } else {
     [self removeActivitySummaryCell];
   }
