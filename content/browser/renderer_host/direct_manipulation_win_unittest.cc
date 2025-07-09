@@ -410,9 +410,9 @@ class DirectManipulationUnitTest : public testing::Test {
     testing::Test::SetUp();
     direct_manipulation_helper_ =
         DirectManipulationHelper::CreateInstanceForTesting(
-            &event_target_,
             Microsoft::WRL::Make<MockDirectManipulationManager>(viewport_));
     ASSERT_TRUE(direct_manipulation_helper_);
+    direct_manipulation_helper_->UpdateEventHandler(nullptr, &event_target_);
   }
 
   DirectManipulationHelper* GetDirectManipulationHelper() {

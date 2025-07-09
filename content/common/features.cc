@@ -551,6 +551,16 @@ BASE_FEATURE(kTrustedTypesFromLiteral,
              "TrustedTypesFromLiteral",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Optimize DirectManipulationHelper by updating its event handler when the
+// window parent changes instead of tearing down and recreating the whole
+// helper. This is a temporary flag to test the performance impact of the
+// optimization.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kUpdateDirectManipulationHelperOnParentChange,
+             "UpdateDirectManipulationHelperOnParentChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Validate the code signing identity of the network process before establishing
 // a Mojo connection with it.
 #if BUILDFLAG(IS_MAC)

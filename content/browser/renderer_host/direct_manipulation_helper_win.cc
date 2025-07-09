@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/win/win_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/compositor/compositor.h"
@@ -21,14 +22,16 @@
 
 namespace content {
 
+namespace {
+
+constexpr gfx::Size kDefaultSize{1000, 1000};
+
+}  // namespace
+
 // static
 std::unique_ptr<DirectManipulationHelper>
-DirectManipulationHelper::CreateInstance(
-    HWND window,
-    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-    ui::WindowEventTarget* event_target) {
-  if (!::IsWindow(window) || !window_tree_host ||
-      !window_tree_host->compositor() || !event_target) {
+DirectManipulationHelper::CreateInstance(HWND window) {
+  if (!::IsWindow(window)) {
     return nullptr;
   }
 
@@ -43,26 +46,21 @@ DirectManipulationHelper::CreateInstance(
     return nullptr;
   }
 
-  return CreateInstanceImpl(std::move(manager), window, window_tree_host,
-                            event_target);
+  return CreateInstanceImpl(std::move(manager), window);
 }
 
 // static
 std::unique_ptr<DirectManipulationHelper>
 DirectManipulationHelper::CreateInstanceForTesting(
-    ui::WindowEventTarget* event_target,
     ComPtr<IDirectManipulationManager> manager) {
-  return CreateInstanceImpl(std::move(manager), /*window=*/nullptr,
-                            /*window_tree_host=*/nullptr, event_target);
+  return CreateInstanceImpl(std::move(manager), /*window=*/nullptr);
 }
 
 // static
 std::unique_ptr<DirectManipulationHelper>
 DirectManipulationHelper::CreateInstanceImpl(
     ComPtr<IDirectManipulationManager> manager,
-    HWND window,
-    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-    ui::WindowEventTarget* event_target) {
+    HWND window) {
   // Since we want to use fake viewport, we need UpdateManager to tell a fake
   // fake render frame.
   ComPtr<IDirectManipulationUpdateManager> update_manager;
@@ -77,31 +75,71 @@ DirectManipulationHelper::CreateInstanceImpl(
     return nullptr;
   }
 
-  auto instance = base::WrapUnique(new DirectManipulationHelper(
-      std::move(manager), std::move(update_manager), std::move(viewport),
-      window, window_tree_host, event_target));
-  if (instance->Initialize()) {
-    return instance;
+  absl::Cleanup clean_up_viewport_on_error = [&viewport] {
+    viewport->Abandon();
+  };
+
+  DIRECTMANIPULATION_CONFIGURATION configuration =
+      DIRECTMANIPULATION_CONFIGURATION_INTERACTION |
+      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_X |
+      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_Y |
+      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_INERTIA |
+      DIRECTMANIPULATION_CONFIGURATION_RAILS_X |
+      DIRECTMANIPULATION_CONFIGURATION_RAILS_Y |
+      DIRECTMANIPULATION_CONFIGURATION_SCALING;
+
+  hr = viewport->ActivateConfiguration(configuration);
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
   }
-  return nullptr;
+
+  // Since we are using fake viewport and only want to use Direct Manipulation
+  // for touchpad, we need to use MANUALUPDATE option.
+  hr = viewport->SetViewportOptions(
+      DIRECTMANIPULATION_VIEWPORT_OPTIONS_MANUALUPDATE);
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  // Set default rect for viewport before activate.
+  RECT rect = gfx::Rect(kDefaultSize).ToRECT();
+  hr = viewport->SetViewportRect(&rect);
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  hr = manager->Activate(window);
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  absl::Cleanup deactivate_manager_on_error = [&manager, &window] {
+    manager->Deactivate(window);
+  };
+
+  hr = viewport->Enable();
+  if (!SUCCEEDED(hr)) {
+    return nullptr;
+  }
+
+  std::move(deactivate_manager_on_error).Cancel();
+  std::move(clean_up_viewport_on_error).Cancel();
+
+  return base::WrapUnique(new DirectManipulationHelper(
+      std::move(manager), std::move(update_manager), std::move(viewport),
+      window));
 }
 
 DirectManipulationHelper::DirectManipulationHelper(
     ComPtr<IDirectManipulationManager> manager,
     ComPtr<IDirectManipulationUpdateManager> update_manager,
     ComPtr<IDirectManipulationViewport> viewport,
-    HWND window,
-    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-    ui::WindowEventTarget* event_target)
+    HWND window)
     : manager_(std::move(manager)),
       update_manager_(std::move(update_manager)),
       viewport_(std::move(viewport)),
       window_(window),
-      window_tree_host_(window_tree_host),
-      event_target_(event_target) {
-  event_handler_ = Microsoft::WRL::Make<DirectManipulationEventHandler>(
-      weak_factory_.GetWeakPtr());
-}
+      size_in_pixels_(kDefaultSize) {}
 
 DirectManipulationHelper::~DirectManipulationHelper() {
   Destroy();
@@ -118,72 +156,55 @@ void DirectManipulationHelper::OnCompositingShuttingDown(
   Destroy();
 }
 
-bool DirectManipulationHelper::Initialize() {
-  // Shouldn't be called again after Destroy().
-  DCHECK(event_handler_);
-
-  DIRECTMANIPULATION_CONFIGURATION configuration =
-      DIRECTMANIPULATION_CONFIGURATION_INTERACTION |
-      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_X |
-      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_Y |
-      DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_INERTIA |
-      DIRECTMANIPULATION_CONFIGURATION_RAILS_X |
-      DIRECTMANIPULATION_CONFIGURATION_RAILS_Y |
-      DIRECTMANIPULATION_CONFIGURATION_SCALING;
-
-  HRESULT hr = viewport_->ActivateConfiguration(configuration);
-  if (!SUCCEEDED(hr)) {
-    return false;
+void DirectManipulationHelper::UpdateEventHandler(
+    base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+    ui::WindowEventTarget* event_target) {
+  if (window_tree_host.get() != window_tree_host_.get() &&
+      has_animation_observer_) {
+    RemoveAnimationObserver();
   }
 
-  // Since we are using fake viewport and only want to use Direct Manipulation
-  // for touchpad, we need to use MANUALUPDATE option.
-  hr = viewport_->SetViewportOptions(
-      DIRECTMANIPULATION_VIEWPORT_OPTIONS_MANUALUPDATE);
-  if (!SUCCEEDED(hr)) {
-    return false;
+  if (event_handler_) {
+    event_handler_.Reset();
+    viewport_->Stop();
+    viewport_->RemoveEventHandler(view_port_handler_cookie_);
   }
+
+  window_tree_host_ = window_tree_host;
+  event_target_ = event_target;
+
+  if (!event_target) {
+    // No need for an event handler without a target.
+    return;
+  }
+
+  event_handler_ = Microsoft::WRL::Make<DirectManipulationEventHandler>(
+      weak_factory_.GetWeakPtr());
+  event_handler_->SetViewportSizeInPixels(size_in_pixels_);
 
   // We got Direct Manipulation transform from
   // IDirectManipulationViewportEventHandler.
-  hr = viewport_->AddEventHandler(window_, event_handler_.Get(),
-                                  &view_port_handler_cookie_);
+  HRESULT hr = viewport_->AddEventHandler(window_, event_handler_.Get(),
+                                          &view_port_handler_cookie_);
   if (!SUCCEEDED(hr)) {
-    return false;
+    event_handler_.Reset();
+    return;
   }
 
-  // Set default rect for viewport before activate.
-  gfx::Size viewport_size_in_pixels = {1000, 1000};
-  event_handler_->SetViewportSizeInPixels(viewport_size_in_pixels);
-  RECT rect = gfx::Rect(viewport_size_in_pixels).ToRECT();
-  hr = viewport_->SetViewportRect(&rect);
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  hr = manager_->Activate(window_);
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  hr = viewport_->Enable();
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  hr = update_manager_->Update(nullptr);
-  if (!SUCCEEDED(hr)) {
-    return false;
-  }
-
-  return true;
+  update_manager_->Update(nullptr);
 }
 
 void DirectManipulationHelper::SetSizeInPixels(
     const gfx::Size& size_in_pixels) {
-  DCHECK(event_handler_);
-  if (!event_handler_->SetViewportSizeInPixels(size_in_pixels))
+  if (size_in_pixels == size_in_pixels_) {
     return;
+  }
+
+  size_in_pixels_ = size_in_pixels;
+
+  if (event_handler_) {
+    event_handler_->SetViewportSizeInPixels(size_in_pixels);
+  }
 
   HRESULT hr = viewport_->Stop();
   if (!SUCCEEDED(hr))
@@ -233,15 +254,7 @@ void DirectManipulationHelper::SetDeviceScaleFactorForTesting(float factor) {
 }
 
 void DirectManipulationHelper::Destroy() {
-  if (has_animation_observer_) {
-    RemoveAnimationObserver();
-  }
-  window_tree_host_.reset();
-  event_target_ = nullptr;
-  event_handler_.Reset();
-
-  viewport_->Stop();
-  viewport_->RemoveEventHandler(view_port_handler_cookie_);
+  UpdateEventHandler(nullptr, nullptr);
   viewport_->Abandon();
   manager_->Deactivate(window_);
 }

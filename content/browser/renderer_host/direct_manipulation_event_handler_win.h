@@ -40,8 +40,7 @@ class DirectManipulationEventHandler
   DirectManipulationEventHandler& operator=(
       const DirectManipulationEventHandler&) = delete;
 
-  // Return true if viewport_size_in_pixels_ changed.
-  bool SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
+  void SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
 
   void SetDeviceScaleFactor(float device_scale_factor);
 

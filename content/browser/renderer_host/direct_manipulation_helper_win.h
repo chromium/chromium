@@ -46,18 +46,13 @@ class CONTENT_EXPORT DirectManipulationHelper
  public:
   // Creates and initializes an instance of this class if Direct Manipulation is
   // enabled on the platform. Returns nullptr if it disabled or failed on
-  // initialization. The DirectManipulationHelper must not outlive
-  // `event_target`.
-  static std::unique_ptr<DirectManipulationHelper> CreateInstance(
-      HWND window,
-      base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-      ui::WindowEventTarget* event_target);
+  // initialization.
+  static std::unique_ptr<DirectManipulationHelper> CreateInstance(HWND window);
 
   // Creates and initializes an instance for testing. The given `manager` should
   // implement IDirectManipulationManager::CreateViewport() and
   // IDirectManipulationManager::GetUpdateManager() to return test mocks.
   static std::unique_ptr<DirectManipulationHelper> CreateInstanceForTesting(
-      ui::WindowEventTarget* event_target,
       Microsoft::WRL::ComPtr<IDirectManipulationManager> manager);
 
   DirectManipulationHelper(const DirectManipulationHelper&) = delete;
@@ -72,6 +67,11 @@ class CONTENT_EXPORT DirectManipulationHelper
 
   // Returns the event target.
   ui::WindowEventTarget* event_target() const { return event_target_; }
+
+  // Creates a DirectManipulationEventHandler for `event_target`, using the
+  // compositor from `window_tree_host`. Replaces any existing event handler.
+  void UpdateEventHandler(base::WeakPtr<aura::WindowTreeHost> window_tree_host,
+                          ui::WindowEventTarget* event_target);
 
   // ui::CompositorAnimationObserver
   // CompositorAnimationObserver implements.
@@ -104,21 +104,13 @@ class CONTENT_EXPORT DirectManipulationHelper
   // `window_`. Returns nullptr on failure.
   static std::unique_ptr<DirectManipulationHelper> CreateInstanceImpl(
       ComPtr<IDirectManipulationManager> manager,
-      HWND window,
-      base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-      ui::WindowEventTarget* event_target);
+      HWND window);
 
   DirectManipulationHelper(
       ComPtr<IDirectManipulationManager> manager,
       ComPtr<IDirectManipulationUpdateManager> update_manager,
       ComPtr<IDirectManipulationViewport> viewport,
-      HWND window,
-      base::WeakPtr<aura::WindowTreeHost> window_tree_host,
-      ui::WindowEventTarget* event_target);
-
-  // This function applies Direct Manipulation settings and installs a viewport
-  // event handler for `event_target_`. Return false if initialize failed.
-  bool Initialize();
+      HWND window);
 
   void SetDeviceScaleFactorForTesting(float factor);
 
@@ -127,12 +119,17 @@ class CONTENT_EXPORT DirectManipulationHelper
   ComPtr<IDirectManipulationManager> manager_;
   ComPtr<IDirectManipulationUpdateManager> update_manager_;
   ComPtr<IDirectManipulationViewport> viewport_;
-  ComPtr<DirectManipulationEventHandler> event_handler_;
   HWND window_;
+
+  // These are only set after UpdateEventHandler() is called, and may change
+  // whenever `window_` is reparented.
+  ComPtr<DirectManipulationEventHandler> event_handler_;
   base::WeakPtr<aura::WindowTreeHost> window_tree_host_;
   raw_ptr<ui::WindowEventTarget> event_target_ = nullptr;
+
   DWORD view_port_handler_cookie_ = 0;
   bool has_animation_observer_ = false;
+  gfx::Size size_in_pixels_;
 
   base::WeakPtrFactory<DirectManipulationHelper> weak_factory_{this};
 };

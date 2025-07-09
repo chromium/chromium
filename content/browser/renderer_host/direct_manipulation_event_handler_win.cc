@@ -33,12 +33,9 @@ DirectManipulationEventHandler::DirectManipulationEventHandler(
     base::WeakPtr<DirectManipulationHelper> helper)
     : helper_(helper) {}
 
-bool DirectManipulationEventHandler::SetViewportSizeInPixels(
+void DirectManipulationEventHandler::SetViewportSizeInPixels(
     const gfx::Size& viewport_size_in_pixels) {
-  if (viewport_size_in_pixels_ == viewport_size_in_pixels)
-    return false;
   viewport_size_in_pixels_ = viewport_size_in_pixels;
-  return true;
 }
 
 void DirectManipulationEventHandler::SetDeviceScaleFactor(
