@@ -18,9 +18,7 @@
 -chromeos/assistant/internal
 -components/optimization_guide/internal/
 -ios/third_party/
--native_client/
 -net/third_party/
--ppapi/
 -testing/iossim/
 -third_party/
 +third_party/blink/
