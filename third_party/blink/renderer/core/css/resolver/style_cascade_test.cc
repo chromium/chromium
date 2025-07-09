@@ -365,11 +365,7 @@ class StyleCascadeTest : public PageTestBase {
     GetDocument()
         .GetStyleEngine()
         .GetDocumentStyleSheetCollection()
-        .AppendActiveStyleSheet(active_sheets[0].first);
-    GetDocument()
-        .GetStyleEngine()
-        .GetDocumentStyleSheetCollection()
-        .CreateRuleSets(GetDocument().GetStyleEngine());
+        .AppendActiveStyleSheet(active_sheets[0]);
   }
 
   Element* DocumentElement() const { return GetDocument().documentElement(); }

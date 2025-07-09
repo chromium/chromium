@@ -41,14 +41,10 @@ DocumentStyleSheetCollector::DocumentStyleSheetCollector(
     : collection_(collection),
       style_sheets_for_style_sheet_list_(sheets_for_list) {}
 
-void DocumentStyleSheetCollector::AppendActiveStyleSheet(CSSStyleSheet* sheet) {
+void DocumentStyleSheetCollector::AppendActiveStyleSheet(
+    const ActiveStyleSheet& sheet) {
   DCHECK(collection_);
   collection_->AppendActiveStyleSheet(sheet);
-}
-
-void DocumentStyleSheetCollector::FinishCollectingStylesheets(
-    StyleEngine& engine) {
-  collection_->CreateRuleSets(engine);
 }
 
 void DocumentStyleSheetCollector::AppendSheetForList(StyleSheet* sheet) {
