@@ -577,9 +577,9 @@
       type_name: "CSSAnimationData",
       field_group: "*",
       default_value: "nullptr",
-      wrapper_pointer_name: "std::unique_ptr",
+      wrapper_pointer_name: "Member",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_animation_data.h"],
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "Transitions",
@@ -587,9 +587,9 @@
       type_name: "CSSTransitionData",
       field_group: "*",
       default_value: "nullptr",
-      wrapper_pointer_name: "std::unique_ptr",
+      wrapper_pointer_name: "Member",
       include_paths: ["third_party/blink/renderer/core/animation/css/css_transition_data.h"],
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["setter"],
     },
     {
       name: "MaskBoxImage",

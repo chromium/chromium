@@ -2992,6 +2992,8 @@ const ComputedStyle* ComputedStyleBuilder::CloneStyle() const {
   ResetAccess();
   has_own_inherited_variables_ = false;
   has_own_non_inherited_variables_ = false;
+  has_own_animations_ = false;
+  has_own_transitions_ = false;
   return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
                                              *this);
 }

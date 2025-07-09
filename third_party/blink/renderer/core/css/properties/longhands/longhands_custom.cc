@@ -813,7 +813,7 @@ const CSSValue* TimelineTriggerName::CSSValueFromComputedStyleInternal(
     if (data->TimelineTriggerNameList().empty()) {
       return InitialValue();
     }
-    for (const Persistent<const ScopedCSSName>& name :
+    for (const Member<const ScopedCSSName>& name :
          data->TimelineTriggerNameList()) {
       list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
     }

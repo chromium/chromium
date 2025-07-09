@@ -981,16 +981,6 @@ class ComputedStyle final : public ComputedStyleBase {
   const CSSValue* GetVariableValue(const AtomicString&,
                                    bool is_inherited_property) const;
 
-  // Animations.
-  const CSSAnimationData* Animations() const {
-    return AnimationsInternal().get();
-  }
-
-  // Transitions.
-  const CSSTransitionData* Transitions() const {
-    return TransitionsInternal().get();
-  }
-
   // Column utility functions.
   bool SpecifiesColumns() const {
     return !HasAutoColumnCount() || !HasAutoColumnWidth() ||
@@ -2861,14 +2851,14 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // animations
-  const CSSAnimationData* Animations() const {
-    return AnimationsInternal().get();
-  }
   CORE_EXPORT CSSAnimationData& AccessAnimations() {
-    std::unique_ptr<CSSAnimationData>& animations = MutableAnimationsInternal();
-    if (!animations) {
-      animations = std::make_unique<CSSAnimationData>();
+    Member<CSSAnimationData>& animations = MutableAnimationsInternal();
+    if (!has_own_animations_) {
+      animations = animations
+                       ? MakeGarbageCollected<CSSAnimationData>(*animations)
+                       : MakeGarbageCollected<CSSAnimationData>();
     }
+    has_own_animations_ = true;
     return *animations;
   }
 
@@ -3354,15 +3344,14 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // transitions
-  const CSSTransitionData* Transitions() const {
-    return TransitionsInternal().get();
-  }
   CORE_EXPORT CSSTransitionData& AccessTransitions() {
-    std::unique_ptr<CSSTransitionData>& transitions =
-        MutableTransitionsInternal();
-    if (!transitions) {
-      transitions = std::make_unique<CSSTransitionData>();
+    Member<CSSTransitionData>& transitions = MutableTransitionsInternal();
+    if (!has_own_transitions_) {
+      transitions = transitions
+                        ? MakeGarbageCollected<CSSTransitionData>(*transitions)
+                        : MakeGarbageCollected<CSSTransitionData>();
     }
+    has_own_transitions_ = true;
     return *transitions;
   }
 
@@ -3550,6 +3539,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
  private:
   mutable bool has_own_inherited_variables_ = false;
   mutable bool has_own_non_inherited_variables_ = false;
+  mutable bool has_own_animations_ = false;
+  mutable bool has_own_transitions_ = false;
 };
 
 }  // namespace blink

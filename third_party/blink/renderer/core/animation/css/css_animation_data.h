@@ -22,8 +22,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   CSSAnimationData();
   explicit CSSAnimationData(const CSSAnimationData&);
 
-  std::unique_ptr<CSSAnimationData> Clone() const {
-    return base::WrapUnique(new CSSAnimationData(*this));
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(timeline_trigger_name_list_);
+    CSSTimingData::Trace(visitor);
   }
 
   bool AnimationsMatchForStyleRecalc(const CSSAnimationData& other) const;
@@ -78,7 +79,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() const {
     return trigger_exit_range_end_list_;
   }
-  const Vector<Persistent<const ScopedCSSName>>& TimelineTriggerNameList()
+  const HeapVector<Member<const ScopedCSSName>>& TimelineTriggerNameList()
       const {
     return timeline_trigger_name_list_;
   }
@@ -147,7 +148,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto>& TriggerExitRangeEndList() {
     return trigger_exit_range_end_list_;
   }
-  Vector<Persistent<const ScopedCSSName>>& TimelineTriggerNameList() {
+  HeapVector<Member<const ScopedCSSName>>& TimelineTriggerNameList() {
     return timeline_trigger_name_list_;
   }
   Vector<EAnimationTriggerBehavior>& TimelineTriggerBehaviorList() {
@@ -216,9 +217,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static TimelineOffsetOrAuto InitialTriggerExitRangeEnd() {
     return TimelineOffsetOrAuto();
   }
-  static Persistent<const ScopedCSSName> InitialTimelineTriggerName() {
-    return nullptr;
-  }
+  static const ScopedCSSName* InitialTimelineTriggerName() { return nullptr; }
   static EAnimationTriggerBehavior InitialTimelineTriggerBehavior() {
     return EAnimationTriggerBehavior::kOnce;
   }
@@ -255,7 +254,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto> trigger_exit_range_start_list_;
   Vector<TimelineOffsetOrAuto> trigger_exit_range_end_list_;
 
-  Vector<Persistent<const ScopedCSSName>> timeline_trigger_name_list_;
+  HeapVector<Member<const ScopedCSSName>> timeline_trigger_name_list_;
   Vector<EAnimationTriggerBehavior> timeline_trigger_behavior_list_;
   Vector<std::optional<TimelineOffset>> timeline_trigger_range_start_list_;
   Vector<std::optional<TimelineOffset>> timeline_trigger_range_end_list_;
