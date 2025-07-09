@@ -104,6 +104,12 @@ class DeepScanningMetadata {
   virtual void ProcessScanResult(DownloadCheckResultReason reason,
                                  DownloadCheckResult deep_scan_result) = 0;
 
+  // Returns the list of URLs ordered from the frame that initiated the download
+  // up to the top-level frame. The first element is the URL of the frame
+  // containing the download link, not the URL of the file itself.
+  virtual google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls()
+      const = 0;
+
  protected:
   // Potentially overrides the deep scan result based on verdict reason and
   // precedence.

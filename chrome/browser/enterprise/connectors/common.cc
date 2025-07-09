@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,6 +45,9 @@ namespace enterprise_connectors {
 namespace {
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+// URL chain limit for nested iFrames.
+constexpr int kMaxFrameUrls = 10;
+
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
     case TriggeredRule::ACTION_UNSPECIFIED:
@@ -77,6 +82,44 @@ std::string DetectorTypeToString(
   return ToString(detector_type);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
+    content::WebContents* web_contents) {
+  google::protobuf::RepeatedPtrField<std::string> frame_urls;
+
+  if (!web_contents) {
+    return frame_urls;
+  }
+
+  content::RenderFrameHost* current_frame = web_contents->GetFocusedFrame();
+
+  // Traverse upwards and add URLs to the chain.
+  while (current_frame && frame_urls.size() < kMaxFrameUrls - 1) {
+    // Skip internal extension resources, blob URLs, and about:blank pages from
+    // being scanned.
+    const GURL& url = current_frame->GetLastCommittedURL();
+    if (!(url.SchemeIs(extensions::kExtensionScheme) ||
+          url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kBlobScheme))) {
+      *frame_urls.Add() = url.spec();
+    }
+
+    content::RenderFrameHost* parent =
+        current_frame->GetParentOrOuterDocumentOrEmbedder();
+    if (!parent) {
+      // Already at outermost frame.
+      return frame_urls;
+    }
+    current_frame = parent;
+  }
+
+  // If we hit the limit, collect the top frame instead.
+  if (frame_urls.size() == kMaxFrameUrls - 1 && current_frame) {
+    current_frame = current_frame->GetOutermostMainFrame();
+    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
+  }
+
+  return frame_urls;
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -200,6 +243,26 @@ std::string GetProfileEmail(Profile* profile) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return email;
+}
+
+google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
+    content::WebContents* web_contents,
+    DeepScanAccessPoint access_point) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrlsImpl(web_contents);
+
+  base::UmaHistogramCustomCounts(
+      base::JoinString(
+          {"Enterprise.IframeDlpRulesSupport",
+           DeepScanAccessPointToString(access_point), "UrlChainSize"},
+          "."),
+      frame_urls.size(), 1, kMaxFrameUrls, 10);
+
+  return frame_urls;
+#else
+  return google::protobuf::RepeatedPtrField<std::string>();
+#endif
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

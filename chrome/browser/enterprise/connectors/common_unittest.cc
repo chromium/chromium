@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -24,7 +25,10 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -331,6 +335,93 @@ INSTANTIATE_TEST_SUITE_P(
                 {.action = TriggeredRule::BLOCK,
                  .message = kTestEscapedHtmlMessage}},
             /*expected_message=*/kTestUnescapedHtmlMessage)));
+
+class CollectFrameUrlsTest : public BaseTest {
+ public:
+  CollectFrameUrlsTest() = default;
+
+ protected:
+  void SetUp() override {
+    BaseTest::SetUp();
+
+    // Create test web contents as we need to navigate to a URL to get a valid
+    // frame chain.
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile(), content::SiteInstance::Create(profile()));
+    content::WebContentsTester::For(web_contents_.get())
+        ->NavigateAndCommit(GURL(kTestUrl));
+  }
+
+  void TearDown() override {
+    // `WebContentsTester` needs to be destroyed before the
+    // `RenderViewHostTestEnabler`.
+    if (web_contents_) {
+      web_contents_.reset();
+    }
+    BaseTest::TearDown();
+  }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
+ private:
+  std::unique_ptr<content::WebContents> web_contents_;
+  // Needed for frame tree and navigation operations.
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+};
+
+TEST_F(CollectFrameUrlsTest, NestedFramesWithUninterestingUrl) {
+  base::HistogramTester histogram_tester;
+
+  // Create test URLs.
+  const GURL child_frame_url1("http://child1.example.com/");
+  const GURL child_frame_url2("http://child2.example.com/");
+  const GURL uninteresting_url("about:blank");
+
+  // Create main frame.
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHostTester* main_frame_tester =
+      content::RenderFrameHostTester::For(main_frame);
+
+  // Create and navigate the first child frame.
+  content::RenderFrameHost* child_frame1 =
+      main_frame_tester->AppendChild("child1");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(child_frame_url1,
+                                                              child_frame1);
+
+  // Create and navigate the second (nested) child frame.
+  content::RenderFrameHostTester* child_frame1_tester =
+      content::RenderFrameHostTester::For(child_frame1);
+  content::RenderFrameHost* child_frame2 =
+      child_frame1_tester->AppendChild("child2");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(child_frame_url2,
+                                                              child_frame2);
+
+  // Create and navigate the third (nested) child frame with uninteresting URL.
+  content::RenderFrameHostTester* child_frame2_tester =
+      content::RenderFrameHostTester::For(child_frame2);
+  content::RenderFrameHost* child_frame3 =
+      child_frame2_tester->AppendChild("child3");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(uninteresting_url,
+                                                              child_frame3);
+
+  // Set focus on the innermost frame.
+  content::FocusWebContentsOnFrame(web_contents(), child_frame3);
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD);
+
+  // Verify that the URL chain is listed in the right order and chain size
+  // histogram is recorded properly.
+  ASSERT_EQ(3, frame_urls.size());
+  EXPECT_EQ(child_frame_url2.spec(), frame_urls[0]);
+  EXPECT_EQ(child_frame_url1.spec(), frame_urls[1]);
+  EXPECT_EQ(kTestUrl, frame_urls[2]);
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 3, 1);
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace enterprise_connectors

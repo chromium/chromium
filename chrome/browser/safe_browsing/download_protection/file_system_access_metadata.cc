@@ -157,6 +157,13 @@ void FileSystemAccessMetadata::ProcessScanResult(
   }
 }
 
+google::protobuf::RepeatedPtrField<std::string>
+FileSystemAccessMetadata::CollectFrameUrls() const {
+  return enterprise_connectors::CollectFrameUrls(
+      item_->web_contents.get(),
+      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+}
+
 base::WeakPtr<FileSystemAccessMetadata> FileSystemAccessMetadata::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }

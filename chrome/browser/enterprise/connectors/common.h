@@ -62,6 +62,13 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 // empty string is returned.
 std::string GetProfileEmail(Profile* profile);
 
+// Returns the list of URLs from the current frame all the way to the outermost
+// frame URL. Above the `kMaxFrameUrls` limit, we skip the rest of the chain and
+// take the outermost URL for performance considerations.
+google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
+    content::WebContents* web_contents,
+    DeepScanAccessPoint access_point);
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // Returns true if the request will use the scotty resumable upload

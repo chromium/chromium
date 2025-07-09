@@ -231,6 +231,13 @@ void DownloadItemMetadata::ProcessScanResult(
   }
 }
 
+google::protobuf::RepeatedPtrField<std::string>
+DownloadItemMetadata::CollectFrameUrls() const {
+  return enterprise_connectors::CollectFrameUrls(
+      content::DownloadItemUtils::GetWebContents(item_),
+      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+}
+
 base::WeakPtr<DownloadItemMetadata> DownloadItemMetadata::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }

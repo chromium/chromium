@@ -771,7 +771,7 @@ safe_browsing::ReferrerChain DeepScanningRequest::referrer_chain() const {
 
 google::protobuf::RepeatedPtrField<std::string>
 DeepScanningRequest::frame_url_chain() const {
-  return {};
+  return metadata_->CollectFrameUrls();
 }
 
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {

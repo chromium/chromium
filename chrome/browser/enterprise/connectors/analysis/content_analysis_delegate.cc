@@ -79,9 +79,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-// URL chain limit for nested iFrames.
-constexpr int kMaxFrameUrls = 10;
-
 // Global pointer of factory function (RepeatingCallback) used to create
 // instances of ContentAnalysisDelegate in tests.  !is_null() only in tests.
 ContentAnalysisDelegate::Factory* GetFactoryStorage() {
@@ -137,39 +134,6 @@ void OnPathsExpanded(
       base::BindOnce(&OnContentAnalysisComplete, std::move(files_scan_data),
                      std::move(callback)),
       access_point);
-}
-
-// Returns the list of URLs from the current frame all the way to the outermost
-// frame URL. Above the `kMaxFrameUrls` limit, we skip the rest of the chain and
-// take the outermost URL for performance considerations.
-google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
-    content::WebContents* web_contents) {
-  google::protobuf::RepeatedPtrField<std::string> frame_urls;
-
-  if (!web_contents) {
-    return frame_urls;
-  }
-
-  content::RenderFrameHost* current_frame = web_contents->GetFocusedFrame();
-
-  // Traverse upwards and add URLs to the chain.
-  while (current_frame && frame_urls.size() < kMaxFrameUrls - 1) {
-    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
-
-    content::RenderFrameHost* parent = current_frame->GetParent();
-    if (!parent) {
-      // Already at outermost frame.
-      return frame_urls;
-    }
-    current_frame = parent;
-  }
-
-  // If we hit the limit, collect the top frame instead.
-  if (frame_urls.size() == kMaxFrameUrls - 1 && current_frame) {
-    current_frame = current_frame->GetOutermostMainFrame();
-    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
-  }
-  return frame_urls;
 }
 
 }  // namespace
@@ -542,13 +506,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
   if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
-    frame_url_chain_ = CollectFrameUrls(web_contents);
-    base::UmaHistogramCustomCounts(
-        base::JoinString(
-            {"Enterprise.IframeDlpRulesSupport",
-             DeepScanAccessPointToString(access_point_), "UrlChainSize"},
-            "."),
-        frame_url_chain_.size(), 1, kMaxFrameUrls, 10);
+    frame_url_chain_ = CollectFrameUrls(web_contents, access_point_);
   }
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
