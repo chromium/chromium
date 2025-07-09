@@ -148,21 +148,45 @@ promise_test(async () => {
 
 promise_test(async () => {
   await ensureLanguageModel(kImageOptions);
-  const image_data = await fetch(kValidImagePath);
+  const imageData = await fetch(kValidImagePath);
   const session = await createLanguageModel(kImageOptions);
   const result = await session.prompt(
-      messageWithContent(kPrompt, 'image', await image_data.arrayBuffer()));
+      messageWithContent(kPrompt, 'image', await imageData.arrayBuffer()));
   assert_regexp_match(result, /<image>/);
 }, 'Prompt with ArrayBuffer image content');
 
 promise_test(async () => {
   await ensureLanguageModel(kImageOptions);
-  const image_data = await fetch(kValidImagePath);
+  const imageData = await fetch(kValidImagePath);
   const session = await createLanguageModel(kImageOptions);
   const result = await session.prompt(messageWithContent(
-      kPrompt, 'image', new DataView(await image_data.arrayBuffer())));
+      kPrompt, 'image', new DataView(await imageData.arrayBuffer())));
   assert_regexp_match(result, /<image>/);
 }, 'Prompt with ArrayBufferView image content');
+
+promise_test(async (t) => {
+  await ensureLanguageModel(kImageOptions);
+  const imageData = await fetch(kValidImagePath);
+  const session = await createLanguageModel(kImageOptions);
+  const buffer = await imageData.arrayBuffer();
+  // Add 256 bytes of padding in front of the image data.
+  const bufferView = new Uint8Array(buffer);
+  const newBufferArray = new ArrayBuffer(256 + buffer.byteLength);
+  const imageView = new Uint8Array(newBufferArray, 256, buffer.byteLength);
+  imageView.set(bufferView);
+
+  const result =
+      await session.prompt(messageWithContent(kPrompt, 'image', imageView));
+  assert_regexp_match(result, /<image>/);
+
+  // Offset causes 56 bytes of blank data, resulting in a decoding error.
+  await promise_rejects_dom(
+      t, 'InvalidStateError',
+      session.prompt(messageWithContent(
+          kPrompt, 'image',
+          new Uint8Array(newBufferArray, 200, buffer.byteLength))));
+}, 'Prompt with ArrayBufferView image content with an offset.');
+
 
 promise_test(async () => {
   await ensureLanguageModel(kImageOptions);

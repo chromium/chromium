@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -73,6 +74,11 @@ class MODULES_EXPORT ImageBitmapFactories final
       const V8ImageBitmapSource*,
       const ImageBitmapOptions*,
       ExceptionState&);
+  // Note that this makes a copy of DOMDataView*.
+  static ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                                      const DOMDataView*,
+                                                      const ImageBitmapOptions*,
+                                                      ExceptionState&);
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       const V8ImageBitmapSource*,
@@ -164,6 +170,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                       const ImageBitmapOptions*);
 
     void LoadBlobAsync(Blob*);
+    void LoadDataViewAsync(const DOMDataView*);
     ScriptPromise<ImageBitmap> Promise() { return resolver_->Promise(); }
 
     void Trace(Visitor*) const override;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/language_model_prompt_builder.h"
 
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -147,9 +148,9 @@ class LanguageModelPromptBuilder
   void ToMojo(String prompt, PendingEntry* entry);
   void ToMojo(AudioBuffer* audio_buffer, PendingEntry* entry);
   void ToMojo(Blob* blob, PendingEntry* entry);
-  void ToMojo(V8ImageBitmapSource* bitmap, PendingEntry* entry);
   void AudioToMojo(base::span<uint8_t> bytes, PendingEntry* entry);
-  void BitmapToMojo(base::span<uint8_t> bytes, PendingEntry* entry);
+  void BitmapToMojo(std::variant<DOMDataView*, V8ImageBitmapSource*> source,
+                    PendingEntry* entry);
 
   // Called when an ImageBitmap is finished decoding.
   void OnBitmapLoaded(PendingEntry* entry,
@@ -376,16 +377,22 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
       UseCounter::Count(ExecutionContext::From(script_state_),
                         WebFeature::kLanguageModel_Prompt_Input_Image);
       if (content_value->IsV8ImageBitmapSource()) {
-        ToMojo(content_value->GetAsV8ImageBitmapSource(), pending_entry);
+        BitmapToMojo(content_value->GetAsV8ImageBitmapSource(), pending_entry);
         return;
       }
       if (content_value->IsArrayBuffer()) {
-        BitmapToMojo(content_value->GetAsArrayBuffer()->Content()->ByteSpan(),
-                     pending_entry);
+        DOMArrayBuffer* array_buffer = content_value->GetAsArrayBuffer();
+        BitmapToMojo(
+            DOMDataView::Create(array_buffer, 0, array_buffer->ByteLength()),
+            pending_entry);
         return;
       }
       if (content_value->IsArrayBufferView()) {
-        BitmapToMojo(content_value->GetAsArrayBufferView()->ByteSpan(),
+        NotShared<DOMArrayBufferView> array_buffer_view =
+            content_value->GetAsArrayBufferView();
+        BitmapToMojo(DOMDataView::Create(array_buffer_view->BufferBase(),
+                                         array_buffer_view->byteOffset(),
+                                         array_buffer_view->byteLength()),
                      pending_entry);
         return;
       }
@@ -494,23 +501,6 @@ void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
                            entry);
 }
 
-void LanguageModelPromptBuilder::BitmapToMojo(base::span<uint8_t> bytes,
-                                              PendingEntry* entry) {
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(bytes);
-  if (!ImageDecoder::HasSufficientDataToSniffMimeType(*buffer.get())) {
-    Reject(DOMException::Create(
-        "Image bytes does not contain a recognized image format.",
-        DOMException::GetErrorName(DOMExceptionCode::kDataError)));
-    return;
-  }
-
-  // TODO(crbug.com/416797732): Using a blob is likely inefficient here. Avoid
-  // sending to the browser and back.
-  ToMojo(MakeGarbageCollected<V8ImageBitmapSource>(
-             Blob::Create(bytes, ImageDecoder::SniffMimeType(buffer))),
-         entry);
-}
-
 void LanguageModelPromptBuilder::ToMojo(Blob* blob, PendingEntry* entry) {
   // TODO(crbug.com/382180351): Make blob reading async or alternatively
   // use FileReaderSync instead (fix linker and exception issues).
@@ -550,28 +540,40 @@ class ThenCallback : public ThenCallable<Type, ThenCallback<Type, ReactType>> {
   base::OnceCallback<void(ScriptState*, ReactType)> callback;
 };
 
-void LanguageModelPromptBuilder::ToMojo(V8ImageBitmapSource* bitmap,
-                                        PendingEntry* entry) {
+void LanguageModelPromptBuilder::BitmapToMojo(
+    std::variant<DOMDataView*, V8ImageBitmapSource*> source,
+    PendingEntry* entry) {
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
   ExceptionState exception_state(isolate);
+
   // Note: GetBitmapFromV8ImageBitmapSource doesn't support async which is
   // required for blobs so async ImageBitmapFactories::CreateImageBitmap is
   // preferred.
   // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
-  ImageBitmapFactories::CreateImageBitmap(
-      script_state_, bitmap, MakeGarbageCollected<ImageBitmapOptions>(),
-      exception_state)
-      .Then(
-          script_state_,
-          MakeGarbageCollected<ThenCallback<ImageBitmap>>(
-              WTF::BindOnce(&LanguageModelPromptBuilder::OnBitmapLoaded,
-                            WrapPersistent(this), WrapPersistent(entry))),
-          MakeGarbageCollected<ThenCallback<IDLAny, ScriptValue>>(WTF::BindOnce(
-              [](LanguageModelPromptBuilder* builder, ScriptState* script_state,
-                 ScriptValue value) { builder->Reject(std::move(value)); },
-              WrapPersistent(this))));
+  ScriptPromise<ImageBitmap> promise = std::visit(
+      absl::Overload{
+          [&](const DOMDataView* data_view) {
+            return ImageBitmapFactories::CreateImageBitmap(
+                script_state_, data_view,
+                MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
+          },
+          [&](const V8ImageBitmapSource* bitmap_source) {
+            return ImageBitmapFactories::CreateImageBitmap(
+                script_state_, bitmap_source,
+                MakeGarbageCollected<ImageBitmapOptions>(), exception_state);
+          }},
+      source);
 
+  promise.Then(
+      script_state_,
+      MakeGarbageCollected<ThenCallback<ImageBitmap>>(
+          WTF::BindOnce(&LanguageModelPromptBuilder::OnBitmapLoaded,
+                        WrapPersistent(this), WrapPersistent(entry))),
+      MakeGarbageCollected<ThenCallback<IDLAny, ScriptValue>>(WTF::BindOnce(
+          [](LanguageModelPromptBuilder* builder, ScriptState* script_state,
+             ScriptValue value) { builder->Reject(std::move(value)); },
+          WrapPersistent(this))));
   if (exception_state.HadException()) {
     CHECK(try_catch.HasCaught());
     this->Reject(ScriptValue(isolate, try_catch.Exception()));

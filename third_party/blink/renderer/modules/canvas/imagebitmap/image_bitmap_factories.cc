@@ -177,6 +177,7 @@ inline ImageBitmapSource* ToImageBitmapSourceInternal(
   NOTREACHED();
 }
 
+// static
 ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmapFromBlob(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
@@ -218,6 +219,24 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
     return EmptyPromise();
   return CreateImageBitmap(script_state, bitmap_source_internal, std::nullopt,
                            options, exception_state);
+}
+
+// static
+ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
+    ScriptState* script_state,
+    const DOMDataView* data_view,
+    const ImageBitmapOptions* options,
+    ExceptionState&) {
+  if (!script_state->ContextIsValid()) {
+    return EmptyPromise();
+  }
+
+  ImageBitmapFactories& factory = From(*ExecutionContext::From(script_state));
+  ImageBitmapLoader* loader = ImageBitmapFactories::ImageBitmapLoader::Create(
+      factory, std::nullopt, options, script_state);
+  factory.AddLoader(loader);
+  loader->LoadDataViewAsync(data_view);
+  return loader->Promise();
 }
 
 ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
@@ -302,9 +321,6 @@ ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
     ScriptState* script_state,
     const ImageBitmapOptions* options)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      loader_(MakeGarbageCollected<FileReaderLoader>(
-          this,
-          GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       factory_(&factory),
       resolver_(MakeGarbageCollected<ScriptPromiseResolver<ImageBitmap>>(
           script_state)),
@@ -312,7 +328,17 @@ ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
       options_(options) {}
 
 void ImageBitmapFactories::ImageBitmapLoader::LoadBlobAsync(Blob* blob) {
+  DCHECK(!loader_);
+  loader_ = MakeGarbageCollected<FileReaderLoader>(
+      this, GetExecutionContext()->GetTaskRunner(TaskType::kFileReading));
   loader_->Start(blob->GetBlobDataHandle());
+}
+
+void ImageBitmapFactories::ImageBitmapLoader::LoadDataViewAsync(
+    const DOMDataView* data_view) {
+  // Make a copy since the data view could be mutated during async decoding.
+  ScheduleAsyncImageBitmapDecoding(
+      std::move(*DOMArrayBuffer::Create(data_view->ByteSpan())->Content()));
 }
 
 ImageBitmapFactories::ImageBitmapLoader::~ImageBitmapLoader() {
