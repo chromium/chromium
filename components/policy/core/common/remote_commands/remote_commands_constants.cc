@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
@@ -28,11 +27,6 @@ BASE_FEATURE(kCbcmRemoteCommandsInvalidationWithDirectMessagesEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-
-// GCP number to be used for remote commands invalidations. Remote commands are
-// considered critical to receive invalidation.
-constexpr int64_t kRemoteCommandsInvalidationsProjectNumber =
-    invalidation::kCriticalInvalidationsProjectNumber;
 
 bool IsDirectInvalidationEnabledForScope(PolicyInvalidationScope scope) {
   switch (scope) {

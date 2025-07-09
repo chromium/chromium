@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
+#include "components/invalidation/invalidation_constants.h"
 
 class GURL;
 class PrefService;
@@ -15,6 +16,11 @@ class PrefService;
 namespace policy {
 
 enum class PolicyInvalidationScope;
+
+// GCP number to be used for policy invalidations. Policy update is not
+// considered critical to receive invalidation.
+inline constexpr int64_t kPolicyInvalidationProjectNumber =
+    invalidation::kNonCriticalInvalidationsProjectNumber;
 
 BASE_DECLARE_FEATURE(kDevicePolicyInvalidationWithDirectMessagesEnabled);
 BASE_DECLARE_FEATURE(

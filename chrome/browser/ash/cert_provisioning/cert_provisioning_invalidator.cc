@@ -309,24 +309,8 @@ void CertProvisioningUserInvalidator::Register(
 
 CertProvisioningDeviceInvalidatorFactory::
     CertProvisioningDeviceInvalidatorFactory(
-        std::variant<policy::AffiliatedInvalidationServiceProvider*,
-                     invalidation::InvalidationListener*>
-            invalidation_service_provider_or_listener)
-    : invalidation_service_provider_or_listener_(
-          invalidation::PointerVariantToRawPointer(
-              invalidation_service_provider_or_listener)) {
-  CHECK(!std::holds_alternative<
-            raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
-            invalidation_service_provider_or_listener_) ||
-        std::get<raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
-            invalidation_service_provider_or_listener_))
-      << "AffiliatedInvalidationServiceProvider is used but is null";
-  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationListener>>(
-            invalidation_service_provider_or_listener_) ||
-        std::get<raw_ptr<invalidation::InvalidationListener>>(
-            invalidation_service_provider_or_listener_))
-      << "InvalidationListener is used but is null";
-}
+        invalidation::InvalidationListener* invalidation_listener)
+    : invalidation_listener_(invalidation_listener) {}
 
 CertProvisioningDeviceInvalidatorFactory::
     CertProvisioningDeviceInvalidatorFactory() = default;
@@ -336,49 +320,17 @@ CertProvisioningDeviceInvalidatorFactory::
 std::unique_ptr<CertProvisioningInvalidator>
 CertProvisioningDeviceInvalidatorFactory::Create() {
   return std::make_unique<CertProvisioningDeviceInvalidator>(
-      invalidation::RawPointerVariantToPointer(
-          invalidation_service_provider_or_listener_));
+      invalidation_listener_);
 }
 
 //=============== CertProvisioningDeviceInvalidator ============================
 
 CertProvisioningDeviceInvalidator::CertProvisioningDeviceInvalidator(
-    std::variant<policy::AffiliatedInvalidationServiceProvider*,
-                 invalidation::InvalidationListener*>
-        invalidation_service_provider_or_listener)
-    : invalidation_service_provider_or_listener_(
-          invalidation::PointerVariantToRawPointer(
-              invalidation_service_provider_or_listener)) {
-  CHECK(!std::holds_alternative<
-            raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
-            invalidation_service_provider_or_listener_) ||
-        std::get<raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
-            invalidation_service_provider_or_listener_))
-      << "AffiliatedInvalidationServiceProvider is used but is null";
-  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationListener>>(
-            invalidation_service_provider_or_listener_) ||
-        std::get<raw_ptr<invalidation::InvalidationListener>>(
-            invalidation_service_provider_or_listener_))
-      << "InvalidationListener is used but is null";
-}
+    invalidation::InvalidationListener* invalidation_listener)
+    : invalidation_listener_(invalidation_listener) {}
 
-CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
-  // As mentioned in the class-level comment, this intentionally doesn't call
-  // Unregister so that a subscription can be preserved across process restarts.
-  //
-  // Note that it is OK to call this even if this instance has not called
-  // RegisterConsumer yet.
-  std::visit(
-      absl::Overload{
-          [this](
-              policy::AffiliatedInvalidationServiceProvider* service_provider) {
-            service_provider->UnregisterConsumer(this);
-          },
-          [](invalidation::InvalidationListener* listener) {
-            // Do nothing.
-          }},
-      invalidation_service_provider_or_listener_);
-}
+CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() =
+    default;
 
 void CertProvisioningDeviceInvalidator::Register(
     const invalidation::Topic& topic,
@@ -388,57 +340,15 @@ void CertProvisioningDeviceInvalidator::Register(
   listener_type_ = listener_type;
   CHECK(!topic_.empty());
   on_invalidation_event_callback_ = std::move(on_invalidation_event_callback);
-  std::visit(
-      absl::Overload{
-          [this](
-              policy::AffiliatedInvalidationServiceProvider* service_provider) {
-            service_provider->RegisterConsumer(this);
-          },
-          [this](invalidation::InvalidationListener* listener) {
-            invalidation_handler_ =
-                internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-                    CertScope::kDevice, listener, topic_, listener_type_,
-                    on_invalidation_event_callback_);
-          }},
-      invalidation_service_provider_or_listener_);
+  invalidation_handler_ =
+      internal::CertProvisioningInvalidationHandler::BuildAndRegister(
+          CertScope::kDevice, invalidation_listener_, topic_, listener_type_,
+          on_invalidation_event_callback_);
 }
 
 void CertProvisioningDeviceInvalidator::Unregister() {
-  std::visit(
-      absl::Overload{
-          [this](
-              policy::AffiliatedInvalidationServiceProvider* service_provider) {
-            service_provider->UnregisterConsumer(this);
-          },
-          [](invalidation::InvalidationListener* listener) {
-            // Do nothing.
-          }},
-      invalidation_service_provider_or_listener_);
   CertProvisioningInvalidator::Unregister();
   topic_.clear();
-}
-
-void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
-    invalidation::InvalidationService* invalidation_service) {
-  // This can only be called after Register() has been called, so the `topic_`
-  // must be non-empty.
-  CHECK(!topic_.empty());
-
-  // Reset any previously active `invalidation_handler` as it could be referring
-  // to the previous `invalidation_service`.
-  invalidation_handler_.reset();
-
-  if (!invalidation_service) {
-    return;
-  }
-
-  invalidation_handler_ =
-      internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-          CertScope::kDevice, invalidation_service, topic_, listener_type_,
-          on_invalidation_event_callback_);
-  if (!invalidation_handler_) {
-    LOG(ERROR) << "Failed to register for invalidation topic";
-  }
 }
 
 }  // namespace ash::cert_provisioning

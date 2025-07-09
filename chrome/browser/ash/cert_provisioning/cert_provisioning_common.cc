@@ -33,7 +33,6 @@
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
-#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
@@ -53,11 +52,6 @@ BASE_FEATURE(kUserCertProvisioningInvalidationWithDirectMessagesEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-
-// GCP number to be used for certificates invalidations. Certificates are
-// considered critical to receive invalidation.
-constexpr int64_t kCertProvisioningInvalidationProjectNumber =
-    invalidation::kCriticalInvalidationsProjectNumber;
 
 std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {

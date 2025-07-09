@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
 
@@ -54,6 +55,11 @@ BASE_DECLARE_FEATURE(
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
 inline constexpr char kKeyNamePrefix[] = "cert-provis-";
+
+// GCP number to be used for certificates invalidations. Certificates are
+// considered critical to receive invalidation.
+inline constexpr int64_t kCertProvisioningInvalidationProjectNumber =
+    invalidation::kCriticalInvalidationsProjectNumber;
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =

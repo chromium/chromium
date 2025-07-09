@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -227,7 +226,7 @@ class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
 //=============== CertProvisioningDeviceInvalidatorFactory =====================
 
 // This factory creates CertProvisioningInvalidators that use the device-wide
-// `InvalidationService` or `InvalidationListener`.
+// `InvalidationListener`.
 class CertProvisioningDeviceInvalidatorFactory
     : public CertProvisioningInvalidatorFactory {
  public:
@@ -235,28 +234,19 @@ class CertProvisioningDeviceInvalidatorFactory
   ~CertProvisioningDeviceInvalidatorFactory() override;
 
   explicit CertProvisioningDeviceInvalidatorFactory(
-      std::variant<policy::AffiliatedInvalidationServiceProvider*,
-                   invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener);
+      invalidation::InvalidationListener* invalidation__listener);
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  std::variant<raw_ptr<policy::AffiliatedInvalidationServiceProvider>,
-               raw_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_ =
-          static_cast<policy::AffiliatedInvalidationServiceProvider*>(nullptr);
+  raw_ptr<invalidation::InvalidationListener> invalidation_listener_;
 };
 
 //=============== CertProvisioningDeviceInvalidator ============================
 
-class CertProvisioningDeviceInvalidator
-    : public CertProvisioningInvalidator,
-      public policy::AffiliatedInvalidationServiceProvider::Consumer {
+class CertProvisioningDeviceInvalidator : public CertProvisioningInvalidator {
  public:
   explicit CertProvisioningDeviceInvalidator(
-      std::variant<policy::AffiliatedInvalidationServiceProvider*,
-                   invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener);
+      invalidation::InvalidationListener* invalidation_listener);
   ~CertProvisioningDeviceInvalidator() override;
 
   void Register(
@@ -266,17 +256,10 @@ class CertProvisioningDeviceInvalidator
   void Unregister() override;
 
  private:
-  // policy::AffiliatedInvalidationServiceProvider::Consumer
-  void OnInvalidationServiceSet(
-      invalidation::InvalidationService* invalidation_service) override;
-
   invalidation::Topic topic_;
   std::string listener_type_;
   OnInvalidationEventCallback on_invalidation_event_callback_;
-  std::variant<raw_ptr<policy::AffiliatedInvalidationServiceProvider>,
-               raw_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_ =
-          static_cast<policy::AffiliatedInvalidationServiceProvider*>(nullptr);
+  raw_ptr<invalidation::InvalidationListener> invalidation_listener_;
 };
 
 }  // namespace ash::cert_provisioning

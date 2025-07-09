@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/prefs/pref_service.h"
@@ -31,11 +30,6 @@ BASE_FEATURE(kUserPolicyInvalidationWithDirectMessagesEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-
-// GCP number to be used for policy invalidations. Policy update is not
-// considered critical to receive invalidation.
-constexpr int64_t kPolicyInvalidationProjectNumber =
-    invalidation::kNonCriticalInvalidationsProjectNumber;
 
 bool IsDirectInvalidationEnabledForScope(PolicyInvalidationScope scope) {
   switch (scope) {
