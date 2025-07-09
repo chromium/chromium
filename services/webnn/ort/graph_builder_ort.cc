@@ -1122,6 +1122,40 @@ void GraphBuilderOrt::AddLeakyReluOperation(
                         attributes);
 }
 
+void GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
+  const OperandDescriptor& input_descriptor =
+      GetOperand(linear.input_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.linear_input.Supports(
+      input_descriptor));
+
+  // Emulate a linear operation using two ONNX nodes for expression `alpha * x +
+  // beta`.
+  const OperandDataType input_data_type = input_descriptor.data_type();
+  std::string alpha =
+      CreateScalarInitializerForFloat(input_data_type, linear.alpha);
+  std::string beta =
+      CreateScalarInitializerForFloat(input_data_type, linear.beta);
+
+  // Step 1: Create 'Mul' node (alpha * x)
+  const std::string mul_node_label = base::JoinString(
+      {kInserted, kOpTypeMul, kToEmulate, linear.label}, kUnderscore);
+  const std::string mul_node_name = GenerateNodeName(mul_node_label);
+  const std::string input = GetOperandNameById(linear.input_operand_id);
+  std::array<const char*, 2> mul_inputs = {input.c_str(), alpha.c_str()};
+  const std::string mul_output = GenerateOperandName();
+  std::array<const char*, 1> mul_outputs = {mul_output.c_str()};
+  model_editor_.AddNode(kOpTypeMul, mul_node_name, mul_inputs, mul_outputs);
+
+  // Step 2: Create 'Add' node (mul_output + beta)
+  const std::string add_node_label = base::JoinString(
+      {kInserted, kOpTypeAdd, kToEmulate, linear.label}, kUnderscore);
+  const std::string add_node_name = GenerateNodeName(add_node_label);
+  std::array<const char*, 2> add_inputs = {mul_output.c_str(), beta.c_str()};
+  const std::string output = GetOperandNameById(linear.output_operand_id);
+  std::array<const char*, 1> add_outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeAdd, add_node_name, add_inputs, add_outputs);
+}
+
 void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   const std::string node_name = GenerateNodeName(matmul.label);
   const std::string input_a = GetOperandNameById(matmul.a_operand_id);
@@ -1670,6 +1704,10 @@ GraphBuilderOrt::BuildModel() {
         AddLeakyReluOperation(*operation->get_leaky_relu());
         break;
       }
+      case mojom::Operation::Tag::kLinear: {
+        AddLinearOperation(*operation->get_linear());
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         AddMatMulOperation(*operation->get_matmul());
         break;
@@ -1759,7 +1797,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kInstanceNormalization:
       case mojom::Operation::Tag::kLayerNormalization:
-      case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
