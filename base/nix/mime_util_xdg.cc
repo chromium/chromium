@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
@@ -30,7 +31,7 @@ namespace {
 
 // Ridiculously large size for a /usr/share/mime/mime.cache file.
 // Default file is about 100KB, allow up to 10MB.
-constexpr size_t kMaxMimeTypesFileSize = 10 * 1024 * 1024;
+constexpr ByteCount kMaxMimeTypesFileSize = MiB(10);
 // Maximum number of nodes to allow in reverse suffix tree.
 // Default file has ~3K nodes, allow up to 30K.
 constexpr size_t kMaxNodes = 30000;
@@ -115,7 +116,8 @@ bool ParseMimeTypes(const FilePath& file_path, MimeTypeMap& out_mime_types) {
   //                  0x100 = case-sensitive
 
   std::string buf;
-  if (!ReadFileToStringWithMaxSize(file_path, &buf, kMaxMimeTypesFileSize)) {
+  if (!ReadFileToStringWithMaxSize(file_path, &buf,
+                                   kMaxMimeTypesFileSize.InBytes())) {
     LOG(ERROR) << "Failed reading in mime.cache file: " << file_path;
     return false;
   }
