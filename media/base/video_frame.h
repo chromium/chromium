@@ -50,8 +50,11 @@
 #endif
 
 namespace gfx {
-class GpuMemoryBuffer;
 struct GpuMemoryBufferHandle;
+}
+
+namespace gpu {
+class GpuMemoryBufferImplNativePixmap;
 }
 
 namespace media {
@@ -363,7 +366,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
       base::TimeDelta timestamp);
 #endif
 
@@ -540,7 +543,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Gets the GpuMemoryBuffer backing the VideoFrame. Meant to be only used by
   // the tests until they are converted to use MappableSI.
-  gfx::GpuMemoryBuffer* GetGpuMemoryBufferForTesting() const;
+  gpu::GpuMemoryBufferImplNativePixmap* GetGpuMemoryBufferForTesting() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing this
@@ -831,7 +834,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
       base::TimeDelta timestamp);
 
   void MakeScopedMappingForGpuMemoryBuffer(
@@ -921,7 +924,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer_;
 #endif
 
   // This field will be set by clients when using MappableSI instead of

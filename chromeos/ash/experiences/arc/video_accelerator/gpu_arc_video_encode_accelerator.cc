@@ -204,7 +204,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
   }
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+  auto gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
           coded_size_, *buffer_format,

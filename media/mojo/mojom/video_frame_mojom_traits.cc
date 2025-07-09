@@ -390,7 +390,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     auto client_native_pixmap_factory =
         ui::CreateClientNativePixmapFactoryOzone();
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+    auto gpu_memory_buffer =
         gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandleForVideoFrame(
             client_native_pixmap_factory.get(),
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,

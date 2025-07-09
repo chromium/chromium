@@ -42,8 +42,10 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40263579): Remove.
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 #include <CoreVideo/CVPixelBuffer.h>
@@ -448,7 +450,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForMappableSIInternal(
 scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+    std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
     base::TimeDelta timestamp) {
   CHECK(gpu_memory_buffer);
 
@@ -850,7 +852,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+    std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
     base::TimeDelta timestamp) {
   return CreateFrameForGpuMemoryBufferInternal(
       visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
@@ -1341,7 +1343,8 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   return false;
 }
 
-gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
+gpu::GpuMemoryBufferImplNativePixmap* VideoFrame::GetGpuMemoryBufferForTesting()
+    const {
 #if !BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
@@ -1962,7 +1965,7 @@ class ScopedMappingSIImpl : public VideoFrame::ScopedMapping {
 #if BUILDFLAG(IS_CHROMEOS)
 class ScopedMappingGMBImpl : public VideoFrame::ScopedMapping {
  public:
-  ScopedMappingGMBImpl(gfx::GpuMemoryBuffer* gpu_memory_buffer)
+  ScopedMappingGMBImpl(gpu::GpuMemoryBufferImplNativePixmap* gpu_memory_buffer)
       : gpu_memory_buffer_(gpu_memory_buffer) {
     CHECK(gpu_memory_buffer);
   }
@@ -1985,7 +1988,8 @@ class ScopedMappingGMBImpl : public VideoFrame::ScopedMapping {
 
  private:
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* gpu_memory_buffer_ = nullptr;
+  RAW_PTR_EXCLUSION gpu::GpuMemoryBufferImplNativePixmap* gpu_memory_buffer_ =
+      nullptr;
 };
 #endif
 
