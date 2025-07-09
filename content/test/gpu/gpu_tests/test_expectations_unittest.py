@@ -303,7 +303,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
               self.assertIsNone(gpu_helper.MatchDriverTag(tag))
         expectations_driver_tags |= driver_tag_set
 
-    self.assertEqual(gpu_helper.ExpectationsDriverTags(),
+    self.assertEqual(gpu_helper.GetAllExpectationFileDriverTags(),
                      expectations_driver_tags)
 
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import os
 import re
 from unittest import mock
@@ -11,20 +12,35 @@ from telemetry.internal.platform import gpu_info as tgi
 from gpu_tests import constants
 from gpu_tests.util import host_information
 
-# This set must be the union of the driver tags used in WebGL and WebGL2
-# expectations files.
+# These sets must be the union of the driver tags used in GPU test
+# expectation files.
 # Examples:
 #   intel_lt_25.20.100.6577
 #   mesa_ge_20.1
-EXPECTATIONS_DRIVER_TAGS = frozenset([
+_MESA_DRIVER_TAGS = frozenset([
     'mesa_lt_19.1',
     'mesa_ge_21.0',
     'mesa_ge_23.2',
-    'nvidia_ge_31.0.15.4601',
-    'nvidia_lt_31.0.15.4601',
+])
+# Most Android devices do not report a driver version, but some do such as
+# Android Desktop devices.
+_ANDROID_DRIVER_TAGS = frozenset([]) | _MESA_DRIVER_TAGS
+_CROS_DRIVER_TAGS = frozenset([]) | _MESA_DRIVER_TAGS
+_LINUX_DRIVER_TAGS = frozenset([
     'nvidia_ge_535.183.01',
     'nvidia_lt_535.183.01',
+]) | _MESA_DRIVER_TAGS
+_WINDOWS_DRIVER_TAGS = frozenset([
+    'nvidia_ge_31.0.15.4601',
+    'nvidia_lt_31.0.15.4601',
 ])
+_DRIVER_TAGS_BY_OS = {
+    'android': _ANDROID_DRIVER_TAGS,
+    'linux': _LINUX_DRIVER_TAGS,
+    'chromeos': _CROS_DRIVER_TAGS,
+    # Mac does not report driver versions.
+    'win': _WINDOWS_DRIVER_TAGS
+}
 
 # Driver tag format: VENDOR_OPERATION_VERSION
 DRIVER_TAG_MATCHER = re.compile(
@@ -341,7 +357,7 @@ def EvaluateVersionComparison(version: str,
     if num1 is None:
       continue
 
-    # This comes from EXPECTATIONS_DRIVER_TAGS, so we should never fail to
+    # This comes from _DRIVER_TAGS_BY_OS, so we should never fail to
     # parse a version.
     assert num2 is not None
 
@@ -425,5 +441,13 @@ def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
 # pylint: enable=too-many-return-statements,too-many-branches
 
 
-def ExpectationsDriverTags() -> frozenset[str]:
-  return EXPECTATIONS_DRIVER_TAGS
+def GetExpectationFileDriverTagsForOs(target_os: str) -> frozenset[str]:
+  return _DRIVER_TAGS_BY_OS.get(target_os, frozenset())
+
+
+@functools.cache
+def GetAllExpectationFileDriverTags() -> frozenset[str]:
+  all_tags = frozenset()
+  for driver_tags in _DRIVER_TAGS_BY_OS.values():
+    all_tags |= driver_tags
+  return all_tags

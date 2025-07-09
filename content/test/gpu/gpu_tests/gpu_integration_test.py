@@ -1265,7 +1265,9 @@ class GpuIntegrationTest(
                             system_info: si_module.SystemInfo) -> list[str]:
     gpu_info = system_info.gpu
     tags = []
-    if gpu_helper.EXPECTATIONS_DRIVER_TAGS and gpu_info:
+    relevant_tags = gpu_helper.GetExpectationFileDriverTagsForOs(
+        browser.platform.GetOSName())
+    if relevant_tags and gpu_info:
       driver_vendor = gpu_helper.GetGpuDriverVendor(gpu_info)
       driver_version = gpu_helper.GetGpuDriverVersion(gpu_info)
       if driver_vendor and driver_version:
@@ -1284,7 +1286,7 @@ class GpuIntegrationTest(
         if match:
           driver_vendor = match.group(1)
 
-        for tag in gpu_helper.EXPECTATIONS_DRIVER_TAGS:
+        for tag in relevant_tags:
           match = gpu_helper.MatchDriverTag(tag)
           assert match
           if (driver_vendor == match.group(1)
