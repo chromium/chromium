@@ -285,6 +285,17 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
           : @"";
   [self.headerConsumer setDefaultSearchEngineName:dseName];
 
+  if (self.placeholderService) {
+    // The DSE icon might have already been fetched. In this case, no updated
+    // will be delivered. Therefore we should query the cache, as the icon store
+    // might have already been updated.
+    UIImage* fetchedIcon =
+        self.placeholderService->GetDefaultSearchEngineIcon(kIconPointSize);
+    if (fetchedIcon) {
+      [self.headerConsumer setDefaultSearchEngineImage:fetchedIcon];
+    }
+  }
+
   [self updateAccountImage];
   [self updateAccountErrorBadge];
   [self startObservingPrefs];
