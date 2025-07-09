@@ -35,12 +35,6 @@
 
 namespace autofill {
 
-// TODO(crbug.com/429704303): Move function to anonymous namespace.
-base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
-FindDatesAndSetFormatStrings(
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    base::span<PossibleTypes> possible_types);
-
 namespace {
 
 // Returns a vector that contains all `{date, format}` for which `str` contains
@@ -67,6 +61,123 @@ GetMatchingCompleteDateAndFormats(std::u16string_view str) {
     }
   }
   return dates_and_formats;
+}
+
+// Extracts the dates and their format strings in `fields`:
+// - It adds the format strings to `PossibleTypes::formats`.
+// - It returns the dates, together with a pointer to the `PossibleTypes` of
+//   each field that contributes a part of the date.
+//
+// For example:
+//
+// For a field #0 with value "09/03/2025", it sets
+//   pt[0].format_strings = {u"DD/MM/YYYY", u"MM/DD/YYYY"}
+// and returns
+//   {{{2025,03,09}, &pt[0]}}
+//   {{{2025,09,03}, &pt[0]}}
+//
+// For a field #0 with value "01/01/01", it sets
+//   pt[0].format_strings = {u"DD/MM/YY", u"MM/DD/YY", u"YY/MM/DD"}
+// and returns
+//   {{{2001,01,01}, &pt[0]}}
+//
+// For three consecutive fields with values "09", "03", "2025", it sets
+//   pt[0].format_strings = {u"DD", u"MM"}
+//   pt[1].format_strings = {u"DD", u"MM"}
+//   pt[2].format_strings = {u"YYYY"}
+// and returns
+//   {{{2025,03,09}, pt[0]}, {2025,09,03, &pt[0]}}}
+//   {{{2025,03,09}, pt[1]}, {2025,09,03, &pt[1]}}}
+//   {{{2025,03,09}, pt[2]}, {2025,09,03, &pt[2]}}}
+base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
+FindDatesAndSetFormatStrings(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<PossibleTypes> possible_types) {
+  // Cheap plausibility checks if the field is relevant for date matching.
+  auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
+    return field->form_control_type() == FormControlType::kInputText &&
+           (field->is_user_edited() || field->is_autofilled() ||
+            field->initial_value() != field->value());
+  };
+
+  // Cheap check if the field's value might contain a year, month, and day.
+  auto may_be_complete_date = [&](const std::unique_ptr<AutofillField>& field) {
+    static constexpr size_t kMinDateLength =
+        std::u16string_view(u"1.1.25").size();
+    static constexpr size_t kMaxDateLength =
+        std::u16string_view(u"2025 / 12 / 31").size();
+    const std::u16string& value = field->value();
+    return kMinDateLength <= value.size() && value.size() <= kMaxDateLength &&
+           std::ranges::all_of(value, [&](char16_t c) {
+             return base::IsAsciiDigit(c) || data_util::IsDateSeparatorChar(c);
+           });
+  };
+
+  // Cheap check if the field's value might contain a year, month, or day.
+  auto may_be_part_of_date = [](const std::unique_ptr<AutofillField>& field) {
+    const std::u16string& value = field->value();
+    return 1 <= value.size() && value.size() <= 4 &&
+           std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
+  };
+
+  // Cheap check if the three fields' values might together contain a year,
+  // month and day.
+  auto may_be_split_date =
+      [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
+        return std::ranges::all_of(group, may_be_part_of_date) &&
+               (group[0]->label() == group[1]->label() ||
+                group[1]->label().empty()) &&
+               group[1]->label() == group[2]->label();
+      };
+
+  std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
+
+  // Match formats against individual fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
+    for (auto [field, pt] : base::zip(fields, possible_types)) {
+      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
+        continue;
+      }
+      for (auto& [date, format] :
+           GetMatchingCompleteDateAndFormats(field->value())) {
+        pt.formats.insert(std::move(format));
+        dates.emplace_back(date, &pt);
+      }
+    }
+  }
+
+  // Match formats against groups of three consecutive fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+    for (size_t i = 0; i + 2 < fields.size(); ++i) {
+      const base::span<const std::unique_ptr<AutofillField>, 3> group =
+          fields.subspan(i).first<3>();
+      if (!std::ranges::all_of(group, may_be_interesting) ||
+          !may_be_split_date(group)) {
+        continue;
+      }
+      static constexpr std::u16string_view kSeparator = u"-";
+      static_assert(
+          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
+      const std::u16string maybe_full_date = base::JoinString(
+          {group[0]->value(), group[1]->value(), group[2]->value()},
+          kSeparator);
+      for (auto& [full_date, full_format] :
+           GetMatchingCompleteDateAndFormats(maybe_full_date)) {
+        std::vector<std::u16string> partial_formats =
+            base::SplitString(full_format, kSeparator, base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_ALL);
+        if (partial_formats.size() == 3) {
+          for (size_t j = 0; j < 3; ++j) {
+            possible_types[i + j].formats.insert(std::move(partial_formats[j]));
+            dates.emplace_back(full_date, &possible_types[i + j]);
+          }
+        }
+      }
+    }
+  }
+  return dates;
 }
 
 // Adds `CREDIT_CARD_VERIFICATION_CODE` to the possible types of fields whose
@@ -136,7 +247,7 @@ void FindAndSetPossibleCvcFieldTypes(
   }
 }
 
-// Returns the FieldTypes for some given EntityInstance defines a non-empty
+// Returns the FieldTypes for which the given EntityInstance defines a non-empty
 // value.
 //
 // If kAutofillAiNoTagTypes is disabled:
@@ -168,8 +279,8 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
   return types;
 }
 
-// Returns the FieldTypes for some given EntityInstance has an attribute whose
-// value matches `value_u16`.
+// Returns the FieldTypes for which the given EntityInstance has an attribute
+// whose value matches `value_u16`.
 //
 // If kAutofillAiNoTagTypes is disabled:
 // This may not just include Autofill AI types like PASSPORT_NUMBER but
@@ -395,123 +506,6 @@ FieldTypeSet DetermineAvailableFieldTypes(
     types.insert(LOYALTY_MEMBERSHIP_ID);
   }
   return types;
-}
-
-// Extracts the dates and their format strings in `fields`:
-// - It adds the format strings to `PossibleTypes::formats`.
-// - It returns the dates, together with a pointer to the `PossibleTypes` of
-//   each field that contributes a part of the date.
-//
-// For example:
-//
-// For a field #0 with value "09/03/2025", it sets
-//   pt[0].format_strings = {u"DD/MM/YYYY", u"MM/DD/YYYY"}
-// and returns
-//   {{{2025,03,09}, &pt[0]}}
-//   {{{2025,09,03}, &pt[0]}}
-//
-// For a field #0 with value "01/01/01", it sets
-//   pt[0].format_strings = {u"DD/MM/YY", u"MM/DD/YY", u"YY/MM/DD"}
-// and returns
-//   {{{2001,01,01}, &pt[0]}}
-//
-// For three consecutive fields with values "09", "03", "2025", it sets
-//   pt[0].format_strings = {u"DD", u"MM"}
-//   pt[1].format_strings = {u"DD", u"MM"}
-//   pt[2].format_strings = {u"YYYY"}
-// and returns
-//   {{{2025,03,09}, pt[0]}, {2025,09,03, &pt[0]}}}
-//   {{{2025,03,09}, pt[1]}, {2025,09,03, &pt[1]}}}
-//   {{{2025,03,09}, pt[2]}, {2025,09,03, &pt[2]}}}
-base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
-FindDatesAndSetFormatStrings(
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    base::span<PossibleTypes> possible_types) {
-  // Cheap plausibility checks if the field is relevant for date matching.
-  auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
-    return field->form_control_type() == FormControlType::kInputText &&
-           (field->is_user_edited() || field->is_autofilled() ||
-            field->initial_value() != field->value());
-  };
-
-  // Cheap check if the field's value might contain a year, month, and day.
-  auto may_be_complete_date = [&](const std::unique_ptr<AutofillField>& field) {
-    static constexpr size_t kMinDateLength =
-        std::u16string_view(u"1.1.25").size();
-    static constexpr size_t kMaxDateLength =
-        std::u16string_view(u"2025 / 12 / 31").size();
-    const std::u16string& value = field->value();
-    return kMinDateLength <= value.size() && value.size() <= kMaxDateLength &&
-           std::ranges::all_of(value, [&](char16_t c) {
-             return base::IsAsciiDigit(c) || data_util::IsDateSeparatorChar(c);
-           });
-  };
-
-  // Cheap check if the field's value might contain a year, month, or day.
-  auto may_be_part_of_date = [](const std::unique_ptr<AutofillField>& field) {
-    const std::u16string& value = field->value();
-    return 1 <= value.size() && value.size() <= 4 &&
-           std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
-  };
-
-  // Cheap check if the three fields' values might together contain a year,
-  // month and day.
-  auto may_be_split_date =
-      [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
-        return std::ranges::all_of(group, may_be_part_of_date) &&
-               (group[0]->label() == group[1]->label() ||
-                group[1]->label().empty()) &&
-               group[1]->label() == group[2]->label();
-      };
-
-  std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
-
-  // Match formats against individual fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
-    for (auto [field, pt] : base::zip(fields, possible_types)) {
-      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
-        continue;
-      }
-      for (auto& [date, format] :
-           GetMatchingCompleteDateAndFormats(field->value())) {
-        pt.formats.insert(std::move(format));
-        dates.emplace_back(date, &pt);
-      }
-    }
-  }
-
-  // Match formats against groups of three consecutive fields.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
-    for (size_t i = 0; i + 2 < fields.size(); ++i) {
-      const base::span<const std::unique_ptr<AutofillField>, 3> group =
-          fields.subspan(i).first<3>();
-      if (!std::ranges::all_of(group, may_be_interesting) ||
-          !may_be_split_date(group)) {
-        continue;
-      }
-      static constexpr std::u16string_view kSeparator = u"-";
-      static_assert(
-          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
-      const std::u16string maybe_full_date = base::JoinString(
-          {group[0]->value(), group[1]->value(), group[2]->value()},
-          kSeparator);
-      for (auto& [full_date, full_format] :
-           GetMatchingCompleteDateAndFormats(maybe_full_date)) {
-        std::vector<std::u16string> partial_formats =
-            base::SplitString(full_format, kSeparator, base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_ALL);
-        if (partial_formats.size() == 3) {
-          for (size_t j = 0; j < 3; ++j) {
-            possible_types[i + j].formats.insert(std::move(partial_formats[j]));
-            dates.emplace_back(full_date, &possible_types[i + j]);
-          }
-        }
-      }
-    }
-  }
-  return dates;
 }
 
 base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
