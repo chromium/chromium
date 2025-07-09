@@ -260,12 +260,10 @@ try/mac-rel-compilator
 try/mac-rust-x64-dbg
 try/mac-swangle-chromium-try-x64
 try/mac-ubsan-fyi-rel
-try/mac11-arm64-rel
 try/mac12-arm64-rel
 try/mac12-tests
 try/mac13-arm64-rel
 try/mac13-tests
-try/mac_chromium_11.0_rel_ng
 try/mac_chromium_asan_rel_ng
 try/mac_chromium_compile_dbg_ng
 try/mac_chromium_compile_rel_ng

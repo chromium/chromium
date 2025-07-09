@@ -198,28 +198,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "mac11-arm64-rel",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    mirrors = [
-        "ci/mac-arm64-rel",
-        "ci/mac11-arm64-rel-tests",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "arm64",
-            "gpu_tests",
-            "release_try_builder",
-            "remoteexec",
-            "no_symbols",
-            "mac",
-        ],
-    ),
-    builderless = True,
-    cores = None,
-    cpu = cpu.ARM64,
-)
-
-try_.builder(
     name = "mac-libfuzzer-asan-rel",
     # TODO(crbug.com/41492669): Can delete this description when it's
     # automatically generated.
@@ -372,25 +350,6 @@ try_.compilator_builder(
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
-)
-
-# NOTE: the following trybots aren't sensitive to Mac version on which
-# they are built, hence no additional dimension is specified.
-# The 10.xx version translates to which bots will run isolated tests.
-try_.builder(
-    name = "mac_chromium_11.0_rel_ng",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac11 Tests",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Mac Builder",
-            "release_try_builder",
-        ],
-    ),
-    builderless = False,
 )
 
 try_.builder(

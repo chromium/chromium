@@ -140,7 +140,6 @@ chromium/try/mac-clobber-rel
 chromium/try/mac-libfuzzer-asan-rel
 chromium/try/mac-official
 chromium/try/mac-rel
-chromium/try/mac11-arm64-rel
 chromium/try/mac12-arm64-rel
 chromium/try/mac12-tests
 chromium/try/mac13-arm64-rel
@@ -148,7 +147,6 @@ chromium/try/mac13-tests
 chromium/try/mac14-arm64-rel
 chromium/try/mac15-arm64-rel
 chromium/try/mac15-x64-rel-tests
-chromium/try/mac_chromium_11.0_rel_ng
 chromium/try/mac_chromium_asan_rel_ng
 chromium/try/mac_chromium_compile_dbg_ng
 chromium/try/mac_chromium_compile_rel_ng
