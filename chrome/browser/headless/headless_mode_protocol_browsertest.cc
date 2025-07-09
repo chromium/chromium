@@ -314,6 +314,8 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
                               ScreencastViewport,
                               "sanity/screencast-viewport.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "shared/large-browser-window-size.js")
 

@@ -24,6 +24,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
 
@@ -137,7 +139,7 @@ Response BrowserHandler::SetWindowBounds(
 
   const std::string window_state = window_bounds->GetWindowState("normal");
   if (set_bounds && window_state != "normal") {
-    return Response::ServerError(
+    return Response::InvalidParams(
         "The 'minimized', 'maximized' and 'fullscreen' states cannot be "
         "combined with 'left', 'top', 'width' or 'height'");
   }
@@ -176,6 +178,47 @@ Response BrowserHandler::SetWindowBounds(
   } else {
     NOTREACHED();
   }
+
+  return Response::Success();
+}
+
+protocol::Response BrowserHandler::SetContentsSize(int window_id,
+                                                   std::optional<int> width,
+                                                   std::optional<int> height) {
+  BrowserWindow* window = GetBrowserWindow(window_id);
+  if (!window) {
+    return Response::ServerError("Browser window not found");
+  }
+
+  gfx::Size contents_size = window->GetContentsSize();
+  if (contents_size.IsEmpty()) {
+    return Response::ServerError("Active contents not found");
+  }
+
+  if (window->IsMinimized() || window->IsMaximized() ||
+      window->IsFullscreen()) {
+    return Response::ServerError(
+        "Restore window to normal state before setting content size");
+  }
+
+  if (!width && !height) {
+    return Response::InvalidParams(
+        "At least one of 'width' or 'height' must be specified");
+  }
+
+  if (width && width.value() <= 0) {
+    return Response::InvalidParams("Contents 'width' must be a positive value");
+  }
+
+  if (height && height.value() <= 0) {
+    return Response::InvalidParams(
+        "Contents 'height' must be a positive value");
+  }
+
+  contents_size.set_width(width.value_or(contents_size.width()));
+  contents_size.set_height(height.value_or(contents_size.height()));
+
+  window->SetContentsSize(contents_size);
 
   return Response::Success();
 }

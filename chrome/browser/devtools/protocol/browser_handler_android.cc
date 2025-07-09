@@ -71,6 +71,12 @@ Response BrowserHandlerAndroid::SetWindowBounds(
   return Response::MethodNotFound(kNotImplemented);
 }
 
+Response BrowserHandlerAndroid::SetContentsSize(int window_id,
+                                                std::optional<int> width,
+                                                std::optional<int> height) {
+  return Response::MethodNotFound(kNotImplemented);
+}
+
 protocol::Response BrowserHandlerAndroid::SetDockTile(
     std::optional<std::string> label,
     std::optional<protocol::Binary> image) {

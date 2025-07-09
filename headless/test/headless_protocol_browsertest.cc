@@ -380,6 +380,7 @@ HEADLESS_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
 HEADLESS_PROTOCOL_TEST(HiddenTargetPageEnable,
                        "sanity/hidden-target-page-enable.js")
 HEADLESS_PROTOCOL_TEST(WindowOuterSize, "sanity/window-outer-size.js")
+HEADLESS_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
 HEADLESS_PROTOCOL_TEST(WindowResizeTo, "sanity/window-resize-to.js")
 
 // https://crbug.com/378531862

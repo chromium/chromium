@@ -29,7 +29,10 @@ class BrowserHandler : public protocol::Browser::Backend {
   protocol::Response Close() override;
   protocol::Response SetWindowBounds(
       int window_id,
-      std::unique_ptr<protocol::Browser::Bounds> out_bounds) override;
+      std::unique_ptr<protocol::Browser::Bounds> window_bounds) override;
+  protocol::Response SetContentsSize(int window_id,
+                                     std::optional<int> width,
+                                     std::optional<int> height) override;
   protocol::Response SetDockTile(
       std::optional<std::string> label,
       std::optional<protocol::Binary> image) override;
