@@ -132,6 +132,9 @@ TEST(BnplIssuerTest, GetDisplayName) {
   issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
   EXPECT_EQ(issuer.GetDisplayName(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
+  EXPECT_EQ(issuer.GetDisplayName(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_KLARNA));
 }
 
 // Test for the equality operator for the BNPL issuer data model.
@@ -176,6 +179,8 @@ TEST(BnplIssuerTest, BnplIssuerIdToDisplayName) {
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
   EXPECT_EQ(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAfterpay),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY));
+  EXPECT_EQ(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplKlarna),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_KLARNA));
 }
 
 TEST(BnplIssuerTest, ConvertToBnplIssuerIdEnum) {
@@ -185,6 +190,8 @@ TEST(BnplIssuerTest, ConvertToBnplIssuerIdEnum) {
             BnplIssuer::IssuerId::kBnplZip);
   EXPECT_EQ(ConvertToBnplIssuerIdEnum(kBnplAfterpayIssuerId),
             BnplIssuer::IssuerId::kBnplAfterpay);
+  EXPECT_EQ(ConvertToBnplIssuerIdEnum(kBnplKlarnaIssuerId),
+            BnplIssuer::IssuerId::kBnplKlarna);
 }
 
 TEST(BnplIssuerTest, ConvertToBnplIssuerIdString) {
@@ -194,6 +201,8 @@ TEST(BnplIssuerTest, ConvertToBnplIssuerIdString) {
             kBnplZipIssuerId);
   EXPECT_EQ(ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAfterpay),
             kBnplAfterpayIssuerId);
+  EXPECT_EQ(ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplKlarna),
+            kBnplKlarnaIssuerId);
 }
 
 }  // namespace autofill

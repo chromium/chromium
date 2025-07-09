@@ -116,6 +116,9 @@ u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
         case IssuerId::kBnplZip:
           return GetStringUTF16(
               IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+        case IssuerId::kBnplKlarna:
+          return GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA);
       }
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:

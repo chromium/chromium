@@ -276,7 +276,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          BnplMetricsTest,
                          testing::Values(IssuerId::kBnplAffirm,
                                          IssuerId::kBnplZip,
-                                         IssuerId::kBnplAfterpay));
+                                         IssuerId::kBnplAfterpay,
+                                         IssuerId::kBnplKlarna));
 
 class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
                                   public testing::Test {
@@ -383,6 +384,17 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithZip) {
       /*expected_count=*/1);
 }
 
+TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithKlarna) {
+  base::HistogramTester histogram_tester;
+
+  LogFormFilledWithBnplVcn(BnplIssuer::IssuerId::kBnplKlarna);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kFormFilledWithKlarna,
+      /*expected_count=*/1);
+}
+
 TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAfterpay) {
   base::HistogramTester histogram_tester;
 
@@ -413,6 +425,17 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithZip) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/BnplFormEvent::kFormSubmittedWithZip,
+      /*expected_count=*/1);
+}
+
+TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithKlarna) {
+  base::HistogramTester histogram_tester;
+
+  LogFormSubmittedWithBnplVcn(BnplIssuer::IssuerId::kBnplKlarna);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kFormSubmittedWithKlarna,
       /*expected_count=*/1);
 }
 

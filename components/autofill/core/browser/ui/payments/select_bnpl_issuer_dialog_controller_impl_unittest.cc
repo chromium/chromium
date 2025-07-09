@@ -79,6 +79,8 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest,
        BnplIssuerContext(test::GetTestLinkedBnplIssuer(IssuerId::kBnplZip),
                          BnplIssuerEligibilityForPage::kIsEligible),
        BnplIssuerContext(test::GetTestLinkedBnplIssuer(IssuerId::kBnplAfterpay),
+                         BnplIssuerEligibilityForPage::kIsEligible),
+       BnplIssuerContext(test::GetTestLinkedBnplIssuer(IssuerId::kBnplKlarna),
                          BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
 
@@ -95,6 +97,10 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest,
       controller_->GetSelectionOptionText(IssuerId::kBnplAfterpay),
       GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY));
+
+  EXPECT_EQ(controller_->GetSelectionOptionText(IssuerId::kBnplKlarna),
+            GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA));
 }
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest,

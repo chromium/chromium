@@ -98,6 +98,14 @@ std::unique_ptr<views::ImageView> CreateIconView(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK));
       break;
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_PAY_KLARNA));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK));
+      break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_G: {
       const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
 #else
@@ -105,7 +113,8 @@ std::unique_ptr<views::ImageView> CreateIconView(
     case TitleWithIconAfterLabelView::Icon::GOOGLE_G:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFTERPAY:
-    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP: {
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP:
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA: {
       const gfx::VectorIcon& icon = kCreditCardIcon;
 #endif
       model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);

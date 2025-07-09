@@ -92,6 +92,8 @@ std::u16string BnplIssuerIdToDisplayName(BnplIssuer::IssuerId issuer_id) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
     case BnplIssuer::IssuerId::kBnplAfterpay:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY);
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_KLARNA);
   }
   NOTREACHED();
 }
@@ -106,6 +108,9 @@ BnplIssuer::IssuerId ConvertToBnplIssuerIdEnum(std::string_view issuer_id) {
   if (issuer_id == kBnplAfterpayIssuerId) {
     return BnplIssuer::IssuerId::kBnplAfterpay;
   }
+  if (issuer_id == kBnplKlarnaIssuerId) {
+    return BnplIssuer::IssuerId::kBnplKlarna;
+  }
   NOTREACHED();
 }
 
@@ -117,6 +122,8 @@ std::string_view ConvertToBnplIssuerIdString(BnplIssuer::IssuerId issuer_id) {
       return kBnplZipIssuerId;
     case BnplIssuer::IssuerId::kBnplAfterpay:
       return kBnplAfterpayIssuerId;
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return kBnplKlarnaIssuerId;
   }
   NOTREACHED();
 }

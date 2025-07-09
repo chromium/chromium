@@ -31,7 +31,8 @@ class BnplIssuer {
     kBnplAffirm = 0,
     kBnplZip = 1,
     kBnplAfterpay = 2,
-    kMaxValue = kBnplAfterpay,
+    kBnplKlarna = 3,
+    kMaxValue = kBnplKlarna,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplIssuerId)
 

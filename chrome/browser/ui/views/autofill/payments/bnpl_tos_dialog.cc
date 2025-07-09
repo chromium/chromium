@@ -136,6 +136,8 @@ TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
     // Afterpay to the BNPL flow.
     case BnplIssuer::IssuerId::kBnplAfterpay:
       return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA;
   }
   NOTREACHED();
 }

@@ -749,9 +749,39 @@ TEST_F(AutofillOptimizationGuideTest,
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
-// Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
-// `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization types are registered when the
-// amount extraction allowlist flag is off.
+// Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is registered
+// when the amount extraction allowlist is enabled and there is at least one
+// Klarna BNPL issuer.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderKlarna) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillEnableAmountExtractionAllowlistDesktop,
+       features::kAutofillEnableBuyNowPayLaterSyncing},
+      {});
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
+  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
+  payments_data_manager().AddBnplIssuer(bnpl_issuer);
+
+  // Ensure that on registration the right optimization type is registered.
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(testing::IsSupersetOf(
+          {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})));
+  guide().OnDidParseForm(form_structure, payments_data_manager());
+}
+
+// Test none of `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM`,
+// `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP`, and `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA`
+// optimization types are registered when the amount extraction allowlist flag
+// is off.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmountExtractionAllowed_FlagOff) {
   base::test::ScopedFeatureList feature_list;
@@ -767,6 +797,8 @@ TEST_F(AutofillOptimizationGuideTest,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
   bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
+  payments_data_manager().AddBnplIssuer(bnpl_issuer);
+  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
 
   // RegisterOptimizationTypes shouldn't be called.
@@ -877,6 +909,46 @@ TEST_F(AutofillOptimizationGuideTest,
       BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 
+// Test that we allow checkout amount searching for Klarna on an allowlisted
+// URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsUrlEligibleForBnplIssuer_KlarnaUrlAllowed) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+
+  ON_CALL(decider(),
+          CanApplyOptimization(
+              Eq(GURL("https://www.testurl.test")),
+              Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+              Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(
+          Return(optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // testurl.test is in the allowlist.
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplKlarna, GURL("https://www.testurl.test")));
+}
+
+// Test that we do not allow checkout amount searching for Klarna on a
+// non-allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsUrlEligibleForBnplIssuer_KlarnaUrlBlocked) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAmountExtractionAllowlistDesktop};
+
+  ON_CALL(decider(),
+          CanApplyOptimization(
+              Eq(GURL("https://www.testurl.test")),
+              Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+              Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .WillByDefault(
+          Return(optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // testurl.test is not in the allowlist.
+  EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplKlarna, GURL("https://www.testurl.test")));
+}
+
 // Test that we allow checkout with BNPL for Affirm on a non-allowlisted URL
 // when AmountExtractionDesktopLogging is enabled.
 TEST_F(
@@ -919,6 +991,28 @@ TEST_F(
   // kAutofillEnableAmountExtractionTesting overrides the allowlist.
   EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
       BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
+}
+
+// Test that we allow checkout with BNPL for Klarna on a non-allowlisted URL
+// when AmountExtractionDesktopLogging is enabled.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    IsUrlEligibleForBnplIssuer_AmountExtractionDesktopLoggingEnabled_KlarnaUrlAllowed) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAmountExtractionTesting};
+
+  EXPECT_CALL(
+      decider(),
+      CanApplyOptimization(
+          Eq(GURL("https://www.testurl.test")),
+          Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+          Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
+      .Times(0);
+
+  // testurl.test is not in the allowlist, but
+  // kAutofillEnableAmountExtractionTesting overrides the allowlist.
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplKlarna, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching when the amount

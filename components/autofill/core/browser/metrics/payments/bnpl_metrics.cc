@@ -22,6 +22,8 @@ std::string GetHistogramSuffixFromIssuerId(IssuerId issuer_id) {
       return "Zip";
     case IssuerId::kBnplAfterpay:
       return "Afterpay";
+    case IssuerId::kBnplKlarna:
+      return "Klarna";
   }
   NOTREACHED();
 }
@@ -115,6 +117,9 @@ void LogFormFilledWithBnplVcn(IssuerId issuer_id) {
     case IssuerId::kBnplAfterpay:
       LogBnplFormEvent(BnplFormEvent::kFormFilledWithAfterpay);
       return;
+    case IssuerId::kBnplKlarna:
+      LogBnplFormEvent(BnplFormEvent::kFormFilledWithKlarna);
+      return;
   }
   NOTREACHED();
 }
@@ -129,6 +134,9 @@ void LogFormSubmittedWithBnplVcn(IssuerId issuer_id) {
       return;
     case IssuerId::kBnplAfterpay:
       LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAfterpay);
+      return;
+    case IssuerId::kBnplKlarna:
+      LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithKlarna);
       return;
   }
   NOTREACHED();

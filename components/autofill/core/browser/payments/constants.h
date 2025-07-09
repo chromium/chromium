@@ -33,6 +33,7 @@ inline constexpr std::string_view kNatwestCardIssuerId = "natwest";
 inline constexpr std::string_view kBnplAffirmIssuerId = "affirm";
 inline constexpr std::string_view kBnplZipIssuerId = "zip";
 inline constexpr std::string_view kBnplAfterpayIssuerId = "afterpay";
+inline constexpr std::string_view kBnplKlarnaIssuerId = "klarna";
 
 // Credit card benefit sources. These are server-generated values that must be
 // consistent between server and client.

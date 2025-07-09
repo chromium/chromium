@@ -61,6 +61,8 @@ constexpr char kBnplAffirmTermsUrl[] =
     "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 constexpr char kBnplZipTermsUrl[] =
     "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
+constexpr char kBnplKlarnaTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 }  // namespace
 
 namespace payments {
@@ -124,6 +126,8 @@ GURL GetBnplTermsUrl(IssuerId issuer_id) {
     // Afterpay to the BNPL flow.
     case IssuerId::kBnplAfterpay:
       NOTREACHED();
+    case IssuerId::kBnplKlarna:
+      return GURL(kBnplKlarnaTermsUrl);
   }
   NOTREACHED();
 }

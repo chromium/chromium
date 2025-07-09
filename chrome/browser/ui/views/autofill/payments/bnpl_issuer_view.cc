@@ -86,6 +86,9 @@ void BnplIssuerView::AddedToWidget() {
           case IssuerId::kBnplAfterpay:
             return {IDR_AUTOFILL_AFTERPAY_LINKED,
                     IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
+          case IssuerId::kBnplKlarna:
+            return {IDR_AUTOFILL_KLARNA_LINKED,
+                    IDR_AUTOFILL_KLARNA_LINKED_DARK};
         }
         NOTREACHED();
       }
@@ -98,6 +101,9 @@ void BnplIssuerView::AddedToWidget() {
         case IssuerId::kBnplAfterpay:
           return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
                   IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
+        case IssuerId::kBnplKlarna:
+          return {IDR_AUTOFILL_KLARNA_UNLINKED,
+                  IDR_AUTOFILL_KLARNA_UNLINKED_DARK};
       }
       NOTREACHED();
     }();

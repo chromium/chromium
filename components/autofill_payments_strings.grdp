@@ -934,6 +934,9 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Zip options.">
       Pay in easy installments (subject to eligibility, fees apply)
   </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
+      Pay in 4 or monthly (subject to eligibility)
+  </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT" desc="Text for the disabled payment option button in the BNPL select provider screen, explaining that the provider is not supported by the merchant based on the page's URL.">
       Not supported by merchant
   </message>
@@ -1059,6 +1062,9 @@
   </message>
   <message name="IDS_AUTOFILL_BNPL_AFTER_PAY" desc="Name of Buy Now Pay Later provider AfterPay.">
     AfterPay
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_KLARNA" desc="Name of Buy Now Pay Later provider Klarna.">
+    Klarna
   </message>
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE" desc="Title for the Autofill filled card information bubble for the Buy Now Pay Later flow.">
     Virtual card for <ph name="BNPL_ISSUER_NAME">$1<ex>PayLater</ex></ph> filled

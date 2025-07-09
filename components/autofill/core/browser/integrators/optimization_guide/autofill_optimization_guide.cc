@@ -249,6 +249,11 @@ void AutofillOptimizationGuide::OnDidParseForm(
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
+
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplKlarna)) {
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA);
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -432,6 +437,9 @@ bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
       // adding Afterpay to the BNPL flow.
       case BnplIssuer::IssuerId::kBnplAfterpay:
         NOTREACHED();
+      case BnplIssuer::IssuerId::kBnplKlarna:
+        return can_apply_optimization(
+            optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA);
     }
     NOTREACHED();
   }

@@ -233,6 +233,10 @@ std::pair<std::string, std::string> PayOverTimeIssuerToIconResourceIdString(
       return std::pair<std::string, std::string>(
           "chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC",
           "chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC");
+    case autofill::BnplIssuer::IssuerId::kBnplKlarna:
+      return std::pair<std::string, std::string>(
+          "chrome://theme/IDR_AUTOFILL_KLARNA_LINKED",
+          "chrome://theme/IDR_AUTOFILL_KLARNA_LINKED_DARK");
   }
   NOTREACHED();
 }

@@ -91,6 +91,8 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
     GOOGLE_PAY_AND_AFTERPAY,
     // Google Pay logo next to an Zip logo separated by a vertical line.
     GOOGLE_PAY_AND_ZIP,
+    // Google Pay logo next to an Klarna logo separated by a vertical line.
+    GOOGLE_PAY_AND_KLARNA,
   };
 
   TitleWithIconAfterLabelView(const std::u16string& window_title,

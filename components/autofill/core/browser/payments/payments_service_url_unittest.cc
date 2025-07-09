@@ -58,6 +58,7 @@ TEST(PaymentsServiceUrl, BnplTermsUrl) {
 
   EXPECT_EQ(kExpectedURL, GetBnplTermsUrl(IssuerId::kBnplAffirm));
   EXPECT_EQ(kExpectedURL, GetBnplTermsUrl(IssuerId::kBnplZip));
+  EXPECT_EQ(kExpectedURL, GetBnplTermsUrl(IssuerId::kBnplKlarna));
   EXPECT_NOTREACHED_DEATH(GetBnplTermsUrl(IssuerId::kBnplAfterpay));
 }
 

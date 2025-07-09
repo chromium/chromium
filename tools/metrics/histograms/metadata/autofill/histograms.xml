@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.BnplIssuer">
   <variant name="Affirm" summary="Buy-now-pay-later issued by Affirm"/>
   <variant name="Afterpay" summary="Buy-now-pay-later issued by Afterpay"/>
+  <variant name="Klarna" summary="Buy-now-pay-later issued by Klarna"/>
   <variant name="Zip" summary="Buy-now-pay-later issued by Zip"/>
 </variants>
 

@@ -3153,6 +3153,8 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="Form submitted with Affirm VCN"/>
   <int value="7" label="Form submitted with Zip VCN"/>
   <int value="8" label="Form submitted with Afterpay VCN"/>
+  <int value="9" label="Form filled with Klarna VCN"/>
+  <int value="10" label="Form submitted with Klarna VCN"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplFormEvent) -->
@@ -3163,6 +3165,7 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Affirm"/>
   <int value="1" label="Zip"/>
   <int value="2" label="Afterpay"/>
+  <int value="3" label="Klarna"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/data_model/payments/bnpl_issuer.h:IssuerId) -->

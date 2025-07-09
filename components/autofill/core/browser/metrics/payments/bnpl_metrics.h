@@ -97,7 +97,13 @@ enum class BnplFormEvent {
   // A form was submitted with an Afterpay VCN.
   kFormSubmittedWithAfterpay = 8,
 
-  kMaxValue = kFormSubmittedWithAfterpay,
+  // A form was filled with an Klarna VCN.
+  kFormFilledWithKlarna = 9,
+
+  // A form was submitted with an Klarna VCN.
+  kFormSubmittedWithKlarna = 10,
+
+  kMaxValue = kFormSubmittedWithKlarna,
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)

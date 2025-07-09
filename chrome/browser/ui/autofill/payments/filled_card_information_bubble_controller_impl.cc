@@ -284,6 +284,9 @@ FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
     // Afterpay to the BNPL flow.
     case BnplIssuer::IssuerId::kBnplAfterpay:
       return {ui::ImageModel::FromImage(options_.card_image), std::nullopt};
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return {ui::ImageModel::FromResourceId(IDR_AUTOFILL_KLARNA_LINKED),
+              ui::ImageModel::FromResourceId(IDR_AUTOFILL_KLARNA_LINKED_DARK)};
   }
   NOTREACHED();
 }
