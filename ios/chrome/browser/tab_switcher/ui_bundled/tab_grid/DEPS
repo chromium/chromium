@@ -11,8 +11,4 @@ specific_include_rules = {
   "tab_grid_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
-  # TODO(crbug.com/429955447): remove this.
-  "^tab_grid_coordinator.mm$": [
-    "+ios/chrome/browser/ntp/ui_bundled/new_tab_prototype_view_controller.h",
-  ],
 }

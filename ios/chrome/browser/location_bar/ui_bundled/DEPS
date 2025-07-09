@@ -35,10 +35,3 @@ include_rules = [
   "+ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h",
   "+ios/chrome/browser/omnibox/public"
 ]
-
-specific_include_rules = {
-  # TODO(crbug.com/429955447): remove this.
-  "location_bar_coordinator.mm": [
-      "+ios/chrome/browser/ntp/ui_bundled/new_tab_prototype_view_controller.h",
-]
-}

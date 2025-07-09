@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_prototype_view_controller.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/new_tab_prototype_view_controller.h"
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"

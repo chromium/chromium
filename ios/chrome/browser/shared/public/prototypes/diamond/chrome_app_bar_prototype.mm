@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/chrome_app_bar_prototype.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
 
-#import "ios/chrome/browser/shared/public/features/diamond_prototype_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
