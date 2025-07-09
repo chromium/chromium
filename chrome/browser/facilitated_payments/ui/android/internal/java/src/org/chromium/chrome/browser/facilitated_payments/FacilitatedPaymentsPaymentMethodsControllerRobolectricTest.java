@@ -380,6 +380,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         for (int uiEvent :
                 Arrays.asList(
                         UiEvent.NEW_SCREEN_SHOWN,
+                        UiEvent.SCREEN_COULD_NOT_BE_SHOWN,
                         UiEvent.SCREEN_CLOSED_NOT_BY_USER,
                         UiEvent.SCREEN_CLOSED_BY_USER)) {
             mFacilitatedPaymentsPaymentMethodsModel.get(UI_EVENT_LISTENER).onResult(uiEvent);
@@ -404,7 +405,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1));
 
-        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_COULD_NOT_BE_SHOWN);
     }
 
     @Test
@@ -423,7 +424,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         mCoordinator.showErrorScreen();
 
-        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_COULD_NOT_BE_SHOWN);
     }
 
     @Test

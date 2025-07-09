@@ -114,7 +114,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
                 mBottomSheetController.addObserver(mBottomSheetObserver);
                 mScreenHolder.addView(mNextScreen.getView());
                 if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
-                    mUiEventListener.onResult(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
+                    mUiEventListener.onResult(UiEvent.SCREEN_COULD_NOT_BE_SHOWN);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                     mNextScreen = null;
                     return;

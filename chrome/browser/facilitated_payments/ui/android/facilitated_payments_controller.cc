@@ -89,6 +89,7 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
   payments::facilitated::UiEvent ui_event =
       static_cast<payments::facilitated::UiEvent>(event);
   switch (ui_event) {
+    case payments::facilitated::UiEvent::kScreenCouldNotBeShown:
     case payments::facilitated::UiEvent::kScreenClosedNotByUser:
     case payments::facilitated::UiEvent::kScreenClosedByUser:
       ClearJavaViewComponents();

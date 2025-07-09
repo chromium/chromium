@@ -357,6 +357,10 @@ void PaymentLinkManager::OnUiEvent(UiEvent ui_event_type) {
       }
       break;
     }
+    case UiEvent::kScreenCouldNotBeShown:
+      // TODO(crbug.com/427597144): Handle the "failure to show" case separately
+      // if required.
+      [[fallthrough]];  // Intentional fallthrough.
     case UiEvent::kScreenClosedNotByUser: {
       if (ui_state_ == UiState::kFopSelector) {
         LogEwalletFlowExitedReason(

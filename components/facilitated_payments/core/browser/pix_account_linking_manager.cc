@@ -109,6 +109,12 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
       // prompt shown.
       break;
     }
+    case UiEvent::kScreenCouldNotBeShown: {
+      CHECK(is_prompt_showing_);
+      // TODO(crbug.com/419108993): Log that the prompt show failed.
+      is_prompt_showing_ = false;
+      break;
+    }
     case UiEvent::kScreenClosedNotByUser: {
       if (is_prompt_showing_) {
         // TODO(crbug.com/419108993): Log that the prompt was closed

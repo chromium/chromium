@@ -37,11 +37,14 @@ enum class UiEvent {
   // sheet to show a screen, and replacing an existing screen to show a new
   // screen.
   kNewScreenShown = 0,
+  // Represents that a new screen was requested to be shown, but the bottom
+  // sheet failed to open.
+  kScreenCouldNotBeShown = 1,
   // Represents the bottom sheet being closed where the user did not close the
   // bottom sheet.
-  kScreenClosedNotByUser = 1,
+  kScreenClosedNotByUser = 2,
   // Represents the bottom sheet being closed by the user.
-  kScreenClosedByUser = 2,
+  kScreenClosedByUser = 3,
   // Max value, needs to be updated every time a new enum is added.
   kMaxValue = kScreenClosedByUser,
 };

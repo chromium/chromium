@@ -207,6 +207,7 @@ INSTANTIATE_TEST_SUITE_P(
     FacilitatedPaymentsControllerTest,
     FacilitatedPaymentsControllerTestForUiEvents,
     testing::Values(payments::facilitated::UiEvent::kNewScreenShown,
+                    payments::facilitated::UiEvent::kScreenCouldNotBeShown,
                     payments::facilitated::UiEvent::kScreenClosedNotByUser,
                     payments::facilitated::UiEvent::kScreenClosedByUser));
 
@@ -219,7 +220,8 @@ TEST_P(FacilitatedPaymentsControllerTestForUiEvents, OnUiEvent) {
 
   // Verify that the UI event is communicated to the feature via the callback.
   EXPECT_CALL(mock_ui_event_listener, Run(ui_event()));
-  if (ui_event() == payments::facilitated::UiEvent::kScreenClosedNotByUser ||
+  if (ui_event() == payments::facilitated::UiEvent::kScreenCouldNotBeShown ||
+      ui_event() == payments::facilitated::UiEvent::kScreenClosedNotByUser ||
       ui_event() == payments::facilitated::UiEvent::kScreenClosedByUser) {
     // Verify that the screen closing event is communicated to the
     // view. The second OnDismissed call is triggered when the test
