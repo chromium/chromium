@@ -818,9 +818,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // when the multi contents view hasn't been fully setup and this
     // inconsistency would cause unnecessary re-layout of content view during
     // tab switch.
-    const tabs::TabInterface* active_tab =
-        browser_view_->browser()->GetActiveTabInterface();
-    return active_tab && active_tab->IsSplit();
+    return browser_view_->browser()->tab_strip_model()->IsActiveTabSplit();
   }
 
   const ImmersiveModeController* GetImmersiveModeController() const override {
@@ -2175,9 +2173,6 @@ void BrowserView::EnterFullscreen(const url::Origin& origin,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
-    if (IsInSplitView()) {
-      multi_contents_view_->CloseSplitView();
-    }
     RequestFullscreen(true, display_id);
   } else {
     auto* screen = display::Screen::GetScreen();
@@ -2187,9 +2182,6 @@ void BrowserView::EnterFullscreen(const url::Origin& origin,
     if (IsFullscreen() && !requesting_another_screen) {
       // Nothing to do.
       return;
-    }
-    if (IsInSplitView()) {
-      multi_contents_view_->CloseSplitView();
     }
     ProcessFullscreen(true, display_id);
   }
@@ -2207,18 +2199,6 @@ void BrowserView::ExitFullscreen() {
       return;  // Nothing to do.
     }
     ProcessFullscreen(false, display::kInvalidDisplayId);
-  }
-
-  const int active_index = browser_->tab_strip_model()->active_index();
-
-  // When the browser is closing when exiting fullscreen mode, the active tab
-  // might no longer exist.
-  if (browser_->tab_strip_model()->ContainsIndex(active_index)) {
-    std::optional<split_tabs::SplitTabId> split_tab_id =
-        browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
-    if (split_tab_id.has_value()) {
-      ShowSplitView(GetContentsView()->HasFocus());
-    }
   }
 }
 
@@ -2408,6 +2388,11 @@ void BrowserView::FullscreenStateChanged() {
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     ToolbarSizeChanged(false);
     frame_->GetFrameView()->OnFullscreenStateChanged();
+
+    // Reshow the split view after completing the toolbar sizing.
+    if (!IsFullscreen() && browser_->tab_strip_model()->IsActiveTabSplit()) {
+      ShowSplitView(GetContentsView()->HasFocus());
+    }
   }
 }
 
@@ -5603,6 +5588,32 @@ bool BrowserView::MaybeShowInfoBar(WebContents* contents) {
   return true;
 }
 
+bool BrowserView::MaybeUpdateSplitView(content::WebContents* contents) {
+  if (!multi_contents_view_) {
+    return false;
+  }
+
+  const bool current_state = multi_contents_view_->IsInSplitView();
+  const tabs::TabInterface* const new_tab =
+      contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
+  const bool updated_state =
+      new_tab && new_tab->IsSplit() &&
+      !GetExclusiveAccessManager()->fullscreen_controller()->IsTabFullscreen();
+
+  if (updated_state) {
+    split_tabs::SplitTabData* split_data =
+        browser_->tab_strip_model()->GetSplitData(new_tab->GetSplit().value());
+    multi_contents_view_->ShowSplitView(
+        split_data->visual_data()->split_ratio());
+  } else if (current_state != updated_state) {
+    multi_contents_view_->CloseSplitView();
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
 void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
                                             bool update_devtools_web_contents) {
   DevToolsContentsResizingStrategy strategy;
@@ -5681,12 +5692,7 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
   // out when layout is actually required.
   needs_layout |= MaybeShowInfoBar(contents);
 
-  if (multi_contents_view_) {
-    bool current_state = multi_contents_view_->IsInSplitView();
-    bool updated_state =
-        contents && tabs::TabInterface::GetFromContents(contents)->IsSplit();
-    needs_layout |= (current_state != updated_state);
-  }
+  needs_layout |= MaybeUpdateSplitView(contents);
 
   if (needs_layout) {
     DeprecatedLayoutImmediately();
@@ -5735,6 +5741,12 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
       fullscreen_control_host_->Hide(false);
       fullscreen_control_host_.reset();
     }
+
+    // Clear the active web contents when exiting a tab fullscreen to prepare
+    // to reshow the split view after toolbar sizing.
+    if (!IsInSplitView() && browser_->tab_strip_model()->IsActiveTabSplit()) {
+      multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
+    }
   }
 }
 
@@ -5764,6 +5776,11 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
   in_process_fullscreen_ = false;
   ToolbarSizeChanged(false);
   frame_->GetFrameView()->OnFullscreenStateChanged();
+
+  // Reshow the split view after completing the toolbar sizing.
+  if (!fullscreen && browser_->tab_strip_model()->IsActiveTabSplit()) {
+    ShowSplitView(GetContentsView()->HasFocus());
+  }
 }
 
 void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {

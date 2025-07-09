@@ -516,6 +516,9 @@ class TabStripModel {
 
   bool ContainsSplit(split_tabs::SplitTabId split_id) const;
 
+  // Returns true if the active tab is split.
+  bool IsActiveTabSplit() const;
+
   std::optional<split_tabs::SplitTabId> GetSplitForTab(int index) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab

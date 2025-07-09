@@ -948,7 +948,7 @@ void BrowserViewLayout::UpdateSplitViewInsets() {
   SidePanel* side_panel = views::AsViewClass<SidePanel>(unified_side_panel_);
   bool has_side_panel = side_panel->GetVisible();
   bool is_right_aligned = side_panel->IsRightAligned();
-  bool is_in_immersive_mode = !delegate_->ShouldLayoutTabStrip();
+  bool is_in_full_screen = browser_view_->IsFullscreen();
   bool has_infobar = infobar_container_->GetVisible();
 
   CHECK(multi_contents_view_);
@@ -957,7 +957,7 @@ void BrowserViewLayout::UpdateSplitViewInsets() {
       .set_left(has_side_panel && !is_right_aligned
                     ? 0
                     : MultiContentsView::kSplitViewContentInset)
-      .set_top(!is_in_immersive_mode && !has_infobar
+      .set_top(!is_in_full_screen && !has_infobar
                    ? 0
                    : MultiContentsView::kSplitViewContentInset);
 
@@ -965,7 +965,7 @@ void BrowserViewLayout::UpdateSplitViewInsets() {
       .set_right(has_side_panel && is_right_aligned
                      ? 0
                      : MultiContentsView::kSplitViewContentInset)
-      .set_top(!is_in_immersive_mode && !has_infobar
+      .set_top(!is_in_full_screen && !has_infobar
                    ? 0
                    : MultiContentsView::kSplitViewContentInset);
 }

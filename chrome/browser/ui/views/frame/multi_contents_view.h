@@ -82,6 +82,11 @@ class MultiContentsView : public views::View,
   // and we are not currently in a split view, displays the split views.
   void SetWebContentsAtIndex(content::WebContents* web_contents, int index);
 
+  // Show the split view without set any WebContents and update the size of
+  // contents views based on `ratio`, this is used to prepare the layout and
+  // prevent a re-layout of WebContents.
+  void ShowSplitView(double ratio);
+
   // Preserves the active WebContents and hides the second ContentsContainerView
   // and resize handle.
   void CloseSplitView();
@@ -89,7 +94,7 @@ class MultiContentsView : public views::View,
   // Sets the index of the active contents view within contents_views_.
   void SetActiveIndex(int index);
 
-  // Updates the the size of the contents views based on |ratio|.
+  // Updates the size of the contents views based on |ratio|.
   void UpdateSplitRatio(double ratio);
 
   // Sets whether a scrim should show over the inactive contents view.

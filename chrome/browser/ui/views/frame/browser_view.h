@@ -989,6 +989,10 @@ class BrowserView : public BrowserWindow,
   // |contents| can be null.
   bool MaybeShowInfoBar(content::WebContents* contents);
 
+  // Prepare and update the split view for the specified WebContents. Returns
+  // true if split view is updated and needs a layout.
+  bool MaybeUpdateSplitView(content::WebContents* contents);
+
   // Updates devtools window for given contents. This method will show docked
   // devtools window for inspected |web_contents| that has docked devtools
   // and hide it for null or not inspected |web_contents|. It will also make

@@ -1622,6 +1622,11 @@ bool TabStripModel::ContainsSplit(split_tabs::SplitTabId split_id) const {
   return contents_data_->GetSplitTabCollection(split_id);
 }
 
+bool TabStripModel::IsActiveTabSplit() const {
+  const tabs::TabInterface* active_tab = GetActiveTab();
+  return active_tab && active_tab->IsSplit();
+}
+
 std::optional<split_tabs::SplitTabId>
 TabStripModel::InsertionBreaksSplitContiguity(int index) {
   CHECK(index >= 0 && index <= count());
