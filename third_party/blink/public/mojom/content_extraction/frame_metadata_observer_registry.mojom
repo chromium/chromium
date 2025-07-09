@@ -6,7 +6,7 @@ module blink.mojom;
 
 // An observer to be notified whenever metadata derived from the associated
 // Document changes.
-interface FrameMetadataObserver {
+interface PaidContentMetadataObserver {
   // Called when the paid content metadata changes.  Clients should consider the
   // value to be unspecified (eg. document not loaded yet) until this method
   // is called.
@@ -18,5 +18,5 @@ interface FrameMetadataObserver {
 interface FrameMetadataObserverRegistry {
   // Adds an observer to be notified whenever metadata derived from the
   // associated Document changes.
-  AddObserver(pending_remote<FrameMetadataObserver> observer);
+  AddPaidContentMetadataObserver(pending_remote<PaidContentMetadataObserver> observer);
 };

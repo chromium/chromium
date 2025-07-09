@@ -173,7 +173,7 @@ void OmniboxTabHelper::AddMetadataObserver(content::Page& page) {
     return;
   }
 
-  frame_metadata_observer_receiver_.reset();
+  paid_content_metadata_observer_receiver_.reset();
 
   mojo::Remote<blink::mojom::FrameMetadataObserverRegistry>
       frame_metadata_observer_registry;
@@ -181,11 +181,12 @@ void OmniboxTabHelper::AddMetadataObserver(content::Page& page) {
   render_frame_host.GetRemoteInterfaces()->GetInterface(
       frame_metadata_observer_registry.BindNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<blink::mojom::FrameMetadataObserver> remote;
-  frame_metadata_observer_receiver_.Bind(
+  mojo::PendingRemote<blink::mojom::PaidContentMetadataObserver> remote;
+  paid_content_metadata_observer_receiver_.Bind(
       remote.InitWithNewPipeAndPassReceiver());
 
-  frame_metadata_observer_registry->AddObserver(std::move(remote));
+  frame_metadata_observer_registry->AddPaidContentMetadataObserver(
+      std::move(remote));
 }
 
 void OmniboxTabHelper::PrimaryMainDocumentElementAvailable() {
@@ -236,7 +237,7 @@ void OmniboxTabHelper::MaybeLogPaywallSignal() {
   // If the page content service is not observing, then the paywall signal is
   // unavailable to be fetched.
   if (!page_content_service_observation_.IsObserving() &&
-      !frame_metadata_observer_receiver_.is_bound()) {
+      !paid_content_metadata_observer_receiver_.is_bound()) {
     return;
   }
 

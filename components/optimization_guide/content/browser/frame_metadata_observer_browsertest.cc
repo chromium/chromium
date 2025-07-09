@@ -37,7 +37,7 @@ base::FilePath GetTestDataDir() {
 
 class FrameMetadataObserverBrowserTest
     : public content::ContentBrowserTest,
-      public blink::mojom::FrameMetadataObserver {
+      public blink::mojom::PaidContentMetadataObserver {
  public:
   FrameMetadataObserverBrowserTest() = default;
 
@@ -89,11 +89,12 @@ class FrameMetadataObserverBrowserTest
     rfh->GetRemoteInterfaces()->GetInterface(
         frame_metadata_observer_registry_.BindNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<blink::mojom::FrameMetadataObserver> remote;
+    mojo::PendingRemote<blink::mojom::PaidContentMetadataObserver> remote;
     frame_metadata_observer_receiver_.Bind(
         remote.InitWithNewPipeAndPassReceiver());
 
-    frame_metadata_observer_registry_->AddObserver(std::move(remote));
+    frame_metadata_observer_registry_->AddPaidContentMetadataObserver(
+        std::move(remote));
   }
 
   // Invoked when the frame metadata changes.
@@ -118,7 +119,7 @@ class FrameMetadataObserverBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   mojo::Remote<blink::mojom::FrameMetadataObserverRegistry>
       frame_metadata_observer_registry_;
-  mojo::Receiver<blink::mojom::FrameMetadataObserver>
+  mojo::Receiver<blink::mojom::PaidContentMetadataObserver>
       frame_metadata_observer_receiver_{this};
 };
 

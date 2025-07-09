@@ -44,13 +44,12 @@ void FrameMetadataObserverRegistry::BindReceiver(
   registry->Bind(std::move(receiver));
 }
 
-
 FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
     base::PassKey<FrameMetadataObserverRegistry>,
     LocalFrame& frame)
     : Supplement<Document>(*frame.GetDocument()),
       receiver_set_(this, frame.DomWindow()),
-      observers_(frame.DomWindow()) {}
+      paid_content_metadata_observers_(frame.DomWindow()) {}
 
 FrameMetadataObserverRegistry::~FrameMetadataObserverRegistry() = default;
 
@@ -66,7 +65,7 @@ void FrameMetadataObserverRegistry::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
   visitor->Trace(receiver_set_);
   visitor->Trace(dom_content_loaded_observer_);
-  visitor->Trace(observers_);
+  visitor->Trace(paid_content_metadata_observers_);
 }
 
 class FrameMetadataObserverRegistry::DomContentLoadedListener final
@@ -92,10 +91,11 @@ class FrameMetadataObserverRegistry::DomContentLoadedListener final
   }
 };
 
-void FrameMetadataObserverRegistry::AddObserver(
-    mojo::PendingRemote<mojom::blink::FrameMetadataObserver> observer) {
-  observers_.Add(std::move(observer), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kInternalUserInteraction));
+void FrameMetadataObserverRegistry::AddPaidContentMetadataObserver(
+    mojo::PendingRemote<mojom::blink::PaidContentMetadataObserver> observer) {
+  paid_content_metadata_observers_.Add(
+      std::move(observer),
+      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
   if (GetSupplementable()->HasFinishedParsing()) {
     OnDomContentLoaded();
   } else {
@@ -112,10 +112,10 @@ void FrameMetadataObserverRegistry::AddObserver(
 void FrameMetadataObserverRegistry::OnDomContentLoaded() {
   OnPaidContentMetadataChanged();
 
-  if(dom_content_loaded_observer_) {
-    GetSupplementable()->removeEventListener(event_type_names::kDOMContentLoaded,
-      dom_content_loaded_observer_.Get(),
-      false);
+  if (dom_content_loaded_observer_) {
+    GetSupplementable()->removeEventListener(
+        event_type_names::kDOMContentLoaded, dom_content_loaded_observer_.Get(),
+        false);
     dom_content_loaded_observer_ = nullptr;
   }
 }
@@ -129,10 +129,9 @@ void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
   // TODO(gklassen): Add a MuationObserver to monitor for changes during the
   // lifetime of the page.
 
-  for (auto& observer : observers_) {
+  for (auto& observer : paid_content_metadata_observers_) {
     observer->OnPaidContentMetadataChanged(has_paid_content);
   }
 }
-
 
 }  // namespace blink

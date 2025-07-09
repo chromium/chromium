@@ -33,7 +33,7 @@ class OmniboxTabHelper
     : public content::WebContentsUserData<OmniboxTabHelper>,
       public page_content_annotations::PageContentExtractionService::Observer,
       public content::WebContentsObserver,
-      public blink::mojom::FrameMetadataObserver {
+      public blink::mojom::PaidContentMetadataObserver {
  public:
   // Observer to listen for updates from OmniboxTabHelper.
   class Observer : public base::CheckedObserver {
@@ -135,8 +135,8 @@ class OmniboxTabHelper
 
   base::ObserverList<Observer> observers_;
 
-  mojo::Receiver<blink::mojom::FrameMetadataObserver>
-      frame_metadata_observer_receiver_{this};
+  mojo::Receiver<blink::mojom::PaidContentMetadataObserver>
+      paid_content_metadata_observer_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TAB_HELPER_H_
