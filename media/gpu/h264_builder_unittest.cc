@@ -24,8 +24,12 @@ class H264BuilderTest : public ::testing::Test {
     sps.profile_idc = 100;
     sps.level_idc = 13;
     sps.chroma_format_idc = 1;
-    memset(sps.scaling_list4x4, 16, sizeof(sps.scaling_list4x4));
-    memset(sps.scaling_list8x8, 16, sizeof(sps.scaling_list8x8));
+    for (auto& row : sps.scaling_list4x4) {
+      row.fill(16u);
+    }
+    for (auto& row : sps.scaling_list8x8) {
+      row.fill(16u);
+    }
     sps.log2_max_frame_num_minus4 = 5;
     sps.log2_max_pic_order_cnt_lsb_minus4 = 6;
     sps.max_num_ref_frames = 4;

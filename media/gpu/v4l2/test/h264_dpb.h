@@ -33,7 +33,8 @@ struct H264SliceMetadata {
   int top_field_order_cnt = 0;
   bool outputted = false;  // Whether this slice has been outputted.
   bool ref = false;        // Whether this slice is a reference element.
-  H264DecRefPicMarking ref_pic_marking[H264SliceHeader::kRefListSize];
+  std::array<H264DecRefPicMarking, H264SliceHeader::kRefListSize>
+      ref_pic_marking;
   bool long_term_reference_flag = false;
   int long_term_frame_idx = 0;
   // Picture number for picture which is marked as long term as defined in

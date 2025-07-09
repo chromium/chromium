@@ -586,83 +586,83 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
 }
 
 // Default scaling lists (per spec).
-static const uint8_t kDefault4x4Intra[kH264ScalingList4x4Length] = {
-    6, 13, 13, 20, 20, 20, 28, 28, 28, 28, 32, 32, 32, 37, 37, 42,
-};
+static const std::array<uint8_t, kH264ScalingList4x4Length> kDefault4x4Intra = {
+    {6, 13, 13, 20, 20, 20, 28, 28, 28, 28, 32, 32, 32, 37, 37, 42}};
 
-static const uint8_t kDefault4x4Inter[kH264ScalingList4x4Length] = {
-    10, 14, 14, 20, 20, 20, 24, 24, 24, 24, 27, 27, 27, 30, 30, 34,
-};
+static const std::array<uint8_t, kH264ScalingList4x4Length> kDefault4x4Inter = {
+    {10, 14, 14, 20, 20, 20, 24, 24, 24, 24, 27, 27, 27, 30, 30, 34}};
 
-static const uint8_t kDefault8x8Intra[kH264ScalingList8x8Length] = {
-    6,  10, 10, 13, 11, 13, 16, 16, 16, 16, 18, 18, 18, 18, 18, 23,
-    23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27,
-    27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31,
-    31, 33, 33, 33, 33, 33, 36, 36, 36, 36, 38, 38, 38, 40, 40, 42,
-};
+static const std::array<uint8_t, kH264ScalingList8x8Length> kDefault8x8Intra = {
+    {
+        6,  10, 10, 13, 11, 13, 16, 16, 16, 16, 18, 18, 18, 18, 18, 23,
+        23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27,
+        27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31,
+        31, 33, 33, 33, 33, 33, 36, 36, 36, 36, 38, 38, 38, 40, 40, 42,
+    }};
 
-static const uint8_t kDefault8x8Inter[kH264ScalingList8x8Length] = {
-    9,  13, 13, 15, 13, 15, 17, 17, 17, 17, 19, 19, 19, 19, 19, 21,
-    21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24,
-    24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27,
-    27, 28, 28, 28, 28, 28, 30, 30, 30, 30, 32, 32, 32, 33, 33, 35,
-};
+static const std::array<uint8_t, kH264ScalingList8x8Length> kDefault8x8Inter = {
+    {
+        9,  13, 13, 15, 13, 15, 17, 17, 17, 17, 19, 19, 19, 19, 19, 21,
+        21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24,
+        24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27,
+        27, 28, 28, 28, 28, 28, 30, 30, 30, 30, 32, 32, 32, 33, 33, 35,
+    }};
 
 static inline void DefaultScalingList4x4(
     int i,
-    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
+    std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>&
+        scaling_list4x4) {
   DCHECK_LT(i, 6);
 
   if (i < 3)
-    memcpy(scaling_list4x4[i], kDefault4x4Intra, sizeof(kDefault4x4Intra));
+    scaling_list4x4[i] = kDefault4x4Intra;
   else if (i < 6)
-    memcpy(scaling_list4x4[i], kDefault4x4Inter, sizeof(kDefault4x4Inter));
+    scaling_list4x4[i] = kDefault4x4Inter;
 }
 
 static inline void DefaultScalingList8x8(
     int i,
-    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
+    std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>&
+        scaling_list8x8) {
   DCHECK_LT(i, 6);
 
   if (i % 2 == 0)
-    memcpy(scaling_list8x8[i], kDefault8x8Intra, sizeof(kDefault8x8Intra));
+    scaling_list8x8[i] = kDefault8x8Intra;
   else
-    memcpy(scaling_list8x8[i], kDefault8x8Inter, sizeof(kDefault8x8Inter));
+    scaling_list8x8[i] = kDefault8x8Inter;
 }
 
 static void FallbackScalingList4x4(
     int i,
-    const uint8_t default_scaling_list_intra[],
-    const uint8_t default_scaling_list_inter[],
-    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
-  static const int kScalingList4x4ByteSize =
-      sizeof(scaling_list4x4[0][0]) * kH264ScalingList4x4Length;
-
+    const std::array<uint8_t, kH264ScalingList4x4Length>&
+        default_scaling_list_intra,
+    const std::array<uint8_t, kH264ScalingList4x4Length>&
+        default_scaling_list_inter,
+    std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>&
+        scaling_list4x4) {
   switch (i) {
     case 0:
-      memcpy(scaling_list4x4[i], default_scaling_list_intra,
-             kScalingList4x4ByteSize);
+      scaling_list4x4[i] = default_scaling_list_intra;
       break;
 
     case 1:
-      memcpy(scaling_list4x4[i], scaling_list4x4[0], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[0];
       break;
 
     case 2:
-      memcpy(scaling_list4x4[i], scaling_list4x4[1], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[1];
       break;
 
     case 3:
-      memcpy(scaling_list4x4[i], default_scaling_list_inter,
-             kScalingList4x4ByteSize);
+      scaling_list4x4[i] = default_scaling_list_inter;
       break;
 
     case 4:
-      memcpy(scaling_list4x4[i], scaling_list4x4[3], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[3];
       break;
 
     case 5:
-      memcpy(scaling_list4x4[i], scaling_list4x4[4], kScalingList4x4ByteSize);
+      scaling_list4x4[i] = scaling_list4x4[4];
       break;
 
     default:
@@ -672,37 +672,35 @@ static void FallbackScalingList4x4(
 
 static void FallbackScalingList8x8(
     int i,
-    const uint8_t default_scaling_list_intra[],
-    const uint8_t default_scaling_list_inter[],
-    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
-  static const int kScalingList8x8ByteSize =
-      sizeof(scaling_list8x8[0][0]) * kH264ScalingList8x8Length;
-
+    const std::array<uint8_t, kH264ScalingList8x8Length>&
+        default_scaling_list_intra,
+    const std::array<uint8_t, kH264ScalingList8x8Length>&
+        default_scaling_list_inter,
+    std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>&
+        scaling_list8x8) {
   switch (i) {
     case 0:
-      memcpy(scaling_list8x8[i], default_scaling_list_intra,
-             kScalingList8x8ByteSize);
+      scaling_list8x8[i] = default_scaling_list_intra;
       break;
 
     case 1:
-      memcpy(scaling_list8x8[i], default_scaling_list_inter,
-             kScalingList8x8ByteSize);
+      scaling_list8x8[i] = default_scaling_list_inter;
       break;
 
     case 2:
-      memcpy(scaling_list8x8[i], scaling_list8x8[0], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[0];
       break;
 
     case 3:
-      memcpy(scaling_list8x8[i], scaling_list8x8[1], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[1];
       break;
 
     case 4:
-      memcpy(scaling_list8x8[i], scaling_list8x8[2], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[2];
       break;
 
     case 5:
-      memcpy(scaling_list8x8[i], scaling_list8x8[3], kScalingList8x8ByteSize);
+      scaling_list8x8[i] = scaling_list8x8[3];
       break;
 
     default:
@@ -710,9 +708,9 @@ static void FallbackScalingList8x8(
   }
 }
 
-H264Parser::Result H264Parser::ParseScalingList(int size,
-                                                uint8_t* scaling_list,
-                                                bool* use_default) {
+H264Parser::Result H264Parser::ParseScalingList(
+    base::span<uint8_t> scaling_list,
+    bool* use_default) {
   // See chapter 7.3.2.1.1.1.
   int last_scale = 8;
   int next_scale = 8;
@@ -720,7 +718,7 @@ H264Parser::Result H264Parser::ParseScalingList(int size,
 
   *use_default = false;
 
-  for (int j = 0; j < size; ++j) {
+  for (size_t j = 0; j < scaling_list.size(); ++j) {
     if (next_scale != 0) {
       READ_SE_OR_RETURN(&delta_scale);
       IN_RANGE_OR_RETURN(delta_scale, -128, 127);
@@ -750,8 +748,7 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H264SPS* sps) {
     READ_BOOL_OR_RETURN(&seq_scaling_list_present_flag);
 
     if (seq_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(sps->scaling_list4x4[i]),
-                             sps->scaling_list4x4[i], &use_default);
+      res = ParseScalingList(sps->scaling_list4x4[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -769,8 +766,7 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H264SPS* sps) {
     READ_BOOL_OR_RETURN(&seq_scaling_list_present_flag);
 
     if (seq_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(sps->scaling_list8x8[i]),
-                             sps->scaling_list8x8[i], &use_default);
+      res = ParseScalingList(sps->scaling_list8x8[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -797,8 +793,7 @@ H264Parser::Result H264Parser::ParsePPSScalingLists(const H264SPS& sps,
     READ_BOOL_OR_RETURN(&pic_scaling_list_present_flag);
 
     if (pic_scaling_list_present_flag) {
-      res = ParseScalingList(std::size(pps->scaling_list4x4[i]),
-                             pps->scaling_list4x4[i], &use_default);
+      res = ParseScalingList(pps->scaling_list4x4[i], &use_default);
       if (res != kOk)
         return res;
 
@@ -823,8 +818,7 @@ H264Parser::Result H264Parser::ParsePPSScalingLists(const H264SPS& sps,
       READ_BOOL_OR_RETURN(&pic_scaling_list_present_flag);
 
       if (pic_scaling_list_present_flag) {
-        res = ParseScalingList(std::size(pps->scaling_list8x8[i]),
-                               pps->scaling_list8x8[i], &use_default);
+        res = ParseScalingList(pps->scaling_list8x8[i], &use_default);
         if (res != kOk)
           return res;
 
@@ -955,10 +949,12 @@ H264Parser::Result H264Parser::ParseVUIParameters(H264SPS* sps) {
 }
 
 static void FillDefaultSeqScalingLists(H264SPS* sps) {
-  static_assert(sizeof(sps->scaling_list4x4[0][0]) == sizeof(uint8_t));
-  memset(sps->scaling_list4x4, 16, sizeof(sps->scaling_list4x4));
-  static_assert(sizeof(sps->scaling_list8x8[0][0]) == sizeof(uint8_t));
-  memset(sps->scaling_list8x8, 16, sizeof(sps->scaling_list8x8));
+  for (auto& arr : sps->scaling_list4x4) {
+    arr.fill(16);
+  }
+  for (auto& arr : sps->scaling_list8x8) {
+    arr.fill(16);
+  }
 }
 
 H264Parser::Result H264Parser::ParseSPS(int* sps_id) {
@@ -1237,7 +1233,7 @@ H264Parser::Result H264Parser::ParseRefPicListModifications(
     READ_BOOL_OR_RETURN(&shdr->ref_pic_list_modification_flag_l0);
     if (shdr->ref_pic_list_modification_flag_l0) {
       res = ParseRefPicListModification(shdr->num_ref_idx_l0_active_minus1,
-                                        shdr->ref_list_l0_modifications);
+                                        shdr->ref_list_l0_modifications.data());
       if (res != kOk)
         return res;
     }
@@ -1247,7 +1243,7 @@ H264Parser::Result H264Parser::ParseRefPicListModifications(
     READ_BOOL_OR_RETURN(&shdr->ref_pic_list_modification_flag_l1);
     if (shdr->ref_pic_list_modification_flag_l1) {
       res = ParseRefPicListModification(shdr->num_ref_idx_l1_active_minus1,
-                                        shdr->ref_list_l1_modifications);
+                                        shdr->ref_list_l1_modifications.data());
       if (res != kOk)
         return res;
     }

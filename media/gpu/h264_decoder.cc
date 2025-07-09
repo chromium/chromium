@@ -244,11 +244,7 @@ bool H264Decoder::InitCurrPicture(const H264SliceHeader* slice_hdr) {
   // process after this picture is decoded, store required data for that
   // purpose.
   if (slice_hdr->adaptive_ref_pic_marking_mode_flag) {
-    static_assert(sizeof(curr_pic_->ref_pic_marking) ==
-                      sizeof(slice_hdr->ref_pic_marking),
-                  "Array sizes of ref pic marking do not match.");
-    memcpy(curr_pic_->ref_pic_marking, slice_hdr->ref_pic_marking,
-           sizeof(curr_pic_->ref_pic_marking));
+    curr_pic_->ref_pic_marking = slice_hdr->ref_pic_marking;
   }
 
   curr_pic_->set_visible_rect(visible_rect_);
@@ -583,12 +579,12 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l0;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l0_active_minus1;
-    list_mod = slice_hdr->ref_list_l0_modifications;
+    list_mod = slice_hdr->ref_list_l0_modifications.data();
   } else {
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l1;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l1_active_minus1;
-    list_mod = slice_hdr->ref_list_l1_modifications;
+    list_mod = slice_hdr->ref_list_l1_modifications.data();
   }
 
   // Resize the list to the size requested in the slice header.

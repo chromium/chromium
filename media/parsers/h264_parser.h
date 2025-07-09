@@ -17,6 +17,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
@@ -155,8 +156,10 @@ struct MEDIA_EXPORT H264SPS {
   bool qpprime_y_zero_transform_bypass_flag = false;
 
   bool seq_scaling_matrix_present_flag = false;
-  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length] = {};
-  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length] = {};
+  std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>
+      scaling_list4x4 = {};
+  std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>
+      scaling_list8x8 = {};
 
   int log2_max_frame_num_minus4 = 0;
   int pic_order_cnt_type = 0;
@@ -166,7 +169,7 @@ struct MEDIA_EXPORT H264SPS {
   int offset_for_top_to_bottom_field = 0;
   int num_ref_frames_in_pic_order_cnt_cycle = 0;
   int expected_delta_per_pic_order_cnt_cycle = 0;  // calculated
-  int offset_for_ref_frame[255] = {};
+  std::array<int, 255> offset_for_ref_frame = {};
   int max_num_ref_frames = 0;
   bool gaps_in_frame_num_value_allowed_flag = false;
   int pic_width_in_mbs_minus1 = 0;
@@ -204,9 +207,9 @@ struct MEDIA_EXPORT H264SPS {
   int cpb_cnt_minus1 = 0;
   int bit_rate_scale = 0;
   int cpb_size_scale = 0;
-  int bit_rate_value_minus1[32] = {};
-  int cpb_size_value_minus1[32] = {};
-  bool cbr_flag[32] = {};
+  std::array<int, 32> bit_rate_value_minus1 = {};
+  std::array<int, 32> cpb_size_value_minus1 = {};
+  std::array<bool, 32> cbr_flag = {};
   int initial_cpb_removal_delay_length_minus_1 = 0;
   int cpb_removal_delay_length_minus1 = 0;
   int dpb_output_delay_length_minus1 = 0;
@@ -268,8 +271,10 @@ struct MEDIA_EXPORT H264PPS {
   bool transform_8x8_mode_flag = false;
 
   bool pic_scaling_matrix_present_flag = false;
-  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length] = {};
-  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length] = {};
+  std::array<std::array<uint8_t, kH264ScalingList4x4Length>, 6>
+      scaling_list4x4 = {};
+  std::array<std::array<uint8_t, kH264ScalingList8x8Length>, 6>
+      scaling_list8x8 = {};
 
   int second_chroma_qp_index_offset = 0;
 };
@@ -285,10 +290,10 @@ struct MEDIA_EXPORT H264ModificationOfPicNum {
 struct MEDIA_EXPORT H264WeightingFactors {
   bool luma_weight_flag = false;
   bool chroma_weight_flag = false;
-  int luma_weight[32] = {};
-  int luma_offset[32] = {};
-  int chroma_weight[32][2] = {};
-  int chroma_offset[32][2] = {};
+  std::array<int, 32> luma_weight = {};
+  std::array<int, 32> luma_offset = {};
+  std::array<std::array<int, 2>, 32> chroma_weight = {};
+  std::array<std::array<int, 2>, 32> chroma_offset = {};
 };
 
 struct MEDIA_EXPORT H264DecRefPicMarking {
@@ -349,8 +354,10 @@ struct MEDIA_EXPORT H264SliceHeader {
   int num_ref_idx_l1_active_minus1 = 0;
   bool ref_pic_list_modification_flag_l0 = false;
   bool ref_pic_list_modification_flag_l1 = false;
-  H264ModificationOfPicNum ref_list_l0_modifications[kRefListModSize];
-  H264ModificationOfPicNum ref_list_l1_modifications[kRefListModSize];
+  std::array<H264ModificationOfPicNum, kRefListModSize>
+      ref_list_l0_modifications;
+  std::array<H264ModificationOfPicNum, kRefListModSize>
+      ref_list_l1_modifications;
 
   int luma_log2_weight_denom = 0;
   int chroma_log2_weight_denom = 0;
@@ -367,7 +374,7 @@ struct MEDIA_EXPORT H264SliceHeader {
   bool long_term_reference_flag = false;
 
   bool adaptive_ref_pic_marking_mode_flag = false;
-  H264DecRefPicMarking ref_pic_marking[kRefListSize];
+  std::array<H264DecRefPicMarking, kRefListSize> ref_pic_marking;
 
   int cabac_init_idc = 0;
   int slice_qp_delta = 0;
@@ -404,9 +411,10 @@ struct MEDIA_EXPORT H264SEIMasteringDisplayInfo {
     kDisplayPrimaryComponents = 2,
   };
 
-  uint16_t display_primaries[kNumDisplayPrimaries][kDisplayPrimaryComponents] =
-      {};
-  uint16_t white_points[2] = {};
+  std::array<std::array<uint16_t, kDisplayPrimaryComponents>,
+             kNumDisplayPrimaries>
+      display_primaries = {};
+  std::array<uint16_t, 2> white_points = {};
   uint32_t max_luminance = 0;
   uint32_t min_luminance = 0;
 
@@ -555,7 +563,7 @@ class MEDIA_EXPORT H264Parser {
   bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
 
   // Parse scaling lists (see spec).
-  Result ParseScalingList(int size, uint8_t* scaling_list, bool* use_default);
+  Result ParseScalingList(base::span<uint8_t> scaling_list, bool* use_default);
   Result ParseSPSScalingLists(H264SPS* sps);
   Result ParsePPSScalingLists(const H264SPS& sps, H264PPS* pps);
 

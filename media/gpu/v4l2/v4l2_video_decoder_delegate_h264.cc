@@ -13,6 +13,7 @@
 #include <linux/videodev2.h>
 
 #include <algorithm>
+#include <tuple>
 #include <type_traits>
 
 #include "base/containers/heap_array.h"
@@ -250,8 +251,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   SPS_TO_V4L2SPS(num_ref_frames_in_pic_order_cnt_cycle);
 
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
-                    std::extent<decltype(sps->offset_for_ref_frame)>(),
-                "offset_for_ref_frame arrays must be same size");
+                std::tuple_size<decltype(sps->offset_for_ref_frame)>::value);
   for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); ++i) {
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
   }
@@ -327,23 +327,31 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
 
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(pps->scaling_list4x4)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list4x4)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(pps->scaling_list4x4[0])>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list4x4[0])>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(pps->scaling_list8x8)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list8x8)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(pps->scaling_list8x8[0])>(),
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list8x8[0])>>::value,
       "PPS scaling_lists must be of correct size");
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(sps->scaling_list4x4)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list4x4)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(sps->scaling_list4x4[0])>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list4x4[0])>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(sps->scaling_list8x8)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list8x8)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(sps->scaling_list8x8[0])>(),
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list8x8[0])>>::value,
       "SPS scaling_lists must be of correct size");
 
   const auto* scaling_list4x4 = &sps->scaling_list4x4[0];
