@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
@@ -750,8 +749,8 @@ class VaapiVideoEncodeAcceleratorTest
 
     auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
     // Create a mappable shared image.
-    auto pixmap_handle =
-        gpu::CreatePixmapHandleForTesting(kDefaultEncodeSize, buffer_format);
+    auto pixmap_handle = gpu::TestSharedImageInterface::CreatePixmapHandle(
+        kDefaultEncodeSize, buffer_format);
     auto shared_image = test_sii->CreateSharedImage(
         {viz::GetSharedImageFormat(buffer_format), kDefaultEncodeSize,
          gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),

@@ -21,6 +21,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
@@ -35,6 +37,14 @@ class TestSharedImageInterfaceClient {
 class TestSharedImageInterface : public SharedImageInterface {
  public:
   TestSharedImageInterface();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // TODO(blundell): Fold this inside of a TestSII::CreateSI() variant and have
+  // test clients that need the handle grab it from the created SI.
+  static gfx::GpuMemoryBufferHandle CreatePixmapHandle(
+      const gfx::Size& size,
+      gfx::BufferFormat format);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,

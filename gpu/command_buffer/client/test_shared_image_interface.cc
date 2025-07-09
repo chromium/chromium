@@ -25,6 +25,10 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <fcntl.h>
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
@@ -143,6 +147,27 @@ TestSharedImageInterface::TestSharedImageInterface() {
 }
 
 TestSharedImageInterface::~TestSharedImageInterface() = default;
+
+// static
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreatePixmapHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format) {
+  gfx::NativePixmapHandle native_pixmap_handle;
+  for (size_t i = 0; i < gfx::NumberOfPlanesForLinearBufferFormat(format);
+       i++) {
+    size_t height_in_pixels;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(size.height(), format, i,
+                                                 &height_in_pixels));
+    size_t stride = gfx::RowSizeForBufferFormat(size.width(), format, i);
+    native_pixmap_handle.planes.emplace_back(
+        stride, 0, height_in_pixels * stride,
+        base::ScopedFD(open("/dev/zero", O_RDWR)));
+  }
+
+  return gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
+}
+#endif
 
 scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
