@@ -414,6 +414,10 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   // Since nobody has a pip window, we shouldn't think we do.
   CHECK(!is_in_picture_in_picture_);
 
+// TODO(crbug.com/421606013): skip permission check for Android for now. Once
+// the permission model for Android is finalized, we'll enable the permission
+// checking logic here.
+#if !BUILDFLAG(IS_ANDROID)
   // The user may block autopip via a content setting. Also, if we're in an
   // incognito window, then we should treat "ask" as "block". This should be the
   // final check before triggering autopip since it will record metrics about
@@ -422,29 +426,24 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   if (setting == CONTENT_SETTING_BLOCK) {
     blocked_due_to_content_setting_ = true;
 
-// TODO(crbug.com/421608904): simplify code path once permission UX is finalized
-// and auto_pip_setting_helper_ is used in Android code path.
-#if !BUILDFLAG(IS_ANDROID)
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
       auto_pip_setting_helper_->OnAutoPipBlockedByPermission(GetAutoPipReason(),
                                                              GetUkmSourceId());
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
     return false;
   } else if (setting == CONTENT_SETTING_ASK &&
              Profile::FromBrowserContext(web_contents()->GetBrowserContext())
                  ->IsIncognitoProfile()) {
     blocked_due_to_content_setting_ = true;
 
-#if !BUILDFLAG(IS_ANDROID)
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
       auto_pip_setting_helper_->OnAutoPipBlockedByIncognito(GetAutoPipReason());
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
     return false;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return true;
 }
@@ -475,10 +474,15 @@ bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
 }
 
 bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
+  // TODO(crbug.com/421606013): Android as autoPiP hasn't been registered for
+  // Android platform. We'll register it and implement a no-permission model for
+  // Android as a follow-up.
+#if !BUILDFLAG(IS_ANDROID)
   // Skip checking media engagement when content setting is set to allow.
   if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
     return true;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
   if (!rfh) {
@@ -493,6 +497,14 @@ bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
   if (!media_engagement_service_) {
     return false;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // For Android JNI tests, return the testing override value if it's available,
+  // completely bypassing the MediaEngagementService check.
+  if (has_high_engagement_for_testing_.has_value()) {
+    return has_high_engagement_for_testing_.value();
+  }
+#endif
 
   return media_engagement_service_->HasHighEngagement(origin);
 }

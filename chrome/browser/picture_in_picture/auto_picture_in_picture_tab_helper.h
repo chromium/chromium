@@ -166,6 +166,21 @@ class AutoPictureInPictureTabHelper
     auto_pip_trigger_reason_ = auto_pip_trigger_reason;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Overrides the media engagement check for testing. This is necessary for
+  // Android JNI tests where mocking MediaEngagementService is difficult due
+  // to framework initialization order complexities.
+  void set_has_high_engagement_for_testing(bool value) {
+    has_high_engagement_for_testing_ = value;
+  }
+
+  // Manually sets the audio focus state for testing. This is necessary for
+  // Android JNI tests because programmatically playing media may not properly
+  // acquire audio focus. This allows tests to mimic the real-world conditions
+  // required for auto-PiP to trigger.
+  void set_has_audio_focus_for_testing(bool value) { has_audio_focus_ = value; }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
       const;
 
@@ -406,6 +421,12 @@ class AutoPictureInPictureTabHelper
   // or incognito, false otherwise. The value is used to prevent recording
   // duplicate entries for blocking metrics.
   bool blocked_due_to_content_setting_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  // If set, this value overrides the result of the real MediaEngagementService
+  // check. Intended for Android JNI tests only.
+  std::optional<bool> has_high_engagement_for_testing_ = std::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
   // is invalidated during calls to `StopAndResetAsyncTasks`.

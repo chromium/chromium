@@ -9,7 +9,10 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.picture_in_picture"
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTest.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTest.java",
+  ]
 
   deps = [
     ":test_support_java",
@@ -24,7 +27,6 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_transit",
     "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
@@ -35,11 +37,16 @@ android_library("test_support_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.picture_in_picture"
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTestUtils.java",
+  ]
 
   deps = [
     "//base:base_java",
+    "//base:base_java_test_support",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
@@ -49,12 +56,18 @@ android_library("test_support_java") {
 generate_jni("jni_headers") {
   testonly = true
   visibility = [ ":*" ]
-  sources = [ "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPiPTabModelObserverHelperTestUtils.java",
+    "android/java/src/org/chromium/chrome/browser/picture_in_picture/AutoPictureInPictureTabHelperTestUtils.java",
+  ]
 }
 
 static_library("test_support") {
   testonly = true
-  sources = [ "android/auto_pip_tab_model_observer_test_utils.cc" ]
+  sources = [
+    "android/auto_pip_tab_helper_test_utils.cc",
+    "android/auto_pip_tab_model_observer_test_utils.cc",
+  ]
   deps = [
     ":jni_headers",
     "//base",
