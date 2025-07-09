@@ -260,15 +260,11 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              std::optional<RandomizedEncoder> randomized_encoder,
              FormStructure::FormAssociations form_associations,
              std::set<FieldGlobalId> fields_that_match_state) {
-            std::map<FieldGlobalId, DatesAndFormats>
-                dates_and_formats_by_field =
-                    ExtractDatesInFields(form->fields());
-
             std::vector<PossibleTypes> possible_types =
                 DeterminePossibleFieldTypesForUpload(
                     profiles, credit_cards, entities, loyalty_cards,
                     fields_that_match_state, last_unlocked_credit_card_cvc,
-                    dates_and_formats_by_field, app_locale, *form);
+                    app_locale, *form);
 
             for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
@@ -285,9 +281,9 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             options.available_field_types = DetermineAvailableFieldTypes(
                 profiles, credit_cards, entities, loyalty_cards,
                 last_unlocked_credit_card_cvc, app_locale);
-            for (auto& [field_id, dates_and_formats] :
-                 std::move(dates_and_formats_by_field)) {
-              options.fields[field_id].format_strings =
+            for (auto [field, dates_and_formats] :
+                 base::zip(form->fields(), possible_types)) {
+              options.fields[field->global_id()].format_strings =
                   std::move(dates_and_formats).formats;
             }
 

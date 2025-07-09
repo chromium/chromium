@@ -35,17 +35,19 @@
 
 namespace autofill {
 
+// TODO(crbug.com/429704303): Move function to anonymous namespace.
+base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
+FindDatesAndSetFormatStrings(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<PossibleTypes> possible_types);
+
 namespace {
 
-struct DateAndFormat {
-  data_util::Date date;
-  std::u16string format;
-};
-
-// Matches a date consisting of year, month, and day in a the given string.
-std::vector<DateAndFormat> GetMatchingCompleteDateAndFormats(
-    std::u16string_view date) {
-  std::vector<DateAndFormat> dafs;
+// Returns a vector that contains all `{date, format}` for which `str` contains
+// `date` in `format`.
+std::vector<std::pair<data_util::Date, std::u16string>>
+GetMatchingCompleteDateAndFormats(std::u16string_view str) {
+  std::vector<std::pair<data_util::Date, std::u16string>> dates_and_formats;
   for (std::u16string_view format :
        {// Ordering: year month day.
         u"YYYY*MM*DD", u"YY*MM*DD", u"YYYY+M+D", u"YY+M+D",
@@ -53,18 +55,18 @@ std::vector<DateAndFormat> GetMatchingCompleteDateAndFormats(
         u"MM*DD*YYYY", u"MM*DD*YY", u"M+D+YYYY", u"M+D+YY",
         // Ordering: day month year.
         u"DD*MM*YYYY", u"DD*MM*YY", u"D+M+YYYY", u"D+M+YY"}) {
-    data_util::Date result;
+    data_util::Date date;
     const char16_t* separator = nullptr;
-    if (data_util::ParseDate(date, format, result, separator) &&
-        data_util::IsValidDateForFormat(result, format)) {
+    if (data_util::ParseDate(str, format, date, separator) &&
+        data_util::IsValidDateForFormat(date, format)) {
       std::u16string instantiated_format;
       base::ReplaceChars(format, u"*+", separator, &instantiated_format);
-      if (data_util::ParseDate(date, instantiated_format, result)) {
-        dafs.emplace_back(result, std::move(instantiated_format));
+      if (data_util::ParseDate(str, instantiated_format, date)) {
+        dates_and_formats.emplace_back(date, std::move(instantiated_format));
       }
     }
   }
-  return dafs;
+  return dates_and_formats;
 }
 
 // Adds `CREDIT_CARD_VERIFICATION_CODE` to the possible types of fields whose
@@ -209,21 +211,13 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
   return types;
 }
 
-void FindAndSetPossibleDateFieldTypes(
+void FindAndSetPossibleDateFieldTypesAndFormatStrings(
     base::span<const EntityInstance> entities,
-    const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<PossibleTypes> possible_types) {
-  std::map<data_util::Date, std::vector<size_t>> date_to_field_indices;
-  for (size_t i = 0; i < fields.size(); ++i) {
-    if (auto it = dates_and_formats.find(fields[i]->global_id());
-        it != dates_and_formats.end()) {
-      for (const data_util::Date& date : it->second.dates) {
-        date_to_field_indices[date].push_back(i);
-      }
-    }
-  }
+  base::flat_set<std::pair<data_util::Date, PossibleTypes*>> dates =
+      FindDatesAndSetFormatStrings(fields, possible_types);
 
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
@@ -234,11 +228,10 @@ void FindAndSetPossibleDateFieldTypes(
         data_util::Date date;
         if (data_util::ParseDate(attribute.GetCompleteInfo(app_locale),
                                  u"YYYY-MM-DD", date)) {
-          if (auto it = date_to_field_indices.find(date);
-              it != date_to_field_indices.end()) {
-            for (size_t field_index : it->second) {
-              possible_types[field_index].types.insert(field_type);
-            }
+          auto get_date = [](const auto& p) { return p.first; };
+          for (auto& [same_date, pt] :
+               std::ranges::equal_range(dates, date, {}, get_date)) {
+            pt->types.insert(field_type);
           }
         }
       }
@@ -297,14 +290,6 @@ PossibleTypes::PossibleTypes(PossibleTypes&&) = default;
 PossibleTypes& PossibleTypes::operator=(PossibleTypes&&) = default;
 PossibleTypes::~PossibleTypes() = default;
 
-DatesAndFormats::DatesAndFormats() = default;
-DatesAndFormats::DatesAndFormats(base::flat_set<data_util::Date> dates,
-                                 base::flat_set<std::u16string> formats)
-    : dates(std::move(dates)), formats(std::move(formats)) {}
-DatesAndFormats::DatesAndFormats(DatesAndFormats&&) = default;
-DatesAndFormats& DatesAndFormats::operator=(DatesAndFormats&&) = default;
-DatesAndFormats::~DatesAndFormats() = default;
-
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
     base::span<const std::unique_ptr<AutofillField>> fields,
@@ -349,7 +334,6 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
-    const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields) {
   std::vector<PossibleTypes> possible_types;
@@ -364,8 +348,8 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
 
   // Date detection is not part of the above loop because dates can span
   // multiple fields.
-  FindAndSetPossibleDateFieldTypes(entities, dates_and_formats, app_locale,
-                                   fields, possible_types);
+  FindAndSetPossibleDateFieldTypesAndFormatStrings(entities, app_locale, fields,
+                                                   possible_types);
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
   FindAndSetPossibleCvcFieldTypes(last_unlocked_credit_card_cvc, fields,
@@ -413,8 +397,36 @@ FieldTypeSet DetermineAvailableFieldTypes(
   return types;
 }
 
-std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
+// Extracts the dates and their format strings in `fields`:
+// - It adds the format strings to `PossibleTypes::formats`.
+// - It returns the dates, together with a pointer to the `PossibleTypes` of
+//   each field that contributes a part of the date.
+//
+// For example:
+//
+// For a field #0 with value "09/03/2025", it sets
+//   pt[0].format_strings = {u"DD/MM/YYYY", u"MM/DD/YYYY"}
+// and returns
+//   {{{2025,03,09}, &pt[0]}}
+//   {{{2025,09,03}, &pt[0]}}
+//
+// For a field #0 with value "01/01/01", it sets
+//   pt[0].format_strings = {u"DD/MM/YY", u"MM/DD/YY", u"YY/MM/DD"}
+// and returns
+//   {{{2001,01,01}, &pt[0]}}
+//
+// For three consecutive fields with values "09", "03", "2025", it sets
+//   pt[0].format_strings = {u"DD", u"MM"}
+//   pt[1].format_strings = {u"DD", u"MM"}
+//   pt[2].format_strings = {u"YYYY"}
+// and returns
+//   {{{2025,03,09}, pt[0]}, {2025,09,03, &pt[0]}}}
+//   {{{2025,03,09}, pt[1]}, {2025,09,03, &pt[1]}}}
+//   {{{2025,03,09}, pt[2]}, {2025,09,03, &pt[2]}}}
+base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
+FindDatesAndSetFormatStrings(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<PossibleTypes> possible_types) {
   // Cheap plausibility checks if the field is relevant for date matching.
   auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
     return field->form_control_type() == FormControlType::kInputText &&
@@ -452,22 +464,19 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
                group[1]->label() == group[2]->label();
       };
 
-  std::map<FieldGlobalId, DatesAndFormats> dates_and_formats_by_field;
+  std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
 
   // Match formats against individual fields.
   if (base::FeatureList::IsEnabled(
           features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
-    for (const std::unique_ptr<AutofillField>& field : fields) {
+    for (auto [field, pt] : base::zip(fields, possible_types)) {
       if (!may_be_interesting(field) || !may_be_complete_date(field)) {
         continue;
       }
-      std::vector<DateAndFormat> dafs =
-          GetMatchingCompleteDateAndFormats(field->value());
-      if (!dafs.empty()) {
-        dates_and_formats_by_field[field->global_id()] = DatesAndFormats(
-            base::MakeFlatSet<data_util::Date>(dafs, {}, &DateAndFormat::date),
-            base::MakeFlatSet<std::u16string>(dafs, {},
-                                              &DateAndFormat::format));
+      for (auto& [date, format] :
+           GetMatchingCompleteDateAndFormats(field->value())) {
+        pt.formats.insert(std::move(format));
+        dates.emplace_back(date, &pt);
       }
     }
   }
@@ -485,26 +494,31 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
       static constexpr std::u16string_view kSeparator = u"-";
       static_assert(
           std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
-      const std::u16string date = base::JoinString(
+      const std::u16string maybe_full_date = base::JoinString(
           {group[0]->value(), group[1]->value(), group[2]->value()},
           kSeparator);
-      for (const DateAndFormat& daf : GetMatchingCompleteDateAndFormats(date)) {
+      for (auto& [full_date, full_format] :
+           GetMatchingCompleteDateAndFormats(maybe_full_date)) {
         std::vector<std::u16string> partial_formats =
-            base::SplitString(daf.format, kSeparator, base::KEEP_WHITESPACE,
+            base::SplitString(full_format, kSeparator, base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_ALL);
         if (partial_formats.size() == 3) {
-          for (auto [field, partial_format] :
-               base::zip(group, partial_formats)) {
-            DatesAndFormats& dates_and_formats =
-                dates_and_formats_by_field[field->global_id()];
-            dates_and_formats.dates.insert(daf.date);
-            dates_and_formats.formats.insert(std::move(partial_format));
+          for (size_t j = 0; j < 3; ++j) {
+            possible_types[i + j].formats.insert(std::move(partial_formats[j]));
+            dates.emplace_back(full_date, &possible_types[i + j]);
           }
         }
       }
     }
   }
-  return dates_and_formats_by_field;
+  return dates;
+}
+
+base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
+FindDatesAndSetFormatStringsForTesting(  // IN-TEST
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    base::span<PossibleTypes> possible_types) {
+  return FindDatesAndSetFormatStrings(fields, possible_types);
 }
 
 }  // namespace autofill
