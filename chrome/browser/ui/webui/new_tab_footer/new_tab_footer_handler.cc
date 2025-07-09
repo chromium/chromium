@@ -127,10 +127,7 @@ void NewTabFooterHandler::OpenManagementPage() {
 }
 
 void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
-  // TODO(crbug.com/424878134): Add managed-specific behavior, this currently
-  // hides the menu if the browser is managed.
-  if (!embedder_ ||
-      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_)) {
+  if (!embedder_) {
     return;
   }
 
@@ -138,7 +135,7 @@ void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
   if (browser) {
     embedder_->ShowContextMenu(point,
                                std::make_unique<FooterContextMenu>(browser));
-  };
+  }
 }
 
 void NewTabFooterHandler::UpdateManagementNotice() {
