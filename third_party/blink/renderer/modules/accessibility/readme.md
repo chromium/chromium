@@ -10,7 +10,7 @@ The core components include:
 
 * [`AXObject`](ax_object.h): This is the fundamental abstract class representing an accessible object in Blink's accessibility tree.
 * [`AXObjectCacheImpl`](ax_object_cache_impl.h): This central class manages the accessibility tree within Blink. It is responsible for caching `AXObject`s corresponding to [`Node`](../../core/dom/node.h)s or [`LayoutObject`](../../core/layout/layout_object.h)s and relaying accessibility events from Blink to the embedding content layer. It queues work via [`DeferTreeUpdate()`](ax_object_cache_impl.cc) and processes updates when layout is clean.
-* [`WebAXObject`](../../core/accessible/web_ax_object.h): This acts as a public API wrapper around `AXObject`s.
+*   [`WebAXObject`](../../../../public/web/web_ax_object.h): This acts as a public API wrapper around `AXObject`s.
 
 ## How Blink Processes and Serializes Accessibility Updates
 
@@ -24,19 +24,19 @@ This is where the "`FooWithCleanLayout`" methods come into play (e.g., [`Childre
 
 Once the accessibility tree is updated, its relevant information is serialized for communication with the browser process. This process involves:
 
-* Calling [`AXObject::Serialize()`](ax_object.cc) on the `AXObject`s in the renderer process. This method populates a [`ui::AXNodeData`](../../../../../ui/accessibility/ax_node_data.h) structure.
+* Calling [`AXObject::Serialize()`](ax_object.cc) on the `AXObject`s in the renderer process. This method populates a [`ui::AXNodeData`](../../../../../../ui/accessibility/ax_node_data.h) structure.
 * The system operates on a "push" model; changes in the renderer's accessibility tree are actively pushed to a cached accessibility tree in the browser process. This approach makes handling operating system accessibility API calls very fast in the browser process, as the tree resides in the browser's memory space.
-* The [`AXTreeSerializer`](../../../../../ui/accessibility/ax_tree_serializer.h) class is used to walk the tree and generate [`AXTreeUpdates`](../../../../../ui/accessibility/ax_tree_update.h) (which contain `AXNodeData`), which are then sent to the browser process via Mojo messages.
-* The browser then consumes the received data, incrementally updating the remote [`AXTree`](../../../../../ui/accessibility/ax_tree.h) via [`AXTree::Unserialize()`](../../../../../ui/accessibility/ax_tree.cc).
+* The [`AXTreeSerializer`](../../../../../../ui/accessibility/ax_tree_serializer.h) class is used to walk the tree and generate [`AXTreeUpdates`](../../../../../../ui/accessibility/ax_tree_update.h) (which contain `AXNodeData`), which are then sent to the browser process via Mojo messages.
+* The browser then consumes the received data, incrementally updating the remote [`AXTree`](../../../../../../ui/accessibility/ax_tree.h) via [`AXTree::Unserialize()`](../../../../../../ui/accessibility/ax_tree.cc).
 
 The entire process is governed by an "Accessibility lifecycle". Key stages include:
 
 1. **Defer tree updates**: Listening for DOM and layout changes and queuing [`TreeUpdateReason`](ax_object_cache_impl.cc) objects for later processing.
 2. **Process deferred updates**: Processing these queued updates when layout is clean, updating the tree structure and `AXObject` cached values.
 3. **Finalize tree**: Ensuring the tree structure and properties are updated before serialization.
-4. **Freeze & Serialize**: Preparing the [`AXTreeUpdate`](../../../../../ui/accessibility/ax_tree_update.h) list, during which no `AXObject` creation or cached value updates are allowed to ensure consistency.
+4. **Freeze & Serialize**: Preparing the [`AXTreeUpdate`](../../../../../../ui/accessibility/ax_tree_update.h) list, during which no `AXObject` creation or cached value updates are allowed to ensure consistency.
 
-This architecture, while effective for AT communication, incurs significant costs in terms of UI jank, performance, and memory usage. Projects are underway to address these issues, including improving [`AXMode`](../../../../../ui/accessibility/ax_mode.h) usage to only compute and cache what's needed, reducing serializations, and optimizing data structures.
+This architecture, while effective for AT communication, incurs significant costs in terms of UI jank, performance, and memory usage. Projects are underway to address these issues, including improving [`AXMode`](../../../../../../ui/accessibility/ax_mode.h) usage to only compute and cache what's needed, reducing serializations, and optimizing data structures.
 
 ## What's an AXObject?
 
@@ -52,9 +52,9 @@ An [`AXObject`](ax_object.h) provides methods to determine roles, properties, an
   * Are expensive to compute but are used repeatedly.
   * Are inherited from their parent `AXObject`. Examples of specific cached values include `cached_is_ignored_`, `cached_is_aria_hidden_`, `cached_can_set_focus_attribute_`, and `cached_local_bounding_box_`. When a node is marked as "dirty" (indicating a change), its cached values are invalidated and updated during the "clean layout" phase of the accessibility lifecycle. Changes to inherited values can also trigger a recursive refresh of cached values for a subtree.
 
-* Behavioral Properties: `AXObject`s include property getters and the [`Serialize()`](ax_object.cc) method which is used to gather data into the [`AXNodeData`](../../../../../ui/accessibility/ax_node_data.h) structure for serialization.
+* Behavioral Properties: `AXObject`s include property getters and the [`Serialize()`](ax_object.cc) method which is used to gather data into the [`AXNodeData`](../../../../../../ui/accessibility/ax_node_data.h) structure for serialization.
 
-* Actions: `AXObject`s support various actions that can be performed on the object, which are represented by the [`ui::AXActionData`](../../../../../ui/accessibility/ax_action_data.h) struct.
+* Actions: `AXObject`s support various actions that can be performed on the object, which are represented by the [`ui::AXActionData`](../../../../../../ui/accessibility/ax_action_data.h) struct.
 
 * Utility Methods: `AXObject`s provide useful methods such as [`IsDetached()`](ax_object.h) (to check if it's no longer connected to the tree), [`AXObjectCache()`](ax_object.h) (to access its associated cache), and [`IsIgnored()`](ax_object.h) (to determine if it's ignored by accessibility features).
 
@@ -70,7 +70,7 @@ An [`AXObject`](ax_object.h) provides methods to determine roles, properties, an
 
 ### Serialization of AXObject Data
 
-Once `AXObject`s are constructed and updated, their relevant information is gathered for transmission across the process boundary to the browser process. This involves calling [`AXObject::Serialize()`](ax_object.cc) which populates a [`ui::AXNodeData`](../../../../../ui/accessibility/ax_node_data.h) structure. The `AXNodeData` structure is designed to be compact and sparse, storing attributes like role, ID, and other properties in attribute arrays (e.g., `string_attributes`, `int_attributes`), rather than allocating space for every possible attribute on every node. During the "Freeze & Serialize" stage of the accessibility lifecycle, the tree is temporarily frozen to prevent modifications, and `const AXObject*` instances are fed to the serializer to generate these `AXNodeData` updates. The collection of updates created in [`AXObjectCacheImpl::GetUpdatesAndEventsForSerialization`](ax_object_cache_impl.cc) is then serialized into a Mojo message by [`RenderAccessibilityImpl::SendAccessibilitySerialization`](../../../../browser/renderer_host/render_accessibility_impl.cc) for transmission.
+Once `AXObject`s are constructed and updated, their relevant information is gathered for transmission across the process boundary to the browser process. This involves calling [`AXObject::Serialize()`](ax_object.cc) which populates a [`ui::AXNodeData`](../../../../../../ui/accessibility/ax_node_data.h) structure. The `AXNodeData` structure is designed to be compact and sparse, storing attributes like role, ID, and other properties in attribute arrays (e.g., `string_attributes`, `int_attributes`), rather than allocating space for every possible attribute on every node. During the "Freeze & Serialize" stage of the accessibility lifecycle, the tree is temporarily frozen to prevent modifications, and `const AXObject*` instances are fed to the serializer to generate these `AXNodeData` updates. The collection of updates created in [`AXObjectCacheImpl::GetUpdatesAndEventsForSerialization`](ax_object_cache_impl.cc) is then serialized into a Mojo message by [`RenderAccessibilityImpl::SendAccessibilitySerialization`](../../../../content/browser/renderer_host/render_accessibility_impl.cc) for transmission.
 
 ## Ignored and Included Objects
 
@@ -80,14 +80,14 @@ The concepts of "ignored" and "included" objects are fundamental to how the acce
 
 An "ignored" accessibility object is one that will not be exposed in platform accessibility APIs to assistive technologies. This means that, from the perspective of a screen reader or other AT, the object effectively does not exist in the accessibility tree.
 
-Objects are marked as ignored for various reasons, often to prevent redundant information, remove visually hidden elements, or simplify the accessibility tree by removing "uninteresting" content. The ignored state is computed by [`AXObject::ComputeIsIgnored()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.cc) or [`AXTree::ComputeNodeIsIgnored()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_tree.cc).
+Objects are marked as ignored for various reasons, often to prevent redundant information, remove visually hidden elements, or simplify the accessibility tree by removing "uninteresting" content. The ignored state is computed by [`AXObject::ComputeIsIgnored()`](ax_object.cc) or [`AXTree::ComputeNodeIsIgnored()`](../../../../../../ui/accessibility/ax_tree.cc).
 
 Common reasons why an object might be ignored include:
 
 * **Explicit State/Role**: If an element has an ARIA presentational role (`role="none"`).
-* **CSS Hiding**: Elements hidden by CSS properties like `display: none` or `visibility: hidden` (determined by [`IsHiddenViaStyle()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.cc)).
-* **ARIA Hiding**: Elements with `aria-hidden=true` (via [`IsAriaHidden()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.cc)), which hides the entire subtree.
-* **Inertness**: Elements marked with the `inert` attribute/`interactivity` property or considered inert due to their context (via [`IsInert()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.cc)).
+* **CSS Hiding**: Elements hidden by CSS properties like `display: none` or `visibility: hidden` (determined by [`IsHiddenViaStyle()`](ax_object.cc)).
+* **ARIA Hiding**: Elements with `aria-hidden=true` (via [`IsAriaHidden()`](ax_object.cc)), which hides the entire subtree.
+* **Inertness**: Elements marked with the `inert` attribute/`interactivity` property or considered inert due to their context (via [`IsInert()`](ax_object.cc)).
 * **Uninteresting Content**: Whitespace nodes, `<span>` tags without additional ARIA information, or `<label>` elements that are already used to name a control and would cause redundancy. The `<html>` and `<body>` elements are also typically ignored.
 * **Layout/Structure**: SVG `symbol` elements (which are graphical templates), or specific layout objects like a 1x1 pixel canvas.
 
@@ -97,7 +97,7 @@ Common reasons why an object might be ignored include:
 
 An object is "included" in the accessibility tree if it is part of the internal structure that is processed and serialized by Blink's accessibility engine, even if it is marked as ignored from the perspective of platform APIs. The purpose of including ignored objects is to retain necessary information for internal computations, tree consistency, and other browser-side accessibility logic.
 
-The [`AXObject`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.h) class, and its concrete subclass [`AXNodeObject`](../../../../../third_party/blink/renderer/modules/accessibility/ax_node_object.h), manage this state using cached values like `cached_is_ignored_` and `cached_is_ignored_but_included_in_tree_`.
+The [`AXObject`](ax_object.h) class, and its concrete subclass [`AXNodeObject`](ax_node_object.h), manage this state using cached values like `cached_is_ignored_` and `cached_is_ignored_but_included_in_tree_`.
 
 ### 3\. Ignored but Included Objects
 
@@ -106,11 +106,11 @@ This is a specific category of objects that are not exposed to platform accessib
 Reasons why an ignored object might still be included in the tree:
 
 * **ARIA-owned Objects**: Objects that are "owned" by another element via `aria-owns` are always included, regardless of their own ignored state, because they need to be children of the owning element in the accessibility tree.
-* **Label and Description Calculation**: Nodes that are used to compute the accessible name or description of other elements (determined by [`IsUsedForLabelOrDescription()`](../../../../../third_party/blink/renderer/modules/accessibility/ax_object.cc)) are included. This is crucial for accurate name calculation, even if the label itself is visually hidden or otherwise ignored.
+* **Label and Description Calculation**: Nodes that are used to compute the accessible name or description of other elements (determined by [`IsUsedForLabelOrDescription()`](ax_object.cc)) are included. This is crucial for accurate name calculation, even if the label itself is visually hidden or otherwise ignored.
   * For instance, `<label>` elements are often ignored to prevent duplicate speech but are included for their role in naming controls. Similarly, children of `<label>` and `<map>` elements are included for accessibility calculation.
   * Elements referenced by `aria-labelledby` or `aria-describedby` relations, especially if hidden, are included to allow their subtrees to contribute to the name/description.
 * **Internal Bookkeeping and Consistency**:
-  * If a node's "flat tree parent" (as determined by [`LayoutTreeBuilderTraversal`](../../../../../third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h)) is different from its DOM parent, it must be included. This handles complex DOM structures, like those involving shadow DOM slotting, where direct DOM traversal might be unsafe or insufficient.
+  * If a node's "flat tree parent" (as determined by [`LayoutTreeBuilderTraversal`](../../core/dom/layout_tree_builder_traversal.h)) is different from its DOM parent, it must be included. This handles complex DOM structures, like those involving shadow DOM slotting, where direct DOM traversal might be unsafe or insufficient.
   * Elements in media controls (e.g., `<video>` or `<audio>`) are kept in the tree, even if ignored, because their ignored state can change dynamically without a layout update, and the serializer needs them to be present.
   * Menu elements are included even if hidden to facilitate event generation when they open.
   * Table-related elements (like `<table>`, `<tbody>`, `<tr>`, `<td>`) are kept included because their role and ignored status can be highly dependent on their complex ancestry.
@@ -130,12 +130,12 @@ Accessibility processing can significantly contribute to jank (dropped frames) i
 
 To mitigate these issues, Blink's accessibility implementation focuses on:
 
-* Controlling Data Flow with [`AXMode`](../../../../../ui/accessibility/ax_mode.h): The [`ui::AXMode`](../../../../../ui/accessibility/ax_mode.h) flags dictate how much accessibility data Blink is instructed to compute and serialize. More detailed modes, such as [`kExtendedProperties`](../../../../../ui/accessibility/ax_mode.h),  [`kInlineTextBoxes`](../../../../../ui/accessibility/ax_mode.h), and [`kScreenReader`](../../../../../ui/accessibility/ax_mode.h), are expensive and can be "overused". A long term goal is to start with minimal `AXMode`, activating more detailed modes only when necessary.
-* Sparse Data Representation: The accessibility node data ([`ui::AXNodeData`](../../../../../ui/accessibility/ax_node_data.h)) is designed to be compact and sparse, avoiding allocation for every possible attribute on every node to reduce memory footprint.
+* Controlling Data Flow with [`AXMode`](../../../../../../ui/accessibility/ax_mode.h): The [`ui::AXMode`](../../../../../../ui/accessibility/ax_mode.h) flags dictate how much accessibility data Blink is instructed to compute and serialize. More detailed modes, such as [`kExtendedProperties`](../../../../../../ui/accessibility/ax_mode.h),  [`kInlineTextBoxes`](../../../../../../ui/accessibility/ax_mode.h), and [`kScreenReader`](../../../../../../ui/accessibility/ax_mode.h), are expensive and can be "overused". A long term goal is to start with minimal `AXMode`, activating more detailed modes only when necessary.
+* Sparse Data Representation: The accessibility node data ([`ui::AXNodeData`](../../../../../../ui/accessibility/ax_node_data.h)) is designed to be compact and sparse, avoiding allocation for every possible attribute on every node to reduce memory footprint.
 
 ### Frame Handling
 
-For embedded web pages (iframes), Blink will build a separate independent accessibility tree for each frame, regardless of whether it's in the same process or a different one. These individual frame trees are then serialized in [`AXObject::SerializeChildTreeID()`](../accessibility/ax_object.cc) and sent to the browser process, where they are cached and composed into a single virtual accessibility tree.
+For embedded web pages (iframes), Blink will build a separate independent accessibility tree for each frame, regardless of whether it's in the same process or a different one. These individual frame trees are then serialized in [`AXObject::SerializeChildTreeID()`](ax_object.cc) and sent to the browser process, where they are cached and composed into a single virtual accessibility tree.
 
 ### Standards Support
 
@@ -153,15 +153,15 @@ For debugging Blink's accessibility tree, developers can use:
 
 * `chrome://accessibility` to view the full AX tree.
 * DevTools to inspect the accessibility tree.
-* Internal logging functions like [`LOG(ERROR) << ax_object`](../../../../../base/logging.h)
+* Internal logging functions like [`LOG(ERROR) << ax_object`](../../../../../../base/logging.h)
 
 ## Further Reading
 
 For a more comprehensive and detailed understanding of Chromium's overall accessibility architecture, internal data structures, and interactions between components, please refer to the following documents in the Chromium repository:
 
-* ["Chromium Accessibility: Architecture and Concepts"](../../../../../docs/accessibility/architecture_and_concepts.md)
-* ["How Chrome Accessibility Works - Part 1"](../../../../../docs/accessibility/how_accessibility_works_1.md)
-* ["How Chrome Accessibility Works - Part 2"](../../../../../docs/accessibility/how_accessibility_works_2.md)
-* ["How Chrome Accessibility Works - Part 3"](../../../../../docs/accessibility/how_accessibility_works_3.md)
+* ["Chromium Accessibility: Architecture and Concepts"](../../../../../../docs/accessibility/architecture_and_concepts.md)
+* ["How Chrome Accessibility Works - Part 1"](../../../../../../docs/accessibility/how_accessibility_works_1.md)
+* ["How Chrome Accessibility Works - Part 2"](../../../../../../docs/accessibility/how_accessibility_works_2.md)
+* ["How Chrome Accessibility Works - Part 3"](../../../../../../docs/accessibility/how_accessibility_works_3.md)
 
 
