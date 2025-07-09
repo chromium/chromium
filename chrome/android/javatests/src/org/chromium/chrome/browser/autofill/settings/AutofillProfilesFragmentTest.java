@@ -53,7 +53,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,6 +70,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -212,6 +216,11 @@ public class AutofillProfilesFragmentTest {
                         .setEmailAddress("fourth@gmail.com")
                         .setLanguageCode("en-US")
                         .build());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
+                });
     }
 
     @After
@@ -883,6 +892,72 @@ public class AutofillProfilesFragmentTest {
         assertEquals(
                 RecordType.LOCAL_OR_SYNCABLE,
                 localOrSyncProfilePreference.getRecordType().getAsInt());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
+    })
+    public void testSettingsState_thirdPartyMode() throws Exception {
+        setUpMockPrimaryAccount("test@account.com");
+        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+
+        // Save and fill addresses toggle should be disabled.
+        ChromeSwitchPreference saveAndFillToggle =
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.SAVE_AND_FILL_ADDRESSES);
+        assertFalse(saveAndFillToggle.isEnabled());
+
+        // Address list should be shown.
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertTrue(localOrSyncProfilePreference.getRecordType().isPresent());
+
+        // Add address button should be hidden.
+        AutofillProfileEditorPreference addProfile =
+                autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
+        assertNull(addProfile);
+
+        // Plus address entry should be shown.
+        AutofillProfileEditorPreference plusAddressEntry =
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.MANAGE_PLUS_ADDRESSES);
+        assertNotNull(plusAddressEntry);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
+    })
+    public void testDisabledSettingsText_shownInThirdPartyMode() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+
+        assertNotNull(
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_SETTINGS_INFO));
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {
