@@ -229,9 +229,7 @@ base::android::BinderStatusOr<PlatformHandle> ReadPlatformHandle(
 }
 
 bool ShouldUseSyncTransactions() {
-  static const bool use_sync_transactions = GetFieldTrialParamByFeatureAsBool(
-      kMojoUseBinder, "use_sync_transactions", true);
-  return use_sync_transactions;
+  return true;
 }
 
 }  // namespace

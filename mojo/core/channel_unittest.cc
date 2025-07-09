@@ -267,14 +267,6 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
 };
 
 TEST(ChannelTest, PeerShutdownDuringRead) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kMojoUseBinder)) {
-    GTEST_SKIP() << "The design of this test is incompatible with "
-                 << "ChannelBinder due to re-entrancy and assumptions about "
-                 << "IO thread usage which don't apply.";
-  }
-#endif
-
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel channel;

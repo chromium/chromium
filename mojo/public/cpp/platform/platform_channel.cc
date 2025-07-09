@@ -128,8 +128,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(core::kMojoUseBinder) &&
-      base::android::IsNativeBinderAvailable()) {
+  if (core::MojoUseBinder() && base::android::IsNativeBinderAvailable()) {
     auto [exchange0, exchange1] = CreateBinderExchange();
     *local_endpoint = PlatformHandle(std::move(exchange0));
     *remote_endpoint = PlatformHandle(std::move(exchange1));

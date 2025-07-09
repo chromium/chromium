@@ -131,11 +131,7 @@ struct BASE_EXPORT BinderApi {
 };
 
 static BinderApi* GetBinderApi() {
-  static BinderApi api;
-  if (!api.library) {
-    return nullptr;
-  }
-  return &api;
+  return nullptr;
 }
 
 std::unique_ptr<std::vector<BinderRef>>& BindersFromParent() {
