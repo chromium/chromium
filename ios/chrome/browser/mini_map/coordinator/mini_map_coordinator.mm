@@ -87,7 +87,10 @@
   [super start];
 
   PrefService* prefService = self.profile->GetPrefs();
+  MiniMapQueryType type =
+      _text ? MiniMapQueryType::kText : MiniMapQueryType::kURL;
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
+                                                    type:type
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
   [self.mediator userInitiatedMiniMapWithIPH:_showIPH];

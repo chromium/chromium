@@ -15,6 +15,11 @@ namespace web {
 class WebState;
 }
 
+// The type of query that is displayed on MiniMap.
+// If `kText`, the query is a string containing and address.
+// If `kURL`, the query is a link to maps.
+enum class MiniMapQueryType { kText, kURL };
+
 // Mediator for the Minimap feature
 @interface MiniMapMediator : NSObject
 
@@ -22,6 +27,7 @@ class WebState;
 @property(nonatomic, weak) id<MiniMapMediatorDelegate> delegate;
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
+                         type:(MiniMapQueryType)type
                      webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

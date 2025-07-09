@@ -3122,11 +3122,25 @@ chromium-metrics-reviews@google.com.
   <summary>Outcome of the MiniMap consent screen.</summary>
 </histogram>
 
+<histogram name="IOS.MiniMap.Link.ConsentOutcome"
+    enum="IOSMiniMapConsentOutcome" expires_after="2025-10-09">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>Outcome of the MiniMap consent screen when showing a link.</summary>
+</histogram>
+
+<histogram name="IOS.MiniMap.Link.Outcome" enum="IOSMiniMapOutcome"
+    expires_after="2025-12-14">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>Outcome of the MiniMap screen when showing a link.</summary>
+</histogram>
+
 <histogram name="IOS.MiniMap.Outcome" enum="IOSMiniMapOutcome"
     expires_after="2025-12-14">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
-  <summary>Outcome of the MiniMap consent screen.</summary>
+  <summary>Outcome of the MiniMap screen.</summary>
 </histogram>
 
 <histogram name="IOS.MultiWindow.Configuration"

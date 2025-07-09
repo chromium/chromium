@@ -28,6 +28,16 @@ enum class ConsentOutcome {
   kMaxValue = kConsentIPH,
 };
 
+// Returns the histogram name to log the consent outcome.
+std::string MiniMapConsentOutcomeHistogram(MiniMapQueryType type) {
+  switch (type) {
+    case MiniMapQueryType::kText:
+      return "IOS.MiniMap.ConsentOutcome";
+    case MiniMapQueryType::kURL:
+      return "IOS.MiniMap.Link.ConsentOutcome";
+  }
+}
+
 // Enum representing the different outcomes of the Mini Map flow.
 // Reported in histogram, do not change order.
 enum class MiniMapOutcome {
@@ -41,6 +51,16 @@ enum class MiniMapOutcome {
   kMaxValue = kUserDisabledThenSettings,
 };
 
+// Returns the histogram name to log the flow outcome.
+std::string MiniMapOutcomeHistogram(MiniMapQueryType type) {
+  switch (type) {
+    case MiniMapQueryType::kText:
+      return "IOS.MiniMap.Outcome";
+    case MiniMapQueryType::kURL:
+      return "IOS.MiniMap.Link.Outcome";
+  }
+}
+
 }  // namespace
 
 @interface MiniMapMediator ()
@@ -52,13 +72,17 @@ enum class MiniMapOutcome {
 
 @end
 
-@implementation MiniMapMediator
+@implementation MiniMapMediator {
+  MiniMapQueryType _type;
+}
 
 - (instancetype)initWithPrefs:(PrefService*)prefService
+                         type:(MiniMapQueryType)type
                      webState:(web::WebState*)webState {
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _type = type;
     if (webState) {
       _webState = webState->GetWeakPtr();
     }
@@ -79,48 +103,48 @@ enum class MiniMapOutcome {
   BOOL shouldPresentIPH = showIPH && ShouldPresentConsentIPH(self.prefService);
   if (showIPH) {
     if (shouldPresentIPH) {
-      base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+      base::UmaHistogramEnumeration(MiniMapConsentOutcomeHistogram(_type),
                                     ConsentOutcome::kConsentIPH);
       // Now that the IPH has been presented, set the flag.
       self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
     } else {
-      base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+      base::UmaHistogramEnumeration(MiniMapConsentOutcomeHistogram(_type),
                                     ConsentOutcome::kConsentSkipped);
     }
   } else {
-    base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+    base::UmaHistogramEnumeration(MiniMapConsentOutcomeHistogram(_type),
                                   ConsentOutcome::kConsentNotRequired);
   }
   [self.delegate showMapWithIPH:shouldPresentIPH];
 }
 
 - (void)userOpenedSettingsFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kOpenedSettings);
 }
 
 - (void)userReportedAnIssueFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kReportedAnIssue);
 }
 
 - (void)userOpenedURLFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kOpenedURL);
 }
 
 - (void)userClosedMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kNormalOutcome);
 }
 
 - (void)userOpenedQueryFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kOpenedQuery);
 }
 
 - (void)userDisabledOneTapSettingFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kUserDisabled);
   if (!self.prefService) {
     return;
@@ -145,7 +169,7 @@ enum class MiniMapOutcome {
 }
 
 - (void)userOpenedSettingsFromDisableConfirmation {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
                                 MiniMapOutcome::kUserDisabledThenSettings);
 }
 
