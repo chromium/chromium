@@ -43,6 +43,7 @@ include_rules = [
   "+services/content/public",
   "+services/device/public/mojom",
   "+services/screen_ai",
+  "+services/webnn/webnn_switches.h",
 ]
 
 specific_include_rules = {

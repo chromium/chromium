@@ -197,11 +197,24 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
                           "Failed to create the ONNX Runtime environment."));
   }
 
+  // Get the ORT EP library path specified by `kWebNNOrtEpLibraryPathForTesting`
+  // switch for testing development EP build.
+  std::optional<base::FilePath> specified_ep_path;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtEpLibraryPathForTesting)) {
+    base::FilePath base_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtEpLibraryPathForTesting);
+    if (base_path.empty()) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kNotSupportedError,
+          "The specified ONNX Runtime EP library path is empty."));
+    }
+    specified_ep_path = base_path;
+  }
+
   // Register the execution provider based on the GPU/NPU vendor id if it's not
   // registered yet. Ultimately, ignore the failure of registering the EP.
-  //
-  // TODO(crbug.com/427242324): Add a flag to register an EP from location
-  // passed in command line for testing development EP build.
   for (const auto& [ep_name, ep_info] : kKnownEPs) {
     if (!VendorIdExistsInGpuInfo(gpu_info, ep_info.vendor_id)) {
       continue;
@@ -211,17 +224,25 @@ CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
       continue;
     }
 
-    const std::optional<base::FilePath>& ep_package_path =
-        platform_functions->InitializePackageDependency(
-            ep_info.package_family_name, ep_info.package_version);
-    if (ep_package_path) {
-      CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
-          env.get(), ep_name.c_str(),
-          ep_package_path->Append(L"ExecutionProvider")
-              .Append(ep_info.library_name)
-              .value()
-              .c_str()));
+    // First try to load EP libraries from the specified path by
+    // `kWebNNOrtEpLibraryPathForTesting` switch. Otherwise, try to load it from
+    // the EP package path.
+    base::FilePath ep_library_path;
+    if (specified_ep_path) {
+      ep_library_path = specified_ep_path->Append(ep_info.library_name);
+    } else {
+      const std::optional<base::FilePath>& ep_package_path =
+          platform_functions->InitializePackageDependency(
+              ep_info.package_family_name, ep_info.package_version);
+      if (!ep_package_path) {
+        continue;
+      }
+      ep_library_path = ep_package_path->Append(L"ExecutionProvider")
+                            .Append(ep_info.library_name);
     }
+
+    CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
+        env.get(), ep_name.c_str(), ep_library_path.value().c_str()));
   }
 
   // Some EPs like OpenVINO EP haven't supported in-memory external weights in

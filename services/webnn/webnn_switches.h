@@ -36,6 +36,20 @@ inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
 // optimized ONNX model after graph level transformations.
 // Usage: --no-sandbox --webnn-ort-dump-model=/tmp/ort_models
 inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
+// Force onnxruntime.dll to be loaded from a location specified by the switch
+// for testing development ORT build. This switch is not to be used in shipping
+// scenarios and is ignored by default.
+// Usage: --webnn-ort-library-path-for-testing="C:\Program Files\ONNXRuntime"
+// --allow-third-party-modules
+inline constexpr char kWebNNOrtLibraryPathForTesting[] =
+    "webnn-ort-library-path-for-testing";
+// Force ORT EP libraries to be loaded from a location specified by the switch
+// for testing development EP build. This switch is not to be used in shipping
+// scenarios and is ignored by default.
+// Usage: --webnn-ort-ep-library-path-for-testing="C:\Program
+// Files\ONNXRuntime-EP" --allow-third-party-modules
+inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
+    "webnn-ort-ep-library-path-for-testing";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace switches

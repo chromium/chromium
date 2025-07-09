@@ -624,6 +624,7 @@ static_library("ui") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom",
     "//services/preferences/public/cpp",
+    "//services/webnn:webnn_switches",
     "//skia",
     "//storage/browser",
     "//storage/common",

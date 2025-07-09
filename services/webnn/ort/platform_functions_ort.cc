@@ -7,10 +7,12 @@
 #include <winerror.h>
 #include <wrl.h>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/strings/string_util_win.h"
+#include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
 
@@ -20,6 +22,8 @@ using OrtGetApiBaseProc = decltype(OrtGetApiBase)*;
 
 constexpr base::wcstring_view kWindowsMLPackageFamilyName =
     L"Microsoft.WindowsMLRuntime.0.3_8wekyb3d8bbwe";
+
+constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 
 constexpr PACKAGE_VERSION kWindowsMLPackageVersion = {
     .Major = 0,
@@ -90,27 +94,38 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  // Initialize Windows ML.
-  std::optional<base::FilePath> windows_ml_package_path =
-      InitializePackageDependency(kWindowsMLPackageFamilyName,
-                                  kWindowsMLPackageVersion);
-  if (!windows_ml_package_path) {
-    LOG(ERROR)
-        << "[WebNN] Failed to initialize Windows ML and get the package path.";
-    return;
+  // If the switch `kWebNNOrtLibraryPathForTesting` is used, try to load ONNX
+  // Runtime library from the specified path for testing development ORT build.
+  // Otherwise, try to load it from the Windows ML package path.
+  base::FilePath ort_library_path;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtLibraryPathForTesting)) {
+    base::FilePath base_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtLibraryPathForTesting);
+    if (base_path.empty()) {
+      LOG(ERROR) << "[WebNN] The specified ONNX Runtime library path is empty.";
+      return;
+    }
+    ort_library_path = base_path.Append(kOnnxRuntimeLibraryName);
+  } else {
+    // Initialize Windows ML.
+    std::optional<base::FilePath> windows_ml_package_path =
+        InitializePackageDependency(kWindowsMLPackageFamilyName,
+                                    kWindowsMLPackageVersion);
+    if (!windows_ml_package_path) {
+      LOG(ERROR) << "[WebNN] Failed to initialize Windows ML and get the "
+                    "package path.";
+      return;
+    }
+    ort_library_path = windows_ml_package_path->Append(kOnnxRuntimeLibraryName);
   }
 
-  // Load the onnxruntime.dll from the Windows ML package path.
-  //
-  // TODO(crbug.com/427242325): Add a flag to load the onnxruntime.dll from
-  // location passed in command line for testing development ORT build.
-  base::ScopedNativeLibrary ort_library =
-      base::ScopedNativeLibrary(base::LoadNativeLibrary(
-          windows_ml_package_path->Append(L"onnxruntime.dll"), nullptr));
+  base::ScopedNativeLibrary ort_library = base::ScopedNativeLibrary(
+      base::LoadNativeLibrary(ort_library_path, nullptr));
   if (!ort_library.is_valid()) {
-    LOG(ERROR)
-        << "[WebNN] Failed to load onnxruntime.dll from the package path: "
-        << windows_ml_package_path->value();
+    LOG(ERROR) << "[WebNN] Failed to load ONNX Runtime library from the path: "
+               << ort_library_path;
     return;
   }
 

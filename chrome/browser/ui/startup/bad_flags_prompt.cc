@@ -49,6 +49,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_switches.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "services/webnn/webnn_switches.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/flags/bad_flags_snackbar_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -131,6 +135,13 @@ const char* const kBadFlags[] = {
     // GPU sanboxing isn't implemented for the Web GPU API yet meaning it would
     // be possible to read GPU data for other Chromium processes.
     switches::kEnableUnsafeWebGPU,
+
+#if BUILDFLAG(IS_WIN)
+    // These flags allow loading libraries from specified paths, which may
+    // compromise process integrity and security.
+    switches::kWebNNOrtLibraryPathForTesting,
+    switches::kWebNNOrtEpLibraryPathForTesting,
+#endif
 
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
