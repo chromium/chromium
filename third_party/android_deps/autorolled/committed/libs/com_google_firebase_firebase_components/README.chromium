@@ -1,7 +1,7 @@
-Name: error-prone annotations
-Short Name: error_prone_annotations
-URL: https://github.com/google/error-prone/tree/master/annotations
-Version: 2.39.0
+Name: firebase-components
+Short Name: firebase-components
+URL: https://firebase.google.com
+Version: 18.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-ErrorProne Annotations.
+Provides dependency management for Firebase SDKs.
 
 Local Modifications:
 No modifications.
