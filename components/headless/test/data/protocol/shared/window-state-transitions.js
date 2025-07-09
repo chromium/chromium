@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={1600x1200}
-//
-// Chrome Headless Mode ignores maximize/minimize window requests while the
-// window is in full screen mode. Headless Shell should do the same, see
-// http://crbug.com/429423225
-// META: fork_headless_shell_expectations
 
 (async function(testRunner) {
   const {session, dp} =

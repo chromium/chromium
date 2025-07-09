@@ -28,6 +28,13 @@ void HeadlessWindow::SetWindowState(HeadlessWindowState window_state) {
     return;
   }
 
+  // Ignore transitions to states other than normal while in full screen state.
+  // See http://crbug.com/429423225.
+  if (window_state_ == HeadlessWindowState::kFullscreen &&
+      window_state != HeadlessWindowState::kNormal) {
+    return;
+  }
+
   bool set_visible = false;
 
   switch (window_state) {
