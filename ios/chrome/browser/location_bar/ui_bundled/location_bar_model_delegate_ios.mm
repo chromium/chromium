@@ -27,14 +27,14 @@
 #import "ios/web/public/web_state.h"
 
 LocationBarModelDelegateIOS::LocationBarModelDelegateIOS(
-    WebStateList* web_state_list,
+    id<LocationBarModelDelegateWebStateProvider> web_state_provider,
     ProfileIOS* profile)
-    : web_state_list_(web_state_list), profile_(profile) {}
+    : web_state_provider_(web_state_provider), profile_(profile) {}
 
 LocationBarModelDelegateIOS::~LocationBarModelDelegateIOS() {}
 
 web::WebState* LocationBarModelDelegateIOS::GetActiveWebState() const {
-  return web_state_list_->GetActiveWebState();
+  return [web_state_provider_ webStateForLocationBarModelDelegate:this];
 }
 
 web::NavigationItem* LocationBarModelDelegateIOS::GetNavigationItem() const {

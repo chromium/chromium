@@ -101,8 +101,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @interface LocationBarCoordinator () <
     ContextualPanelEntrypointCoordinatorDelegate,
     LoadQueryCommands,
-    LocationBarViewControllerDelegate,
+    LocationBarModelDelegateWebStateProvider,
     LocationBarSteadyViewConsumer,
+    LocationBarViewControllerDelegate,
     WebLocationBarDelegate,
     OmniboxStateProvider,
     URLDragDataSource> {
@@ -208,8 +209,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
-  _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
-      self.browser->GetWebStateList(), self.profile));
+  _locationBarModelDelegate.reset(
+      new LocationBarModelDelegateIOS(self, self.profile));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
@@ -500,6 +501,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.isCancellingOmniboxEdit = YES;
   [self.omniboxCoordinator endEditing];
   self.isCancellingOmniboxEdit = NO;
+}
+
+#pragma mark - LocationBarModelDelegateWebStateProvider
+
+- (web::WebState*)webStateForLocationBarModelDelegate:
+    (const LocationBarModelDelegateIOS*)locationBarModelDelegate {
+  return self.webStateList->GetActiveWebState();
 }
 
 #pragma mark - WebLocationBarDelegate

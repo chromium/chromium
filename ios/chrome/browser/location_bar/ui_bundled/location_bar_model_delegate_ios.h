@@ -9,20 +9,31 @@
 #import "components/omnibox/browser/location_bar_model_delegate.h"
 
 class ProfileIOS;
-class WebStateList;
 
 namespace web {
 class NavigationItem;
 class WebState;
 }  // namespace web
 
+class LocationBarModelDelegateIOS;
+
+// Interface used to provide a web state to the LocationBarModelDelegateIOS.
+@protocol LocationBarModelDelegateWebStateProvider
+
+// Returns the WebState to be used by the LocationBarModelDelegateIOS.
+- (web::WebState*)webStateForLocationBarModelDelegate:
+    (const LocationBarModelDelegateIOS*)locationBarModelDelegate;
+
+@end
+
 // Implementation of LocationBarModelDelegate which uses an instance of
 // WebStateLisy in order to fulfill its duties.
 class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
  public:
-  // `web_state_list` must outlive this LocationBarModelDelegateIOS object.
-  explicit LocationBarModelDelegateIOS(WebStateList* web_state_list,
-                                       ProfileIOS* profile);
+  // `web_state_provider` must outlive this LocationBarModelDelegateIOS object.
+  explicit LocationBarModelDelegateIOS(
+      id<LocationBarModelDelegateWebStateProvider> web_state_provider,
+      ProfileIOS* profile);
 
   LocationBarModelDelegateIOS(const LocationBarModelDelegateIOS&) = delete;
   LocationBarModelDelegateIOS& operator=(const LocationBarModelDelegateIOS&) =
@@ -56,7 +67,7 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
   // Returns the active WebState.
   web::WebState* GetActiveWebState() const;
 
-  raw_ptr<WebStateList> web_state_list_;  // weak
+  __weak id<LocationBarModelDelegateWebStateProvider> web_state_provider_;
 
   raw_ptr<ProfileIOS> profile_;
 };
