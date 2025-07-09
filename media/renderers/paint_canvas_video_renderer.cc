@@ -1658,9 +1658,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // Pass the rgb sync token here to be waited upon before performing raster
   // tasks.
   internals::ConvertYuvVideoFrameToRgbSharedImage(
-      video_frame.get(), raster_context_provider, rgb_shared_image->mailbox(),
-      rgb_sync_token,
-      /*use_visible_rect=*/false, yuv_shared_image_cache_.get());
+      video_frame.get(), raster_context_provider, rgb_shared_image,
+      rgb_sync_token, /*use_visible_rect=*/false,
+      yuv_shared_image_cache_.get());
 
   gpu::SyncToken post_conversion_sync_token;
   raster_context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
@@ -1928,9 +1928,8 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   } else {
     // TODO(vasilyt): Add caching support
     sync_token = internals::ConvertYuvVideoFrameToRgbSharedImage(
-        video_frame.get(), raster_context_provider,
-        dest_shared_image->mailbox(), dest_sync_token, use_visible_rect,
-        /*shared_image_cache=*/nullptr);
+        video_frame.get(), raster_context_provider, dest_shared_image,
+        dest_sync_token, use_visible_rect, /*shared_image_cache=*/nullptr);
   }
 
   return sync_token;
