@@ -74,6 +74,11 @@ std::optional<web::proto::WebStateStorage> SessionStorageToProto(
   return storage;
 }
 
+// Returns whether `web_state` has a SerializableUserDataManager.
+bool HasSerializableUserDataManager(const WebState* web_state) {
+  return SerializableUserDataManager::FromWebState(web_state) != nullptr;
+}
+
 // Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
 // instances. Used by WebStateImpl::FromWebState(...) to assert the pointer is
 // pointing to a WebStateImpl instance and not another sub-class of WebState.
@@ -545,9 +550,16 @@ WebState* WebStateImpl::ForceRealizedWithPolicy(RealizationPolicy policy) {
     if (policy == RealizationPolicy::kEnforceNoAttachedData) {
       // WebStateImpl attaches a base::SupportsUserData::Data object in its
       // constructor (see AddWebStateImplMarker() method) in order to check
-      // the cast from WebState* to WebStateImpl* is valid. This is why the
-      // check here assert that there is exactly one object attached.
-      CHECK_EQ(UserDataCount(), 1u, base::NotFatalUntil::M160);
+      // the cast from WebState* to WebStateImpl* is valid.
+      //
+      // Additionally, if the legacy session storage is used then user data
+      // is attached to the instance via SerializableUserDataManager.
+      //
+      // This means that there should be at least one tab helpers attached
+      // to the current object, and at most two if legacy session storage
+      // is used (determined if a SerializableUserDataManager is attached).
+      const size_t expected = HasSerializableUserDataManager(this) ? 2u : 1u;
+      CHECK_EQ(UserDataCount(), expected, base::NotFatalUntil::M160);
     }
 
     // Create the RealizedWebState. At this point the WebStateImpl has
