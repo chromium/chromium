@@ -172,7 +172,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/external_data:unit_tests",
     "//chrome/browser/ash/policy/external_data/handlers:unit_tests",
     "//chrome/browser/ash/policy/handlers:unit_tests",
-    "//chrome/browser/ash/policy/invalidation:unit_tests",
     "//chrome/browser/ash/policy/networking:unit_tests",
     "//chrome/browser/ash/policy/off_hours:unit_tests",
     "//chrome/browser/ash/policy/remote_commands:unit_tests",
