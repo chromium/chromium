@@ -116,8 +116,7 @@ bool ParseRemoteResponse(const std::string& response_json,
 // centralized than distributed.
 struct EligibleMatchesAndActions {
   EligibleMatchesAndActions(const AutocompleteInput& input,
-                            const AutocompleteInput& adjusted_input,
-                            const TemplateURL* starter_pack_engine,
+                            const TemplateURL* template_url,
                             AutocompleteProviderClient* client) {
     // - Hide toolbelt in realbox.
     // - Check feature/params for zero and typed inputs.
@@ -130,7 +129,7 @@ struct EligibleMatchesAndActions {
         toolbelt_config.enabled &&
         (toolbelt_config.keep_toolbelt_after_input || input.IsZeroSuggest()) &&
         client->GetPrefs()->GetBoolean(omnibox::kShowSearchTools) &&
-        (toolbelt_config.keep_toolbelt_in_keyword_mode || !starter_pack_engine);
+        (toolbelt_config.keep_toolbelt_in_keyword_mode || !template_url);
 
     // - Restricted to DSE google, which is already checked in
     //   `client->IsLensEnabled()`.
@@ -209,8 +208,8 @@ struct EligibleMatchesAndActions {
     // - Hidden in incognito.
     page_verbatim = !toolbelt_config.enabled &&
                     !contextual_search_config.show_open_lens_action &&
-                    starter_pack_engine &&
-                    starter_pack_engine->starter_pack_id() ==
+                    template_url &&
+                    template_url->starter_pack_id() ==
                         template_url_starter_pack_data::StarterPackId::kPage &&
                     !client->IsOffTheRecord();
 
@@ -333,32 +332,37 @@ void ContextualSearchProvider::Start(const AutocompleteInput& input,
   // matches the behavior of the `ZeroSuggestProvider`.
   Stop(AutocompleteStopReason::kClobbered);
 
-  const auto [adjusted_input, starter_pack_engine] =
-      AdjustInputForStarterPackKeyword(input,
-                                       client()->GetTemplateURLService());
+  // Determine keyword (may be nullptr, a starter pack, or some other keyword).
+  AutocompleteInput keyword_input = input;
+  const TemplateURL* template_url =
+      input.prefer_keyword()
+          ? AutocompleteInput::GetSubstitutingTemplateURLForInput(
+                client()->GetTemplateURLService(), &keyword_input)
+          : nullptr;
 
-  const EligibleMatchesAndActions eligibility(input, adjusted_input,
-                                              starter_pack_engine, client());
+  const EligibleMatchesAndActions eligibility(input, template_url, client());
 
   if (eligibility.toolbelt) {
-    AddToolbeltMatch(adjusted_input,
+    AddToolbeltMatch(keyword_input,
                      eligibility.GetToolbeltActions(
-                         adjusted_input, client()->GetTemplateURLService()));
+                         keyword_input, client()->GetTemplateURLService()));
   }
 
   if (eligibility.lens_entry_match) {
-    AddLensEntrypointMatch(adjusted_input);
+    AddLensEntrypointMatch(keyword_input);
   }
 
   if (eligibility.page_verbatim) {
-    input_keyword_ = starter_pack_engine->keyword();
+    // `template_url` can't be nullptr here; see `page_verbatim` assignment.
+    DCHECK(template_url);
+    input_keyword_ = template_url->keyword();
     AddDefaultVerbatimMatch(input);
   }
 
   if (eligibility.page_suggestions) {
     done_ = false;
-    AddDefaultVerbatimMatch(adjusted_input);
-    StartSuggestRequest(std::move(adjusted_input));
+    AddDefaultVerbatimMatch(keyword_input);
+    StartSuggestRequest(std::move(keyword_input));
   }
 }
 
