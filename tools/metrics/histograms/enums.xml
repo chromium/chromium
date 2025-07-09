@@ -14353,6 +14353,7 @@ from previous Chrome versions.
   <int value="120097846" label="SmartLockSignInRemoved:enabled"/>
   <int value="120429808" label="disable-new-profile-management"/>
   <int value="120519004" label="NavigationPredictor:disabled"/>
+  <int value="120825360" label="CustomizeTabGroupColorPalette:enabled"/>
   <int value="120880746" label="NtpPhotosModuleSoftOptOut:disabled"/>
   <int value="121684313" label="QuickUnlockPin:enabled"/>
   <int value="121692330" label="CompareManagementInterface:enabled"/>
@@ -19897,6 +19898,7 @@ from previous Chrome versions.
   <int value="2144581598" label="UpcomingSharingFeatures:enabled"/>
   <int value="2145077452" label="BlockCrossPartitionBlobUrlFetching:disabled"/>
   <int value="2145140507" label="WebViewRecordAppDataDirectorySize:enabled"/>
+  <int value="2146769089" label="CustomizeTabGroupColorPalette:disabled"/>
   <int value="2147448086" label="OmniboxUniformRowHeight:enabled"/>
 </enum>
 

@@ -372,6 +372,13 @@ const char kCustomizeChromeWallpaperSearchInspirationCardDescription[] =
     "Shows inspiration card in Customize Chrome Side Panel Wallpaper Search. "
     "Requires #customize-chrome-wallpaper-search to be enabled too.";
 
+const char kCustomizeTabGroupColorPaletteName[] =
+    "Customize tab group color palette";
+const char kCustomizeTabGroupColorPaletteDescription[] =
+    "Enables parsing of the `tab_group_color_palette` key in the "
+    "manifest.json file, which allows customization of the tab group color "
+    "palette. Disabling this flag will cause the key to be ignored.";
+
 const char kDataSharingName[] = "Data Sharing";
 const char kDataSharingDescription[] =
     "Enabled all Data Sharing related UI and features.";

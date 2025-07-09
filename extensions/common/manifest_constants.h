@@ -148,6 +148,7 @@ inline constexpr char kTheme[] = "theme";
 inline constexpr char kThemeColors[] = "colors";
 inline constexpr char kThemeDisplayProperties[] = "properties";
 inline constexpr char kThemeImages[] = "images";
+inline constexpr char kThemeTabGroupColorPalette[] = "tab_group_color_palette";
 inline constexpr char kThemeTints[] = "tints";
 inline constexpr char kTrialTokens[] = "trial_tokens";
 inline constexpr char kTtsEngine[] = "tts_engine";
@@ -597,6 +598,9 @@ inline constexpr char kInvalidThemeImagesMissing[] =
     "An image specified in the theme is missing.";
 inline constexpr char16_t kInvalidThemeTints[] =
     u"Invalid value for theme images - tints must be decimal numbers.";
+inline constexpr char16_t kInvalidThemeTabGroupColorPalette[] =
+    u"Invalid value for theme tab group color palette - tab group color "
+    u"palette values must be integers.";
 inline constexpr char kInvalidTrialTokensNonEmptyList[] =
     "Invalid value for 'trial_tokens'. Must be a non-empty list.";
 inline constexpr char kInvalidTrialTokensValue[] =

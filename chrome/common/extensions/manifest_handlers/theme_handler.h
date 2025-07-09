@@ -24,6 +24,8 @@ struct ThemeInfo : public Extension::ManifestData {
   static const base::Value::Dict* GetTints(const Extension* extension);
   static const base::Value::Dict* GetDisplayProperties(
       const Extension* extension);
+  static const base::Value::Dict* GetTabGroupColorPalette(
+      const Extension* extension);
 
   // A map of resource id's to relative file paths.
   base::Value::Dict theme_images_;
@@ -36,6 +38,16 @@ struct ThemeInfo : public Extension::ManifestData {
 
   // A map of display properties.
   base::Value::Dict theme_display_properties_;
+
+  // Maps a palette color key to a hue value (range: -1 to 359).
+  // Example:
+  // {
+  //   "grey_override": 230,
+  //   "blue_override": 12,
+  //   "green_override": 300,
+  //   "cyan_override": -1   // -1 indicates a grey/black color.
+  // }
+  base::Value::Dict theme_tab_group_color_palette_;
 };
 
 // Parses the "theme" manifest key.

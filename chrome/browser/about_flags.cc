@@ -12695,6 +12695,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+    {"customize-tab-group-color-palette",
+     flag_descriptions::kCustomizeTabGroupColorPaletteName,
+     flag_descriptions::kCustomizeTabGroupColorPaletteDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCustomizeTabGroupColorPalette)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"lens-overlay-permission-bubble-alt",
      flag_descriptions::kLensOverlayPermissionBubbleAltName,

@@ -244,6 +244,9 @@ extern const char kCustomizeChromeWallpaperSearchButtonDescription[];
 extern const char kCustomizeChromeWallpaperSearchInspirationCardName[];
 extern const char kCustomizeChromeWallpaperSearchInspirationCardDescription[];
 
+extern const char kCustomizeTabGroupColorPaletteName[];
+extern const char kCustomizeTabGroupColorPaletteDescription[];
+
 extern const char kDataSharingName[];
 extern const char kDataSharingDescription[];
 
