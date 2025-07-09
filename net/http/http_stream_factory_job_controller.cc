@@ -125,6 +125,14 @@ base::Value::Dict NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
   return dict;
 }
 
+const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
+    net::RequestPriority priority) {
+  if (features::kNetTaskSchedulerHttpStreamFactoryJobController.Get()) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
+
 }  // namespace
 
 // The maximum time to wait for the alternate job to complete before resuming
@@ -613,7 +621,7 @@ void HttpStreamFactory::JobController::ResumeMainJobLater(
   resume_main_job_callback_.Reset(
       base::BindOnce(&HttpStreamFactory::JobController::ResumeMainJob,
                      ptr_factory_.GetWeakPtr()));
-  net::GetTaskRunner(priority_)->PostDelayedTask(
+  TaskRunner(priority_)->PostDelayedTask(
       FROM_HERE, resume_main_job_callback_.callback(), delay);
 }
 
@@ -757,7 +765,7 @@ void HttpStreamFactory::JobController::RunLoop(int result) {
     DCHECK(!main_job_);
     DCHECK(!alternative_job_);
     DCHECK(!dns_alpn_h3_job_);
-    net::GetTaskRunner(priority_)->PostTask(
+    TaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamFactory::JobController::NotifyRequestFailed,
                        ptr_factory_.GetWeakPtr(), rv));
@@ -1523,7 +1531,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
-      net::GetTaskRunner(priority_)->PostTask(
+      TaskRunner(priority_)->PostTask(
           FROM_HERE, base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                                     ptr_factory_.GetWeakPtr(), rv));
     }
@@ -1537,7 +1545,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       enable_ip_based_pooling_, enable_alternative_services_);
 
   // Delete `this` later as this method is called while running DoLoop().
-  net::GetTaskRunner(priority_)->PostTask(
+  TaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&JobController::MaybeNotifyFactoryOfCompletion,
                                 ptr_factory_.GetWeakPtr()));
 }

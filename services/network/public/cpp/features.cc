@@ -653,6 +653,11 @@ BASE_FEATURE(kNetworkServiceTaskScheduler,
              "NetworkServiceTaskScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
+                   kNetworkServiceTaskSchedulerResourceScheduler,
+                   &kNetworkServiceTaskScheduler,
+                   "resource_scheduler",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kNetworkServiceTaskSchedulerURLLoader,
                    &kNetworkServiceTaskScheduler,
                    "url_loader",

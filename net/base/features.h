@@ -827,6 +827,23 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpConnectionPoolSizeTrialNormal);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kTcpConnectionPoolSizeTrialWebSocket);
 
+// These parameters control whether the Network Service Task Scheduler is used
+// for specific classes.
+NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpProxyConnectJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpStreamFactoryJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kNetTaskSchedulerHttpStreamFactoryJobController);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerURLRequestErrorJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestHttpJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerURLRequestRedirectJob);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

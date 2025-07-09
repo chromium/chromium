@@ -95,6 +95,14 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
   }
 }
 
+const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
+    net::RequestPriority priority) {
+  if (features::kNetworkServiceTaskSchedulerResourceScheduler.Get()) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
+}
+
 }  // namespace
 
 // The maximum number of requests to allow be in-flight at any point in time per
@@ -286,7 +294,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
       // If can't start the request synchronously, post a task to start the
       // request.
       if (start_mode == START_ASYNC) {
-        net::GetTaskRunner(priority_.priority)
+        TaskRunner(priority_.priority)
             ->PostTask(
                 FROM_HERE,
                 base::BindOnce(&ScheduledResourceRequestImpl::Start,
@@ -1106,7 +1114,7 @@ class ResourceScheduler::Client
       net::RequestPriority new_priority) {
     if (num_skipped_scans_due_to_scheduled_start_ == 0) {
       TRACE_EVENT0("loading", "ScheduleLoadAnyStartablePendingRequests");
-      net::GetTaskRunner(new_priority)
+      TaskRunner(new_priority)
           ->PostTask(FROM_HERE,
                      base::BindOnce(&Client::LoadAnyStartablePendingRequests,
                                     weak_ptr_factory_.GetWeakPtr(), trigger));
