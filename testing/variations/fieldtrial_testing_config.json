@@ -17429,15 +17429,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPdfLoad",
-                    "params": {
-                        "trigger": "pdf-load"
-                    },
-                    "enable_features": [
-                        "PdfInfoBar"
-                    ]
-                },
-                {
                     "name": "EnabledStartup",
                     "params": {
                         "trigger": "startup"
