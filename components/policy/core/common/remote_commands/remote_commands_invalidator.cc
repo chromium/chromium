@@ -177,6 +177,14 @@ void RemoteCommandsInvalidator::OnSuccessfullySubscribed(
 
 void RemoteCommandsInvalidator::OnExpectationChanged(
     invalidation::InvalidationsExpected expected) {
+  if (expected == invalidation::InvalidationsExpected::kYes &&
+      are_invalidations_expected_ != expected) {
+    // If an invalidation is sent before invalidations are registered, it may be
+    // lost (see crbug.com/430014807). Fetch remote commands to cover possibly
+    // lost invalidation.
+    DoInitialRemoteCommandsFetch();
+  }
+
   are_invalidations_expected_ = expected;
 }
 
@@ -214,11 +222,8 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
                  [this, policy](invalidation::InvalidationService* service) {
                    ReloadPolicyDataWithInvalidationService(policy);
                  },
-                 [this](invalidation::InvalidationListener* listener) {
-                   // With `invalidation_service_`, invalidator does initial
-                   // fetch after subscribing. Without service there's no
-                   // subscription event. Let's do initial fetch right away.
-                   DoInitialRemoteCommandsFetch();
+                 [](invalidation::InvalidationListener* listener) {
+                   // Do nothing.
                  },
              },
              invalidation_service_or_listener_);
