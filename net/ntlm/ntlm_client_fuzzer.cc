@@ -17,8 +17,9 @@
 std::u16string ConsumeRandomLengthString16(FuzzedDataProvider& data_provider,
                                            size_t max_chars) {
   std::string bytes = data_provider.ConsumeRandomLengthString(max_chars * 2);
-  return std::u16string(reinterpret_cast<const char16_t*>(bytes.data()),
-                        bytes.size() / 2);
+  // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
+  return UNSAFE_TODO(std::u16string(
+      reinterpret_cast<const char16_t*>(bytes.data()), bytes.size() / 2));
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
