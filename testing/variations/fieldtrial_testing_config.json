@@ -27001,6 +27001,24 @@
             ]
         }
     ],
+    "WebRTCColorAccuracy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRTCColorAccuracy"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRtcAudioSinkUseTimestampAligner": [
         {
             "platforms": [

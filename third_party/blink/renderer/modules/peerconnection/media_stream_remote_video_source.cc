@@ -202,12 +202,12 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
         WebRtcToMediaVideoRotation(incoming_frame.rotation());
   }
 
-  // The second clause of the condition is controlled by the feature flag
+  // The third clause of the condition is controlled by the feature flag
   // WebRtcIgnoreUnspecifiedColorSpace. If the feature is enabled we won't try
   // to guess a color space if the webrtc::ColorSpace is unspecified. If the
   // feature is disabled (default), an unspecified color space will get
   // converted into a gfx::ColorSpace set to BT601.
-  if (incoming_frame.color_space() &&
+  if (!video_frame->ColorSpace().IsValid() && incoming_frame.color_space() &&
       !(ignore_unspecified_color_space_ &&
         incoming_frame.color_space()->primaries() ==
             webrtc::ColorSpace::PrimaryID::kUnspecified &&
@@ -226,7 +226,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
     }
   }
   if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy) &&
-      !incoming_frame.color_space()) {
+      !video_frame->ColorSpace().IsValid()) {
     video_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   }
 

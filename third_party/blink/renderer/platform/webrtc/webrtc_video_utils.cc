@@ -369,6 +369,11 @@ webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
     case gfx::ColorSpace::MatrixID::RGB:
       matrix = webrtc::ColorSpace::MatrixID::kRGB;
       break;
+    case gfx::ColorSpace::MatrixID::GBR:
+      // This is used only for RGB YUV images in chrome,
+      // But webrtc always converts to YUV anyway.
+      matrix = webrtc::ColorSpace::MatrixID::kRGB;
+      break;
     case gfx::ColorSpace::MatrixID::BT709:
       matrix = webrtc::ColorSpace::MatrixID::kBT709;
       break;
