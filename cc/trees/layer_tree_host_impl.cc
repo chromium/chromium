@@ -489,7 +489,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   // LTHI always has an active tree.
   active_tree_ = std::make_unique<LayerTreeImpl>(
       *this, viz::BeginFrameArgs(), new SyncedScale, new SyncedBrowserControls,
-      new SyncedBrowserControls);
+      new SyncedBrowserControls, new SyncedElasticOverscroll);
   active_tree_->property_trees()->set_is_active(true);
 
   viewport_ = Viewport::Create(this);
@@ -1859,7 +1859,8 @@ void LayerTreeHostImpl::ResetTreesForTesting() {
   active_tree_ = std::make_unique<LayerTreeImpl>(
       *this, CurrentBeginFrameArgs(), active_tree()->page_scale_factor(),
       active_tree()->top_controls_shown_ratio(),
-      active_tree()->bottom_controls_shown_ratio());
+      active_tree()->bottom_controls_shown_ratio(),
+      active_tree()->elastic_overscroll());
   active_tree_->property_trees()->set_is_active(true);
   active_tree_->property_trees()->clear();
   if (pending_tree_)
@@ -3792,7 +3793,8 @@ void LayerTreeHostImpl::CreatePendingTree() {
     pending_tree_ = std::make_unique<LayerTreeImpl>(
         *this, CurrentBeginFrameArgs(), active_tree()->page_scale_factor(),
         active_tree()->top_controls_shown_ratio(),
-        active_tree()->bottom_controls_shown_ratio());
+        active_tree()->bottom_controls_shown_ratio(),
+        active_tree()->elastic_overscroll());
   }
   pending_tree_fully_painted_ = false;
 
@@ -4927,6 +4929,9 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
           main_thread_mutator_host);
   commit_data->bottom_controls_delta =
       active_tree()->bottom_controls_shown_ratio()->PullDeltaForMainThread(
+          main_thread_mutator_host);
+  commit_data->elastic_overscroll_delta =
+      active_tree_->elastic_overscroll()->PullDeltaForMainThread(
           main_thread_mutator_host);
   commit_data->swap_promises.swap(swap_promises_for_main_thread_scroll_update_);
 

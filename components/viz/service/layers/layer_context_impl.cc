@@ -1784,6 +1784,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       !std::isfinite(update->max_safe_area_inset_bottom)) {
     return base::unexpected("Invalid max safe area inset bottom");
   }
+  if (layers.elastic_overscroll()->SetCurrent(update->elastic_overscroll)) {
+    layers.set_needs_update_draw_properties();
+  }
   layers.SetBrowserControlsParams(update->browser_controls_params);
   host_impl_->browser_controls_manager()->SetOffsetTagModifications(
       update->browser_controls_offset_tag_modifications);
