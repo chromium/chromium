@@ -802,11 +802,13 @@ v8::Isolate* ToIsolate(const LocalFrame* frame) {
 }
 
 v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
-                                    const String& stringified_json) {
+                                    const String& stringified_json,
+                                    std::optional<v8::ScriptOrigin> origin) {
   auto v8_string = V8String(script_state->GetIsolate(), stringified_json);
   v8::Local<v8::Value> parsed;
-  std::ignore =
-      v8::JSON::Parse(script_state->GetContext(), v8_string).ToLocal(&parsed);
+
+  std::ignore = v8::JSON::Parse(script_state->GetContext(), v8_string, origin)
+                    .ToLocal(&parsed);
   return parsed;
 }
 

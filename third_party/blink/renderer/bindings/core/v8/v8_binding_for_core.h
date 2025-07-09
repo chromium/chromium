@@ -361,8 +361,10 @@ CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 // a context, if the window is currently being displayed in a Frame.
 CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
 
-CORE_EXPORT v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
-                                                const String& stringified_json);
+CORE_EXPORT v8::Local<v8::Value> FromJSONString(
+    ScriptState* script_state,
+    const String& stringified_json,
+    std::optional<v8::ScriptOrigin> origin = std::nullopt);
 
 CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,

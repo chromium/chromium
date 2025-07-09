@@ -93,9 +93,26 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   // and return script."
   // [spec text]
   ScriptState::Scope scope(script_state);
-  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+
+  // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
+  // is always false because CORS is enforced to module scripts.
+  const TextPosition start_position = TextPosition::MinimumPosition();
+  v8::ScriptOrigin origin(
+      V8String(isolate, params.SourceURL()),
+      start_position.line_.ZeroBasedInt(),    // line_offset
+      start_position.column_.ZeroBasedInt(),  // column_offset
+      true,                                   // resource_is_shared_cross_origin
+      -1,                                     // script_id
+      V8String(isolate, params.SourceMapURL()),  // source_map_url
+      false,                                     // resource_is_opaque
+      false,                                     // is_wasm
+      true                                       // is_module
+  );
+
   v8::Local<v8::Value> parsed_json =
-      FromJSONString(script_state, params.GetSourceText().ToString());
+      FromJSONString(script_state, params.GetSourceText().ToString(), origin);
   if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
         parsed_json, settings_object, params.SourceURL(), KURL(),
