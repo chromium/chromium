@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/test/gtest_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -19,6 +20,8 @@
 
 using base::Bucket;
 using base::BucketsAre;
+using ukm::builders::IOS_ReaderMode_Distiller_Latency;
+using ukm::builders::IOS_ReaderMode_Distiller_Result;
 using ukm::builders::IOS_ReaderMode_Heuristic_Latency;
 using ukm::builders::IOS_ReaderMode_Heuristic_Result;
 
@@ -35,7 +38,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
 
   ReaderModeMetricsHelper* metrics_helper() { return metrics_helper_.get(); }
 
-  void FlushMetrics() { metrics_helper_.reset(); }
+  void ResetMetricsHelper() { metrics_helper_.reset(); }
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -60,7 +63,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
 // state.
 TEST_F(ReaderModeMetricsHelperTest, RecordHeuristicTrigger) {
   metrics_helper()->RecordReaderHeuristicTriggered();
-  FlushMetrics();
+  metrics_helper()->Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kHeuristicStarted, 1)));
@@ -96,6 +99,84 @@ TEST_F(ReaderModeMetricsHelperTest,
   EXPECT_EQ(0u, ukm_latency_entries.size());
 }
 
+// Tests that deleting the metrics helper causes metrics state to flush.
+TEST_F(ReaderModeMetricsHelperTest, DeleteMetricsHelper) {
+  metrics_helper()->RecordReaderHeuristicTriggered();
+  ResetMetricsHelper();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kHeuristicStarted, 1)));
+}
+
+// Tests that recording the distillation trigger updates the recorded Reading
+// mode state.
+TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerTriggered) {
+  metrics_helper()->RecordReaderDistillerTriggered();
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 0);
+}
+
+// Tests that recording the distillation completion updates the recorded Reading
+// mode state.
+TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerCompleted) {
+  metrics_helper()->RecordReaderDistillerTriggered();
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  metrics_helper()->RecordReaderDistillerCompleted(
+      ReaderModeDistillerResult::kPageIsDistillable);
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationCompleted, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(kReaderModeDistillerLatencyHistogram,
+                                           base::Seconds(1), 1);
+
+  std::vector<int64_t> ukm_entries = test_ukm_recorder_.GetMetricsEntryValues(
+      IOS_ReaderMode_Distiller_Result::kEntryName,
+      IOS_ReaderMode_Distiller_Result::kResultName);
+  EXPECT_THAT(ukm_entries, testing::ElementsAre(static_cast<int>(
+                               ReaderModeDistillerResult::kPageIsDistillable)));
+  std::vector<int64_t> ukm_latency_entries =
+      test_ukm_recorder_.GetMetricsEntryValues(
+          IOS_ReaderMode_Distiller_Latency::kEntryName,
+          IOS_ReaderMode_Distiller_Latency::kLatencyName);
+  EXPECT_THAT(ukm_latency_entries,
+              testing::ElementsAre(base::Seconds(1).InMilliseconds()));
+}
+
+// Tests that the end state of showing the Reading mode UI is automatically
+// flushed.
+TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateAutomaticallyFlushed) {
+  metrics_helper()->RecordReaderShown();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
+}
+
+// Tests that multiple calls to Flush will record all reader mode state events
+// and latency from the last Flush call.
+TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
+  metrics_helper()->RecordReaderHeuristicTriggered();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  metrics_helper()->Flush();
+
+  metrics_helper()->RecordReaderHeuristicCompleted(
+      ReaderModeHeuristicResult::kReaderModeEligible);
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kHeuristicStarted, 1),
+                         Bucket(ReaderModeState::kHeuristicCompleted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
+  // The second flushed recording did not trigger any latency collection.
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicLatencyHistogram, 0);
+}
+
 // Tests metrics functionality based on the heuristic result.
 class ReaderModeMetricsHelperWithEligibilityTest
     : public ReaderModeMetricsHelperTest,
@@ -112,9 +193,9 @@ TEST_P(ReaderModeMetricsHelperWithEligibilityTest, RecordHeuristicElapsedTime) {
 
   ReaderModeHeuristicResult heuristic_result = GetEligibility();
   metrics_helper()->RecordReaderHeuristicCompleted(heuristic_result);
+  metrics_helper()->Flush();
 
   // Heuristic result and state are recorded correctly.
-  FlushMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kHeuristicCompleted, 1)));
   EXPECT_THAT(

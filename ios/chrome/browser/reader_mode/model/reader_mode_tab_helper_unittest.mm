@@ -75,12 +75,6 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
             .GetEntriesByName(IOS_ReaderMode_Distiller_Latency::kEntryName)
             .size());
   }
-  // Returns the distiller results from the UKM recorder.
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
-  GetDistillerResultEntries() {
-    return test_ukm_recorder_.GetEntriesByName(
-        IOS_ReaderMode_Distiller_Result::kEntryName);
-  }
 
   // Returns the heuristic results from the UKM recorder.
   std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
@@ -132,6 +126,30 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   EXPECT_THAT(ukm_entries,
               testing::UnorderedElementsAre(static_cast<int>(
                   ReaderModeHeuristicResult::kReaderModeEligible)));
+}
+
+// Tests that multiple navigations after the trigger heuristic delay records
+// metrics from the previous and current navigation.
+TEST_F(ReaderModeTabHelperTest, TriggerHeuristicFlushedOnNewNavigation) {
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ASSERT_EQ(0u, GetHeuristicResultEntries().size());
+
+  GURL test_url("https://test.url/");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+  LoadWebpage(web_state(), test_url);
+  WaitForReaderModeContentReady();
+
+  LoadWebpage(web_state(), test_url);
+  WaitForReaderModeContentReady();
+
+  // The metrics for the navigation are recorded.
+  FlushMetrics();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kHeuristicCompleted, 2)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 2)));
 }
 
 // Tests that trigger heuristic is canceled after a web state is destroyed.
@@ -291,6 +309,29 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
             WebSelectionTabHelper::FromWebState(reader_mode_web_state));
 }
 
+// Tests that when eligible content is displayed, the reader mode state is
+// recorded correctly.
+TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
+  // Set a non-empty DOM Distiller result.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+
+  // Initially, no observer methods should be called.
+  WaitForReaderModeContentReady();
+
+  // When SetActive(true) is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  reader_mode_tab_helper()->SetActive(true);
+  WaitForReaderModeContentReady();
+
+  // The metrics for the navigation are recorded.
+  FlushMetrics();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
+}
+
 class ReaderModeTabHelperWithEligibilityTest
     : public ReaderModeTabHelperTest,
       public ::testing::WithParamInterface<ReaderModeHeuristicResult> {
@@ -388,17 +429,19 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
-  histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 1u);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationCompleted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeDistillerLatencyHistogram),
+      BucketsAre(Bucket(0, 1)));
   ExpectDistillerLatencyEntriesCount(1u);
   // The metrics for the navigation are recorded.
-  ASSERT_EQ(1u, GetDistillerResultEntries().size());
-  auto distiller_entries = GetDistillerResultEntries();
-  ASSERT_EQ(1u, distiller_entries.size());
-  const auto* entry = distiller_entries[0].get();
-  // With the default empty content page is always not distillable.
-  test_ukm_recorder_.ExpectEntryMetric(
-      entry, IOS_ReaderMode_Distiller_Result::kResultName,
-      static_cast<int64_t>(ReaderModeDistillerResult::kPageIsNotDistillable));
+  std::vector<int64_t> ukm_entries = test_ukm_recorder_.GetMetricsEntryValues(
+      IOS_ReaderMode_Distiller_Result::kEntryName,
+      IOS_ReaderMode_Distiller_Result::kResultName);
+  EXPECT_THAT(ukm_entries,
+              testing::ElementsAre(static_cast<int>(
+                  ReaderModeDistillerResult::kPageIsNotDistillable)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

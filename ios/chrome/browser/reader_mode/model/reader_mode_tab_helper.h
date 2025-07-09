@@ -128,7 +128,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Callback for handling completion of the page distillation.
   void PageDistillationCompleted(
-      base::TimeTicks start_time,
       const GURL& page_url,
       const std::string& html,
       const std::vector<DistillerViewerInterface::ImageInfo>& images,

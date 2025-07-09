@@ -32,41 +32,13 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/apple/url_conversions.h"
-#import "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
 
-// Records the time elapsed from the execution of the distillation JavaScript to
-// the result callback.
-void RecordReaderModeDistillationLatency(base::TimeDelta elapsed,
-                                         ukm::SourceId source_id) {
-  UMA_HISTOGRAM_TIMES(kReaderModeDistillerLatencyHistogram, elapsed);
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::IOS_ReaderMode_Distiller_Latency(source_id)
-        .SetLatency(elapsed.InMilliseconds())
-        .Record(ukm::UkmRecorder::Get());
-  }
-}
-
-// Records whether the given source ID for a navigation is distillable or not.
-void RecordReaderModeDistillationResult(bool is_distillable,
-                                        ukm::SourceId source_id) {
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::IOS_ReaderMode_Distiller_Result(source_id)
-        .SetResult(static_cast<int64_t>(
-            is_distillable ? ReaderModeDistillerResult::kPageIsDistillable
-                           : ReaderModeDistillerResult::kPageIsNotDistillable))
-        .Record(ukm::UkmRecorder::Get());
-  }
-}
-
 // Helper function to generate the snackbar message.
-NSString* GenerateSnackbarMessage(bool is_distillable_page,
-                                  base::TimeDelta distillation_latency) {
+NSString* GenerateSnackbarMessage(bool is_distillable_page) {
   std::string message = "\nDistillation Result: ";
   message += (is_distillable_page ? "Distillable" : "Not Distillable");
-  message += "\nDistillation Latency: " +
-             base::NumberToString(distillation_latency.InMilliseconds()) + "ms";
   return base::SysUTF8ToNSString(message);
 }
 
@@ -230,6 +202,10 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
     metrics_helper_.CancelReaderHeuristicRecording();
+  } else {
+    // If there is no trigger in progress ensure any metrics related to a
+    // past navigation have been recorded.
+    metrics_helper_.Flush();
   }
 
   // Do not reset URL eligibility for same-page navigations.
@@ -240,6 +216,8 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
 
 void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     ReaderModeContentTabHelper* reader_mode_content_tab_helper) {
+  metrics_helper_.RecordReaderShown();
+
   // Generic snapshot image generation on side-swipe has a long tail latency.
   // Force update the snapshot storage to ensure that the latest snapshot is
   // presented before a transition.
@@ -330,7 +308,6 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
 }
 
 void ReaderModeTabHelper::PageDistillationCompleted(
-    base::TimeTicks start_time,
     const GURL& page_url,
     const std::string& html,
     const std::vector<DistillerViewerInterface::ImageInfo>& images,
@@ -341,21 +318,17 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   if (!web_state_ || web_state_->IsBeingDestroyed()) {
     return;
   }
-  const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebStateDocument(web_state_);
-  const base::TimeDelta distillation_latency =
-      base::TimeTicks::Now() - start_time;
-  RecordReaderModeDistillationLatency(distillation_latency, source_id);
 
   bool is_distillable_page = !html.empty();
-  RecordReaderModeDistillationResult(is_distillable_page, source_id);
+  metrics_helper_.RecordReaderDistillerCompleted(
+      is_distillable_page ? ReaderModeDistillerResult::kPageIsDistillable
+                          : ReaderModeDistillerResult::kPageIsNotDistillable);
 
   if (IsReaderModeSnackbarEnabled()) {
     // Show a snackbar with the heuristic result, latency and page distillation
     // result and latency.
     MDCSnackbarMessage* message = [MDCSnackbarMessage
-        messageWithText:GenerateSnackbarMessage(is_distillable_page,
-                                                distillation_latency)];
+        messageWithText:GenerateSnackbarMessage(is_distillable_page)];
     message.duration = MDCSnackbarMessageDurationMax;
     [snackbar_handler_ showSnackbarMessage:message];
   }
@@ -379,6 +352,8 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 }
 
 void ReaderModeTabHelper::CreateReaderModeWebState() {
+  metrics_helper_.RecordReaderDistillerTriggered();
+
   web::WebState::CreateParams create_params = web::WebState::CreateParams(
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
           ->GetOffTheRecordProfile());
@@ -396,8 +371,7 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
       reader_mode_web_state_.get(), distiller_service_,
       std::move(distiller_page), web_state_->GetLastCommittedURL(),
       base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          base::TimeTicks::Now())));
+                          weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ReaderModeTabHelper::DestroyReaderModeWebState() {

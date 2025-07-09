@@ -18,7 +18,10 @@ enum class ReaderModeState {
   kHeuristicCanceled = 0,
   kHeuristicStarted = 1,
   kHeuristicCompleted = 2,
-  kMaxValue = kHeuristicCompleted,
+  kDistillationStarted = 3,
+  kDistillationCompleted = 4,
+  kReaderShown = 5,
+  kMaxValue = kReaderShown,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeState)
 

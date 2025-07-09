@@ -1626,6 +1626,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Heuristic Canceled"/>
   <int value="1" label="Heuristic Started"/>
   <int value="2" label="Heuristic Completed"/>
+  <int value="3" label="Distillation Started"/>
+  <int value="4" label="Distillation Completed"/>
+  <int value="5" label="Reader shown"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeState) -->

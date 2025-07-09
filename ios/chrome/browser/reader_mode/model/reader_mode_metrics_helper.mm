@@ -15,16 +15,15 @@ ReaderModeMetricsHelper::ReaderModeMetricsHelper(web::WebState* web_state)
     : web_state_(web_state) {}
 
 ReaderModeMetricsHelper::~ReaderModeMetricsHelper() {
-  if (!last_reader_mode_state_.has_value()) {
-    return;
-  }
-  base::UmaHistogramEnumeration(kReaderModeStateHistogram,
-                                last_reader_mode_state_.value());
+  Flush();
 }
 
 void ReaderModeMetricsHelper::CancelReaderHeuristicRecording() {
-  heuristic_timer_.reset();
+  // Reset `last_reader_mode_state_` before calling flush to ensure that
+  // any existing state is not recorded since this is replaced by cancelation.
   last_reader_mode_state_.reset();
+  Flush();
+
   base::UmaHistogramEnumeration(kReaderModeStateHistogram,
                                 ReaderModeState::kHeuristicCanceled);
 }
@@ -38,8 +37,6 @@ void ReaderModeMetricsHelper::RecordReaderHeuristicCompleted(
     ReaderModeHeuristicResult result) {
   base::UmaHistogramEnumeration(kReaderModeHeuristicResultHistogram, result);
 
-  // TODO(crbug.com/429174292): Flush the last expected event that is recorded
-  // when reader mode is shown.
   last_reader_mode_state_ = ReaderModeState::kHeuristicCompleted;
 
   const ukm::SourceId result_source_id =
@@ -65,4 +62,45 @@ void ReaderModeMetricsHelper::RecordReaderHeuristicCompleted(
         .SetLatency(elapsed.InMilliseconds())
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+void ReaderModeMetricsHelper::RecordReaderDistillerTriggered() {
+  distiller_timer_ = std::make_unique<base::ElapsedTimer>();
+  last_reader_mode_state_ = ReaderModeState::kDistillationStarted;
+}
+
+void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
+    ReaderModeDistillerResult result) {
+  last_reader_mode_state_ = ReaderModeState::kDistillationCompleted;
+
+  CHECK(distiller_timer_);
+  base::TimeDelta elapsed = distiller_timer_->Elapsed();
+  base::UmaHistogramTimes(kReaderModeDistillerLatencyHistogram, elapsed);
+
+  const ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(web_state_);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Distiller_Latency(source_id)
+        .SetLatency(elapsed.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+    ukm::builders::IOS_ReaderMode_Distiller_Result(source_id)
+        .SetResult(static_cast<int64_t>(result))
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void ReaderModeMetricsHelper::RecordReaderShown() {
+  last_reader_mode_state_.reset();
+  base::UmaHistogramEnumeration(kReaderModeStateHistogram,
+                                ReaderModeState::kReaderShown);
+}
+
+void ReaderModeMetricsHelper::Flush() {
+  if (last_reader_mode_state_.has_value()) {
+    base::UmaHistogramEnumeration(kReaderModeStateHistogram,
+                                  last_reader_mode_state_.value());
+    last_reader_mode_state_.reset();
+  }
+  distiller_timer_.reset();
+  heuristic_timer_.reset();
 }
