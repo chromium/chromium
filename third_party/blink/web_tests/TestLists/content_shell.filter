@@ -626,9 +626,6 @@ external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-close
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html
 external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html
 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html
-external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html
-external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html
-external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html
 external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html
 external/wpt/html/semantics/popovers/popover-focus.html
 external/wpt/html/semantics/popovers/popover-hidden-display.html
@@ -956,9 +953,6 @@ virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-conten
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_window_open_download_allow_downloads.tentative.html
 virtual/no-forced-frame-updates/external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal/order-in-bfcache-restore-iframe.html
 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/element-render-blocking-036.html
-virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html
-virtual/permission-element/external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html
-virtual/permission-element/external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html
 virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=from-treat-as-public
 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
