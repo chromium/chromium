@@ -14322,21 +14322,6 @@
             ]
         }
     ],
-    "Lobster": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Lobster"
-                    ]
-                }
-            ]
-        }
-    ],
     "LobsterDogfood": [
         {
             "platforms": [
@@ -14347,33 +14332,6 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "LobsterDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LobsterI18n": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LobsterI18n"
-                    ],
-                    "disable_features": [
-                        "LobsterDisabledByInvalidIME"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "LobsterI18n"
-                    ],
-                    "disable_features": [
-                        "LobsterDisabledByInvalidIME"
                     ]
                 }
             ]
