@@ -2854,6 +2854,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch"
+    enum="Boolean" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether the user has any saved passwords for the particular website
+    where they initiated the password change flow.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChangeSubmissionOutcome"
     enum="SubmissionOutcome" expires_after="2026-02-04">
   <owner>fiorellab@google.com</owner>

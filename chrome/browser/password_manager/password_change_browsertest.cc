@@ -44,6 +44,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -488,6 +489,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
                                     1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ChangePasswordFormDetected", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch", false,
+      1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ChangePasswordFormDetectionTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -519,7 +523,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
-  base::HistogramTester histograms;
   SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -991,4 +994,41 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
   EXPECT_TRUE(ui_controller->dialog_widget()->IsVisible());
   EXPECT_FALSE(ui_controller->toast_view());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       LogsUserHasPasswordSavedOnAPCLaunch) {
+  password_manager::PasswordFormManager::
+      set_wait_for_server_predictions_for_filling(false);
+  const GURL url =
+      embedded_test_server()->GetURL(kMainHost, "/password/password_form.html");
+  password_manager::PasswordForm form;
+  form.signon_realm = url.GetWithEmptyPath().spec();
+  form.url = url;
+  form.username_value = u"test";
+  form.password_value = u"pa$$word";
+  ProfilePasswordStoreFactory::GetForProfile(browser()->profile(),
+                                             ServiceAccessType::IMPLICIT_ACCESS)
+      ->AddLogin(form);
+  WaitForPasswordStore();
+
+  SetPrivacyNoticeAcceptedPref();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(url))
+      .WillOnce(Return(embedded_test_server()->GetURL(
+          kMainHost, "/password/update_form_empty_fields.html")));
+
+  // Navigate to the page again to trigger autofill.
+  PasswordsNavigationObserver observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(observer.Wait());
+
+  base::HistogramTester histogram_tester;
+  password_change_service()->OfferPasswordChangeUi(url, u"test", u"pa$$word",
+                                                   WebContents());
+  password_change_service()
+      ->GetPasswordChangeDelegate(WebContents())
+      ->StartPasswordChangeFlow();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch", true,
+      1);
 }

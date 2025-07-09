@@ -83,6 +83,21 @@ void LogLeakDialogTimeSpent(PasswordChangeDelegate::State state,
       base::StrCat({kLeakDialogTimeSpentHistogram, suffix}), time_delta);
 }
 
+// Logs whether user had any passwords saved for the website where the change
+// password was offered.
+void LogPasswordSavedOnStart(content::WebContents* web_contents) {
+  CHECK(web_contents);
+  ManagePasswordsUIController* manage_passwords_ui_controller =
+      ManagePasswordsUIController::FromWebContents(web_contents);
+  if (!manage_passwords_ui_controller) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch",
+      !manage_passwords_ui_controller->GetCurrentForms().empty());
+}
+
 std::u16string GeneratePassword(
     const password_manager::PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper) {
@@ -234,6 +249,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   flow_start_time_ = base::Time::Now();
   LogLeakDialogTimeSpent(current_state_,
                          flow_start_time_ - leak_dialog_display_time_);
+  LogPasswordSavedOnStart(originator_);
   UpdateState(State::kWaitingForChangePasswordForm);
 
   executor_ = CreateWebContents(profile_, change_password_url_);
