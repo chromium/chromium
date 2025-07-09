@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
@@ -25,7 +26,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class HubToolbarViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, HubToolbarView view, PropertyKey key) {
-        if (key == PANE_SWITCHER_BUTTON_DATA) {
+        if (key == ACTION_BUTTON_DATA) {
+            view.setActionButton(model.get(ACTION_BUTTON_DATA));
+        } else if (key == PANE_SWITCHER_BUTTON_DATA) {
             view.setPaneSwitcherButtonData(
                     model.get(PANE_SWITCHER_BUTTON_DATA), model.get(PANE_SWITCHER_INDEX));
         } else if (key == PANE_SWITCHER_INDEX) {

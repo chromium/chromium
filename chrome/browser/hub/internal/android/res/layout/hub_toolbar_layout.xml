@@ -33,7 +33,7 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="@dimen/toolbar_height_no_shadow">
 
-      <org.chromium.chrome.browser.hub.HubActionButtonView
+      <Button
         android:id="@+id/toolbar_action_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

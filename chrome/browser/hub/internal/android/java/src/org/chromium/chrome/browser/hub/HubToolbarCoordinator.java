@@ -36,7 +36,6 @@ public class HubToolbarCoordinator {
     private final MenuButton mMenuButton;
     private final UserEducationHelper mUserEducationHelper;
     private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
-    private final HubActionButtonCoordinator mActionButtonCoordinator;
 
     /**
      * Eagerly creates the component, but will not be rooted in the view tree yet.
@@ -63,12 +62,6 @@ public class HubToolbarCoordinator {
         mUserEducationHelper = userEducationHelper;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsAnimatingSupplier = isHubAnimatingSupplier;
-
-        HubActionButtonView hubActionButtonView =
-                hubToolbarView.findViewById(R.id.toolbar_action_button);
-        mActionButtonCoordinator =
-                new HubActionButtonCoordinator(hubActionButtonView, paneManager, hubColorMixer);
-
         PropertyModel model =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
@@ -118,7 +111,6 @@ public class HubToolbarCoordinator {
     public void destroy() {
         mMediator.destroy();
         mIsAnimatingSupplier.removeObserver(mIsAnimatingObserver);
-        mActionButtonCoordinator.destroy();
     }
 
     public boolean isSearchBoxVisible() {
