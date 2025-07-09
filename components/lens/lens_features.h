@@ -450,12 +450,6 @@ extern int GetScannedPdfCharacterPerPageHeuristic();
 // in the request payload.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseUpdatedContextFields();
-
-// Returns whether to include PDFs from the underlying page in the request to be
-// used as page context.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UsePdfsAsContext();
-
 // Returns whether to include the inner text from the underlying page in the
 // request to be used as page context. This is for webpages and sends text
 // equivalent to document.body.innerText. Must have UseUpdatedContextFields

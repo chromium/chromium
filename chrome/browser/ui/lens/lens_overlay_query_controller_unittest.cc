@@ -112,10 +112,6 @@ inline constexpr char kVisualInputTypeParameterKey[] = "vit";
 // Query parameter for the invocation source.
 inline constexpr char kInvocationSourceParameterKey[] = "source";
 
-// The encoded video context for the test page.
-constexpr char kTestEncodedVideoContext[] =
-    "ChkKF2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20v";
-
 // The session id query parameter key.
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 
@@ -165,15 +161,13 @@ const base::test::FeatureRefAndParams
     kDefaultLensOverlayContextualSearchboxParams =
         base::test::FeatureRefAndParams(
             lens::features::kLensOverlayContextualSearchbox,
-            {{"use-video-context-for-text-only-requests", "true"},
-             {"use-pdf-vit-param", "true"},
+            {{"use-pdf-vit-param", "true"},
              {"use-webpage-vit-param", "true"},
              {"use-pdf-interaction-type", "true"},
              {"use-webpage-interaction-type", "true"},
              {"send-lens-inputs-for-contextual-suggest", "true"},
              {"use-updated-content-fields", "false"},
              {"page-content-request-id-fix", "false"},
-             {"send-page-url-for-contextualization", "true"},
              {"send-lens-inputs-for-lens-suggest", "true"},
              {"send-lens-visual-interaction-data-for-lens-suggest", "true"},
              {"characters-per-page-heuristic", "50"}});
@@ -1486,7 +1480,6 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(vsint.log_data().user_selection_data().selection_type(),
             lens::SELECT_TEXT_HIGHLIGHT);
   ASSERT_FALSE(latest_suggest_inputs_.has_contextual_visual_input_type());
-  ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_query_submission_time);
   ASSERT_EQ(query_controller.latency_gen_204_counter(

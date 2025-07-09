@@ -401,12 +401,10 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
-  if (!page_url.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
+  if (!page_url.is_empty()) {
     content->set_webpage_url(page_url.spec());
   }
-  if (page_title.has_value() && !page_title.value().empty() &&
-      lens::features::SendPageTitleForContextualization()) {
+  if (page_title.has_value() && !page_title.value().empty()) {
     content->set_webpage_title(page_title.value());
   }
 
@@ -434,8 +432,7 @@ lens::Payload CreatePageContentPayloadForChunks(
 
   lens::Payload payload;
   payload.set_content_type(ContentTypeToString(primary_content_type));
-  if (!page_url.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
+  if (!page_url.is_empty()) {
     payload.set_page_url(page_url.spec());
   }
   payload.mutable_stored_chunk_options()->set_read_stored_chunks(true);
@@ -454,12 +451,10 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
-  if (!page_url.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
+  if (!page_url.is_empty()) {
     content->set_webpage_url(page_url.spec());
   }
-  if (page_title.has_value() && !page_title.value().empty() &&
-      lens::features::SendPageTitleForContextualization()) {
+  if (page_title.has_value() && !page_title.value().empty()) {
     content->set_webpage_title(page_title.value());
   }
 
@@ -505,8 +500,7 @@ lens::Payload CreatePageContentPayload(
 
   lens::Payload payload;
   payload.set_content_type(ContentTypeToString(content_type));
-  if (!page_url.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
+  if (!page_url.is_empty()) {
     payload.set_page_url(page_url.spec());
   }
 
@@ -1687,20 +1681,17 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     partial_pdf_document.SerializeToString(content_data->mutable_data());
 
     // Add the page url to the payload if it is available.
-    if (!page_url_.is_empty() &&
-        lens::features::SendPageUrlForContextualization()) {
+    if (!page_url_.is_empty()) {
       content->set_webpage_url(page_url_.spec());
     }
-    if (page_title_.has_value() && !page_title_.value().empty() &&
-        lens::features::SendPageTitleForContextualization()) {
+    if (page_title_.has_value() && !page_title_.value().empty()) {
       content->set_webpage_title(page_title_.value());
     }
   } else {
     payload.mutable_partial_pdf_document()->CopyFrom(partial_pdf_document);
 
     // Add the page url to the payload if it is available.
-    if (!page_url_.is_empty() &&
-        lens::features::SendPageUrlForContextualization()) {
+    if (!page_url_.is_empty()) {
       payload.set_page_url(page_url_.spec());
     }
   }

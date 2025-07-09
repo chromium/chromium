@@ -59,9 +59,6 @@ inline constexpr char kMGTModeParameterValue[] = "50";
 // Query parameter for the language code.
 inline constexpr char kLanguageCodeParameterKey[] = "hl";
 
-// Query parameter for the video context.
-inline constexpr char kVideoContextParameterKey[] = "vidcip";
-
 // Query parameter for the lens mode.
 inline constexpr char kLensModeParameterKey[] = "lns_mode";
 inline constexpr char kLensModeParameterTextValue[] = "text";
@@ -220,28 +217,6 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
   return new_url;
 }
 
-GURL AppendVideoContextParamToURL(const GURL& url_to_modify,
-                                  std::optional<GURL> page_url) {
-  if (!page_url.has_value()) {
-    return url_to_modify;
-  }
-
-  lens::LensOverlayVideoParams video_params;
-  video_params.mutable_video_context_input_params()->set_url(page_url->spec());
-  std::string serialized_video_params;
-  if (!video_params.SerializeToString(&serialized_video_params)) {
-    return url_to_modify;
-  }
-  std::string encoded_video_params;
-  base::Base64UrlEncode(serialized_video_params,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_video_params);
-  GURL new_url = url_to_modify;
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kVideoContextParameterKey, encoded_video_params);
-  return new_url;
-}
-
 GURL AppendInvocationSourceParamToURL(
     const GURL& url_to_modify,
     lens::LensOverlayInvocationSource invocation_source) {
@@ -328,12 +303,6 @@ GURL BuildTextOnlySearchURL(
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
-  if (lens::features::UseVideoContextForTextOnlyLensOverlayRequests()) {
-    // All queries use the video context param to report page context
-    // information even if the page does not contain a video.
-    url_with_query_params =
-        AppendVideoContextParamToURL(url_with_query_params, page_url);
-  }
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kUserPerceivedStateTimeQueryParameter,
       base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
@@ -360,13 +329,6 @@ GURL BuildLensSearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
-  if (text_query.has_value() &&
-      lens::features::UseVideoContextForMultimodalLensOverlayRequests()) {
-    // All pages use the video context param to report page context information
-    // even if the page does not contain a video.
-    url_with_query_params =
-        AppendVideoContextParamToURL(url_with_query_params, page_url);
-  }
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey,
       text_query.has_value() ? *text_query : "");

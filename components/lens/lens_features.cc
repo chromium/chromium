@@ -331,10 +331,6 @@ constexpr base::FeatureParam<bool>
 
 constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
     &kLensOverlayContextualSearchbox, "use-updated-content-fields", true};
-
-constexpr base::FeatureParam<bool> kUsePdfsAsContext{
-    &kLensOverlayContextualSearchbox, "use-pdfs-as-context", true};
-
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-text-as-context", true};
 
@@ -344,26 +340,8 @@ constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
 constexpr base::FeatureParam<bool> kUseApcAsContext{
     &kLensOverlayContextualSearchbox, "use-apc-as-context", true};
 
-constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
-    &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
-    true};
-
-constexpr base::FeatureParam<bool> kSendPageTitleForContextualization{
-    &kLensOverlayContextualSearchbox, "send-page-title-for-contextualization",
-    true};
-
 constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
     &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
-
-constexpr base::FeatureParam<bool>
-    kUseVideoContextForTextOnlyLensOverlayRequests{
-        &kLensOverlayContextualSearchbox,
-        "use-video-context-for-text-only-requests", false};
-
-constexpr base::FeatureParam<bool>
-    kUseVideoContextForMultimodalLensOverlayRequests{
-        &kLensOverlayContextualSearchbox,
-        "use-video-context-for-multimodal-requests", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
@@ -759,14 +737,6 @@ int GetLensOverlayClusterInfoLifetimeSeconds() {
   return kLensOverlayClusterInfoLifetimeSeconds.Get();
 }
 
-bool UseVideoContextForTextOnlyLensOverlayRequests() {
-  return kUseVideoContextForTextOnlyLensOverlayRequests.Get();
-}
-
-bool UseVideoContextForMultimodalLensOverlayRequests() {
-  return kUseVideoContextForMultimodalLensOverlayRequests.Get();
-}
-
 std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
 }
@@ -824,11 +794,6 @@ int GetScannedPdfCharacterPerPageHeuristic() {
 bool UseUpdatedContextFields() {
   return kUseUpdatedContentFields.Get();
 }
-
-bool UsePdfsAsContext() {
-  return kUsePdfsAsContext.Get();
-}
-
 bool UseInnerTextAsContext() {
   return kUseInnerTextAsContext.Get();
 }
@@ -847,14 +812,6 @@ bool SendClientContextToClusterInfoRequestForContextualSuggest() {
 
 bool UseApcAsContext() {
   return kUseApcAsContext.Get();
-}
-
-bool SendPageUrlForContextualization() {
-  return kSendPageUrlForContextualization.Get();
-}
-
-bool SendPageTitleForContextualization() {
-  return kSendPageTitleForContextualization.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

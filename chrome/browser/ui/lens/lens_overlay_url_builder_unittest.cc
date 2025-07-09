@@ -74,19 +74,6 @@ class LensOverlayUrlBuilderTest : public testing::Test {
     return encoded_request_id;
   }
 
-  std::string EncodeVideoContext(std::optional<GURL> page_url) {
-    lens::LensOverlayVideoParams video_params;
-    video_params.mutable_video_context_input_params()->set_url(
-        page_url->spec());
-    std::string serialized_video_params;
-    EXPECT_TRUE(video_params.SerializeToString(&serialized_video_params));
-    std::string encoded_video_params;
-    base::Base64UrlEncode(serialized_video_params,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_video_params);
-    return encoded_video_params;
-  }
-
   // Checks that the query submission time param is present and removes it.
   GURL StripQuerySubmissionTimeParam(const GURL& url) {
     std::string unused_query_submission_time;
@@ -207,8 +194,6 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
-  std::string expected_video_context =
-      EncodeVideoContext(std::make_optional<GURL>(kPageUrl));
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0&pqsubts=1000000",
@@ -226,14 +211,11 @@ TEST_F(LensOverlayUrlBuilderTest,
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
-  std::string expected_video_context =
-      EncodeVideoContext(std::make_optional<GURL>(kPageUrl));
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0&"
-      "vidcip=%s&pqsubts=1000000",
-      kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
-      expected_video_context.c_str());
+      "pqsubts=1000000",
+      kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeParam(lens::BuildTextOnlySearchURL(
                 kTestTime, text_query, std::make_optional<GURL>(kPageUrl),
@@ -247,14 +229,11 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrl) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
-  std::string expected_video_context =
-      EncodeVideoContext(std::make_optional<GURL>(kPageUrl));
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0&"
-      "vidcip=%s&pqsubts=1000000",
-      kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
-      expected_video_context.c_str());
+      "pqsubts=1000000",
+      kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeParam(lens::BuildTextOnlySearchURL(
                 kTestTime, text_query, std::make_optional<GURL>(kPageUrl),
@@ -486,15 +465,12 @@ TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_request_id);
 
-  std::string expected_video_context =
-      EncodeVideoContext(std::make_optional<GURL>(kPageUrl));
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&vidcip=%s&q=%s&lns_"
+      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_"
       "mode=mu&lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&"
       "vsrid=%s&pqsubts=1000000",
-      kResultsSearchBaseUrl, kLanguage, expected_video_context.c_str(),
-      escaped_text_query.c_str(), search_session_id.c_str(),
-      encoded_request_id.c_str());
+      kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
+      search_session_id.c_str(), encoded_request_id.c_str());
 
   EXPECT_EQ(StripQuerySubmissionTimeParam(lens::BuildLensSearchURL(
                 kTestTime, text_query, std::make_optional<GURL>(kPageUrl),

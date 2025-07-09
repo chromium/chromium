@@ -193,11 +193,9 @@ void LensSearchContextualizationController::GetPageContextualization(
   // calling MaybeGetPdfBytes or else the `callback` will have been moved but
   // not called.
   pdf::PDFDocumentHelper* pdf_helper =
-      lens::features::UsePdfsAsContext()
-          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(
-                lens_search_controller_->GetTabInterface()->GetContents())
-          : nullptr;
-  if (lens::features::UsePdfsAsContext() && pdf_helper) {
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+          lens_search_controller_->GetTabInterface()->GetContents());
+  if (pdf_helper) {
     // Fetch the PDF bytes then run the callback.
     MaybeGetPdfBytes(pdf_helper, std::move(callback));
     return;
