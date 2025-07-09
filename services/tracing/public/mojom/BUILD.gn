@@ -49,7 +49,7 @@ mojom_component("mojom") {
             cpp = "::perfetto::CommitDataRequest::ChunkToPatch::Patch"
           },
           {
-            mojom = "tracing.mojom.ChunkToPatch"
+            mojom = "tracing.mojom.ChunksToPatch"
             cpp = "::perfetto::CommitDataRequest::ChunkToPatch"
           },
           {

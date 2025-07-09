@@ -172,9 +172,8 @@ mojom::blink::SerialPortFilterPtr Serial::CreateMojoFilter(
       return nullptr;
     }
     mojo_filter->bluetooth_service_class_id =
-        ::bluetooth::mojom::blink::UUID::New(
-            GetBluetoothUUIDFromV8Value(filter->bluetoothServiceClassId()));
-    if (mojo_filter->bluetooth_service_class_id->uuid.empty()) {
+        GetBluetoothUUIDFromV8Value(filter->bluetoothServiceClassId());
+    if (mojo_filter->bluetooth_service_class_id.empty()) {
       exception_state.ThrowTypeError(
           "Invalid Bluetooth service class ID filter value.");
       return nullptr;
@@ -234,13 +233,11 @@ ScriptPromise<SerialPort> Serial::requestPort(
     }
   }
 
-  Vector<::bluetooth::mojom::blink::UUIDPtr>
-      allowed_bluetooth_service_class_ids;
+  Vector<WTF::String> allowed_bluetooth_service_class_ids;
   if (options && options->hasAllowedBluetoothServiceClassIds()) {
     for (const auto& id : options->allowedBluetoothServiceClassIds()) {
       allowed_bluetooth_service_class_ids.push_back(
-          ::bluetooth::mojom::blink::UUID::New(
-              GetBluetoothUUIDFromV8Value(id)));
+          GetBluetoothUUIDFromV8Value(id));
     }
   }
 

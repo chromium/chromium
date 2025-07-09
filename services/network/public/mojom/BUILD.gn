@@ -79,22 +79,6 @@ mojom("mojom_ip_address") {
     {
       types = [
         {
-          mojom = "network.mojom.ConnectionInfo"
-          cpp = "::net::HttpConnectionInfo"
-        },
-      ]
-      traits_headers = [
-        "//net/http/http_response_info.h",
-        "//services/network/public/cpp/network_ipc_param_traits.h",
-      ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:ip_address_mojom_support",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "network.mojom.AlternateProtocolUsage"
           cpp = "::net::AlternateProtocolUsage"
         },
@@ -151,20 +135,6 @@ mojom("mojom_ip_address") {
       traits_headers =
           [ "//services/network/public/cpp/address_list_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.WebTransportError"
-          cpp = "::net::WebTransportError"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/web_transport_error_mojom_traits.h" ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:ip_address_mojom_support",
-      ]
     },
     {
       types = [
@@ -715,6 +685,22 @@ mojom("url_loader_base") {
     {
       types = [
         {
+          mojom = "network.mojom.ConnectionInfo"
+          cpp = "::net::HttpConnectionInfo"
+        },
+      ]
+      traits_headers = [
+        "//net/http/http_response_info.h",
+        "//services/network/public/cpp/network_ipc_param_traits.h",
+      ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:ip_address_mojom_support",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.CrossOriginEmbedderPolicy"
           cpp = "::network::CrossOriginEmbedderPolicy"
         },
@@ -894,46 +880,6 @@ mojom("url_loader_base") {
     },
   ]
 
-  if (is_p2p_enabled) {
-    shared_typemaps += [
-      {
-        types = [
-          {
-            mojom = "network.mojom.P2PPacketInfo"
-            cpp = "::network::P2PPacketInfo"
-          },
-          {
-            mojom = "network.mojom.P2PSendPacketMetrics"
-            cpp = "::network::P2PSendPacketMetrics"
-          },
-          {
-            mojom = "network.mojom.P2PPortRange"
-            cpp = "::network::P2PPortRange"
-          },
-          {
-            mojom = "network.mojom.P2PHostAndIPEndPoint"
-            cpp = "::network::P2PHostAndIPEndPoint"
-          },
-          {
-            mojom = "network.mojom.P2PSocketOption"
-            cpp = "::network::P2PSocketOption"
-          },
-          {
-            mojom = "network.mojom.P2PSocketType"
-            cpp = "::network::P2PSocketType"
-          },
-          {
-            mojom = "network.mojom.EcnMarking"
-            cpp = "::webrtc::EcnMarking"
-          },
-        ]
-        traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
-        traits_public_deps =
-            [ "//third_party/webrtc_overrides:webrtc_component" ]
-      },
-    ]
-  }
-
   cpp_typemaps = [
     {
       types = [
@@ -956,10 +902,6 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.EffectiveConnectionType"
           cpp = "::net::EffectiveConnectionType"
-        },
-        {
-          mojom = "network.mojom.OriginPolicy"
-          cpp = "::network::OriginPolicy"
         },
         {
           mojom = "network.mojom.URLRequestRedirectInfo"
@@ -1007,6 +949,20 @@ mojom("url_loader_base") {
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
       ]
       traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.WebTransportError"
+          cpp = "::net::WebTransportError"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/web_transport_error_mojom_traits.h" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:ip_address_mojom_support",
+      ]
     },
   ]
 
@@ -1808,6 +1764,46 @@ mojom("mojom") {
   # Typemaps which apply to both Blink and non-Blink bindings.
   shared_cpp_typemaps = []
 
+  if (is_p2p_enabled) {
+    shared_cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network.mojom.P2PPacketInfo"
+            cpp = "::network::P2PPacketInfo"
+          },
+          {
+            mojom = "network.mojom.P2PSendPacketMetrics"
+            cpp = "::network::P2PSendPacketMetrics"
+          },
+          {
+            mojom = "network.mojom.P2PPortRange"
+            cpp = "::network::P2PPortRange"
+          },
+          {
+            mojom = "network.mojom.P2PHostAndIPEndPoint"
+            cpp = "::network::P2PHostAndIPEndPoint"
+          },
+          {
+            mojom = "network.mojom.P2PSocketOption"
+            cpp = "::network::P2PSocketOption"
+          },
+          {
+            mojom = "network.mojom.P2PSocketType"
+            cpp = "::network::P2PSocketType"
+          },
+          {
+            mojom = "network.mojom.EcnMarking"
+            cpp = "::webrtc::EcnMarking"
+          },
+        ]
+        traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
+        traits_public_deps =
+            [ "//third_party/webrtc_overrides:webrtc_component" ]
+      },
+    ]
+  }
+
   # Typemaps applied only to non-Blink bindings
   cpp_typemaps = [
     {
@@ -1962,7 +1958,7 @@ mojom("mojom") {
       {
         types = [
           {
-            mojom = "network::mojom::ReportingApiReportStatus"
+            mojom = "network.mojom.ReportingApiReportStatus"
             cpp = "::net::ReportingReport::Status"
           },
           {

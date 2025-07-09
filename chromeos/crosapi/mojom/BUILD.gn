@@ -88,70 +88,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "crosapi.mojom.App"
-          cpp = "::apps::AppPtr"
-          move_only = true
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "crosapi.mojom.CapabilityAccess"
-          cpp = "::apps::CapabilityAccessPtr"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.IconType"
-          cpp = "::apps::IconType"
-        },
-        {
-          mojom = "crosapi.mojom.IconValue"
-          cpp = "::apps::IconValuePtr"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.IconKey"
-          cpp = "::apps::IconKeyPtr"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.WindowMode"
-          cpp = "::apps::WindowMode"
-        },
-        {
-          mojom = "crosapi.mojom.AppType"
-          cpp = "::apps::AppType"
-        },
-        {
-          mojom = "crosapi.mojom.LaunchSource"
-          cpp = "::apps::LaunchSource"
-        },
-        {
-          mojom = "crosapi.mojom.SharesheetLaunchSource"
-          cpp = "::sharesheet::LaunchSource"
-        },
-        {
-          mojom = "crosapi.mojom.SharesheetResult"
-          cpp = "::sharesheet::SharesheetResult"
-        },
-        {
-          mojom = "crosapi.mojom.BrowserWindowInstanceUpdate"
-          cpp = "::apps::BrowserWindowInstanceUpdate"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.BrowserAppInstanceUpdate"
-          cpp = "::apps::BrowserAppInstanceUpdate"
-          move_only = true
-        },
-        {
-          mojom = "crosapi.mojom.BrowserAppInstanceType"
-          cpp = "::apps::BrowserAppInstanceUpdate::Type"
-        },
-        {
-          mojom = "crosapi.mojom.Permission"
-          cpp = "::apps::PermissionPtr"
-          move_only = true
-        },
-        {
           mojom = "crosapi.mojom.WebAppInstallResultCode"
           cpp = "::webapps::InstallResultCode"
         },
@@ -160,26 +96,8 @@ mojom("mojom") {
           cpp = "::webapps::UninstallResultCode"
         },
         {
-          mojom = "crosapi.mojom.GUID"
-          cpp = "::base::Uuid"
-        },
-        {
-          mojom = "crosapi.mojom.TabGroup"
-          cpp = "::tab_groups::TabGroupInfo"
-        },
-        {
           mojom = "crosapi.mojom.ResourceScaleFactor"
           cpp = "::ui::ResourceScaleFactor"
-        },
-        {
-          mojom = "crosapi.mojom.AppShortcut"
-          cpp = "::apps::ShortcutPtr"
-          move_only = true
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "crosapi.mojom.PackageId"
-          cpp = "::apps::PackageId"
         },
       ]
       traits_headers = [

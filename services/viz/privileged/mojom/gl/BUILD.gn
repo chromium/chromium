@@ -60,16 +60,5 @@ mojom("gl") {
           [ "//services/viz/privileged/cpp/context_lost_reason_traits.h" ]
       traits_public_deps = [ "//gpu/command_buffer/common" ]
     },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.OverlayStrategy"
-          cpp = "::viz::OverlayStrategy"
-        },
-      ]
-      traits_headers =
-          [ "//services/viz/privileged/cpp/overlay_strategy_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
-    },
   ]
 }
