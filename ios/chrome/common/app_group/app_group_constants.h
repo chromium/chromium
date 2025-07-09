@@ -163,14 +163,15 @@ extern const char kChromeAppClientID[];
 // metrics reporting.
 extern const char kUserMetricsEnabledDate[];
 
-// The six keys of the items sent by the share extension to Chrome (source, URL,
-// title, date, cancel, type).
+// The seven keys of the items sent by the share extension to Chrome (source,
+// URL, title, date, cancel, type, gaiaID).
 extern NSString* const kShareItemSource;
 extern NSString* const kShareItemURL;
 extern NSString* const kShareItemTitle;
 extern NSString* const kShareItemDate;
 extern NSString* const kShareItemCancel;
 extern NSString* const kShareItemType;
+extern NSString* const kShareItemGaiaID;
 
 // The value used by Chrome Share extension in `kShareItemSource`.
 extern NSString* const kShareItemSourceShareExtension;

@@ -70,6 +70,7 @@ NSString* const kShareItemTitle = @"Title";
 NSString* const kShareItemDate = @"Date";
 NSString* const kShareItemCancel = @"Cancel";
 NSString* const kShareItemType = @"Type";
+NSString* const kShareItemGaiaID = @"GaiaID";
 
 NSString* const kShareItemSourceShareExtension = @"ChromeShareExtension";
 
