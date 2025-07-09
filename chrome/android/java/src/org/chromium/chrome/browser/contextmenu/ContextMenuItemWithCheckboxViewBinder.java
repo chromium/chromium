@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.chromium.ui.listmenu.ContextMenuCheckItemProperties.CHECKED;
 import static org.chromium.ui.listmenu.ContextMenuCheckItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ContextMenuCheckItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 
 import android.view.View;
 import android.widget.CheckBox;
@@ -36,9 +37,9 @@ class ContextMenuItemWithCheckboxViewBinder {
             title.setEnabled(model.get(ENABLED));
         } else if (propertyKey == CHECKED) {
             checkBox.setChecked(model.get(CHECKED));
+        } else if (propertyKey == CLICK_LISTENER) {
+            view.setOnClickListener(model.get(CLICK_LISTENER));
         }
-        // MENU_ITEM_ID and ON_CLICK are used by the ContextMenuCoordinator.
-        // Note that because this will be an item inside of a list, this view itself does not need
-        // to implement the on-click behavior (it's handled by ContextMenuCoordinator).
+        // MENU_ITEM_ID does not change the view.
     }
 }

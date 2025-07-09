@@ -4,6 +4,7 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
@@ -18,9 +19,6 @@ import java.util.List;
 @NullMarked
 public class ContextMenuSubmenuItemProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    // The ON_CLICK should enter the submenu (for drilldown).
-    public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
-            new WritableObjectPropertyKey<>();
     // The ON_HOVER should show the flyout on mouse hover or keyboard focus.
     public static final WritableObjectPropertyKey<Runnable> ON_HOVER =
             new WritableObjectPropertyKey<>();
@@ -28,6 +26,6 @@ public class ContextMenuSubmenuItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        TITLE, MENU_ITEM_ID, ON_CLICK, ON_HOVER, ENABLED, SUBMENU_ITEMS
+        TITLE, MENU_ITEM_ID, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
     };
 }

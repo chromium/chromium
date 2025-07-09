@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.ON_HOVER;
 import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 
 import android.view.View;
 import android.widget.TextView;
@@ -29,11 +30,9 @@ class ContextMenuItemWithSubmenuViewBinder {
             textView.setText(model.get(TITLE));
         } else if (propertyKey == ON_HOVER) {
             // TODO(crbug.com/424580483): Implement flyout submenus.
+        } else if (propertyKey == CLICK_LISTENER) {
+            view.setOnClickListener(model.get(CLICK_LISTENER));
         }
     }
-
-    // MENU_ITEM_ID and ON_CLICK are used by the ContextMenuCoordinator.
-    // Note that because this will be an item inside of a list, this view itself does not need
-    // to implement the on-click behavior (it's handled by ContextMenuCoordinator).
-    // SUBMENU_ITEMS will be used to generate the submenu.
+    // MENU_ITEM_ID does not change the view.
 }
