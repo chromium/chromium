@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
-    expires_after="2025-05-01">
+    expires_after="2026-05-01">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1874,12 +1874,12 @@ chromium-metrics-reviews@google.com.
     when a new navigation is finished. It is used to verify the effectiveness of
     code fixes because this issue is not currently reproducible in testing
     (http://crbug.com/864769). True means a non-null NavigationContext is
-    present.
+    present. Expired 2025-05. Revived July 2025.
   </summary>
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasItem" enum="Boolean"
-    expires_after="2025-07-06">
+    expires_after="2026-07-06">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1892,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedURLMatchesCurrentItem" enum="Boolean"
-    expires_after="2025-06-19">
+    expires_after="2026-06-19">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4570,7 +4570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.RestoreNavigationItemCount" units="rank"
-    expires_after="2025-08-10">
+    expires_after="2026-08-10">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>

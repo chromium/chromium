@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
-    expires_after="2025-05-11">
+    expires_after="2026-05-11">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -706,7 +706,8 @@ chromium-metrics-reviews@google.com.
     edge of the web page and continues scrolling in the same direction revealing
     a specific UI on the header with multiple actions icons. The user can then
     choose an action by scrolling left or right and lift the finger or cancel by
-    scrolling back up. This is currently an iOS specific feature.
+    scrolling back up. This is currently an iOS specific feature. Expired
+    2025-05. Revived July 2025.
   </summary>
 </histogram>
 

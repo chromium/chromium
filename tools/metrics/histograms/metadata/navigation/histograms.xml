@@ -3586,7 +3586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.PrerenderTimeSaved" units="ms"
-    expires_after="2025-07-13">
+    expires_after="2026-07-13">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
