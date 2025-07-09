@@ -402,7 +402,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripLayoutOptimization,
     &kTabStripMouseCloseResizeDelay,
     &kTabStripTransitionInDesktopWindow,
-    &kTabSwitcherColorBlendAnimate,
     &kTabArchivalDragDropAndroid,
     &kTabCollectionAndroid,
     &kTabSwitcherDragDropAndroid,
@@ -1341,10 +1340,6 @@ BASE_FEATURE(kTabStripTransitionInDesktopWindow,
 BASE_FEATURE(kTabStripIncognitoMigration,
              "TabStripIncognitoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabSwitcherColorBlendAnimate,
-             "TabSwitcherColorBlendAnimate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabArchivalDragDropAndroid,
              "TabArchivalDragDropAndroid",

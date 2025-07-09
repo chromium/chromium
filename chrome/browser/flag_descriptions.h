@@ -3243,9 +3243,6 @@ extern const char kTabStripMouseCloseResizeDelayDescription[];
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 
-extern const char kTabSwitcherColorBlendAnimateName[];
-extern const char kTabSwitcherColorBlendAnimateDescription[];
-
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
 

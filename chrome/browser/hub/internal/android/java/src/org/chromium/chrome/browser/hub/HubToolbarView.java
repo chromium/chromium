@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
 
 import android.animation.Animator;
@@ -54,6 +52,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.ui.animation.AnimationHandler;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.List;
 
@@ -301,7 +300,7 @@ public class HubToolbarView extends LinearLayout {
                                                 interpolatedIconColor,
                                                 interpolatedSelectedIconColor);
                                     });
-                    animation.setInterpolator(getPaneColorBlendInterpolator());
+                    animation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
                     return animation;
                 };
         mixer.registerBlend(multiColorBlend);

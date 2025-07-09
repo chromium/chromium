@@ -1297,8 +1297,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
             newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
-    public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
-            newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsTestModeAndroid =
@@ -1842,8 +1840,4 @@ public abstract class ChromeFeatureList {
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(
                             "android_tab_declutter_auto_delete_time_delta_hours", 90 * 24);
-    public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateDurationMs =
-            sTabSwitcherColorBlendAnimate.newIntParam("animation_duration_ms", 240);
-    public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateInterpolator =
-            sTabSwitcherColorBlendAnimate.newIntParam("animation_interpolator", 0);
 }
