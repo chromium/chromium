@@ -19,6 +19,7 @@
 
 #include "absl/base/internal/low_level_alloc.h"
 
+#include <optional>
 #include <type_traits>
 
 #include "absl/base/call_once.h"

@@ -127,7 +127,7 @@ class ByString {
   absl::string_view Find(absl::string_view text, size_t pos) const;
 
  private:
-  const std::string delimiter_;
+  std::string delimiter_;
 };
 
 // ByAsciiWhitespace

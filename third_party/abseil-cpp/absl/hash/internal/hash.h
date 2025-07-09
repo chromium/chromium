@@ -955,24 +955,9 @@ inline uint64_t PrecombineLengthMix(uint64_t state, size_t len) {
 }
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t Mix(uint64_t lhs, uint64_t rhs) {
-  // For 32 bit platforms we are trying to use all 64 lower bits.
-  if constexpr (sizeof(size_t) < 8) {
-    uint64_t m = lhs * rhs;
-    return m ^ absl::byteswap(m);
-  }
-  // absl::uint128 is not an alias or a thin wrapper around the intrinsic.
-  // We use the intrinsic when available to improve performance.
-  // TODO(b/399425325): Try to remove MulType since compiler seem to generate
-  // the same code with just absl::uint128.
-  // See https://gcc.godbolt.org/z/s3hGarraG for details.
-#ifdef ABSL_HAVE_INTRINSIC_INT128
-  using MulType = __uint128_t;
-#else   // ABSL_HAVE_INTRINSIC_INT128
-  using MulType = absl::uint128;
-#endif  // ABSL_HAVE_INTRINSIC_INT128
-  // Though the 128-bit product on AArch64 needs two instructions, it is
-  // still a good balance between speed and hash quality.
-  MulType m = lhs;
+  // Though the 128-bit product needs multiple instructions on non-x86-64
+  // platforms, it is still a good balance between speed and hash quality.
+  absl::uint128 m = lhs;
   m *= rhs;
   return Uint128High64(m) ^ Uint128Low64(m);
 }

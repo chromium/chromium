@@ -964,7 +964,14 @@ class CommonFields : public CommonFieldsGenerationInfo {
 
   ctrl_t* control() const {
     ABSL_SWISSTABLE_ASSERT(capacity() > 0);
-    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(heap_or_soo_.control().get());
+    // Assume that the control bytes don't alias `this`.
+    ctrl_t* ctrl = heap_or_soo_.control().get();
+    [[maybe_unused]] size_t num_control_bytes = NumControlBytes(capacity());
+    ABSL_ASSUME(reinterpret_cast<uintptr_t>(ctrl + num_control_bytes) <=
+                    reinterpret_cast<uintptr_t>(this) ||
+                reinterpret_cast<uintptr_t>(this + 1) <=
+                    reinterpret_cast<uintptr_t>(ctrl));
+    ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(ctrl);
   }
 
   void set_control(ctrl_t* c) { heap_or_soo_.control().set(c); }
@@ -3016,14 +3023,13 @@ class raw_hash_set {
       absl::PrefetchToLocalCache(slot_array() + seq.offset());
 #endif
       Group g{ctrl + seq.offset()};
-      // TODO(b/424834054): assert that Match doesn't have too many collisions.
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i))))
           return iterator_at(seq.offset(i));
       }
       if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return end();
       seq.next();
-      AssertOnProbe(seq);
+      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
     }
   }
 
@@ -3280,7 +3286,6 @@ class raw_hash_set {
       absl::PrefetchToLocalCache(slot_array() + seq.offset());
 #endif
       Group g{ctrl + seq.offset()};
-      // TODO(b/424834054): assert that Match doesn't have too many collisions.
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i))))
           return {iterator_at(seq.offset(i)), false};
@@ -3299,7 +3304,7 @@ class raw_hash_set {
         return {iterator_at(index), true};
       }
       seq.next();
-      AssertOnProbe(seq);
+      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
     }
   }
 
@@ -3379,20 +3384,6 @@ class raw_hash_set {
     // We only do validation for small tables so that it's constant time.
     if (capacity() > 16) return;
     IterateOverFullSlots(common(), sizeof(slot_type), assert_consistent);
-  }
-
-  void AssertOnProbe([[maybe_unused]] const probe_seq<Group::kWidth>& seq) {
-    ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
-    // We only assert that the hash function has good quality for non-default
-    // hash functions.
-    if constexpr (std::is_same_v<hasher, hash_default_hash<key_type>>) return;
-    // TODO(b/424834054): investigate and see if we can remove the deleted
-    // elements condition.
-    ABSL_SWISSTABLE_ASSERT(
-        (seq.index() <= 256 || seq.index() <= capacity() / 2 ||
-         !common().growth_info().HasNoDeleted()) &&
-        "The hash function has low entropy and is non-default. Please replace "
-        "it with absl::Hash.");
   }
 
   // Attempts to find `key` in the table; if it isn't found, returns an iterator

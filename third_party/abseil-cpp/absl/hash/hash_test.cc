@@ -1266,11 +1266,6 @@ TEST(PrecombineLengthMix, ShortStringCollision) {
 // Test that we don't cause excessive collisions on the hash table for
 // doubles in the range [-1024, 1024]. See cl/773069881 for more information.
 TEST(SwisstableCollisions, DoubleRange) {
-#ifdef GOOGLE_UNSUPPORTED_OS_LOONIX
-  // TODO(b/424834054): make this test pass on Loonix.
-  GTEST_SKIP() << "Test fails on Loonix.";
-#endif
-
   absl::flat_hash_set<double> set;
   for (double t = -1024.0; t < 1024.0; t += 1.0) {
     set.insert(t);
@@ -1282,12 +1277,6 @@ TEST(SwisstableCollisions, DoubleRange) {
 // Test that for each pair of adjacent bytes in a string, if there's only
 // entropy in those two bytes, then we don't have excessive collisions.
 TEST(SwisstableCollisions, LowEntropyStrings) {
-  if (sizeof(size_t) < 8) {
-    // TODO(b/424834054): make this test pass on 32-bit platforms. We need to
-    // make 32-bit Mix() stronger.
-    GTEST_SKIP() << "Test fails on 32-bit platforms";
-  }
-
   constexpr char kMinChar = 0;
   constexpr char kMaxChar = 64;
   // These sizes cover the different hashing cases.
@@ -1302,7 +1291,7 @@ TEST(SwisstableCollisions, LowEntropyStrings) {
           set.insert(s);
           ASSERT_LT(HashtableDebugAccess<decltype(set)>::GetNumProbes(set, s),
                     64)
-              << size << " " << b;
+              << "size: " << size << "; bit: " << b;
         }
       }
     }
