@@ -9,6 +9,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_glic)
 
+# TODO(b/430371855): This target should eventually become Glic's public target,
+# to be imported from external BUILD files. The "impl" source set below would
+# then list resources only needed internally for the implementation. In the
+# meantime, prefer adding new sources or dependencies only needed internally to
+# the "impl" target.
 source_set("glic") {
   sources = [
     "browser_ui/glic_border_view.h",
@@ -86,6 +91,9 @@ source_set("enum") {
   sources = [ "glic_enums.h" ]
 }
 
+# TODO(b/430371855): This is the better target for resources only needed
+# by the Glic implementation. Prefer adding to this target any new sources or
+# dependencies that are only needed internally.
 source_set("impl") {
   sources = [
     "glic_enabling.cc",
