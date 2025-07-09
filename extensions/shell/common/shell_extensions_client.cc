@@ -71,7 +71,7 @@ ShellExtensionsClient::~ShellExtensionsClient() {
 }
 
 void ShellExtensionsClient::Initialize() {
-  // TODO(jamescook): Do we need to whitelist any extensions?
+  // TODO(jamescook): Do we need to allowlist any extensions?
 }
 
 void ShellExtensionsClient::InitializeWebStoreUrls(
