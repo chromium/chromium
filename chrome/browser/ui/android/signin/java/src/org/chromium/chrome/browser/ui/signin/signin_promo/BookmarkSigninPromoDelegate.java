@@ -213,16 +213,15 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     private boolean canManuallyEnableSyncTypes() {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         assumeNonNull(syncService);
-        boolean areTypesAlreadyEnabled =
-                syncService
-                        .getSelectedTypes()
-                        .containsAll(
-                                Set.of(
-                                        UserSelectableType.BOOKMARKS,
-                                        UserSelectableType.READING_LIST));
-        boolean areBookmarksManaged =
-                syncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
 
-        return !areTypesAlreadyEnabled && !areBookmarksManaged;
+        for (@UserSelectableType
+        int type : Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST)) {
+            boolean isTypeEnabled = syncService.getSelectedTypes().contains(type);
+            boolean isTypeManaged = syncService.isTypeManagedByPolicy(type);
+            if (!isTypeEnabled && !isTypeManaged) {
+                return true;
+            }
+        }
+        return false;
     }
 }

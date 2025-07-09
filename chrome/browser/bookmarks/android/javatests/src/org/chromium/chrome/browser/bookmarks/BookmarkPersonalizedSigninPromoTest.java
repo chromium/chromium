@@ -99,9 +99,10 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/372858049
-    public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
+    public void shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(true);
 
         showBookmarkManagerAndCheckSigninPromoIsHidden();
     }
@@ -110,9 +111,10 @@ public class BookmarkPersonalizedSigninPromoTest {
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/419932169
-    public void shouldShowBookmarksSigninPromoIfBookmarksIsNotManagedByPolicy() {
+    public void shouldShowBookmarksSigninPromoIfDataTypesAreNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
 
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
     }
