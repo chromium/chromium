@@ -60,6 +60,7 @@ static_library("shell_delegate") {
     "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/services/multidevice_setup",
     "//components/ui_devtools",
+    "//components/ui_devtools/views",
     "//components/user_manager",
     "//components/version_info",
     "//content/public/browser",

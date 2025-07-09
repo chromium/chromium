@@ -18,6 +18,8 @@ source_set("views") {
     "overlay_agent_views.h",
     "page_agent_views.cc",
     "page_agent_views.h",
+    "server_holder.cc",
+    "server_holder.h",
     "ui_element_with_metadata.cc",
     "ui_element_with_metadata.h",
     "view_element.cc",

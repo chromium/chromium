@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/path_service.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -20,8 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/inspect_resources.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/switches.h"
+#include "components/ui_devtools/views/server_holder.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -465,16 +467,20 @@ void InspectMessageHandler::HandleOpenNodeFrontendCommand(
 void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
     const base::Value::List& args) {
   // Start the UI DevTools server if needed and launch the front-end.
-  if (!ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance()) {
-    ChromeBrowserMainExtraPartsViews::Get()->CreateUiDevTools();
+  if (!ui_devtools::ServerHolder::GetInstance()
+           ->GetUiDevToolsServerInstance()) {
+    base::FilePath output_dir;
+    bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+    DCHECK(result);
+    ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
 
     // Make the server only lasts for a session.
     const ui_devtools::UiDevToolsServer* server =
-        ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance();
+        ui_devtools::ServerHolder::GetInstance()->GetUiDevToolsServerInstance();
     server->SetOnSessionEnded(base::BindOnce([]() {
-      if (ChromeBrowserMainExtraPartsViews::Get()
+      if (ui_devtools::ServerHolder::GetInstance()
               ->GetUiDevToolsServerInstance()) {
-        ChromeBrowserMainExtraPartsViews::Get()->DestroyUiDevTools();
+        ui_devtools::ServerHolder::GetInstance()->DestroyUiDevTools();
       }
     }));
   }

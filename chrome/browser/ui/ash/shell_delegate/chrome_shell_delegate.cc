@@ -24,8 +24,10 @@
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "cc/input/touch_action.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -70,19 +72,20 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
+#include "components/ui_devtools/views/server_holder.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -398,19 +401,24 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
 }
 
 bool ChromeShellDelegate::IsUiDevToolsStarted() const {
-  return ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance();
+  return ui_devtools::ServerHolder::GetInstance()
+      ->GetUiDevToolsServerInstance();
 }
 
 void ChromeShellDelegate::StartUiDevTools() {
-  ChromeBrowserMainExtraPartsViews::Get()->CreateUiDevTools();
+  base::FilePath output_dir;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+  DCHECK(result);
+
+  return ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
 }
 
 void ChromeShellDelegate::StopUiDevTools() {
-  ChromeBrowserMainExtraPartsViews::Get()->DestroyUiDevTools();
+  return ui_devtools::ServerHolder::GetInstance()->DestroyUiDevTools();
 }
 
 int ChromeShellDelegate::GetUiDevToolsPort() const {
-  return ChromeBrowserMainExtraPartsViews::Get()
+  return ui_devtools::ServerHolder::GetInstance()
       ->GetUiDevToolsServerInstance()
       ->port();
 }
