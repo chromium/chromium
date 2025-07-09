@@ -24,6 +24,7 @@ public class DataSharingManageUiConfig {
     private final @Nullable GURL mLearnAboutBlockedAccounts;
     private final @Nullable GURL mActivityLogsUrl;
     private final @Nullable DataSharingUiConfig mCommonConfig;
+    private final boolean mIsSharingDisabled;
 
     /** Callback interface for data sharing Manage UI events. */
     public interface ManageCallback {
@@ -57,6 +58,7 @@ public class DataSharingManageUiConfig {
         this.mActivityLogsUrl = builder.mActivityLogsUrl;
         this.mManageCallback = builder.mManageCallback;
         this.mCommonConfig = builder.mCommonConfig;
+        this.mIsSharingDisabled = builder.mIsSharingDisabled;
     }
 
     public @Nullable GroupToken getGroupToken() {
@@ -79,6 +81,10 @@ public class DataSharingManageUiConfig {
         return mCommonConfig;
     }
 
+    public boolean getIsSharingDisabled() {
+        return mIsSharingDisabled;
+    }
+
     // Builder class
     public static class Builder {
         private @Nullable GroupToken mGroupToken;
@@ -86,6 +92,7 @@ public class DataSharingManageUiConfig {
         private @Nullable GURL mActivityLogsUrl;
         private @Nullable ManageCallback mManageCallback;
         private @Nullable DataSharingUiConfig mCommonConfig;
+        private boolean mIsSharingDisabled;
 
         /**
          * Sets the group token for the data sharing group.
@@ -134,6 +141,16 @@ public class DataSharingManageUiConfig {
          */
         public Builder setCommonConfig(DataSharingUiConfig commonConfig) {
             this.mCommonConfig = commonConfig;
+            return this;
+        }
+
+        /**
+         * Sets whether sharing is disabled.
+         *
+         * @param isSharingDisabled True if sharing is disabled.
+         */
+        public Builder setIsSharingDisabled(boolean isSharingDisabled) {
+            this.mIsSharingDisabled = isSharingDisabled;
             return this;
         }
 
