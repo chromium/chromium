@@ -541,10 +541,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Gets the GpuMemoryBuffer backing the VideoFrame. Meant to be only used by
-  // the tests until they are converted to use MappableSI.
-  gpu::GpuMemoryBufferImplNativePixmap* GetGpuMemoryBufferForTesting() const;
-
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing this
   // VideoFrame(via GpuMemoryBuffer or MappableSI).

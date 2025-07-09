@@ -1343,18 +1343,6 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   return false;
 }
 
-gpu::GpuMemoryBufferImplNativePixmap* VideoFrame::GetGpuMemoryBufferForTesting()
-    const {
-#if !BUILDFLAG(IS_CHROMEOS)
-  return nullptr;
-#else
-  if (wrapped_frame_) {
-    return wrapped_frame_->GetGpuMemoryBufferForTesting();  // IN-TEST
-  }
-  return gpu_memory_buffer_.get();
-#endif
-}
-
 void VideoFrame::MapGMBOrSharedImageAsync(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb) const {
