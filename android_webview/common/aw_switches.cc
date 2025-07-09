@@ -120,4 +120,8 @@ const char kWebViewUseStartupTasksLogic[] = "webview-use-startup-tasks-logic";
 const char kWebViewUseStartupTasksLogicP2[] =
     "webview-use-startup-tasks-logic-p2";
 
+// Enables running native startup tasks asynchronously if WebView startup is
+// asynchronous.
+const char kWebViewStartupTasksYieldToNative[] =
+    "webview-startup-tasks-yield-to-native";
 }  // namespace switches

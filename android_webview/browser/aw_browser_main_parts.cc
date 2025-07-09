@@ -380,4 +380,11 @@ bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() {
              switches::kWebViewUseStartupTasksLogicP2);
 }
 
+bool AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() {
+  return Java_AwBrowserMainParts_isWebViewStartupTasksYieldToNativeExperimentEnabled(
+             base::android::AttachCurrentThread()) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kWebViewStartupTasksYieldToNative);
+}
+
 }  // namespace android_webview

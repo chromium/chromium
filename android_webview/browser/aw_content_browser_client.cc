@@ -50,6 +50,7 @@
 #include "android_webview/common/url_constants.h"
 #include "base/android/build_info.h"
 #include "base/android/locale_utils.h"
+#include "base/android/yield_to_looper_checker.h"
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -142,6 +143,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
 
+using base::android::YieldToLooperChecker;
 using content::BrowserThread;
 using content::FrameType;
 using content::WebContents;
@@ -345,7 +347,8 @@ AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
 
 bool IsAnyStartupTaskExperimentEnabled() {
   return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
-         AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2();
+         AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() ||
+         AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled();
 }
 
 void AwContentBrowserClient::PostAfterStartupTask(
@@ -375,6 +378,10 @@ void AwContentBrowserClient::OnStartupComplete() {
   DCHECK(!startup_info_.startup_complete);
 
   startup_info_.startup_complete = true;
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+    YieldToLooperChecker::GetInstance().SetStartupRunning(false);
+  }
+
   // if the native ui task execution isn't enabled already, enable it.
   if (!startup_info_.enable_native_task_execution_callback.is_null()) {
     std::move(startup_info_.enable_native_task_execution_callback).Run();
@@ -397,6 +404,10 @@ void AwContentBrowserClient::OnUiTaskRunnerReady(
 
   startup_info_.enable_native_task_execution_callback =
       std::move(enable_native_task_execution_callback);
+
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+    YieldToLooperChecker::GetInstance().SetStartupRunning(true);
+  }
 }
 
 std::unique_ptr<content::WebContentsViewDelegate>

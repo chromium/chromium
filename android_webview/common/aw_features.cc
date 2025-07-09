@@ -317,4 +317,9 @@ BASE_FEATURE(kWebViewUseStartupTasksLogicP2,
              "WebViewUseStartupTasksLogicP2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables running native startup tasks asynchronously if WebView startup is
+// asynchronous.
+BASE_FEATURE(kWebViewStartupTasksYieldToNative,
+             "WebViewStartupTasksYieldToNative",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

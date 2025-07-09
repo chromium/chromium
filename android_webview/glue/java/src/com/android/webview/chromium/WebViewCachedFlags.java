@@ -83,6 +83,8 @@ public class WebViewCachedFlags {
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
                                     DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
                                     DefaultState.DISABLED));
         }
     }

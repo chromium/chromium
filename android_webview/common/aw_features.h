@@ -36,6 +36,7 @@ BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);
 BASE_DECLARE_FEATURE(kWebViewPropagateNetworkChangeSignals);
+BASE_DECLARE_FEATURE(kWebViewStartupTasksYieldToNative);
 BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);
 BASE_DECLARE_FEATURE(kWebViewUseStartupTasksLogic);
 BASE_DECLARE_FEATURE(kWebViewUseStartupTasksLogicP2);

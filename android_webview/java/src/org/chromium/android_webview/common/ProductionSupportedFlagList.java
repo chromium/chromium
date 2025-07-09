@@ -1078,6 +1078,10 @@ public final class ProductionSupportedFlagList {
                     + " asynchronously."),
         Flag.baseFeature("ServiceWorkerAutoPreload"),
         Flag.baseFeature(GpuFeatures.WEB_GPU_USE_SPIRV14, "Use WebGPU's SPIR-V 1.4"),
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
+                "Enables running native startup tasks asynchronously if WebView startup is"
+                        + " asynchronous"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

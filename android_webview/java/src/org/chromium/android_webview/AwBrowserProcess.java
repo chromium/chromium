@@ -200,8 +200,11 @@ public final class AwBrowserProcess {
      * <p>Note: it is up to the caller to ensure this is only called once.
      *
      * @param callback This is triggered when the async startup completes.
+     * @param shouldScheduleFlushStartupTasks Whether to post a task to flush the startup tasks
+     *     instead of letting them complete asynchronously
      */
-    public static void triggerAsyncBrowserProcess(StartupCallback callback) {
+    public static void triggerAsyncBrowserProcess(
+            StartupCallback callback, boolean shouldScheduleFlushStartupTasks) {
         ThreadUtils.assertOnUiThread();
         try (ScopedSysTraceEvent e2 =
                 ScopedSysTraceEvent.scoped("AwBrowserProcess.startBrowserProcessAsync")) {
@@ -211,7 +214,7 @@ public final class AwBrowserProcess {
                             /* startGpuProcess= */ false,
                             /* startMinimalBrowser= */ false,
                             /* singleProcess= */ !isMultiProcess(),
-                            /* scheduleFlushStartupTasks= */ true,
+                            /* scheduleFlushStartupTasks= */ shouldScheduleFlushStartupTasks,
                             callback);
         }
     }

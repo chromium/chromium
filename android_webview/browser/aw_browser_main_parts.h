@@ -50,6 +50,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
 
   static bool isWebViewStartupTasksExperimentEnabled();
   static bool isWebViewStartupTasksExperimentEnabledP2();
+  static bool isStartupTaskYieldToNativeExperimentEnabled();
 
  private:
   void RegisterSyntheticTrials();

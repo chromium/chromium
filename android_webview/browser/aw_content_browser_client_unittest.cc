@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_switches.h"
+#include "base/android/yield_to_looper_checker.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,11 +29,13 @@ namespace {
 using ::testing::InSequence;
 using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
+using base::android::YieldToLooperChecker;
 
 enum class StartupTaskExperiment {
   kNone,
   kUseStartupTasksLogic,
-  kUseStartupTasksLogicP2
+  kUseStartupTasksLogicP2,
+  kStartupTasksYieldToNative,
 };
 
 std::string StartupTaskExperimentToString(
@@ -44,6 +47,8 @@ std::string StartupTaskExperimentToString(
       return "UseStartupTasksLogic";
     case StartupTaskExperiment::kUseStartupTasksLogicP2:
       return "UseStartupTasksLogicP2";
+    case StartupTaskExperiment::kStartupTasksYieldToNative:
+      return "StartupTasksYieldToNative";
   }
 }
 
@@ -60,6 +65,9 @@ class AwContentBrowserClientTest
         break;
       case StartupTaskExperiment::kUseStartupTasksLogicP2:
         command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogicP2);
+        break;
+      case StartupTaskExperiment::kStartupTasksYieldToNative:
+        command_line->AppendSwitch(switches::kWebViewStartupTasksYieldToNative);
         break;
       default:
         CHECK(false) << "Unhandled experiment";
@@ -178,12 +186,25 @@ TEST_P(AwContentBrowserClientTest,
   }
 }
 
+TEST_P(AwContentBrowserClientTest, StartupStatesSetCorrectly) {
+  const bool yield_to_native_experiment =
+      GetParam() == StartupTaskExperiment::kStartupTasksYieldToNative;
+
+  client_.OnUiTaskRunnerReady(base::DoNothing());
+  EXPECT_EQ(yield_to_native_experiment,
+            YieldToLooperChecker::GetInstance().ShouldYield());
+
+  client_.OnStartupComplete();
+  EXPECT_FALSE(YieldToLooperChecker::GetInstance().ShouldYield());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     AwContentBrowserClientTest,
     ::testing::Values(StartupTaskExperiment::kNone,
                       StartupTaskExperiment::kUseStartupTasksLogic,
-                      StartupTaskExperiment::kUseStartupTasksLogicP2),
+                      StartupTaskExperiment::kUseStartupTasksLogicP2,
+                      StartupTaskExperiment::kStartupTasksYieldToNative),
     StartupTaskExperimentToString);
 
 }  // namespace

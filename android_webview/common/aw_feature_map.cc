@@ -57,6 +57,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewSeparateResourceContext,
     &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewSkipInterceptsForPrefetch,
+    &features::kWebViewStartupTasksYieldToNative,
     &features::kWebViewTestFeature,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewUseMetricsUploadService,
