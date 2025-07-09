@@ -37,7 +37,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BuildInfo;
@@ -51,7 +50,6 @@ import java.util.ArrayList;
 /** Unit tests for ChildProcessConnection. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ChildProcessConnectionTest {
     private static class ChildServiceConnectionMock implements ChildServiceConnection {
         private final Intent mBindIntent;
@@ -399,6 +397,7 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         verify(mConnectionCallback, times(1)).onConnected(connection);
     }
 
@@ -419,6 +418,7 @@ public class ChildProcessConnectionTest {
         assertNotNull(mConnectionParentProcess);
 
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         assertEquals(34, connection.getPid());
         sendPid(543);
         assertEquals(34, connection.getPid());
@@ -446,6 +446,7 @@ public class ChildProcessConnectionTest {
                 /* zygotePid= */ ,
                 /* zygoteStartupTimeMillis= */ 789,
                 /* relroInfo= */ null);
+        ShadowLooper.runUiThreadTasks();
         assertTrue(connection.hasUsableZygoteInfo());
         assertEquals(456, connection.getZygotePid());
     }
@@ -496,6 +497,7 @@ public class ChildProcessConnectionTest {
                 /* zygotePid= */ 300,
                 /* zygoteStartupTimeMillis= */ -1,
                 /* relroInfo= */ null);
+        ShadowLooper.runUiThreadTasks();
         assertTrue(connection2.hasUsableZygoteInfo());
         assertEquals(300, connection2.getZygotePid());
         assertFalse(connection1.hasUsableZygoteInfo());
@@ -524,6 +526,7 @@ public class ChildProcessConnectionTest {
                 /* zygotePid= */ ,
                 /* zygoteStartupTimeMillis= */ 789,
                 relroInfo);
+        ShadowLooper.runUiThreadTasks();
         assertTrue(connection.hasUsableZygoteInfo());
         assertEquals(456, connection.getZygotePid());
         verify(mZygoteInfoCallback, times(1)).onReceivedZygoteInfo(connection, relroInfo);
@@ -576,6 +579,7 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         verify(mConnectionCallback, times(1)).onConnected(connection);
     }
 
@@ -595,6 +599,7 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         verify(mConnectionCallback, times(1)).onConnected(connection);
 
         // Add strong binding so that connection is oom protected.
@@ -634,6 +639,7 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         verify(mConnectionCallback, times(1)).onConnected(connection);
         connection.removeVisibleBinding();
 
@@ -734,6 +740,7 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
         sendPid(34);
+        ShadowLooper.runUiThreadTasks();
         verify(mConnectionCallback, times(1)).onConnected(connection);
 
         String exceptionString = "test exception string";
