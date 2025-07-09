@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Copyright 2024 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 
 #include <algorithm>
@@ -13,7 +9,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
-#include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 
 namespace web_package {
 
@@ -54,8 +51,9 @@ EcdsaP256SHA256Signature::EcdsaP256SHA256Signature(std::vector<uint8_t> bytes)
 [[nodiscard]] bool EcdsaP256SHA256Signature::Verify(
     base::span<const uint8_t> message,
     const EcdsaP256PublicKey& public_key) const {
-  return internal::VerifyMessageSignedWithEcdsaP256SHA256(
-      message, /*signature=*/bytes(), public_key);
+  auto key = crypto::keypair::PublicKey::FromEcP256Point(public_key.bytes());
+  return crypto::sign::Verify(crypto::sign::ECDSA_SHA256, *key, message,
+                              bytes());
 }
 
 }  // namespace web_package
