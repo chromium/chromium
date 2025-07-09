@@ -119,10 +119,6 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, GetContentScripts) {
   ASSERT_TRUE(RunExtensionTest("scripting/get_scripts")) << message_;
 }
 
-// TODO(crbug.com/371432155): Most of the tests in this file are skipped on
-// desktop Android because they use the chrome.tabs API, which hasn't been
-// ported yet.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
   OpenURLInCurrentTab(embedded_test_server()->GetURL(
       "example.com", "/extensions/main_world_script_flag.html"));
@@ -134,6 +130,10 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432404): Most of the tests in this file are skipped on
+// desktop Android because they use the chrome.webNavigation API, which hasn't
+// been ported yet.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
@@ -152,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("a.com", "/iframe_about_blank.html"));
 
-  content::RenderFrameHost* iframe_host = content::ChildFrameAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0);
+  content::RenderFrameHost* iframe_host =
+      content::ChildFrameAt(GetActiveWebContents(), 0);
   ASSERT_TRUE(iframe_host);
   content::WebContents* inner_web_contents =
       content::CreateAndAttachInnerContents(iframe_host);
@@ -164,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
   // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTest("scripting/nested_web_contents")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
 class ScriptingAPIOopifPdfTest : public ScriptingAPITest {
@@ -187,6 +188,9 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPIOopifPdfTest, PdfFrames) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432404): Skipped on desktop Android because the test uses
+// the chrome.webNavigation API, which hasn't been ported yet.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSInjection) {
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("example.com", "/simple.html"));
@@ -203,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSInjection) {
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSRemoval) {
   ASSERT_TRUE(RunExtensionTest("scripting/remove_css")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RegisterContentScripts) {
   ASSERT_TRUE(RunExtensionTest("scripting/register_scripts")) << message_;
@@ -227,7 +232,6 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsMainWorld) {
   ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts_main_world"))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Unregisters a pending script and verifies that the script is unregistered
 // and doesn't inject.
