@@ -8379,7 +8379,7 @@
   {
     "name": "render-arc-notifications-by-chrome",
     "owners": [ "shuminghao@google.com", "arc-framework@google.com" ],
-    "expiry_milestone": 138
+    "expiry_milestone": 152
   },
   {
     "name": "render-document",
