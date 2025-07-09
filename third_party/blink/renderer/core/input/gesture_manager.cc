@@ -126,6 +126,8 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     }
   }
 
+  // TODO(https://crbug.com/427503494): Investigate if this code block is
+  // exposing internal gesture events as DOM events.
   if (Node* event_target = hit_test_result.InnerNode()) {
     GestureEvent* gesture_dom_event = GestureEvent::Create(
         event_target->GetDocument().domWindow(), gesture_event);
@@ -407,19 +409,13 @@ WebInputEventResult GestureManager::HandleGestureTap(
 WebInputEventResult GestureManager::HandleGestureShortPress(
     const GestureEventWithHitTestResults& targeted_event) {
   drag_in_progress_ = false;
-  // TODO(crbug.com/1299010): When TouchDragAndContextMenu is enabled, we want
-  // to start drag here at short-press and open context-menu later at
-  // long-press.  However, on Android an ACTION_CANCEL event is fired on
-  // drag-start, and occcasionally that happens before long-press gesture
-  // timeout which causes GestureRecognizer to suppress long-press detection.
-  if (TouchDragAndContextMenuEnabled(frame_) &&
-      RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-    drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
-        targeted_event,
-        GetPointerIdFromWebGestureEvent(targeted_event.Event()));
+  if (frame_->GetSettings() &&
+      frame_->GetSettings()->GetTouchDragDropEnabled() &&
+      RuntimeEnabledFeatures::TouchDragOnShortPressEnabled() &&
+      HandleDragDropIfPossible(targeted_event)) {
+    return WebInputEventResult::kHandledSystem;
   }
-  return drag_in_progress_ ? WebInputEventResult::kHandledSystem
-                           : WebInputEventResult::kNotHandled;
+  return WebInputEventResult::kNotHandled;
 }
 
 WebInputEventResult GestureManager::HandleGestureLongPress(
@@ -439,34 +435,34 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   gesture_context_menu_deferred_ = false;
 
-  if (TouchDragAndContextMenuEnabled(frame_)) {
-    if (!RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-      drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
-          targeted_event,
-          GetPointerIdFromWebGestureEvent(targeted_event.Event()));
+  if (RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
+    if (drag_in_progress_ && DragEndOpensContextMenu()) {
+      gesture_context_menu_deferred_ = true;
+      return WebInputEventResult::kNotHandled;
     }
+  } else if (TouchDragAndContextMenuEnabled(frame_)) {
+    HandleDragDropIfPossible(targeted_event);
   } else if (frame_->GetSettings() &&
              frame_->GetSettings()->GetTouchDragDropEnabled() &&
              frame_->View()) {
-    // Dragging is suppressed on links and images in favor of opening a context
-    // menu on long press. In Windows, a drag is started and the context menu
-    // is opened if the drop happens in the same spot.
+    // Dragging is suppressed on links and images in favor of opening a
+    // context menu on long press. In Windows, a drag is started and the
+    // context menu is opened if the drop happens in the same spot.
     const bool should_open_context_menu_now =
         !frame_->GetSettings()->GetTouchDragEndContextMenu() &&
         (hit_test_result.URLElement() ||
          !hit_test_result.AbsoluteImageURL().IsNull() ||
          !hit_test_result.AbsoluteMediaURL().IsNull());
     if (!should_open_context_menu_now &&
-        mouse_event_manager_->HandleDragDropIfPossible(
-            targeted_event,
-            GetPointerIdFromWebGestureEvent(targeted_event.Event()))) {
+        HandleDragDropIfPossible(targeted_event)) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kHandledSystem;
     }
   }
 
   Node* inner_node = hit_test_result.InnerNode();
-  if (!drag_in_progress_ && inner_node && inner_node->GetLayoutObject() &&
+  if (!(drag_in_progress_ && TouchDragAndContextMenuEnabled(frame_)) &&
+      inner_node && inner_node->GetLayoutObject() &&
       selection_controller_->HandleGestureLongPress(hit_test_result)) {
     mouse_event_manager_->FocusDocumentView();
   }
@@ -502,6 +498,16 @@ WebInputEventResult GestureManager::HandleGestureTwoFingerTap(
   return SendContextMenuEventForGesture(targeted_event);
 }
 
+void GestureManager::HandleTouchDragEnd(const WebMouseEvent& mouse_event) {
+  if (!drag_in_progress_) {
+    return;
+  }
+  drag_in_progress_ = false;
+  if (DragEndOpensContextMenu()) {
+    SendContextMenuEventTouchDragEnd(mouse_event);
+  }
+}
+
 void GestureManager::SendContextMenuEventTouchDragEnd(
     const WebMouseEvent& mouse_event) {
   if (!gesture_context_menu_deferred_ || suppress_mouse_events_from_gestures_) {
@@ -517,8 +523,10 @@ void GestureManager::SendContextMenuEventTouchDragEnd(
   // drag controller does not sync well with gesture recognizer.  See the
   // blocked-on bugs in https://crbug.com/1096189.
   if ((positon_in_root_frame - long_press_position_in_root_frame_).Length() >
-      kTouchDragSlop)
+      kTouchDragSlop) {
+    ResetLongTapContextMenuStates();
     return;
+  }
 
   ContextMenuAllowedScope scope;
   frame_->GetEventHandler().SendContextMenuEvent(mouse_event);
@@ -629,6 +637,18 @@ PointerId GestureManager::GetPointerIdFromWebGestureEvent(
 
   return pointer_event_manager_->GetPointerIdForTouchGesture(
       gesture_event.primary_unique_touch_event_id);
+}
+
+bool GestureManager::HandleDragDropIfPossible(
+    const GestureEventWithHitTestResults& targeted_event) {
+  return drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
+             targeted_event,
+             GetPointerIdFromWebGestureEvent(targeted_event.Event()));
+}
+
+bool GestureManager::DragEndOpensContextMenu() {
+  return frame_->GetSettings() &&
+         frame_->GetSettings()->GetTouchDragEndContextMenu();
 }
 
 }  // namespace blink

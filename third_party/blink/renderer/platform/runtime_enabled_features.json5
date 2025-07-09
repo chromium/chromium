@@ -4836,6 +4836,10 @@
     // this feature, a long-press touch gesture can start either a drag or a
     // context-menu in Blink, not both (more precisely, a context menu is shown
     // only if a drag cannot be started).
+    // This feature is enabled by default in Android, where
+    // TouchDragOnShortPress is not shipped due to interactions with the OS that
+    // caused issues in the behavior.
+    // Please see https://issues.chromium.org/40823294
     {
       name: "TouchDragAndContextMenu",
       implied_by: ["TouchDragOnShortPress"],
@@ -4851,10 +4855,13 @@
       public: true,
     },
     // This feature makes touch dragging to occur at the short-press gesture,
-    // which occurs right before the long-press gesture.  This feature assumes
-    // that TouchDragAndContextMenu is enabled.
+    // which occurs right before the long-press gesture.
     {
       name: "TouchDragOnShortPress",
+      depends_on: ["TouchDragAndDrop"],
+      status: {
+        "Win": "stable",
+      },
     },
     // Many websites disable mouse support when touch APIs are available.  We'd
     // like to enable this always but can't until more websites fix this bug.

@@ -48,13 +48,15 @@ class CORE_EXPORT GestureManager final
       const GestureEventWithHitTestResults&);
   bool GestureContextMenuDeferred() const;
 
+  void HandleTouchDragEnd(const WebMouseEvent&);
+
   // Dispatches contextmenu event for drag-ends that haven't really dragged
   // except for a few pixels.
   //
   // The reason for handling this in GestureManager is the similarity of the
   // interaction with long taps.  When a drag ends without a drag offset, it is
   // effectively a long tap but with one difference: there is no gesture long
-  // tap event.  This is because the drag controller interrupts current gesture
+  // tap event. This is because the drag controller interrupts current gesture
   // sequence (cancelling the gesture) at the moment a drag begins, and the
   // gesture recognizer does not know if the drag has ended at the originating
   // position.
@@ -91,6 +93,10 @@ class CORE_EXPORT GestureManager final
   PointerId GetPointerIdFromWebGestureEvent(
       const WebGestureEvent& gesture_event) const;
 
+  // Returns `true` if a drag was initiated.
+  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&);
+  bool DragEndOpensContextMenu();
+
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared if needed in |GestureManager::clear()|.
 
@@ -113,7 +119,7 @@ class CORE_EXPORT GestureManager final
   bool gesture_context_menu_deferred_;
 
   gfx::PointF long_press_position_in_root_frame_;
-  bool drag_in_progress_;
+  bool drag_in_progress_ = false;
 
   const Member<SelectionController> selection_controller_;
 };

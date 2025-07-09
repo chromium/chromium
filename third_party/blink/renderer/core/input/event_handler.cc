@@ -2415,12 +2415,7 @@ void EventHandler::DragSourceEndedAt(
   }
 
   mouse_event_manager_->DragSourceEndedAt(event, operation);
-
-  if (frame_->GetSettings() &&
-      frame_->GetSettings()->GetTouchDragDropEnabled() &&
-      frame_->GetSettings()->GetTouchDragEndContextMenu()) {
-    gesture_manager_->SendContextMenuEventTouchDragEnd(event);
-  }
+  gesture_manager_->HandleTouchDragEnd(event);
 }
 
 void EventHandler::UpdateDragStateAfterEditDragIfNeeded(
