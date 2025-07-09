@@ -90,6 +90,6 @@ const base::FeatureParam<bool> kReturnEmptyForSameDocumentNavigation(
 const base::FeatureParam<bool> kAllowContextualSuggestionsForSearchResultsPages(
     &kGlicZeroStateSuggestions,
     "ZSSAllowContextualSuggestionsForSearchResultsPages",
-    false);
+    true);
 
 }  // namespace contextual_cueing
