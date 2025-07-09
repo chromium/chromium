@@ -8,10 +8,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_request.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
@@ -76,6 +79,42 @@ std::vector<std::string> GetSupportedToolsFromPref(
   }
   return supported_tools;
 }
+
+// Populates the tools to be sent in the request for zero state suggestions.
+// Will cache tools from request if present. Otherwise, gets the tools cached
+// from pref.
+void PopulateSupportedToolsForRequest(
+    const std::optional<std::vector<std::string>>& tools_from_request,
+    PrefService* pref_service,
+    optimization_guide::proto::ZeroStateSuggestionsRequest* out_request) {
+  std::vector<std::string> req_supported_tools;
+  if (tools_from_request) {
+    req_supported_tools = *tools_from_request;
+    pref_service->SetList(
+        prefs::kZeroStateSuggestionsSupportedTools,
+        ConvertSupportedToolsToPrefValue(*tools_from_request));
+  } else {
+    req_supported_tools = GetSupportedToolsFromPref(
+        pref_service->GetList(prefs::kZeroStateSuggestionsSupportedTools));
+  }
+  *out_request->mutable_supported_tools() = {req_supported_tools.begin(),
+                                             req_supported_tools.end()};
+}
+
+void OnSuggestionsReceived(
+    base::TimeTicks fetch_begin_time,
+    GlicSuggestionsCallback callback,
+    std::optional<std::vector<std::string>> suggestions) {
+  base::UmaHistogramTimes(suggestions
+                              ? "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.ValidSuggestions"
+                              : "ContextualCueing.GlicSuggestions."
+                                "SuggestionsFetchLatency.EmptySuggestions",
+                          base::TimeTicks::Now() - fetch_begin_time);
+
+  std::move(callback).Run(suggestions);
+}
+
 #endif
 
 }  // namespace
@@ -322,42 +361,34 @@ void ContextualCueingService::
     return;
   }
 
-  std::vector<std::string> req_supported_tools;
-  if (supported_tools) {
-    req_supported_tools = *supported_tools;
-    pref_service_->SetList(prefs::kZeroStateSuggestionsSupportedTools,
-                           ConvertSupportedToolsToPrefValue(*supported_tools));
-  } else {
-    req_supported_tools = GetSupportedToolsFromPref(
-        pref_service_->GetList(prefs::kZeroStateSuggestionsSupportedTools));
+  // Construct base request proto.
+  optimization_guide::proto::ZeroStateSuggestionsRequest request_proto;
+  request_proto.set_is_fre(is_fre);
+  if (g_browser_process) {
+    request_proto.set_locale(g_browser_process->GetApplicationLocale());
   }
-  ZeroStateSuggestionsPageData* page_data =
-      ZeroStateSuggestionsPageData::GetOrCreateForPage(
-          web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(
-      is_fre, req_supported_tools,
-      base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     std::move(callback)));
+  PopulateSupportedToolsForRequest(supported_tools, pref_service_,
+                                   &request_proto);
+  // Instantiate the one-of to indicate it's a request for a focused tab.
+  request_proto.mutable_page_context();
+
+  // Add callback to new request or existing one if already have one for
+  // the page associated with `web_contents`.
+  auto* zss_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+  auto* zss_request_ptr = zss_data->focused_tab_request();
+  if (!zss_request_ptr) {
+    auto zss_request = std::make_unique<ZeroStateSuggestionsRequest>(
+        optimization_guide_keyed_service_, request_proto,
+        std::vector<content::WebContents*>({web_contents}));
+    zss_request_ptr = zss_request.get();
+    zss_data->set_focused_tab_request(std::move(zss_request));
+  }
+  zss_request_ptr->AddCallback(base::BindOnce(
+      &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
 #else
   std::move(callback).Run(std::nullopt);
 #endif
-}
-
-void ContextualCueingService::OnSuggestionsReceived(
-    base::TimeTicks fetch_begin_time,
-    GlicSuggestionsCallback callback,
-    std::optional<std::vector<std::string>> suggestions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramTimes(suggestions
-                              ? "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.ValidSuggestions"
-                              : "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.EmptySuggestions",
-                          base::TimeTicks::Now() - fetch_begin_time);
-
-  std::move(callback).Run(suggestions);
 }
 
 void ContextualCueingService::OnPageContentExtracted(

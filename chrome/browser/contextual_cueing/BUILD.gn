@@ -33,6 +33,8 @@ source_set("impl") {
     "nudge_cap_tracker.cc",
     "zero_state_suggestions_page_data.cc",
     "zero_state_suggestions_page_data.h",
+    "zero_state_suggestions_request.cc",
+    "zero_state_suggestions_request.h",
   ]
   deps = [
     "//chrome/browser:browser_process",

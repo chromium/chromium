@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
-
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -17,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace contextual_cueing {
@@ -27,11 +31,11 @@ enum class ContentExtraction {
   kFetchInnerTextAndAnnotatedPageContent,
 };
 
-class ZeroStateSuggestionsPageDataBrowserTest
+class ZeroStateSuggestionsBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<ContentExtraction> {
  public:
-  ZeroStateSuggestionsPageDataBrowserTest() {
+  ZeroStateSuggestionsBrowserTest() {
     base::FieldTrialParams zss_params;
     switch (GetParam()) {
       case ContentExtraction::kFetchInnerTextOnly:
@@ -57,6 +61,12 @@ class ZeroStateSuggestionsPageDataBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     url_ = embedded_test_server()->GetURL("/optimization_guide/zss_page.html");
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    // Override glic tab context sharing to be always on.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicTabContextEnabled, true);
   }
 
   void DisableOptimizationPermissionCheck() {
@@ -151,13 +161,13 @@ class ZeroStateSuggestionsPageDataBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     WithContentExtraction,
-    ZeroStateSuggestionsPageDataBrowserTest,
+    ZeroStateSuggestionsBrowserTest,
     ::testing::Values(
         ContentExtraction::kFetchInnerTextOnly,
         ContentExtraction::kFetchAnnotatedPageContentOnly,
         ContentExtraction::kFetchInnerTextAndAnnotatedPageContent));
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
   base::HistogramTester histogram_tester;
 
   DisableOptimizationPermissionCheck();
@@ -169,10 +179,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+          web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+          future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(3u, future.Get().value().size());
   EXPECT_EQ("suggestion 1", future.Get().value()[0]);
@@ -182,9 +192,18 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions",
+      0);
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        HoldsOntoSuccessiveRequests) {
   base::HistogramTester histogram_tester;
 
@@ -195,16 +214,18 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
+  ContextualCueingService* contextual_cueing_service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
 
   // Set up two concurrent calls (simulates mouse down and then on load).
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
+  contextual_cueing_service->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+      future.GetCallback());
   base::test::TestFuture<std::optional<std::vector<std::string>>> future2;
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future2.GetCallback());
+  contextual_cueing_service->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+      web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+      future2.GetCallback());
 
   // Wait until page is extracted.
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -232,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
       "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        CreateDataDoesNotFetchWithoutExplicitCall) {
   base::HistogramTester histogram_tester;
 
@@ -254,30 +275,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
       "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       UseHintsSuggestions) {
-  DisableOptimizationPermissionCheck();
-
-  SetUpHints(url(), /*allow_contextual=*/true,
-             /*suggestions=*/{"hints 1", "hints 2", "hints 3"});
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(3u, future.Get().value().size());
-  EXPECT_EQ("hints 1", future.Get().value()[0]);
-  EXPECT_EQ("hints 2", future.Get().value()[1]);
-  EXPECT_EQ("hints 3", future.Get().value()[2]);
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        ContextualSuggestionsNotAllowed) {
+  base::HistogramTester histogram_tester;
+
   DisableOptimizationPermissionCheck();
 
   SetUpHints(url(), /*allow_contextual=*/false, /*suggestions=*/{});
@@ -285,17 +286,24 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+          web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+          future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(std::nullopt, future.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions",
+      0);
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       NoResultFromHints) {
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, NoResultFromHints) {
   DisableOptimizationPermissionCheck();
 
   // Assumes page is eligible for contextual suggestions without hints result.
@@ -305,11 +313,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+          web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+          future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(3u, future.Get().value().size());
   EXPECT_EQ("suggestion 1", future.Get().value()[0]);
@@ -317,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehavior) {
   DisableOptimizationPermissionCheck();
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -331,10 +338,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
     SetUpHints(url(), /*allow_contextual=*/true, /*suggestions=*/{});
     SetUpSuccessfulModelExecution();
 
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
+    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+            future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_EQ(3u, future.Get().value().size());
     EXPECT_EQ("suggestion 1", future.Get().value()[0]);
@@ -349,10 +356,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
     base::HistogramTester histogram_tester;
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
+    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+            future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_EQ(3u, future.Get().value().size());
     EXPECT_EQ("suggestion 1", future.Get().value()[0]);
@@ -363,8 +370,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       CacheBehaviorNonTransientError) {
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, CacheBehaviorError) {
   DisableOptimizationPermissionCheck();
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -392,10 +398,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                         FromModelExecutionServerError(error_response)),
                 nullptr));
 
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
+    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+            future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(future.Get().has_value());
     histogram_tester.ExpectTotalCount(
@@ -408,10 +414,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
     base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
+    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+            future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(future.Get().has_value());
     histogram_tester.ExpectTotalCount(
@@ -419,91 +425,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       CacheBehaviorTransientError) {
-  DisableOptimizationPermissionCheck();
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-
-  // Set up initial flow.
-  {
-    base::HistogramTester histogram_tester;
-    SetUpHints(url(), /*allow_contextual=*/true, /*suggestions=*/{});
-    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-    // Set up transient error.
-    optimization_guide::proto::ErrorResponse error_response;
-    error_response.set_error_state(optimization_guide::proto::ErrorState::
-                                       ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY);
-
-    OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->GetForProfile(browser()->profile())
-        ->AddExecutionResultForTesting(
-            optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-            optimization_guide::OptimizationGuideModelExecutionResult(
-                base::unexpected(
-                    optimization_guide::OptimizationGuideModelExecutionError::
-                        FromModelExecutionServerError(error_response)),
-                nullptr));
-
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_FALSE(future.Get().has_value());
-    histogram_tester.ExpectTotalCount(
-        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
-  }
-
-  // Make sure model execution called after a transient error.
-  {
-    base::HistogramTester histogram_tester;
-    SetUpSuccessfulModelExecution();
-
-    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                                future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(3u, future.Get().value().size());
-    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
-    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
-    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
-    histogram_tester.ExpectTotalCount(
-        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, NonMSBBFlow) {
-  base::HistogramTester histogram_tester;
-  SetUpEmptyModelExecutionResult();
-
-  SetUpOnDemandHints(
-      url(), /*allow_contextual=*/true,
-      /*suggestions=*/{"on demand 1", "on demand 2", "on demand 3"});
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(3u, future.Get().value().size());
-  EXPECT_EQ("on demand 1", future.Get().value()[0]);
-  EXPECT_EQ("on demand 2", future.Get().value()[1]);
-  EXPECT_EQ("on demand 3", future.Get().value()[2]);
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
                        NonMSBBFlowContextualNotAllowed) {
   base::HistogramTester histogram_tester;
 
@@ -513,10 +435,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-  page_data->FetchSuggestions(/*is_fre=*/false, /*supported_tools=*/{},
-                              future.GetCallback());
+  ContextualCueingServiceFactory::GetForProfile(browser()->profile())
+      ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+          web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+          future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(std::nullopt, future.Get());
 }

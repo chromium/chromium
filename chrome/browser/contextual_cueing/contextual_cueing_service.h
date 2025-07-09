@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
@@ -16,13 +17,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
-#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
-class GURL;
 class OptimizationGuideKeyedService;
 class PrefService;
 class TemplateURLService;
@@ -40,6 +40,10 @@ enum class GlicNudgeActivity;
 }  // namespace tabs
 
 namespace contextual_cueing {
+
+using GlicSuggestionsCallbackList =
+    base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
+using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
 
 class ContextualCueingService
     : public KeyedService,
@@ -101,13 +105,6 @@ class ContextualCueingService
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent& page_content)
       override;
-
-  // Called when suggestions are received. Cleans up after suggestions
-  // generation.
-  void OnSuggestionsReceived(
-      base::TimeTicks fetch_begin_time,
-      GlicSuggestionsCallback callback,
-      std::optional<std::vector<std::string>> suggestions);
 
   // Returns true if nudge should not be shown due to the backoff rule.
   bool IsNudgeBlockedByBackoffRule() const;

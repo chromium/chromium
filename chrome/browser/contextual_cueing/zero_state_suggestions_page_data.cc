@@ -9,7 +9,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/browser_process.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
@@ -32,47 +33,36 @@
 
 namespace {
 
-// Parse the given metadata and return a std::pair containing:
-// 1. bool: true if eligible for contextual suggestions.
-// 2. std::vector<std::string>: suggestions in the metadata, if present.
-std::pair<bool, std::vector<std::string>> ParseOptimizationMetadata(
+// Returns true if eligible for contextual suggestions.
+bool IsEligibleForContextualSuggestions(
     optimization_guide::OptimizationGuideDecision decision,
     optimization_guide::OptimizationMetadata& metadata) {
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    return std::make_pair(true, std::vector<std::string>());
+    return true;
   }
 
   auto suggestions_metadata = metadata.ParsedMetadata<
       optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
-  if (!suggestions_metadata.has_value()) {
-    return std::make_pair(true, std::vector<std::string>());
+  if (!suggestions_metadata) {
+    return true;
   }
-  if (!suggestions_metadata->contextual_suggestions_eligible()) {
-    return std::make_pair(false, std::vector<std::string>());
-  }
-  if (!suggestions_metadata->contextual_suggestions().empty()) {
-    return std::make_pair(
-        true, std::vector<std::string>(
-                  suggestions_metadata->contextual_suggestions().begin(),
-                  suggestions_metadata->contextual_suggestions().end()));
-  }
-
-  return std::make_pair(true, std::vector<std::string>());
+  return suggestions_metadata->contextual_suggestions_eligible();
 }
 
 void GetEligibilityAndRunCallback(
     const GURL& url,
+    optimization_guide::PageContextEligibility* page_context_eligibility,
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::AnnotatedPageContent>)>
         callback,
     std::optional<optimization_guide::AIPageContentResult> content) {
-  auto* pce = optimization_guide::PageContextEligibility::Get();
   bool is_eligible =
       content &&
-      (!pce ||
+      (!page_context_eligibility ||
        optimization_guide::IsPageContextEligible(
            url.host(), url.path(),
-           optimization_guide::GetFrameMetadataFromPageContent(*content), pce));
+           optimization_guide::GetFrameMetadataFromPageContent(*content),
+           page_context_eligibility));
   std::move(callback).Run(is_eligible ? std::make_optional(content->proto)
                                       : std::nullopt);
 }
@@ -108,11 +98,6 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
     std::optional<base::TimeTicks> last_same_doc_navigation_time =
         helper->last_same_doc_navigation_committed();
     if (last_same_doc_navigation_time) {
-      if (kReturnEmptyForSameDocumentNavigation.Get()) {
-        cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
-        return;
-      }
-
       initiate_page_content_extraction_delay =
           (kPageContentExtractionDelayForSameDocumentNavigation.Get() +
            *last_same_doc_navigation_time) -
@@ -132,6 +117,14 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   } else {
     InitiatePageContentExtraction();
   }
+
+  // Post to a background thread to avoid blocking the set up of the overlay.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
+      base::BindOnce(
+          &ZeroStateSuggestionsPageData::OnPageContextEligibilityAPILoaded,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {
@@ -217,6 +210,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
           web_contents, std::move(ai_page_content_options),
           base::BindOnce(
               &GetEligibilityAndRunCallback, GetUrl(),
+              page_context_eligibility_,
               base::BindOnce(
                   &ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent,
                   weak_ptr_factory_.GetWeakPtr())));
@@ -268,41 +262,16 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
   }
 }
 
-void ZeroStateSuggestionsPageData::FetchSuggestions(
-    bool is_fre,
-    std::vector<std::string> supported_tools,
-    GlicSuggestionsCallback callback) {
-  if (cached_suggestions_) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Returning cached "
-                           "suggestions for %s.",
-                           GetUrl().spec()));
-    std::move(callback).Run(cached_suggestions_->empty()
-                                ? std::nullopt
-                                : std::make_optional(*cached_suggestions_));
+void ZeroStateSuggestionsPageData::GetPageContext(
+    PageContextCallback callback) {
+  if (work_done()) {
+    std::move(callback).Run(ConstructPageContextProto());
     return;
   }
 
-  begin_time_ = base::TimeTicks::Now();
-
-  // Request for page already in flight - just notify when it comes back.
-  if (suggestions_request_) {
-    suggestions_callbacks_.AddUnsafe(std::move(callback));
-    return;
-  }
-
-  suggestions_request_ = optimization_guide::proto::
-      ZeroStateSuggestionsRequest::default_instance();
-  suggestions_request_->set_is_fre(is_fre);
-  *suggestions_request_->mutable_supported_tools() = {supported_tools.begin(),
-                                                      supported_tools.end()};
-  if (g_browser_process) {
-    suggestions_request_->set_locale(g_browser_process->GetApplicationLocale());
-  }
-  suggestions_callbacks_.AddUnsafe(std::move(callback));
-  RequestSuggestionsIfComplete();
+  // Page content extraction should already be initiated with construction of
+  // this object. Add callback to list to get fired.
+  page_context_callbacks_.AddUnsafe(std::move(callback));
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
@@ -315,7 +284,7 @@ void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
   }
   annotated_page_content_ = std::move(content);
   annotated_page_content_done_ = true;
-  RequestSuggestionsIfComplete();
+  InvokePageContextCallbacksIfComplete();
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedInnerText(
@@ -327,7 +296,7 @@ void ZeroStateSuggestionsPageData::OnReceivedInnerText(
         "ContextualCueing.GlicSuggestions.PageContextFetchlatency.InnerText",
         base::TimeTicks::Now() - page_context_begin_time_);
   }
-  RequestSuggestionsIfComplete();
+  InvokePageContextCallbacksIfComplete();
 }
 
 void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadataOnDemand(
@@ -353,45 +322,22 @@ void ZeroStateSuggestionsPageData::OnReceivedOptimizationMetadata(
   optimization_decision_ = decision;
   optimization_metadata_ = metadata;
 
-  RequestSuggestionsIfComplete();
+  InvokePageContextCallbacksIfComplete();
 }
 
-bool ZeroStateSuggestionsPageData::
-    ReturnSuggestionsFromOptimizationMetadataIfPossible() {
-  if (!optimization_metadata_done_) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf(
-            "ZeroStateSuggestionsPageData: Waiting on "
-            "optimization metadata for %s. Not returning suggestions yet.",
-            GetUrl().spec()));
-    return false;
-  }
-
-  std::pair<bool, std::vector<std::string>> pair =
-      ParseOptimizationMetadata(optimization_decision_, optimization_metadata_);
-  if (!pair.first) {
-    suggestions_callbacks_.Notify(std::nullopt);
-    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
-    return true;
-  }
-  if (!pair.second.empty()) {
-    suggestions_callbacks_.Notify(pair.second);
-    cached_suggestions_ = pair.second;
-    return true;
-  }
-  return false;
-}
-
-void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
-  bool work_done = inner_text_done_ && annotated_page_content_done_ &&
-                   optimization_metadata_done_;
-  bool has_page_context = inner_text_result_ || annotated_page_content_;
-  if (!work_done) {
+void ZeroStateSuggestionsPageData::InvokePageContextCallbacksIfComplete() {
+  if (!work_done()) {
     return;
   }
 
+  // Check if we are allowed to request suggestions for this page.
+  if (!IsEligibleForContextualSuggestions(optimization_decision_,
+                                          optimization_metadata_)) {
+    page_context_callbacks_.Notify(std::nullopt);
+    return;
+  }
+
+  bool has_page_context = inner_text_result_ || annotated_page_content_;
   if (has_page_context && !page_context_duration_logged_) {
     page_context_duration_logged_ = true;
     base::UmaHistogramTimes(
@@ -401,136 +347,44 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
         "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true);
   }
 
-  if (!suggestions_request_) {
-    return;
-  }
+  page_context_callbacks_.Notify(
+      has_page_context ? std::make_optional(ConstructPageContextProto())
+                       : std::nullopt);
+}
 
-  const GURL url = GetUrl();
-  if (ReturnSuggestionsFromOptimizationMetadataIfPossible()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Suggestions for %s "
-                           "returned from optimization metadata.",
-                           url.spec()));
-    return;
-  }
+const GURL ZeroStateSuggestionsPageData::GetUrl() const {
+  return content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()))
+      ->GetLastCommittedURL();
+}
 
-  if (!has_page_context) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf(
-            "ZeroStateSuggestionsPageData: No page content for %s "
-            ". Returning no suggestions available",
-            url.spec()));
-    suggestions_callbacks_.Notify(std::nullopt);
-    cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
-    return;
-  }
+optimization_guide::proto::ZeroStatePageContext
+ZeroStateSuggestionsPageData::ConstructPageContextProto() const {
+  GURL url = GetUrl();
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf("ZeroStateSuggestionsPageData: Starting fetch for "
-                         "suggestions for %s.",
-                         url.spec()));
-
-  optimization_guide::proto::PageContext* page_context =
-      suggestions_request_->mutable_page_context();
+  optimization_guide::proto::PageContext page_context;
   if (!url.is_empty() && url.is_valid()) {
-    page_context->set_url(url.spec());
+    page_context.set_url(url.spec());
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()));
-  page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+  page_context.set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
 
   if (annotated_page_content_) {
-    *page_context->mutable_annotated_page_content() = *annotated_page_content_;
+    *page_context.mutable_annotated_page_content() = *annotated_page_content_;
   }
   if (inner_text_result_) {
-    page_context->set_inner_text(inner_text_result_->inner_text);
+    page_context.set_inner_text(inner_text_result_->inner_text);
   }
 
-  optimization_guide_keyed_service_->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      *suggestions_request_,
-      /*execution_timeout=*/std::nullopt,
-      base::BindOnce(&ZeroStateSuggestionsPageData::OnModelExecutionResponse,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+  optimization_guide::proto::ZeroStatePageContext zero_state_page_context;
+  *zero_state_page_context.mutable_page_context() = page_context;
+  return zero_state_page_context;
 }
 
-void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
-    base::TimeTicks mes_begin_time,
-    optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  base::UmaHistogramTimes("ContextualCueing.GlicSuggestions.MesFetchLatency",
-                          base::TimeTicks::Now() - mes_begin_time);
-  const GURL url = GetUrl();
-
-  // Clear out suggestions request as it's been fulfilled.
-  suggestions_request_ = std::nullopt;
-
-  base::TimeDelta suggestions_duration = base::TimeTicks::Now() - begin_time_;
-  if (!result.response.has_value()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Failed to get "
-                           "suggestions for %s after %ld ms. Error: %d",
-                           url.spec(), suggestions_duration.InMilliseconds(),
-                           static_cast<int>(result.response.error().error())));
-    suggestions_callbacks_.Notify(std::nullopt);
-
-    if (!result.response.error().transient()) {
-      // Cache empty suggestions if error is not transient.
-      cached_suggestions_ = std::make_optional(std::vector<std::string>({}));
-    }
-
-    return;
-  }
-
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-      base::StringPrintf("ZeroStateSuggestionsPageData: Received valid "
-                         "suggestions for %s after %ld ms.",
-                         url.spec(), suggestions_duration.InMilliseconds()));
-
-  std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
-      response = optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::ZeroStateSuggestionsResponse>(
-          result.response.value());
-  if (!response) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf(
-            "ZeroStateSuggestionsPageData: No response available for %s.",
-            url.spec()));
-    suggestions_callbacks_.Notify(std::nullopt);
-    // Treat this as a transient error that server returned bad data
-    // momentarily.
-    return;
-  }
-
-  std::vector<std::string> suggestions;
-  for (int i = 0; i < response->suggestions_size(); ++i) {
-    suggestions.push_back(response->suggestions(i).label());
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        base::StringPrintf("ZeroStateSuggestionsPageData: Suggestion %d: %s",
-                           i + 1, response->suggestions(i).label()));
-  }
-  suggestions_callbacks_.Notify(suggestions);
-  cached_suggestions_ = suggestions;
-}
-
-const GURL ZeroStateSuggestionsPageData::GetUrl() {
-  return content::WebContents::FromRenderFrameHost(&(page().GetMainDocument()))
-      ->GetLastCommittedURL();
+void ZeroStateSuggestionsPageData::OnPageContextEligibilityAPILoaded(
+    optimization_guide::PageContextEligibility* page_context_eligibility) {
+  page_context_eligibility_ = page_context_eligibility;
 }
 
 PAGE_USER_DATA_KEY_IMPL(ZeroStateSuggestionsPageData);

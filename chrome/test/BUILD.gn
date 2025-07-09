@@ -3817,7 +3817,7 @@ if (!is_android) {
 
     if (enable_glic) {
       sources += [
-        "../browser/contextual_cueing/zero_state_suggestions_page_data_browsertest.cc",
+        "../browser/contextual_cueing/zero_state_suggestions_browsertest.cc",
         "../browser/ui/views/tabs/glic_button_browsertest.cc",
         "../browser/ui/webui/settings/glic_handler_browsertest.cc",
       ]

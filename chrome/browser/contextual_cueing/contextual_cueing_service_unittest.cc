@@ -437,7 +437,10 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     if (!zss_data) {
       return std::nullopt;
     }
-    return zss_data->pending_request();
+    if (!zss_data->focused_tab_request()) {
+      return std::nullopt;
+    }
+    return zss_data->focused_tab_request()->pending_base_request_;
   }
 
   ContextualCueingService* service() { return service_.get(); }
