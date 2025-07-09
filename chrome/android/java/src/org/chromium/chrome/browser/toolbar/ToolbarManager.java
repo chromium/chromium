@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -385,6 +386,7 @@ public class ToolbarManager
     private @Nullable UndoBarThrottle mUndoBarThrottle;
 
     private CustomTabCount mCustomTabCount;
+    private int mIncognitoNtpViewIdForA11y = View.NO_ID;
     private float mNtpSearchBoxScrollPercentage;
     private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
     private final NewTabPageDelegate mNtpDelegate;
@@ -1229,6 +1231,7 @@ public class ToolbarManager
                         // tab, but will update the URL.
                         onBackPressStateChanged();
                         onBackForwardTransitionAnimationChange();
+                        applyIncognitoNtpAccessibilityOrder(tab);
                         mBackGestureInProgress = false;
                         if (tab == null) {
                             mLocationBarModel.notifyUrlChanged(false);
@@ -1324,6 +1327,7 @@ public class ToolbarManager
                         // Paint preview status might have been changed. Update the omnibox chip.
                         mLocationBarModel.notifySecurityStateChanged();
                         onBackPressStateChanged();
+                        applyIncognitoNtpAccessibilityOrder(tab);
                     }
 
                     @Override
@@ -1518,6 +1522,12 @@ public class ToolbarManager
                                     };
                             mControlContainer.addOnLayoutChangeListener(mLayoutChangeListener);
                         }
+                    }
+
+                    @Override
+                    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
+                        Tab currentTab = mActivityTabProvider.get();
+                        applyIncognitoNtpAccessibilityOrder(currentTab);
                     }
                 };
         mBrowserControlsSizer.addObserver(mBrowserControlsObserver);
@@ -1893,6 +1903,49 @@ public class ToolbarManager
         HomepageManager.getInstance().onMenuClick(context);
         if (isNtp) {
             BrowserUiUtils.recordModuleLongClickHistogram(ModuleTypeOnStartAndNtp.HOME_BUTTON);
+        }
+    }
+
+    // TODO(crbug.com/430518884): Remove when the proper fix is implemented.
+    /**
+     * Sets accessibility order for incognito ntp.
+     *
+     * @param tab Chrome Tab.
+     */
+    private void applyIncognitoNtpAccessibilityOrder(Tab tab) {
+        final boolean isIncognitoNtp =
+                tab != null
+                        && tab.isIncognitoBranded()
+                        && UrlUtilities.isNtpUrl(tab.getUrl())
+                        && tab.getView() != null;
+
+        if (isIncognitoNtp) {
+            View ntpView = tab.getView();
+            int ntpViewId = ntpView.getId();
+            @ControlsPosition int controlsPosition = mBrowserControlsSizer.getControlsPosition();
+
+            switch (controlsPosition) {
+                case ControlsPosition.TOP:
+                    mIncognitoNtpViewIdForA11y = View.NO_ID;
+                    mToolbar.setAccessibilityTraversalAfter(View.NO_ID);
+                    ntpView.setAccessibilityTraversalAfter(R.id.toolbar);
+                    break;
+                case ControlsPosition.BOTTOM:
+                    mIncognitoNtpViewIdForA11y = ntpViewId;
+                    ntpView.setAccessibilityTraversalAfter(View.NO_ID);
+                    mToolbar.setAccessibilityTraversalAfter(ntpViewId);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            // Not on Incognito NTP. If accessibility order was previously
+            // set with ntp view id, reset it.
+            if (mIncognitoNtpViewIdForA11y != View.NO_ID
+                    && mToolbar.getAccessibilityTraversalAfter() == mIncognitoNtpViewIdForA11y) {
+                mToolbar.setAccessibilityTraversalAfter(View.NO_ID);
+            }
+            mIncognitoNtpViewIdForA11y = View.NO_ID;
         }
     }
 

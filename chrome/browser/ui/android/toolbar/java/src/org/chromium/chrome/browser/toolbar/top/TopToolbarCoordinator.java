@@ -756,6 +756,20 @@ public class TopToolbarCoordinator implements Toolbar {
         return mToolbarLayout.getHeight();
     }
 
+    /**
+     * Sets the id of a view after which the toolbar should be visited in accessibility traversal.
+     *
+     * @param viewId The view id which the toolbar should be traversed after.
+     */
+    public void setAccessibilityTraversalAfter(int viewId) {
+        mToolbarLayout.setAccessibilityTraversalAfter(viewId);
+    }
+
+    /** Gets the id of a view after which the toolbar is visited in accessibility traversal. */
+    public int getAccessibilityTraversalAfter() {
+        return mToolbarLayout.getAccessibilityTraversalAfter();
+    }
+
     /** Returns the {@link OptionalBrowsingModeButtonController}. */
     public @Nullable OptionalBrowsingModeButtonController getOptionalButtonControllerForTesting() {
         return mOptionalButtonController;
