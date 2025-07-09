@@ -298,6 +298,7 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kExtensionsPolicyInvalid);
     CASE(kUserNotAllowlisted);
     CASE(kChromeAppDeprecated);
+    CASE(kIsolatedAppNotAllowed);
   }
   NOTREACHED();
 #undef CASE
@@ -615,9 +616,12 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
       std::move(attempt_relaunch_).Run();
       break;
     case Error::kChromeAppDeprecated:
-      // Keep the splash screen with the error message, do not relaunch or exit.
+    case Error::kIsolatedAppNotAllowed:
       splash_screen_->UpdateAppLaunchState(
-          ash::AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated);
+          error == Error::kChromeAppDeprecated
+              ? AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated
+              : AppLaunchSplashScreenView::AppLaunchState::
+                    kIsolatedAppNotAllowed);
       splash_screen_->HideThrobber();
       KioskAppLaunchError::Save(error);
       return;

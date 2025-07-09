@@ -999,4 +999,24 @@ TEST_F(KioskLaunchControllerTest,
   EXPECT_FALSE(launcher().HasAppLaunched());
 }
 
+TEST_F(KioskLaunchControllerTest,
+       IsolatedWebAppNotAllowedCheckKeepSplashScreenMessage) {
+  controller().Start(kiosk_app(), /*auto_launch=*/false);
+  FinishLoadingProfile();
+
+  launcher().observers().NotifyLaunchFailed(
+      KioskAppLaunchError::Error::kIsolatedAppNotAllowed);
+
+  VerifyLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
+
+  EXPECT_THAT(
+      screen(),
+      HasViewState(
+          AppLaunchSplashScreenView::AppLaunchState::kIsolatedAppNotAllowed));
+  EXPECT_FALSE(screen().IsThrobberVisible());
+
+  task_environment()->FastForwardBy(base::Minutes(2));
+  EXPECT_FALSE(launcher().HasAppLaunched());
+}
+
 }  // namespace ash

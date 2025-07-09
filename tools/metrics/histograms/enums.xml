@@ -6841,6 +6841,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="17" label="Lacros migration is in progress"/>
   <int value="18" label="Lacros backward migration is in progress"/>
   <int value="19" label="Failed to launch a deprecated Chrome App"/>
+  <int value="20" label="Failed to install not allowlisted Isolated Web App"/>
 </enum>
 
 <enum name="KioskLaunchType">

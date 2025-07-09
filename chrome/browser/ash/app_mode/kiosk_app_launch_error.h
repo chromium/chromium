@@ -42,7 +42,8 @@ class KioskAppLaunchError {
     // kLacrosDataMigrationStarted = 17,  // Deprecated
     // kLacrosBackwardDataMigrationStarted = 18,  // Deprecated
     kChromeAppDeprecated = 19,
-    kMaxValue = kChromeAppDeprecated,  // Max value of errors.
+    kIsolatedAppNotAllowed = 20,         // Isolated app is not on allowlist
+    kMaxValue = kIsolatedAppNotAllowed,  // Max value of errors.
   };
 
   // Returns a message for given `error`.

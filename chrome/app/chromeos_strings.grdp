@@ -2824,6 +2824,9 @@
   <message name="IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH_CHROME_APP" desc="Error message used when a kiosk session fails to launch due to the app being launched is a deprecated Chrome App.">
     Can't launch unsupported Chrome app. Notify your administrator about this issue.
   </message>
+  <message name="IDS_KIOSK_APP_ERROR_IWA_UNSUPPORTED" desc="Error message used when a kiosk app fails to launch/install because of being unsupported (e.g., not allowlisted/blocklisted)">
+    Can't launch unsupported kiosk app. Notify your administrator about this issue.
+  </message>
   <message name="IDS_KIOSK_EXTERNAL_UPDATE_IN_PROGRESS" desc="Message shown on screen when the system is updating kiosk apps from usb stick.">
     Please wait....Kiosk app is in the process of being updated. Do not remove the USB stick.
   </message>

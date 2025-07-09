@@ -92,6 +92,11 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH);
   VerifyErrorMessage(KioskAppLaunchError::Error::kUnableToLaunch,
                      expected_message);
+
+  expected_message =
+      l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_IWA_UNSUPPORTED);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kIsolatedAppNotAllowed,
+                     expected_message);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveError) {

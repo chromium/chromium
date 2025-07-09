@@ -76,6 +76,8 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kChromeAppDeprecated:
       return l10n_util::GetStringUTF8(
           IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH_CHROME_APP);
+    case Error::kIsolatedAppNotAllowed:
+      return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_IWA_UNSUPPORTED);
   }
 
   NOTREACHED() << "Unknown kiosk app launch error, error="

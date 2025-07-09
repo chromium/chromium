@@ -49,7 +49,8 @@ std::vector<std::string>* test_prefs_to_reset = nullptr;
 
 bool ShouldAutoLaunchAfterAppLaunchError(KioskAppLaunchError::Error error) {
   return error == KioskAppLaunchError::Error::kNone ||
-         error == KioskAppLaunchError::Error::kChromeAppDeprecated;
+         error == KioskAppLaunchError::Error::kChromeAppDeprecated ||
+         error == KioskAppLaunchError::Error::kIsolatedAppNotAllowed;
 }
 
 }  // namespace

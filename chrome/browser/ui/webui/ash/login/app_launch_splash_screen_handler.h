@@ -25,6 +25,7 @@ class AppLaunchSplashScreenView {
     kNetworkWaitTimeout,
     kShowingNetworkConfigureUI,
     kChromeAppDeprecated,
+    kIsolatedAppNotAllowed
   };
 
   inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",

@@ -69,8 +69,10 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
     case AppLaunchState::kShowingNetworkConfigureUI:
       return IDS_APP_START_SHOWING_NETWORK_CONFIGURE_UI_MESSAGE;
-    case AppLaunchSplashScreenView::AppLaunchState::kChromeAppDeprecated:
+    case AppLaunchState::kChromeAppDeprecated:
       return IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH_CHROME_APP;
+    case AppLaunchState::kIsolatedAppNotAllowed:
+      return IDS_KIOSK_APP_ERROR_IWA_UNSUPPORTED;
   }
 }
 

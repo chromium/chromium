@@ -100,6 +100,12 @@ void KioskIwaLauncher::OnInstallComplete(
     return;
   }
 
+  if (result.type() ==
+      web_app::IwaInstallerResult::Type::kErrorAppNotInAllowlist) {
+    NotifyLaunchFailed(KioskAppLaunchError::Error::kIsolatedAppNotAllowed);
+    return;
+  }
+
   if (retry_with_internet_on_failure) {
     delegate_->InitializeNetwork();
     return;
