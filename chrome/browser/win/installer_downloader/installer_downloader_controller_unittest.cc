@@ -399,5 +399,20 @@ TEST_F(InstallerDownloaderControllerTest,
   std::move(completion_callback).Run(/*success=*/true);
 }
 
+TEST_F(InstallerDownloaderControllerTest, NoInfobarOnGuestProfile) {
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  std::unique_ptr<Profile> guest_profile = builder.Build();
+  content::WebContents* guest_web_contents =
+      web_contents_factory_.CreateWebContents(guest_profile.get());
+  controller_->SetActiveWebContentsCallbackForTesting(
+      base::BindLambdaForTesting([&]() { return guest_web_contents; }));
+  EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  // Since this is a guest profile, the eligibility check should not run.
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
+  controller_->MaybeShowInfoBar();
+  web_contents_factory_.DestroyWebContents(guest_web_contents);
+}
+
 }  // namespace
 }  // namespace installer_downloader

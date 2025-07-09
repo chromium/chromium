@@ -80,6 +80,12 @@ class InstallerDownloaderController final
 
   ~InstallerDownloaderController() override;
 
+  // Determines whether the installer downloader infobar should be shown for the
+  // profile associated with the active WebContents. The infobar is not shown
+  // for guest profiles or if there is no active WebContents.
+  bool ShouldShowInfobarForActiveContentProfile(
+      GetActiveWebContentsCallback get_active_web_contents_callback);
+
   // Called early during the browser startup and will show the installer
   // downloader infobar if a set of conditions are met.
   void MaybeShowInfoBar();

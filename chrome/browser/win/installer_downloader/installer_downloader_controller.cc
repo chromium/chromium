@@ -150,10 +150,33 @@ void InstallerDownloaderController::OnRemovedBrowserWindow(
   bwi_and_active_tab_tracker_map_.erase(bwi);
 }
 
+bool InstallerDownloaderController::ShouldShowInfobarForActiveContentProfile(
+    base::RepeatingCallback<content::WebContents*()>
+        get_active_web_contents_callback) {
+  auto* contents = get_active_web_contents_callback.Run();
+
+  if (!contents) {
+    return false;
+  }
+
+  // The infobar should not be shown on guest profiles.
+  if (Profile::FromBrowserContext(contents->GetBrowserContext())
+          ->IsGuestSession()) {
+    return false;
+  }
+
+  return true;
+}
+
 void InstallerDownloaderController::MaybeShowInfoBar() {
   // The max show count of the infobar have been reached. Eligibility check is
   // no longer needed.
   if (!model_->CanShowInfobar()) {
+    return;
+  }
+
+  if (!ShouldShowInfobarForActiveContentProfile(
+          get_active_web_contents_callback_)) {
     return;
   }
 
@@ -171,12 +194,6 @@ void InstallerDownloaderController::OnEligibilityReady(
   auto* contents = get_active_web_contents_callback_.Run();
 
   if (!contents) {
-    return;
-  }
-
-  // The infobar should not be shown on guest profiles.
-  if (Profile::FromBrowserContext(contents->GetBrowserContext())
-          ->IsGuestSession()) {
     return;
   }
 
