@@ -35,14 +35,13 @@ AutomationPosition::AutomationPosition(const AXNode& node,
 
 AutomationPosition::~AutomationPosition() = default;
 
-// static
-gin::DeprecatedWrapperInfo AutomationPosition::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
+const gin::WrapperInfo* AutomationPosition::wrapper_info() const {
+  return &kWrapperInfo;
+}
 
 gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<AutomationPosition>::GetObjectTemplateBuilder(
-             isolate)
+  return Wrappable<AutomationPosition>::GetObjectTemplateBuilder(isolate)
       .SetProperty("treeID", &AutomationPosition::GetTreeID)
       .SetProperty("anchorID", &AutomationPosition::GetAnchorID)
       .SetProperty("childIndex", &AutomationPosition::GetChildIndex)

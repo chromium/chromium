@@ -29,6 +29,8 @@
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-function-callback.h"
 
 namespace ui {
@@ -1663,10 +1665,12 @@ void AutomationV8Bindings::CreateAutomationPosition(
   int offset =
       args[3]->Int32Value(automation_v8_router_->GetContext()).ToChecked();
   bool is_upstream = args[3]->BooleanValue(isolate);
+  AutomationPosition* cpp_result =
+      cppgc::MakeGarbageCollected<AutomationPosition>(
+          isolate->GetCppHeap()->GetAllocationHandle(), *node, kind, offset,
+          is_upstream);
 
-  gin::Handle<AutomationPosition> handle = gin::CreateHandle(
-      isolate, new AutomationPosition(*node, kind, offset, is_upstream));
-  args.GetReturnValue().Set(handle.ToV8().As<v8::Object>());
+  args.GetReturnValue().Set(cpp_result->GetWrapper(isolate).ToLocalChecked());
 }
 
 void AutomationV8Bindings::DestroyAccessibilityTree(

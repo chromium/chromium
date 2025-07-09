@@ -21,7 +21,7 @@ namespace ui {
 // chrome.automation extension api. If so, please update
 // extensions/common/api/automation.idl.
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
-    : public gin::DeprecatedWrappable<AutomationPosition> {
+    : public gin::Wrappable<AutomationPosition> {
  public:
   AutomationPosition(const AXNode& node,
                      AXPositionKind kind,
@@ -33,11 +33,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
 
   ~AutomationPosition() override;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kAutomationPosition};
 
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
  private:
   std::string GetTreeID(gin::Arguments* arguments);
