@@ -231,7 +231,9 @@ function createRoutes(): SettingsRoutes {
     r.APPEARANCE = r.BASIC.createSection(
         '/appearance', 'appearance',
         loadTimeData.getString('appearancePageTitle'));
+    r.APPEARANCE.hasMigratedToPlugin = true;
     r.FONTS = r.APPEARANCE.createChild('/fonts');
+    r.FONTS.hasMigratedToPlugin = true;
   }
 
   if (visibility.autofill !== false) {

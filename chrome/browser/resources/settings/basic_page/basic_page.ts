@@ -15,7 +15,6 @@ import '../ai_page/ai_page.js';
 // <if expr="enable_glic">
 import '../glic_page/glic_page.js';
 // </if>
-import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';

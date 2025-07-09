@@ -51,7 +51,6 @@ suite('SettingsMain', function() {
       routes.AUTOFILL,
       routes.PRIVACY,
       routes.PERFORMANCE,
-      routes.APPEARANCE,
     ];
 
     for (const route of nonMigratedRoutes) {
@@ -64,6 +63,7 @@ suite('SettingsMain', function() {
       // TODO(crbug.com/424223101): Update this list as more routes are
       // migrated.
 
+      {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
       {route: routes.SEARCH, pluginTag: 'settings-search-page-index'},
       // <if expr="not is_chromeos">
       {

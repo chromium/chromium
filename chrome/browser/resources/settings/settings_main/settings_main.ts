@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../about_page/about_page.js';
+import '../appearance_page/appearance_page_index.js';
 import '../basic_page/basic_page.js';
 import '../on_startup_page/on_startup_page.js';
 import '../search_page/search_page_index.js';

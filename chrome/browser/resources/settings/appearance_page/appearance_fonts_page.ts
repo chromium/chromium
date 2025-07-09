@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 
@@ -13,6 +14,7 @@ import type {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slide
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './appearance_fonts_page.html.js';
 
@@ -44,7 +46,11 @@ export interface SettingsAppearanceFontsPageElement {
   };
 }
 
-export class SettingsAppearanceFontsPageElement extends PolymerElement {
+const SettingsAppearanceFontsPageElementBase =
+    SettingsViewMixin(PolymerElement);
+
+export class SettingsAppearanceFontsPageElement extends
+    SettingsAppearanceFontsPageElementBase {
   static get is() {
     return 'settings-appearance-fonts-page';
   }
@@ -131,6 +137,11 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
     }
     // </if>
     return prefValue;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

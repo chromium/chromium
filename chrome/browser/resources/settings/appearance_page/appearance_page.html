@@ -38,8 +38,7 @@
       }
 
     </style>
-    <settings-animated-pages id="pages" section="appearance"
-        focus-config="[[focusConfig_]]">
+    <settings-section page-title="$i18n{appearancePageTitle}">
       <div route-path="default">
         <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
@@ -285,15 +284,7 @@
         </settings-toggle-button>
 </if>
       </div>
-      <template is="dom-if" route-path="/fonts">
-        <settings-subpage
-            associated-control="[[$$('#customize-fonts-subpage-trigger')]]"
-            page-title="$i18n{customizeFonts}">
-          <settings-appearance-fonts-page prefs="{{prefs}}">
-          </settings-appearance-fonts-page>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+    </settings-section>
     <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
       <managed-dialog on-close="onManagedDialogClosed_"
           title="$i18n{themeManagedDialogTitle}"

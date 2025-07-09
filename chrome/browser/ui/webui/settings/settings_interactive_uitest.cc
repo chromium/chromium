@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
 
   const GURL appearance_setting_url("chrome://settings/appearance");
   const WebContentsInteractionTestUtil::DeepQuery reset_to_default_btn = {
-      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-ui", "settings-main", "settings-appearance-page-index",
       "settings-appearance-page", "cr-button#useDefault"};
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
