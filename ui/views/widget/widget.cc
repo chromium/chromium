@@ -790,13 +790,15 @@ void Widget::SetContentsView(View* view) {
   root_view_->LayoutImmediately();
 }
 
-View* Widget::GetContentsView() {
+View* Widget::GetContentsView() const {
   return root_view_->GetContentsView();
 }
 
-View* Widget::GetClientContentsView() {
+View* Widget::GetClientContentsView() const {
   if (non_client_view_) {
-    return non_client_view_->client_view()->children().front();
+    auto* client_view = non_client_view_->client_view();
+    return (!client_view->children().empty()) ? client_view->children().front()
+                                              : nullptr;
   }
   return GetContentsView();
 }
@@ -2778,6 +2780,20 @@ void Widget::ResizeToDelegateDesiredBounds() {
 
   // Size to contents view.
   SetBounds(desired_bounds);
+}
+
+void Widget::SetClientContentsViewInternal(std::unique_ptr<View> view) {
+  if (non_client_view_) {
+    auto* client_view = non_client_view_->client_view();
+    // Remove/destroy the existing client contents view(s), if present.
+    if (!client_view->children().empty()) {
+      client_view->RemoveAllChildViews();
+    }
+    client_view->AddChildView(std::move(view));
+  } else {
+    SetContentsView(view.release());
+  }
+  root_view_->LayoutImmediately();
 }
 
 BEGIN_METADATA_BASE(Widget)

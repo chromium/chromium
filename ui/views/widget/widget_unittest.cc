@@ -6325,4 +6325,30 @@ TEST_F(WidgetTest, ChildWidgetNotifiesModalVisibilityChanged) {
   widget->RemoveObserver(&observer);
 }
 
+TEST_F(WidgetTest, RemoveClientContentsView) {
+  std::unique_ptr<Widget> widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto client_view = widget->RemoveClientContentsView<View>();
+  EXPECT_TRUE(client_view);
+  EXPECT_FALSE(widget->GetClientContentsView());
+}
+
+TEST_F(WidgetTest, SetClientContentsView) {
+  std::unique_ptr<Widget> widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto client_view = widget->RemoveClientContentsView<View>();
+  EXPECT_TRUE(client_view);
+  auto* client_view_ptr = widget->SetClientContentsView(std::move(client_view));
+  EXPECT_EQ(client_view_ptr, widget->GetClientContentsView());
+}
+
+TEST_F(WidgetTest, ReplaceClientContentsView) {
+  std::unique_ptr<Widget> widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  auto client_view = std::make_unique<View>();
+  EXPECT_NE(client_view.get(), widget->GetClientContentsView());
+  auto* client_view_ptr = widget->SetClientContentsView(std::move(client_view));
+  EXPECT_EQ(client_view_ptr, widget->GetClientContentsView());
+}
+
 }  // namespace views::test
