@@ -63,9 +63,13 @@ class KioskWebAppData::IconFetcher {
   ~IconFetcher() = default;
 
   // `callback` will be called unless `this` is deleted.
-  // When download or decode fails, the callback is invoked with null.
+  // When download or decode fails, `callback` is invoked with a null SkBitmap.
   void Start(const GURL& icon_url, ResultCallback callback) {
     CHECK(callback);
+
+    // `Start` must not be called multiple times.
+    CHECK(!started_);
+    started_ = true;
 
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("kiosk_app_icon", R"(
@@ -131,14 +135,17 @@ class KioskWebAppData::IconFetcher {
  private:
   void OnDownloadCompleted(ResultCallback callback,
                            std::unique_ptr<std::string> response_body) {
+    // Now simple_loader_ can be released safely.
+    simple_loader_.reset();
+
     if (!response_body) {
       LOG(ERROR) << "Could not download icon url for kiosk app.";
       std::move(callback).Run(SkBitmap());
       return;
     }
 
-    // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
-    // with the data when it is done.
+    // Start decoding. `OnImageDecoded` will be called when decoding is
+    // complete. It's called with a null SkBitmap on error.
     data_decoder::DecodeImageIsolated(
         base::as_byte_span(*response_body),
         data_decoder::mojom::ImageCodec::kDefault,
@@ -151,7 +158,7 @@ class KioskWebAppData::IconFetcher {
 
   void OnImageDecoded(ResultCallback callback, const SkBitmap& bitmap) {
     if (bitmap.isNull()) {
-      LOG(ERROR) << "Could not download icon url for kiosk app.";
+      LOG(ERROR) << "Icon image url does not contain a valid image.";
       std::move(callback).Run(SkBitmap());
       return;
     }
@@ -170,14 +177,19 @@ class KioskWebAppData::IconFetcher {
           FROM_HERE,
           {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::BindOnce(ResizeImageBlocking, bitmap,
+          base::BindOnce(&ResizeImageBlocking, bitmap,
                          KioskWebAppData::kIconSize),
-          std::move(callback));
+          base::BindOnce(&IconFetcher::OnImageResized,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     }
   }
 
-  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+  void OnImageResized(ResultCallback callback, SkBitmap bitmap) {
+    std::move(callback).Run(bitmap);
+  }
 
+  bool started_ = false;
+  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::WeakPtrFactory<IconFetcher> weak_ptr_factory_{this};
 };
 
@@ -241,10 +253,9 @@ void KioskWebAppData::LoadIcon() {
     return;
   }
 
-  DCHECK(!icon_fetcher_);
-
   status_ = Status::kLoading;
 
+  DCHECK(!icon_fetcher_);
   icon_fetcher_ = std::make_unique<IconFetcher>();
   icon_fetcher_->Start(icon_url_,
                        base::BindOnce(&KioskWebAppData::OnDidDownloadIcon,
@@ -332,12 +343,13 @@ GURL KioskWebAppData::GetLastIconUrl(const base::Value::Dict& dict) const {
 }
 
 void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (icon.isNull()) {
     // NOTE: Probably we should do something on error cases.
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK_EQ(icon.width(), KioskWebAppData::kIconSize);
 
   icon_fetcher_.reset();
