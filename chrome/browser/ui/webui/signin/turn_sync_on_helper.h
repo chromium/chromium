@@ -294,6 +294,8 @@ class TurnSyncOnHelper {
   CoreAccountId initial_primary_account_;
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
+  base::ScopedClosureRunner
+      enable_automatic_management_disclaimer_on_primary_account_change_;
   base::WeakPtrFactory<TurnSyncOnHelper> weak_pointer_factory_{this};
 };
 

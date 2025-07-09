@@ -10,14 +10,18 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "net/base/host_port_pair.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 struct AccountInfo;
+struct CoreAccountId;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
@@ -116,6 +120,12 @@ void GetManagementIcon(const GURL& url,
 // `EnterpriseCustomLabel` set by policy if present.
 // `truncated` indicates whether the label returned needs to be truncated.
 std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+base::ScopedClosureRunner
+DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    Profile* profile);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util
 

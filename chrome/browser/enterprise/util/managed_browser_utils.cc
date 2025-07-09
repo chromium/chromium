@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -35,6 +36,7 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -45,6 +47,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
@@ -532,5 +539,19 @@ std::u16string GetEnterpriseLabel(Profile* profile, bool truncated) {
     return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+base::ScopedClosureRunner
+DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    Profile* profile) {
+  auto* disclaimer_service =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
+  if (!disclaimer_service) {
+    return base::ScopedClosureRunner(base::DoNothing());
+  }
+  return disclaimer_service
+      ->DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util
