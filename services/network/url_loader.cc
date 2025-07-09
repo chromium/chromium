@@ -49,6 +49,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/base/mime_sniffer.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"

@@ -30,7 +30,6 @@
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_internal_info.h"
-#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
@@ -73,6 +72,7 @@ class CookieOptions;
 class CookieInclusionStatus;
 class IOBuffer;
 struct LoadTimingInfo;
+struct NetErrorDetails;
 struct RedirectInfo;
 class SSLCertRequestInfo;
 class SSLInfo;

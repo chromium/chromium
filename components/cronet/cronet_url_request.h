@@ -16,6 +16,7 @@
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/shared_dictionary/shared_dictionary.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
