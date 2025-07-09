@@ -2613,6 +2613,7 @@ crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.servicew
 # Flaky tests
 [ Android ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize.html [ Failure Pass ]
 [ Android ] external/wpt/visual-viewport/viewport-unscaled-size.html [ Failure Pass ]
+crbug.com/429202003 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scale.html [ Failure Pass ]
 [ Webview ] external/wpt/largest-contentful-paint/idlharness.html [ Pass Timeout ]
 [ Webview ] external/wpt/storage/idlharness.https.any.worker.html [ Failure Pass ]
 [ Webview ] external/wpt/streams/idlharness.any.worker.html [ Failure Pass Timeout ]
