@@ -367,7 +367,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
   const InlineItems& items = line_info.ItemsData().items;
-  if (!break_token->UseFirstLineStyle()) {
+  if (!break_token->UseFirstLineStyle() && !apply_fit_text_) {
     box_states_ = context_->BoxStatesIfValidForItemIndex(
         items, break_token->StartItemIndex());
     if (box_states_) {
@@ -411,7 +411,7 @@ void InlineLayoutAlgorithm::CheckBoxStates(
                             baseline_type_, quirks_mode_,
                             should_scale_line_height, &line_box);
   DCHECK(box_states_);
-  box_states_->CheckSame(rebuilt, should_scale_line_height);
+  box_states_->CheckSame(rebuilt);
   context_->ReleaseTempLogicalLineItems(line_box);
 }
 #endif

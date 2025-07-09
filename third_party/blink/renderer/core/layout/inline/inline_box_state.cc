@@ -1385,33 +1385,30 @@ LogicalRubyColumn& InlineLayoutStateStack::CreateRubyColumn() {
 }
 
 #if DCHECK_IS_ON()
-void InlineLayoutStateStack::CheckSame(const InlineLayoutStateStack& other,
-                                       bool allow_metrics_mismatch) const {
+void InlineLayoutStateStack::CheckSame(
+    const InlineLayoutStateStack& other) const {
   // At the beginning of each line, box_data_list_ should be empty.
   DCHECK_EQ(box_data_list_.size(), 0u);
   DCHECK_EQ(other.box_data_list_.size(), 0u);
 
   DCHECK_EQ(stack_.size(), other.stack_.size());
   for (unsigned i = 0; i < stack_.size(); i++) {
-    stack_[i].CheckSame(other.stack_[i], allow_metrics_mismatch);
+    stack_[i].CheckSame(other.stack_[i]);
   }
 }
 
-void InlineBoxState::CheckSame(const InlineBoxState& other,
-                               bool allow_metrics_mismatch) const {
+void InlineBoxState::CheckSame(const InlineBoxState& other) const {
   DCHECK_EQ(fragment_start, other.fragment_start);
   DCHECK_EQ(item, other.item);
   DCHECK_EQ(style, other.style);
 
-  if (!allow_metrics_mismatch) {
-    DCHECK_EQ(metrics, other.metrics);
-    DCHECK_EQ(text_metrics, other.text_metrics);
-    DCHECK_EQ(text_top, other.text_top);
-    DCHECK_EQ(text_height, other.text_height);
-    if (!text_metrics.IsEmpty()) {
-      // |include_used_fonts| will be computed when computing |text_metrics|.
-      DCHECK_EQ(include_used_fonts, other.include_used_fonts);
-    }
+  DCHECK_EQ(metrics, other.metrics);
+  DCHECK_EQ(text_metrics, other.text_metrics);
+  DCHECK_EQ(text_top, other.text_top);
+  DCHECK_EQ(text_height, other.text_height);
+  if (!text_metrics.IsEmpty()) {
+    // |include_used_fonts| will be computed when computing |text_metrics|.
+    DCHECK_EQ(include_used_fonts, other.include_used_fonts);
   }
 
   DCHECK_EQ(needs_box_fragment, other.needs_box_fragment);

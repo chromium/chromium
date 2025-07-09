@@ -151,7 +151,7 @@ struct InlineBoxState {
                           FontHeight& metrics);
 
 #if DCHECK_IS_ON()
-  void CheckSame(const InlineBoxState&, bool allow_metrics_mismatch) const;
+  void CheckSame(const InlineBoxState&) const;
 #endif
 };
 
@@ -260,8 +260,7 @@ class CORE_EXPORT InlineLayoutStateStack {
                           bool is_opaque);
 
 #if DCHECK_IS_ON()
-  void CheckSame(const InlineLayoutStateStack&,
-                 bool allow_metrics_mismatch) const;
+  void CheckSame(const InlineLayoutStateStack&) const;
 #endif
 
  private:
