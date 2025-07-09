@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -75,6 +76,7 @@ public class MostVisitedMediatorUnitTest {
     @Mock SuggestionsTileView mTileView;
     @Mock SiteSuggestion mData;
     @Mock TileRenderer mTileRenderer;
+    @Mock UserEducationHelper mUserEducationHelper;
     @Mock SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock ContextMenuManager mContextMenuManager;
     @Mock TileGroup.Delegate mTileGroupDelegate;
@@ -394,6 +396,7 @@ public class MostVisitedMediatorUnitTest {
                         mTileCountChangedRunnable);
         mMediator.initWithNative(
                 mProfile,
+                mUserEducationHelper,
                 mSuggestionsUiDelegate,
                 mContextMenuManager,
                 mTileGroupDelegate,

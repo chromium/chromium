@@ -70,6 +70,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHLowUserEngagementDetectorFeature,
     &kIPHMicToolbarFeature,
     &kIPHMenuAddToGroup,
+    &kIPHMostVisitedTilesCustomizationPinFeature,
     &kIPHPageInfoFeature,
     &kIPHPageInfoStoreInfoFeature,
     &kIPHPageZoomFeature,

@@ -1006,6 +1006,18 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               360, 360);
     return config;
   }
+  if (kIPHMostVisitedTilesCustomizationPinFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("most_visited_tiles_customization_pin_triggered",
+                    Comparator(LESS_THAN, 1), 1, 360);
+    config.used = EventConfig("most_visited_tiles_customization_pin_clicked",
+                              Comparator(EQUAL, 0), 90, 360);
+    return config;
+  }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
     // A config that allows the web page summary menu item IPH to be shown:
     // * Once per day. 3 times max in 90 days
