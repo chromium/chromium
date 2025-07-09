@@ -248,4 +248,6 @@ found in the LICENSE file.
     <dimen name="rich_radio_button_radio_button_margin_start">16dp</dimen>
 
     <dimen name="rich_radio_button_description_margin_top">4dp</dimen>
+
+    <dimen name="rich_radio_button_list_spacing">8dp</dimen>
 </resources>
