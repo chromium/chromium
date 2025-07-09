@@ -188,7 +188,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public Iterator<Tab> iterator() {
-        return assumeNonNull(null);
+        return getAllTabs().iterator();
     }
 
     // SupportsTabModelObserver overrides.
@@ -558,13 +558,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     protected List<Tab> getAllTabs() {
         assertOnUiThread();
-        List<Tab> tabs = new ArrayList<>();
-        // TODO(crbug.com/428981631): Use an iterator instead.
-        for (int i = 0; i < getCount(); i++) {
-            Tab tab = getTabAtChecked(i);
-            tabs.add(tab);
-        }
-        return tabs;
+        return TabCollectionTabModelImplJni.get().getAllTabs(mNativeTabCollectionTabModelImplPtr);
     }
 
     @Override
@@ -955,5 +949,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         void closeDetachedTabGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        @JniType("std::vector<TabAndroid*>")
+        List<Tab> getAllTabs(long nativeTabCollectionTabModelImpl);
     }
 }

@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +38,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -535,6 +537,45 @@ public class TabCollectionTabModelImplTest {
         assertNull("Current tab should be null.", getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetIterator() {
+        Tab tab = getTabAt(0);
+        List<Tab> allTabs = List.of(tab);
+        assertTabsInOrderAre(allTabs);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Iterator<Tab> iterator = mCollectionModel.iterator();
+                    assertTrue(iterator.hasNext());
+                    assertEquals(iterator.next(), tab);
+                    assertFalse(iterator.hasNext());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testGetIterator_multipleTabs() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> allTabs = List.of(tab0, tab1, tab2);
+                    assertTabsInOrderAre(allTabs);
+
+                    Iterator<Tab> iterator = mCollectionModel.iterator();
+                    assertTrue(iterator.hasNext());
+                    assertEquals(iterator.next(), tab0);
+                    assertTrue(iterator.hasNext());
+                    assertEquals(iterator.next(), tab1);
+                    assertTrue(iterator.hasNext());
+                    assertEquals(iterator.next(), tab2);
+                    assertFalse(iterator.hasNext());
+                });
     }
 
     private void assertTabsInOrderAre(List<Tab> tabs) {

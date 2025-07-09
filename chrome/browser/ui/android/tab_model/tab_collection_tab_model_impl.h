@@ -89,6 +89,9 @@ class TabCollectionTabModelImpl {
   // Returns the count of tabs in a group. Returns 0 if not group not found.
   size_t GetTabCountForGroup(JNIEnv* env, const base::Token& token);
 
+  // Gets a list of all tabs.
+  std::vector<TabAndroid*> GetAllTabs(JNIEnv* env);
+
  private:
   // Returns a safe index for adding or moving a single tab without it changing
   // state.

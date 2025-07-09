@@ -260,6 +260,16 @@ std::optional<TabGroupId> TabCollectionTabModelImpl::GetGroupIdAt(
   }
 }
 
+std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {
+  std::vector<TabAndroid*> tabs;
+  tabs.reserve(tab_strip_collection_->TabCountRecursive());
+
+  for (TabInterface* tab_in_collection : *tab_strip_collection_) {
+    tabs.push_back(ToTabAndroid(tab_in_collection));
+  }
+  return tabs;
+}
+
 static jlong JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_java_object,
