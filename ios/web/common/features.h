@@ -101,6 +101,9 @@ BASE_DECLARE_FEATURE(kRestoreWKWebViewEditMenuHandler);
 // Enables logging CrWeb Javascript errors.
 BASE_DECLARE_FEATURE(kLogCrWebJavaScriptErrors);
 
+// When enabled, JavaScript errors will crash the application.
+BASE_DECLARE_FEATURE(kAssertOnJavaScriptErrors);
+
 }  // namespace features
 }  // namespace web
 

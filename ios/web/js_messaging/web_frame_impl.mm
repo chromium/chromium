@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
@@ -258,6 +259,11 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
   DLOG(WARNING) << "Script execution of:" << executed_script
                 << "\nfailed with error: " << error_string
                 << "\nand exception: " << exception;
+
+  if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
+    CHECK(false)
+        << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
+  }
 
   UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
 

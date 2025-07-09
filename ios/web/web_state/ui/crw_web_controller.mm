@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -1029,6 +1030,12 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
       DLOG(WARNING) << "Script execution failed with error: "
                     << base::SysNSStringToUTF16(
                            error.userInfo[NSLocalizedDescriptionKey]);
+
+      if (base::FeatureList::IsEnabled(
+              web::features::kAssertOnJavaScriptErrors)) {
+        CHECK(false) << "JavaScript error occurred with "
+                        "kAssertOnJavaScriptErrors enabled.";
+      }
     }
     if (stack_completion_block) {
       stack_completion_block(value, error);

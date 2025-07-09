@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/no_destructor.h"
@@ -65,6 +66,10 @@ GetScriptErrorMessageHandlerJavaScriptFeature() {
                     << error_details.url.spec() << " | "
                     << base::SysNSStringToUTF8(error_details.filename) << ":"
                     << error_details.line_number << "\n  " << frame_description;
+        if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
+          CHECK(false) << "JavaScript error occurred with "
+                          "kAssertOnJavaScriptErrors enabled.";
+        }
       }));
   return script_error_message_handler_feature.get();
 }
