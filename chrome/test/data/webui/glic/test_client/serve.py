@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'protobuf',
 
 from google.protobuf.message import DecodeError
 from google.protobuf import json_format
+from google.protobuf import text_format
 
 def build(outdir: str):
     subprocess.run([
@@ -67,9 +68,29 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         except DecodeError:
             self.send_error(400, 'proto could not be parsed')
 
+    def _parse_apc_text(self):
+        """Deserializes AnnotatedPageContent from the request payload and
+           converts it to TEXTPROTO (which is sent as a response)."""
+        try:
+            # TODO: gklassen - refactor into a common function.
+            content_length = int(self.headers['Content-Length'])
+            serialized_apc = self.rfile.read(content_length)
+            import common_quality_data_pb2
+            apc = common_quality_data_pb2.AnnotatedPageContent()
+            apc.ParseFromString(serialized=serialized_apc)
+            result = text_format.MessageToString(apc)
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(result.encode())
+        except text_format.ParseError:
+            self.send_error(400, 'proto could not be parsed')
+
     def do_POST(self):
         if self.path == '/parse-apc':
             self._parse_apc()
+        elif self.path == '/parse-apc-text':
+            self._parse_apc_text()
         else:
             self.send_error(404, f'invalid path: ${self.path}')
 

@@ -14,8 +14,8 @@ $.copyAPCToClipboardBtn.addEventListener('click', async () => {
       annotatedPageContent =
           await readStream(pageContent.annotatedPageData.annotatedPageContent);
     }
-  } catch (err) {
-    logMessage(`fetching APC failed: ${err}`);
+  } catch (error) {
+    $.APCResult.innerText = `Error getting page context: ${error}`;
     return;
   }
 
@@ -24,11 +24,12 @@ $.copyAPCToClipboardBtn.addEventListener('click', async () => {
     return;
   }
 
-  logMessage(`APC length: ${annotatedPageContent.length}`);
+  logMessage(`APC binary size in bytes: ${annotatedPageContent.length}`);
 
-  const postResponse =
-      await fetch('/parse-apc', {method: 'POST', body: annotatedPageContent});
-  const json = await postResponse.json();
-  navigator.clipboard.writeText(JSON.stringify(json, null, 2));
-  logMessage('APC copied to clipboard');
+  const postResponse = await fetch(
+      '/parse-apc-text', {method: 'POST', body: annotatedPageContent});
+  const textproto = await postResponse.text();
+  navigator.clipboard.writeText(textproto);
+  $.APCResult.innerText = `APC TEXTPROTO copied to clipboard`
+      + `\nFully Qualified Message Name: chrome_intelligence_proto_features.AnnotatedPageContent`;
 });

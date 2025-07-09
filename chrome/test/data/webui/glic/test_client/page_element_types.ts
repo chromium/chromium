@@ -121,6 +121,7 @@ export interface PageElementTypes {
   setClosedCaptioningFalse: HTMLButtonElement;
   dropScrollToHighlightBtn: HTMLButtonElement;
   copyAPCToClipboardBtn: HTMLButtonElement;
+  APCResult: HTMLSpanElement;
   maybeRefreshUserStatusBn: HTMLButtonElement;
   multiTabSection: HTMLElement;
   pinnedTabs: HTMLElement;
