@@ -41,6 +41,7 @@
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVariationsHeaderKey[] = "X-Client-Data";
 constexpr char kTestUser[] = "test_user@gmail.com";
+constexpr char kTestSearchSessionId[] = "test_search_session_id";
 constexpr char kTestServerSessionId[] = "test_server_session_id";
 constexpr char kLocale[] = "en-US";
 constexpr char kRegion[] = "US";
@@ -78,6 +79,7 @@ class ComposeboxQueryControllerTest
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
+    cluster_info_response.set_search_session_id(kTestSearchSessionId);
     cluster_info_response.set_server_session_id(kTestServerSessionId);
     controller_->set_fake_cluster_info_response(cluster_info_response);
   }
@@ -661,6 +663,20 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  // The AIM URL can only be created after the cluster info is received.
+  controller().NotifySessionStarted();
+  run_loop.Run();
+
   GURL aim_url = controller().CreateAimUrl("test");
 
   // Assert no lens params are added to unimodal text query.
@@ -671,6 +687,11 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   std::string vit_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
                                           &vit_value));
+
+  // Gsession id is not needed for unimodal text queries.
+  std::string gsession_id_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                         &gsession_id_value));
 
   EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
 }
@@ -727,4 +748,9 @@ TEST_F(ComposeboxQueryControllerTest, AimUrlWithUploadedPdf) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
                                          &vit_value));
   EXPECT_EQ(vit_value, "pdf");
+
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                         &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
 }

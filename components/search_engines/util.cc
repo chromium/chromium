@@ -37,6 +37,7 @@
 
 namespace {
 
+constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
 constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
@@ -614,6 +615,7 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
     const std::string& aim_entrypoint,
+    const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
     const std::u16string& query_text) {
@@ -629,5 +631,7 @@ GURL GetUrlForMultimodalAim(
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kVisualInputTypeQueryParameter,
       GetMimeTypeParamValue(mime_type));
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kSearchSessionIdParameterKey, search_session_id);
   return result_url;
 }
