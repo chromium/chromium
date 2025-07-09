@@ -206,9 +206,17 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/430525043): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit \
+  DISABLED_SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit
+#else
+#define MAYBE_SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit \
+  SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit
+#endif
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
-    SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit) {
+    MAYBE_SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit) {
   auto* tab_strip_model = browser()->tab_strip_model();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
