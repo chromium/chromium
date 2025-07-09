@@ -533,37 +533,43 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   DCHECK(output_format ==
          media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
 
-  // The SharedImages here are used to back VideoFrames. They may be read by the
-  // raster interface for format conversion (e.g., for 2-copy import into WebGL)
-  // as well as by the GLES2 interface for one-copy import into WebGL.
-  gpu::SharedImageUsageSet usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-#if BUILDFLAG(IS_APPLE)
-  usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
-#endif
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-  // These SharedImages may be used for zero-copy of VideoFrames into WebGPU.
-  usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-#endif
-
   auto size = gfx::Size(video_frame_init_data.ready_buffer->info->coded_size);
-  if (should_recreate_shared_image ||
-      !video_frame_init_data.buffer_context->gmb_resources()->shared_image) {
+  auto color_space = video_frame_init_data.ready_buffer->info->color_space;
+  auto& shared_image =
+      video_frame_init_data.buffer_context->gmb_resources()->shared_image;
+  // If there is size or color space mismatch, recreate shared image with new
+  // metadata.
+  if (shared_image && (size != shared_image->size() ||
+                       color_space != shared_image->color_space())) {
+    should_recreate_shared_image = true;
+  }
+
+  if (!shared_image || should_recreate_shared_image) {
     auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
 #if BUILDFLAG(IS_OZONE)
     multiplanar_si_format.SetPrefersExternalSampler();
 #endif
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
-        sii->CreateSharedImage(
-            {multiplanar_si_format, size,
-             video_frame_init_data.ready_buffer->info->color_space,
-             gpu::SharedImageUsageSet(usage), "VideoCaptureFrameBuffer"},
-            gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-            std::move(gmb_handle));
-    CHECK(client_shared_image);
-    video_frame_init_data.buffer_context->gmb_resources()->shared_image =
-        std::move(client_shared_image);
+    // The SharedImages here are used to back VideoFrames. They may be read by
+    // the raster interface for format conversion (e.g., for 2-copy import into
+    // WebGL) as well as by the GLES2 interface for one-copy import into WebGL.
+    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#if BUILDFLAG(IS_APPLE)
+    usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+#endif
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    // These SharedImages may be used for zero-copy of VideoFrames into WebGPU.
+    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+#endif
+
+    shared_image = sii->CreateSharedImage(
+        {multiplanar_si_format, size, color_space,
+         gpu::SharedImageUsageSet(usage), "VideoCaptureFrameBuffer"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        std::move(gmb_handle));
+    CHECK(shared_image);
   } else {
     sii->UpdateSharedImage(video_frame_init_data.buffer_context->gmb_resources()
                                ->release_sync_token,
@@ -578,9 +584,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 #endif
 
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-
-  auto& shared_image =
-      video_frame_init_data.buffer_context->gmb_resources()->shared_image;
   CHECK(shared_image);
 
   auto frame = media::VideoFrame::WrapMappableSharedImage(
@@ -595,8 +598,9 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     LOG(ERROR) << "Can't wrap SharedImage as VideoFrame";
     return false;
   }
-  frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
 
+  frame->set_color_space(shared_image->color_space());
+  frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible =
