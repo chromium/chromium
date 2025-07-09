@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -327,6 +329,24 @@ webapps::AppId InstallForWebContents(
       install_future.GetCallback(), fallback_behavior);
   EXPECT_TRUE(install_future.Wait());
   return install_future.Get<webapps::AppId>();
+}
+
+std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
+    base::WeakPtr<content::WebContents> web_contents,
+    const blink::mojom::Manifest& manifest) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* provider = WebAppProvider::GetForTest(profile);
+  base::Value::Dict debug_data;
+  base::test::TestFuture<std::unique_ptr<WebAppInstallInfo>> test_future;
+  std::unique_ptr<WebAppDataRetriever> retriever =
+      provider->web_contents_manager().CreateDataRetriever();
+  auto job = ManifestToWebAppInstallInfoJob::CreateAndStart(
+      manifest, *retriever.get(), /*background_installation=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, web_contents,
+      [](IconUrlSizeSet&) {}, debug_data, test_future.GetCallback());
+  EXPECT_TRUE(test_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+  return test_future.Take();
 }
 
 }  // namespace test

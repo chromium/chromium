@@ -16,9 +16,14 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 class GURL;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace web_app {
 
@@ -87,6 +92,11 @@ webapps::AppId InstallForWebContents(
     Profile* profile,
     content::WebContents* web_contents,
     webapps::WebappInstallSource install_surface);
+
+// Parses the manifest to create a `WebAppInstallInfo` instance out of it.
+std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
+    base::WeakPtr<content::WebContents> web_contents,
+    const blink::mojom::Manifest& manifest);
 
 }  // namespace test
 }  // namespace web_app

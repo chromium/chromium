@@ -249,9 +249,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
   // Install the web app:
   std::unique_ptr<WebAppInstallInfo> install_info =
-      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kStartUrl));
+      test::GetInstallInfoForCurrentManifest(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          *manifest);
   install_info->install_url = GURL(kInstallUrl);
-  UpdateWebAppInfoFromManifest(*manifest, install_info.get());
 
   auto* provider = WebAppProvider::GetForTest(profile());
   provider->scheduler().InstallFromInfoNoIntegrationForTesting(

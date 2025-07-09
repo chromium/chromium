@@ -68,15 +68,8 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
 
   std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfoFromJob(
       const blink::mojom::Manifest& manifest) {
-    base::Value::Dict debug_data;
-    base::test::TestFuture<std::unique_ptr<WebAppInstallInfo>> test_future;
-    auto job = ManifestToWebAppInstallInfoJob::CreateAndStart(
-        manifest, *fake_retriever_.get(), /*background_installation=*/false,
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        web_contents()->GetWeakPtr(), [](IconUrlSizeSet&) {}, debug_data,
-        test_future.GetCallback());
-    EXPECT_TRUE(test_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
-    return test_future.Take();
+    return test::GetInstallInfoForCurrentManifest(web_contents()->GetWeakPtr(),
+                                                  manifest);
   }
 
  protected:

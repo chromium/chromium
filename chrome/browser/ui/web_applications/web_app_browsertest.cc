@@ -495,9 +495,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     manifest.scope = manifest.start_url.GetWithoutFilename();
     manifest.has_theme_color = true;
     manifest.theme_color = theme_color;
-    auto web_app_info =
-        std::make_unique<WebAppInstallInfo>(manifest.id, manifest.start_url);
-    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+    std::unique_ptr<WebAppInstallInfo> web_app_info =
+        test::GetInstallInfoForCurrentManifest(
+            browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+            manifest);
 
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -527,9 +528,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   manifest.scope = GURL(kExampleURL);
   manifest.has_background_color = true;
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
-  auto web_app_info =
-      std::make_unique<WebAppInstallInfo>(manifest.id, manifest.start_url);
-  web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+  std::unique_ptr<WebAppInstallInfo> web_app_info =
+      test::GetInstallInfoForCurrentManifest(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          manifest);
   webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
   auto* provider = WebAppProvider::GetForTest(profile());
