@@ -3005,6 +3005,7 @@ static_library("browser") {
       "collaboration/android/collaboration_controller_delegate_android.cc",
       "collaboration/android/collaboration_controller_delegate_android.h",
       "collaboration/android/collaboration_service_factory_android.cc",
+      "collaboration/android/comments/comments_service_factory_android.cc",
       "collaboration/android/messaging/messaging_backend_service_factory_android.cc",
       "commerce/android/price_tracking_utils_android.cc",
       "commerce/android/shopping_service_factory_android.cc",

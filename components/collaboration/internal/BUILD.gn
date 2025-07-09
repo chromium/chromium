@@ -94,6 +94,15 @@ static_library("comments_internal") {
     "//components/collaboration/public:comments_public",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/comments/comments_service_bridge.cc",
+      "android/comments/comments_service_bridge.h",
+    ]
+
+    deps += [ ":comments_jni_headers" ]
+  }
 }
 
 static_library("messaging_internal") {
@@ -206,9 +215,21 @@ source_set("comments_unit_tests") {
 
   deps = [
     ":comments_internal",
+    "//base",
+    "//base/test:test_support",
     "//components/collaboration/public:comments_public",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [ "android/comments/comments_service_bridge_unittest.cc" ]
+    deps += [
+      ":comments_native_j_unittests_jni_headers",
+      ":comments_native_java_unittests_java",
+      "//components/collaboration:test_support",
+      "//testing/gmock",
+    ]
+  }
 }
 
 source_set("messaging_unit_tests") {
@@ -272,6 +293,7 @@ if (is_android) {
   java_group("java") {
     visibility = [ "//chrome/android:*" ]
     deps = [
+      ":comments_java",
       ":core_java",
       ":messaging_java",
     ]
@@ -293,6 +315,20 @@ if (is_android) {
     ]
   }
 
+  android_library("comments_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":comments_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridge.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   android_library("messaging_java") {
     visibility = [ ":*" ]
     srcjar_deps = [ ":messaging_jni_headers" ]
@@ -311,6 +347,26 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+  }
+
+  android_library("comments_native_java_unittests_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridgeUnitTestCompanion.java" ]
+    deps = [
+      ":comments_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/collaboration/public:comments_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+    ]
+
+    srcjar_deps = [ ":comments_native_j_unittests_jni_headers" ]
+  }
+
+  generate_jni("comments_native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridgeUnitTestCompanion.java" ]
   }
 
   android_library("messaging_native_java_unittests_java") {
@@ -348,6 +404,12 @@ if (is_android) {
     ]
 
     sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+  }
+
+  generate_jni("comments_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridge.java" ]
   }
 
   generate_jni("messaging_jni_headers") {

@@ -154,6 +154,7 @@ source_set("messaging_unit_tests") {
 if (is_android) {
   java_group("java") {
     deps = [
+      ":comments_java",
       ":core_java",
       ":messaging_java",
     ]
@@ -204,6 +205,12 @@ if (is_android) {
     ]
 
     sources = [ "android/java/src/org/chromium/components/collaboration/ServiceStatus.java" ]
+  }
+
+  android_library("comments_java") {
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsService.java" ]
+
+    deps = [ "//build/android:build_java" ]
   }
 
   android_library("messaging_java") {
