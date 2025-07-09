@@ -56,7 +56,10 @@ void BrowserWebStateListDelegate::WillActivateWebState(
   // (such as side swipe over multiple tab in the tab strip) can cause
   // rapid change of the active WebState.
   web::IgnoreOverRealizationCheck();
-  web_state->ForceRealized();
+  web_state->ForceRealizedWithPolicy(
+      CreateTabHelperOnlyForRealizedWebStates()
+          ? web::WebState::RealizationPolicy::kEnforceNoAttachedData
+          : web::WebState::RealizationPolicy::kDefault);
 }
 
 void BrowserWebStateListDelegate::WillRemoveWebState(web::WebState* web_state) {
