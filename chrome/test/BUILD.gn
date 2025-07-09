@@ -8596,7 +8596,6 @@ test("unit_tests") {
     ]
     sources += [
       "../browser/ash/scalable_iph/scalable_iph_factory_impl_unittest.cc",
-      "../browser/browser_process_platform_part_ash_unittest.cc",
       "../browser/certificate_provider/certificate_provider_service_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",

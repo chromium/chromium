@@ -26,6 +26,7 @@ namespace ash {
 class AccountManagerFactory;
 class AshProxyMonitor;
 class BrowserContextFlusher;
+class BrowserRestoreObserver;
 class ChromeSessionManager;
 class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
@@ -176,51 +177,14 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   static void EnsureFactoryBuilt();
 
  private:
-  // An observer that restores urls based on the on startup setting after a new
-  // browser is added to the BrowserList.
-  class BrowserRestoreObserver : public BrowserListObserver {
-   public:
-    explicit BrowserRestoreObserver(
-        const BrowserProcessPlatformPart* browser_process_platform_part);
-
-    ~BrowserRestoreObserver() override;
-
-   protected:
-    // BrowserListObserver:
-    void OnBrowserAdded(Browser* browser) override;
-
-   private:
-    // Returns true, if the url defined in the on startup setting should be
-    // opened. Otherwise, returns false.
-    bool ShouldRestoreUrls(Browser* browser) const;
-
-    // Returns true, if the url defined in the on startup setting should be
-    // opened in a new browser. Otherwise, returns false.
-    bool ShouldOpenUrlsInNewBrowser(Browser* browser) const;
-
-    // Restores urls based on the on startup setting.
-    void RestoreUrls(Browser* browser);
-
-    // Called when a session is restored.
-    void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
-
-    const raw_ptr<const BrowserProcessPlatformPart>
-        browser_process_platform_part_;
-
-    base::CallbackListSubscription on_session_restored_callback_subscription_;
-  };
-
-  BrowserRestoreObserver browser_restore_observer_;
 
   friend class BrowserProcessPlatformPartTestApi;
-
-  // Returns true if we can restore URLs for `profile`. Restoring URLs should
-  // only be allowed for regular signed-in users.
-  bool CanRestoreUrlsForProfile(const Profile* profile) const;
 
   void CreateProfileHelper();
 
   void ShutdownPrimaryProfileServices();
+
+  std::unique_ptr<ash::BrowserRestoreObserver> browser_restore_observer_;
 
   std::unique_ptr<ash::ChromeSessionManager> session_manager_;
 
