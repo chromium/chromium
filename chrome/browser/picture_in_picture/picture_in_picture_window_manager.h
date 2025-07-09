@@ -174,9 +174,6 @@ class PictureInPictureWindowManager {
   // update makes it here.
   void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
 
-  // Clears the picture-in-picture window cached bounds.
-  void ClearCachedBounds();
-
   // Used for Document picture-in-picture windows only.
   // Note that this is meant to represent the inner window bounds. When the pip
   // window is drawn, outer bounds may be greater than kMinWindowSize to
