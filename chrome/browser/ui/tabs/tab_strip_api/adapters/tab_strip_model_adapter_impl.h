@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_TAB_STRIP_MODEL_ADAPTER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_collection.h"
@@ -31,6 +32,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, Position target) override;
   mojom::TabCollectionContainerPtr GetTabStripTopology() override;
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle) override;
 
   // TabStripModelAdapterImpl uses passkeys to access experimental API methods
   // in TabStripModel or TabCollections.

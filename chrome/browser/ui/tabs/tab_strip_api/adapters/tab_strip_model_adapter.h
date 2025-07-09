@@ -28,6 +28,8 @@ class TabStripModelAdapter {
   virtual void ActivateTab(size_t index) = 0;
   virtual void MoveTab(tabs::TabHandle handle, Position position) = 0;
   virtual mojom::TabCollectionContainerPtr GetTabStripTopology() = 0;
+  virtual std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle) = 0;
 };
 
 }  // namespace tabs_api

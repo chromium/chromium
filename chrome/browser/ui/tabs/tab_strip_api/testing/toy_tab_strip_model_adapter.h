@@ -27,6 +27,8 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, Position position) override;
   mojom::TabCollectionContainerPtr GetTabStripTopology() override;
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle) override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

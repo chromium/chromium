@@ -68,4 +68,11 @@ ToyTabStripModelAdapter::GetTabStripTopology() {
   return result;
 }
 
+std::optional<const tab_groups::TabGroupId>
+ToyTabStripModelAdapter::FindGroupIdFor(
+    const tabs::TabCollection::Handle& collection_handle) {
+  // TODO(crbug.com/425390972): Integrate with the toy tabstrip for testing
+  // purposes.
+  return std::nullopt;
+}
 }  // namespace tabs_api::testing

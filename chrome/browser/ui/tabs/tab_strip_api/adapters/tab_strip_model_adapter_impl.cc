@@ -57,4 +57,11 @@ TabStripModelAdapterImpl::GetTabStripTopology() {
   return MojoTreeBuilder(tab_strip_model_).Build();
 }
 
+std::optional<const tab_groups::TabGroupId>
+TabStripModelAdapterImpl::FindGroupIdFor(
+    const tabs::TabCollection::Handle& collection_handle) {
+  return tab_strip_model_->FindGroupIdFor(
+      collection_handle, base::PassKey<TabStripModelAdapterImpl>());
+}
+
 }  // namespace tabs_api
