@@ -323,8 +323,6 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
     &kLensOverlayLatencyOptimizations,
     "enable-early-start-query-flow-optimization", true};
 
-constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
-    &kLensOverlayContextualSearchbox, "use-updated-content-fields", true};
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-text-as-context", true};
 
@@ -748,9 +746,6 @@ int GetScannedPdfCharacterPerPageHeuristic() {
   return kScannedPdfCharacterPerPageHeuristic.Get();
 }
 
-bool UseUpdatedContextFields() {
-  return kUseUpdatedContentFields.Get();
-}
 bool UseInnerTextAsContext() {
   return kUseInnerTextAsContext.Get();
 }

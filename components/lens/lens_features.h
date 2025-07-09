@@ -422,10 +422,6 @@ extern uint32_t GetLensOverlayPdfSuggestCharacterTarget();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetScannedPdfCharacterPerPageHeuristic();
 
-// Returns whether to use the new content fields when sending content data
-// in the request payload.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseUpdatedContextFields();
 // Returns whether to include the inner text from the underlying page in the
 // request to be used as page context. This is for webpages and sends text
 // equivalent to document.body.innerText. Must have UseUpdatedContextFields

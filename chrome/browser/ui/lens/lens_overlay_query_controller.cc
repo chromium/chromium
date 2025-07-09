@@ -88,9 +88,6 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
-constexpr char kPdfMimeType[] = "application/pdf";
-constexpr char kPlainTextMimeType[] = "text/plain";
-constexpr char kHtmlMimeType[] = "text/html";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
 constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
@@ -207,29 +204,6 @@ std::map<std::string, std::string> AddVisualInputTypeQueryParam(
   additional_search_query_params.insert(
       {kVisualInputTypeQueryParameterKey, vitValue});
   return additional_search_query_params;
-}
-
-std::string ContentTypeToString(lens::MimeType content_type) {
-  switch (content_type) {
-    case lens::MimeType::kPdf:
-      return kPdfMimeType;
-    case lens::MimeType::kHtml:
-      return kHtmlMimeType;
-    case lens::MimeType::kPlainText:
-      return kPlainTextMimeType;
-    case lens::MimeType::kUnknown:
-      return "";
-    case lens::MimeType::kAnnotatedPageContent:
-      // Upload annotated page content should only be done in the new request
-      // flow which does not use string for content type.
-      NOTREACHED() << "APC not supported in this flow";
-    case lens::MimeType::kImage:
-    case lens::MimeType::kVideo:
-    case lens::MimeType::kAudio:
-    case lens::MimeType::kJson:
-      // These content types are not supported for the page content upload flow.
-      NOTREACHED() << "Unsupported option in page content upload";
-  }
 }
 
 lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
@@ -382,7 +356,7 @@ lens::LensOverlayUploadChunkRequest CreateUploadChunkRequest(
 
 // Returns the lens::Payload to be sent after uploading chunked data using the
 // repeated Content field instead of the deprecated payload fields.
-lens::Payload CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
+lens::Payload CreatePageContentPayloadForChunks(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
     GURL page_url,
@@ -407,34 +381,9 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
   return payload;
 }
 
-// Returns the lens::Payload to be sent after uploading chunked data.
-lens::Payload CreatePageContentPayloadForChunks(
-    base::span<const lens::PageContent> page_content,
-    lens::MimeType primary_content_type,
-    GURL page_url,
-    std::optional<std::string> page_title,
-    int64_t total_stored_chunks) {
-  if (lens::features::UseUpdatedContextFields()) {
-    return CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
-        page_content, primary_content_type, page_url, page_title,
-        total_stored_chunks);
-  }
-
-  lens::Payload payload;
-  payload.set_content_type(ContentTypeToString(primary_content_type));
-  if (!page_url.is_empty()) {
-    payload.set_page_url(page_url.spec());
-  }
-  payload.mutable_stored_chunk_options()->set_read_stored_chunks(true);
-  payload.mutable_stored_chunk_options()->set_total_stored_chunks(
-      total_stored_chunks);
-  payload.set_compression_type(lens::CompressionType::ZSTD);
-  return payload;
-}
-
 // Returns the lens::Payload using the repeated Content field instead of the
 // deprecated payload fields.
-lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
+lens::Payload CreatePageContentPayload(
     base::span<const lens::PageContent> page_contents,
     GURL page_url,
     std::optional<std::string> page_title) {
@@ -470,44 +419,6 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
                                          page_content.bytes_.end());
   }
 
-  return payload;
-}
-
-lens::Payload CreatePageContentPayload(
-    base::span<const lens::PageContent> page_content,
-    lens::MimeType primary_content_type,
-    GURL page_url,
-    std::optional<std::string> page_title) {
-  if (lens::features::UseUpdatedContextFields()) {
-    return CreatePageContentPayloadWithUpdatedContentFields(
-        page_content, page_url, page_title);
-  }
-
-  CHECK_EQ(page_content.size(), 1u);
-  auto content_type = page_content.front().content_type_;
-  auto content_bytes = page_content.front().bytes_;
-  CHECK_EQ(content_type, primary_content_type);
-
-  lens::Payload payload;
-  payload.set_content_type(ContentTypeToString(content_type));
-  if (!page_url.is_empty()) {
-    payload.set_page_url(page_url.spec());
-  }
-
-  // Compress the PDF bytes if the feature flag is enabled and the bytes are for
-  // a PDF.
-  if (content_type == lens::MimeType::kPdf &&
-      lens::features::ShouldZstdCompressPdfBytes()) {
-    // If compression is successful, set the compression type and return.
-    // Otherwise, fall back to the original bytes.
-    if (ZstdCompressBytes(content_bytes, payload.mutable_content_data())) {
-      payload.set_compression_type(lens::CompressionType::ZSTD);
-      return payload;
-    }
-  }
-
-  payload.mutable_content_data()->assign(content_bytes.begin(),
-                                         content_bytes.end());
   return payload;
 }
 
@@ -1412,7 +1323,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     compression_task_tracker_->PostTaskAndReplyWithResult(
         compression_task_runner_.get(), FROM_HERE,
         base::BindOnce(&CreatePageContentPayload, underlying_page_contents_,
-                       primary_content_type_, page_url_, page_title_),
+                       page_url_, page_title_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(),
@@ -1657,27 +1568,18 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     page->add_text_segments(base::UTF16ToUTF8(page_text));
   }
 
-  if (lens::features::UseUpdatedContextFields()) {
-    auto* content = payload.mutable_content();
-    auto* content_data = content->add_content_data();
-    content_data->set_content_type(
-        lens::ContentData::CONTENT_TYPE_EARLY_PARTIAL_PDF);
-    partial_pdf_document.SerializeToString(content_data->mutable_data());
+  auto* content = payload.mutable_content();
+  auto* content_data = content->add_content_data();
+  content_data->set_content_type(
+      lens::ContentData::CONTENT_TYPE_EARLY_PARTIAL_PDF);
+  partial_pdf_document.SerializeToString(content_data->mutable_data());
 
-    // Add the page url to the payload if it is available.
-    if (!page_url_.is_empty()) {
-      content->set_webpage_url(page_url_.spec());
-    }
-    if (page_title_.has_value() && !page_title_.value().empty()) {
-      content->set_webpage_title(page_title_.value());
-    }
-  } else {
-    payload.mutable_partial_pdf_document()->CopyFrom(partial_pdf_document);
-
-    // Add the page url to the payload if it is available.
-    if (!page_url_.is_empty()) {
-      payload.set_page_url(page_url_.spec());
-    }
+  // Add the page url to the payload if it is available.
+  if (!page_url_.is_empty()) {
+    content->set_webpage_url(page_url_.spec());
+  }
+  if (page_title_.has_value() && !page_title_.value().empty()) {
+    content->set_webpage_title(page_title_.value());
   }
 
   request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
