@@ -125,7 +125,10 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
         static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
     auto execution_engine = ExecutionEngine::CreateForTesting(
         profile(), std::move(ui_event_dispatcher));
+    auto raw_execution_engine = execution_engine.get();
     task_ = std::make_unique<ActorTask>(std::move(execution_engine));
+    task_->SetIdForTesting(0);
+    raw_execution_engine->SetOwner(task_.get());
 
     ON_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _, _))
         .WillByDefault(Invoke(Invoke(
@@ -280,8 +283,6 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
-  ActorTask task(std::move(execution_engine));
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
@@ -290,7 +291,7 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
   action.mutable_actions()->at(0).mutable_click()->set_tab_id(
       GetTab()->GetHandle().raw_value());
 
-  task.GetExecutionEngine()->Act(action, result.GetCallback());
+  task_->GetExecutionEngine()->Act(action, result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -308,12 +309,10 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
-  ActorTask task(std::move(execution_engine));
   BrowserAction action = MakeClick(*main_rfh(), kFakeContentNodeId);
   action.mutable_actions()->at(0).mutable_click()->set_tab_id(
       GetTab()->GetHandle().raw_value());
-  task.GetExecutionEngine()->Act(action, result.GetCallback());
+  task_->GetExecutionEngine()->Act(action, result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

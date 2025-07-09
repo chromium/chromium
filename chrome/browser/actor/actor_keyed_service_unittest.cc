@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 
+#include <memory>
 #include <optional>
 
 #include "chrome/browser/actor/actor_task.h"
@@ -47,7 +48,8 @@ class ActorKeyedServiceTest : public testing::Test {
 // Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
+  std::unique_ptr<ExecutionEngine> execution_engine =
+      std::make_unique<ExecutionEngine>(profile());
   actor_service->AddActiveTask(
       std::make_unique<ActorTask>(std::move(execution_engine)));
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
@@ -58,7 +60,8 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 // Stops a task.
 TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
+  std::unique_ptr<ExecutionEngine> execution_engine =
+      std::make_unique<ExecutionEngine>(profile());
   TaskId id = actor_service->AddActiveTask(
       std::make_unique<ActorTask>(std::move(execution_engine)));
   actor_service->StopTask(id);
