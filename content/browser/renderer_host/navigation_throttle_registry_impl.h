@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/safety_checks.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
@@ -104,11 +105,9 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // deferred the navigation have unblocked the navigation.
   void ResumeProcessingNavigationEvent(NavigationThrottle* resuiming_throttle);
 
-  // Returns the underlying NavigationThrottleRunner for tests to manipulate.
-  // TODO(https://crbug.com/422003056): Remove this method, and hide the runner
-  // interfaces from general code to decouple the runner. Once it is hidden,
-  // drop the CONTENT_EXPORT from this class.
-  NavigationThrottleRunner& GetNavigationThrottleRunnerForTesting();
+  // Sets a callback to be called when the navigation is deferred for the first
+  // time.
+  void SetFirstDeferralCallbackForTesting(base::OnceClosure callback);
 
   // Implements NavigationThrottleRegistry:
   NavigationHandle& GetNavigationHandle() override;
@@ -147,6 +146,11 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
   // TODO(https://424460302): Remove this once the experiment completes, and
   // move the cache to GURL if it's successful.
   std::optional<bool> is_http_or_https_;
+
+  // A callback to be called when the navigation is deferred for the first time.
+  base::OnceClosure first_deferral_callback_for_testing_;
+
+  base::WeakPtrFactory<NavigationThrottleRegistryImpl> weak_factory_{this};
 };
 
 }  // namespace content

@@ -168,9 +168,19 @@ void NavigationThrottleRegistryImpl::
 
 void NavigationThrottleRegistryImpl::ProcessNavigationEvent(
     NavigationThrottleEvent event) {
+  base::WeakPtr<NavigationThrottleRegistryImpl> weak_ref =
+      weak_factory_.GetWeakPtr();
   navigation_throttle_runner_->ProcessNavigationEvent(event);
-  // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
-  // by the previous call.
+  // DO NOT ADD CODE BETWEEN THIS AND THE WEAK_REF CHECK BELOW, as the
+  // NavigationHandle might have been deleted by the previous call.
+  if (!weak_ref) {
+    // The NavigationEvent handling might have destroyed NavigationHandle
+    // and its owning this instance. Return immediately.
+    return;
+  }
+  if (!deferring_throttles_.empty() && first_deferral_callback_for_testing_) {
+    std::move(first_deferral_callback_for_testing_).Run();  // IN-TEST
+  }
 }
 
 void NavigationThrottleRegistryImpl::ResumeProcessingNavigationEvent(
@@ -208,9 +218,10 @@ NavigationThrottleRegistryImpl::GetDeferringThrottles() const {
   return deferring_throttles_;
 }
 
-NavigationThrottleRunner&
-NavigationThrottleRegistryImpl::GetNavigationThrottleRunnerForTesting() {
-  return *navigation_throttle_runner_;
+void NavigationThrottleRegistryImpl::SetFirstDeferralCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK(deferring_throttles_.empty());
+  first_deferral_callback_for_testing_ = std::move(callback);
 }
 
 NavigationHandle& NavigationThrottleRegistryImpl::GetNavigationHandle() {

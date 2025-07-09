@@ -200,9 +200,6 @@ void NavigationThrottleRunner::ProcessInternal() {
         registry_->OnDeferProcessingNavigationEvent(throttles[i].get());
         next_index_ = i + 1;
         defer_start_time_ = base::Time::Now();
-        if (first_deferral_callback_for_testing_) {
-          std::move(first_deferral_callback_for_testing_).Run();
-        }
         event_process_execution_time_ += base::Time::Now() - start_time;
         return;
     }

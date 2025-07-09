@@ -51,10 +51,6 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // the navigation.
   void ResumeProcessingNavigationEvent(NavigationThrottle* resuming_throttle);
 
-  void set_first_deferral_callback_for_testing(base::OnceClosure callback) {
-    first_deferral_callback_for_testing_ = std::move(callback);
-  }
-
  private:
   void ProcessInternal();
   void InformRegistry(const NavigationThrottle::ThrottleCheckResult& result);
@@ -89,10 +85,6 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // The total count to know how many times a throttle defer the navigation.
   size_t defer_count_ = 0;
   size_t defer_count_for_request_ = 0;
-
-  // This test-only callback will be run the first time a NavigationThrottle
-  // defers this navigation.
-  base::OnceClosure first_deferral_callback_for_testing_;
 
   // The event currently being processed.
   NavigationThrottleEvent current_event_ = NavigationThrottleEvent::kNoEvent;
