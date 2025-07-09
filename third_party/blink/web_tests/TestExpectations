@@ -1792,6 +1792,9 @@ crbug.com/613659 external/wpt/quirks/percentage-height-calculation.html [ Failur
 # Note: this test was previously marked as slow on Debug builds. Skipping until crash is fixed
 crbug.com/619978 fast/css/giant-stylesheet-crash.html [ Crash Failure Pass Timeout ]
 
+# Temporarily disabled to ship base64 proposal
+crbug.com/42204568 external/wpt/trusted-types/script-enforcement-008.https.html [ Skip Failure Pass ]
+crbug.com/42204568 external/wpt/trusted-types/script-enforcement-009.https.html [ Skip Failure Pass ]
 
 # Working on getting the CSP tests going:
 
