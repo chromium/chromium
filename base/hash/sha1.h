@@ -5,24 +5,15 @@
 #ifndef BASE_HASH_SHA1_H_
 #define BASE_HASH_SHA1_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "build/build_config.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace base {
-
-// Used for storing intermediate data during an SHA1 computation. Callers
-// should not access the data.
-using SHA1Context = SHA_CTX;
 
 enum { kSHA1Length = 20 };  // Length in bytes of a SHA-1 hash.
 
@@ -36,10 +27,6 @@ BASE_EXPORT SHA1Digest SHA1Hash(span<const uint8_t> data);
 // hash.
 BASE_EXPORT std::string SHA1HashString(std::string_view str);
 
-// These functions allow streaming SHA-1 operations.
-BASE_EXPORT void SHA1Init(SHA1Context& context);
-BASE_EXPORT void SHA1Update(std::string_view data, SHA1Context& context);
-BASE_EXPORT void SHA1Final(SHA1Context& context, SHA1Digest& digest);
 }  // namespace base
 
 #endif  // BASE_HASH_SHA1_H_

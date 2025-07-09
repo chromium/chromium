@@ -4,14 +4,11 @@
 
 #include "base/hash/sha1.h"
 
-#include <stdint.h>
-
-#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/hash/sha1.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace base {
@@ -29,20 +26,6 @@ std::string SHA1HashString(std::string_view str) {
   SHA1(reinterpret_cast<const uint8_t*>(str.data()), str.size(),
        reinterpret_cast<uint8_t*>(digest.data()));
   return digest;
-}
-
-// These functions allow streaming SHA-1 operations.
-void SHA1Init(SHA1Context& context) {
-  SHA1_Init(&context);
-}
-
-void SHA1Update(std::string_view data, SHA1Context& context) {
-  SHA1_Update(&context, data.data(), data.size());
-}
-
-void SHA1Final(SHA1Context& context, SHA1Digest& digest) {
-  SHA1Context ctx(context);
-  SHA1_Final(digest.data(), &ctx);
 }
 
 }  // namespace base
