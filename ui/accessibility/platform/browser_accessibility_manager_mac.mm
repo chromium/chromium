@@ -17,6 +17,7 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #import "ui/accessibility/platform/browser_accessibility_cocoa.h"
@@ -514,6 +515,15 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
         }
       }
     }
+#if defined(AX_EXTRA_MAC_NODES)
+    // Update cached native children for tables.
+    if (ui::IsTableLike(change.node->GetRole()) &&
+        change.type == AXTreeObserver::NODE_CHANGED) {
+      BrowserAccessibilityMac* browser_accessibility =
+          static_cast<BrowserAccessibilityMac*>(GetFromID(change.node->id()));
+      [browser_accessibility->GetNativeWrapper() childrenChanged];
+    }
+#endif
   }
 
   for (const BrowserAccessibilityCocoa* obj : changed_editable_roots) {
@@ -536,6 +546,26 @@ void BrowserAccessibilityManagerMac::OnNodeDataChanged(
       new_node_data.GetIntListAttribute(
           ax::mojom::IntListAttribute::kIndirectChildIds)) {
     [node->GetNativeWrapper() childrenChanged];
+  }
+  if (old_node_data.IsInvisible() != new_node_data.IsInvisible()) {
+    // Visibility changes whether a native node is ignored via
+    // isAccessibilityElement().
+    BrowserAccessibilityMac* node_mac =
+        static_cast<BrowserAccessibilityMac*>(node);
+    BrowserAccessibilityCocoa* node_cocoa = node_mac->GetNativeWrapper();
+    if ([node_cocoa isAccessibilityElement]) {
+      [node_cocoa childrenChanged];
+    }
+  }
+}
+
+void BrowserAccessibilityManagerMac::OnSubtreeWillBeReparented(AXTree* tree,
+                                                               AXNode* node) {
+  BrowserAccessibilityMac* node_mac =
+      static_cast<BrowserAccessibilityMac*>(GetFromID(node->id()));
+  BrowserAccessibilityCocoa* node_cocoa = node_mac->GetNativeWrapper();
+  if ([node_cocoa isAccessibilityElement]) {
+    [node_cocoa childrenChanged];
   }
 }
 
