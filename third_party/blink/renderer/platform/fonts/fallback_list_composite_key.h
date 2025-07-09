@@ -39,7 +39,7 @@ struct FallbackListCompositeKey {
         // Discriminate between quoted generic names, referring to a named
         // family, vs unquoted referring to the generic. The name itself is
         // stored identically in both cases.
-        WTF::AddIntToHash(hash_, current_family->FamilyIsGeneric() ? 2u : 1u);
+        AddIntToHash(hash_, current_family->FamilyIsGeneric() ? 2u : 1u);
       }
       current_family = current_family->Next();
     }

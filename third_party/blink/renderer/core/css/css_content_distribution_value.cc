@@ -50,9 +50,9 @@ bool CSSContentDistributionValue::Equals(
 }
 
 unsigned CSSContentDistributionValue::CustomHash() const {
-  return WTF::HashInts(static_cast<unsigned>(distribution_),
-                       WTF::HashInts(static_cast<unsigned>(position_),
-                                     static_cast<unsigned>(overflow_)));
+  return HashInts(static_cast<unsigned>(distribution_),
+                  HashInts(static_cast<unsigned>(position_),
+                           static_cast<unsigned>(overflow_)));
 }
 
 }  // namespace cssvalue

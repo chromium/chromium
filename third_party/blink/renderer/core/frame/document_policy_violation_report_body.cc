@@ -36,9 +36,9 @@ void DocumentPolicyViolationReportBody::BuildJSONValue(
 
 unsigned DocumentPolicyViolationReportBody::MatchId() const {
   unsigned hash = LocationReportBody::MatchId();
-  hash = WTF::HashInts(hash, featureId().Impl()->GetHash());
-  hash = WTF::HashInts(hash, disposition().Impl()->GetHash());
-  hash = WTF::HashInts(hash, message().Impl()->GetHash());
+  hash = HashInts(hash, featureId().Impl()->GetHash());
+  hash = HashInts(hash, disposition().Impl()->GetHash());
+  hash = HashInts(hash, message().Impl()->GetHash());
   return hash;
 }
 

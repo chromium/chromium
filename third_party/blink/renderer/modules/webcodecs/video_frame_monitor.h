@@ -100,7 +100,7 @@ class MODULES_EXPORT VideoFrameMonitor {
       : WTF::GenericHashTraits<media::VideoFrame::ID> {
     static unsigned GetHash(media::VideoFrame::ID key) {
       static_assert(std::is_same_v<decltype(key.GetUnsafeValue()), uint64_t>);
-      return WTF::HashInt(key.GetUnsafeValue());
+      return HashInt(key.GetUnsafeValue());
     }
 
     static const bool kEmptyValueIsZero = false;

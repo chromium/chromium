@@ -66,8 +66,8 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
            identical_values_policy_ == other.identical_values_policy_;
   }
   unsigned CustomHash() const {
-    return WTF::HashInts(identical_values_policy_,
-                         WTF::HashInts(first_->Hash(), second_->Hash()));
+    return HashInts(identical_values_policy_,
+                    HashInts(first_->Hash(), second_->Hash()));
   }
 
   void TraceAfterDispatch(blink::Visitor*) const;

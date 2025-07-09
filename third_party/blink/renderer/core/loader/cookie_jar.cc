@@ -333,8 +333,8 @@ void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
                                            const String& cookie_string,
                                            uint64_t new_version) {
   std::optional<unsigned> new_hash =
-      WTF::HashInts(WTF::GetHash(cookie_url),
-                    cookie_string.IsNull() ? 0 : WTF::GetHash(cookie_string));
+      HashInts(blink::GetHash(cookie_url),
+               cookie_string.IsNull() ? 0 : blink::GetHash(cookie_string));
 
   CookieCacheLookupResult result =
       CookieCacheLookupResult::kCacheMissFirstAccess;

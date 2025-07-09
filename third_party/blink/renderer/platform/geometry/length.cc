@@ -351,10 +351,10 @@ String Length::ToString() const {
 
 unsigned Length::GetHash() const {
   unsigned hash = 0;
-  WTF::AddFloatToHash(hash, value_);
-  WTF::AddIntToHash(hash, type_);
-  WTF::AddIntToHash(hash, quirk_);
-  WTF::AddIntToHash(hash, calculation_handle_);
+  AddFloatToHash(hash, value_);
+  AddIntToHash(hash, type_);
+  AddIntToHash(hash, quirk_);
+  AddIntToHash(hash, calculation_handle_);
   return hash;
 }
 

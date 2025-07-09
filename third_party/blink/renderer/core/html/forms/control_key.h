@@ -57,7 +57,7 @@ struct ControlKeyTranslator {
     // The following hash computation is equivalent to TwoFieldsHashTraits.
     // We can use neither PairHashTraits nor TwoFieldsHashTraits because of
     // reference data members of ControlKeyData.
-    return WTF::HashInts(WTF::GetHash(data.first), WTF::GetHash(data.second));
+    return HashInts(blink::GetHash(data.first), blink::GetHash(data.second));
   }
   static bool Equal(const ControlKey& key, const ControlKeyData& data) {
     return ControlKeyData{key.GetName(), key.GetType()} == data;

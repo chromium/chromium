@@ -75,12 +75,12 @@ unsigned CSSPropertyValueSet::ComputeHash() const {
 
   for (const CSSPropertyValue& property : Properties()) {
     if (property.PropertyID() == CSSPropertyID::kVariable) {
-      WTF::AddIntToHash(hash, property.Name().ToAtomicString().Hash());
+      AddIntToHash(hash, property.Name().ToAtomicString().Hash());
     } else {
-      WTF::AddIntToHash(hash, static_cast<unsigned>(property.PropertyID()));
+      AddIntToHash(hash, static_cast<unsigned>(property.PropertyID()));
     }
-    WTF::AddIntToHash(hash, property.IsImportant());
-    WTF::AddIntToHash(hash, property.Value().Hash());
+    AddIntToHash(hash, property.IsImportant());
+    AddIntToHash(hash, property.Value().Hash());
   }
 
   static_assert((HashTraits<unsigned>::EmptyValue() ^ 0x80000000) !=

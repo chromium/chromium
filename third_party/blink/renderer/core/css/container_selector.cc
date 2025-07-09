@@ -50,15 +50,15 @@ ContainerSelector::ContainerSelector(AtomicString name,
 }
 
 unsigned ContainerSelector::GetHash() const {
-  unsigned hash = !name_.empty() ? WTF::GetHash(name_) : 0;
-  WTF::AddIntToHash(hash, physical_axes_.value());
-  WTF::AddIntToHash(hash, logical_axes_.value());
-  WTF::AddIntToHash(hash, has_style_query_);
-  WTF::AddIntToHash(hash, has_sticky_query_);
-  WTF::AddIntToHash(hash, has_snap_query_);
-  WTF::AddIntToHash(hash, has_scrollable_query_);
-  WTF::AddIntToHash(hash, has_scroll_direction_query_);
-  WTF::AddIntToHash(hash, has_anchored_query_);
+  unsigned hash = !name_.empty() ? blink::GetHash(name_) : 0;
+  AddIntToHash(hash, physical_axes_.value());
+  AddIntToHash(hash, logical_axes_.value());
+  AddIntToHash(hash, has_style_query_);
+  AddIntToHash(hash, has_sticky_query_);
+  AddIntToHash(hash, has_snap_query_);
+  AddIntToHash(hash, has_scrollable_query_);
+  AddIntToHash(hash, has_scroll_direction_query_);
+  AddIntToHash(hash, has_anchored_query_);
   return hash;
 }
 

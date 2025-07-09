@@ -1208,8 +1208,8 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     base::TimeTicks unsafe_start_time =
         entry->GetEventTimingReportingInfo()->creation_time;
     base::TimeTicks unsafe_end_time = entry->GetEndTime();
-    unsigned hash = WTF::GetHash(entry->name());
-    WTF::AddFloatToHash(hash, entry->startTime());
+    unsigned hash = GetHash(entry->name());
+    AddFloatToHash(hash, entry->startTime());
     auto track_id = perfetto::Track::ThreadScoped(this);
     auto flow_id = perfetto::Flow::FromPointer(entry);
     TRACE_EVENT_INSTANT("latency", "EventCreation", track_id,

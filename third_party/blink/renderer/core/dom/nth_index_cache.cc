@@ -34,12 +34,12 @@ void NthIndexCache::Key::Trace(Visitor* visitor) const {
 }
 
 unsigned NthIndexCache::Key::GetHash() const {
-  unsigned hash = WTF::GetHash(parent);
+  unsigned hash = blink::GetHash(parent);
   if (filter != nullptr) {
-    WTF::AddIntToHash(hash, WTF::GetHash(filter));
+    AddIntToHash(hash, blink::GetHash(filter));
   }
   if (!child_tag_name.empty()) {
-    WTF::AddIntToHash(hash, WTF::GetHash(child_tag_name));
+    AddIntToHash(hash, blink::GetHash(child_tag_name));
   }
   return hash;
 }

@@ -266,9 +266,9 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
         end_time_is_now_time
             ? base::TimeTicks::Now()
             : GetPerformanceMarkUnsafeTimeForTraces(end_time, end);
-    unsigned hash = WTF::GetHash(measure_name);
-    WTF::AddFloatToHash(hash, start_time);
-    WTF::AddFloatToHash(hash, end_time);
+    unsigned hash = GetHash(measure_name);
+    AddFloatToHash(hash, start_time);
+    AddFloatToHash(hash, end_time);
     String serialized_detail = GetSerializedDetail(detail);
     v8::Isolate* isolate = script_state->GetIsolate();
     const base::TimeTicks callTime = base::TimeTicks::Now();

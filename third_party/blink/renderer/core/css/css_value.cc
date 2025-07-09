@@ -533,47 +533,43 @@ String CSSValue::CssText() const {
 unsigned CSSValue::Hash() const {
   switch (GetClassType()) {
     case kColorClass:
-      return WTF::HashInts(GetClassType(),
-                           To<cssvalue::CSSColor>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<cssvalue::CSSColor>(this)->CustomHash());
     case kCSSContentDistributionClass:
-      return WTF::HashInts(
+      return HashInts(
           GetClassType(),
           To<cssvalue::CSSContentDistributionValue>(this)->CustomHash());
     case kCustomIdentClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSCustomIdentValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<CSSCustomIdentValue>(this)->CustomHash());
     case kIdentifierClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSIdentifierValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<CSSIdentifierValue>(this)->CustomHash());
     case kNumericLiteralClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSNumericLiteralValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<CSSNumericLiteralValue>(this)->CustomHash());
     case kPathClass:
-      return WTF::HashInts(GetClassType(),
-                           To<cssvalue::CSSPathValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<cssvalue::CSSPathValue>(this)->CustomHash());
     case kStringClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSStringValue>(this)->CustomHash());
+      return HashInts(GetClassType(), To<CSSStringValue>(this)->CustomHash());
     case kUnparsedDeclarationClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSUnparsedDeclarationValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<CSSUnparsedDeclarationValue>(this)->CustomHash());
     case kValueListClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSValueList>(this)->CustomHash());
+      return HashInts(GetClassType(), To<CSSValueList>(this)->CustomHash());
     case kValuePairClass:
-      return WTF::HashInts(GetClassType(),
-                           To<CSSValuePair>(this)->CustomHash());
+      return HashInts(GetClassType(), To<CSSValuePair>(this)->CustomHash());
     case kSuperellipseClass:
-      return WTF::HashInts(
-          GetClassType(),
-          To<cssvalue::CSSSuperellipseValue>(this)->CustomHash());
+      return HashInts(GetClassType(),
+                      To<cssvalue::CSSSuperellipseValue>(this)->CustomHash());
     // These don't have any values.
     case kInheritedClass:
     case kInitialClass:
     case kUnsetClass:
     case kRevertClass:
     case kRevertLayerClass:
-      return WTF::HashInt(GetClassType());
+      return HashInt(GetClassType());
     case kMathFunctionClass:
     case kScopedKeywordClass:
     case kColorMixClass:

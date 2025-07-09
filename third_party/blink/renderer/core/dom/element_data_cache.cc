@@ -51,7 +51,7 @@ ElementDataCache::CachedShareableElementDataWithAttributes(
     const Vector<Attribute, kAttributePrealloc>& attributes) {
   DCHECK(!attributes.empty());
 
-  unsigned hash = WTF::HashInts(tag_name->GetHash(), AttributeHash(attributes));
+  unsigned hash = HashInts(tag_name->GetHash(), AttributeHash(attributes));
   ShareableElementDataCache::ValueType* it =
       shareable_element_data_cache_.insert(hash, std::pair(nullptr, nullptr))
           .stored_value;

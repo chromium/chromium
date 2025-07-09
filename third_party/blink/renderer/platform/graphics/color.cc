@@ -937,15 +937,15 @@ void Color::UnpremultiplyColor() {
 }
 
 unsigned Color::GetHash() const {
-  unsigned result = WTF::HashInt(static_cast<uint8_t>(color_space_));
-  WTF::AddFloatToHash(result, param0_);
-  WTF::AddFloatToHash(result, param1_);
-  WTF::AddFloatToHash(result, param2_);
-  WTF::AddFloatToHash(result, alpha_);
-  WTF::AddIntToHash(result, param0_is_none_);
-  WTF::AddIntToHash(result, param1_is_none_);
-  WTF::AddIntToHash(result, param2_is_none_);
-  WTF::AddIntToHash(result, alpha_is_none_);
+  unsigned result = HashInt(static_cast<uint8_t>(color_space_));
+  AddFloatToHash(result, param0_);
+  AddFloatToHash(result, param1_);
+  AddFloatToHash(result, param2_);
+  AddFloatToHash(result, alpha_);
+  AddIntToHash(result, param0_is_none_);
+  AddIntToHash(result, param1_is_none_);
+  AddIntToHash(result, param2_is_none_);
+  AddIntToHash(result, alpha_is_none_);
   return result;
 }
 

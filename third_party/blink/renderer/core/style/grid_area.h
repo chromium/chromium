@@ -95,7 +95,7 @@ struct GridSpan {
     // In general, a negative `end_line_` will reduce collisions of indefinite
     // spans since it represents the range `[-end_line_, 0]`, which can never
     // occur in definite spans that ensure `start_line_ < end_line_`.
-    return WTF::HashInts(start_line_, IsIndefinite() ? -end_line_ : end_line_);
+    return HashInts(start_line_, IsIndefinite() ? -end_line_ : end_line_);
   }
 
   bool Intersects(GridSpan span) const {

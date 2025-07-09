@@ -183,7 +183,7 @@ bool CSSValueList::Equals(const CSSValueList& other) const {
 unsigned CSSValueList::CustomHash() const {
   unsigned hash = value_list_separator_;
   for (const CSSValue* value : values_) {
-    WTF::AddIntToHash(hash, value->Hash());
+    AddIntToHash(hash, value->Hash());
   }
   return hash;
 }

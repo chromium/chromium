@@ -446,13 +446,11 @@ unsigned int BlinkAXEventIntentHashTraits::GetHash(
     return std::numeric_limits<unsigned>::max();
 
   unsigned hash = 1u;
-  WTF::AddIntToHash(hash, static_cast<const unsigned>(key.intent().command));
-  WTF::AddIntToHash(hash,
-                    static_cast<const unsigned>(key.intent().input_event_type));
-  WTF::AddIntToHash(hash,
-                    static_cast<const unsigned>(key.intent().text_boundary));
-  WTF::AddIntToHash(hash,
-                    static_cast<const unsigned>(key.intent().move_direction));
+  AddIntToHash(hash, static_cast<const unsigned>(key.intent().command));
+  AddIntToHash(hash,
+               static_cast<const unsigned>(key.intent().input_event_type));
+  AddIntToHash(hash, static_cast<const unsigned>(key.intent().text_boundary));
+  AddIntToHash(hash, static_cast<const unsigned>(key.intent().move_direction));
   return hash;
 }
 

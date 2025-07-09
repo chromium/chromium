@@ -136,7 +136,7 @@ class IntegerObject : public GarbageCollected<IntegerObject> {
 
 struct IntegerObjectHash {
   static unsigned GetHash(const IntegerObject& key) {
-    return WTF::HashInt(static_cast<uint32_t>(key.Value()));
+    return HashInt(static_cast<uint32_t>(key.Value()));
   }
 
   static bool Equal(const IntegerObject& a, const IntegerObject& b) {

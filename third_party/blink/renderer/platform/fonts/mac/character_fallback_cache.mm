@@ -106,11 +106,11 @@ std::optional<CharacterFallbackKey> CharacterFallbackKey::Make(
 
 unsigned CharacterFallbackKeyHashTraits::GetHash(
     const CharacterFallbackKey& key) {
-  unsigned hash = WTF::GetHash(key.font_identifier);
-  WTF::AddIntToHash(hash, WTF::HashInt(key.weight));
-  WTF::AddIntToHash(hash, WTF::HashInt(key.style));
-  WTF::AddIntToHash(hash, WTF::HashInt(key.orientation));
-  WTF::AddIntToHash(hash, WTF::HashFloat(key.font_size));
+  unsigned hash = blink::GetHash(key.font_identifier);
+  AddIntToHash(hash, HashInt(key.weight));
+  AddIntToHash(hash, HashInt(key.style));
+  AddIntToHash(hash, HashInt(key.orientation));
+  AddIntToHash(hash, HashFloat(key.font_size));
   return hash;
 }
 

@@ -97,9 +97,9 @@ String CSSCustomIdentValue::CustomCSSText() const {
 
 unsigned CSSCustomIdentValue::CustomHash() const {
   if (IsKnownPropertyID()) {
-    return WTF::HashInt(property_id_);
+    return HashInt(property_id_);
   } else if (ident_function_) {
-    return WTF::HashPointer(ident_function_.Get());
+    return HashPointer(ident_function_.Get());
   } else {
     return string_.Hash();
   }

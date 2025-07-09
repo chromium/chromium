@@ -378,33 +378,33 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   if (settings) {
     unsigned num_features = settings->size();
     for (unsigned i = 0; i < num_features; ++i) {
-      WTF::AddIntToHash(hash, settings->at(i).Tag());
-      WTF::AddIntToHash(hash, settings->at(i).Value());
+      AddIntToHash(hash, settings->at(i).Tag());
+      AddIntToHash(hash, settings->at(i).Value());
     }
   }
 
   if (VariationSettings()) {
-    WTF::AddIntToHash(hash, VariationSettings()->GetHash());
+    AddIntToHash(hash, VariationSettings()->GetHash());
   }
 
   if (font_palette_) {
-    WTF::AddIntToHash(hash, font_palette_->GetHash());
+    AddIntToHash(hash, font_palette_->GetHash());
   }
 
   if (locale_) {
     const AtomicString& locale = locale_->LocaleString();
-    WTF::AddIntToHash(hash, locale.Hash());
+    AddIntToHash(hash, locale.Hash());
   }
 
-  WTF::AddFloatToHash(hash, specified_size_);
-  WTF::AddFloatToHash(hash, computed_size_);
-  WTF::AddFloatToHash(hash, adjusted_size_);
-  WTF::AddIntToHash(hash, letter_spacing_.GetHash());
-  WTF::AddFloatToHash(hash, word_spacing_);
-  WTF::AddIntToHash(hash, fields_as_unsigned_.parts[0]);
-  WTF::AddIntToHash(hash, fields_as_unsigned_.parts[1]);
-  WTF::AddIntToHash(hash, font_selection_request_.GetHash());
-  WTF::AddIntToHash(hash, size_adjust_.GetHash());
+  AddFloatToHash(hash, specified_size_);
+  AddFloatToHash(hash, computed_size_);
+  AddFloatToHash(hash, adjusted_size_);
+  AddIntToHash(hash, letter_spacing_.GetHash());
+  AddFloatToHash(hash, word_spacing_);
+  AddIntToHash(hash, fields_as_unsigned_.parts[0]);
+  AddIntToHash(hash, fields_as_unsigned_.parts[1]);
+  AddIntToHash(hash, font_selection_request_.GetHash());
+  AddIntToHash(hash, size_adjust_.GetHash());
 
   return hash;
 }
@@ -415,8 +415,8 @@ unsigned FontDescription::GetHash() const {
        family = family->Next()) {
     if (family->FamilyName().empty())
       continue;
-    WTF::AddIntToHash(hash, family->FamilyIsGeneric());
-    WTF::AddIntToHash(hash, WTF::GetHash(family->FamilyName()));
+    AddIntToHash(hash, family->FamilyIsGeneric());
+    AddIntToHash(hash, blink::GetHash(family->FamilyName()));
   }
   return hash;
 }

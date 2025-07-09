@@ -18,8 +18,8 @@ ScriptObject Report::toJSON(ScriptState* script_state) const {
 
 unsigned Report::MatchId() const {
   unsigned hash = body()->MatchId();
-  hash = WTF::HashInts(hash, url().IsNull() ? 0 : url().Impl()->GetHash());
-  hash = WTF::HashInts(hash, type().Impl()->GetHash());
+  hash = HashInts(hash, url().IsNull() ? 0 : url().Impl()->GetHash());
+  hash = HashInts(hash, type().Impl()->GetHash());
   return hash;
 }
 

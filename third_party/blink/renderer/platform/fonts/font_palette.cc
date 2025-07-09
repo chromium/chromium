@@ -14,36 +14,36 @@ namespace blink {
 
 unsigned FontPalette::GetHash() const {
   unsigned computed_hash = 0;
-  WTF::AddIntToHash(computed_hash, palette_keyword_);
+  AddIntToHash(computed_hash, palette_keyword_);
 
   if (palette_keyword_ == kInterpolablePalette) {
-    WTF::AddFloatToHash(computed_hash, percentages_.start);
-    WTF::AddFloatToHash(computed_hash, percentages_.end);
-    WTF::AddFloatToHash(computed_hash, normalized_percentage_);
-    WTF::AddFloatToHash(computed_hash, alpha_multiplier_);
-    WTF::AddIntToHash(computed_hash,
-                      static_cast<uint8_t>(color_interpolation_space_));
+    AddFloatToHash(computed_hash, percentages_.start);
+    AddFloatToHash(computed_hash, percentages_.end);
+    AddFloatToHash(computed_hash, normalized_percentage_);
+    AddFloatToHash(computed_hash, alpha_multiplier_);
+    AddIntToHash(computed_hash,
+                 static_cast<uint8_t>(color_interpolation_space_));
     if (hue_interpolation_method_.has_value()) {
-      WTF::AddIntToHash(computed_hash,
-                        static_cast<uint8_t>(*hue_interpolation_method_));
+      AddIntToHash(computed_hash,
+                   static_cast<uint8_t>(*hue_interpolation_method_));
     }
 
-    WTF::AddIntToHash(computed_hash, start_->GetHash());
-    WTF::AddIntToHash(computed_hash, end_->GetHash());
+    AddIntToHash(computed_hash, start_->GetHash());
+    AddIntToHash(computed_hash, end_->GetHash());
   }
 
   if (palette_keyword_ != kCustomPalette)
     return computed_hash;
 
-  WTF::AddIntToHash(computed_hash, WTF::GetHash(palette_values_name_));
-  WTF::AddIntToHash(computed_hash, match_font_family_.empty()
-                                       ? 0
-                                       : WTF::GetHash(match_font_family_));
-  WTF::AddIntToHash(computed_hash, base_palette_.type);
-  WTF::AddIntToHash(computed_hash, base_palette_.index);
+  AddIntToHash(computed_hash, blink::GetHash(palette_values_name_));
+  AddIntToHash(computed_hash, match_font_family_.empty()
+                                  ? 0
+                                  : blink::GetHash(match_font_family_));
+  AddIntToHash(computed_hash, base_palette_.type);
+  AddIntToHash(computed_hash, base_palette_.index);
 
   for (auto& override_entry : palette_overrides_) {
-    WTF::AddIntToHash(computed_hash, override_entry.index);
+    AddIntToHash(computed_hash, override_entry.index);
   }
   return computed_hash;
 }
