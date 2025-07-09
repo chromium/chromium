@@ -316,7 +316,7 @@
     "args": [
       "--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"
     ],
-    "expires": "Jul 6, 2025",
+    "expires": "Dec 6, 2025",
     "owners": [
       "linnan@chromium.org",
       "johnidel@chromium.org"
