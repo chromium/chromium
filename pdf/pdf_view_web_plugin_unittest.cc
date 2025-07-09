@@ -1929,9 +1929,24 @@ TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-TEST_F(PdfViewWebPluginTest, HighlightTextFragments) {
-  EXPECT_CALL(*engine_ptr_, HighlightTextFragments(
-                                ElementsAre("hello-,world", "world,-hello")));
+TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragments) {
+  EXPECT_CALL(*engine_ptr_, FindAndHighlightTextFragments(
+                                ElementsAre("hello-,world", "world,-hello")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
+
+  plugin_->OnMessage(base::Value::Dict()
+                         .Set("type", "highlightTextFragments")
+                         .Set("textFragments", base::Value::List()
+                                                   .Append("hello-,world")
+                                                   .Append("world,-hello")));
+}
+
+TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragmentsNotFound) {
+  EXPECT_CALL(*engine_ptr_, FindAndHighlightTextFragments(
+                                ElementsAre("hello-,world", "world,-hello")))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment).Times(0);
 
   plugin_->OnMessage(base::Value::Dict()
                          .Set("type", "highlightTextFragments")

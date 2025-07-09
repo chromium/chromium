@@ -1063,16 +1063,24 @@ void PDFiumEngine::SetFormHighlight(bool enable_form) {
   KillFormFocus();
 }
 
-void PDFiumEngine::HighlightTextFragments(
+bool PDFiumEngine::FindAndHighlightTextFragments(
     base::span<const std::string> text_fragments) {
   HighlightChangeInvalidator invalidator(this);
   PDFiumTextFragmentFinder text_fragment_finder(this);
   text_fragment_highlights_ =
       text_fragment_finder.FindTextFragments(text_fragments);
+  return !text_fragment_highlights_.empty();
+}
 
-  // Scroll to first text fragment if any were found.
+void PDFiumEngine::ScrollToFirstTextFragment() {
+  CHECK(!text_fragment_highlights_.empty());
+  ScrollToBoundingRects(text_fragment_highlights_[0]);
+}
+
+void PDFiumEngine::RemoveTextFragments() {
   if (!text_fragment_highlights_.empty()) {
-    ScrollToBoundingRects(text_fragment_highlights_[0]);
+    HighlightChangeInvalidator invalidator(this);
+    text_fragment_highlights_.clear();
   }
 }
 

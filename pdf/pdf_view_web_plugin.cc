@@ -1844,7 +1844,9 @@ void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
   for (const base::Value& fragment : *text_fragment_value_list) {
     text_fragments.push_back(fragment.GetString());
   }
-  engine_->HighlightTextFragments(text_fragments);
+  if (engine_->FindAndHighlightTextFragments(text_fragments)) {
+    engine_->ScrollToFirstTextFragment();
+  }
 }
 
 void PdfViewWebPlugin::HandlePrintMessage(

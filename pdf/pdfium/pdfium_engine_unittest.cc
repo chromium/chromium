@@ -2836,6 +2836,9 @@ class SearchStringTestClient : public TestClient {
     EXPECT_FALSE(haystack.empty());
     return TextSearch(/*needle=*/needle, /*haystack=*/haystack, case_sensitive);
   }
+
+  MOCK_METHOD(void, ScrollToX, (int), (override));
+  MOCK_METHOD(void, ScrollToY, (int), (override));
 };
 
 class PDFiumEngineHighlightTextFragmentTest
@@ -2855,7 +2858,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, OnlyTextStart) {
   NiceMock<SearchStringTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
-  engine->HighlightTextFragments({"Spanner"});
+  engine->FindAndHighlightTextFragments({"Spanner"});
 
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
 }
@@ -2865,7 +2868,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndEnd) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"spanner,database"});
+  engine->FindAndHighlightTextFragments({"spanner,database"});
 
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_end_highlight.png");
 }
@@ -2875,7 +2878,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndTextSuffix) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"how,-many"});
+  engine->FindAndHighlightTextFragments({"how,-many"});
 
   DrawHighlightsAndCompare(*engine, 0,
                            "spanner_text_start_suffix_highlight.png");
@@ -2886,7 +2889,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartEndAndSuffix) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"this,api,-and"});
+  engine->FindAndHighlightTextFragments({"this,api,-and"});
 
   DrawHighlightsAndCompare(*engine, 0,
                            "spanner_text_start_end_suffix_highlight.png");
@@ -2897,7 +2900,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixAndTextStart) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"is-,Google"});
+  engine->FindAndHighlightTextFragments({"is-,Google"});
 
   DrawHighlightsAndCompare(*engine, 0,
                            "spanner_text_prefix_start_highlight.png");
@@ -2908,7 +2911,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartAndSuffix) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"of-,Google,-'s"});
+  engine->FindAndHighlightTextFragments({"of-,Google,-'s"});
 
   DrawHighlightsAndCompare(*engine, 0,
                            "spanner_text_prefix_start_suffix_highlight.png");
@@ -2919,7 +2922,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartEndAndSuffix) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"and-,applications,old,-timestamps"});
+  engine->FindAndHighlightTextFragments({"and-,applications,old,-timestamps"});
 
   DrawHighlightsAndCompare(
       *engine, 0, "spanner_text_prefix_start_end_suffix_highlight.png");
@@ -2930,8 +2933,9 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, MultipleTextFragments) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({"Google", "is-,Google", "of-,Google,-'s",
-                                  "and-,applications,old,-timestamps"});
+  engine->FindAndHighlightTextFragments({"Google", "is-,Google",
+                                         "of-,Google,-'s",
+                                         "and-,applications,old,-timestamps"});
 
   DrawHighlightsAndCompare(*engine, 0,
                            "spanner_multiple_fragments_highlight.png");
@@ -2942,32 +2946,85 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
-  engine->HighlightTextFragments({});
+  engine->FindAndHighlightTextFragments({});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"apples"});
+  engine->FindAndHighlightTextFragments({"apples"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"of-,Google,-random"});
+  engine->FindAndHighlightTextFragments({"of-,Google,-random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"of-,Google,random"});
+  engine->FindAndHighlightTextFragments({"of-,Google,random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"and-,applications,old,-random"});
+  engine->FindAndHighlightTextFragments({"and-,applications,old,-random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"apples-,Google"});
+  engine->FindAndHighlightTextFragments({"apples-,Google"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"Google,-random"});
+  engine->FindAndHighlightTextFragments({"Google,-random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"applications,random"});
+  engine->FindAndHighlightTextFragments({"applications,random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
 
-  engine->HighlightTextFragments({"applications,old,-random"});
+  engine->FindAndHighlightTextFragments({"applications,old,-random"});
   DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+}
+
+// Assert that the second highlight should clear the existing highlight.
+TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
+  SearchStringTestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  engine->FindAndHighlightTextFragments({"Spanner"});
+  DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
+
+  engine->FindAndHighlightTextFragments({"spanner,database"});
+  DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_end_highlight.png");
+}
+
+// Assert that a failed text fragment search should also clear the existing
+// highlight.
+TEST_P(PDFiumEngineHighlightTextFragmentTest,
+       ClearExistingHighlightOnFailedFind) {
+  SearchStringTestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  engine->FindAndHighlightTextFragments({"Spanner"});
+  DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
+
+  engine->FindAndHighlightTextFragments({"does_not_exist"});
+  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+}
+
+TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
+  SearchStringTestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  engine->FindAndHighlightTextFragments({"Spanner"});
+  DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
+
+  engine->RemoveTextFragments();
+  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+}
+
+TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
+  SearchStringTestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({200, 400});
+
+  EXPECT_CALL(client, ScrollToX(424));
+  EXPECT_CALL(client, ScrollToY(749));
+
+  engine->FindAndHighlightTextFragments({"difficult to implement"});
+  engine->ScrollToFirstTextFragment();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

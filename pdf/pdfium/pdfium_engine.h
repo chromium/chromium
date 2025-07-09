@@ -559,11 +559,18 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Sets whether form highlight should be enabled or cleared.
   virtual void SetFormHighlight(bool enable_form);
 
-  // Attempts to render highlights for all of the fragments provided in
-  // `text_fragments`. If a fragment is not found, it is skipped and the
-  // engine will attempt to find and highlight the next fragment in the list.
-  virtual void HighlightTextFragments(
+  // Attempts to find and highlight all the `text_fragments` in the PDF. Returns
+  // true if any of the fragments is found, and caches the results in
+  // `text_fragment_highlights_`.
+  virtual bool FindAndHighlightTextFragments(
       base::span<const std::string> text_fragments);
+
+  // Scrolls to and highlights the first entry in `text_fragment_highlights_`.
+  // Only valid if `text_fragment_highlights_` is non-empty (gated by a CHECK).
+  virtual void ScrollToFirstTextFragment();
+
+  // Removes the text fragments and their highlights.
+  virtual void RemoveTextFragments();
 
   // Searches for a text fragment within the text of the PDF.
   void SearchForFragment(const std::u16string& term,
