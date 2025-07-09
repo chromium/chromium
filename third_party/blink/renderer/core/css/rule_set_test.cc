@@ -930,8 +930,7 @@ class RuleSetCascadeLayerTest : public SimTest {
         To<HTMLStyleElement>(GetDocument().QuerySelector(AtomicString("style")))
             ->sheet()
             ->Contents()
-            ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
-                            /*mixins=*/{});
+            ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
     rule_set.CompactRulesIfNeeded();
     return rule_set;
   }

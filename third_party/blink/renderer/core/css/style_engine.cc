@@ -645,7 +645,7 @@ void StyleEngine::UpdateActiveStyleSheetsInShadow(
   auto* collection =
       To<ShadowTreeStyleSheetCollection>(StyleSheetCollectionFor(*tree_scope));
   DCHECK(collection);
-  collection->UpdateActiveStyleSheets(*this, EnsureMediaQueryEvaluator());
+  collection->UpdateActiveStyleSheets(*this);
   if (!collection->HasStyleSheetCandidateNodes() &&
       !tree_scope->HasAdoptedStyleSheets()) {
     tree_scopes_removed.insert(tree_scope);
@@ -660,8 +660,7 @@ void StyleEngine::UpdateActiveUserStyleSheets() {
 
   ActiveStyleSheetVector new_active_sheets;
   for (auto& sheet : injected_user_style_sheets_) {
-    // TODO: Support mixins in user stylesheets.
-    if (RuleSet* rule_set = RuleSetForSheet(*sheet.second, /*mixins=*/{})) {
+    if (RuleSet* rule_set = RuleSetForSheet(*sheet.second)) {
       new_active_sheets.push_back(std::make_pair(sheet.second, rule_set));
     }
   }
@@ -685,8 +684,7 @@ void StyleEngine::UpdateActiveStyleSheets() {
   }
 
   if (ShouldUpdateDocumentStyleSheetCollection()) {
-    GetDocumentStyleSheetCollection().UpdateActiveStyleSheets(
-        *this, EnsureMediaQueryEvaluator());
+    GetDocumentStyleSheetCollection().UpdateActiveStyleSheets(*this);
   }
 
   if (ShouldUpdateShadowTreeStyleSheetCollection()) {
@@ -940,21 +938,18 @@ const Font* StyleEngine::ComputeFont(
   return GetStyleResolver().ComputeFont(element, font_style, font_properties);
 }
 
-RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet,
-                                      const MixinMap& mixins) {
+RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
-  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_, mixins);
+  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_);
 }
 
-RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet,
-                                               const MixinMap& mixins) {
+RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet) {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
-  return sheet.Contents()->CreateUnconnectedRuleSet(*media_query_evaluator_,
-                                                    mixins);
+  return sheet.Contents()->CreateUnconnectedRuleSet(*media_query_evaluator_);
 }
 
 void StyleEngine::ClearResolvers() {
@@ -2654,7 +2649,7 @@ RuleSet* StyleEngine::DefaultViewTransitionStyle(const Element& element) const {
 
   auto* css_style_sheet = transition->UAStyleSheet();
   return &css_style_sheet->Contents()->EnsureRuleSet(
-      CSSDefaultStyleSheets::ScreenEval(), /*mixins=*/{});
+      CSSDefaultStyleSheets::ScreenEval());
 }
 
 void StyleEngine::UpdateViewTransitionOptIn() {
