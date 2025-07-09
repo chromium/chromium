@@ -70,6 +70,7 @@ public class HubToolbarViewRenderTest {
     private HubToolbarView mToolbar;
     private PropertyModel mPropertyModel;
     private HubColorMixer mColorMixer;
+    private PropertyModel mActionButtonPropertyModel;
 
     @Before
     public void setUp() {
@@ -102,6 +103,16 @@ public class HubToolbarViewRenderTest {
                         .with(COLOR_MIXER, mColorMixer)
                         .build();
         PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
+
+        HubActionButtonView hubActionButtonView = mToolbar.findViewById(R.id.toolbar_action_button);
+        mActionButtonPropertyModel =
+                new PropertyModel.Builder(HubActionButtonProperties.ALL_ACTION_BUTTON_KEYS)
+                        .with(COLOR_MIXER, mColorMixer)
+                        .with(HubActionButtonProperties.ACTION_BUTTON_VISIBLE, true)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                mActionButtonPropertyModel, hubActionButtonView, HubActionButtonViewBinder::bind);
+
         when(mPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         mFocusedPaneSupplier.set(mPane);
     }
@@ -137,23 +148,27 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, enabledButtonData);
                 });
         mRenderTestRule.render(mToolbar, "actionButtonOnlyImage");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mPropertyModel.set(
-                                HubToolbarProperties.ACTION_BUTTON_DATA, disabledButtonData));
+                        mActionButtonPropertyModel.set(
+                                HubActionButtonProperties.ACTION_BUTTON_DATA, disabledButtonData));
         mRenderTestRule.render(mToolbar, "disabledButtonOnlyImage");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, null));
+                () ->
+                        mActionButtonPropertyModel.set(
+                                HubActionButtonProperties.ACTION_BUTTON_DATA, null));
         mRenderTestRule.render(mToolbar, "noActionButton");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, enabledButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPane = mock();
                     when(mPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
@@ -163,7 +178,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, disabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, disabledButtonData);
                 });
         mRenderTestRule.render(mToolbar, "disabledActionButtonIncognito");
     }
@@ -178,23 +194,27 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, enabledButtonData);
                 });
         mRenderTestRule.render(mToolbar, "actionButtonOnlyImageWithGTSUpdate");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mPropertyModel.set(
-                                HubToolbarProperties.ACTION_BUTTON_DATA, disabledButtonData));
+                        mActionButtonPropertyModel.set(
+                                HubActionButtonProperties.ACTION_BUTTON_DATA, disabledButtonData));
         mRenderTestRule.render(mToolbar, "disabledButtonOnlyImageWithGTSUpdate");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, null));
+                () ->
+                        mActionButtonPropertyModel.set(
+                                HubActionButtonProperties.ACTION_BUTTON_DATA, null));
         mRenderTestRule.render(mToolbar, "noActionButtonWithGTSUpdate");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, enabledButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPane = mock();
                     when(mPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
@@ -204,7 +224,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, disabledButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, disabledButtonData);
                 });
         mRenderTestRule.render(mToolbar, "disabledActionButtonIncognitoWithGTSUpdate");
     }
@@ -221,7 +242,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
@@ -255,7 +277,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
@@ -288,7 +311,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, false);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
@@ -319,7 +343,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
@@ -355,7 +380,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1);
                     mPropertyModel.set(
@@ -384,7 +410,8 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mActionButtonPropertyModel.set(
+                            HubActionButtonProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(

@@ -20,6 +20,11 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonMediator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonProperties.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorBlendAnimatorSetHelper.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorMixerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorSchemeUpdate.java",
@@ -154,6 +159,8 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.hub"
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubColorMixerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
@@ -85,7 +84,6 @@ public class HubToolbarMediatorUnitTest {
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Pane mTabGroupsPane;
     @Mock private Pane mBookmarksPane;
-    @Mock private FullButtonData mFullButtonData;
     @Mock private PaneOrderController mPaneOrderController;
     @Mock private DisplayButtonData mDisplayButtonData;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
@@ -223,15 +221,6 @@ public class HubToolbarMediatorUnitTest {
         // TOggle panes back to the incognito tab switcher
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertFalse(mModel.get(HUB_SEARCH_ENABLED_STATE));
-    }
-
-    @Test
-    @SmallTest
-    public void testWithActionButtonData() {
-        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        mActionButtonSupplier.set(mFullButtonData);
-        assertEquals(mFullButtonData, mModel.get(ACTION_BUTTON_DATA));
     }
 
     @Test

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
@@ -29,7 +28,6 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -102,10 +100,6 @@ public class HubToolbarMediator {
 
     private final PropertyModel mPropertyModel;
 
-    private final Callback<FullButtonData> mOnActionButtonChangeCallback =
-            this::onActionButtonChange;
-    private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
-
     private final Context mContext;
     private final PaneManager mPaneManager;
     private final Tracker mTracker;
@@ -161,11 +155,6 @@ public class HubToolbarMediator {
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
         rebuildPaneSwitcherButtonData();
 
-        mActionButtonDataSupplier =
-                new TransitiveObservableSupplier<>(
-                        focusedPaneSupplier, p -> p.getActionButtonDataSupplier());
-        mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
-
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 
         mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
@@ -176,10 +165,6 @@ public class HubToolbarMediator {
 
     /** Cleans up observers. */
     public void destroy() {
-        if (mActionButtonDataSupplier != null) {
-            mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
-            mActionButtonDataSupplier = null;
-        }
         mRemoveReferenceButtonObservers.forEach(Runnable::run);
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
@@ -208,10 +193,6 @@ public class HubToolbarMediator {
             }
         }
         return null;
-    }
-
-    private void onActionButtonChange(@Nullable FullButtonData actionButtonData) {
-        mPropertyModel.set(ACTION_BUTTON_DATA, actionButtonData);
     }
 
     private int findCachedPaneSwitcherIndex(@PaneId int paneId) {
