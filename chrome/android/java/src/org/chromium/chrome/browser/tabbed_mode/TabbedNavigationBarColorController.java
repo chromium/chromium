@@ -319,6 +319,7 @@ class TabbedNavigationBarColorController
                                 && ChromeFeatureList.sNavBarColorAnimation.isEnabled()
                                 && isBottomChinEnabled()) {
                             // Hide the nav bar during omnibox swipes.
+                            mNavigationBarColor = Color.TRANSPARENT;
                             mEdgeToEdgeSystemBarColorHelper.setNavigationBarColor(
                                     Color.TRANSPARENT);
                             mEdgeToEdgeSystemBarColorHelper.setNavigationBarDividerColor(
@@ -354,7 +355,14 @@ class TabbedNavigationBarColorController
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         mActiveTab = activeTab;
         if (mActiveTab != null) mActiveTab.addObserver(mTabObserver);
-        updateNavigationBarColor(/* forceShowDivider= */ false, /* disableAnimation= */ false);
+
+        // Do not update the navigation bar color if the device is in the middle of a toolbar swipe
+        // or animation, this will lead to incorrect colors flashing in the middle of the
+        // transition. Later calls to #updateNavigationBarColor() will properly update the color
+        // after the swipe is complete.
+        if (mLayoutManager != null && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING) {
+            updateNavigationBarColor(/* forceShowDivider= */ false, /* disableAnimation= */ false);
+        }
     }
 
     @SuppressLint("NewApi")
