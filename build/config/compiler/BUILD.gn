@@ -784,10 +784,14 @@ config("compiler") {
       } else {
         if (is_apple) {
           ldflags += [ "-Wl,-cache_path_lto,$cache_dir" ]
-        } else {
+        } else if (!is_android) {
+          # TODO(crbug.com/364987714): Re-enable ThinLTO cache on Android.
           ldflags += [ "-Wl,--thinlto-cache-dir=$cache_dir" ]
         }
-        ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
+        if (!is_android) {
+          # TODO(crbug.com/364987714): Re-enable ThinLTO cache on Android.
+          ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
+        }
       }
     }
 
