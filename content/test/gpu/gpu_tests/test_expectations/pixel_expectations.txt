@@ -474,13 +474,13 @@ crbug.com/421871867 [ android android-chromium graphite-disabled passthrough ang
 
 
 # Flaky on Mac Intel
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/425671158 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
+crbug.com/425671158 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
 
 # Flaky Timeout on Mac m3
 crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
