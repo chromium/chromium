@@ -33,6 +33,7 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
   // content::ContentGpuClient:
   void GpuServiceInitialized() override;
   void ExposeInterfacesToBrowser(
+      viz::GpuServiceImpl* gpu_service,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) override;

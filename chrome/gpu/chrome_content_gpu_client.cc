@@ -93,14 +93,15 @@ void ChromeContentGpuClient::GpuServiceInitialized() {
 }
 
 void ChromeContentGpuClient::ExposeInterfacesToBrowser(
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
   // NOTE: Do not add binders directly within this method. Instead, modify the
   // definition of |ExposeChromeGpuInterfacesToBrowser()|, as this ensures
   // security review coverage.
-  ExposeChromeGpuInterfacesToBrowser(this, gpu_preferences, gpu_workarounds,
-                                     binders);
+  ExposeChromeGpuInterfacesToBrowser(this, gpu_service, gpu_preferences,
+                                     gpu_workarounds, binders);
 }
 
 void ChromeContentGpuClient::PostSandboxInitialized() {

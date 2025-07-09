@@ -52,6 +52,7 @@ void CreateArcVideoDecoder(
 }
 
 void CreateArcVideoEncodeAccelerator(
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::PendingReceiver<::arc::mojom::VideoEncodeAccelerator> receiver) {
@@ -89,6 +90,7 @@ void CreateProtectedBufferManager(
 
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
@@ -101,8 +103,8 @@ void ExposeChromeGpuInterfacesToBrowser(
       base::BindRepeating(&CreateArcVideoDecoder, client),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<::arc::mojom::VideoEncodeAccelerator>(
-      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_preferences,
-                          gpu_workarounds),
+      base::BindRepeating(&CreateArcVideoEncodeAccelerator, gpu_service,
+                          gpu_preferences, gpu_workarounds),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<::arc::mojom::VideoProtectedBufferAllocator>(
       base::BindRepeating(&CreateArcVideoProtectedBufferAllocator, client),

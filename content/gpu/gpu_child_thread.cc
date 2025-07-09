@@ -221,7 +221,7 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
   // that will ensure security review coverage.
   mojo::BinderMap binders;
   content::ExposeGpuInterfacesToBrowser(
-      gpu_service->gpu_preferences(),
+      gpu_service, gpu_service->gpu_preferences(),
       gpu_service->gpu_channel_manager()->gpu_driver_bug_workarounds(),
       &binders);
   ExposeInterfacesToBrowser(std::move(binders));
