@@ -168,14 +168,14 @@ suite(`NotificationsPageWithNestedRadioButton`, function() {
     assertTrue(isVisible(cpssRadioGroup));
 
     const blockNotification =
-        page.shadowRoot!.querySelector<HTMLElement>('#notification-block');
+        page.shadowRoot!.querySelector<HTMLElement>('#notificationBlock');
     assertTrue(!!blockNotification);
     blockNotification.click();
     await flushTasks();
     assertFalse(isVisible(cpssRadioGroup));
 
     const allowNotification = page.shadowRoot!.querySelector<HTMLElement>(
-        '#notification-ask-radio-button');
+        '#notificationAskRadioButton');
     assertTrue(!!allowNotification);
     allowNotification.click();
     await flushTasks();

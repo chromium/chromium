@@ -152,7 +152,7 @@ suite(`GeolocationPageWithNestedRadioButton`, function() {
     assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
 
     const blockLocation = page.shadowRoot!.querySelector<HTMLElement>(
-        '#location-block-radio-button');
+        '#locationBlockRadioButton');
     assertTrue(!!blockLocation);
     blockLocation.click();
     await flushTasks();

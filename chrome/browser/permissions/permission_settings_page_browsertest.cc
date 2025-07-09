@@ -46,7 +46,7 @@ const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
-    "#notification-ask-quiet"};
+    "#notificationAskQuiet"};
 
 const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
     "settings-ui",
@@ -54,7 +54,7 @@ const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
-    "#notification-ask-cpss"};
+    "#notificationAskCpss"};
 
 const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
     "settings-ui",
@@ -62,7 +62,7 @@ const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
-    "#notification-ask-loud"};
+    "#notificationAskLoud"};
 
 const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
     "settings-ui",
@@ -219,7 +219,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
-                  "#notification-ask-quiet"};
+                  "#notificationAskQuiet"};
               util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -244,7 +244,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
-                  "#notification-ask-cpss"};
+                  "#notificationAskCpss"};
               util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -319,7 +319,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
-                  "#notification-ask-quiet"};
+                  "#notificationAskQuiet"};
               util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -360,7 +360,7 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   "settings-basic-page",
                   "settings-privacy-page",
                   "settings-notifications-page",
-                  "#notification-ask-cpss"};
+                  "#notificationAskCpss"};
               util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
