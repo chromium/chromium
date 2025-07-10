@@ -19,7 +19,6 @@ import {PrivacySandboxInternalsBrowserProxy} from './privacy_sandbox_internals_b
 import {Router} from './router.js';
 import type {RouteObserver} from './router.js';
 
-
 const tpcdExperimentPrefPrefixes: string[] = [
   'tpcd_experiment.',
   'uninstall_metrics.installation_date2',
@@ -37,11 +36,9 @@ const advertisingPrefPrefixes: string[] = [
   'privacy_sandbox.',
 ];
 
-
 export class InternalsPage extends CustomElement implements RouteObserver {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
-  whenLoaded: Promise<void>|null = null;
 
   static get is() {
     return 'internals-page';
@@ -53,7 +50,8 @@ export class InternalsPage extends CustomElement implements RouteObserver {
   }
 
   connectedCallback() {
-    this.whenLoaded = this.load();
+    this.setupEventListeners();
+    this.load();
     const defaultPage =
         this.shadowRoot!.querySelector<HTMLElement>('[slot="tab"][selected]')
             ?.dataset['pageName']!;
@@ -82,7 +80,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       console.error('Parent element not defined for prefixList:', prefixes);
     }
   }
-
 
   // Accepts a list prefs and displays them in the parent element
   addPrefsToDom(
@@ -115,13 +112,33 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     }
   }
 
-  async load() {
+  loadAndDisplayPrefs() {
+    this.browserProxy_.handler
+        .readPrefsWithPrefixes([
+          ...advertisingPrefPrefixes,
+          ...trackingProtectionPrefPrefixes,
+          ...tpcdExperimentPrefPrefixes,
+        ])
+        .then(({prefs}) => {
+          this.maybeAddPrefsToDom(
+              this.shadowRoot!.querySelector<HTMLElement>(
+                  '#advertising-prefs-panel'),
+              advertisingPrefPrefixes, prefs);
+          this.maybeAddPrefsToDom(
+              this.shadowRoot!.querySelector<HTMLElement>(
+                  '#tracking-protection-prefs-panel'),
+              trackingProtectionPrefPrefixes, prefs);
+          this.maybeAddPrefsToDom(
+              this.shadowRoot!.querySelector<HTMLElement>(
+                  '#tpcd-experiment-prefs-panel'),
+              tpcdExperimentPrefPrefixes, prefs);
+        });
+  }
+
+  setupEventListeners() {
     const tabBox =
         this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
 
-    // We set up the event listener on the #ps-page element at the top of load,
-    // before any await statements, otherwise, the registration of the event
-    // listener will be delayed till awaited async operations are completed.
     tabBox.addEventListener('selected-index-change', () => {
       const selectedTab =
           tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
@@ -130,25 +147,12 @@ export class InternalsPage extends CustomElement implements RouteObserver {
         Router.getInstance().navigateTo(selectedTab.dataset['pageName']);
       }
     });
+  }
 
-    const {prefs} = await this.browserProxy_.handler.readPrefsWithPrefixes([
-      ...advertisingPrefPrefixes,
-      ...trackingProtectionPrefPrefixes,
-      ...tpcdExperimentPrefPrefixes,
-    ]);
-
-    this.maybeAddPrefsToDom(
-        this.shadowRoot!.querySelector<HTMLElement>('#advertising-prefs-panel'),
-        advertisingPrefPrefixes, prefs);
-    this.maybeAddPrefsToDom(
-        this.shadowRoot!.querySelector<HTMLElement>(
-            '#tracking-protection-prefs-panel'),
-        trackingProtectionPrefPrefixes, prefs);
-    this.maybeAddPrefsToDom(
-        this.shadowRoot!.querySelector<HTMLElement>(
-            '#tpcd-experiment-prefs-panel'),
-        tpcdExperimentPrefPrefixes, prefs);
-
+  async load() {
+    const tabBox =
+        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
+    this.loadAndDisplayPrefs();
     const csPanels = new Map<string, HTMLElement>();
     const handler = this.browserProxy_.handler;
     const shouldShowTpcdMetadataGrants =
@@ -178,7 +182,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
 
       csPanels.set(ContentSettingsType[i], panel);
     }
-
 
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {

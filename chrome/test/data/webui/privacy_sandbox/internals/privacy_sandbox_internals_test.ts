@@ -12,15 +12,18 @@ import 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
+import type {PrivacySandboxInternalsPref} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
+import {PrivacySandboxInternalsBrowserProxy} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals_browser_proxy.js';
 import {Router} from 'chrome://privacy-sandbox-internals/router.js';
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-function waitForElement(
+import {TestPrivacySandboxInternalsBrowserProxy} from './test_privacy_sandbox_internals_browser_proxy.js';
+
+async function waitForElement(
     root: ShadowRoot, selector: string): Promise<HTMLElement> {
   return new Promise(resolve => {
     const check = () => {
@@ -64,6 +67,10 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   }
 
   setup(async function() {
+    const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.setShouldShowTpcdMetadataGrants(true);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+
     Router.resetInstanceForTesting();
     window.history.replaceState({}, '', window.location.pathname);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -95,14 +102,13 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('navigatingToSpecificUrl', async () => {
-    const targetPage = Page.TPCD_METADATA_GRANTS;
-    await page.whenLoaded;
+    const targetPage = Page.COOKIES;
     Router.getInstance().navigateTo(targetPage);
 
-    const tpcdmetadatagrantsTab = await waitForElement(
+    const cookiesTab = await waitForElement(
         shadowRoot, `div[slot="tab"][data-page-name="${targetPage}"]`);
     const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
-    const expectedIndex = allTabs.indexOf(tpcdmetadatagrantsTab).toString();
+    const expectedIndex = allTabs.indexOf(cookiesTab).toString();
 
     await waitForCondition(
         () => tabContainer.getAttribute('selected-index') === expectedIndex);
@@ -139,7 +145,6 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('updatesTabWhenBackButtonIsUsed', async () => {
-    await page.whenLoaded;
     Router.getInstance().navigateTo(Page.ADVERTISING);
     await waitForCondition(
         () => new URLSearchParams(window.location.search).get('page') ===
@@ -164,7 +169,6 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('updatesTabWhenForwardButtonIsUsed', async () => {
-    await page.whenLoaded;
     Router.getInstance().navigateTo(Page.ADVERTISING);
     await waitForCondition(
         () => new URLSearchParams(window.location.search).get('page') ===
@@ -196,11 +200,23 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
 // Test the <internals-page> element with the real PageHandler.
 suite('InternalsPageTest', function() {
   let internalsPage: InternalsPage;
+  let browserProxy: TestPrivacySandboxInternalsBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+
+    const mockPrefs: PrivacySandboxInternalsPref[] = [
+      {name: 'privacy_sandbox.some_pref', value: {boolValue: true}},
+      {name: 'tracking_protection.some_pref', value: {boolValue: true}},
+      {name: 'tpcd_experiment.some_pref', value: {boolValue: true}},
+    ];
+
+    browserProxy.testHandler.setPrefs(mockPrefs);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     internalsPage = document.createElement('internals-page');
     document.body.appendChild(internalsPage);
+    await browserProxy.testHandler.whenCalled('readPrefsWithPrefixes');
   });
 
   test('rendersAdvertisingPrefs', async () => {
@@ -234,11 +250,12 @@ suite('InternalsPageTest', function() {
 // flag status.
 suite('PSInternalsPageTpcdTabLoadingTest', function() {
   let internalsPage: InternalsPage;
+  let browserProxy: TestPrivacySandboxInternalsBrowserProxy;
 
   function setShouldShowTpcdMetadataGrants(isEnabled: boolean) {
-    loadTimeData.overrideValues({
-      isPrivacySandboxInternalsDevUIEnabled: isEnabled,
-    });
+    browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.setShouldShowTpcdMetadataGrants(isEnabled);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     internalsPage = document.createElement('internals-page');
     document.body.appendChild(internalsPage);
@@ -260,15 +277,13 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
   test('NoTpcdPanelIfDisabled', async () => {
     setShouldShowTpcdMetadataGrants(false);
-    await internalsPage.whenLoaded;
     const anotherPanel = await waitForElement(
         internalsPage.shadowRoot!, 'div[slot="panel"][title="COOKIES"]');
     assertTrue(
         !!anotherPanel,
         'Panels that are not TPCD Metadata Grants should render normally.');
-    await new Promise(resolve => setTimeout(resolve, 0));
     const tpcdPanel = internalsPage.shadowRoot!.querySelector(
-        'div[slot="panel"][title="TPCD_METADATA_GRANTS"]');
+        'div[slot="panel"][title="TPCD_METADADATA_GRANTS"]');
     assertNull(
         tpcdPanel,
         'The panel for TPCD Metadata Grants should not exist when the flag is disabled.');
@@ -276,7 +291,6 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
   test('hidesTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(false);
-    await internalsPage.whenLoaded;
     const tpcdTab = await findTpcdTab();
     assertFalse(
         !!tpcdTab, 'The TPCD tab should not exist when its flag is disabled.');
@@ -284,7 +298,6 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
   test('rendersTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(true);
-    await internalsPage.whenLoaded;
     const tpcdTab = await findTpcdTab();
     assertTrue(
         !!tpcdTab, 'The TPCD tab should exist when its flag is enabled.');

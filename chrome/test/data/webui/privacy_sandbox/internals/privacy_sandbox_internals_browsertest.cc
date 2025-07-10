@@ -26,9 +26,7 @@ class PrivacySandboxInternalsMochaTest : public WebUIMochaBrowserTest {
       privacy_sandbox::kPrivacySandboxInternalsDevUI};
 };
 
-// TODO(crbug.com/428869493): The test times out after crrev.com/c/6597720.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMochaTest,
-                       DISABLED_CustomElements) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMochaTest, CustomElements) {
   RunTest("privacy_sandbox/internals/privacy_sandbox_internals_test.js",
           "mocha.run();");
 }
