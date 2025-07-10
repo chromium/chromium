@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
+package optimization_guide.proto;
+
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "ContextualCueingMetadataProto";
 
-package optimization_guide.proto;
-
 enum ContextualCueingClientSignal {
   CONTEXTUAL_CUEING_CLIENT_SIGNAL_UNSPECIFIED = 0;
+
   // The number of pages in the PDF, if the page being viewed is a PDF.
   CONTEXTUAL_CUEING_CLIENT_SIGNAL_PDF_PAGE_COUNT = 1;
+
   // The number of words in the page being viewed if not a PDF.
   CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT = 2;
 }
@@ -26,10 +30,10 @@ enum ContextualCueingOperator {
 
 message ContextualCueingConditions {
   // The signal to check.
-  optional ContextualCueingClientSignal signal = 1;
+  ContextualCueingClientSignal signal = 1;
 
   // The operator to use when comparing the signal to the threshold.
-  optional ContextualCueingOperator cueing_operator = 2;
+  ContextualCueingOperator cueing_operator = 2;
 
   oneof threshold {
     // The int64 threshold value to compare the signal to.
@@ -51,7 +55,7 @@ message GlicCueingConfiguration {
   // The cue label to show in the tab strip.
   //
   // This will always be non-empty.
-  optional string cue_label = 1;
+  string cue_label = 1;
 
   // The conditions that must be met for this cueing configuration to be
   // eligible. This should be treated as an AND operation.
@@ -73,5 +77,5 @@ message GlicZeroStateSuggestionsMetadata {
   // If this is false, the client should show generic suggestions instead.
   // If this is true, the client should show the `contextual_suggestions` if
   // available, or generic suggestions if not.
-  optional bool contextual_suggestions_eligible = 2;
+  bool contextual_suggestions_eligible = 2;
 }

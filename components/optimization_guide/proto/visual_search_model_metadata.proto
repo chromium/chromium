@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
+package optimization_guide.proto;
+
+option features.enum_type = CLOSED;
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "VisualSearchModelMetadataProto";
-
-package optimization_guide.proto;
 
 message FeatureLibrary {
   // Next id: 16
@@ -50,8 +51,10 @@ message FeatureLibrary {
   // Enum listing the ways in which we can normalize a feature.
   enum NormalizingOp {
     NORMALIZE_UNSPECIFIED = 0;
+
     // Normalize by the size of the viewport area.
     BY_VIEWPORT_AREA = 1;
+
     // Normalize by the max value of the feature.
     BY_MAX_VALUE = 2;
   }
@@ -59,8 +62,10 @@ message FeatureLibrary {
   // Enum listing the types of thresholding operators.
   enum ThresholdingOp {
     THRESHOLDING_UNSPECIFIED = 0;
+
     // Greater than.
     GT = 1;
+
     // Less than.
     LT = 2;
   }
@@ -80,11 +85,12 @@ message FeatureLibrary {
 // threshold = 5. Then the rule is satisfied if the original area of the image
 // is greater than 5.
 message ThresholdingRule {
-  optional FeatureLibrary.ImageLevelFeatureName feature_name = 1;
+  FeatureLibrary.ImageLevelFeatureName feature_name = 1;
+
   // The normalizing_op is not required.
-  optional FeatureLibrary.NormalizingOp normalizing_op = 2;
-  optional FeatureLibrary.ThresholdingOp thresholding_op = 3;
-  optional float threshold = 4;
+  FeatureLibrary.NormalizingOp normalizing_op = 2;
+  FeatureLibrary.ThresholdingOp thresholding_op = 3;
+  float threshold = 4;
 }
 
 // An OR-of-thresholding-rules is satisfied if any of the thresholding rules it
@@ -95,8 +101,8 @@ message OrOfThresholdingRules {
 
 // Specifies a feature by whose value we need to sort the final eligible images.
 message SortingClause {
-  optional FeatureLibrary.ImageLevelFeatureName feature_name = 1;
-  optional FeatureLibrary.SortingOrder sorting_order = 2;
+  FeatureLibrary.ImageLevelFeatureName feature_name = 1;
+  FeatureLibrary.SortingOrder sorting_order = 2;
 }
 
 // Contains any additional options for cheap pruning that cannot be neatly
@@ -107,7 +113,7 @@ message AdditionalCheapPruningOptions {
   // overlap of the images is >= to the provided fraction (eg. 0.99),
   // and there is a z-index value present, we will filter out the image
   // with a lower z-index value.
-  optional float z_index_overlap_fraction = 1;
+  float z_index_overlap_fraction = 1;
 }
 
 // Overall spec for the whole module.
@@ -116,11 +122,12 @@ message EligibilitySpec {
   // cheaply prune ineligible images. All of the eligibility rules must be
   // satisfied for an image to be considered eligible.
   repeated OrOfThresholdingRules cheap_pruning_rules = 1;
-  optional AdditionalCheapPruningOptions additional_cheap_pruning_options = 5;
+  AdditionalCheapPruningOptions additional_cheap_pruning_options = 5;
 
   // These are thresholding rules that depend on more expensive-to-compute
   // inputs such as the sensitivity and intent classifications.
   repeated OrOfThresholdingRules classifier_score_rules = 2;
+
   // Before running these rules, normalizing features are recomputed only over
   // the images that remain after the second pass.
   repeated OrOfThresholdingRules post_renormalization_rules = 3;
@@ -133,9 +140,9 @@ message EligibilitySpec {
 
 // The message contains a set of params to config visual search classification.
 message VisualSearchModelMetadata {
-  optional EligibilitySpec eligibility_spec = 1;
+  EligibilitySpec eligibility_spec = 1;
 
   // Keep track of the version to ensure the client-side has been updated to
   // handle new fields that may appear in the config protos.
-  optional int64 metadata_version = 2;
+  int64 metadata_version = 2;
 }
