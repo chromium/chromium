@@ -96,27 +96,6 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 };
 
-// Tests that each WKWebViewConfigurationProvider has own, non-nil
-// configuration and configurations returned by the same provider will always
-// have the same process pool.
-TEST_F(WKWebViewConfigurationProviderTest, ConfigurationOwnerhip) {
-  // Configuration is not nil.
-  WKWebViewConfigurationProvider& provider = GetProvider();
-  ASSERT_TRUE(provider.GetWebViewConfiguration());
-
-  // Same non-nil WKProcessPool for the same provider.
-  ASSERT_TRUE(provider.GetWebViewConfiguration().processPool);
-  EXPECT_EQ(provider.GetWebViewConfiguration().processPool,
-            provider.GetWebViewConfiguration().processPool);
-
-  // Different WKProcessPools for different providers.
-  FakeBrowserState other_browser_state;
-  WKWebViewConfigurationProvider& other_provider =
-      GetProvider(&other_browser_state);
-  EXPECT_NE(provider.GetWebViewConfiguration().processPool,
-            other_provider.GetWebViewConfiguration().processPool);
-}
-
 // Tests Non-OffTheRecord configuration.
 TEST_F(WKWebViewConfigurationProviderTest, NoneOffTheRecordConfiguration) {
   browser_state_.SetOffTheRecord(false);
@@ -137,7 +116,6 @@ TEST_F(WKWebViewConfigurationProviderTest, OffTheRecordConfiguration) {
 TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
   WKWebViewConfigurationProvider& provider = GetProvider();
   WKWebViewConfiguration* config = provider.GetWebViewConfiguration();
-  WKProcessPool* pool = [config processPool];
   WKPreferences* prefs = [config preferences];
   WKUserContentController* userContentController =
       [config userContentController];
@@ -147,14 +125,11 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
   WKWebViewConfiguration* other_wk_web_view_configuration =
       GetProvider(&other_browser_state).GetWebViewConfiguration();
   ASSERT_TRUE(other_wk_web_view_configuration);
-  config.processPool = other_wk_web_view_configuration.processPool;
   config.preferences = other_wk_web_view_configuration.preferences;
   config.userContentController =
       other_wk_web_view_configuration.userContentController;
 
   // Make sure that the properties of internal configuration were not changed.
-  EXPECT_TRUE(provider.GetWebViewConfiguration().processPool);
-  EXPECT_EQ(pool, provider.GetWebViewConfiguration().processPool);
   EXPECT_TRUE(provider.GetWebViewConfiguration().preferences);
   EXPECT_EQ(prefs, provider.GetWebViewConfiguration().preferences);
   EXPECT_TRUE(provider.GetWebViewConfiguration().userContentController);
