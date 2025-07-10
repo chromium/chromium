@@ -5,10 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
 
-#include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -29,16 +27,6 @@ class TestGpuMemoryBufferManager {
 
   ~TestGpuMemoryBufferManager();
 
-  std::unique_ptr<TestGpuMemoryBufferManager>
-  CreateClientGpuMemoryBufferManager();
-  int GetClientId() { return client_id_; }
-
-  void OnGpuMemoryBufferDestroyed(gfx::GpuMemoryBufferId gpu_memory_buffer_id);
-
-  void SetFailOnCreate(bool fail_on_create) {
-    fail_on_create_ = fail_on_create;
-  }
-
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
@@ -51,21 +39,6 @@ class TestGpuMemoryBufferManager {
   // for the duration of all member functions, to ensure consistency.
   // https://crbug.com/690588, https://crbug.com/859020
   base::Lock lock_;
-
-  // Buffers allocated by this manager.
-  int last_gpu_memory_buffer_id_ = 1000;
-  std::map<int, raw_ptr<gfx::GpuMemoryBuffer, CtnExperimental>> buffers_;
-
-  // Parent information for child managers.
-  int client_id_ = -1;
-  raw_ptr<TestGpuMemoryBufferManager> parent_gpu_memory_buffer_manager_ =
-      nullptr;
-
-  // Child infomration for parent managers.
-  int last_client_id_ = 5000;
-  std::map<int, raw_ptr<TestGpuMemoryBufferManager, CtnExperimental>> clients_;
-
-  bool fail_on_create_ = false;
 };
 
 }  // namespace gpu
