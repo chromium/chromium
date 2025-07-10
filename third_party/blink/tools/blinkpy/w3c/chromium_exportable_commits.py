@@ -5,6 +5,7 @@
 import logging
 
 from blinkpy.w3c.chromium_commit import ChromiumCommit
+from blinkpy.w3c.known_exported_change_ids import KNOWN_EXPORTED_CHANGE_IDS
 
 _log = logging.getLogger(__name__)
 
@@ -167,6 +168,13 @@ def _is_commit_exported(chromium_commit, local_wpt, wpt_github,
 
     # PR is merged, and we need to verify that local WPT contains the commit.
     change_id = chromium_commit.change_id()
+    if change_id and change_id in KNOWN_EXPORTED_CHANGE_IDS:
+        _log.info(
+            'Checking if commit is exported: '
+            'Commit %s (Change-Id: %s) is considered exported via manual override list.',
+            chromium_commit.short_sha, change_id)
+        return True
+
     found_in_upstream = bool(
         local_wpt.seek_change_id(change_id) if change_id else local_wpt.
         seek_commit_position(chromium_commit.position))
