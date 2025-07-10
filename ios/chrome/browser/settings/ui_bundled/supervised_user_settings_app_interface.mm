@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -56,10 +57,22 @@ void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
 
 bool isShowingInterstitialForState(web::WebState* web_state) {
   CHECK(web_state);
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    // If kCreateTabHelperOnlyForRealizedWebStates feature is enabled, then
+    // the tab helpers are not created for unrealized WebStates. If the tab
+    // helpers are not created, they cannot be presenting an interstitial,
+    // so return early in that case.
+    if (!web_state->IsRealized()) {
+      return false;
+    }
+  }
+
   auto* blocking_tab_helper =
       security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state);
 
+  // The tab helper must have been created for the WebState at this point.
   CHECK(blocking_tab_helper);
+
   security_interstitials::IOSSecurityInterstitialPage* blocking_page =
       blocking_tab_helper->GetCurrentBlockingPage();
   return blocking_page && blocking_page->GetInterstitialType() ==
