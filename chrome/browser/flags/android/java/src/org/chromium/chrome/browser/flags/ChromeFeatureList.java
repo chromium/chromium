@@ -174,8 +174,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_COMPOSEPLATE = "AndroidComposeplate";
-    public static final String ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE =
-            "AndroidDumpOnScrollWithoutResource";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
     public static final String ANDROID_NATIVE_PAGES_IN_NEW_TAB = "AndroidNativePagesInNewTab";
@@ -1209,8 +1207,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
-    public static final MutableFlagWithSafeDefault sAndroidDumpOnScrollWithoutResource =
-            newMutableFlagWithSafeDefault(ANDROID_DUMP_ON_SCROLL_WITHOUT_RESOURCE, false);
     public static final MutableFlagWithSafeDefault sAndroidNativePagesInNewTab =
             newMutableFlagWithSafeDefault(ANDROID_NATIVE_PAGES_IN_NEW_TAB, true);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =

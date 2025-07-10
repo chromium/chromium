@@ -1039,11 +1039,9 @@ public class CompositorViewHolder extends FrameLayout
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
-        if (ChromeFeatureList.sAndroidDumpOnScrollWithoutResource.isEnabled()
-                && !isVisibilityForced
-                && getResourceManager() != null) {
+        if (!isVisibilityForced && getResourceManager() != null) {
             getResourceManager()
-                    .dumpIfNoResource(AndroidResourceType.DYNAMIC, R.id.control_container);
+                    .assertResourceExists(AndroidResourceType.DYNAMIC, R.id.control_container);
         }
 
         onViewportChanged();

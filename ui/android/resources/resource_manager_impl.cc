@@ -251,12 +251,11 @@ void ResourceManagerImpl::RemoveResource(
   resources_[res_type].erase(res_id);
 }
 
-void ResourceManagerImpl::DumpIfNoResource(
-    JNIEnv* env,
-    jint res_type,
-    jint res_id) {
+void ResourceManagerImpl::AssertResourceExists(JNIEnv* env,
+                                               jint res_type,
+                                               jint res_id) {
   if (resources_[res_type].find(res_id) == resources_[res_type].end()) {
-    base::debug::DumpWithoutCrashing();  // Investigating crbug.com/388600389.
+    base::debug::DumpWithoutCrashing();
   }
 }
 

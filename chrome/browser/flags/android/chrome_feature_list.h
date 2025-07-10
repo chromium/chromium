@@ -30,7 +30,6 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
 BASE_DECLARE_FEATURE(kAndroidAppearanceSettings);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbar);
-BASE_DECLARE_FEATURE(kAndroidDumpOnScrollWithoutResource);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidNativePagesInNewTab);
 BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindow);

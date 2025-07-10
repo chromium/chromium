@@ -203,7 +203,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppearanceSettings,
     &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
-    &kAndroidDumpOnScrollWithoutResource,
     &kAndroidElegantTextHeight,
     &kAndroidNativePagesInNewTab,
     &kAndroidProgressBarVisualUpdate,
@@ -559,10 +558,6 @@ BASE_FEATURE(kAndroidBookmarkBar,
 
 BASE_FEATURE(kAndroidBottomToolbar,
              "AndroidBottomToolbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidDumpOnScrollWithoutResource,
-             "AndroidDumpOnScrollWithoutResource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidElegantTextHeight,

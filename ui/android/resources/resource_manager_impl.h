@@ -66,9 +66,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
       jint res_type,
       jint res_id);
   void ClearTintedResourceCache(JNIEnv* env);
-  void DumpIfNoResource(JNIEnv* env,
-                        jint res_type,
-                        jint res_id);
+  void AssertResourceExists(JNIEnv* env, jint res_type, jint res_id);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

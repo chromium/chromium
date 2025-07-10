@@ -678,21 +678,6 @@
             ]
         }
     ],
-    "AndroidDumpOnScrollWithoutResource": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidDumpOnScrollWithoutResource"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [
