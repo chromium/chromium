@@ -15,6 +15,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
@@ -76,6 +77,20 @@ void SetBannerImage(ui::DialogModel::Builder& builder,
                          profiles::EmbedAvatarOntoImage(
                              IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK,
                              avatar_image, kAvatarPosition, kAvatarSize));
+}
+
+void MigrateUser(Profile* profile) {
+  if (!IsUserEligibleForDiceMigration(profile)) {
+    return;
+  }
+  PrefService* prefs = profile->GetPrefs();
+  prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  // TODO(crbug.com/399838468): Consider calling
+  // `PrimaryAccountManager::ComputeExplicitBrowserSignin` upon explicit signin
+  // pref change.
+  prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
+                    true);
 }
 
 }  // namespace
@@ -168,6 +183,8 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
     case views::Widget::ClosedReason::kCancelButtonClicked:
       NOTREACHED();
     case views::Widget::ClosedReason::kAcceptButtonClicked:
+      MigrateUser(profile_);
+      break;
     case views::Widget::ClosedReason::kUnspecified:
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:

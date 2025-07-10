@@ -128,6 +128,16 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
       prefs::internal::kSelectedTypesPerAccount,
       base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
                           base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers)) {
+    // The explicit browser signin pref is used for determining whether some
+    // data types are selected by default. Therefore, upon a change, the
+    // selected types may change.
+    pref_change_registrar_.Add(
+        ::prefs::kExplicitBrowserSignin,
+        base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                            base::Unretained(this)));
+  }
 }
 
 SyncPrefs::~SyncPrefs() {
