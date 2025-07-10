@@ -1208,6 +1208,10 @@ source_set("test_support") {
     ]
     deps += [ "//ui/ozone:ui_test_support" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("views_unittests") {
@@ -1579,6 +1583,10 @@ test("views_unittests") {
   if (enable_nocompile_tests) {
     deps += [ ":views_nocompile_tests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_nocompile_tests) {
@@ -1595,7 +1603,7 @@ source_set("views_interactive_ui_tests") {
 
   sources = [
     "widget/any_widget_observer_uitest.cc",
-    "widget/widget_interactive_uitest.cc"
+    "widget/widget_interactive_uitest.cc",
   ]
 
   deps = [
