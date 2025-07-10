@@ -17,8 +17,6 @@
 #include "extensions/common/permissions/manifest_permission.h"
 #include "extensions/common/permissions/permission_message_util.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
 
 using extensions::mojom::APIPermissionID;
 

@@ -30,7 +30,6 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/web_ui_injection_host.h"
-#include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"

@@ -20,8 +20,6 @@
 #include "extensions/common/permissions/manifest_permission.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/permissions/settings_override_permission.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
 #include "url/gurl.h"
 
 using extensions::api::manifest_types::ChromeSettingsOverrides;

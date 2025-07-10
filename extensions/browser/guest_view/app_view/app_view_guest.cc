@@ -26,7 +26,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "ipc/ipc_message_macros.h"
 
 namespace app_runtime = extensions::api::app_runtime;
 

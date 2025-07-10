@@ -42,7 +42,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
-#include "ipc/ipc_message_macros.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
