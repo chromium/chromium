@@ -57,7 +57,7 @@ void DataSharingUIDelegateIOS::HandleShareURLIntercepted(
 void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(GURL url,
                                                             Browser* browser) {
   UIViewController* base_view_controller =
-      browser->GetSceneState().rootViewController;
+      browser->GetSceneState().window.rootViewController;
 
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
       std::make_unique<IOSCollaborationControllerDelegate>(

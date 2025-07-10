@@ -162,7 +162,7 @@ enum class AuthenticationFlowInProfileState {
 
 - (UIViewController*)findViewController {
   UIViewController* viewController =
-      _browser->GetSceneState().rootViewController;
+      _browser->GetSceneState().window.rootViewController;
   while (viewController.presentedViewController) {
     viewController = viewController.presentedViewController;
   }

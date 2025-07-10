@@ -1373,7 +1373,7 @@ void OnListFamilyMembersResponse(
 
   if (base::FeatureList::IsEnabled(
           kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
-    [self.sceneState setRootViewControllerKeyAndVisible];
+    [self.sceneState.window makeKeyAndVisible];
   }
 
   _mainCoordinator = [[TabGridCoordinator alloc]
@@ -1391,7 +1391,7 @@ void OnListFamilyMembersResponse(
     // `mainCoordinator start` as it sets self.window.rootViewController to work
     // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
     // called.
-    [self.sceneState setRootViewControllerKeyAndVisible];
+    [self.sceneState.window makeKeyAndVisible];
   }
 
   if (!self.sceneState.profileState.startupInformation.isFirstRun) {

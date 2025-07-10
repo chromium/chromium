@@ -608,7 +608,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  [sceneState setWindowUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  sceneState.window.overrideUserInterfaceStyle =
+      UIUserInterfaceStyleUnspecified;
 
   // If another BVC is already being presented, swap this one into the
   // container.
@@ -849,7 +850,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // the context menu to be displayed in light mode. Note that view presented on
   // top of the tab grid are in dark mode too.
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  [sceneState setWindowUserInterfaceStyle:UIUserInterfaceStyleDark];
+  sceneState.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 }
 
 // Creates a transition handler with `animationEnabled` parameter.
@@ -1171,8 +1172,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
   // before `RecentTabsMediator` updates are started.
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  [sceneState setRootViewController:self.baseViewController
-                  makeKeyAndVisible:NO];
+  sceneState.window.rootViewController = self.baseViewController;
   if (regularProfile) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];

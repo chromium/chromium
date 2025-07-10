@@ -54,9 +54,10 @@ const int kStartupCrashLoopThreshold = 3;
   // General note: Safe mode should be safe; it should not depend on other
   // objects being created. Be extremely conservative when adding code to this
   // method.
-  SafeModeViewController* viewController =
+  UIWindow* window = _sceneState.window;
+  window.rootViewController =
       [[SafeModeViewController alloc] initWithDelegate:self];
-  [_sceneState setRootViewController:viewController makeKeyAndVisible:YES];
+  [window makeKeyAndVisible];
 
   // Reset the crash count; the user may change something based on the recovery
   // UI that will fix the crash, and having the next launch start in recovery

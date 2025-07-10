@@ -121,23 +121,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return _agents;
 }
 
-- (void)setRootViewController:(UIViewController*)rootViewController
-            makeKeyAndVisible:(BOOL)makeKeyAndVisible {
-  [self.window setRootViewController:rootViewController];
-  if (makeKeyAndVisible) {
-    [self.window makeKeyAndVisible];
-  }
-}
-
-- (void)setRootViewControllerKeyAndVisible {
-  [self.window makeKeyAndVisible];
-}
-
-- (void)setWindowUserInterfaceStyle:
-    (UIUserInterfaceStyle)windowUserInterfaceStyle {
-  self.window.overrideUserInterfaceStyle = windowUserInterfaceStyle;
-}
-
 - (std::unique_ptr<SigninInProgress>)createSigninInProgress {
   return std::make_unique<SigninInProgress>(self);
 }
@@ -152,18 +135,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
     }
   }
   return mainWindow;
-}
-
-- (NSString*)windowAccessibilityIdentifier {
-  return self.window.accessibilityIdentifier;
-}
-
-- (UIViewController*)rootViewController {
-  return [self.window rootViewController];
-}
-
-- (UIView*)rootView {
-  return self.rootViewController.view;
 }
 
 - (const std::string&)sceneSessionID {

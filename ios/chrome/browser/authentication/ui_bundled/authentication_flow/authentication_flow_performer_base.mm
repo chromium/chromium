@@ -150,7 +150,7 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
   command.optionalHistorySync = YES;
 
   UIViewController* view_controller =
-      browser->GetSceneState().rootViewController;
+      browser->GetSceneState().window.rootViewController;
   while (view_controller.presentedViewController) {
     view_controller = view_controller.presentedViewController;
   }

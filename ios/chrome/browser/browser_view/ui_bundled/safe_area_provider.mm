@@ -33,7 +33,7 @@
 }
 
 - (UIEdgeInsets)safeArea {
-  return self.sceneState.rootView.safeAreaInsets;
+  return self.sceneState.window.rootViewController.view.safeAreaInsets;
 }
 
 #pragma mark - Private properties

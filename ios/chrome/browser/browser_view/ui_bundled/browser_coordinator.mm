@@ -4506,9 +4506,9 @@ enum class ToolbarKind {
   [_quickDeleteCoordinator stop];
 
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-          initWithBaseViewController:top_view_controller::
-                                         TopPresentedViewControllerFrom(
-                                             self.sceneState.rootViewController)
+          initWithBaseViewController:
+              top_view_controller::TopPresentedViewControllerFrom(
+                  self.sceneState.window.rootViewController)
                              browser:self.browser
       canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
   [_quickDeleteCoordinator start];

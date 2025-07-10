@@ -81,9 +81,6 @@ class SigninInProgress;
 // the window scene owns this object (indirectly through scene delegate).
 @property(nonatomic, weak) UIWindowScene* scene;
 
-// The root view controller of the current scene if any.
-@property(nonatomic, readonly) UIViewController* rootViewController;
-
 // Connection options of `scene`, if any, from when the scene was connected.
 @property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
 
@@ -126,12 +123,6 @@ class SigninInProgress;
 // sign-in prompt UI.
 @property(nonatomic, readonly) BOOL signinInProgress;
 
-// Accessibility identifier of the window.
-@property(nonatomic, copy, readonly) NSString* windowAccessibilityIdentifier;
-
-// Root view controller's view.
-@property(nonatomic, strong, readonly) UIView* rootView;
-
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;
@@ -152,19 +143,6 @@ class SigninInProgress;
 // Stores `object` as a per-session preference if supported by the device or
 // into NSUserDefaults otherwise (old table, phone, ...).
 - (void)setSessionObject:(NSObject*)object forKey:(NSString*)key;
-
-// Set the root view controller with the given view controller. Set
-// `makeKeyAndVisible` to YES if it is needed to show and position it in front
-// of all other windows.
-- (void)setRootViewController:(UIViewController*)rootViewController
-            makeKeyAndVisible:(BOOL)makeKeyAndVisible;
-
-// Shows and positions rootViewController in front of all others window.
-- (void)setRootViewControllerKeyAndVisible;
-
-// Sets the User Interface Style of the window.
-- (void)setWindowUserInterfaceStyle:
-    (UIUserInterfaceStyle)windowUserInterfaceStyle;
 
 // Records that an extra sign-in process started. When the returned value is
 // destructed, the sign-in ended.
