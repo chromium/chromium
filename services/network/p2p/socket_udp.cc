@@ -402,9 +402,9 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  webrtc::ApplyPacketOptions(packet.data->bytes(), packet.size,
-                             packet.packet_options.packet_time_params,
-                             send_time_us);
+  webrtc::ApplyPacketOptions(
+      webrtc::ArrayView<uint8_t>(packet.data->bytes(), packet.size),
+      packet.packet_options.packet_time_params, send_time_us);
   auto callback_binding = base::BindRepeating(
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);

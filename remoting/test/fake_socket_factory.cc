@@ -133,9 +133,9 @@ int FakeUdpSocket::SendTo(const void* data,
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
   memcpy(buffer->data(), data, data_size);
   base::TimeTicks now = base::TimeTicks::Now();
-  webrtc::ApplyPacketOptions(buffer->bytes(), data_size,
-                             options.packet_time_params,
-                             (now - base::TimeTicks()).InMicroseconds());
+  webrtc::ApplyPacketOptions(
+      webrtc::ArrayView<uint8_t>(buffer->bytes(), data_size),
+      options.packet_time_params, (now - base::TimeTicks()).InMicroseconds());
   SignalSentPacket(
       this, webrtc::SentPacketInfo(options.packet_id, webrtc::TimeMillis()));
   dispatcher_->DeliverPacket(local_address_, address, buffer, data_size);

@@ -254,8 +254,7 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
   auto rtp_packet = packet.subspan(rtp_packet_pos, rtp_packet_size);
 
   size_t header_size = 0;
-  bool valid = webrtc::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
-                                         &header_size);
+  bool valid = webrtc::ValidateRtpHeader(rtp_packet, &header_size);
   if (!valid) {
     NOTREACHED();
   }
