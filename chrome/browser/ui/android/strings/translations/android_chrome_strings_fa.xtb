@@ -309,7 +309,7 @@
 <translation id="2450083983707403292">می‌خواهید بارگیری <ph name="FILE_NAME" /> را دوباره شروع کنید؟</translation>
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2453860139492968684">پایان</translation>
-<translation id="2461378706168271257">برگه‌هایتان را جستجو کنید</translation>
+<translation id="2461378706168271257">زبانه‌هایتان را جستجو کنید</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2463770278804271243">صفحه</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
@@ -704,7 +704,7 @@
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4270730597186910506">محصول را پیگیری یا لغو پیگیری کنید.</translation>
 <translation id="4277529130885813215">استفاده از دستگاهی دیگر</translation>
-<translation id="427987768447457592">گروه برگه جدید</translation>
+<translation id="427987768447457592">گروه زبانه جدید</translation>
 <translation id="4282440837784183472">‏سازمانتان (<ph name="MANAGED_DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chrome را مدیریت می‌کند. سرپرستتان می‌تواند برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="4285846616383034558">کوکی‌ها، حافظه نهان، و دیگر داده‌های سایت</translation>
@@ -1128,7 +1128,7 @@
 <translation id="6170675927290506430">رفتن به تنظیمات اعلان</translation>
 <translation id="6186394685773237175">گذرواژه لورفته‌ای پیدا نشد</translation>
 <translation id="6192907950379606605">دریافت توضیحات تصویر</translation>
-<translation id="6193448654517602979">انتخاب برگه‌ها</translation>
+<translation id="6193448654517602979">انتخاب زبانه‌ها</translation>
 <translation id="6196315980958524839">‏گذرواژه‌ها در «مدیر گذرواژه Google» در این دستگاه ذخیره می‌شوند</translation>
 <translation id="6202812185118613467">برای شروع همگام‌سازی دوباره به سیستم وارد شوید</translation>
 <translation id="6204781143409202534">‏‫Chrome هرزنامه احتمالی از <ph name="DOMAIN" /> شناسایی کرده است.</translation>
@@ -1184,7 +1184,7 @@
 <translation id="6401458660421980302">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
 <translation id="6406506848690869874">همگام‌سازی</translation>
-<translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند برگه باز کنید</translation>
+<translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند زبانه باز کنید</translation>
 <translation id="6411219469806822692">نمی‌توان بالاتر رفت. از بخش بالاتری در صفحه شروع کنید.</translation>
 <translation id="641643625718530986">چاپ...</translation>
 <translation id="6433501201775827830">موتور جستجو را انتخاب کنید</translation>
@@ -1618,7 +1618,7 @@
 <translation id="820568752112382238">سایت‌هایی که بیشتر بازدید شده</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}one{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}other{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUMBER_OF_OTHER_MEMBERS" /> نفر دیگر بپیوندید}}</translation>
 <translation id="8209050860603202033">باز کردن تصویر</translation>
-<translation id="8210770465353466621">برگه‌ها را اینجا خواهید دید</translation>
+<translation id="8210770465353466621">زبانه‌ها را اینجا خواهید دید</translation>
 <translation id="8211101263765532799">برخی‌از گذرواژه‌ها به‌زودی ازکار خواهد افتاد</translation>
 <translation id="8215740705341534369">برگ کناری</translation>
 <translation id="8218622182176210845">مدیریت حساب</translation>
@@ -1773,7 +1773,7 @@
 <translation id="8863714995118816041">اجازه‌ها دوباره به <ph name="SITE_NAME" /> اعطا شد</translation>
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8888527824584402177">زبانه‌هایی که به‌مدت <ph name="DAYS_INACTIVE" /> روز از آن‌ها استفاده نکرده‌اید به اینجا منتقل می‌شود<ph name="AUTODELETE_SECTION" />. هرزمان بخواهید می‌توانید این گزینه را در <ph name="SETTINGS_TITLE" /> تغییر دهید.</translation>
-<translation id="8890668505403261809">جستجوی برگه‌های ناشناس</translation>
+<translation id="8890668505403261809">جستجوی زبانه‌های ناشناس</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8909135823018751308">هم‌رسانی…</translation>
 <translation id="8918299437379122615">هم‌رسانی پیوند صفحه نتایج جستجو برای: <ph name="SEARCH_QUERY" />. منبع: <ph name="PAGE_URL" /></translation>
