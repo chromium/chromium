@@ -629,6 +629,14 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     auto_pip_setting_overlay_ =
         AddChildView(std::move(auto_pip_setting_overlay));
   }
+
+  // Clear the picture-in-picture window cached bounds, whenever the
+  // `auto_pip_setting_overlay_` is visible.
+  if (base::FeatureList::IsEnabled(
+          media::kClearPipCachedBoundsWhenPermissionPromptVisible) &&
+      IsOverlayViewVisible()) {
+    PictureInPictureWindowManager::GetInstance()->ClearCachedBounds();
+  }
 }
 
 PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() {
