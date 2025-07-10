@@ -109,8 +109,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   UIView* wrapperContainer = [[UIView alloc] init];
   wrapperContainer.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* separator = [[UIView alloc] init];
-  // TODO(crbug.com/428624319): Change separator color.
-  separator.backgroundColor = [UIColor colorNamed:kGrey800Color];
+  separator.backgroundColor = [UIColor colorNamed:kBWGSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
   [NSLayoutConstraint activateConstraints:@[

@@ -22,6 +22,7 @@ NSString* const kScrimBackgroundColor = @"scrim_background_color";
 NSString* const kDarkerScrimBackgroundColor = @"darker_scrim_background_color";
 NSString* const kSecondaryBackgroundColor = @"secondary_background_color";
 NSString* const kSeparatorColor = @"separator_color";
+NSString* const kBWGSeparatorColor = @"bwg_separator_color";
 NSString* const kSolidButtonTextColor = @"solid_button_text_color";
 NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
 NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
