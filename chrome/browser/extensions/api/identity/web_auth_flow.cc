@@ -170,6 +170,13 @@ void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
 }
 
 void WebAuthFlow::AfterUrlLoaded() {
+  CHECK(profile_);
+  if (profile_->ShutdownStarted()) {
+    // Don't process further if the profile is being deleted. The pending
+    // extension functions will be aborted during KeyedService shutdown.
+    return;
+  }
+
   initial_url_loaded_ = true;
   if (delegate_ && mode_ == WebAuthFlow::SILENT) {
     if (abort_on_load_for_non_interactive_ == AbortOnLoad::kYes) {
@@ -255,6 +262,13 @@ void WebAuthFlow::DidRedirectNavigation(
 
 void WebAuthFlow::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  CHECK(profile_);
+  if (profile_->ShutdownStarted()) {
+    // Don't process further if the profile is being deleted. The pending
+    // extension functions will be aborted during KeyedService shutdown.
+    return;
+  }
+
   // Websites may create and remove <iframe> during the auth flow. In
   // particular, to integrate CAPTCHA tests. Chrome shouldn't abort the auth
   // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
