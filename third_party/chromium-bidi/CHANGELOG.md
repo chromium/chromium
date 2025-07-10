@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.0.0...chromium-bidi-v7.1.0) (2025-07-09)
+
+
+### Features
+
+* Extend `browser.createUserContext` with `unhandledPromptBehavior` parameter ([#3440](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3440)) ([de72d10](https://github.com/GoogleChromeLabs/chromium-bidi/commit/de72d10875fb77c6908cb116bb46a6b3d49491b7))
+* implement network data collectors ([#3546](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3546)) ([6e7f127](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6e7f1270fd1a1a3292ba417eef21d1863000a30a))
+
 ## [7.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v6.1.0...chromium-bidi-v7.0.0) (2025-06-27)
 
 
