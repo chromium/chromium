@@ -1,7 +1,7 @@
-Name: okio
-Short Name: okio-jvm
-URL: https://github.com/square/okio/
-Version: 3.15.0
+Name: RxAndroid
+Short Name: rxandroid
+URL: https://github.com/ReactiveX/RxAndroid
+Version: 2.1.1
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-A modern I/O library for Android, Java, and Kotlin Multiplatform.
+RxAndroid
 
 Local Modifications:
 No modifications.

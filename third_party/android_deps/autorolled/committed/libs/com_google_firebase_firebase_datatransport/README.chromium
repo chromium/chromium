@@ -1,7 +1,7 @@
-Name: okio
-Short Name: okio-jvm
-URL: https://github.com/square/okio/
-Version: 3.15.0
+Name: firebase-datatransport
+Short Name: firebase-datatransport
+URL: https://firebase.google.com
+Version: 19.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-A modern I/O library for Android, Java, and Kotlin Multiplatform.
+Firebase firebase datatransport pulled in via gradle.
 
 Local Modifications:
 No modifications.

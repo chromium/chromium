@@ -1,7 +1,7 @@
-Name: okio
-Short Name: okio-jvm
-URL: https://github.com/square/okio/
-Version: 3.15.0
+Name: firebase-components
+Short Name: firebase-components
+URL: https://firebase.google.com
+Version: 18.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-A modern I/O library for Android, Java, and Kotlin Multiplatform.
+Provides dependency management for Firebase SDKs.
 
 Local Modifications:
 No modifications.

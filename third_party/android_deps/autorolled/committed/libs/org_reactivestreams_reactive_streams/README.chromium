@@ -1,0 +1,16 @@
+Name: reactive-streams
+Short Name: reactive-streams
+URL: http://www.reactive-streams.org/
+Version: 1.0.4
+Update Mechanism: Autoroll
+License: MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A Protocol for Asynchronous Non-Blocking Data Sequence
+
+Local Modifications:
+No modifications.

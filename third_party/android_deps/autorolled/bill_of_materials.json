@@ -1192,12 +1192,12 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.7.0"
+        "version": "18.7.2"
     },
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.7.0"
+        "version": "18.7.1"
     },
     {
         "name": "play-services-cast",
@@ -1267,7 +1267,7 @@
     {
         "name": "play-services-tasks",
         "group": "com.google.android.gms",
-        "version": "18.3.0"
+        "version": "18.3.2"
     },
     {
         "name": "play-services-vision",
@@ -1312,7 +1312,7 @@
     {
         "name": "auto-service-annotations",
         "group": "com.google.auto.service",
-        "version": "1.0-rc6"
+        "version": "1.1.1"
     },
     {
         "name": "auto-value-annotations",
@@ -1330,11 +1330,6 @@
         "version": "2.13.1"
     },
     {
-        "name": "dagger",
-        "group": "com.google.dagger",
-        "version": "2.52"
-    },
-    {
         "name": "error_prone_annotation",
         "group": "com.google.errorprone",
         "version": "2.38.0"
@@ -1342,7 +1337,7 @@
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.38.0"
+        "version": "2.40.0"
     },
     {
         "name": "firebase-annotations",
@@ -1412,7 +1407,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "24.1.0"
+        "version": "24.1.2"
     },
     {
         "name": "failureaccess",
@@ -1482,7 +1477,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.9.1"
+        "version": "3.15.0"
     },
     {
         "name": "wire-runtime",
@@ -1505,12 +1500,12 @@
         "version": "2.1.1"
     },
     {
-        "name": "grpc-android",
+        "name": "grpc-api",
         "group": "io.grpc",
         "version": "1.73.0"
     },
     {
-        "name": "grpc-api",
+        "name": "grpc-binder",
         "group": "io.grpc",
         "version": "1.73.0"
     },
@@ -1525,19 +1520,34 @@
         "version": "1.73.0"
     },
     {
+        "name": "grpc-protobuf-lite",
+        "group": "io.grpc",
+        "version": "1.73.0"
+    },
+    {
+        "name": "grpc-stub",
+        "group": "io.grpc",
+        "version": "1.73.0"
+    },
+    {
         "name": "perfmark-api",
         "group": "io.perfmark",
         "version": "0.27.0"
     },
     {
+        "name": "rxandroid",
+        "group": "io.reactivex.rxjava2",
+        "version": "2.1.1"
+    },
+    {
+        "name": "rxjava",
+        "group": "io.reactivex.rxjava2",
+        "version": "2.2.6"
+    },
+    {
         "name": "rxjava",
         "group": "io.reactivex.rxjava3",
         "version": "3.0.2"
-    },
-    {
-        "name": "jakarta.inject-api",
-        "group": "jakarta.inject",
-        "version": "2.0.1"
     },
     {
         "name": "javax.annotation-api",
@@ -1587,12 +1597,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.25.0"
+        "version": "3.49.5"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.25.0"
+        "version": "3.49.5"
     },
     {
         "name": "animal-sniffer-annotations",
@@ -1642,7 +1652,7 @@
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.1.20"
+        "version": "2.1.21"
     },
     {
         "name": "kotlin-stdlib-common",
@@ -1672,12 +1682,12 @@
     {
         "name": "kotlinx-coroutines-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.1"
+        "version": "1.10.2"
     },
     {
         "name": "kotlinx-coroutines-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.1"
+        "version": "1.10.2"
     },
     {
         "name": "kotlinx-coroutines-core-jvm",
@@ -1770,11 +1780,6 @@
         "version": "9.8"
     },
     {
-        "name": "asm-analysis",
-        "group": "org.ow2.asm",
-        "version": "7.0"
-    },
-    {
         "name": "asm-commons",
         "group": "org.ow2.asm",
         "version": "9.8"
@@ -1785,14 +1790,9 @@
         "version": "9.8"
     },
     {
-        "name": "asm-util",
-        "group": "org.ow2.asm",
-        "version": "7.0"
-    },
-    {
         "name": "reactive-streams",
         "group": "org.reactivestreams",
-        "version": "1.0.3"
+        "version": "1.0.4"
     },
     {
         "name": "annotations",
