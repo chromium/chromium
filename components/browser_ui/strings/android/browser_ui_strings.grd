@@ -1374,6 +1374,15 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_THEME_COLLECTIONS_OPTION" desc="Title of the theme collections option in the new tab page customization theme bottom sheet">
         Theme Collections
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_TITLE" desc="Open all available theme collections when click the theme collection section in the NTP appearance bottom sheet">
+        Theme
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page appearance theme collections bottom sheet.">
+        New tab page appearance theme collections bottom sheet
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance theme collections bottom sheet is fully opened.">
+        New tab page appearance theme collections bottom sheet opened at full height
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

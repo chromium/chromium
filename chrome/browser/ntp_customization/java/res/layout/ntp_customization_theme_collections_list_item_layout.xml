@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/ntp_customization_theme_list_item_padding_vertical">
+
+  <ImageView
+      android:id="@+id/theme_collection_cover_image"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:scaleType="centerCrop"
+      android:importantForAccessibility="no"
+      android:clipToOutline="true"
+      app:layout_constraintDimensionRatio="1:1"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+  <TextView
+      android:id="@+id/theme_collection_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/ntp_customization_theme_list_item_padding_vertical"
+      android:gravity="center"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+      app:layout_constraintTop_toBottomOf="@id/theme_collection_cover_image"
+      app:layout_constraintStart_toStartOf="@id/theme_collection_cover_image"
+      app:layout_constraintEnd_toEndOf="@id/theme_collection_cover_image" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

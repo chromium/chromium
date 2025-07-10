@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 
 /**
  * This delegate interface is responsible for recording the position of the bottom sheet layout in
@@ -20,8 +21,7 @@ public interface BottomSheetDelegate {
      *
      * @param type The type of the bottom sheet.
      */
-    void registerBottomSheetLayout(
-            @NtpCustomizationCoordinator.BottomSheetType int type, View view);
+    void registerBottomSheetLayout(@BottomSheetType int type, View view);
 
     /** Handles back button clicks in the bottom sheet. */
     void backPressOnCurrentBottomSheet();
@@ -35,4 +35,7 @@ public interface BottomSheetDelegate {
      *     bottom sheet.
      */
     boolean shouldShowAlone();
+
+    /** Shows the given type of the bottom sheet. */
+    void showBottomSheet(@BottomSheetType int type);
 }

@@ -11,4 +11,5 @@ found in the LICENSE file.
   <item type="id" name="feed_settings" />
   <item type="id" name="theme" />
   <item type="id" name="mvt" />
+  <item type="id" name="theme_collections" />
 </resources>

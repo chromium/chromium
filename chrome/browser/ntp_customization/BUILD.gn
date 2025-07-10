@@ -33,6 +33,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeProperty.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapter.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinator.java",
   ]
   deps = [
     ":java_resources",
@@ -71,6 +73,7 @@ android_library("java") {
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ntp_customization"
@@ -95,7 +98,9 @@ android_resources("java_resources") {
     "java/res/layout/ntp_customization_ntp_cards_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_list_item_layout.xml",
     "java/res/layout/ntp_customization_theme_bottom_sheet_layout.xml",
+    "java/res/layout/ntp_customization_theme_collections_bottom_sheet_layout.xml",
     "java/res/layout/ntp_customization_theme_collections_list_item_icon_layout.xml",
+    "java/res/layout/ntp_customization_theme_collections_list_item_layout.xml",
     "java/res/layout/ntp_customization_theme_list_chrome_colors_item_layout.xml",
     "java/res/layout/ntp_customization_theme_list_chrome_default_item_layout.xml",
     "java/res/layout/ntp_customization_theme_list_theme_collections_item_layout.xml",
@@ -139,6 +144,8 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
   ]
   deps = [
     ":java",
@@ -156,8 +163,10 @@ robolectric_library("junit") {
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
+    "//third_party/android_deps:org_robolectric_shadows_framework_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

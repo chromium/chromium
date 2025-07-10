@@ -63,7 +63,8 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.NTP_CARDS,
         BottomSheetType.FEED,
         BottomSheetType.THEME,
-        BottomSheetType.MVT
+        BottomSheetType.MVT,
+        BottomSheetType.THEME_COLLECTIONS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
@@ -72,7 +73,8 @@ public class NtpCustomizationCoordinator {
         int FEED = 2;
         int THEME = 3;
         int MVT = 4;
-        int NUM_ENTRIES = 5;
+        int THEME_COLLECTIONS = 5;
+        int NUM_ENTRIES = 6;
     }
 
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
@@ -266,6 +268,11 @@ public class NtpCustomizationCoordinator {
             @Override
             public boolean shouldShowAlone() {
                 return mBottomSheetType != MAIN;
+            }
+
+            @Override
+            public void showBottomSheet(@BottomSheetType int type) {
+                mMediator.showBottomSheet(type);
             }
         };
     }
