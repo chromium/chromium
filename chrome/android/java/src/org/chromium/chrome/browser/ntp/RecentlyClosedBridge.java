@@ -17,6 +17,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -85,27 +86,30 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(tabModel.isIncognito());
-        TabGroupModelFilter groupFilter = filter;
-
-        int rootId = tabIds[0];
-        assumeNonNull(groupFilter);
-        groupFilter.setTabGroupColor(rootId, color);
+        assumeNonNull(filter);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
+        int destinationId = tabIds[0];
         if (tabIds.length == 1) {
-            groupFilter.createSingleTabGroup(tabIds[0]);
+            filter.createSingleTabGroup(destinationId);
         } else {
             for (int id : tabIds) {
-                if (id == rootId) continue;
+                if (id == destinationId) continue;
 
-                groupFilter.mergeTabsToGroup(id, rootId);
+                filter.mergeTabsToGroup(id, destinationId);
             }
         }
 
+        Tab tab = tabModel.getTabById(destinationId);
+        assert tab != null;
+        Token tabGroupId = tab.getTabGroupId();
+        assert tabGroupId != null;
+        filter.setTabGroupColor(tabGroupId, color);
+
         if (title == null || title.isEmpty()) return;
 
-        groupFilter.setTabGroupTitle(rootId, title);
+        filter.setTabGroupTitle(tabGroupId, title);
     }
 
     /**

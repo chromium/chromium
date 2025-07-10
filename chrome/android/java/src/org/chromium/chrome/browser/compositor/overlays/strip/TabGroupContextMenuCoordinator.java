@@ -26,6 +26,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -80,13 +81,12 @@ import org.chromium.ui.widget.RectProvider;
  */
 @NullMarked
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    @MonotonicNonNull private View mContentView;
-    @MonotonicNonNull private Context mContext;
-    @MonotonicNonNull private EditText mGroupTitleEditText;
-    @MonotonicNonNull private ColorPickerCoordinator mColorPickerCoordinator;
+    private @MonotonicNonNull View mContentView;
+    private @MonotonicNonNull Context mContext;
+    private @MonotonicNonNull EditText mGroupTitleEditText;
+    private @MonotonicNonNull ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
-    private @Nullable Token mTabGroupId;
-    private int mGroupRootId;
+    private Token mTabGroupId;
 
     // Title currently modified by the user through the edit box. This does not include previously
     // updated or default title.
@@ -100,7 +100,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 @Override
                 public void didChangeTabGroupTitle(
                         int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
-                    if (isMenuShowing() && rootId == mGroupRootId) {
+                    if (isMenuShowing() && mTabGroupId.equals(tabGroupId)) {
                         setExistingOrDefaultTitle(newTitle);
                     }
                 }
@@ -108,7 +108,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 @Override
                 public void didChangeTabGroupColor(
                         int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
-                    if (isMenuShowing() && rootId == mGroupRootId) {
+                    if (isMenuShowing() && mTabGroupId.equals(tabGroupId)) {
                         setSelectedColorItem(newColor);
                     }
                 }
@@ -281,9 +281,9 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      *     coordinates.
      * @param tabGroupId The tab group ID of the interacting tab group.
      */
+    @Initializer
     public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
         mTabGroupId = tabGroupId;
-        mGroupRootId = mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
@@ -476,7 +476,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private void updateTabGroupColor() {
         if (mColorPickerCoordinator == null) return;
         @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
-        if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor)) {
+        if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mTabGroupId, newColor)) {
             RecordUserAction.record("MobileToolbarTabGroupMenu.ColorChanged");
         }
     }
@@ -492,10 +492,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         if (newTitle == null) {
             return;
         } else if (TextUtils.isEmpty(newTitle) || newTitle.equals(getDefaultTitle())) {
-            mTabGroupModelFilter.deleteTabGroupTitle(mGroupRootId);
+            mTabGroupModelFilter.deleteTabGroupTitle(mTabGroupId);
             RecordUserAction.record("MobileToolbarTabGroupMenu.TitleReset");
             setExistingOrDefaultTitle(getDefaultTitle());
-        } else if (TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle)) {
+        } else if (TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mTabGroupId, newTitle)) {
             RecordUserAction.record("MobileToolbarTabGroupMenu.TitleChanged");
         }
         mCurrentModifiedTitle = null;
@@ -541,7 +541,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
         // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
         // is set.
-        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
+        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mTabGroupId);
         if (curGroupTitle == null || curGroupTitle.isEmpty()) {
             setExistingOrDefaultTitle(getDefaultTitle());
         } else {
@@ -577,7 +577,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
         // The color picker should select the current color of the tab group when it is displayed.
         @TabGroupColorId
-        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
+        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mTabGroupId);
         mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
     }
 
@@ -602,8 +602,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         return mKeyboardVisibilityListener;
     }
 
-    void setGroupDataForTesting(int id, Token tabGroupId) {
-        mGroupRootId = id;
+    void setGroupDataForTesting(Token tabGroupId) {
         mTabGroupId = tabGroupId;
     }
 }

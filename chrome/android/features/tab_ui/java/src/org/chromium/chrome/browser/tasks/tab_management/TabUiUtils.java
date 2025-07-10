@@ -146,15 +146,15 @@ public class TabUiUtils {
      * Update the tab group color.
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param rootId The root id of the interacting tab group.
+     * @param tabGroupId The group id of the interacting tab group.
      * @param newGroupColor The new group color being assigned to the tab group.
      * @return Whether the tab group color is updated.
      */
     public static boolean updateTabGroupColor(
-            TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
-        int curGroupColor = filter.getTabGroupColor(rootId);
+            TabGroupModelFilter filter, Token tabGroupId, @TabGroupColorId int newGroupColor) {
+        int curGroupColor = filter.getTabGroupColor(tabGroupId);
         if (curGroupColor != newGroupColor) {
-            filter.setTabGroupColor(rootId, newGroupColor);
+            filter.setTabGroupColor(tabGroupId, newGroupColor);
             return true;
         }
         return false;
@@ -164,16 +164,16 @@ public class TabUiUtils {
      * Update the tab group title.
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param rootId The root id of the interacting tab group.
+     * @param tabGroupId The group id of the interacting tab group.
      * @param newGroupTitle The new group title being assigned to the tab group.
      * @return Whether the tab group title is updated.
      */
     public static boolean updateTabGroupTitle(
-            TabGroupModelFilter filter, int rootId, String newGroupTitle) {
+            TabGroupModelFilter filter, Token tabGroupId, String newGroupTitle) {
         assert newGroupTitle != null && !newGroupTitle.isEmpty();
-        String curGroupTitle = filter.getTabGroupTitle(rootId);
+        String curGroupTitle = filter.getTabGroupTitle(tabGroupId);
         if (!newGroupTitle.equals(curGroupTitle)) {
-            filter.setTabGroupTitle(rootId, newGroupTitle);
+            filter.setTabGroupTitle(tabGroupId, newGroupTitle);
             return true;
         }
         return false;
