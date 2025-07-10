@@ -1,7 +1,8 @@
 {
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
@@ -9,6 +10,7 @@
     "experiments": [],
     "keep_going": true,
     "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 500
   }

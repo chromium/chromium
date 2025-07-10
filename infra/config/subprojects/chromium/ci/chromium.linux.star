@@ -1152,11 +1152,8 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "ci/Linux Builder",
             "libcxx_modules",
-            "linux",
-            "release_builder",
-            "remoteexec",
-            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -1164,8 +1161,6 @@ ci.builder(
             "all",
         ],
     ),
-    cores = 32,
-    ssd = True,
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -1178,6 +1173,7 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     notifies = args.ignore_default([]),
     siso_keep_going = True,
+    siso_remote_linking = True,
 )
 
 ci.builder(
