@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/synchronization/lock.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -33,12 +32,6 @@ class TestGpuMemoryBufferManager {
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
-
- private:
-  // This class is called by multiple threads at the same time. Hold this lock
-  // for the duration of all member functions, to ensure consistency.
-  // https://crbug.com/690588, https://crbug.com/859020
-  base::Lock lock_;
 };
 
 }  // namespace gpu

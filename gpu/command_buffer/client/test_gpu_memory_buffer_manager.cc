@@ -100,8 +100,6 @@ TestGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event) {
-  base::AutoLock hold(lock_);
-
   const size_t buffer_size = gfx::BufferSizeForBufferFormat(size, format);
   base::UnsafeSharedMemoryRegion shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
