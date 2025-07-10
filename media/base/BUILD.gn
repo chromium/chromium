@@ -102,8 +102,6 @@ source_set("base") {
     "audio_timestamp_helper.h",
     "bit_reader.cc",
     "bit_reader.h",
-    "bit_reader_core.cc",
-    "bit_reader_core.h",
     "bitrate.cc",
     "bitrate.h",
     "bitstream_buffer.cc",
