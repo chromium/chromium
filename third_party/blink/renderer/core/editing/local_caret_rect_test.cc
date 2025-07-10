@@ -3158,7 +3158,8 @@ TEST_F(LocalCaretRectTest, TextCombineOneTextNode) {
       "  writing-mode: vertical-rl;"
       "}"
       "tcy { text-combine-upright: all; }");
-  SetBodyInnerHTML("<div>a<tcy id=target>01234</tcy>b</div>");
+  SetBodyInnerHTML("<div contenteditable>a<tcy id=target>01234</tcy>b</div>");
+  // caret-shape: bar
   //   LayoutBlockFlow {HTML} at (0,0) size 800x600
   //     LayoutBlockFlow {BODY} at (8,8) size 784x584
   //       LayoutBlockFlow {DIV} at (0,0) size 110x300
@@ -3210,6 +3211,105 @@ TEST_F(LocalCaretRectTest, TextCombineOneTextNode) {
   EXPECT_EQ(
       LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 1)),
       LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1))));
+
+  // caret-shape: block
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1)),
+                               CaretShape::kBlock));
+
+  // text_01234
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(0, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(),
+                     PhysicalRect(17, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 1)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(),
+                     PhysicalRect(39, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 2)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(),
+                     PhysicalRect(61, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 3)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(),
+                     PhysicalRect(83, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 4)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(),
+                     PhysicalRect(99, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 5)),
+                               CaretShape::kBlock));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1)),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1)),
+                               CaretShape::kUnderscore));
+
+  // text_01234
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(0, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(17, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 1)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(39, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 2)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(61, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 3)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(83, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 4)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(99, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 5)),
+                               CaretShape::kUnderscore));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1)),
+                               CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest, TextCombineTwoTextNodes) {
@@ -3220,7 +3320,9 @@ TEST_F(LocalCaretRectTest, TextCombineTwoTextNodes) {
       "  writing-mode: vertical-rl;"
       "}"
       "tcy { text-combine-upright: all; }");
-  SetBodyInnerHTML("<div>a<tcy id=target>012<!-- -->34</tcy>b</div>");
+  SetBodyInnerHTML(
+      "<div contenteditable>a<tcy id=target>012<!-- -->34</tcy>b</div>");
+  // caret-shape: bar
   //   LayoutBlockFlow {HTML} at (0,0) size 800x600
   //     LayoutBlockFlow {BODY} at (8,8) size 784x584
   //       LayoutBlockFlow {DIV} at (0,0) size 110x300
@@ -3280,6 +3382,112 @@ TEST_F(LocalCaretRectTest, TextCombineTwoTextNodes) {
   EXPECT_EQ(
       LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 1)),
       LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1))));
+
+  // caret-shape: block
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1)),
+                               CaretShape::kBlock));
+
+  // text_012
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(0, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(17, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 1)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(39, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 2)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(61, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 3)),
+                               CaretShape::kBlock));
+
+  // text_34
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(61, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(83, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 1)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(99, 0, 22, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 2)),
+                               CaretShape::kBlock));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0)),
+                               CaretShape::kBlock));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1)),
+                               CaretShape::kBlock));
+
+  // caret-shape: underscore
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1)),
+                               CaretShape::kUnderscore));
+
+  // text_012
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(0, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(17, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 1)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(39, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 2)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(61, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 3)),
+                               CaretShape::kUnderscore));
+
+  // text_34
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(61, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(83, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 1)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(99, 99, 22, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 2)),
+                               CaretShape::kUnderscore));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0)),
+                               CaretShape::kUnderscore));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1)),
+                               CaretShape::kUnderscore));
 }
 
 TEST_F(LocalCaretRectTest,
