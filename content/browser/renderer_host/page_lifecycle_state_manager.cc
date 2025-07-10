@@ -227,6 +227,13 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     // has not.
   }
 
+  back_forward_cache_state_tracker_.append(base::StringPrintf(
+      "U%d%d%d%d%d%d", last_acknowledged_state_->is_in_back_forward_cache,
+      last_acknowledged_state_->is_frozen,
+      last_state_sent_to_renderer_->is_in_back_forward_cache,
+      last_state_sent_to_renderer_->is_frozen,
+      new_state->is_in_back_forward_cache, new_state->is_frozen));
+
   last_state_sent_to_renderer_ = new_state.Clone();
   auto state = new_state.Clone();
 
@@ -262,6 +269,11 @@ PageLifecycleStateManager::CalculatePageLifecycleState() {
 void PageLifecycleStateManager::OnPageLifecycleStateChanged(
     blink::mojom::PageLifecycleStatePtr acknowledged_state,
     bool set_page_lifecycle_state_response) {
+  back_forward_cache_state_tracker_.append(base::StringPrintf(
+      "O%d%d%d%d", last_acknowledged_state_->is_in_back_forward_cache,
+      last_acknowledged_state_->is_frozen,
+      last_state_sent_to_renderer_->is_in_back_forward_cache,
+      last_state_sent_to_renderer_->is_frozen));
   blink::mojom::PageLifecycleStatePtr old_state =
       std::move(last_acknowledged_state_);
 
