@@ -105,6 +105,7 @@ config("pgo_optimization_flags") {
       if (pgo_data_path == "") {
         pgo_data_path =
             "//chrome/android/orderfiles/arm64/pgo_profile.arm64.profdata"
+        inputs = [ pgo_data_path ]
       } else {
         inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
       }
