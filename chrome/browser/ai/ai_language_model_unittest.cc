@@ -1338,6 +1338,23 @@ TEST_F(AILanguageModelTest, CanCreate_UnsupportedOutputLanguages) {
                                                   callback.Get());
 }
 
+TEST_F(AILanguageModelTest, CanCreate_UnavailableWhenAdaptationNotAvailable) {
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
+        std::move(callback).Run(
+            optimization_guide::OnDeviceModelEligibilityReason::
+                kModelAdaptationNotAvailable);
+      });
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      result_future;
+  GetAIManagerInterface()->CanCreateLanguageModel({},
+                                                  result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                                     kUnavailableModelAdaptationNotAvailable);
+}
+
 // Tests the `AILanguageModel::Context` that's initialized with/without any
 // initial prompt.
 class AILanguageModelContextTest : public testing::Test {

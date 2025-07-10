@@ -66,6 +66,8 @@ std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
     case OnDeviceModelEligibilityReason::kValidationFailed:
     case OnDeviceModelEligibilityReason::kModelNotEligible:
     case OnDeviceModelEligibilityReason::kInsufficientDiskSpace:
+    // This is returned if the device will never support a capability.
+    case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
       return mojom::ModelUnavailableReason::kNotSupported;
     // Errors solved by request.
     case OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed:
@@ -74,7 +76,6 @@ std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
     case OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature:
     case OnDeviceModelEligibilityReason::kSafetyModelNotAvailable:
     case OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable:
-    case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
     case OnDeviceModelEligibilityReason::kValidationPending:
     case OnDeviceModelEligibilityReason::kModelToBeInstalled:
       return mojom::ModelUnavailableReason::kPendingAssets;
