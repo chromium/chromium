@@ -124,10 +124,6 @@ public class TabModelRemoverUnitTest {
 
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_1.tabGroupId))
-                .thenReturn(ROOT_ID_1);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_2.tabGroupId))
-                .thenReturn(ROOT_ID_2);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_1.tabGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_2.tabGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.getTabGroupTitle(any())).thenReturn(TAB_GROUP_TITLE);

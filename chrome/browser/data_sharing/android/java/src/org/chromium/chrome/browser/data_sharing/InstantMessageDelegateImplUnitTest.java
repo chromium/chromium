@@ -138,8 +138,8 @@ public class InstantMessageDelegateImplUnitTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mIsActiveWindowSupplier.get()).thenReturn(false);

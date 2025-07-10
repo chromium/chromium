@@ -14,7 +14,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.ACCESS_TOKEN1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
@@ -364,7 +363,6 @@ public class DataSharingTabManagerUnitTest {
                 .thenReturn(mTabGroupModelFilter);
         mSavedTabGroup.localId = LOCAL_ID;
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID)).thenReturn(INVALID_TAB_ID);
 
         when(mDataSharingTabGroupsDelegate.findWindowIdForTabGroup(GROUP_ID)).thenReturn(1);
         mDataSharingTabManager.displayTabGroupAnywhere(

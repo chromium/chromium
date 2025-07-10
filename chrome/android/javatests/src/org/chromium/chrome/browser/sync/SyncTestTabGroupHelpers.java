@@ -40,8 +40,8 @@ final class SyncTestTabGroupHelpers {
             Tab tabInGroup, String title, @TabGroupColorId int color) {
         TabGroupModelFilter tabGroupModelFilter =
                 TabModelUtils.getTabGroupModelFilterByTab(tabInGroup);
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabInGroup.getTabGroupId());
-        tabGroupModelFilter.setTabGroupColor(rootId, color);
-        tabGroupModelFilter.setTabGroupTitle(rootId, title);
+        Token tabGroupId = tabInGroup.getTabGroupId();
+        tabGroupModelFilter.setTabGroupColor(tabGroupId, color);
+        tabGroupModelFilter.setTabGroupTitle(tabGroupId, title);
     }
 }

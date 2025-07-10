@@ -1560,8 +1560,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         deleteTabGroupCollapsed(rootId);
     }
 
-    @Override
-    public int getRootIdFromTabGroupId(@Nullable Token stableId) {
+    private @TabId int getRootIdFromTabGroupId(@Nullable Token stableId) {
         if (stableId == null) return Tab.INVALID_TAB_ID;
         return mGroupIdToRootIdMap.getOrDefault(stableId, Tab.INVALID_TAB_ID);
     }

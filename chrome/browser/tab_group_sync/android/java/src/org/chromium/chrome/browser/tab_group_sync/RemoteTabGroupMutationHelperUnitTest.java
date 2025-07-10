@@ -84,8 +84,6 @@ public class RemoteTabGroupMutationHelperUnitTest {
         tabs.add(mTab2);
         when(mTabGroupModelFilter.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
 
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
-
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mRemoteMutationHelper =

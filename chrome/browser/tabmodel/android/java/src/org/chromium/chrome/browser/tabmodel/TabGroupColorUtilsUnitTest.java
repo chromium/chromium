@@ -9,7 +9,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,6 +37,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.Map;
 import java.util.Set;
 
 /** Tests for {@link TabGroupColorUtils}. */
@@ -68,6 +71,20 @@ public class TabGroupColorUtilsUnitTest {
     private static final Token TAB_GROUP_ID_8 = new Token(ROOT_ID_8, 1L);
     private static final Token TAB_GROUP_ID_9 = new Token(ROOT_ID_9, 1L);
     private static final Token TAB_GROUP_ID_10 = new Token(ROOT_ID_10, 1L);
+
+    private static final Map<Token, Integer> TAB_GROUP_ID_MAP =
+            Map.of(
+                    TAB_GROUP_ID_1, ROOT_ID_1,
+                    TAB_GROUP_ID_2, ROOT_ID_2,
+                    TAB_GROUP_ID_3, ROOT_ID_3,
+                    TAB_GROUP_ID_4, ROOT_ID_4,
+                    TAB_GROUP_ID_5, ROOT_ID_5,
+                    TAB_GROUP_ID_6, ROOT_ID_6,
+                    TAB_GROUP_ID_7, ROOT_ID_7,
+                    TAB_GROUP_ID_8, ROOT_ID_8,
+                    TAB_GROUP_ID_9, ROOT_ID_9,
+                    TAB_GROUP_ID_10, ROOT_ID_10);
+
     private static final int COLOR_1 = 0;
     private static final int COLOR_2 = 1;
     private static final int COLOR_3 = 2;
@@ -95,16 +112,24 @@ public class TabGroupColorUtilsUnitTest {
         doReturn(mRemoveEditor).when(mEditor).remove(any(String.class));
         doReturn(mPutIntEditor).when(mEditor).putInt(any(String.class), any(Integer.class));
 
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_1)).thenReturn(ROOT_ID_1);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_2)).thenReturn(ROOT_ID_2);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_3)).thenReturn(ROOT_ID_3);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_4)).thenReturn(ROOT_ID_4);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_5)).thenReturn(ROOT_ID_5);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_6)).thenReturn(ROOT_ID_6);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_7)).thenReturn(ROOT_ID_7);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_8)).thenReturn(ROOT_ID_8);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_9)).thenReturn(ROOT_ID_9);
-        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID_10)).thenReturn(ROOT_ID_10);
+        doAnswer(
+                        invocation -> {
+                            Token tabGroupId = invocation.getArgument(0);
+                            return TabGroupColorUtils.getTabGroupColor(
+                                    TAB_GROUP_ID_MAP.get(tabGroupId));
+                        })
+                .when(mFilter)
+                .getTabGroupColor(any(Token.class));
+        doAnswer(
+                        invocation -> {
+                            Token tabGroupId = invocation.getArgument(0);
+                            int color = invocation.getArgument(1);
+                            TabGroupColorUtils.storeTabGroupColor(
+                                    TAB_GROUP_ID_MAP.get(tabGroupId), color);
+                            return null;
+                        })
+                .when(mFilter)
+                .setTabGroupColor(any(Token.class), anyInt());
 
         ContextUtils.initApplicationContextForTests(mContext);
     }

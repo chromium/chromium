@@ -91,15 +91,12 @@ public class TabGroupColorUtils {
 
         // Assign a color to all tab groups that don't have a color.
         for (Token tabGroupId : tabGroupIds) {
-            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-            assert rootId != Tab.INVALID_TAB_ID;
-
-            int colorId = getTabGroupColor(rootId);
+            int colorId = tabGroupModelFilter.getTabGroupColor(tabGroupId);
 
             // Retrieve the next suggested colorId if the current tab group does not have a color.
             if (colorId == INVALID_COLOR_ID) {
                 int suggestedColorId = getNextSuggestedColorId(currentColorCountMap);
-                storeTabGroupColor(rootId, suggestedColorId);
+                tabGroupModelFilter.setTabGroupColor(tabGroupId, suggestedColorId);
                 currentColorCountMap.put(
                         suggestedColorId,
                         assumeNonNull(currentColorCountMap.get(suggestedColorId)) + 1);
@@ -167,10 +164,7 @@ public class TabGroupColorUtils {
 
         // Filter all tab groups for ones that already have a color assigned.
         for (Token tabGroupId : tabGroupIds) {
-            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-            assert rootId != Tab.INVALID_TAB_ID;
-
-            int colorId = getTabGroupColor(rootId);
+            int colorId = tabGroupModelFilter.getTabGroupColor(tabGroupId);
 
             // If the tab group has a color stored on shared prefs, increment the colorId map count.
             if (colorId != INVALID_COLOR_ID) {

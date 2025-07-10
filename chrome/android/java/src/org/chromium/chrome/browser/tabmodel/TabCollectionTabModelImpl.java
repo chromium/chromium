@@ -636,11 +636,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public @TabId int getRootIdFromTabGroupId(@Nullable Token tabGroupId) {
-        return Tab.INVALID_TAB_ID;
-    }
-
-    @Override
     public List<Tab> getRelatedTabList(@TabId int tabId) {
         Tab tab = getTabById(tabId);
         if (tab == null) return Collections.emptyList();

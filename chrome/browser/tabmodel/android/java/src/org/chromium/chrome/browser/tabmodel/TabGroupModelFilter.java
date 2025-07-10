@@ -77,19 +77,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     boolean tabGroupExists(@Nullable Token tabGroupId);
 
     /**
-     * Given a tab group's tab group ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the
-     * tab group doesn't exist in the model.
-     *
-     * @param tabGroupId The tab group ID to look for.
-     * @return The root ID of the tab group or {@link Tab.INVALID_TAB_ID} if the group isn't found
-     *     in the tab model.
-     * @deprecated Use a {@link Token} tab group ID instead.
-     */
-    @Deprecated
-    @TabId
-    int getRootIdFromTabGroupId(@Nullable Token tabGroupId);
-
-    /**
      * Returns the list of {@link Tab}s that are grouped with the given {@code tabId}.
      *
      * @param tabId The id of a {@link Tab} in the group.

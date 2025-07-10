@@ -327,9 +327,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @Nullable String url,
             TabGroupModelFilter tabGroupModelFilter) {
         url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
+        int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
         TabGroupUtils.openUrlInGroup(
-                tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
+                tabGroupModelFilter, url, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(

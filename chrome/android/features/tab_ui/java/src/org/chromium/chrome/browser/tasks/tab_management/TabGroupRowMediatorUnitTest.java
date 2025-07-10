@@ -171,7 +171,6 @@ public class TabGroupRowMediatorUnitTest {
             when(tab.getTabGroupId()).thenReturn(GROUP_ID1);
             tabList.add(tab);
         }
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID1)).thenReturn(mRootId);
         when(mTabGroupModelFilter.getTabsInGroup(GROUP_ID1)).thenReturn(tabList);
 
         TabGroupRowMediator mediator =

@@ -76,7 +76,6 @@ public class TabGroupLabellerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID1)).thenReturn(TAB_ID1);
         mTabGroupLabeller =
                 new TabGroupLabeller(
