@@ -6,6 +6,7 @@
 #define GPU_IPC_SERVICE_ARC_SHARED_IMAGE_INTERFACE_H_
 
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 
 namespace gpu {
@@ -15,7 +16,8 @@ namespace gpu {
 class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
     : public SharedImageInterface {
  public:
-  ArcSharedImageInterface();
+  explicit ArcSharedImageInterface(
+      std::unique_ptr<SharedImageFactory> shared_image_factory);
 
   ArcSharedImageInterface(const ArcSharedImageInterface&) = delete;
   ArcSharedImageInterface& operator=(const ArcSharedImageInterface&) = delete;
@@ -78,6 +80,10 @@ class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
 
  private:
   ~ArcSharedImageInterface() override;
+
+  bool MakeContextCurrent(bool needs_gl = false);
+
+  std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
 };
 
 }  // namespace gpu

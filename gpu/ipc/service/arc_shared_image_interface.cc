@@ -6,27 +6,61 @@
 
 #include "base/notimplemented.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gl/gl_context.h"
 
 namespace gpu {
 
-ArcSharedImageInterface::ArcSharedImageInterface() = default;
+ArcSharedImageInterface::ArcSharedImageInterface(
+    std::unique_ptr<SharedImageFactory> shared_image_factory)
+    : shared_image_factory_(std::move(shared_image_factory)) {}
 
-ArcSharedImageInterface::~ArcSharedImageInterface() = default;
+ArcSharedImageInterface::~ArcSharedImageInterface() {
+  if (shared_image_factory_->HasImages()) {
+    // Some of the backings might require a current GL context to be destroyed.
+    bool have_context = MakeContextCurrent(/*needs_gl=*/true);
+    shared_image_factory_->DestroyAllSharedImages(have_context);
+  }
+}
 
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto client_buffer_handle = buffer_handle.Clone();
+  auto mailbox = Mailbox::Generate();
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
+  // Set CPU read/write usage based on buffer usage.
+  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+
+  if (!MakeContextCurrent()) {
+    return nullptr;
+  }
+
+  if (!shared_image_factory_->CreateSharedImage(
+          mailbox, si_info.meta.format, si_info.meta.size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, si_info.meta.usage,
+          std::move(si_info.debug_label), std::move(buffer_handle))) {
+    shared_image_factory_->shared_context_state()->MarkContextLost();
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info_copy, GenVerifiedSyncToken(),
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
+                                si_info_copy.meta.format,
+                                si_info_copy.meta.size, buffer_usage),
+      holder_);
 }
 
 void ArcSharedImageInterface::DestroySharedImage(
     const SyncToken& sync_token,
     scoped_refptr<ClientSharedImage> client_shared_image) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
@@ -77,7 +111,13 @@ void ArcSharedImageInterface::UpdateSharedImage(
 }
 void ArcSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
-  NOTREACHED();
+  if (!MakeContextCurrent()) {
+    return;
+  }
+
+  if (!shared_image_factory_->DestroySharedImage(mailbox)) {
+    shared_image_factory_->shared_context_state()->MarkContextLost();
+  }
 }
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::ImportSharedImage(
     ExportedSharedImage exported_shared_image) {
@@ -112,6 +152,25 @@ void ArcSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
 
 const SharedImageCapabilities& ArcSharedImageInterface::GetCapabilities() {
   NOTREACHED();
+}
+
+bool ArcSharedImageInterface::MakeContextCurrent(bool needs_gl /*=false*/) {
+  auto* context_state = shared_image_factory_->shared_context_state();
+  if (!context_state) {
+    return false;
+  }
+
+  if (context_state->context_lost()) {
+    return false;
+  }
+
+  // |shared_image_factory_| never writes to the surface, so pass nullptr to
+  // improve performance. https://crbug.com/457431
+  auto* context = context_state->real_context();
+  if (context->IsCurrent(nullptr)) {
+    return !context_state->CheckResetStatus(needs_gl);
+  }
+  return context_state->MakeCurrent(/*surface=*/nullptr, needs_gl);
 }
 
 }  // namespace gpu

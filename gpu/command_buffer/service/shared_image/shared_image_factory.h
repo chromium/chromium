@@ -155,6 +155,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   bool HasSharedImage(const Mailbox& mailbox) const;
 
+  SharedContextState* shared_context_state() { return context_state_.get(); }
+
  private:
   bool IsSharedBetweenThreads(gpu::SharedImageUsageSet usage);
 
