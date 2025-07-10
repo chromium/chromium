@@ -13,10 +13,14 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 
 namespace safe_browsing {
 class SafeBrowsingUIHandler;
+}  // namespace safe_browsing
+
+namespace safe_browsing::web_ui {
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 struct DeepScanDebugData {
@@ -93,6 +97,36 @@ struct ClientPhishingRequestAndToken {
   std::string token;
 };
 
-}  // namespace safe_browsing
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+
+std::string UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds);
+void AddStoreInfo(
+    const DatabaseManagerInfo::DatabaseInfo::StoreInfo& store_info,
+    base::Value::List& database_info_list);
+
+void AddDatabaseInfo(const DatabaseManagerInfo::DatabaseInfo& database_info,
+                     base::Value::List& database_info_list);
+
+void AddUpdateInfo(const DatabaseManagerInfo::UpdateInfo& update_info,
+                   base::Value::List& database_info_list);
+
+void ParseFullHashInfo(
+    const FullHashCacheInfo::FullHashCache::CachedHashPrefixInfo::FullHashInfo&
+        full_hash_info,
+    base::Value::Dict& full_hash_info_dict);
+
+void ParseFullHashCache(const FullHashCacheInfo::FullHashCache& full_hash_cache,
+                        base::Value::List& full_hash_cache_list);
+void ParseFullHashCacheInfo(const FullHashCacheInfo& full_hash_cache_info_proto,
+                            base::Value::List& full_hash_cache_info);
+
+std::string AddFullHashCacheInfo(
+    const FullHashCacheInfo& full_hash_cache_info_proto);
+
+#endif
+
+std::string SerializeJson(base::ValueView value);
+
+}  // namespace safe_browsing::web_ui
 
 #endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_UTIL_H_

@@ -61,11 +61,13 @@ source_set("util") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//components/safe_browsing/core/common/proto:webui_proto",
     "//components/sync/protocol",
   ]
 }

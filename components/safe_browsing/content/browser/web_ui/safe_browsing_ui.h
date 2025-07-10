@@ -195,7 +195,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Called when any new ClientPhishingRequest messages are sent (potentially
   // with token in header) while one or more WebUI tabs are open.
   void NotifyClientPhishingRequestJsListener(
-      const ClientPhishingRequestAndToken& client_phishing_request);
+      const web_ui::ClientPhishingRequestAndToken& client_phishing_request);
 
   // Called when any new ClientPhishingResponse messages are received while one
   // or more WebUI tabs are open.
@@ -222,7 +222,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // are open.
   void NotifyPGPingJsListener(
       int token,
-      const LoginReputationClientRequestAndToken& request);
+      const web_ui::LoginReputationClientRequestAndToken& request);
 
   // Called when any new PhishGuard responses are received while one or more
   // WebUI tabs are open.
@@ -233,7 +233,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Called when any new URL real time lookup pings are sent while one or more
   // WebUI tabs are open.
   void NotifyURTLookupPingJsListener(int token,
-                                     const URTLookupRequest& request);
+                                     const web_ui::URTLookupRequest& request);
 
   // Called when any new URL real time lookup responses are received while one
   // or more WebUI tabs are open.
@@ -243,7 +243,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Called when any new hash-prefix real-time lookup pings are sent while one
   // or more WebUI tabs are open.
   void NotifyHPRTLookupPingJsListener(int token,
-                                      const HPRTLookupRequest& request);
+                                      const web_ui::HPRTLookupRequest& request);
 
   // Called when any new hash-prefix real-time lookup responses are received
   // while one or more WebUI tabs are open.
@@ -264,7 +264,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Called when any deep scans are updated while one or more WebUI
   // tabs are open.
   void NotifyDeepScanJsListener(const std::string& token,
-                                const DeepScanDebugData& request);
+                                const web_ui::DeepScanDebugData& request);
 #endif
 
   // Gets the tailored verdict override in a format for displaying.
@@ -508,7 +508,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Get the list of the sent ClientPhishingRequestAndToken that have been
   // collected (potentially with token in header) since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  const std::vector<ClientPhishingRequestAndToken>&
+  const std::vector<web_ui::ClientPhishingRequestAndToken>&
   client_phishing_requests_sent() const {
     return client_phishing_requests_sent_;
   }
@@ -553,7 +553,8 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // Get the list of PhishGuard pings and tokens since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  const std::vector<LoginReputationClientRequestAndToken>& pg_pings() const {
+  const std::vector<web_ui::LoginReputationClientRequestAndToken>& pg_pings()
+      const {
     return pg_pings_;
   }
 
@@ -565,7 +566,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // Get the list of URL real time lookup pings since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  const std::vector<URTLookupRequest>& urt_lookup_pings() const {
+  const std::vector<web_ui::URTLookupRequest>& urt_lookup_pings() const {
     return urt_lookup_pings_;
   }
 
@@ -577,7 +578,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // Get the list of hash-prefix real-time lookup pings since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  const std::vector<HPRTLookupRequest>& hprt_lookup_pings() const {
+  const std::vector<web_ui::HPRTLookupRequest>& hprt_lookup_pings() const {
     return hprt_lookup_pings_;
   }
 
@@ -591,13 +592,13 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Get the collection of deep scanning requests since the oldest currently
   // open chrome://safe-browsing tab was opened. Returns a map from a unique
   // token to the request proto.
-  const base::flat_map<std::string, DeepScanDebugData>& deep_scan_requests()
-      const {
+  const base::flat_map<std::string, web_ui::DeepScanDebugData>&
+  deep_scan_requests() const {
     return deep_scan_requests_;
   }
 
   // Gets the currently registered override data.
-  const TailoredVerdictOverrideData& tailored_verdict_override() const {
+  const web_ui::TailoredVerdictOverrideData& tailored_verdict_override() const {
     return tailored_verdict_override_;
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
@@ -656,7 +657,8 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // currently open chrome://safe-browsing tab was opened.
   // "ClientPhishingRequests" cannot be const, due to being used by functions
   // that call AllowJavascript(), which is not marked const.
-  std::vector<ClientPhishingRequestAndToken> client_phishing_requests_sent_;
+  std::vector<web_ui::ClientPhishingRequestAndToken>
+      client_phishing_requests_sent_;
 
   // List of ClientPhishingResponses received since since the oldest currently
   // open chrome://safe-browsing tab was opened. "ClientPhishingResponse" cannot
@@ -690,7 +692,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // List of PhishGuard pings and tokens sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<LoginReputationClientRequestAndToken> pg_pings_;
+  std::vector<web_ui::LoginReputationClientRequestAndToken> pg_pings_;
 
   // List of PhishGuard responses received since the oldest currently open
   // chrome://safe-browsing tab was opened. Keyed by the index of the
@@ -699,7 +701,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // List of URL real time lookup pings sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<URTLookupRequest> urt_lookup_pings_;
+  std::vector<web_ui::URTLookupRequest> urt_lookup_pings_;
 
   // List of URL real time lookup responses received since the oldest currently
   // open chrome://safe-browsing tab was opened. Keyed by the index of the
@@ -708,7 +710,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // List of hash-prefix real-time lookup pings sent since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  std::vector<HPRTLookupRequest> hprt_lookup_pings_;
+  std::vector<web_ui::HPRTLookupRequest> hprt_lookup_pings_;
 
   // List of hash-prefix real-time lookup responses received since the oldest
   // currently open chrome://safe-browsing tab was opened. Keyed by the index of
@@ -733,10 +735,10 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Map of deep scan requests sent since the oldest currently open
   // chrome://safe-browsing tab was opened. Maps from the unique token per
   // request to the data about the request.
-  base::flat_map<std::string, DeepScanDebugData> deep_scan_requests_;
+  base::flat_map<std::string, web_ui::DeepScanDebugData> deep_scan_requests_;
 
   // Local override of download TailoredVerdict.
-  TailoredVerdictOverrideData tailored_verdict_override_;
+  web_ui::TailoredVerdictOverrideData tailored_verdict_override_;
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
 
