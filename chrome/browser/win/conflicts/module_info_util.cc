@@ -57,13 +57,15 @@ std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
   }
 
   // Allocate enough space to hold the signer info.
-  std::unique_ptr<BYTE[]> signer_info_buffer(new BYTE[signer_info_size]);
+  base::HeapArray<uint8_t> signer_info_buffer =
+      base::HeapArray<uint8_t>::Uninit(signer_info_size);
   CMSG_SIGNER_INFO* signer_info =
-      reinterpret_cast<CMSG_SIGNER_INFO*>(signer_info_buffer.get());
+      reinterpret_cast<CMSG_SIGNER_INFO*>(signer_info_buffer.data());
 
   // Obtain the signer info.
-  if (!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0, signer_info,
-                        &signer_info_size)) {
+  // SAFETY: `signer_info_buffer.size()` is the size of the allocation.
+  if (!UNSAFE_BUFFERS(CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0,
+                                       signer_info, &signer_info_size))) {
     return std::u16string();
   }
 
