@@ -35,6 +35,37 @@ class RunLoop;
 
 namespace content {
 
+using OnPrefetchCompleteTestFuture =
+    base::test::TestFuture<network::URLLoaderCompletionStatus>;
+using OnPrefetchReceiveRedirectTestFuture =
+    base::test::TestFuture<net::RedirectInfo,
+                           network::mojom::URLResponseHeadPtr>;
+
+struct NotReachedTagForTests {};
+
+// Used to specify the test behavior on a specific callback.
+// - If `NotReachedTagForTests()`: the callback shouldn't be called.
+// - Otherwise: `T` (either `RunLoop*` or `TestFuture*`) is unblocked when the
+//   callback is called, if non-nullptr.
+template <typename T>
+using NotReachedTagForTestsOr = std::variant<T, NotReachedTagForTests>;
+
+// The centralized helper to create `PrefetchStreamingURLLoader` and its
+// corresponding `PrefetchResponseReader`.
+std::tuple<scoped_refptr<PrefetchResponseReader>,
+           base::WeakPtr<PrefetchStreamingURLLoader>>
+CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const network::ResourceRequest& prefetch_request,
+    NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
+    NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+    NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
+        on_receive_redirect,
+    NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
+    std::optional<PrefetchErrorOnResponseReceived> error_on_response_received =
+        std::nullopt,
+    base::TimeDelta timeout_duration = {});
+
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,
@@ -45,13 +76,6 @@ void MakeServableStreamingURLLoaderForTest(
 network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container);
-
-using OnPrefetchReceiveRedirectTestFuture =
-    base::test::TestFuture<net::RedirectInfo,
-                           network::mojom::URLResponseHeadPtr>;
-
-OnPrefetchRedirectCallback CreatePrefetchRedirectCallbackForTest(
-    OnPrefetchReceiveRedirectTestFuture* on_receive_redirect);
 
 void MakeServableStreamingURLLoaderWithRedirectForTest(
     PrefetchContainer* prefetch_container,

@@ -61,6 +61,83 @@ CreatePrefetchResponseCompletedCallbackForTest(
 
 }  // namespace
 
+std::tuple<scoped_refptr<PrefetchResponseReader>,
+           base::WeakPtr<PrefetchStreamingURLLoader>>
+CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const network::ResourceRequest& prefetch_request,
+    NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
+    NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+    NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
+        on_receive_redirect,
+    NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
+    std::optional<PrefetchErrorOnResponseReceived> error_on_response_received,
+    base::TimeDelta timeout_duration) {
+  auto on_receive_response_callback = base::BindOnce(
+      [](NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
+         std::optional<PrefetchErrorOnResponseReceived>
+             error_on_response_received,
+         network::mojom::URLResponseHead* head) {
+        if (std::holds_alternative<NotReachedTagForTests>(
+                on_response_received)) {
+          NOTREACHED();
+        }
+        if (auto run_loop = std::get<0>(on_response_received)) {
+          run_loop->Quit();
+        }
+        return error_on_response_received;
+      },
+      on_response_received, error_on_response_received);
+
+  auto on_complete_callback = base::BindOnce(
+      [](NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+         const network::URLLoaderCompletionStatus& completion_status) {
+        if (std::holds_alternative<NotReachedTagForTests>(on_complete)) {
+          NOTREACHED();
+        }
+        if (auto future = std::get<0>(on_complete)) {
+          future->SetValue(completion_status);
+        }
+      },
+      on_complete);
+
+  auto on_receive_redirect_callback = base::BindRepeating(
+      [](NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
+             on_receive_redirect,
+         const net::RedirectInfo& redirect_info,
+         network::mojom::URLResponseHeadPtr redirect_head) {
+        if (std::holds_alternative<NotReachedTagForTests>(
+                on_receive_redirect)) {
+          NOTREACHED();
+        }
+        if (auto future = std::get<0>(on_receive_redirect)) {
+          future->SetValue(redirect_info, std::move(redirect_head));
+        }
+      },
+      on_receive_redirect);
+
+  auto on_head_received_callback = base::BindOnce(
+      [](NotReachedTagForTestsOr<base::RunLoop*> on_head_received) {
+        if (std::holds_alternative<NotReachedTagForTests>(on_head_received)) {
+          NOTREACHED();
+        }
+        if (auto run_loop = std::get<0>(on_head_received)) {
+          run_loop->Quit();
+        }
+      },
+      on_head_received);
+
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
+  auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
+      std::move(url_loader_factory), prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, timeout_duration,
+      std::move(on_receive_response_callback), std::move(on_complete_callback),
+      std::move(on_receive_redirect_callback),
+      std::move(on_head_received_callback), response_reader->GetWeakPtr());
+
+  return std::make_tuple(response_reader, streaming_loader);
+}
+
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,
