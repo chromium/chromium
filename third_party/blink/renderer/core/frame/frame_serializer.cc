@@ -980,8 +980,8 @@ function main(metadata) {
   }
 
   void AppendAttributeValue(const String& attribute_value) {
-    MarkupFormatter::AppendAttributeValue(
-        markup_, attribute_value, IsA<HTMLDocument>(document_), *document_);
+    MarkupFormatter::AppendAttributeValue(markup_, attribute_value,
+                                          IsA<HTMLDocument>(document_));
   }
 
   void AppendRewrittenAttribute(const Element& element,

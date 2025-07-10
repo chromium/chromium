@@ -117,8 +117,7 @@ class CORE_EXPORT MarkupAccumulator {
   ElementSerializationData AppendStartTagOpen(const Element&);
   void AppendStartTagClose(const Element&);
   void AppendNamespace(const AtomicString& prefix,
-                       const AtomicString& namespace_uri,
-                       const Document& document);
+                       const AtomicString& namespace_uri);
   void AppendAttributeAsXMLWithNamespace(const Element& element,
                                          const Attribute& attribute,
                                          const String& value);

@@ -27,13 +27,11 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -44,7 +42,6 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -212,19 +209,9 @@ void MarkupFormatter::AppendEndMarkup(StringBuilder& result,
 
 void MarkupFormatter::AppendAttributeValue(StringBuilder& result,
                                            const String& attribute,
-                                           bool document_is_html,
-                                           const Document& document) {
-  if (attribute.Contains('<') || attribute.Contains('>')) {
-    document.CountUse(mojom::blink::WebFeature::kAttributeValueContainsLtOrGt);
-  }
-
-  EntityMask entity_mask =
-      document_is_html
-          ? (RuntimeEnabledFeatures::EscapeLtGtInAttributesEnabled()
-                 ? kEntityExperimentalMaskInHTMLAttributeValue
-                 : kEntityMaskInHTMLAttributeValue)
-          : kEntityMaskInAttributeValue;
-
+                                           bool document_is_html) {
+  EntityMask entity_mask = document_is_html ? kEntityMaskInHTMLAttributeValue
+                                            : kEntityMaskInAttributeValue;
   AppendCharactersReplacingEntities(result, attribute, entity_mask);
 }
 
@@ -232,8 +219,7 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
                                       const AtomicString& prefix,
                                       const AtomicString& local_name,
                                       const String& value,
-                                      bool document_is_html,
-                                      const Document& document) {
+                                      bool document_is_html) {
   result.Append(' ');
   if (!prefix.empty()) {
     result.Append(prefix);
@@ -241,7 +227,7 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
   }
   result.Append(local_name);
   result.Append("=\"");
-  AppendAttributeValue(result, value, document_is_html, document);
+  AppendAttributeValue(result, value, document_is_html);
   result.Append('"');
 }
 
@@ -346,8 +332,7 @@ void MarkupFormatter::AppendStartTagClose(StringBuilder& result,
 
 void MarkupFormatter::AppendAttributeAsHTML(StringBuilder& result,
                                             const Attribute& attribute,
-                                            const String& value,
-                                            const Document& document) {
+                                            const String& value) {
   // https://html.spec.whatwg.org/C/#attribute's-serialised-name
   QualifiedName prefixed_name = attribute.GetName();
   if (attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
@@ -359,14 +344,13 @@ void MarkupFormatter::AppendAttributeAsHTML(StringBuilder& result,
     prefixed_name.SetPrefix(g_xlink_atom);
   }
   AppendAttribute(result, prefixed_name.Prefix(), prefixed_name.LocalName(),
-                  value, true, document);
+                  value, true);
 }
 
 void MarkupFormatter::AppendAttributeAsXMLWithoutNamespace(
     StringBuilder& result,
     const Attribute& attribute,
-    const String& value,
-    const Document& document) {
+    const String& value) {
   const AtomicString& attribute_namespace = attribute.NamespaceURI();
   AtomicString candidate_prefix = attribute.Prefix();
   if (attribute_namespace == xmlns_names::kNamespaceURI) {
@@ -379,8 +363,8 @@ void MarkupFormatter::AppendAttributeAsXMLWithoutNamespace(
     if (!candidate_prefix)
       candidate_prefix = g_xlink_atom;
   }
-  AppendAttribute(result, candidate_prefix, attribute.LocalName(), value, false,
-                  document);
+  AppendAttribute(result, candidate_prefix, attribute.LocalName(), value,
+                  false);
 }
 
 void MarkupFormatter::AppendCDATASection(StringBuilder& result,
