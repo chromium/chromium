@@ -3990,5 +3990,41 @@ TEST_F(AIPageContentAgentTest, AriaHasPopup) {
           mojom::blink::AIPageContentClickabilityReason::kAriaHasPopup));
 }
 
+TEST_F(AIPageContentAgentTest, AriaExpandedTrue) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div aria-expanded=true>Plain Div</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+
+  const auto& interaction_info =
+      *div_node.content_attributes->node_interaction_info;
+  EXPECT_THAT(
+      interaction_info.clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kAriaExpandedTrue));
+}
+
+TEST_F(AIPageContentAgentTest, AriaExpandedFalse) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div aria-expanded=false>Plain Div</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+
+  const auto& interaction_info =
+      *div_node.content_attributes->node_interaction_info;
+  EXPECT_THAT(
+      interaction_info.clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kAriaExpandedFalse));
+}
+
 }  // namespace
 }  // namespace blink

@@ -1380,6 +1380,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // The following HasAriaFooAttribute() methods return true if the attribute
   // is present. `out_value` is filled with the value of the attribute or a
   // default value if the attribute is not present.
+  static bool AriaBooleanAttribute(const Element& element,
+                                   const QualifiedName&,
+                                   bool* out_value);
   bool AriaBooleanAttribute(const QualifiedName& attribute,
                             bool* out_value = nullptr) const;
   bool AriaFloatAttribute(const QualifiedName& attribute,

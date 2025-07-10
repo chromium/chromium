@@ -1220,9 +1220,10 @@ bool AXObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
   return GetElement() ? IsAriaAttributeTrue(*GetElement(), attribute) : false;
 }
 
-bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
-                                    bool* out_value) const {
-  const AtomicString& value = AriaAttribute(attribute);
+bool AXObject::AriaBooleanAttribute(const Element& element,
+                                    const QualifiedName& attribute,
+                                    bool* out_value) {
+  const AtomicString& value = AriaAttribute(element, attribute);
   if (value == g_null_atom || value.empty() ||
       EqualIgnoringASCIICase(value, "undefined")) {
     if (out_value) {
@@ -1234,6 +1235,19 @@ bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
     *out_value = !EqualIgnoringASCIICase(value, "false");
   }
   return true;
+}
+
+bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
+                                    bool* out_value) const {
+  if (auto* element = GetElement()) {
+    return AriaBooleanAttribute(*element, attribute, out_value);
+  }
+
+  if (out_value) {
+    *out_value = false;
+  }
+
+  return false;
 }
 
 bool AXObject::AriaIntAttribute(const QualifiedName& attribute,

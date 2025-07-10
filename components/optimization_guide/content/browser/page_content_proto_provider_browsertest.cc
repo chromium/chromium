@@ -411,6 +411,20 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP));
+
+  const auto& expanded = ActionableContentRootNode().children_nodes()[1];
+  ASSERT_TRUE(expanded.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      expanded.content_attributes().interaction_info().clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_TRUE));
+
+  const auto& collapsed = ActionableContentRootNode().children_nodes()[2];
+  ASSERT_TRUE(collapsed.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      collapsed.content_attributes().interaction_info().clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_FALSE));
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

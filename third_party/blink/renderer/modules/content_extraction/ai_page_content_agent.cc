@@ -257,6 +257,18 @@ void AddClickabilityReasons(
   if (AXObject::HasPopupFromAttribute(element)) {
     interaction_info.clickability_reasons.push_back(Reason::kAriaHasPopup);
   }
+
+  bool aria_expanded = false;
+  if (AXObject::AriaBooleanAttribute(element, html_names::kAriaExpandedAttr,
+                                     &aria_expanded)) {
+    if (aria_expanded) {
+      interaction_info.clickability_reasons.push_back(
+          Reason::kAriaExpandedTrue);
+    } else {
+      interaction_info.clickability_reasons.push_back(
+          Reason::kAriaExpandedFalse);
+    }
+  }
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {

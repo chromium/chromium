@@ -144,6 +144,16 @@ enum AIPageContentClickabilityReason {
   // The node has the aria-haspopup attribute indicating it opens a popup on
   // activation.
   kAriaHasPopup,
+
+  // The node has the aria-expanded attribute indicating it controls the
+  // visibility of other elements. This reason implies that the associated
+  // control is currently expanded.
+  kAriaExpandedTrue,
+
+  // The node has the aria-expanded attribute indicating it controls the
+  // visibility of other elements. This reason implies that the associated
+  // control is currently collapsed.
+  kAriaExpandedFalse
 };
 
 struct AIPageContentNodeInteractionInfo {
