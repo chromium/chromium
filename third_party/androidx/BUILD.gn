@@ -3105,6 +3105,7 @@ if (!limit_android_deps) {
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_java",
       ":androidx_navigationevent_navigationevent_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
