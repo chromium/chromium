@@ -180,6 +180,95 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_datatransport_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_datatransport/firebase-datatransport-19.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_datatransport/com_google_firebase_firebase_datatransport.info"
+      enable_bytecode_checks = false
+      deps = [
+        ":google_android_datatransport_transport_api_java",
+        ":google_android_datatransport_transport_backend_cct_java",
+        ":google_android_datatransport_transport_runtime_java",
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_iid_java") {
+      aar_path =
+          "cipd/libs/com_google_firebase_firebase_iid/firebase-iid-21.1.0.aar"
+      info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_iid_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_cloud_messaging_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt(
+        "google_firebase_firebase_measurement_connector_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-20.0.1.aar"
+      info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_play_services_basement_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_messaging_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-24.1.0.aar"
+      info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
+      enable_bytecode_checks = false
+      deps = [
+        ":com_google_errorprone_error_prone_annotations_java",
+        ":google_android_datatransport_transport_api_java",
+        ":google_android_datatransport_transport_backend_cct_java",
+        ":google_android_datatransport_transport_runtime_java",
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_common_ktx_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_datatransport_java",
+        "$google_play_services_package:google_firebase_firebase_encoders_java",
+        "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+        "$google_play_services_package:google_firebase_firebase_encoders_proto_java",
+        "$google_play_services_package:google_firebase_firebase_iid_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_java",
+        "$google_play_services_package:google_firebase_firebase_measurement_connector_java",
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_cloud_messaging_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_googlecode_java_diff_utils_diffutils_java") {
     jar_path =
         "cipd/libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"
@@ -188,6 +277,21 @@ if (!limit_android_deps) {
     requires_android = true
     enable_bytecode_checks = false
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_moshi_moshi_adapters_java") {
+    jar_path =
+        "cipd/libs/com_squareup_moshi_moshi_adapters/moshi-adapters-1.15.0.jar"
+    output_name = "com_squareup_moshi_moshi_adapters"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+    testonly = true
+    deps = [
+      ":com_squareup_moshi_moshi_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -221,6 +325,17 @@ if (!limit_android_deps) {
     requires_android = true
     enable_bytecode_checks = false
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_checkerframework_checker_util_java") {
+    jar_path =
+        "cipd/libs/org_checkerframework_checker_util/checker-util-3.25.0.jar"
+    output_name = "org_checkerframework_checker_util"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+    deps = [ ":org_checkerframework_checker_qual_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -323,6 +438,26 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_cloud_messaging_java") {
+      aar_path = "cipd/libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-17.2.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_google_ar_impress_java") {
     aar_path = "cipd/libs/com_google_ar_impress/impress-0.0.3.aar"
     info_path = "libs/com_google_ar_impress/com_google_ar_impress.info"
@@ -342,6 +477,160 @@ if (!limit_android_deps) {
 
     # Chrome does not use the APIs that require the native library.
     ignore_native_libraries = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    java_prebuilt("google_firebase_firebase_annotations_java") {
+      jar_path = "cipd/libs/com_google_firebase_firebase_annotations/firebase-annotations-16.2.0.jar"
+      output_name = "com_google_firebase_firebase_annotations"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ ":javax_inject_javax_inject_java" ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_common_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_common/firebase-common-21.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java",
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_common_ktx_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_common_ktx/firebase-common-ktx-21.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_common_ktx/com_google_firebase_firebase_common_ktx.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_components_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_components/firebase-components-18.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        ":com_google_errorprone_error_prone_annotations_java",
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.1.0.aar"
+      info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_installations_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_installations/firebase-installations-17.2.0.aar"
+      info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_common_ktx_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt(
+        "google_firebase_firebase_installations_interop_java") {
+      aar_path = "cipd/libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-17.1.1.aar"
+      info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

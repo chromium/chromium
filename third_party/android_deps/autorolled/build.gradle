@@ -252,8 +252,8 @@ versionCache['com.google.android.gms:play-services-auth'] = '21.3.0'
 versionCache['com.google.android.gms:play-services-auth-api-phone'] = '18.2.0'
 versionCache['com.google.android.gms:play-services-auth-base'] = '18.1.0'
 versionCache['com.google.android.gms:play-services-auth-blockstore'] = '16.4.0'
-versionCache['com.google.android.gms:play-services-base'] = '18.7.1'
-versionCache['com.google.android.gms:play-services-basement'] = '18.7.1'
+versionCache['com.google.android.gms:play-services-base'] = '18.7.0'
+versionCache['com.google.android.gms:play-services-basement'] = '18.7.0'
 versionCache['com.google.android.gms:play-services-cast'] = '22.1.0'
 versionCache['com.google.android.gms:play-services-cast-framework'] = '22.1.0'
 versionCache['com.google.android.gms:play-services-clearcut'] = '17.0.0'
@@ -267,7 +267,7 @@ versionCache['com.google.android.gms:play-services-instantapps'] = '18.1.0'
 versionCache['com.google.android.gms:play-services-location'] = '21.3.0'
 versionCache['com.google.android.gms:play-services-phenotype'] = '17.0.0'
 versionCache['com.google.android.gms:play-services-stats'] = '17.1.0'
-versionCache['com.google.android.gms:play-services-tasks'] = '18.3.1'
+versionCache['com.google.android.gms:play-services-tasks'] = '18.3.0'
 versionCache['com.google.android.gms:play-services-vision'] = '20.1.3'
 versionCache['com.google.android.gms:play-services-vision-common'] = '19.1.3'
 versionCache['com.google.android.libraries.identity.googleid:googleid'] = '1.1.1'
@@ -280,8 +280,9 @@ versionCache['com.google.auto.service:auto-service-annotations'] = '1.0-rc6'
 versionCache['com.google.auto.value:auto-value-annotations'] = '1.11.0'
 versionCache['com.google.code.findbugs:jsr305'] = '3.0.2'
 versionCache['com.google.code.gson:gson'] = '2.13.1'
+versionCache['com.google.dagger:dagger'] = '2.52'
 versionCache['com.google.errorprone:error_prone_annotation'] = '2.38.0'
-versionCache['com.google.errorprone:error_prone_annotations'] = '2.39.0'
+versionCache['com.google.errorprone:error_prone_annotations'] = '2.38.0'
 versionCache['com.google.firebase:firebase-annotations'] = '16.2.0'
 versionCache['com.google.firebase:firebase-common'] = '21.0.0'
 versionCache['com.google.firebase:firebase-common-ktx'] = '21.0.0'
@@ -295,7 +296,7 @@ versionCache['com.google.firebase:firebase-iid-interop'] = '17.1.0'
 versionCache['com.google.firebase:firebase-installations'] = '17.2.0'
 versionCache['com.google.firebase:firebase-installations-interop'] = '17.1.1'
 versionCache['com.google.firebase:firebase-measurement-connector'] = '20.0.1'
-versionCache['com.google.firebase:firebase-messaging'] = '24.1.2'
+versionCache['com.google.firebase:firebase-messaging'] = '24.1.0'
 versionCache['com.google.guava:failureaccess'] = '1.0.3'
 versionCache['com.google.guava:guava'] = '33.4.8-jre'
 versionCache['com.google.guava:listenablefuture'] = '9999.0-empty-to-avoid-conflict-with-guava'
@@ -314,14 +315,13 @@ versionCache['com.squareup.wire:wire-runtime'] = '5.2.1'
 versionCache['com.squareup.wire:wire-runtime-jvm'] = '5.2.1'
 versionCache['com.squareup:javapoet'] = '1.13.0'
 versionCache['com.squareup:javawriter'] = '2.1.1'
+versionCache['io.grpc:grpc-android'] = '1.73.0'
 versionCache['io.grpc:grpc-api'] = '1.73.0'
-versionCache['io.grpc:grpc-binder'] = '1.73.0'
 versionCache['io.grpc:grpc-context'] = '1.73.0'
 versionCache['io.grpc:grpc-core'] = '1.73.0'
-versionCache['io.grpc:grpc-protobuf-lite'] = '1.73.0'
-versionCache['io.grpc:grpc-stub'] = '1.73.0'
 versionCache['io.perfmark:perfmark-api'] = '0.27.0'
 versionCache['io.reactivex.rxjava3:rxjava'] = '3.0.2'
+versionCache['jakarta.inject:jakarta.inject-api'] = '2.0.1'
 versionCache['javax.annotation:javax.annotation-api'] = '1.3.2'
 versionCache['javax.inject:javax.inject'] = '1'
 versionCache['junit:junit'] = '4.13.2'
@@ -331,8 +331,8 @@ versionCache['net.bytebuddy:byte-buddy-android'] = '1.14.12'
 versionCache['org.bouncycastle:bcprov-jdk18on'] = '1.80'
 versionCache['org.ccil.cowan.tagsoup:tagsoup'] = '1.2.1'
 versionCache['org.checkerframework:checker-compat-qual'] = '2.5.5'
-versionCache['org.checkerframework:checker-qual'] = '3.49.5'
-versionCache['org.checkerframework:checker-util'] = '3.49.5'
+versionCache['org.checkerframework:checker-qual'] = '3.25.0'
+versionCache['org.checkerframework:checker-util'] = '3.25.0'
 versionCache['org.codehaus.mojo:animal-sniffer-annotations'] = '1.24'
 versionCache['org.conscrypt:conscrypt-openjdk-uber'] = '2.5.2'
 versionCache['org.hamcrest:hamcrest'] = '2.2'
@@ -348,8 +348,8 @@ versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk7'] = '1.9.0'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk8'] = '1.8.22'
 versionCache['org.jetbrains.kotlinx:atomicfu-jvm'] = '0.23.2'
 versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-android'] = '1.8.1'
-versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-bom'] = '1.10.2'
-versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-core'] = '1.10.2'
+versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-bom'] = '1.10.1'
+versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-core'] = '1.10.1'
 versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm'] = '1.8.1'
 versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-guava'] = '1.8.1'
 versionCache['org.jetbrains.kotlinx:kotlinx-coroutines-play-services'] = '1.10.1'
@@ -368,8 +368,10 @@ versionCache['org.mockito:mockito-core'] = '5.11.0'
 versionCache['org.mockito:mockito-subclass'] = '5.11.0'
 versionCache['org.objenesis:objenesis'] = '3.3'
 versionCache['org.ow2.asm:asm'] = '9.8'
+versionCache['org.ow2.asm:asm-analysis'] = '7.0'
 versionCache['org.ow2.asm:asm-commons'] = '9.8'
 versionCache['org.ow2.asm:asm-tree'] = '9.8'
+versionCache['org.ow2.asm:asm-util'] = '7.0'
 versionCache['org.reactivestreams:reactive-streams'] = '1.0.3'
 versionCache['org.robolectric:annotations'] = '4.15.1'
 versionCache['org.robolectric:junit'] = '4.15.1'
@@ -407,12 +409,9 @@ dependencies {
     compileLatest 'com.google.android.material:material:+'
     compileLatest 'com.google.android.play:feature-delivery:+'
     compileLatest 'com.google.code.gson:gson:+'
-    compileLatest 'io.grpc:grpc-binder:+'
-    compileLatest 'io.grpc:grpc-api:+'
-    compileLatest 'io.grpc:grpc-stub:+'
-    compileLatest 'io.grpc:grpc-protobuf-lite:+'
+    compileLatest 'io.grpc:grpc-android:+'
 
-    // Play Services & Firebase
+    // Play services libraries
     compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
     compileLatest "com.google.android.gms:play-services-auth-base:+"
     compileLatest "com.google.android.gms:play-services-auth-blockstore:+"
@@ -430,22 +429,9 @@ dependencies {
     compileLatest "com.google.android.gms:play-services-tasks:+"
     compileLatest "com.google.android.gms:play-services-vision-common:+"
     compileLatest "com.google.android.gms:play-services-vision:+"
-    compileLatest "com.google.firebase:firebase-messaging:+"
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
-    compileLatest "com.google.errorprone:error_prone_annotations:+"
-    compileLatest "org.jspecify:jspecify:+"
-    compileLatest "javax.inject:javax.inject:+"
-
-    // Needed by internal targets
-    compileLatest "com.google.code.findbugs:jsr305:+"
-    compileLatest "com.google.j2objc:j2objc-annotations:+"
-    compileLatest "org.checkerframework:checker-qual:+"
-    compileLatest "org.checkerframework:checker-util:+"
-    compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

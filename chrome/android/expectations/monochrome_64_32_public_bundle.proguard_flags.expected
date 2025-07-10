@@ -903,7 +903,8 @@
 -dontwarn libcore.io.Memory
 
 # Annotations used during internal SDK shrinking.
--dontwarn com.google.android.apps.common.proguard.**
+-dontwarn com.google.android.apps.common.proguard.UsedBy*
+-dontwarn com.google.android.apps.common.proguard.SideEffectFree
 
 # Annotations referenced by the SDK but whose definitions are contained in
 # non-required dependencies.
