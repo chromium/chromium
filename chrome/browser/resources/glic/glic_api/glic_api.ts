@@ -910,6 +910,11 @@ export declare interface TabContextOptions {
    * will never be returned.
    */
   pdfSizeLimit?: number;
+  /**
+   * The mode of the annotated page content if included in the response. This
+   * maps directly to the AnnotatedPageContentMode enum in the proto.
+   */
+  annotatedPageContentMode?: number;
 }
 
 /**

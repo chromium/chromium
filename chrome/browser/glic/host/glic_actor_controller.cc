@@ -29,6 +29,16 @@ namespace glic {
 
 namespace {
 
+mojom::GetTabContextOptionsPtr ActionableOptions(
+    const mojom::GetTabContextOptions& options) {
+  // TODO(khushalsagar): Ideally this should be set by the web UI instead of
+  // overriding here for actor mode.
+  auto actionable_context_options = options.Clone();
+  actionable_context_options->annotated_page_content_mode = optimization_guide::
+      proto::ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
+  return actionable_context_options;
+}
+
 mojom::ActInFocusedTabResultPtr MakeActErrorResult(
     mojom::ActInFocusedTabErrorReason error_reason) {
   mojom::ActInFocusedTabResultPtr result =
@@ -198,8 +208,9 @@ void GlicActorController::ResumeTask(
     return;
   }
 
-  glic::FetchPageContext(tab_of_resumed_task, context_options,
-                         /*include_actionable_data=*/true, std::move(callback));
+  glic::FetchPageContext(tab_of_resumed_task,
+                         *ActionableOptions(context_options),
+                         std::move(callback));
 }
 
 void GlicActorController::OnUserInputSubmitted() {
@@ -277,7 +288,7 @@ void GlicActorController::OnActionFinished(
         journal.CreatePendingAsyncEntry(url, task_id, "FetchPageContext", "");
 
     FetchPageContext(
-        tab, options, /*include_actionable_data=*/true,
+        tab, *ActionableOptions(options),
         base::BindOnce(OnFetchPageContext, url,
                        mojo_base::ProtoWrapperBytes::GetPassKey(),
                        std::move(journal_entry), std::move(callback),

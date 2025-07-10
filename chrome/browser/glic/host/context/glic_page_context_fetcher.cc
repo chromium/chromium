@@ -131,7 +131,6 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void FetchStart(
       tabs::TabInterface* tab,
       const mojom::GetTabContextOptions& options,
-      bool include_actionable_data,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
           callback) {
     options_ = options;
@@ -191,7 +190,9 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 
       // TODO(crbug.com/409564704): Move actor page content extraction to the
       // actor coordinator.
-      if (include_actionable_data) {
+      if (options.annotated_page_content_mode ==
+          optimization_guide::proto::
+              ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS) {
         ai_page_content_options =
             optimization_guide::ActionableAIPageContentOptions();
       } else {
@@ -431,14 +432,13 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 void FetchPageContext(
     tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& options,
-    bool include_actionable_data,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   CHECK(tab);
   CHECK(callback);
   auto self = std::make_unique<GlicPageContextFetcher>();
   auto* raw_self = self.get();
   raw_self->FetchStart(
-      tab, options, include_actionable_data,
+      tab, options,
       base::BindOnce(
           // Bind `fetcher` to the callback to keep it in scope until it
           // returns.

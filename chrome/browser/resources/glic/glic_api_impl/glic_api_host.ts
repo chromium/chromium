@@ -1408,6 +1408,9 @@ function tabContextOptionsFromClient(options: TabContextOptions):
     pdfSizeLimit: options.pdfSizeLimit === undefined ?
         DEFAULT_PDF_SIZE_LIMIT :
         Math.min(Number.MAX_SAFE_INTEGER, options.pdfSizeLimit),
+    annotatedPageContentMode: options.annotatedPageContentMode === undefined ?
+        0 :
+        options.annotatedPageContentMode,
   };
 }
 

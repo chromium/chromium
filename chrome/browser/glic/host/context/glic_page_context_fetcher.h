@@ -18,7 +18,6 @@ namespace glic {
 void FetchPageContext(
     tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& options,
-    bool include_actionable_data,
     base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback);
 
 }  // namespace glic

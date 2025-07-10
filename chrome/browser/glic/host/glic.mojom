@@ -263,7 +263,7 @@ struct GetTabContextOptions {
   uint32 inner_text_bytes_limit;
   // Whether to include a viewport screenshot in the response.
   bool include_viewport_screenshot;
-  // Whether to include annotated page content in the response.
+  // Whether to include  in the response.
   bool include_annotated_page_content;
   // Maximum number of meta tags (per Document)to include in the response.
   uint32 max_meta_tags;
@@ -272,6 +272,11 @@ struct GetTabContextOptions {
   // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
   // data is returned.
   uint32 pdf_size_limit;
+  // The mode of the annotated page content if included in the response. This
+  // maps directly to the AnnotatedPageContentMode enum in the proto.
+  //
+  // If invalid, falls back to using ANNOTATED_PAGE_CONTENT_MODE_DEFAULT.
+  uint32 annotated_page_content_mode = 0;
 };
 
 // Options for requesting pin candidates.

@@ -135,8 +135,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
   } else {
     // TODO(b/422240100): Handle metrics for pinned tabs.
   }
-  FetchPageContext(tab, options,
-                   /*include_actionable_data=*/false, std::move(callback));
+  FetchPageContext(tab, options, std::move(callback));
 }
 
 bool GlicSharingManagerImpl::IsBrowserValidForSharing(

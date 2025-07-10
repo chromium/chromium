@@ -40,6 +40,8 @@ glic::mojom::GetTabContextOptions DefaultOptions() {
   glic::mojom::GetTabContextOptions options;
   options.include_annotated_page_content = true;
   options.include_viewport_screenshot = true;
+  options.annotated_page_content_mode = optimization_guide::proto::
+      ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
   return options;
 }
 
@@ -259,7 +261,7 @@ void ActorKeyedService::OnActionFinished(
   // handles getting a new observation.
   int32_t tab_id = tab->GetHandle().raw_value();
   glic::FetchPageContext(
-      tab, DefaultOptions(), /*include_actionable_data=*/true,
+      tab, DefaultOptions(),
       base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      task_id, tab_id, std::move(action_result)));
