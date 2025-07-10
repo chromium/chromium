@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -77,6 +78,24 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
 
       resolved_height = ResolveViewportDimension(
           style.Height(), viewport_resolver, style, SVGLengthMode::kHeight);
+
+      if (RuntimeEnabledFeatures::
+              WidthAndHeightStylePropertiesOnUseAndSymbolEnabled() &&
+          svg->InUseShadowTree() && IsAtShadowBoundary(svg)) {
+        const ComputedStyle& parent_style = Parent()->StyleRef();
+
+        if (!parent_style.Width().IsAuto()) {
+          resolved_width =
+              ValueForLength(parent_style.Width(), viewport_resolver,
+                             parent_style, SVGLengthMode::kWidth);
+        }
+
+        if (!parent_style.Height().IsAuto()) {
+          resolved_height =
+              ValueForLength(parent_style.Height(), viewport_resolver,
+                             parent_style, SVGLengthMode::kHeight);
+        }
+      }
 
     } else {
       resolved_width = svg->width()->CurrentValue()->Value(length_context);

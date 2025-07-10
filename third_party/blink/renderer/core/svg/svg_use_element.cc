@@ -83,12 +83,14 @@ SVGUseElement::SVGUseElement(Document& document)
           this,
           svg_names::kWidthAttr,
           SVGLengthMode::kWidth,
-          SVGLength::Initial::kUnitlessZero)),
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kWidth)),
       height_(MakeGarbageCollected<SVGAnimatedLength>(
           this,
           svg_names::kHeightAttr,
           SVGLengthMode::kHeight,
-          SVGLength::Initial::kUnitlessZero)),
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kHeight)),
       element_url_is_local_(true),
       needs_shadow_tree_recreation_(false) {
   DCHECK(HasCustomStyleCallbacks());
@@ -250,7 +252,9 @@ void SVGUseElement::SvgAttributeChanged(
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr) {
-    if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr) {
+    if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+        RuntimeEnabledFeatures::
+            WidthAndHeightStylePropertiesOnUseAndSymbolEnabled()) {
       UpdatePresentationAttributeStyle(params.property);
     }
 
@@ -686,8 +690,8 @@ void SVGUseElement::SynchronizeAllSVGAttributes() const {
 
 void SVGUseElement::CollectExtraStyleForPresentationAttribute(
     HeapVector<CSSPropertyValue, 8>& style) {
-  auto pres_attrs =
-      std::to_array<const SVGAnimatedPropertyBase*>({x_.Get(), y_.Get()});
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
 }
