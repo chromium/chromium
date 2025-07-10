@@ -295,7 +295,7 @@ chrome_internal_verifier(
         #    and thus will exist in a couple of minutes.
         #  - so far we only have 166 files listed in the map, which is a tiny
         #    amount compared to the number of files in the chromium repo.
-        experiment_percentage = 10,
+        experiment_percentage = 50,
     ),
 )
 

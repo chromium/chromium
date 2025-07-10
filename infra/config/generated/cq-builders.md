@@ -827,7 +827,7 @@ as required builders.
 
 ### chrome
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 50.0
 
 ### chromium
 * [chromeos-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-js-coverage-rel""))
