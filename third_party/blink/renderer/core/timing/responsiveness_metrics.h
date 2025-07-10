@@ -243,18 +243,6 @@ class CORE_EXPORT ResponsivenessMetrics
   HeapTaskRunnerTimer<ResponsivenessMetrics> pointer_flush_timer_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> contextmenu_flush_timer_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> composition_end_flush_timer_;
-  // The PointerId of the last pointerdown or pointerup event processed. Used to
-  // know which interactionId to use for click events. If pointecancel or
-  // keyboard events are seen, the value is reset. TODO(crbug.com/1264930):
-  // remove this attribute once PointerId for clicks correctly points to the
-  // same value as its corresponding pointerdown and pointerup.
-  std::optional<PointerId> last_pointer_id_;
-
-  // Indicate whether the last pointerup event had a paired pointerdown event
-  // or otherwise its related pointerdown event was optimized out. This is
-  // added only for the purpose of analyzing how often an orphan pointerup can
-  // come with click, and should be removed once the experiment is done.
-  bool is_last_pointerup_orphan_ = false;
 
   // Queued timestamp of current event being dispatched.
   base::TimeTicks current_interaction_event_queued_timestamp_;
