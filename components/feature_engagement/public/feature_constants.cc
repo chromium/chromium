@@ -492,6 +492,9 @@ BASE_FEATURE(kIPHTabGroupShareNotificationBubbleOnStripFeature,
 BASE_FEATURE(kIPHTabGroupShareUpdateFeature,
              "IPH_TabGroupShareUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabGroupShareVersionUpdateFeature,
+             "IPH_TabGroupShareVersionUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabGroupsRemoteGroupFeature,
              "IPH_TabGroupsRemoteGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -93,6 +93,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupShareNoticeFeature,
     &kIPHTabGroupShareNotificationBubbleOnStripFeature,
     &kIPHTabGroupShareUpdateFeature,
+    &kIPHTabGroupShareVersionUpdateFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,

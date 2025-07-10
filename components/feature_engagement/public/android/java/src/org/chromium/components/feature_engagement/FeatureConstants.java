@@ -78,6 +78,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
@@ -267,6 +268,12 @@ public @interface FeatureConstants {
      * activity dot visible. Teaches the user what the dot means.
      */
     String TAB_GROUP_SHARE_UPDATE_FEATURE = "IPH_TabGroupShareUpdate";
+
+    /**
+     * A simple IPH bubble and highlight on the tab switcher button or tab group pane button when
+     * the user updates their version of Chrome and regains access to shared tab groups.
+     */
+    String TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE = "IPH_TabGroupShareVersionUpdate";
 
     /**
      * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on
