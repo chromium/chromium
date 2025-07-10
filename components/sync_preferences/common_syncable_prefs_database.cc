@@ -134,6 +134,8 @@ enum {
   kSyncableAlwaysSyncingPriorityPrefForTesting = 85,  // For tests.
   kFacilitatedPaymentsPixAccountLinking = 86,
   kShowSearchTools = 87,
+  kAutofillHomeMetadata = 88,
+  kAutofillWorkMetadata = 89,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -356,6 +358,16 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {omnibox::kShowSearchTools,
          {syncable_prefs_ids::kShowSearchTools, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillHomeMetadata,
+         {syncable_prefs_ids::kAutofillHomeMetadata,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+          MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillWorkMetadata,
+         {syncable_prefs_ids::kAutofillWorkMetadata,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+          MergeBehavior::kNone}},
     });
 
 }  // namespace

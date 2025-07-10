@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/autofill_prefs.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -113,6 +114,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    registry->RegisterDictionaryPref(
+        kAutofillHomeMetadata,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+    registry->RegisterDictionaryPref(
+        kAutofillWorkMetadata,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  }
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {

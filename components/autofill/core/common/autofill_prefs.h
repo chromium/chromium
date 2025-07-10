@@ -147,6 +147,10 @@ inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
     "facilitated_payments.pix_account_linking";
 #endif  // BUILDFLAG(IS_ANDROID)
+// Dictionaries containing metadata for Home and Work addresses. See
+// HomeAndWorkMetadataStore.
+inline constexpr char kAutofillHomeMetadata[] = "autofill.home_metadata";
+inline constexpr char kAutofillWorkMetadata[] = "autofill.work_metadata";
 
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this

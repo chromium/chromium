@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
+#include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -158,7 +159,12 @@ void AddressDataManager::OnWebDataServiceRequestDone(
   std::vector<AutofillProfile> profiles_from_db =
       static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
           ->GetValue();
-  profiles_ = std::move(profiles_from_db);
+  if (!home_and_work_metadata_) {
+    profiles_ = std::move(profiles_from_db);
+  } else {
+    profiles_ =
+        home_and_work_metadata_->ApplyMetadata(std::move(profiles_from_db));
+  }
 
   if (!has_initial_load_finished_) {
     has_initial_load_finished_ = true;
@@ -477,6 +483,12 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
         prefs::kAutofillProfileEnabled, pref_service_,
         base::BindRepeating(&AddressDataManager::OnAutofillProfilePrefChanged,
                             base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForHomeAndWork)) {
+      home_and_work_metadata_ = std::make_unique<HomeAndWorkMetadataStore>(
+          pref_service_, base::BindRepeating(&AddressDataManager::LoadProfiles,
+                                             base::Unretained(this)));
+    }
   }
 }
 
@@ -745,6 +757,9 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     }
+  }
+  if (home_and_work_metadata_) {
+    home_and_work_metadata_->ApplyChange(change);
   }
   is_ongoing = true;
 }

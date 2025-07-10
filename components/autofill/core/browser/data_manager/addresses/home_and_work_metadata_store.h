@@ -1,0 +1,79 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_HOME_AND_WORK_METADATA_STORE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_HOME_AND_WORK_METADATA_STORE_H_
+
+#include <optional>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
+
+namespace autofill {
+
+class AutofillProfile;
+
+// Home and Work profiles are downloaded through CONTACT_INFO but can currently
+// not be uploaded there. As a result, syncing of metadata (e.g. use counts) is
+// not possible like it is for regular account profiles.
+// To support some kind of metadata sync for Home and Work, this class syncs the
+// most important metadata through prefs. This is an awful workaround and to be
+// removed once Home and Work metadata can be uploaded through CONTACT_INFO.
+//
+// The following metadata is supported:
+// - use count
+// - last use timestamp
+// - A timestamp, indicating the modification time of the address when the user
+//   removed it from Chrome. Once the address is modified outside of Chrome, it
+//   will reappear.
+//   Note that storing the modification timestamp instead of the time of removal
+//   is preferred to avoid issues with incorrect system times.
+//
+// Ideally, all this logic would be integrated in the CONTACT_INFO sync bridge,
+// as close to the sync support for non Home and Work addresses. However, since
+// the bridge lives on a background thread and since writing prefs is only
+// supported on the UI thread, it is integrated into the AddressDataManager for
+// simplicity:
+// - When profiles are loaded from the database, metadata changes are applied on
+//   top of the result from the database.
+// - When profiles are updated locally through the data manager, prefs are
+//   updated.
+// - When profiles are updated remotely, profiles are reloaded from the database
+//   to apply any metadata changes.
+//
+// TODO(crbug.com/354706653): Ensure prefs are cleared on sign-out, after sync
+// has shutdown, to prevent leaking them into different profiles.
+class HomeAndWorkMetadataStore {
+ public:
+  // `on_change` is called whenever the result of `ApplyMetadata()` changes,
+  // for example because pref updates through sync were received.
+  HomeAndWorkMetadataStore(PrefService* pref_service,
+                           base::RepeatingClosure on_change);
+
+  // Applies any metadata stored to all Home and Work profiles in `profiles`.
+  // If the address was removed from Chrome, it is dropped.
+  // Non Home and Work profiles are returned unmodified.
+  std::vector<AutofillProfile> ApplyMetadata(
+      std::vector<AutofillProfile> profiles) const;
+
+  // Persists the `change` in prefs, if it applies to a Home and Work profile.
+  void ApplyChange(const AutofillProfileChange& change);
+
+ private:
+  // Applies metadata to a single profile, returning the modified profile.
+  // If the profile was removed from Chrome, nullopt is returned.
+  std::optional<AutofillProfile> ApplyMetadata(AutofillProfile profiles) const;
+
+  raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar change_registrar_;
+};
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_HOME_AND_WORK_METADATA_STORE_H_
