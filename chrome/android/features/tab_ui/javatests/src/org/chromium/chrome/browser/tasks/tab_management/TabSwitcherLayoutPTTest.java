@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT;
 
 import android.graphics.Bitmap;
@@ -30,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -135,10 +135,10 @@ public class TabSwitcherLayoutPTTest {
     private RegularTabSwitcherStation enterRegularHtsWithThumbnailChecking(
             PageStation currentStation) {
         RegularTabSwitcherStation tabSwitcherStation = currentStation.openRegularTabSwitcher();
-        CarryOn.pickUp(
-                new TabThumbnailsCapturedCarryOn(
-                        tabSwitcherStation.tabModelSelectorElement.get(), /* isIncognito= */ false),
-                /* trigger= */ null);
+        noopTo().pickUpCarryOn(
+                        new TabThumbnailsCapturedCarryOn(
+                                tabSwitcherStation.tabModelSelectorElement.get(),
+                                /* isIncognito= */ false));
         return tabSwitcherStation;
     }
 
@@ -146,10 +146,10 @@ public class TabSwitcherLayoutPTTest {
     private IncognitoTabSwitcherStation enterIncognitoHtsWithThumbnailChecking(
             PageStation currentStation) {
         IncognitoTabSwitcherStation tabSwitcherStation = currentStation.openIncognitoTabSwitcher();
-        CarryOn.pickUp(
-                new TabThumbnailsCapturedCarryOn(
-                        tabSwitcherStation.tabModelSelectorElement.get(), /* isIncognito= */ true),
-                /* trigger= */ null);
+        noopTo().pickUpCarryOn(
+                        new TabThumbnailsCapturedCarryOn(
+                                tabSwitcherStation.tabModelSelectorElement.get(),
+                                /* isIncognito= */ true));
         return tabSwitcherStation;
     }
 
