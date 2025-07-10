@@ -219,10 +219,8 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
   SetXinputMask(mask_data, x11::Input::DeviceEvent::ButtonRelease);
   SetXinputMask(mask_data, x11::Input::DeviceEvent::Motion);
 
-  if (base::FeatureList::IsEnabled(features::kXInput2KeyEvents)) {
-    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
-    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
-  }
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
 
   x11::Input::EventMask touch_mask{x11::Input::DeviceId::All};
   touch_mask.mask.push_back({});
