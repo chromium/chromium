@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_mediator.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 
-@implementation SafariDataImportMainMediator {
+@implementation SafariDataImportEntryPointMediator {
   /// UI blocker used while the workflow is presenting. This makes sure that the
   /// promos manager would not attempt to show another promo in the meantime.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;

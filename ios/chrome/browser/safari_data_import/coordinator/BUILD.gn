@@ -4,10 +4,10 @@
 
 source_set("coordinator") {
   sources = [
+    "safari_data_import_entry_point_mediator.h",
+    "safari_data_import_entry_point_mediator.mm",
     "safari_data_import_main_coordinator.h",
     "safari_data_import_main_coordinator.mm",
-    "safari_data_import_main_mediator.h",
-    "safari_data_import_main_mediator.mm",
     "safari_data_import_ui_handler.h",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
@@ -81,7 +81,7 @@ source_set("promo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safari_data_import_main_mediator_unittest.mm" ]
+  sources = [ "safari_data_import_entry_point_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
     "//ios/chrome/app/profile",

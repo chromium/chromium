@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator_transitioning_delegate.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -28,7 +28,7 @@
 
 @implementation SafariDataImportMainCoordinator {
   /// Mediator for the main workflow.
-  SafariDataImportMainMediator* _mediator;
+  SafariDataImportEntryPointMediator* _mediator;
   /// View controller for the entry point of the Ssafari data import workflow.
   SafariDataImportEntryPointViewController* _viewController;
   /// Coordinator that displays the next step in the Safari data importing
@@ -44,7 +44,7 @@
   _viewController.actionHandler = self;
   PromosManager* promosManager =
       PromosManagerFactory::GetForProfile(self.profile);
-  _mediator = [[SafariDataImportMainMediator alloc]
+  _mediator = [[SafariDataImportEntryPointMediator alloc]
       initWithUIBlockerTarget:self.browser->GetSceneState()
                 promosManager:promosManager];
   [self.baseViewController presentViewController:_viewController
@@ -54,7 +54,7 @@
 
 - (void)stop {
   __weak __typeof(self) weakSelf = self;
-  SafariDataImportMainMediator* mediator = _mediator;
+  SafariDataImportEntryPointMediator* mediator = _mediator;
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{

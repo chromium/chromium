@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_mediator.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 
 #import <memory>
 
@@ -13,15 +13,15 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-// Test fixture for SafariDataImportMainMediator.
-class SafariDataImportMainMediatorTest : public PlatformTest {
+// Test fixture for SafariDataImportEntryPointMediator.
+class SafariDataImportEntryPointMediatorTest : public PlatformTest {
  public:
-  SafariDataImportMainMediatorTest() : PlatformTest() {
+  SafariDataImportEntryPointMediatorTest() : PlatformTest() {
     ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.profileState = profile_state;
     promos_manager_ = std::make_unique<MockPromosManager>();
-    mediator_ = [[SafariDataImportMainMediator alloc]
+    mediator_ = [[SafariDataImportEntryPointMediator alloc]
         initWithUIBlockerTarget:scene_state_
                   promosManager:promos_manager_.get()];
   }
@@ -29,11 +29,12 @@ class SafariDataImportMainMediatorTest : public PlatformTest {
  protected:
   SceneState* scene_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
-  SafariDataImportMainMediator* mediator_;
+  SafariDataImportEntryPointMediator* mediator_;
 };
 
 // Tests that the Safari import reminder is registered on request.
-TEST_F(SafariDataImportMainMediatorTest, TestRegisterSafariImportReminder) {
+TEST_F(SafariDataImportEntryPointMediatorTest,
+       TestRegisterSafariImportReminder) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::SafariImportRemindMeLater));

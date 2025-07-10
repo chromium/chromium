@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_MAIN_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_MAIN_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_ENTRY_POINT_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_ENTRY_POINT_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +11,7 @@ class PromosManager;
 @protocol UIBlockerTarget;
 
 /// A mediator for the safari data import screen entry point.
-@interface SafariDataImportMainMediator : NSObject
+@interface SafariDataImportEntryPointMediator : NSObject
 
 /// Initializer.
 - (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
@@ -28,4 +28,4 @@ class PromosManager;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_MAIN_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_COORDINATOR_SAFARI_DATA_IMPORT_ENTRY_POINT_MEDIATOR_H_
