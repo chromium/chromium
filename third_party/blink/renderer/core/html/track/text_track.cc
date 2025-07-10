@@ -111,11 +111,12 @@ void TextTrack::SetTrackList(TextTrackList* track_list) {
 }
 
 bool TextTrack::IsVisualKind() const {
-  return kind() == SubtitlesKeyword() || kind() == CaptionsKeyword();
+  return kind() == V8TextTrackKind::Enum::kSubtitles ||
+         kind() == V8TextTrackKind::Enum::kCaptions;
 }
 
 bool TextTrack::IsSpokenKind() const {
-  return kind() == DescriptionsKeyword();
+  return kind() == V8TextTrackKind::Enum::kDescriptions;
 }
 
 void TextTrack::setMode(const V8TextTrackMode& mode) {

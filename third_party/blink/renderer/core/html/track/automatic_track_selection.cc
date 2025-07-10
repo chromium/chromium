@@ -53,14 +53,15 @@ AutomaticTrackSelection::AutomaticTrackSelection(
     const Configuration& configuration)
     : configuration_(configuration) {}
 
-const AtomicString& AutomaticTrackSelection::PreferredTrackKind() const {
+std::optional<V8TextTrackKind::Enum>
+AutomaticTrackSelection::PreferredTrackKind() const {
   if (configuration_.text_track_kind_user_preference ==
       TextTrackKindUserPreference::kSubtitles)
-    return TextTrack::SubtitlesKeyword();
+    return V8TextTrackKind::Enum::kSubtitles;
   if (configuration_.text_track_kind_user_preference ==
       TextTrackKindUserPreference::kCaptions)
-    return TextTrack::CaptionsKeyword();
-  return g_null_atom;
+    return V8TextTrackKind::Enum::kCaptions;
+  return std::nullopt;
 }
 
 void AutomaticTrackSelection::PerformAutomaticTextTrackSelection(

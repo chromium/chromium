@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_AUTOMATIC_TRACK_SELECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_AUTOMATIC_TRACK_SELECTION_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_track_kind.h"
 #include "third_party/blink/renderer/core/html/track/text_track_kind_user_preference.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -38,7 +39,7 @@ class AutomaticTrackSelection {
  private:
   void PerformAutomaticTextTrackSelection(const TrackGroup&);
   void EnableDefaultMetadataTextTracks(const TrackGroup&);
-  const AtomicString& PreferredTrackKind() const;
+  std::optional<V8TextTrackKind::Enum> PreferredTrackKind() const;
 
   const Configuration configuration_;
 };

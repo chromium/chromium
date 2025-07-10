@@ -160,16 +160,16 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   if (track && (track->label().empty() || HasDuplicateLabel(track))) {
     auto* track_kind_marker =
         MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-    if (track->kind() == track->CaptionsKeyword()) {
+    if (track->kind() == V8TextTrackKind::Enum::kCaptions) {
       track_kind_marker->SetShadowPseudoId(AtomicString(
           "-internal-media-controls-text-track-list-kind-captions"));
-    } else if (track->kind() == track->DescriptionsKeyword()) {
+    } else if (track->kind() == V8TextTrackKind::Enum::kDescriptions) {
       track_kind_marker->SetShadowPseudoId(AtomicString(
           "-internal-media-controls-text-track-list-kind-descriptions"));
     } else {
       // Aside from Captions and Descriptions, Subtitles is the only other
       // supported keyword.
-      DCHECK_EQ(track->kind(), track->SubtitlesKeyword());
+      DCHECK_EQ(track->kind(), V8TextTrackKind::Enum::kSubtitles);
       track_kind_marker->SetShadowPseudoId(AtomicString(
           "-internal-media-controls-text-track-list-kind-subtitles"));
     }
