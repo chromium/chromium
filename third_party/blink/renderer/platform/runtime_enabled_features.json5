@@ -1180,7 +1180,7 @@
     {
       // Need a feature entry
       name: "CSSCaretShape",
-      status: "test",
+      status: "experimental",
     },
     {
       // Support case-sensitive attribute selector modifier
