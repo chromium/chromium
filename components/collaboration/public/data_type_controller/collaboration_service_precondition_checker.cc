@@ -41,6 +41,11 @@ CollaborationServicePreconditionChecker::GetPreconditionState() const {
     case CollaborationStatus::kDisabledPending:
       return PreconditionState::kMustStopAndKeepData;
     case CollaborationStatus::kDisabledForPolicy:
+      if (base::FeatureList::IsEnabled(
+              data_sharing::features::kCollaborationEntrepriseV2)) {
+        return PreconditionState::kPreconditionsMet;
+      }
+      ABSL_FALLTHROUGH_INTENDED;
     case CollaborationStatus::kVersionOutOfDate:
     case CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi:
       return PreconditionState::kMustStopAndClearData;
