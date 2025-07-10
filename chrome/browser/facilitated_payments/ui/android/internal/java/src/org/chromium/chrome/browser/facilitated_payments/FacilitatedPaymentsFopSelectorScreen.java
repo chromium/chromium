@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.PAYMENT_APP;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -42,7 +43,9 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
 
         @Override
         protected boolean shouldSkipItemType(@ItemType int type) {
-            return type != ItemType.BANK_ACCOUNT && type != ItemType.EWALLET;
+            return type != ItemType.BANK_ACCOUNT
+                    && type != ItemType.EWALLET
+                    && type != ItemType.PAYMENT_APP;
         }
     }
 
@@ -101,6 +104,10 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                 EWALLET,
                 EwalletViewBinder::createEwalletItemView,
                 EwalletViewBinder::bindEwalletItemView);
+        adapter.registerType(
+                PAYMENT_APP,
+                PaymentAppViewBinder::createPaymentAppItemView,
+                PaymentAppViewBinder::bindPaymentAppItemView);
         adapter.registerType(
                 ADDITIONAL_INFO,
                 FacilitatedPaymentsPaymentMethodsViewBinder::createAdditionalInfoView,

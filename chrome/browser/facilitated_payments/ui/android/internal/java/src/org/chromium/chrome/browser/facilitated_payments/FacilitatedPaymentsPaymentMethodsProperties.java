@@ -57,6 +57,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int FOOTER = 4;
 
         int EWALLET = 5;
+
+        int PAYMENT_APP = 6;
     }
 
     // The visible state of the Facilitated Payments bottom sheet.
@@ -150,6 +152,21 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         };
 
         private EwalletProperties() {}
+    }
+
+    /** Properties for a payment app entry in the facilitated payments bottom sheet. */
+    static class PaymentAppProperties {
+        static final ReadableObjectPropertyKey<String> PAYMENT_APP_NAME =
+                new ReadableObjectPropertyKey("payment_app_name");
+        static final ReadableIntPropertyKey PAYMENT_APP_DRAWABLE_ID =
+                new ReadableIntPropertyKey("payment_app_drawable_id");
+        static final ReadableObjectPropertyKey<Runnable> ON_PAYMENT_APP_CLICK_ACTION =
+                new ReadableObjectPropertyKey<>("on_payment_app_click_action");
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
+            PAYMENT_APP_NAME, PAYMENT_APP_DRAWABLE_ID, ON_PAYMENT_APP_CLICK_ACTION
+        };
+
+        private PaymentAppProperties() {}
     }
 
     /**

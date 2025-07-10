@@ -28,6 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsProgressScreen.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/PaymentAppViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/PixAccountLinkingPrompt.java",
   ]
 
@@ -81,6 +82,7 @@ android_resources("java_resources") {
     "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
     "java/res/layout/facilitated_payments_progress_screen.xml",
     "java/res/layout/facilitated_payments_sequence_view.xml",
+    "java/res/layout/payment_app_item.xml",
     "java/res/layout/pix_account_linking_prompt.xml",
     "java/res/values/dimens.xml",
   ]
