@@ -623,16 +623,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
-        assertOnUiThread();
-        if (tabGroupId == null) return 0;
-
-        return TabCollectionTabModelImplJni.get()
-                .getTabCountForGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+        // TODO(crbug.com/428692223): revisit the performance of this method as compared to checking
+        // this in C++ and returning a count.
+        return getTabsInGroup(tabGroupId).size();
     }
 
     @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
-        return false;
+        // TODO(crbug.com/428692223): revisit the performance of this method as compared to checking
+        // this in C++ and returning a boolean.
+        return getTabsInGroup(tabGroupId).size() > 0;
     }
 
     @Override
@@ -642,12 +642,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public List<Tab> getRelatedTabList(@TabId int tabId) {
-        return Collections.emptyList();
+        Tab tab = getTabById(tabId);
+        if (tab == null) return Collections.emptyList();
+        if (tab.getTabGroupId() == null) return Collections.singletonList(tab);
+        return getTabsInGroup(tab.getTabGroupId());
     }
 
     @Override
     public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
-        return Collections.emptyList();
+        assertOnUiThread();
+        if (tabGroupId == null) return Collections.emptyList();
+
+        return TabCollectionTabModelImplJni.get()
+                .getTabsInGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
@@ -658,7 +665,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getIndexOfTabInGroup(Tab tab) {
-        return TabList.INVALID_TAB_INDEX;
+        // TODO(crbug.com/428692223): revisit the performance of this method as compared to
+        // computing the index in C++ and returning it.
+        return getTabsInGroup(tab.getTabGroupId()).indexOf(tab);
     }
 
     @Override
@@ -671,7 +680,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
-        return false;
+        assertOnUiThread();
+        for (Tab tab : tabsToMerge) {
+            if (tab.getTabGroupId() != null) return false;
+        }
+        return true;
     }
 
     @Override
@@ -930,9 +943,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         void removeTabRecursive(
                 long nativeTabCollectionTabModelImpl, @JniType("TabAndroid*") Tab tabs);
 
-        int getTabCountForGroup(
-                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
-
         void createTabGroup(
                 long nativeTabCollectionTabModelImpl,
                 @JniType("base::Token") Token tabGroupId,
@@ -940,12 +950,21 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 @TabGroupColorId int colorId,
                 boolean isCollapsed);
 
+        void moveTabGroupTo(
+                long nativeTabCollectionTabModelImpl,
+                @JniType("base::Token") Token tabGroupId,
+                int newIndex);
+
+        @JniType("std::vector<TabAndroid*>")
+        List<Tab> getTabsInGroup(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
         void updateTabGroupVisualData(
                 long nativeTabCollectionTabModelImpl,
                 @JniType("base::Token") Token tabGroupId,
-                @JniType("std::u16string") String title,
-                @TabGroupColorId int colorId,
-                boolean isCollapsed);
+                @JniType("std::optional<std::u16string>") @Nullable String title,
+                @JniType("std::optional<int>") @Nullable @TabGroupColorId Integer colorId,
+                @JniType("std::optional<bool>") @Nullable Boolean isCollapsed);
 
         void closeDetachedTabGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);

@@ -76,18 +76,26 @@ class TabCollectionTabModelImpl {
                       jint j_color_id,
                       bool is_collapsed);
 
+  // Moves the tab group to a the new index.
+  void MoveTabGroupTo(JNIEnv* env,
+                      const base::Token& tab_group_id,
+                      int to_index);
+
+  // Returns the tabs in a group. If the group is not found, returns an empty
+  // vector.
+  std::vector<TabAndroid*> GetTabsInGroup(JNIEnv* env,
+                                          const base::Token& token);
+
   // Update tab group visual data.
-  void UpdateTabGroupVisualData(JNIEnv* env,
-                                const base::Token& tab_group_id,
-                                const std::u16string& tab_group_title,
-                                jint j_color_id,
-                                bool is_collapsed);
+  void UpdateTabGroupVisualData(
+      JNIEnv* env,
+      const base::Token& tab_group_id,
+      const std::optional<std::u16string>& tab_group_title,
+      const std::optional<jint>& j_color_id,
+      const std::optional<bool>& is_collapsed);
 
   // Closes a detached tab group.
   void CloseDetachedTabGroup(JNIEnv* env, const base::Token& tab_group_id);
-
-  // Returns the count of tabs in a group. Returns 0 if not group not found.
-  size_t GetTabCountForGroup(JNIEnv* env, const base::Token& token);
 
   // Gets a list of all tabs.
   std::vector<TabAndroid*> GetAllTabs(JNIEnv* env);
