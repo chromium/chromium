@@ -271,8 +271,8 @@ class LinkedHashSet {
     return reverse_iterator(it, value_to_index_);
   }
 
-  Map value_to_index_;
-  ListType list_;
+  GC_PLUGIN_IGNORE("crbug.com/428987863") Map value_to_index_;
+  GC_PLUGIN_IGNORE("crbug.com/428987863") ListType list_;
 
   struct TypeConstraints {
     constexpr TypeConstraints() {

@@ -26,7 +26,11 @@
 // GC_PLUGIN_IGNORE_FILE should only be used when GC_PLUGIN_IGNORE is not
 // appropriate (e.g. when using GC_PLUGIN_IGNORE results in binary size
 // regressions, etc.).
-#define GC_PLUGIN_IGNORE_FILE(reason) _Pragma("blink_gc_plugin_ignore_file")
+#define GC_PLUGIN_IGNORE_FILE(reason)                           \
+  _Pragma("clang diagnostic push")                              \
+      _Pragma("clang diagnostic ignored \"-Wunknown-pragmas\"") \
+          _Pragma("blink_gc_plugin_ignore_file")                \
+              _Pragma("clang diagnostic pop")
 #else  // !defined(__clang__)
 #define GC_PLUGIN_IGNORE(reason)
 #define GC_PLUGIN_IGNORE_FILE(reason)

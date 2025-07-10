@@ -36,6 +36,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -126,7 +127,7 @@ class UnretainedWrapper final {
   T* Value() const { return ptr_; }
 
  private:
-  T* ptr_;
+  GC_PLUGIN_IGNORE("crbug.com/428987863") T* ptr_;
 };
 
 template <typename T>

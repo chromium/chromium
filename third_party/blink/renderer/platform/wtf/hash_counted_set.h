@@ -23,6 +23,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -111,7 +112,7 @@ class HashCountedSet {
   }
 
  private:
-  ImplType impl_;
+  GC_PLUGIN_IGNORE("crbug.com/428987863") ImplType impl_;
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
