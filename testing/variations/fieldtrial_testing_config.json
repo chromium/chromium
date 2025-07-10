@@ -8503,7 +8503,7 @@
             ]
         }
     ],
-    "DisableInstanceLimitDesktop": [
+    "DisableInstanceLimitWithV2Switcher": [
         {
             "platforms": [
                 "android"
@@ -8512,7 +8512,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DisableInstanceLimit"
+                        "DisableInstanceLimit",
+                        "InstanceSwitcherV2"
                     ]
                 }
             ]
