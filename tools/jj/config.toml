@@ -1,0 +1,13 @@
+# See https://jj-vcs.github.io/jj/latest/config/ for the schema.
+
+[revset-aliases]
+"trunk()" = "main@origin"
+"immutable_heads()" = "remote_bookmarks() | tags()"
+
+[git]
+auto-local-bookmark = false
+
+# For users of jj-on-piper, this is enabled by default for *all* repos.
+# We want chrome's formatters, not google3's.
+[fix.tools.google3format]
+enabled = false
