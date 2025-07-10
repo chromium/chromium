@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
@@ -111,6 +112,26 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   EXPECT_EQ(GetInfo(passport_name, NAME_FULL), u"Some Name");
   EXPECT_EQ(GetInfo(passport_name, NAME_FIRST), u"Some");
   EXPECT_EQ(GetInfo(passport_name, NAME_LAST), u"Name");
+}
+
+// Tests that AttributeInstance honors the affix formats.
+TEST(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
+  AttributeInstance passport_number((AttributeType(kPassportNumber)));
+  passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
+                          /*app_locale=*/"", /*format_string=*/u"",
+                          VerificationStatus::kObserved);
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"0"}),
+            u"LR0123456");
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"4"}),
+            u"LR01");
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"-4"}),
+            u"3456");
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                    {.format_string =
+                         base::NumberToString16(std::numeric_limits<int>::min())
+                             .c_str()}),
+            u"LR0123456");
 }
 
 // Tests that AttributeInstance appropriately manages dates.

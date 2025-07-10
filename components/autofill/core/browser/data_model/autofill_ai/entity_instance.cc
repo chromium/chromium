@@ -8,6 +8,7 @@
 #include <ranges>
 #include <variant>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -23,6 +24,39 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
+
+namespace {
+
+std::u16string Format(std::u16string s,
+                      base::optional_ref<const std::u16string> format_string) {
+  if (!format_string) {
+    return s;
+  }
+
+  // We parse the leading minus here rather than using `base::StringToInt()` to
+  // avoid mixing signed and unsigned integers as this easily leads to
+  // undefined behavior.
+  std::u16string_view format = *format_string;
+  bool suffix = false;
+  if (format_string->starts_with(u"-")) {
+    format = format.substr(1);
+    suffix = true;
+  }
+  uint32_t offset = 0;
+  if (!base::StringToUint(format, &offset)) {
+    return s;
+  }
+
+  if (suffix) {
+    offset = s.size() - offset;
+    s = std::move(s).substr(offset < s.size() ? offset : 0);
+  } else if (offset > 0) {
+    s = std::move(s).substr(0, offset);
+  }
+  return s;
+}
+
+}  // namespace
 
 AttributeInstance::AttributeInstance(AttributeType type)
     : type_(type), info_([&]() -> InfoStructure {
@@ -76,7 +110,8 @@ std::u16string AttributeInstance::GetInfo(
                        return GetRawInfo(/*pass_key=*/{}, field_type);
                      },
                      [&](const std::u16string&) {
-                       return GetRawInfo(/*pass_key=*/{}, field_type);
+                       return Format(GetRawInfo(/*pass_key=*/{}, field_type),
+                                     format_string);
                      }},
       info_);
 }
