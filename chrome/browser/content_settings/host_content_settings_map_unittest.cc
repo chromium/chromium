@@ -989,28 +989,8 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
                                        otr_settings[1].setting_value));
   }
 }
-class HostContentSettingsMapPermissionSettingIncognitoInheritanceTest
-    : public HostContentSettingsMapTest {
- public:
-  HostContentSettingsMapPermissionSettingIncognitoInheritanceTest() {
-    feature_list_.InitWithFeatureState(
-        content_settings::features::kApproximateGeolocationPermission, true);
-    // Reset ContentSettingsRegistry before and after this test because the
-    // PermissionSetting registration is still behind a flag and the registry
-    // otherwise affects other tests.
-    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
-  }
 
-  void TearDown() override {
-    HostContentSettingsMapTest::TearDown();
-    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(HostContentSettingsMapPermissionSettingIncognitoInheritanceTest,
+TEST_F(HostContentSettingsMapTest,
        IncognitoInheritGeolocationWithOptionPartialBlocks) {
   // The cookie setting has an initial value of ALLOW, so all changes should be
   // inherited from regular to incognito mode.

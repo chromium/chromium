@@ -8,16 +8,12 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/values.h"
-#include "build/blink_buildflags.h"
-#include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/geolocation_setting_delegate.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/features.h"
 
 namespace content_settings {
 
@@ -78,8 +74,6 @@ void PermissionSettingsRegistry::Init() {
   // If a permission is DELETED, please update
   // PrefProvider::DiscardOrMigrateObsoletePreferences() and
   // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
     Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
              "geolocation-with-options",
              GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
@@ -90,7 +84,6 @@ void PermissionSettingsRegistry::Init() {
                  WebsiteSettingsRegistry::DESKTOP,
              PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
              std::make_unique<GeolocationSettingDelegate>());
-  }
 }
 
 void PermissionSettingsRegistry::Register(
