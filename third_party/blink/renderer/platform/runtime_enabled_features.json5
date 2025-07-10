@@ -2341,7 +2341,7 @@
     {
       // crbug.com/40398871
       name: "FontFeatureSettingsDescriptor",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontMatchAliasesAsLastResort",
@@ -2364,7 +2364,7 @@
     {
       // crbug.com/40398871
       name: "FontVariationSettingsDescriptor",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/1231644): This flag is being kept (even though the
