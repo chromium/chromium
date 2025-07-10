@@ -1736,7 +1736,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isOptionalButtonSupported() {
-        return ChromeFeatureList.sCctAdaptiveButton.isEnabled() && !isTrustedWebActivity();
+        return ChromeFeatureList.sCctAdaptiveButton.isEnabled()
+                && !isTrustedWebActivity()
+                && mUiType == CustomTabsUiType.DEFAULT;
     }
 
     private @DisplayMode.EnumType int resolveDisplayMode() {
