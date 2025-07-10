@@ -856,28 +856,9 @@ android_java_prebuilt("package_impl_common_java") {
   deps = [ ":repackage_impl_common" ]
 }
 
-java_prebuilt("package_impl_native_java") {
-  # This target is a java_prebuilt instead of a android_java_prebuilt so we
-  # don't filter out GEN_JNI which is part of jar_excluded_patterns in
-  # android_java_prebuilt.
+android_java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
-  supports_android = true
-  requires_android = true
-
-  # To avoid dual definition of classes some dependencies are added
-  # downstream (Maven deps, BUILD dependencies), and the bytecode check
-  # doesn't like that.
-  enable_bytecode_checks = false
-
   deps = [ ":repackage_native" ]
-  jar_excluded_patterns = [
-    "androidx/*/R*",
-
-    # This class is already in package_shared_java, which is always shipped as a
-    # required dependency of this jar. Including it in this jar would cause
-    # duplicate class errors.
-    "org/chromium/base/metrics/ScopedSysTraceEvent.class",
-  ]
 }
 
 android_java_prebuilt("package_impl_util_java") {
@@ -1108,7 +1089,12 @@ repackage_jars("repackage_native_impl") {
   output = _native_intermediate_jar_path
   deps =
       cronet_impl_native_java_deps_to_package + [ ":cronet_impl_native_java" ]
-  jar_excluded_patterns = _jar_excluded_patterns
+  jar_excluded_patterns = _jar_excluded_patterns + [
+                            # This class is already in package_shared_java, which is always shipped as a
+                            # required dependency of this jar. Including it in this jar would cause
+                            # duplicate class errors.
+                            "org/chromium/base/metrics/ScopedSysTraceEvent.class",
+                          ]
 }
 
 # Do not depend on this target directly. Use :repackage_native.
