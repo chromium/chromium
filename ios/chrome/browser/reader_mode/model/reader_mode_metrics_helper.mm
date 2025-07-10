@@ -11,8 +11,41 @@
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-ReaderModeMetricsHelper::ReaderModeMetricsHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+namespace {
+
+// Converts dom_distiller::mojom::FontFamily to Reader mode metric type.
+ReaderModeFontFamily ConvertMojomFontFamily(
+    dom_distiller::mojom::FontFamily font_family) {
+  switch (font_family) {
+    case dom_distiller::mojom::FontFamily::kSansSerif:
+      return ReaderModeFontFamily::kSansSerif;
+    case dom_distiller::mojom::FontFamily::kSerif:
+      return ReaderModeFontFamily::kSerif;
+    case dom_distiller::mojom::FontFamily::kMonospace:
+      return ReaderModeFontFamily::kMonospace;
+  }
+}
+
+// Converts dom_distiller::mojom::Theme to Reader mode metric type.
+ReaderModeTheme ConvertMojomTheme(dom_distiller::mojom::Theme theme) {
+  switch (theme) {
+    case dom_distiller::mojom::Theme::kDark:
+      return ReaderModeTheme::kDark;
+    case dom_distiller::mojom::Theme::kLight:
+      return ReaderModeTheme::kLight;
+    case dom_distiller::mojom::Theme::kSepia:
+      return ReaderModeTheme::kSepia;
+  }
+}
+
+}  // namespace
+
+ReaderModeMetricsHelper::ReaderModeMetricsHelper(
+    web::WebState* web_state,
+    dom_distiller::DistilledPagePrefs* distilled_page_prefs)
+    : web_state_(web_state), distilled_page_prefs_(distilled_page_prefs) {
+  scoped_observation_.Observe(distilled_page_prefs);
+}
 
 ReaderModeMetricsHelper::~ReaderModeMetricsHelper() {
   Flush();
@@ -103,4 +136,28 @@ void ReaderModeMetricsHelper::Flush() {
   }
   distiller_timer_.reset();
   heuristic_timer_.reset();
+}
+
+void ReaderModeMetricsHelper::OnChangeFontFamily(
+    dom_distiller::mojom::FontFamily font) {
+  base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
+                                ReaderModeCustomizationType::kFontFamily);
+  base::UmaHistogramEnumeration(kReaderModeFontFamilyCustomizationHistogram,
+                                ConvertMojomFontFamily(font));
+}
+
+void ReaderModeMetricsHelper::OnChangeTheme(dom_distiller::mojom::Theme theme) {
+  base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
+                                ReaderModeCustomizationType::kTheme);
+  base::UmaHistogramEnumeration(kReaderModeThemeCustomizationHistogram,
+                                ConvertMojomTheme(theme));
+}
+
+void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {
+  base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
+                                ReaderModeCustomizationType::kFontScale);
+
+  int doubleToInt = std::floor(scaling * 100);
+  base::UmaHistogramCustomCounts(kReaderModeFontScaleCustomizationHistogram,
+                                 doubleToInt, 1, 200, 25);
 }

@@ -73,7 +73,7 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
                                          DistillerService* distiller_service)
     : web_state_(web_state),
       distiller_service_(distiller_service),
-      metrics_helper_(web_state) {
+      metrics_helper_(web_state, distiller_service->GetDistilledPagePrefs()) {
   CHECK(web_state_);
   web_state_observation_.Observe(web_state_);
 }

@@ -1587,6 +1587,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationTargetProfileHandlingResult) -->
 
+<!-- LINT.IfChange(ReaderModeCustomizationType) -->
+
+<enum name="ReaderModeCustomizationType">
+  <int value="0" label="Font scale"/>
+  <int value="1" label="Font family"/>
+  <int value="2" label="Theme"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeCustomizationType) -->
+
 <!-- LINT.IfChange(ReaderModeDistillerResult) -->
 
 <enum name="ReaderModeDistillerResult">
@@ -1595,6 +1605,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeDistillerResult) -->
+
+<!-- LINT.IfChange(ReaderModeFontFamily) -->
+
+<enum name="ReaderModeFontFamily">
+  <int value="0" label="Sans Serif"/>
+  <int value="1" label="Serif"/>
+  <int value="2" label="Monospace"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeFontFamily) -->
 
 <!-- LINT.IfChange(ReaderModeHeuristicClassification) -->
 
@@ -1632,6 +1652,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeState) -->
+
+<!-- LINT.IfChange(ReaderModeTheme) -->
+
+<enum name="ReaderModeTheme">
+  <int value="0" label="Light"/>
+  <int value="1" label="Dark"/>
+  <int value="2" label="Sepia"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeTheme) -->
 
 <enum name="TextSelectionDetectedEntityType">
   <int value="0" label="Unknown"/>

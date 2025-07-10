@@ -8,6 +8,8 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
 namespace base {
@@ -18,10 +20,12 @@ namespace web {
 class WebState;
 }
 
-class ReaderModeMetricsHelper {
+class ReaderModeMetricsHelper
+    : public dom_distiller::DistilledPagePrefs::Observer {
  public:
-  ReaderModeMetricsHelper(web::WebState* web_state);
-  ~ReaderModeMetricsHelper();
+  ReaderModeMetricsHelper(web::WebState* web_state,
+                          dom_distiller::DistilledPagePrefs* prefs);
+  ~ReaderModeMetricsHelper() override;
 
   // Records histograms for the Reading Mode heuristic event.
   void RecordReaderHeuristicTriggered();
@@ -40,12 +44,21 @@ class ReaderModeMetricsHelper {
   // Records the last state of Reading Mode events.
   void Flush();
 
+  // dom_distiller::DistilledPagePrefs::Observer implementation.
+  void OnChangeFontFamily(dom_distiller::mojom::FontFamily font) override;
+  void OnChangeTheme(dom_distiller::mojom::Theme theme) override;
+  void OnChangeFontScaling(float scaling) override;
+
  private:
   std::unique_ptr<base::ElapsedTimer> heuristic_timer_;
   std::unique_ptr<base::ElapsedTimer> distiller_timer_;
   // Tracks the last state that was recorded in the Reading Mode events.
   std::optional<ReaderModeState> last_reader_mode_state_;
   raw_ptr<web::WebState> web_state_;
+  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  base::ScopedObservation<dom_distiller::DistilledPagePrefs,
+                          dom_distiller::DistilledPagePrefs::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_METRICS_HELPER_H_

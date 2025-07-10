@@ -16,7 +16,10 @@
 
 class ReaderModeModelTest : public ReaderModeTest {
  public:
-  ReaderModeModelTest() : web_state_(CreateWebState()) {}
+  void SetUp() override {
+    ReaderModeTest::SetUp();
+    web_state_ = CreateWebState();
+  }
 
   void DetachReaderModeTabHelper() {
     ReaderModeTabHelper::RemoveFromWebState(web_state());

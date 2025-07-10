@@ -17,6 +17,16 @@ const char kReaderModeHeuristicLatencyHistogram[] =
 const char kReaderModeDistillerLatencyHistogram[] =
     "IOS.ReaderMode.Distiller.Latency";
 
+const char kReaderModeThemeCustomizationHistogram[] = "IOS.ReaderMode.Theme";
+
+const char kReaderModeFontFamilyCustomizationHistogram[] =
+    "IOS.ReaderMode.FontFamily";
+
+const char kReaderModeFontScaleCustomizationHistogram[] =
+    "IOS.ReaderMode.FontScale";
+
+const char kReaderModeCustomizationHistogram[] = "IOS.ReaderMode.Customization";
+
 NSString* GetReaderModeSymbolName() {
   if (@available(iOS 18, *)) {
     return kReaderModeSymbolPostIOS18;

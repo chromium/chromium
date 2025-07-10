@@ -62,6 +62,37 @@ enum class ReaderModeHeuristicClassification {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicClassification)
 
+// LINT.IfChange(ReaderModeCustomizationType)
+enum class ReaderModeCustomizationType {
+  kFontScale = 0,
+  kFontFamily = 1,
+  kTheme = 2,
+  kMaxValue = kTheme,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeCustomizationType)
+
+// Recorded for IOS.ReaderMode.Theme. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeTheme)
+enum class ReaderModeTheme {
+  kLight = 0,
+  kDark = 1,
+  kSepia = 2,
+  kMaxValue = kSepia,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeTheme)
+
+// Recorded for IOS.ReaderMode.FontFamily. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeFontFamily)
+enum class ReaderModeFontFamily {
+  kSansSerif = 0,
+  kSerif = 1,
+  kMonospace = 2,
+  kMaxValue = kMonospace,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeFontFamily)
+
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.
@@ -79,6 +110,18 @@ extern const char kReaderModeHeuristicLatencyHistogram[];
 
 // Histogram name for Reader Mode distillation latency.
 extern const char kReaderModeDistillerLatencyHistogram[];
+
+// Histogram name for Reader Mode theme customization.
+extern const char kReaderModeThemeCustomizationHistogram[];
+
+// Histogram name for Reader Mode font family customization.
+extern const char kReaderModeFontFamilyCustomizationHistogram[];
+
+// Histogram name for Reader Mode font scale customization.
+extern const char kReaderModeFontScaleCustomizationHistogram[];
+
+// Histogram name for Reader Mode customization.
+extern const char kReaderModeCustomizationHistogram[];
 
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();

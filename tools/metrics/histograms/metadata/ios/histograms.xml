@@ -4406,6 +4406,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.Customization"
+    enum="ReaderModeCustomizationType" expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs any change the user has made to the default Reading Mode UI including
+    font family, size, and theme changes on iOS devices.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReaderMode.Distiller.Latency" units="ms"
     expires_after="2025-11-24">
   <owner>fernandex@google.com</owner>
@@ -4415,6 +4425,27 @@ chromium-metrics-reviews@google.com.
     when the JavaScript is executed until the result is processed. Sampled on a
     subset of user page loads based on page load probability configuration which
     will be dependent on the milestone and channel for iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.FontFamily" enum="ReaderModeFontFamily"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs any change the user has made to the default Reading Mode UI font family
+    including customizations to Sans Serif, Serif, and Monospace fonts on iOS
+    devices.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.FontScale" units="count"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs any change the user has made to the default Reading Mode UI font scale
+    taking the original double value and multiplying by 100.
   </summary>
 </histogram>
 
@@ -4461,6 +4492,17 @@ chromium-metrics-reviews@google.com.
     Logs the user's state in the Reading Mode journey from the background
     triggering of the heuristic on the page to showing and interacting with
     Reading Mode UI on iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.Theme" enum="ReaderModeTheme"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs any change the user has made to the default Reading Mode UI theme
+    including background customizations to sepia, dark, and light colors on iOS
+    devices.
   </summary>
 </histogram>
 

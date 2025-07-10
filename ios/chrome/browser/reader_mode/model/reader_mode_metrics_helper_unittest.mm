@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -29,7 +30,12 @@ using ukm::builders::IOS_ReaderMode_Heuristic_Result;
 class ReaderModeMetricsHelperTest : public PlatformTest {
  public:
   void SetUp() override {
-    metrics_helper_ = std::make_unique<ReaderModeMetricsHelper>(&web_state_);
+    profile_ = TestProfileIOS::Builder().Build();
+    distilled_page_prefs_ =
+        DistillerServiceFactory::GetForProfile(profile_.get())
+            ->GetDistilledPagePrefs();
+    metrics_helper_ = std::make_unique<ReaderModeMetricsHelper>(
+        &web_state_, distilled_page_prefs_);
     ukm::InitializeSourceUrlRecorderForWebState(&web_state_);
     CommitNavigation();
   }
@@ -44,6 +50,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
 
  private:
   // Starts and finishes a committed navigation in `web_state()`. This
@@ -56,6 +63,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
   }
 
   web::FakeWebState web_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<ReaderModeMetricsHelper> metrics_helper_;
 };
 
@@ -97,6 +105,52 @@ TEST_F(ReaderModeMetricsHelperTest,
           IOS_ReaderMode_Heuristic_Latency::kEntryName,
           IOS_ReaderMode_Heuristic_Latency::kLatencyName);
   EXPECT_EQ(0u, ukm_latency_entries.size());
+}
+
+// Tests that metrics are recorded when the user changes the font family in
+// Reading Mode customization UI.
+TEST_F(ReaderModeMetricsHelperTest, OnFontFamilyChanged) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetFontFamily(
+      dom_distiller::mojom::FontFamily::kMonospace);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kFontFamily, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kReaderModeFontFamilyCustomizationHistogram),
+              BucketsAre(Bucket(ReaderModeFontFamily::kMonospace, 1)));
+}
+
+// Tests that metrics are recorded when the user changes the font scaling in
+// Reading Mode customization UI.
+TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetFontScaling(2.0);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kFontScale, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kReaderModeFontScaleCustomizationHistogram),
+              BucketsAre(Bucket(200, 1)));
+}
+
+// Tests that metrics are recorded when the user changes the theme in Reading
+// Mode customization UI.
+TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+
+  distilled_page_prefs_->SetTheme(dom_distiller::mojom::Theme::kDark);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeCustomizationType::kTheme, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeThemeCustomizationHistogram),
+      BucketsAre(Bucket(ReaderModeTheme::kDark, 1)));
 }
 
 // Tests that deleting the metrics helper causes metrics state to flush.
