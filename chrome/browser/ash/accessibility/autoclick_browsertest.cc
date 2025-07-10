@@ -99,12 +99,11 @@ class AutoclickBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/388867838): Add manifest v3 variant when migration is
+// complete.
 INSTANTIATE_TEST_SUITE_P(ManifestV2,
                          AutoclickBrowserTest,
                          ::testing::Values(ManifestVersion::kTwo));
-INSTANTIATE_TEST_SUITE_P(ManifestV3,
-                         AutoclickBrowserTest,
-                         ::testing::Values(ManifestVersion::kThree));
 
 IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LeftClickButtonOnHover) {
   LoadURLAndAutoclick(kShowButtonOnClickUrl);

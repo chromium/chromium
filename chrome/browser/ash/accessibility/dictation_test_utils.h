@@ -92,9 +92,6 @@ class DictationTestUtils {
   // allow specific messages.
   void DisableConsoleObserver() { console_observer_.reset(); }
 
-  // Add an allowed extension JS error to `console_observer_`.
-  void AddAllowedExtensionError(const std::u16string& allowed);
-
   // Sets whether or not we should wait for the accessibility common extension
   // to load when enabling Dictation. This should be true in almost all cases.
   // However, there are times when we don't want to wait for accessibility

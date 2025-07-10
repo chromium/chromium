@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -76,9 +75,6 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
 //        browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
 class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
  public:
-  static constexpr char16_t kErrorBrowserIsShuttingDown[] =
-      u"The browser is shutting down.";
-
   ExtensionConsoleErrorObserver(Profile* profile, const char* extension_id);
   virtual ~ExtensionConsoleErrorObserver();
 
@@ -97,13 +93,9 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   // Get the number of errors and warnings received.
   size_t GetErrorsAndWarningsCount() const;
 
-  // Add an allowed error message.
-  void AddAllowedError(const std::u16string& allowed);
-
  private:
   std::vector<std::u16string> errors_;
   raw_ptr<ErrorConsole> error_console_;
-  std::set<std::u16string> allowed_errors_;
 };
 
 // Listens for changes to the histogram provided at construction. This class
@@ -149,9 +141,6 @@ class MagnifierAnimationWaiter {
   raw_ptr<FullscreenMagnifierController> controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
 };
-
-// Helper to convert `ManifestVersion` to string.
-std::string ManifestVersionToString(ManifestVersion version);
 
 }  // namespace ash
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_

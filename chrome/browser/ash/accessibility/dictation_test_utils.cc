@@ -342,13 +342,6 @@ void DictationTestUtils::WaitForCommitText(const std::u16string& value) {
   input_context_handler_->RemoveObserver(&waiter);
 }
 
-void DictationTestUtils::AddAllowedExtensionError(
-    const std::u16string& allowed) {
-  if (console_observer_) {
-    console_observer_->AddAllowedError(allowed);
-  }
-}
-
 void DictationTestUtils::SetUpPumpkinDir(const char* pumpkin_dir) {
   // Set the path to the Pumpkin test files. For more details, see the
   // `pumpkin_test_files` rule in the accessibility_common BUILD file.
