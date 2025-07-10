@@ -17,6 +17,7 @@
 namespace base {
 namespace sequence_manager {
 
+using blink::Vector;
 using testing::ContainerEq;
 using testing::UnorderedElementsAreArray;
 

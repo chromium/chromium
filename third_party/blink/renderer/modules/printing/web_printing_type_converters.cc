@@ -551,7 +551,7 @@ TypeConverter<blink::WebPrinterAttributes*,
   attributes->setPrinterState(
       mojo::ConvertTo<V8PrinterState::Enum>(printer_attributes->printer_state));
   attributes->setPrinterStateReasons(
-      mojo::ConvertTo<Vector<V8PrinterStateReason>>(
+      mojo::ConvertTo<blink::Vector<V8PrinterStateReason>>(
           printer_attributes->printer_state_reasons));
   attributes->setPrinterStateMessage(printer_attributes->printer_state_message);
 

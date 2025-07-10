@@ -2637,6 +2637,8 @@ auto ToVector(Range&& range, Proj proj = {}) {
 
 }  // namespace WTF
 
+namespace blink {
 using WTF::Vector;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_H_

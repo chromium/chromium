@@ -61,7 +61,9 @@ using blink::StringImpl;
 
 }  // namespace WTF
 
+namespace blink {
 using WTF::Vector;
+}  // namespace blink
 
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;

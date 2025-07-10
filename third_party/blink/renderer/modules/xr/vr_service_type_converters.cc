@@ -24,8 +24,9 @@ TypeConverter<std::optional<blink::XRPlane::Orientation>,
 
 blink::HeapVector<blink::Member<blink::DOMPointReadOnly>>
 TypeConverter<blink::HeapVector<blink::Member<blink::DOMPointReadOnly>>,
-              Vector<device::mojom::blink::XRPlanePointDataPtr>>::
-    Convert(const Vector<device::mojom::blink::XRPlanePointDataPtr>& vertices) {
+              blink::Vector<device::mojom::blink::XRPlanePointDataPtr>>::
+    Convert(const blink::Vector<device::mojom::blink::XRPlanePointDataPtr>&
+                vertices) {
   blink::HeapVector<blink::Member<blink::DOMPointReadOnly>> result;
 
   for (const auto& vertex_data : vertices) {

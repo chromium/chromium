@@ -380,6 +380,8 @@ inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
 
 }  // namespace WTF
 
+namespace blink {
 using WTF::HashSet;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_SET_H_

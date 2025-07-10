@@ -35,7 +35,7 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
   blink::ContactInfo* contact_info = blink::ContactInfo::Create();
 
   if (contact->name) {
-    Vector<blink::String> names;
+    blink::Vector<blink::String> names;
     names.ReserveInitialCapacity(contact->name->size());
 
     for (const blink::String& name : *contact->name) {
@@ -46,7 +46,7 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
   }
 
   if (contact->email) {
-    Vector<blink::String> emails;
+    blink::Vector<blink::String> emails;
     emails.ReserveInitialCapacity(contact->email->size());
 
     for (const blink::String& email : *contact->email) {
@@ -57,7 +57,7 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
   }
 
   if (contact->tel) {
-    Vector<blink::String> numbers;
+    blink::Vector<blink::String> numbers;
     numbers.ReserveInitialCapacity(contact->tel->size());
 
     for (const blink::String& number : *contact->tel) {

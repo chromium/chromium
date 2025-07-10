@@ -67,7 +67,7 @@ class OffscreenFontCache {
   }
 
  private:
-  HashMap<blink::String, blink::FontDescription> fonts_resolved_;
+  blink::HashMap<blink::String, blink::FontDescription> fonts_resolved_;
   LinkedHashSet<blink::String> font_lru_list_;
 };
 

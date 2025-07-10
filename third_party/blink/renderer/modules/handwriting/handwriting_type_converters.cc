@@ -54,7 +54,7 @@ TypeConverter<HandwritingStrokePtr, blink::HandwritingStroke*>::Convert(
   }
   auto output = handwriting::mojom::blink::HandwritingStroke::New();
   output->points =
-      mojo::ConvertTo<Vector<HandwritingPointPtr>>(input->getPoints());
+      mojo::ConvertTo<blink::Vector<HandwritingPointPtr>>(input->getPoints());
   return output;
 }
 
@@ -178,13 +178,13 @@ TypeConverter<handwriting::mojom::blink::HandwritingModelConstraintPtr,
   return output;
 }
 
-Vector<blink::V8HandwritingRecognitionType> ConvertRecognitionType(
-    const Vector<handwriting::mojom::blink::HandwritingRecognitionType>&
+blink::Vector<blink::V8HandwritingRecognitionType> ConvertRecognitionType(
+    const blink::Vector<handwriting::mojom::blink::HandwritingRecognitionType>&
         input) {
   using V8Type = blink::V8HandwritingRecognitionType;
   using BlinkType = handwriting::mojom::blink::HandwritingRecognitionType;
 
-  Vector<V8Type> ret;
+  blink::Vector<V8Type> ret;
 
   for (const auto& it : input) {
     switch (it) {
@@ -197,12 +197,13 @@ Vector<blink::V8HandwritingRecognitionType> ConvertRecognitionType(
   return ret;
 }
 
-Vector<blink::V8HandwritingInputType> ConvertInputType(
-    const Vector<handwriting::mojom::blink::HandwritingInputType>& input) {
+blink::Vector<blink::V8HandwritingInputType> ConvertInputType(
+    const blink::Vector<handwriting::mojom::blink::HandwritingInputType>&
+        input) {
   using V8Type = blink::V8HandwritingInputType;
   using BlinkType = handwriting::mojom::blink::HandwritingInputType;
 
-  Vector<V8Type> ret;
+  blink::Vector<V8Type> ret;
 
   for (const auto& it : input) {
     switch (it) {

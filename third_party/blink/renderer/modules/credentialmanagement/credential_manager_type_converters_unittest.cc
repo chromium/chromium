@@ -54,6 +54,7 @@
 namespace mojo {
 
 using V8Context = blink::V8IdentityCredentialRequestOptionsContext;
+using blink::Vector;
 using blink::mojom::blink::RpContext;
 
 const uint8_t kSample[] = {1, 2, 3, 4, 5, 6};

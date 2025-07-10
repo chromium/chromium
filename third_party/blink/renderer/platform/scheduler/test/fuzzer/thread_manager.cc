@@ -421,12 +421,12 @@ scoped_refptr<SingleThreadTaskRunner> ThreadManager::GetTaskRunnerFor(
       ->queue->task_runner();
 }
 
-const Vector<SequenceManagerFuzzerProcessor::TaskForTest>&
+const blink::Vector<SequenceManagerFuzzerProcessor::TaskForTest>&
 ThreadManager::ordered_tasks() const {
   return ordered_tasks_;
 }
 
-const Vector<SequenceManagerFuzzerProcessor::ActionForTest>&
+const blink::Vector<SequenceManagerFuzzerProcessor::ActionForTest>&
 ThreadManager::ordered_actions() const {
   return ordered_actions_;
 }

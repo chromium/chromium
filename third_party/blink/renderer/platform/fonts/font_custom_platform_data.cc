@@ -61,7 +61,7 @@ RetrieveVariationDesignParametersByTag(sk_sp<SkTypeface> base_typeface,
   int axes_count = base_typeface->getVariationDesignParameters({});
   if (axes_count <= 0)
     return std::nullopt;
-  Vector<SkFontParameters::Variation::Axis> axes;
+  blink::Vector<SkFontParameters::Variation::Axis> axes;
   axes.resize(axes_count);
   int axes_read =
       base_typeface->getVariationDesignParameters(axes);

@@ -14,8 +14,9 @@ TypeConverter<payments::mojom::blink::PaymentAddressPtr,
   payments::mojom::blink::PaymentAddressPtr output =
       payments::mojom::blink::PaymentAddress::New();
   output->country = input->hasCountry() ? input->country() : g_empty_string;
-  output->address_line =
-      input->hasAddressLine() ? input->addressLine() : Vector<blink::String>();
+  output->address_line = input->hasAddressLine()
+                             ? input->addressLine()
+                             : blink::Vector<blink::String>();
   output->region = input->hasRegion() ? input->region() : g_empty_string;
   output->city = input->hasCity() ? input->city() : g_empty_string;
   output->dependent_locality = input->hasDependentLocality()

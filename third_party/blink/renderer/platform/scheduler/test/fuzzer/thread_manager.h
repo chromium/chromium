@@ -59,11 +59,11 @@ class PLATFORM_EXPORT ThreadManager {
       const google::protobuf::RepeatedPtrField<
           SequenceManagerTestDescription::Action>& initial_thread_actions);
 
-  const Vector<SequenceManagerFuzzerProcessor::TaskForTest>& ordered_tasks()
-      const;
+  const blink::Vector<SequenceManagerFuzzerProcessor::TaskForTest>&
+  ordered_tasks() const;
 
-  const Vector<SequenceManagerFuzzerProcessor::ActionForTest>& ordered_actions()
-      const;
+  const blink::Vector<SequenceManagerFuzzerProcessor::ActionForTest>&
+  ordered_actions() const;
 
  protected:
   class Task {
@@ -145,20 +145,20 @@ class PLATFORM_EXPORT ThreadManager {
 
   // For testing purposes, this should follow the order in which queues
   // were created on the thread in which |this| was instantiated.
-  Vector<scoped_refptr<TaskQueueWithVoters>> task_queues_;
+  blink::Vector<scoped_refptr<TaskQueueWithVoters>> task_queues_;
 
   // Used to be able to cancel pending tasks from the sequence manager. For
   // testing purposes, this should follow the order in which the tasks were
   // posted to the thread in which |this| was instantiated.
-  Vector<std::unique_ptr<Task>> pending_tasks_;
+  blink::Vector<std::unique_ptr<Task>> pending_tasks_;
 
   // For Testing. Used to log tasks in their order of execution on the
   // thread in which |this| was instantiated.
-  Vector<SequenceManagerFuzzerProcessor::TaskForTest> ordered_tasks_;
+  blink::Vector<SequenceManagerFuzzerProcessor::TaskForTest> ordered_tasks_;
 
   // For Testing. Used to log actions in their order of execution on the
   // thread in which |this| was instantiated.
-  Vector<SequenceManagerFuzzerProcessor::ActionForTest> ordered_actions_;
+  blink::Vector<SequenceManagerFuzzerProcessor::ActionForTest> ordered_actions_;
 
   // Outlives this class. |processor_| owns a thread pool manager that creates
   // threads.

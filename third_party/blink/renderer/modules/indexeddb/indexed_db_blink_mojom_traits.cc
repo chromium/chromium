@@ -114,7 +114,7 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
          std::unique_ptr<blink::IDBKey>* out) {
   switch (data.tag()) {
     case blink::mojom::IDBKeyDataView::Tag::kKeyArray: {
-      Vector<std::unique_ptr<blink::IDBKey>> array;
+      blink::Vector<std::unique_ptr<blink::IDBKey>> array;
       if (!data.ReadKeyArray(&array))
         return false;
       *out = blink::IDBKey::CreateArray(std::move(array));
@@ -124,8 +124,8 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
       *out = blink::IDBKey::CreateBinary(
-          base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-              Vector<char>(base::as_chars(base::span(bytes)))));
+          base::MakeRefCounted<base::RefCountedData<blink::Vector<char>>>(
+              blink::Vector<char>(base::as_chars(base::span(bytes)))));
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kString: {
@@ -150,7 +150,7 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 }
 
 // static
-const Vector<std::unique_ptr<blink::IDBKey>>&
+const blink::Vector<std::unique_ptr<blink::IDBKey>>&
 UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     key_array(const std::unique_ptr<blink::IDBKey>& key) {
   return key->Array();
@@ -171,10 +171,10 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
 }
 
 // static
-Vector<blink::mojom::blink::IDBExternalObjectPtr>
+blink::Vector<blink::mojom::blink::IDBExternalObjectPtr>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     external_objects(const std::unique_ptr<blink::IDBValue>& input) {
-  Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
+  blink::Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   external_objects.ReserveInitialCapacity(
       input->BlobInfo().size() + input->FileSystemAccessTokens().size());
   for (const blink::WebBlobInfo& info : input->BlobInfo()) {
@@ -211,8 +211,8 @@ bool StructTraits<blink::mojom::IDBValueDataView,
                   std::unique_ptr<blink::IDBValue>>::
     Read(blink::mojom::IDBValueDataView data,
          std::unique_ptr<blink::IDBValue>* out) {
-  Vector<char> value_bits;
-  if (!data.ReadBits(reinterpret_cast<Vector<uint8_t>*>(&value_bits))) {
+  blink::Vector<char> value_bits;
+  if (!data.ReadBits(reinterpret_cast<blink::Vector<uint8_t>*>(&value_bits))) {
     return false;
   }
 
@@ -221,12 +221,12 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     return true;
   }
 
-  Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
+  blink::Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   if (!data.ReadExternalObjects(&external_objects))
     return false;
 
-  Vector<blink::WebBlobInfo> value_blob_info;
-  Vector<
+  blink::Vector<blink::WebBlobInfo> value_blob_info;
+  blink::Vector<
       mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
       file_system_access_tokens;
 
@@ -281,7 +281,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
     }
     case blink::mojom::IDBKeyPathType::Array: {
       const auto& array = key_path.Array();
-      Vector<blink::String> result;
+      blink::Vector<blink::String> result;
       result.ReserveInitialCapacity(
           base::checked_cast<wtf_size_t>(array.size()));
       for (const auto& item : array)
@@ -317,7 +317,7 @@ bool StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::Read(
       return true;
     }
     case blink::mojom::IDBKeyPathDataDataView::Tag::kStringArray: {
-      Vector<blink::String> array;
+      blink::Vector<blink::String> array;
       if (!data_view.ReadStringArray(&array))
         return false;
       *out = blink::IDBKeyPath(array);

@@ -30,6 +30,6 @@
 
 typedef float DashArrayElement;
 
-typedef Vector<DashArrayElement> DashArray;
+using DashArray = blink::Vector<DashArrayElement>;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_DASH_ARRAY_H_

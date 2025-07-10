@@ -22,9 +22,9 @@ struct TypeConverter<std::optional<blink::XRPlane::Orientation>,
 
 template <>
 struct TypeConverter<blink::HeapVector<blink::Member<blink::DOMPointReadOnly>>,
-                     Vector<device::mojom::blink::XRPlanePointDataPtr>> {
+                     blink::Vector<device::mojom::blink::XRPlanePointDataPtr>> {
   static blink::HeapVector<blink::Member<blink::DOMPointReadOnly>> Convert(
-      const Vector<device::mojom::blink::XRPlanePointDataPtr>& vertices);
+      const blink::Vector<device::mojom::blink::XRPlanePointDataPtr>& vertices);
 };
 
 }  // namespace mojo

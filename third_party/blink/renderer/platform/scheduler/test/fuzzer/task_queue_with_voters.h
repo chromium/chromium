@@ -20,7 +20,7 @@ struct PLATFORM_EXPORT TaskQueueWithVoters
       : queue(std::move(task_queue)) {}
 
   TaskQueue::Handle queue;
-  Vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
+  blink::Vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
 
  private:
   friend ThreadSafeRefCounted<TaskQueueWithVoters>;

@@ -589,6 +589,8 @@ inline bool operator!=(const HashMap<T, U, V, W, X>& a,
 
 }  // namespace WTF
 
+namespace blink {
 using WTF::HashMap;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_

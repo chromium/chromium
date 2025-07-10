@@ -24,8 +24,10 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
     Convert(const blink::SecurePaymentConfirmationRequest* input) {
   auto output = payments::mojom::blink::SecurePaymentConfirmationRequest::New();
   output->credential_ids =
-      mojo::ConvertTo<Vector<Vector<uint8_t>>>(input->credentialIds());
-  output->challenge = mojo::ConvertTo<Vector<uint8_t>>(input->challenge());
+      mojo::ConvertTo<blink::Vector<blink::Vector<uint8_t>>>(
+          input->credentialIds());
+  output->challenge =
+      mojo::ConvertTo<blink::Vector<uint8_t>>(input->challenge());
 
   // If a timeout was not specified in JavaScript, then pass a null `timeout`
   // through mojo IPC, so the browser can set a default (e.g., 3 minutes).

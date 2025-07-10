@@ -10,10 +10,10 @@
 
 namespace mojo {
 
-Vector<scoped_refptr<blink::BlobDataHandle>> StructTraits<
+blink::Vector<scoped_refptr<blink::BlobDataHandle>> StructTraits<
     blink::mojom::blink::CloneableMessage::DataView,
     blink::BlinkCloneableMessage>::blobs(blink::BlinkCloneableMessage& input) {
-  Vector<scoped_refptr<blink::BlobDataHandle>> result;
+  blink::Vector<scoped_refptr<blink::BlobDataHandle>> result;
   result.ReserveInitialCapacity(input.message->BlobDataHandles().size());
   for (const auto& blob : input.message->BlobDataHandles())
     result.push_back(blob.value);
@@ -29,7 +29,7 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
     return false;
   out->message = blink::SerializedScriptValue::Create(message_view.data());
 
-  Vector<scoped_refptr<blink::BlobDataHandle>> blobs;
+  blink::Vector<scoped_refptr<blink::BlobDataHandle>> blobs;
   if (!data.ReadBlobs(&blobs))
     return false;
   for (auto& blob : blobs) {
@@ -50,7 +50,8 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
   out->sender_agent_cluster_id = sender_agent_cluster_id;
   out->locked_to_sender_agent_cluster = data.locked_to_sender_agent_cluster();
 
-  Vector<PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>&
+  blink::Vector<
+      PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>&
       tokens = out->message->FileSystemAccessTokens();
   if (!data.ReadFileSystemAccessTokens(&tokens)) {
     return false;

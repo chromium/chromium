@@ -21,7 +21,7 @@
 
 namespace {
 
-void AppendToVectorTestTask(Vector<blink::String>* vector,
+void AppendToVectorTestTask(blink::Vector<blink::String>* vector,
                             blink::String value) {
   vector->push_back(std::move(value));
 }

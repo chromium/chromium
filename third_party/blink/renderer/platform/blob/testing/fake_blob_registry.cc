@@ -18,7 +18,7 @@ class DataElementReader {
  public:
   DataElementReader(mojo::PendingReceiver<mojob::Blob> blob,
                     const blink::String& uuid,
-                    Vector<mojob::DataElementPtr> elements)
+                    blink::Vector<mojob::DataElementPtr> elements)
       : blob_(std::move(blob)),
         uuid_(uuid),
         elements_(std::move(elements)),
@@ -72,7 +72,7 @@ class DataElementReader {
   class DataPipeReader : public mojo::DataPipeDrainer::Client {
    public:
     DataPipeReader(mojo::ScopedDataPipeConsumerHandle pipe,
-                   Vector<uint8_t>& blob_body_bytes,
+                   blink::Vector<uint8_t>& blob_body_bytes,
                    base::OnceClosure done_callback)
         : drainer_(this, std::move(pipe)),
           blob_body_bytes_(blob_body_bytes),
@@ -86,16 +86,16 @@ class DataElementReader {
 
    private:
     mojo::DataPipeDrainer drainer_;
-    raw_ref<Vector<uint8_t>> blob_body_bytes_;
+    raw_ref<blink::Vector<uint8_t>> blob_body_bytes_;
     base::OnceClosure done_callback_;
   };
 
   mojo::PendingReceiver<mojob::Blob> blob_;
   blink::String uuid_;
-  Vector<mojob::DataElementPtr> elements_;
+  blink::Vector<mojob::DataElementPtr> elements_;
 
-  Vector<mojob::DataElementPtr>::iterator elements_index_;
-  Vector<uint8_t> blob_body_bytes_;
+  blink::Vector<mojob::DataElementPtr>::iterator elements_index_;
+  blink::Vector<uint8_t> blob_body_bytes_;
   std::unique_ptr<DataPipeReader> async_reader_;
 };
 

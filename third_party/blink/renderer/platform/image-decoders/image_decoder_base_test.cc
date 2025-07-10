@@ -47,7 +47,8 @@ bool ShouldSkipFile(const base::FilePath& path,
          (image_size > threshold);
 }
 
-void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
+void ReadFileToVector(const base::FilePath& path,
+                      blink::Vector<char>* contents) {
   std::string raw_image_data;
   base::ReadFileToString(path, &raw_image_data);
   contents->resize(raw_image_data.size());

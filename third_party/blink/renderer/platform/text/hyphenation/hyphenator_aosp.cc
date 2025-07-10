@@ -114,7 +114,7 @@ Hyphenator* Hyphenator::loadBinary(const uint8_t* patternData) {
   return result;
 }
 
-void Hyphenator::hyphenate(Vector<uint8_t>* result,
+void Hyphenator::hyphenate(blink::Vector<uint8_t>* result,
                            const uint16_t* word,
                            wtf_size_t len) {
   result->clear();
