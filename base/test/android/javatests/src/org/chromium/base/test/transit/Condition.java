@@ -13,8 +13,6 @@ import com.google.errorprone.annotations.FormatMethod;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
-import org.chromium.base.test.transit.Transition.TransitionOptions;
-import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -332,26 +330,5 @@ public abstract class Condition {
     public static ConditionStatus fulfilledOrAwaiting(
             boolean isFulfilled, String message, Object... args) {
         return fulfilledOrAwaiting(isFulfilled, String.format(message, args));
-    }
-
-    /** Waits for one or more Conditions using a Transition. */
-    public static CarryOn waitFor(Condition... conditions) {
-        return waitFor(TransitionOptions.DEFAULT, conditions);
-    }
-
-    /** Waits for one or more Conditions using a Transition with {@link TransitionOptions}. */
-    public static CarryOn waitFor(TransitionOptions options, Condition... conditions) {
-        return CarryOn.pickUp(CarryOn.fromConditions(conditions), options, /* trigger= */ null);
-    }
-
-    /** Runs |trigger| and waits for one or more Conditions using a Transition. */
-    public static CarryOn runAndWaitFor(Trigger trigger, Condition... conditions) {
-        return runAndWaitFor(TransitionOptions.DEFAULT, trigger, conditions);
-    }
-
-    /** Versions of {@link #runAndWaitFor(Trigger, Condition...)} with {@link TransitionOptions}. */
-    public static CarryOn runAndWaitFor(
-            TransitionOptions options, Trigger trigger, Condition... conditions) {
-        return CarryOn.pickUp(CarryOn.fromConditions(conditions), options, trigger);
     }
 }

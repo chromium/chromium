@@ -25,10 +25,8 @@ import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
@@ -87,19 +85,19 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     }
 
     public void typeInOmnibox(String query) {
-        Condition.waitFor(new UrlBarHasFocusCondition(urlBarElement.get()));
-        Condition.runAndWaitFor(
-                Transition.possiblyAlreadyFulfilledOption(),
-                urlBarElement.getTypeTextTrigger(query),
-                new SuggestionsShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.get()));
+        urlBarElement
+                .typeTextTo(query)
+                .withPossiblyAlreadyFulfilled()
+                .waitFor(new SuggestionsShownCondition(locationBarElement.get()));
     }
 
     public void checkSuggestionsShown() {
-        Condition.waitFor(new SuggestionsShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.get()));
     }
 
     public void checkSuggestionsNotShown() {
-        Condition.waitFor(new SuggestionsNotShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.get()));
     }
 
     /** Expect a suggestion with the given |index|, |title| and |text| combination. */
@@ -171,7 +169,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
 
         public WebPageStation openPagePressingEnter() {
             UrlBar urlBar = urlBarElement.get();
-            Condition.waitFor(new UrlBarHasFocusCondition(urlBar, /* active= */ true));
+            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar, /* active= */ true));
             return urlBarElement
                     .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
                     .arriveAt(buildDestinationPageStation());

@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -31,7 +33,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.util.Criteria;
@@ -183,7 +184,7 @@ public class OmniboxTestUtils {
      * @param active Whether the Omnibox is expected to have focus or not.
      */
     public void checkFocus(boolean active) {
-        Condition.waitFor(new UrlBarHasFocusCondition(mUrlBar, active));
+        noopTo().waitFor(new UrlBarHasFocusCondition(mUrlBar, active));
     }
 
     /**
@@ -246,7 +247,7 @@ public class OmniboxTestUtils {
 
     /** Waits for a non-empty list of omnibox suggestions to be shown. */
     public void checkSuggestionsShown() {
-        Condition.waitFor(new SuggestionsShownCondition(mLocationBar));
+        noopTo().waitFor(new SuggestionsShownCondition(mLocationBar));
     }
 
     /**

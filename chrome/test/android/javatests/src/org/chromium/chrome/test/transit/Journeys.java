@@ -6,10 +6,11 @@ package org.chromium.chrome.test.transit;
 
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
+
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -236,9 +237,9 @@ public class Journeys {
 
             boolean tryToFixThumbnail = false;
             try {
-                Condition.waitFor(
-                        TabThumbnailCondition.etc1(tabModelSelector, previousTab),
-                        TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
+                noopTo().waitFor(
+                                TabThumbnailCondition.etc1(tabModelSelector, previousTab),
+                                TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             } catch (TravelException e) {
                 tryToFixThumbnail = true;
             }
@@ -256,9 +257,9 @@ public class Journeys {
                         currentPage.selectTabFast(previousTab, PageStation::newGenericBuilder);
                 currentPage = previousPageAgain.selectTabFast(tabToComeBackTo, pageStationFactory);
 
-                Condition.waitFor(
-                        TabThumbnailCondition.etc1(tabModelSelector, previousTab),
-                        TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
+                noopTo().waitFor(
+                                TabThumbnailCondition.etc1(tabModelSelector, previousTab),
+                                TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             }
         }
         return (T) currentPage;
