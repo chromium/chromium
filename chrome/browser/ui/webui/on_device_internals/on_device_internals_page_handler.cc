@@ -250,25 +250,10 @@ void PageHandler::OnModelLoaded(
 
 void PageHandler::GetDevicePerformanceInfo(
     GetDevicePerformanceInfoCallback callback) {
-#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
-  GetPlatformService().GetEstimatedPerformanceClass(
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              [](GetDevicePerformanceInfoCallback callback,
-                 on_device_model::mojom::PerformanceClass performance_class) {
-                auto perf_info =
-                    on_device_model::mojom::DevicePerformanceInfo::New();
-                perf_info->performance_class = performance_class;
-                std::move(callback).Run(std::move(perf_info));
-              },
-              std::move(callback)),
-          on_device_model::mojom::PerformanceClass::kError));
-#else
   GetService().GetDevicePerformanceInfo(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback),
           on_device_model::mojom::DevicePerformanceInfo::New()));
-#endif
 }
 
 void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {

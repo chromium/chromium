@@ -485,6 +485,16 @@ void OnDeviceModelService::GetCapabilities(ModelFile model_file,
 
 void OnDeviceModelService::GetDevicePerformanceInfo(
     GetDevicePerformanceInfoCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, we explicitly allowlist only Chromebook Plus devices,
+  // so skip the benchmark and return a fixed performance profile.
+  auto perf_info = on_device_model::mojom::DevicePerformanceInfo::New();
+  // Fix the performance to 'High', which should allow all Nano models to run.
+  perf_info->performance_class = on_device_model::mojom::PerformanceClass::kHigh;
+  // Chromebook+ devices have 8GB RAM+, so half of that can be VRAM.
+  perf_info->vram_mb = 4096;
+  std::move(callback).Run(std::move(perf_info));
+#else
   // This is expected to take awhile in some cases, so run on a background
   // thread to avoid blocking the main thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -503,6 +513,7 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
           },
           weak_factory_.GetWeakPtr()),
       std::move(callback));
+#endif
 }
 
 void OnDeviceModelService::LoadTextSafetyModel(
