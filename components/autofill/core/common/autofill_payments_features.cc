@@ -95,7 +95,7 @@ BASE_FEATURE(kAutofillEnableCardBenefitsForBmo,
 // When enabled, card benefits IPH will be shown in Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardBenefitsIph,
              "AutofillEnableCardBenefitsIph",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, card benefit source will be synced to Chrome clients.
 BASE_FEATURE(kAutofillEnableCardBenefitsSourceSync,

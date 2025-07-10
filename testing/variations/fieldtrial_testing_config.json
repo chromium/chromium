@@ -2099,25 +2099,6 @@
             ]
         }
     ],
-    "AutofillEnableCardBenefitsIph": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardBenefitsIph",
-                        "IPH_AutofillCreditCardBenefit"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardInfoRuntimeRetrieval": [
         {
             "platforms": [
