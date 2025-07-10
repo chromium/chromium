@@ -32,10 +32,13 @@ class KioskAppLevelLogsSaver {
   class KioskLogMessage {
    public:
     KioskLogMessage(const std::u16string& message,
+                    blink::mojom::ConsoleMessageLevel severity);
+    KioskLogMessage(const std::u16string& message,
                     blink::mojom::ConsoleMessageLevel severity,
                     int line_no,
-                    const std::u16string& source,
+                    std::u16string source,
                     std::optional<std::u16string> untrusted_stack_trace);
+
     KioskLogMessage(const KioskLogMessage&);
     KioskLogMessage(KioskLogMessage&&);
     KioskLogMessage& operator=(const KioskLogMessage&) = delete;
@@ -43,11 +46,24 @@ class KioskAppLevelLogsSaver {
 
     ~KioskLogMessage();
 
-    const std::u16string message;
-    const blink::mojom::ConsoleMessageLevel severity;
-    const int line_no;
-    const std::u16string source;
-    const std::optional<std::u16string> untrusted_stack_trace;
+    const std::u16string& message() const { return message_; }
+
+    blink::mojom::ConsoleMessageLevel severity() const { return severity_; }
+
+    const std::optional<int>& line_no() const { return line_no_; }
+
+    const std::optional<std::u16string>& source() const { return source_; }
+
+    const std::optional<std::u16string>& untrusted_stack_trace() const {
+      return untrusted_stack_trace_;
+    }
+
+   private:
+    const std::u16string message_;
+    const blink::mojom::ConsoleMessageLevel severity_;
+    const std::optional<int> line_no_;
+    const std::optional<std::u16string> source_;
+    const std::optional<std::u16string> untrusted_stack_trace_;
   };
 
   void SaveLog(const KioskLogMessage& log);

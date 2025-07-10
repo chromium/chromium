@@ -39,36 +39,45 @@ void SaveLogAccordingToSeverity(const std::u16string& message,
 }
 
 std::u16string FormatLogMessage(
-    const std::u16string& source,
-    const std::u16string& message,
-    int line_no,
-    const std::optional<std::u16string> stack_trace) {
-  std::u16string formatted_message = l10n_util::FormatString(
-      u"$1:$2 \"$3\"", {source, base::NumberToString16(line_no), message},
-      nullptr);
+    const KioskAppLevelLogsSaver::KioskLogMessage& log) {
+  std::u16string formatted_message;
+  if (log.source().has_value() && log.line_no().has_value()) {
+    formatted_message = l10n_util::FormatString(
+        u"$1:$2 \"$3\"",
+        {log.source().value(), base::NumberToString16(log.line_no().value()),
+         log.message()},
+        nullptr);
+  } else {
+    formatted_message = log.message();
+  }
 
-  if (!stack_trace.has_value()) {
+  if (!log.untrusted_stack_trace().has_value()) {
     return formatted_message;
   }
 
-  return l10n_util::FormatString(u"$1\nstack_trace: $2",
-                                 {formatted_message, stack_trace.value()},
-                                 nullptr);
+  return l10n_util::FormatString(
+      u"$1\nstack_trace: $2",
+      {formatted_message, log.untrusted_stack_trace().value()}, nullptr);
 }
 
 }  // namespace
 
 KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(
     const std::u16string& message,
+    blink::mojom::ConsoleMessageLevel severity)
+    : message_(message), severity_(severity) {}
+
+KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(
+    const std::u16string& message,
     blink::mojom::ConsoleMessageLevel severity,
     int line_no,
-    const std::u16string& source,
+    std::u16string source,
     std::optional<std::u16string> untrusted_stack_trace)
-    : message(message),
-      severity(severity),
-      line_no(line_no),
-      source(source),
-      untrusted_stack_trace(untrusted_stack_trace) {}
+    : message_(message),
+      severity_(severity),
+      line_no_(line_no),
+      source_(source),
+      untrusted_stack_trace_(untrusted_stack_trace) {}
 
 KioskAppLevelLogsSaver::KioskLogMessage::KioskLogMessage(
     const KioskLogMessage&) = default;
@@ -93,9 +102,7 @@ void KioskAppLevelLogsSaver::SaveLog(const KioskLogMessage& log) {
   }
 
   total_logs_saved_++;
-  logger_callback_.Run(FormatLogMessage(log.source, log.message, log.line_no,
-                                        log.untrusted_stack_trace),
-                       log.severity);
+  logger_callback_.Run(FormatLogMessage(log), log.severity());
 }
 
 }  // namespace chromeos

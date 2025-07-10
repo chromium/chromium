@@ -79,7 +79,7 @@ class KioskAppLevelLogsSaverTest : public testing::Test {
 TEST_F(KioskAppLevelLogsSaverTest, ShouldNotSaveLogAfterMaximumLimit) {
   KioskAppLevelLogsSaver::KioskLogMessage log(
       kDefaultMessage, ConsoleMessageLevel::kInfo, kDefaultLineNumber,
-      kDefaultSource, std::nullopt);
+      kDefaultSource, /*untrusted_stack_trace=*/std::nullopt);
   CHECK_EQ(total_logs_saved(), 0u);
 
   for (size_t i = 0u; i < kMaxLogEntriesAllowed; i++) {
@@ -98,7 +98,7 @@ TEST_F(KioskAppLevelLogsSaverTest, ShouldNotSaveLogAfterMaximumLimit) {
 TEST_F(KioskAppLevelLogsSaverTest, ShouldLogWithProperFormat) {
   KioskAppLevelLogsSaver::KioskLogMessage log(
       kDefaultMessage, ConsoleMessageLevel::kInfo, kDefaultLineNumber,
-      kDefaultSource, std::nullopt);
+      kDefaultSource, /*untrusted_stack_trace=*/std::nullopt);
 
   logs_saver().SaveLog(log);
 
@@ -113,6 +113,15 @@ TEST_F(KioskAppLevelLogsSaverTest, ShouldLogWithStackTraceWithProperFormat) {
   logs_saver().SaveLog(log);
 
   EXPECT_EQ(last_saved_log(), kDefaultFormattedMessageWithStackTrace);
+}
+
+TEST_F(KioskAppLevelLogsSaverTest, ShouldLogMessageWithoutLogSource) {
+  KioskAppLevelLogsSaver::KioskLogMessage log(kDefaultMessage,
+                                              ConsoleMessageLevel::kInfo);
+
+  logs_saver().SaveLog(log);
+
+  EXPECT_EQ(last_saved_log(), kDefaultMessage);
 }
 
 }  // namespace chromeos

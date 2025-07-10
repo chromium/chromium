@@ -34,7 +34,6 @@ const std::u16string kExpectedSource2 =
 const std::u16string kFailureMessage =
     u"Unable to collect service worker logs as service worker context doesn't "
     u"exist.";
-const std::u16string kFailureLogSource = u"KioskServiceWorkersLogsCollector";
 
 }  // namespace
 
@@ -75,10 +74,10 @@ TEST_F(KioskServiceWorkersLogsCollectorTest, ShouldReportServiceWorkerLog) {
   AddServiceWorkerLog(console_log1);
 
   auto log1 = logging_future.Take();
-  EXPECT_EQ(log1.message, kLogMessage1);
-  EXPECT_EQ(log1.line_no, kLogLineNumber1);
-  EXPECT_EQ(log1.severity, blink::mojom::ConsoleMessageLevel::kInfo);
-  EXPECT_EQ(log1.source, kExpectedSource1);
+  EXPECT_EQ(log1.message(), kLogMessage1);
+  EXPECT_EQ(log1.line_no(), kLogLineNumber1);
+  EXPECT_EQ(log1.severity(), blink::mojom::ConsoleMessageLevel::kInfo);
+  EXPECT_EQ(log1.source(), kExpectedSource1);
 
   content::ConsoleMessage console_log2{
       blink::mojom::ConsoleMessageSource::kConsoleApi,
@@ -87,10 +86,10 @@ TEST_F(KioskServiceWorkersLogsCollectorTest, ShouldReportServiceWorkerLog) {
   AddServiceWorkerLog(console_log2);
 
   auto log2 = logging_future.Take();
-  EXPECT_EQ(log2.message, kLogMessage2);
-  EXPECT_EQ(log2.line_no, kLogLineNumber2);
-  EXPECT_EQ(log2.severity, blink::mojom::ConsoleMessageLevel::kError);
-  EXPECT_EQ(log2.source, kExpectedSource2);
+  EXPECT_EQ(log2.message(), kLogMessage2);
+  EXPECT_EQ(log2.line_no(), kLogLineNumber2);
+  EXPECT_EQ(log2.severity(), blink::mojom::ConsoleMessageLevel::kError);
+  EXPECT_EQ(log2.source(), kExpectedSource2);
 }
 
 TEST_F(KioskServiceWorkersLogsCollectorTest, LogWithEmptySourceURL) {
@@ -108,7 +107,7 @@ TEST_F(KioskServiceWorkersLogsCollectorTest, LogWithEmptySourceURL) {
   AddServiceWorkerLog(console_log1);
 
   auto log = logging_future.Take();
-  EXPECT_EQ(log.source, u" [JS]");
+  EXPECT_EQ(log.source(), u" [JS]");
 }
 
 TEST_F(KioskServiceWorkersLogsCollectorTest, LogWithEmptyMessage) {
@@ -125,7 +124,7 @@ TEST_F(KioskServiceWorkersLogsCollectorTest, LogWithEmptyMessage) {
   AddServiceWorkerLog(console_log1);
 
   auto log = logging_future.Take();
-  EXPECT_EQ(log.message, u"");
+  EXPECT_EQ(log.message(), u"");
 }
 
 TEST_F(KioskServiceWorkersLogsCollectorTest,
@@ -139,10 +138,11 @@ TEST_F(KioskServiceWorkersLogsCollectorTest,
                                                   logging_future.GetCallback());
 
   auto log = logging_future.Take();
-  EXPECT_EQ(log.message, kFailureMessage);
-  EXPECT_EQ(log.source, kFailureLogSource);
-  EXPECT_EQ(log.severity, blink::mojom::ConsoleMessageLevel::kError);
-  EXPECT_EQ(log.line_no, 0);
+  EXPECT_EQ(log.message(), kFailureMessage);
+  EXPECT_EQ(log.source(), std::nullopt);
+  EXPECT_EQ(log.severity(), blink::mojom::ConsoleMessageLevel::kError);
+  EXPECT_EQ(log.line_no(), std::nullopt);
+  EXPECT_EQ(log.untrusted_stack_trace(), std::nullopt);
 }
 
 }  // namespace chromeos

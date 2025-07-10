@@ -23,7 +23,6 @@ namespace {
 const std::u16string kFailureMessage =
     u"Unable to collect service worker logs as service worker context doesn't "
     u"exist.";
-const std::u16string kFailureLogSource = u"KioskServiceWorkersLogsCollector";
 
 std::u16string GetLogMessageSource(const content::ConsoleMessage& log) {
   return l10n_util::FormatString(
@@ -59,8 +58,7 @@ KioskServiceWorkersLogsCollector::KioskServiceWorkersLogsCollector(
     service_worker_context_observer_.Observe(service_worker_context);
   } else {
     KioskAppLevelLogsSaver::KioskLogMessage log{
-        kFailureMessage, blink::mojom::ConsoleMessageLevel::kError, 0,
-        kFailureLogSource, std::nullopt};
+        kFailureMessage, blink::mojom::ConsoleMessageLevel::kError};
     logger_callback_.Run(std::move(log));
   }
 }
