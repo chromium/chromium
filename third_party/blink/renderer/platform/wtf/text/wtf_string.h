@@ -205,7 +205,7 @@ class WTF_EXPORT String {
 
   template <typename IntegerType>
   static String Number(IntegerType number) {
-    WTF::IntegerToStringConverter<IntegerType> converter(number);
+    IntegerToStringConverter<IntegerType> converter(number);
     return StringImpl::Create(converter.Span());
   }
 

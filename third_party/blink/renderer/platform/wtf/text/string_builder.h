@@ -142,7 +142,7 @@ class WTF_EXPORT StringBuilder {
 
   template <typename IntegerType>
   void AppendNumber(IntegerType number) {
-    WTF::IntegerToStringConverter<IntegerType> converter(number);
+    IntegerToStringConverter<IntegerType> converter(number);
     Append(converter.Span());
   }
 
