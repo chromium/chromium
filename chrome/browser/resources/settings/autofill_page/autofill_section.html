@@ -11,13 +11,13 @@
         background-color: var(--cr-hover-background-color);
       }
 
-      #non-home-work-address-row-icon {
+      #address-row-icon {
         --iron-icon-fill-color: var(--google-grey-700);
         padding-inline-end: var(--cr-icon-button-margin-start);
       }
 
       @media (prefers-color-scheme: dark) {
-        #non-home-work-address-row-icon {
+        #address-row-icon {
           --iron-icon-fill-color: var(--google-grey-500);
         }
       }
@@ -78,11 +78,11 @@
         <template is="dom-repeat" items="[[addresses]]">
           <div class="list-item" role="listitem">
             <div class="start">
-              <cr-icon id="non-home-work-address-row-icon" icon="settings20:location-on"
-                  hidden="[[!shouldShowAddressRowIcon_(item)]]"
-                  aria-label="$i18n{localAddressIconA11yLabel}"
+              <cr-icon id="address-row-icon" icon="[[getAddressIcon_(item)]]"
+                  hidden="[[!shouldShowAddressRowIcon_]]"
                   role="img">
               </cr-icon>
+
               <span id="addressSummary">
                 <span class="ellipses">
                   [[item.metadata.summaryLabel]]

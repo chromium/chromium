@@ -261,10 +261,14 @@ export class SettingsAutofillSectionElement extends
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
   }
 
-  private isAccountHomeOrWorkAddress_(
-      address: chrome.autofillPrivate.AddressEntry) {
-    return this.isAccountHomeAddress_(address) ||
-        this.isAccountWorkAddress_(address);
+  private getAddressIcon_(address: chrome.autofillPrivate.AddressEntry) {
+    if (this.isAccountHomeAddress_(address)) {
+      return 'settings20:home';
+    }
+    if (this.isAccountWorkAddress_(address)) {
+      return 'settings20:work';
+    }
+    return 'settings20:location-on';
   }
 
   private onAccountHomeAddressClick_() {
@@ -277,10 +281,8 @@ export class SettingsAutofillSectionElement extends
         this.i18n('googleAccountWorkAddressUrl'));
   }
 
-  private shouldShowAddressRowIcon_(
-      address: chrome.autofillPrivate.AddressEntry) {
-    return loadTimeData.getBoolean('enableSupportForHomeAndWork') &&
-        !this.isAccountHomeOrWorkAddress_(address);
+  private shouldShowAddressRowIcon_() {
+    return loadTimeData.getBoolean('enableSupportForHomeAndWork');
   }
 
   private isCloudOffVisible_(
