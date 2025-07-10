@@ -164,6 +164,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftAuthModule) {
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, TabGroupsModule) {
+  RunTest("new_tab_page/modules/v2/tab_groups/module_test.js", "mocha.run()");
+}
+
 using NewTabPageAppTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Misc) {

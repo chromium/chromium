@@ -18,6 +18,7 @@ inline constexpr char kMicrosoftAuthenticationModuleId[] =
     "microsoft_authentication";
 inline constexpr char kOutlookCalendarModuleId[] = "outlook_calendar";
 inline constexpr char kMicrosoftFilesModuleId[] = "microsoft_files";
+inline constexpr char kTabGroupsModuleId[] = "tab_groups";
 
 // All modules that require successful Microsoft authentication before being
 // loaded.

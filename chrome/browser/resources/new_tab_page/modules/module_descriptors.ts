@@ -20,6 +20,7 @@ import {dummyV2Descriptor} from './v2/dummy/module.js';
 import {driveModuleV2Descriptor} from './v2/file_suggestion/drive_module.js';
 import {microsoftFilesModuleDescriptor} from './v2/file_suggestion/microsoft_files_module.js';
 import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resumption/module.js';
+import {tabGroupsDescriptor} from './v2/tab_groups/module.js';
 
 export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(mostRelevantTabResumptionDescriptor);
@@ -28,6 +29,7 @@ descriptors.push(googleCalendarDescriptor);
 descriptors.push(microsoftAuthModuleDescriptor);
 descriptors.push(outlookCalendarDescriptor);
 descriptors.push(microsoftFilesModuleDescriptor);
+descriptors.push(tabGroupsDescriptor);
 
 // <if expr="not is_official_build">
 descriptors.push(dummyV2Descriptor);

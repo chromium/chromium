@@ -8801,6 +8801,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME" desc="Name of the Microsoft Authentication module as shown in various UIs.">
         Microsoft Authentication
       </message>
+      <message name="IDS_NTP_MODULES_TAB_GROUPS_TITLE" desc="Title for Tab Groups NTP module on the new tab page.">
+        Your tab groups
+      </message>
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of the Microsoft Authentication module.">
        Don't show this card
       </message>

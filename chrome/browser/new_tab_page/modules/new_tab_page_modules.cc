@@ -73,6 +73,11 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
   }
 #endif
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpTabGroupsModule)) {
+    details.emplace_back(ntp_modules::kTabGroupsModuleId,
+                         IDS_NTP_MODULES_TAB_GROUPS_TITLE);
+  }
+
   return details;
 }
 
