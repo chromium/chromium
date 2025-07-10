@@ -17,6 +17,7 @@
 #include "chrome/common/extensions/api/windows.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -95,6 +96,10 @@ class WindowController {
   // Returns false if the window is in a state where closing the window is not
   // permitted and sets `reason` if not NULL.
   virtual bool CanClose(Reason* reason) const = 0;
+
+  // Returns the BrowserWindowInterface associated with this window controller,
+  // if any. Defaults to returning null.
+  virtual BrowserWindowInterface* GetBrowserWindowInterface();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a Browser if available. Defaults to returning NULL.

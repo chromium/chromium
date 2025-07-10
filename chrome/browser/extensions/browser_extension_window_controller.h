@@ -49,6 +49,7 @@ class BrowserExtensionWindowController : public WindowController {
   void SetFullscreenMode(bool is_fullscreen,
                          const GURL& extension_url) const override;
   bool CanClose(Reason* reason) const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
 #if !BUILDFLAG(IS_ANDROID)
   Browser* GetBrowser() const override;
 #endif

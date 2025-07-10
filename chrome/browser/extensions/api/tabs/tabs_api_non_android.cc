@@ -64,6 +64,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -229,6 +231,25 @@ bool GetTabById(int tab_id,
   }
 
   return false;
+}
+
+// Returns the last active browser with the given `profile`. If
+// `include_incognito_information` is true, this will also return a browser
+// that crosses the incognito boundary.
+BrowserWindowInterface* GetLastActiveBrowserWithProfile(
+    Profile* profile,
+    bool include_incognito_information) {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  for (auto* browser : all_browsers) {
+    if (browser->GetProfile() == profile ||
+        (include_incognito_information &&
+         profile->IsSameOrParent(browser->GetProfile()))) {
+      return browser;
+    }
+  }
+
+  return nullptr;
 }
 
 // Gets the WebContents for |tab_id| if it is specified. Otherwise get the
@@ -1285,36 +1306,42 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
 
   base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  Browser* last_active_browser =
-      chrome::FindAnyBrowser(profile, include_incognito_information());
+  BrowserWindowInterface* last_active_browser =
+      GetLastActiveBrowserWithProfile(profile, include_incognito_information());
 
   // Note that the current browser is allowed to be null: you can still query
   // the tabs in this case.
-  Browser* current_browser = nullptr;
-  WindowController* window_controller =
+  BrowserWindowInterface* current_browser = nullptr;
+  WindowController* current_window_controller =
       ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-  if (window_controller) {
-    current_browser = window_controller->GetBrowser();
+  if (current_window_controller) {
+    current_browser = current_window_controller->GetBrowserWindowInterface();
     // Note: current_browser may still be null.
   }
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!profile->IsSameOrParent(browser->profile())) {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  // Historically, we queried browsers in reverse-activation order. Maintain
+  // that behavior (for now).
+  std::reverse(all_browsers.begin(), all_browsers.end());
+  for (auto* browser : all_browsers) {
+    if (!profile->IsSameOrParent(browser->GetProfile())) {
       continue;
     }
 
-    if (!browser->window()) {
+    if (!browser->GetWindow()) {
       continue;
     }
 
-    if (!include_incognito_information() && profile != browser->profile()) {
+    if (!include_incognito_information() && profile != browser->GetProfile()) {
       continue;
     }
 
-    if (!browser->GetFeatures()
-             .extension_window_controller()
-             ->IsVisibleToTabsAPIForExtension(
-                 extension(), /*allow_dev_tools_windows=*/false)) {
+    WindowController* window_controller =
+        BrowserExtensionWindowController::From(browser);
+    CHECK(window_controller);
+    if (!window_controller->IsVisibleToTabsAPIForExtension(
+            extension(), /*allow_dev_tools_windows=*/false)) {
       continue;
     }
 
@@ -1338,13 +1365,12 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     }
 
     if (!window_type.empty() &&
-        window_type != browser->GetFeatures()
-                           .extension_window_controller()
-                           ->GetWindowTypeText()) {
+        window_type != window_controller->GetWindowTypeText()) {
       continue;
     }
 
-    TabStripModel* tab_strip = browser->tab_strip_model();
+    TabStripModel* tab_strip =
+        browser->GetBrowserForMigrationOnly()->tab_strip_model();
     DCHECK(tab_strip);
     for (int i = 0; i < tab_strip->count(); ++i) {
       WebContents* web_contents = tab_strip->GetWebContentsAt(i);

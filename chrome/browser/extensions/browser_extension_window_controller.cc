@@ -138,6 +138,11 @@ bool BrowserExtensionWindowController::CanClose(Reason* reason) const {
   return true;
 }
 
+BrowserWindowInterface*
+BrowserExtensionWindowController::GetBrowserWindowInterface() {
+  return browser_.get();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 Browser* BrowserExtensionWindowController::GetBrowser() const {
   return browser_->GetBrowserForMigrationOnly();
