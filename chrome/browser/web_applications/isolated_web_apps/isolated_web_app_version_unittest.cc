@@ -106,7 +106,10 @@ INSTANTIATE_TEST_SUITE_P(
              base::unexpected(IwaVersionParseError::kLeadingZero)},
         {.version_string = "1.2.03",
          .expected_components =
-             base::unexpected(IwaVersionParseError::kLeadingZero)}}));
+             base::unexpected(IwaVersionParseError::kLeadingZero)},
+        {.version_string = "1.2.0.3.0",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kTooManyComponents)}}));
 
 using IwaVersionParseErrorToStringTest =
     ::testing::TestWithParam<std::pair<IwaVersionParseError, std::string>>;
@@ -127,6 +130,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(IwaVersionParseError::kNonDigit, "only contain digits"),
         std::make_pair(IwaVersionParseError::kLeadingZero,
                        "not have leading zeros"),
+        std::make_pair(IwaVersionParseError::kTooManyComponents,
+                       "may not contain more than"),
         std::make_pair(IwaVersionParseError::kCannotConvertToNumber,
                        "could not be converted into a number")));
 

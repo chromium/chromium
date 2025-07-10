@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VERSION_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VERSION_H_
 
+#include <cstdint>
 #include <string_view>
 #include <vector>
 
@@ -19,6 +20,7 @@ enum class IwaVersionParseError {
   kLeadingZero,
   kNonDigit,
   kCannotConvertToNumber,
+  kTooManyComponents,
 };
 
 // Parses a string representing the version of an Isolated Web App. Returns the

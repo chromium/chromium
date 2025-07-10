@@ -10,8 +10,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+
+constexpr uint32_t kMaxNumberOfComponents = 4;
 
 namespace web_app {
 
@@ -51,7 +54,13 @@ base::expected<base::Version, IwaVersionParseError> ParseIwaVersion(
                   "uint32_t must be same as unsigned int");
 
     components.push_back(number);
+
+    // Version should contain not more than kMaxNumberOfComponents components
+    if (components.size() > kMaxNumberOfComponents) {
+      return base::unexpected(IwaVersionParseError::kTooManyComponents);
+    }
   }
+
   return base::Version(std::move(components));
 }
 
@@ -67,6 +76,10 @@ std::string IwaVersionParseErrorToString(IwaVersionParseError error) {
       return "A version component may not have leading zeros";
     case IwaVersionParseError::kCannotConvertToNumber:
       return "A version component could not be converted into a number";
+    case IwaVersionParseError::kTooManyComponents:
+      return base::StringPrintf(
+          "A version may not contain more than %d components",
+          kMaxNumberOfComponents);
   }
 }
 
