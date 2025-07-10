@@ -452,7 +452,19 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  if (redirect_url_ != redirect_info.new_url &&
+  // An extension can intercept the headers of a response and issue a redirect
+  // to a different URL. In that case `redirect_url_` was set by the proxying
+  // extension and passed to the Network Service to synthesize a redirect.
+  // `redirect_info.new_url` is part of the synthesized redirect coming from the
+  // Network Service. If the two match, we know the extension initiated the
+  // redirect, so we can trust it.
+  bool redirect_url_comes_from_extension =
+      redirect_url_ == redirect_info.new_url;
+  if (redirect_url_comes_from_extension) {
+    head->bypass_redirect_checks = true;
+  }
+
+  if (!redirect_url_comes_from_extension &&
       !IsRedirectSafe(request_.url, redirect_info.new_url,
                       info_->is_navigation_request)) {
     OnNetworkError(CreateURLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
@@ -708,6 +720,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
   head->encoded_data_length = 0;
+  head->bypass_redirect_checks = true;
 
   current_response_ = std::move(head);
   ContinueToBeforeRedirect(redirect_info, net::OK);
@@ -1211,6 +1224,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     net::RedirectInfo redirect_info = CreateRedirectInfo(
         request_, new_url, override_headers_->response_code(),
         net::RedirectUtil::GetReferrerPolicyHeader(override_headers_.get()));
+
+    // Since this is an extension-generated redirect, we need to tell
+    // the client to bypass redirect checks.
+    current_response_->bypass_redirect_checks = true;
 
     // These will get re-bound if a new request is initiated by
     // |FollowRedirect()|.

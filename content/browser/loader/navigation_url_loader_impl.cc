@@ -72,6 +72,7 @@
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
@@ -1263,7 +1264,13 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
                         resource_request_->is_outermost_main_frame);
   net::Error error = net::OK;
-  if (!bypass_redirect_checks_ &&
+
+  bool bypass_redirect_checks =
+      base::FeatureList::IsEnabled(features::kBypassRedirectChecksPerRequest)
+          ? head->bypass_redirect_checks
+          : bypass_redirect_checks_;
+
+  if (!bypass_redirect_checks &&
       !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
     error = net::ERR_UNSAFE_REDIRECT;
   } else if (--redirect_limit_ == 0) {

@@ -31,6 +31,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
@@ -7262,6 +7263,69 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequiredTab) {
   EXPECT_EQ(auth_url, frame_host->GetLastCommittedURL());
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
+
+class ManifestV3WebRequestApiTestWithBypassRedirectChecksPerRequest
+    : public ManifestV3WebRequestApiTest,
+      public base::test::WithFeatureOverride {
+ public:
+  ManifestV3WebRequestApiTestWithBypassRedirectChecksPerRequest()
+      : WithFeatureOverride(features::kBypassRedirectChecksPerRequest) {}
+};
+
+// Tests service workers can't redirect to unsafe URLs when WebRequest
+// extensions are proxying requests. Regression test for crbug.com/379337758.
+IN_PROC_BROWSER_TEST_P(
+    ManifestV3WebRequestApiTestWithBypassRedirectChecksPerRequest,
+    ServiceWorkerCantRedirectToUnsafeUrls) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": ["<all_urls>"],
+           "background": {"service_worker": "background.js"}
+         })";
+  // Listen to all requests to ensure they're proxied.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => { return {}; },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  // Setup a service worker that redirects all requests to a "data:" URL.
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL sw_url = embedded_test_server()->GetURL(
+      "/service_worker/service_worker_setup_data_redirect.html");
+  EXPECT_TRUE(NavigateToURL(sw_url));
+  EXPECT_EQ("ok", EvalJs(web_contents, "setup();"));
+
+  // Navigate to a URL that the service worker is monitoring.
+  content::TestNavigationObserver nav_observer(web_contents);
+  const GURL url = embedded_test_server()->GetURL("/service_worker/test");
+
+  const bool per_request_bypass = IsParamFeatureEnabled();
+  if (per_request_bypass) {
+    EXPECT_FALSE(NavigateToURL(url));
+    EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, nav_observer.last_net_error_code());
+  } else {
+    EXPECT_TRUE(NavigateToURL(url));
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+}
+
+// Toggle `features::BypassRedirectChecksPerRequest`.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ManifestV3WebRequestApiTestWithBypassRedirectChecksPerRequest);
 
 class OnAuthRequiredApiTest : public ExtensionApiTest {
  public:

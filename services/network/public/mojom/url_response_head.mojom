@@ -325,4 +325,7 @@ struct URLResponseHead {
   // True if the synthetic response is used. This indicates the response headers
   // are returned with the locally storead headers. See crbug.com/352578800.
   bool from_synthetic_response = false;
+
+  // True when a proxy will handle the redirect checks.
+  bool bypass_redirect_checks = false;
 };

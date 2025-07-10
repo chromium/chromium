@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Register a service worker that redirects to data: URLs</title>
+<script>
+async function setup() {
+  let script_file = 'service_worker_data_redirect.js';
+  await navigator.serviceWorker.register(script_file);
+  await navigator.serviceWorker.ready;
+  return 'ok';
+}
+</script>
