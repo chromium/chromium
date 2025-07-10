@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -106,6 +108,8 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
                             view:self.baseViewController.view];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock primaryItemAction = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "IOS.AutoDeletion.ActionSheet.AcceptDownloadEnrollment"));
     [weakSelf scheduleFileForDeletion];
     [weakSelf dismiss];
   };
@@ -115,6 +119,8 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
                 action:primaryItemAction
                  style:UIAlertActionStyleDestructive];
   ProceduralBlock cancelAction = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "IOS.AutoDeletion.ActionSheet.RejectDownloadEnrollment"));
     [weakSelf dismiss];
   };
   [coordinator

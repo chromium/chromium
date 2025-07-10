@@ -14967,6 +14967,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.AutoDeletion.ActionSheet.AcceptDownloadEnrollment">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User taps 'Confirm deletion' button from the Auto-deletion action sheet. iOS
+    only.
+  </description>
+</action>
+
+<action name="IOS.AutoDeletion.ActionSheet.RejectDownloadEnrollment">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User taps either the 'cancel' button or an area outside of the Auto-deletion
+    action sheet. iOS only.
+  </description>
+</action>
+
 <action name="IOS.AutoDeletion.IPH.DismissButtonTapped">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
