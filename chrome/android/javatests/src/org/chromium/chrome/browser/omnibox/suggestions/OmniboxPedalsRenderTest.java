@@ -110,6 +110,7 @@ public class OmniboxPedalsRenderTest {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
                 .setActions(List.of(new OmniboxPedal(0, "hint", "accessibility", id)))
+                .setDescription(null)
                 .build();
     }
 

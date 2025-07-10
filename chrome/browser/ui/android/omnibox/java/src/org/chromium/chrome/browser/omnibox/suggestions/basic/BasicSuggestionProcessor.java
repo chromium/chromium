@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -192,7 +191,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
-        if (match.getGroupId() == GroupId.GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA.getNumber()) {
+        if (match.getDescription() != null) {
             return new SuggestionSpannable(match.getDescription());
         }
         return null;
