@@ -19,6 +19,9 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/backend.h"
+#include "services/on_device_model/backend_model.h"
+#include "services/on_device_model/backend_session.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/session_accessor.h"
 #include "services/on_device_model/ml/ts_model.h"
@@ -35,32 +38,62 @@ class ContextHolder;
 class OnDeviceModelExecutor;
 class Responder;
 
-class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
+    : public on_device_model::Backend {
+ public:
+  explicit BackendImpl(const ml::ChromeML* chrome_ml);
+  ~BackendImpl() override;
+
+  // on_device_model::Backend:
+  base::expected<void, on_device_model::ServiceDisconnectReason> CanCreate()
+      override;
+  on_device_model::Capabilities GetCapabilities(
+      on_device_model::ModelFile model_file) override;
+  base::expected<std::unique_ptr<on_device_model::BackendModel>,
+                 on_device_model::mojom::LoadModelResult>
+  CreateWithResult(on_device_model::mojom::LoadModelParamsPtr params,
+                   base::OnceClosure on_complete) override;
+  void LoadTextSafetyModel(
+      on_device_model::mojom::TextSafetyModelParamsPtr params,
+      mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model)
+      override;
+  on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo()
+      override;
+
+ private:
+  const raw_ptr<const ml::ChromeML> chrome_ml_;
+  base::SequenceBound<ml::TsHolder> ts_holder_;
+};
+
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
+    : public on_device_model::BackendSession {
  public:
   SessionImpl(const ChromeML& chrome_ml,
               OnDeviceModelExecutor& executor,
               SessionAccessor::Ptr session,
               uint32_t max_tokens,
               std::optional<uint32_t> adaptation_id);
-  ~SessionImpl();
+  ~SessionImpl() override;
 
   SessionImpl(const SessionImpl&) = delete;
   SessionImpl& operator=(const SessionImpl&) = delete;
 
+  // on_device_model::BackendSession:
   void Append(on_device_model::mojom::AppendOptionsPtr options,
               mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
-              base::OnceClosure on_complete);
+              base::OnceClosure on_complete) override;
   void Generate(
       on_device_model::mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
-      base::OnceClosure on_complete);
+      base::OnceClosure on_complete) override;
   void SizeInTokens(on_device_model::mojom::InputPtr input,
-                    base::OnceCallback<void(uint32_t)> callback);
-  void Score(const std::string& text, base::OnceCallback<void(float)> callback);
+                    base::OnceCallback<void(uint32_t)> callback) override;
+  void Score(const std::string& text,
+             base::OnceCallback<void(float)> callback) override;
   void GetProbabilitiesBlocking(
       const std::string& input,
-      base::OnceCallback<void(const std::vector<float>&)> callback);
-  std::unique_ptr<SessionImpl> Clone();
+      base::OnceCallback<void(const std::vector<float>&)> callback) override;
+  std::unique_ptr<BackendSession> Clone() override;
 
  private:
   void RemoveContext(ContextHolder* context);
@@ -76,26 +109,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
 
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
-class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final
+    : public on_device_model::BackendModel {
  public:
-  // A handle for an adaptation ID that takes care of erasing the session when
-  // it is destroyed.
-  class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ScopedAdaptation {
-   public:
-    ScopedAdaptation(base::WeakPtr<OnDeviceModelExecutor> executor,
-                     uint32_t adaptation_id);
-    ~ScopedAdaptation();
-
-    uint32_t adaptation_id() const { return adaptation_id_; }
-
-   private:
-    base::WeakPtr<OnDeviceModelExecutor> executor_;
-    uint32_t adaptation_id_;
-  };
 
   explicit OnDeviceModelExecutor(base::PassKey<OnDeviceModelExecutor>,
                                  const ChromeML& chrome_ml);
-  ~OnDeviceModelExecutor();
+  ~OnDeviceModelExecutor() override;
 
   static base::expected<std::unique_ptr<OnDeviceModelExecutor>,
                         on_device_model::mojom::LoadModelResult>
@@ -103,15 +123,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
                    on_device_model::mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete);
 
-  static on_device_model::Capabilities GetCapabilities(
-      const ChromeML& chrome_ml,
-      on_device_model::ModelFile model_file);
-
-  std::unique_ptr<SessionImpl> CreateSession(
+  // on_device_model::BackendModel:
+  std::unique_ptr<on_device_model::BackendSession> CreateSession(
       const ScopedAdaptation* adaptation,
-      on_device_model::mojom::SessionParamsPtr params);
+      on_device_model::mojom::SessionParamsPtr params) override;
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
-      on_device_model::mojom::LoadAdaptationParamsPtr params);
+      on_device_model::mojom::LoadAdaptationParamsPtr params) override;
+  void UnloadAdaptation(uint32_t adaptation_id) override;
 
   ChromeMLConstraint CreateConstraint(
       const on_device_model::mojom::ResponseConstraint& response_constraint);

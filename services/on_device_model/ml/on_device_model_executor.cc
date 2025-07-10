@@ -26,7 +26,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
+#include "services/on_device_model/ml/performance_class.h"
 #include "services/on_device_model/ml/session_accessor.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -269,6 +272,73 @@ class ContextHolder final {
   base::WeakPtrFactory<ContextHolder> weak_ptr_factory_{this};
 };
 
+BackendImpl::BackendImpl(const ml::ChromeML* chrome_ml)
+    : chrome_ml_(chrome_ml), ts_holder_(ml::TsHolder::Create(*chrome_ml_)) {}
+
+BackendImpl::~BackendImpl() = default;
+
+base::expected<void, on_device_model::ServiceDisconnectReason>
+BackendImpl::CanCreate() {
+  if (!chrome_ml_) {
+    return base::unexpected(
+        on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary);
+  }
+  if (!optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
+      ml::IsGpuBlocked(chrome_ml_->api())) {
+    return base::unexpected(
+        on_device_model::ServiceDisconnectReason::kGpuBlocked);
+  }
+  return base::ok();
+}
+
+DISABLE_CFI_DLSYM
+on_device_model::Capabilities BackendImpl::GetCapabilities(
+    on_device_model::ModelFile model_file) {
+  on_device_model::Capabilities result;
+  if (!chrome_ml_->api().GetCapabilities) {
+    return result;
+  }
+
+  PlatformFile platform_file;
+  if (model_file.IsFile()) {
+    platform_file = model_file.file().TakePlatformFile();
+  } else {
+    base::File file(model_file.path(),
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+    platform_file = file.TakePlatformFile();
+  }
+  ChromeMLCapabilities capabilities;
+  chrome_ml_->api().GetCapabilities(platform_file, capabilities);
+
+  if (capabilities.image_input) {
+    result.Put(on_device_model::CapabilityFlags::kImageInput);
+  }
+  if (capabilities.audio_input) {
+    result.Put(on_device_model::CapabilityFlags::kAudioInput);
+  }
+  return result;
+}
+
+base::expected<std::unique_ptr<on_device_model::BackendModel>,
+               on_device_model::mojom::LoadModelResult>
+BackendImpl::CreateWithResult(on_device_model::mojom::LoadModelParamsPtr params,
+                              base::OnceClosure on_complete) {
+  return OnDeviceModelExecutor::CreateWithResult(*chrome_ml_, std::move(params),
+                                                 std::move(on_complete));
+}
+
+void BackendImpl::LoadTextSafetyModel(
+    on_device_model::mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model) {
+  ts_holder_.AsyncCall(&ml::TsHolder::Reset)
+      .WithArgs(std::move(params), std::move(model));
+}
+
+on_device_model::mojom::DevicePerformanceInfoPtr
+BackendImpl::GetDevicePerformanceInfo() {
+  return ml::GetDevicePerformanceInfo(*chrome_ml_);
+}
+
 SessionImpl::SessionImpl(const ChromeML& chrome_ml,
                          OnDeviceModelExecutor& executor,
                          SessionAccessor::Ptr session,
@@ -344,7 +414,7 @@ void SessionImpl::GetProbabilitiesBlocking(
                                      ConvertCallbackToFn(std::move(callback)));
 }
 
-std::unique_ptr<SessionImpl> SessionImpl::Clone() {
+std::unique_ptr<on_device_model::BackendSession> SessionImpl::Clone() {
   return std::make_unique<SessionImpl>(chrome_ml_.get(), *executor_,
                                        session_->Clone(), max_tokens_,
                                        adaptation_id_);
@@ -357,17 +427,6 @@ void SessionImpl::RemoveContext(ContextHolder* context) {
 DISABLE_CFI_DLSYM
 void DestroyModel(const ChromeML* chrome_ml, ChromeMLModel model) {
   chrome_ml->api().DestroyModel(model);
-}
-
-OnDeviceModelExecutor::ScopedAdaptation::ScopedAdaptation(
-    base::WeakPtr<OnDeviceModelExecutor> executor,
-    uint32_t adaptation_id)
-    : executor_(std::move(executor)), adaptation_id_(adaptation_id) {}
-
-OnDeviceModelExecutor::ScopedAdaptation::~ScopedAdaptation() {
-  if (executor_) {
-    executor_->adaptation_params_.erase(adaptation_id_);
-  }
 }
 
 OnDeviceModelExecutor::OnDeviceModelExecutor(
@@ -406,37 +465,8 @@ OnDeviceModelExecutor::CreateWithResult(
   return base::unexpected(load_model_result);
 }
 
-// static
-DISABLE_CFI_DLSYM
-on_device_model::Capabilities OnDeviceModelExecutor::GetCapabilities(
-    const ChromeML& chrome_ml,
-    on_device_model::ModelFile model_file) {
-  on_device_model::Capabilities result;
-  if (!chrome_ml.api().GetCapabilities) {
-    return result;
-  }
-
-  PlatformFile platform_file;
-  if (model_file.IsFile()) {
-    platform_file = model_file.file().TakePlatformFile();
-  } else {
-    base::File file(model_file.path(),
-                    base::File::FLAG_OPEN | base::File::FLAG_READ);
-    platform_file = file.TakePlatformFile();
-  }
-  ChromeMLCapabilities capabilities;
-  chrome_ml.api().GetCapabilities(platform_file, capabilities);
-
-  if (capabilities.image_input) {
-    result.Put(on_device_model::CapabilityFlags::kImageInput);
-  }
-  if (capabilities.audio_input) {
-    result.Put(on_device_model::CapabilityFlags::kAudioInput);
-  }
-  return result;
-}
-
-std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
+std::unique_ptr<on_device_model::BackendSession>
+OnDeviceModelExecutor::CreateSession(
     const ScopedAdaptation* adaptation,
     on_device_model::mojom::SessionParamsPtr params) {
   std::optional<uint32_t> adaptation_id;
@@ -461,6 +491,10 @@ OnDeviceModelExecutor::LoadAdaptation(
   adaptation_params_.insert({next_adaptation_id_, std::move(params)});
   return std::make_unique<ScopedAdaptation>(weak_ptr_factory_.GetWeakPtr(),
                                             next_adaptation_id_++);
+}
+
+void OnDeviceModelExecutor::UnloadAdaptation(uint32_t adaptation_id) {
+  adaptation_params_.erase(adaptation_id);
 }
 
 DISABLE_CFI_DLSYM

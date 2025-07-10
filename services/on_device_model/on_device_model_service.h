@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/on_device_model/backend.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/ml/ts_model.h"
@@ -25,11 +26,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
-
-namespace ml {
-class OnDeviceModelInternalImpl;
-class TsHolder;
-}
 
 namespace on_device_model {
 
@@ -53,16 +49,15 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
 
   OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      const ml::OnDeviceModelInternalImpl* impl);  // Deprecated
+      const ml::ChromeML& impl);
   OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      const ml::ChromeML& impl);
+      std::unique_ptr<Backend> backend);
 
   // Creates a service bound to the receiver.
-  // This may create a dummy service if the GPU is on a blocklist, or if the
-  // shared library fails to load.
   static std::unique_ptr<mojom::OnDeviceModelService> Create(
-      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver);
+      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+      std::unique_ptr<Backend> backend = nullptr);
 
   ~OnDeviceModelService() override;
 
@@ -90,10 +85,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
-  const raw_ref<const ml::ChromeML> chrome_ml_;
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
       models_;
-  base::SequenceBound<ml::TsHolder> ts_holder_;
+  std::unique_ptr<Backend> backend_;
+  base::WeakPtrFactory<OnDeviceModelService> weak_factory_{this};
 };
 
 }  // namespace on_device_model

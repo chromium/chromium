@@ -6,6 +6,21 @@ import("//build/buildflag_header.gni")
 import("//services/on_device_model/on_device_model.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 
+component("backend_interfaces") {
+  sources = [
+    "backend.h",
+    "backend_model.cc",
+    "backend_model.h",
+    "backend_session.h",
+  ]
+  deps = [
+    "//base",
+    "//services/on_device_model/public/cpp",
+    "//services/on_device_model/public/mojom",
+  ]
+  defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+}
+
 component("on_device_model_service") {
   sources = [
     "on_device_model_service.cc",
@@ -13,6 +28,7 @@ component("on_device_model_service") {
     "pre_sandbox_init.cc",
   ]
   deps = [
+    ":backend_interfaces",
     "//components/optimization_guide/core:features",
     "//services/on_device_model/fake",
     "//services/on_device_model/ml:ml_no_internal",

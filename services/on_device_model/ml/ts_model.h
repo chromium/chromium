@@ -24,8 +24,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) TsHolder final {
   explicit TsHolder(raw_ref<const ChromeML> chrome_ml);
   ~TsHolder();
 
-  static base::SequenceBound<TsHolder> Create(
-      raw_ref<const ChromeML> chrome_ml);
+  static base::SequenceBound<TsHolder> Create(const ChromeML& chrome_ml);
 
   void Reset(
       on_device_model::mojom::TextSafetyModelParamsPtr params,

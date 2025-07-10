@@ -192,11 +192,10 @@ TsHolder::TsHolder(raw_ref<const ChromeML> chrome_ml) : chrome_ml_(chrome_ml) {}
 TsHolder::~TsHolder() = default;
 
 // static
-base::SequenceBound<TsHolder> TsHolder::Create(
-    raw_ref<const ChromeML> chrome_ml) {
+base::SequenceBound<TsHolder> TsHolder::Create(const ChromeML& chrome_ml) {
   return base::SequenceBound<TsHolder>(
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-      chrome_ml);
+      ToRawRef(chrome_ml));
 }
 
 void TsHolder::Reset(mojom::TextSafetyModelParamsPtr params,

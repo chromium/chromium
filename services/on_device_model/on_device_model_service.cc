@@ -16,15 +16,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/backend.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
-#include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
-#include "services/on_device_model/ml/on_device_model_internal.h"
-#include "services/on_device_model/ml/performance_class.h"
-#include "services/on_device_model/ml/ts_model.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 
@@ -48,7 +46,7 @@ class SessionWrapper final : public mojom::Session {
  public:
   SessionWrapper(base::WeakPtr<ModelWrapper> model,
                  mojo::PendingReceiver<mojom::Session> receiver,
-                 std::unique_ptr<ml::SessionImpl> session,
+                 std::unique_ptr<BackendSession> session,
                  mojom::Priority priority)
       : model_(model),
         receiver_(this, std::move(receiver)),
@@ -119,7 +117,7 @@ class SessionWrapper final : public mojom::Session {
 
   base::WeakPtr<ModelWrapper> model_;
   mojo::Receiver<mojom::Session> receiver_;
-  std::unique_ptr<ml::SessionImpl> session_;
+  std::unique_ptr<BackendSession> session_;
   mojom::Priority priority_;
   base::WeakPtrFactory<SessionWrapper> weak_ptr_factory_{this};
 };
@@ -127,13 +125,12 @@ class SessionWrapper final : public mojom::Session {
 class ModelWrapper final : public mojom::OnDeviceModel {
  public:
   explicit ModelWrapper(
-      std::unique_ptr<ml::OnDeviceModelExecutor> model,
+      std::unique_ptr<BackendModel> model,
       mojo::PendingReceiver<mojom::OnDeviceModel> receiver,
       base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete)
       : model_(std::move(model)), on_delete_(std::move(on_delete)) {
-    receivers_.Add(
-        this, std::move(receiver),
-        std::unique_ptr<ml::OnDeviceModelExecutor::ScopedAdaptation>());
+    receivers_.Add(this, std::move(receiver),
+                   std::unique_ptr<BackendModel::ScopedAdaptation>());
     receivers_.set_disconnect_handler(base::BindRepeating(
         &ModelWrapper::ModelDisconnected, weak_ptr_factory_.GetWeakPtr()));
     RestartIdleTimer();
@@ -192,7 +189,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   }
 
   void AddSession(mojo::PendingReceiver<mojom::Session> receiver,
-                  std::unique_ptr<ml::SessionImpl> session,
+                  std::unique_ptr<BackendSession> session,
                   mojom::Priority priority) {
     auto current_session = std::make_unique<SessionWrapper>(
         weak_ptr_factory_.GetWeakPtr(), std::move(receiver), std::move(session),
@@ -302,12 +299,11 @@ class ModelWrapper final : public mojom::OnDeviceModel {
     ModelDisconnected();
   }
 
-  std::unique_ptr<ml::OnDeviceModelExecutor> model_;
+  std::unique_ptr<BackendModel> model_;
   std::set<std::unique_ptr<SessionWrapper>, base::UniquePtrComparator>
       sessions_;
-  mojo::ReceiverSet<
-      mojom::OnDeviceModel,
-      std::unique_ptr<ml::OnDeviceModelExecutor::ScopedAdaptation>>
+  mojo::ReceiverSet<mojom::OnDeviceModel,
+                    std::unique_ptr<BackendModel::ScopedAdaptation>>
       receivers_;
   base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete_;
   std::list<PendingTask> pending_tasks_;
@@ -425,36 +421,34 @@ const ml::ChromeML* DefaultImpl() {
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    const ml::OnDeviceModelInternalImpl* impl)
-    : OnDeviceModelService(std::move(receiver), *impl->chrome_ml()) {}
+    const ml::ChromeML& chrome_ml)
+    : receiver_(this, std::move(receiver)),
+      backend_(std::make_unique<ml::BackendImpl>(&chrome_ml)) {}
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    const ml::ChromeML& chrome_ml)
-    : receiver_(this, std::move(receiver)),
-      chrome_ml_(chrome_ml),
-      ts_holder_(ml::TsHolder::Create(chrome_ml_)) {}
+    std::unique_ptr<Backend> backend)
+    : receiver_(this, std::move(receiver)), backend_(std::move(backend)) {}
+
 OnDeviceModelService::~OnDeviceModelService() = default;
 
+// static
 std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
-    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver) {
-  const ml::ChromeML* chrome_ml = DefaultImpl();
-  if (!chrome_ml) {
-    receiver.ResetWithReason(
-        static_cast<uint32_t>(ServiceDisconnectReason::kFailedToLoadLibrary),
-        "Unable to load chrome_ml library.");
-    return nullptr;
+    mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
+    std::unique_ptr<Backend> backend) {
+  if (!backend) {
+    backend = std::make_unique<ml::BackendImpl>(DefaultImpl());
   }
-  if (!optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
-      ml::IsGpuBlocked(chrome_ml->api())) {
-    receiver.ResetWithReason(
-        static_cast<uint32_t>(ServiceDisconnectReason::kGpuBlocked),
-        "The device's GPU is not supported.");
-    return nullptr;
-  }
+  RETURN_IF_ERROR(backend->CanCreate(),
+                  [&](ServiceDisconnectReason reason)
+                      -> std::unique_ptr<mojom::OnDeviceModelService> {
+                    receiver.ResetWithReason(static_cast<uint32_t>(reason),
+                                             "Error loading backend.");
+                    return nullptr;
+                  });
   // No errors, return real service.
   return std::make_unique<OnDeviceModelService>(std::move(receiver),
-                                                *chrome_ml);
+                                                std::move(backend));
 }
 
 void OnDeviceModelService::LoadModel(
@@ -465,8 +459,8 @@ void OnDeviceModelService::LoadModel(
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
   }
   auto start = base::TimeTicks::Now();
-  auto model_impl = ml::OnDeviceModelExecutor::CreateWithResult(
-      *chrome_ml_, std::move(params),
+  auto model_impl = backend_->CreateWithResult(
+      std::move(params),
       base::BindOnce(
           [](base::TimeTicks start) {
             base::UmaHistogramMediumTimes("OnDeviceModel.LoadModelDuration",
@@ -486,8 +480,7 @@ void OnDeviceModelService::LoadModel(
 
 void OnDeviceModelService::GetCapabilities(ModelFile model_file,
                                            GetCapabilitiesCallback callback) {
-  std::move(callback).Run(ml::OnDeviceModelExecutor::GetCapabilities(
-      *chrome_ml_, std::move(model_file)));
+  std::move(callback).Run(backend_->GetCapabilities(std::move(model_file)));
 }
 
 void OnDeviceModelService::GetDevicePerformanceInfo(
@@ -497,24 +490,25 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
-          [](const ml::ChromeML& chrome_ml) {
+          [](base::WeakPtr<OnDeviceModelService> service) {
+            if (!service) {
+              return on_device_model::mojom::DevicePerformanceInfo::New();
+            }
             base::ElapsedTimer timer;
             on_device_model::mojom::DevicePerformanceInfoPtr perf_info =
-                ml::GetDevicePerformanceInfo(chrome_ml);
+                service->backend_->GetDevicePerformanceInfo();
             base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration",
                                     timer.Elapsed());
             return perf_info;
           },
-          // base::Unretained is safe since chrome_ml_ refers to a global.
-          base::Unretained(chrome_ml_)),
+          weak_factory_.GetWeakPtr()),
       std::move(callback));
 }
 
 void OnDeviceModelService::LoadTextSafetyModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params,
     mojo::PendingReceiver<mojom::TextSafetyModel> model) {
-  ts_holder_.AsyncCall(&ml::TsHolder::Reset)
-      .WithArgs(std::move(params), std::move(model));
+  backend_->LoadTextSafetyModel(std::move(params), std::move(model));
 }
 
 void OnDeviceModelService::SetForceQueueingForTesting(bool force_queueing) {
