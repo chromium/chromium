@@ -406,9 +406,11 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
           field_dict.FindList("select_options")) {
     for (const base::Value& option : *select_options) {
       const base::Value::Dict& option_dict = option.GetDict();
-      options.push_back(SelectOption{
-          .value = base::UTF8ToUTF16(*option_dict.FindString("value")),
-          .text = base::UTF8ToUTF16(*option_dict.FindString("label"))});
+      const std::string* value = option_dict.FindString("value");
+      const std::string* label = option_dict.FindString("label");
+      options.push_back(
+          SelectOption{.value = value ? base::UTF8ToUTF16(*value) : u"",
+                       .text = label ? base::UTF8ToUTF16(*label) : u""});
     }
   }
   field.set_options(std::move(options));
