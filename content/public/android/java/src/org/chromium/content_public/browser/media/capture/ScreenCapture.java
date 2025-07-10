@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -83,6 +84,12 @@ public class ScreenCapture implements ImageHandler.Delegate {
         }
     }
 
+    @VisibleForTesting
+    interface ImageHandlerFactory {
+        ImageHandler create(
+                CaptureState captureState, ImageHandler.Delegate delegate, Handler handler);
+    }
+
     // Starting a MediaProjection session involves plumbing the results from the content picker,
     // which is done via ActivityResult. This class does not handle how that is achieved, but
     // requires this state to begin the session.
@@ -97,6 +104,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private long mNativeDesktopCapturerAndroid;
 
     private final Handler mHandler;
+    private final ImageHandlerFactory mImageHandlerFactory;
 
     private @Nullable MediaProjection mMediaProjection;
 
@@ -110,8 +118,14 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private @Nullable WebContents mWebContents;
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
+        this(nativeDesktopCapturerAndroid, ImageHandler::new);
+    }
+
+    @VisibleForTesting
+    ScreenCapture(long nativeDesktopCapturerAndroid, ImageHandlerFactory imageHandlerFactory) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
         mHandler = new Handler(assumeNonNull(Looper.myLooper()));
+        mImageHandlerFactory = imageHandlerFactory;
     }
 
     public static void onForegroundServiceRunning(boolean running) {
@@ -246,7 +260,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     }
 
     private ImageHandler createImageHandler(CaptureState captureState) {
-        final var imageHandler = new ImageHandler(captureState, this, mHandler);
+        final var imageHandler = mImageHandlerFactory.create(captureState, this, mHandler);
         mImageHandlerQueue.add(imageHandler);
         return imageHandler;
     }

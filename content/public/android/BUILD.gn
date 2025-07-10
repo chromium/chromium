@@ -741,6 +741,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/webcontents/WebContentsObserverProxyTest.java",
     "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
     "junit/src/org/chromium/content_public/browser/media/capture/ImageHandlerTest.java",
+    "junit/src/org/chromium/content_public/browser/media/capture/ScreenCaptureTest.java",
   ]
 
   deps = [
@@ -758,6 +759,7 @@ robolectric_binary("content_junit_tests") {
     "//mojo/public/mojom/base:base_java",
     "//services/device/public/mojom:mojom_java",
     "//skia/public/mojom:mojom_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
