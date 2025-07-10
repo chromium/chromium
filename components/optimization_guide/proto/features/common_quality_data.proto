@@ -287,8 +287,15 @@ message ContentAttributes {
     TableRowData table_row_data = 13;
   }
 
-  // If this content node has the content of an entire subtree, this is the ID
-  // of the common ancestor of all the nodes in the subtree.
+  // A unique identifier for the DOM node which generated this ContentNode.
+  //
+  // Note: This field is only set if the ContentNode corresponds to a DOM
+  // node. There are cases where the browser generates layout nodes which don't
+  // map to a single DOM node, such as pseudo elements. In such cases, this
+  // field will not be set.
+  //
+  // The identifier's lifetime is tied to its Document's lifetime in the
+  // browser's renderer process.
   int32 common_ancestor_dom_node_id = 2 [features = { field_presence: EXPLICIT }];
 
   ContentAttributeType attribute_type = 3 [features = { field_presence: EXPLICIT }];
