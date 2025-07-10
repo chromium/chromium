@@ -120,7 +120,7 @@ suite('SettingsMenu', function() {
         // <if expr="not is_chromeos">
         'defaultBrowser',
         // </if>
-        'downloads', 'languages', 'onStartup', 'people', 'reset',
+        'downloads', 'languages', 'onStartup', 'people', 'performance', 'reset',
         // <if expr="not is_chromeos">
         'system',
         // </if>
@@ -146,6 +146,7 @@ suite('SettingsMenu', function() {
       languages: false,
       onStartup: false,
       people: false,
+      performance: false,
       reset: false,
       system: false,
     });

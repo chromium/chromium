@@ -84,51 +84,5 @@
             </settings-privacy-page>
           </settings-section>
         </template>
-        <template is="dom-if"
-            if="[[showPage_(pageVisibility_.performance)]]"
-            restamp>
-          <settings-section page-title="$i18n{generalPageTitle}"
-              section="performance" id="performanceSettingsSection"
-<if expr="_google_chrome">
-              show-send-feedback-button
-              on-send-feedback="onSendPerformanceFeedbackClick_"
-</if>
-              >
-            <settings-performance-page prefs="{{prefs}}">
-            </settings-performance-page>
-          </settings-section>
-          <settings-section page-title="$i18n{memoryPageTitle}"
-              section="memory" nest-under-section="performance"
-              id="memorySettingsSection"
-<if expr="_google_chrome">
-              show-send-feedback-button
-              on-send-feedback="onSendMemorySaverFeedbackClick_"
-</if>
-              >
-            <settings-memory-page prefs="{{prefs}}">
-            </settings-memory-page>
-          </settings-section>
-          <settings-section page-title="$i18n{batteryPageTitle}"
-              section="battery" nest-under-section="performance"
-              id="batterySettingsSection" hidden="[[!showBatterySettings_]]"
-<if expr="_google_chrome">
-              show-send-feedback-button
-              on-send-feedback="onSendBatterySaverFeedbackClick_"
-</if>
-              >
-            <settings-battery-page prefs="{{prefs}}">
-            </settings-battery-page>
-          </settings-section>
-          <settings-section page-title="$i18n{speedPageTitle}"
-              section="speed" nest-under-section="performance"
-              id="speedSettingsSection"
-<if expr="_google_chrome">
-              show-send-feedback-button
-              on-send-feedback="onSendSpeedFeedbackClick_"
-</if>
-              >
-            <settings-speed-page prefs="{{prefs}}"></settings-speed-page>
-          </settings-section>
-        </template>
       </div>
     </template>

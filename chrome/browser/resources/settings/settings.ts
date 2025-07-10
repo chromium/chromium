@@ -90,6 +90,7 @@ export {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, SettingsM
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {DISCARD_RING_PREF, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
+export {SettingsPerformancePageIndexElement} from './performance_page/performance_page_index.js';
 export {SpeedPageElement} from './performance_page/speed_page.js';
 export {ExceptionEditDialogElement} from './performance_page/tab_discard/exception_edit_dialog.js';
 export {ExceptionEntryElement} from './performance_page/tab_discard/exception_entry.js';

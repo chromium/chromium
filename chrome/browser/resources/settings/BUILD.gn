@@ -110,6 +110,7 @@ build_webui("build") {
     "people_page/sync_page.ts",
     "performance_page/battery_page.ts",
     "performance_page/memory_page.ts",
+    "performance_page/performance_page_index.ts",
     "performance_page/performance_page.ts",
     "performance_page/speed_page.ts",
     "performance_page/tab_discard/exception_add_input.ts",

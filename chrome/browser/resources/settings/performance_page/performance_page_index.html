@@ -1,0 +1,28 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-performance-page slot="view" id="performance" prefs="{{prefs}}">
+  </settings-performance-page>
+
+  <settings-memory-page slot="view" id="memory" prefs="{{prefs}}">
+  </settings-memory-page>
+
+  <settings-battery-page slot="view" id="battery" prefs="{{prefs}}"
+      hidden="[[!showBatterySettings_]]">
+  </settings-battery-page>
+
+  <settings-speed-page slot="view" id="speed" prefs="{{prefs}}">
+  </settings-speed-page>
+</cr-view-manager>

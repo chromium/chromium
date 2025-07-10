@@ -14,6 +14,7 @@ import '../about_page/about_page.js';
 import '../appearance_page/appearance_page_index.js';
 import '../basic_page/basic_page.js';
 import '../on_startup_page/on_startup_page.js';
+import '../performance_page/performance_page_index.js';
 import '../search_page/search_page_index.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
@@ -86,7 +87,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
       pageVisibility_: {
         type: Object,
-        value: pageVisibility || {},
+        value: () => pageVisibility || {},
       },
 
       lastRoute_: {

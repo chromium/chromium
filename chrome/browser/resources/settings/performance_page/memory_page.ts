@@ -7,6 +7,7 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -17,6 +18,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './memory_page.html.js';
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
 import {MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 
@@ -86,6 +88,14 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('memorySaverLearnMoreUrl'));
   }
+
+  // <if expr="_google_chrome">
+  private onSendFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
+        PerformanceFeedbackCategory.TABS);
+  }
+  // </if>
 }
 
 declare global {

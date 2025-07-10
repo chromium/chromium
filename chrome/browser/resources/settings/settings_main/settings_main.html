@@ -54,11 +54,21 @@
   <div slot="view" id="old">
     <template is="dom-if" if="[[renderBasicPage_(lastRoute_)]]">
       <settings-basic-page class="cr-centered-card-container"
-          prefs="{{prefs}}" languages="[[languages_]]"
-          in-search-mode="[[inSearchMode_]]">
+          prefs="{{prefs}}" in-search-mode="[[inSearchMode_]]">
       </settings-basic-page>
     </template>
   </div>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.performance)]]">
+    <div slot="view" id="performance">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PERFORMANCE, lastRoute_, inSearchMode_)]]">
+        <settings-performance-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-performance-page-index>
+      </template>
+    </div>
+  </template>
 
   <template is="dom-if" if="[[showPage_(pageVisibility_.appearance)]]">
     <div slot="view" id="appearance">

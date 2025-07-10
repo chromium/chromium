@@ -13,14 +13,13 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsBasicPageElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPrivacyGuideBrowserProxy} from './test_privacy_guide_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 
 // clang-format on
 suite('BasicPage', () => {
@@ -402,118 +401,6 @@ suite('PrivacyGuidePromo', () => {
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideEntryExitHistogram');
     assertEquals(result, PrivacyGuideInteractions.PROMO_ENTRY);
-  });
-});
-
-suite('Performance', () => {
-  let page: SettingsBasicPageElement;
-  let performanceBrowserProxy: TestPerformanceBrowserProxy;
-
-  function queryPerformanceSettingsSection(): SettingsSectionElement|null {
-    return page.shadowRoot!.querySelector('#performanceSettingsSection');
-  }
-
-  function queryMemorySettingsSection(): SettingsSectionElement|null {
-    return page.shadowRoot!.querySelector('#memorySettingsSection');
-  }
-
-  function queryBatterySettingsSection(): SettingsSectionElement|null {
-    return page.shadowRoot!.querySelector('#batterySettingsSection');
-  }
-
-  function querySpeedSettingsSection(): SettingsSectionElement|null {
-    return page.shadowRoot!.querySelector('#speedSettingsSection');
-  }
-
-  function createNewBasicPage() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    performanceBrowserProxy = new TestPerformanceBrowserProxy();
-    PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
-    page = document.createElement('settings-basic-page');
-    document.body.appendChild(page);
-    flush();
-    const sections = page.shadowRoot!.querySelectorAll('settings-section');
-    assertTrue(sections.length > 1);
-  }
-
-  teardown(function() {
-    resetPageVisibilityForTesting();
-  });
-
-  test('performanceSectionTitlesVisible', function() {
-    createNewBasicPage();
-    flush();
-
-    assertEquals(
-        queryPerformanceSettingsSection()!.shadowRoot!.querySelector('h2')
-            ?.innerText,
-        loadTimeData.getString('generalPageTitle'));
-    assertEquals(
-        queryMemorySettingsSection()!.shadowRoot!.querySelector('h2')
-            ?.innerText,
-        loadTimeData.getString('memoryPageTitle'));
-    assertEquals(
-        queryBatterySettingsSection()!.shadowRoot!.querySelector('h2')
-            ?.innerText,
-        loadTimeData.getString('batteryPageTitle'));
-    assertEquals(
-        querySpeedSettingsSection()!.shadowRoot!.querySelector('h2')?.innerText,
-        loadTimeData.getString('speedPageTitle'));
-  });
-
-  test('performanceVisibilityTestFeaturesAvailable', function() {
-    createNewBasicPage();
-    flush();
-
-    assertTrue(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should exist with default page visibility');
-    assertTrue(
-        !!queryMemorySettingsSection(),
-        'Memory section should exist with default page visibility');
-    assertTrue(
-        !!queryBatterySettingsSection(),
-        'Battery section should exist with default page visibility');
-    assertTrue(
-        !!querySpeedSettingsSection(),
-        'Speed section should exist with default page visibility');
-
-    // Set the visibility of the pages under test to "false".
-    resetPageVisibilityForTesting({performance: false});
-    createNewBasicPage();
-    flush();
-
-    assertFalse(
-        !!queryPerformanceSettingsSection(),
-        'Performance section should not exist when visibility is false');
-    assertFalse(
-        !!queryMemorySettingsSection(),
-        'Memory section should not exist when visibility is false');
-    assertFalse(
-        !!queryBatterySettingsSection(),
-        'Battery section should not exist when visibility is false');
-    assertFalse(
-        !!querySpeedSettingsSection(),
-        'Speed section should not exist when visibility is false');
-  });
-
-  test('performanceVisibilityTestDeviceHasBattery', async function() {
-    createNewBasicPage();
-    flush();
-
-    await performanceBrowserProxy.whenCalled('getDeviceHasBattery');
-    const batterySettingsSection = queryBatterySettingsSection();
-    assertTrue(!!batterySettingsSection);
-    assertTrue(
-        batterySettingsSection.hidden,
-        'Battery section should be hidden at by default');
-
-    // Simulate OnDeviceHasBatteryChanged from backend
-    webUIListenerCallback('device-has-battery-changed', true);
-    assertFalse(
-        batterySettingsSection.hidden,
-        'Battery section should be visible after being notified that the ' +
-            'device has a battery');
   });
 });
 

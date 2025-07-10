@@ -9,6 +9,7 @@ import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import '../privacy_page/collapse_radio_button.js';
 import '../settings_columned_section.css.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -22,6 +23,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {NetworkPredictionOptions} from './constants.js';
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import {getTemplate} from './speed_page.html.js';
 
 export interface SpeedPageElement {
@@ -94,6 +96,14 @@ export class SpeedPageElement extends SpeedPageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('preloadingLearnMoreUrl'));
   }
+
+  // <if expr="_google_chrome">
+  private onSendFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
+        PerformanceFeedbackCategory.SPEED);
+  }
+  // </if>
 }
 
 declare global {

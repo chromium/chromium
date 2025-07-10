@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -20,6 +21,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './battery_page.html.js';
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
 import {BatterySaverModeState, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 
@@ -90,6 +92,14 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
   private openOsPowerSettings_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('osPowerSettingsUrl'));
+  }
+  // </if>
+
+  // <if expr="_google_chrome">
+  private onSendFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
+        PerformanceFeedbackCategory.BATTERY);
   }
   // </if>
 }

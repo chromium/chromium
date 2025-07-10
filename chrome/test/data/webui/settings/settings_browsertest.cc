@@ -317,6 +317,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionPaymentsList) {
   RunTest("settings/payments_section_payments_list_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, PerformancePageIndex) {
+  RunTest("settings/performance_page_index_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePage) {
   RunTest("settings/people_page_test.js", "mocha.run()");
 }
@@ -550,10 +554,6 @@ IN_PROC_BROWSER_TEST_F(PeoplePageSyncPageTest, EEAChoiceCountry) {
 IN_PROC_BROWSER_TEST_F(PeoplePageSyncPageTest, LinkedServicesDisabled) {
   RunTest("settings/people_page_sync_page_test.js",
           "runMochaSuite('LinkedServicesDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, PerformanceMenu) {
-  RunTest("settings/settings_performance_menu_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ProtocolHandlers) {
@@ -808,10 +808,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_BasicPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromo) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, Performance) {
-  RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, AiSections) {

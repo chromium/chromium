@@ -332,6 +332,7 @@ function createRoutes(): SettingsRoutes {
     r.PERFORMANCE = r.BASIC.createSection(
         '/performance', 'performance',
         loadTimeData.getString('performancePageTitle'));
+    r.PERFORMANCE.hasMigratedToPlugin = true;
   }
 
   return r as unknown as SettingsRoutes;

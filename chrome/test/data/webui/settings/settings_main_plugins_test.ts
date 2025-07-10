@@ -6,8 +6,8 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Route, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSearchManager} from './test_search_manager.js';
@@ -22,7 +22,7 @@ suite('SettingsMain', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  function createSettingsMain() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     searchManager = new TestSearchManager();
     setSearchManagerForTesting(searchManager);
@@ -32,6 +32,10 @@ suite('SettingsMain', function() {
     settingsMain.toolbarSpinnerActive = false;
     document.body.appendChild(settingsMain);
     flush();
+  }
+
+  setup(function() {
+    createSettingsMain();
   });
 
   test('UpdatesActiveViewWhenRouteChanges', async function() {
@@ -50,7 +54,6 @@ suite('SettingsMain', function() {
       routes.BASIC,
       routes.AUTOFILL,
       routes.PRIVACY,
-      routes.PERFORMANCE,
     ];
 
     for (const route of nonMigratedRoutes) {
@@ -63,6 +66,7 @@ suite('SettingsMain', function() {
       // TODO(crbug.com/424223101): Update this list as more routes are
       // migrated.
 
+      {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
       {route: routes.SEARCH, pluginTag: 'settings-search-page-index'},
       // <if expr="not is_chromeos">
@@ -112,5 +116,46 @@ suite('SettingsMain', function() {
     // active view.
     await settingsMain.searchContents('');
     assertFalse(settingsMain.$.switcher.hasAttribute('show-all'));
+  });
+
+  test('RespectsVisibility', function() {
+    function queryView(id: string): HTMLElement|null {
+      return settingsMain.$.switcher.querySelector<HTMLElement>(
+          `#${id}[slot=view]`);
+    }
+
+    function assertVisibilityRespected() {
+      const viewIds: string[] = [
+        'a11y', 'about', 'appearance', 'downloads', 'languages', 'onStartup',
+        'performance', 'reset', 'search',
+
+        // <if expr='not is_chromeos'>
+        'defaultBrowser', 'system',
+        // </if>
+      ];
+
+      for (const id of viewIds) {
+        if (id === 'about' || id === 'search') {
+          assertTrue(!!queryView(id));
+          continue;
+        }
+
+        const visibiilty: Record<string, any> = pageVisibility || {};
+        assertEquals(
+            visibiilty[id] !== false, !!queryView(id),
+            `Visibility check failed for view with id: '${id}'`);
+      }
+    }
+
+    // Case1: Default (non-guest mode)
+    assertEquals(undefined, pageVisibility);
+    assertVisibilityRespected();
+
+    // Case2: Guest mode case
+    loadTimeData.overrideValues({isGuest: true});
+    resetPageVisibilityForTesting();
+    // Create a new instance for the visibility to have an effect.
+    createSettingsMain();
+    assertVisibilityRespected();
   });
 });

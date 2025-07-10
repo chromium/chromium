@@ -20,17 +20,12 @@ import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
 import '../people_page/people_page.js';
-import '../performance_page/battery_page.js';
-import '../performance_page/memory_page.js';
-import '../performance_page/performance_page.js';
-import '../performance_page/speed_page.js';
 import '../reset_page/reset_profile_banner.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format off
@@ -42,13 +37,8 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="not is_chromeos">
-import type {LanguagesModel} from '../languages_page/languages_types.js';
-// </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
-import type {PerformanceBrowserProxy} from '../performance_page/performance_browser_proxy.js';
-import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from '../performance_page/performance_browser_proxy.js';
 import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
 import type {PrivacyGuideBrowserProxy} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
@@ -62,8 +52,8 @@ import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 import {getTemplate} from './basic_page.html.js';
 
 const SettingsBasicPageElementBase =
-    PrefsMixin(MainPageMixin(RouteObserverMixin(PrivacyGuideAvailabilityMixin(
-        WebUiListenerMixin(I18nMixin(PolymerElement))))));
+    PrefsMixin(MainPageMixin(RouteObserverMixin(
+        PrivacyGuideAvailabilityMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     implements SettingsPlugin {
@@ -77,14 +67,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   static get properties() {
     return {
-      // <if expr="not is_chromeos">
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
-      // </if>
-
       /**
        * Dictionary defining page visibility.
        */
@@ -136,14 +118,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
         reflectToAttribute: true,
       },
 
-      /**
-       * Used to hide battery settings section if the device has no battery
-       */
-      showBatterySettings_: {
-        type: Boolean,
-        value: false,
-      },
-
       showAiPageAiFeatureSection_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiPageAiFeatureSection'),
@@ -164,16 +138,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     ];
   }
 
-  // <if expr="not is_chromeos">
-  declare languages?: LanguagesModel;
-  // </if>
   declare private pageVisibility_: PageVisibility;
   declare inSearchMode: boolean;
   declare private showResetProfileBanner_: boolean;
 
   declare private currentRoute_: Route;
   declare private advancedTogglingInProgress_: boolean;
-  declare private showBatterySettings_: boolean;
   declare private showAiPageAiFeatureSection_: boolean;
   // <if expr="enable_glic">
   declare private showGlicSection_: boolean;
@@ -182,8 +152,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
-  private performanceBrowserProxy_: PerformanceBrowserProxy =
-      PerformanceBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -194,12 +162,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   override connectedCallback() {
     super.connectedCallback();
-
-    this.addWebUiListener(
-        'device-has-battery-changed',
-        this.onDeviceHasBatteryChanged_.bind(this));
-    this.performanceBrowserProxy_.getDeviceHasBattery().then(
-        this.onDeviceHasBatteryChanged_.bind(this));
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
@@ -238,10 +200,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
       this.privacyGuideBrowserProxy_.incrementPromoImpressionCount();
       this.privacyGuidePromoWasShown_ = true;
     }
-  }
-
-  private onDeviceHasBatteryChanged_(deviceHasBattery: boolean) {
-    this.showBatterySettings_ = deviceHasBattery;
   }
 
   /**
@@ -293,32 +251,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   private showAiPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
   }
-
-  // <if expr="_google_chrome">
-  private onSendPerformanceFeedbackClick_(e: Event) {
-    e.stopPropagation();
-    this.performanceBrowserProxy_.openFeedbackDialog(
-        PerformanceFeedbackCategory.NOTIFICATIONS);
-  }
-
-  private onSendMemorySaverFeedbackClick_(e: Event) {
-    e.stopPropagation();
-    this.performanceBrowserProxy_.openFeedbackDialog(
-        PerformanceFeedbackCategory.TABS);
-  }
-
-  private onSendBatterySaverFeedbackClick_(e: Event) {
-    e.stopPropagation();
-    this.performanceBrowserProxy_.openFeedbackDialog(
-        PerformanceFeedbackCategory.BATTERY);
-  }
-
-  private onSendSpeedFeedbackClick_(e: Event) {
-    e.stopPropagation();
-    this.performanceBrowserProxy_.openFeedbackDialog(
-        PerformanceFeedbackCategory.SPEED);
-  }
-  // </if>
 }
 
 declare global {
