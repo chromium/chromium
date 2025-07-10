@@ -207,17 +207,13 @@ features::SoftNavigationHeuristicsMode GetPaintAttributionMode(
 }
 
 SoftNavigationHeuristics* GetHeuristicsForNodeIfShouldTrack(const Node& node) {
-  const Document& document = node.GetDocument();
-  if (!document.IsTrackingSoftNavigationHeuristics()) {
-    return nullptr;
-  }
   // This handles both disconnected nodes and detached frames.
   if (!node.InActiveDocument()) {
     return nullptr;
   }
   // The window cannot be null unless the document has been shut down, which is
   // not true for active documents.
-  LocalDOMWindow* window = document.domWindow();
+  LocalDOMWindow* window = node.GetDocument().domWindow();
   CHECK(window);
   return window->GetSoftNavigationHeuristics();
 }
@@ -265,13 +261,6 @@ void SoftNavigationHeuristics::Shutdown() {
                                         required_paint_area);
   }
   potential_soft_navigations_.clear();
-}
-
-void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
-    bool value) const {
-  if (Document* document = window_->document()) {
-    document->SetIsTrackingSoftNavigationHeuristics(value);
-  }
 }
 
 SoftNavigationContext* SoftNavigationHeuristics::EnsureContextForCurrentWindow(
@@ -623,8 +612,6 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
                       perfetto::Track::FromPointer(active_interaction_context_),
                       "context", active_interaction_context_.Get(), "task_id",
                       task_state.Id().value());
-
-  SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
 }
 
 void SoftNavigationHeuristics::ProcessCustomWeakness(
@@ -649,17 +636,14 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
     return false;
   });
 
-  // If we fully clear out all contexts via GC, then turn off soft-navs tracking
-  // on document.  This should never happen if we have a
-  // `context_for_current_url_`, which means we won't ever turn off tracking
-  // once an attributable URL change is detected.
+  // The set should not become empty if we're still tracking contexts for the
+  // current interaction of current URL change.
   // TODO(crbug.com/416706750, crbug.com/420402247): Consider enabling some
   // mechanism for eventually resetting things.
-  if (potential_soft_navigations_.empty()) {
-    CHECK(!active_interaction_context_, base::NotFatalUntil::M142);
-    CHECK(!context_for_current_url_, base::NotFatalUntil::M142);
-    SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
-  }
+  CHECK(!potential_soft_navigations_.empty() || !active_interaction_context_,
+        base::NotFatalUntil::M142);
+  CHECK(!potential_soft_navigations_.empty() || !context_for_current_url_,
+        base::NotFatalUntil::M142);
 }
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(

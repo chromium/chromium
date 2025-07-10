@@ -143,6 +143,10 @@ class CORE_EXPORT SoftNavigationHeuristics
   // collection to remove items from `potential_soft_navigations_`.
   void ProcessCustomWeakness(const LivenessBroker& info);
 
+  bool IsTrackingSoftNavigationsForTest() const {
+    return !potential_soft_navigations_.empty();
+  }
+
  private:
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;

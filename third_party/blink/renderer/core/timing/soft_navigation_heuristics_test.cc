@@ -62,12 +62,6 @@ class SoftNavigationHeuristicsTest : public testing::Test {
 
   Document& GetDocument() { return page_holder_->GetDocument(); }
 
-  bool IsDocumentTrackingSoftNavigations() {
-    return LocalDOMWindow::From(GetScriptStateForTest())
-        ->document()
-        ->IsTrackingSoftNavigationHeuristics();
-  }
-
   static AtomicString KeyboardEventScopeTypeToEventName(
       SoftNavigationHeuristics::EventScope::Type type) {
     switch (type) {
@@ -146,7 +140,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   Persistent<scheduler::TaskAttributionInfo> root_task_state = nullptr;
   // Simulate a click.
   {
-    EXPECT_FALSE(IsDocumentTrackingSoftNavigations());
+    EXPECT_FALSE(heuristics->IsTrackingSoftNavigationsForTest());
     auto* event =
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
@@ -162,7 +156,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
     root_task_state = tracker->CurrentTaskState();
   }
   EXPECT_TRUE(root_task_state);
-  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
 
   // Simulate a descendant task.
   Persistent<scheduler::TaskAttributionInfo> descendant_task_state = nullptr;
@@ -173,20 +167,20 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   }
   EXPECT_TRUE(descendant_task_state);
 
-  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
   EXPECT_EQ(root_task_state.Get(), descendant_task_state.Get());
 
   root_task_state = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
   // The heuristics still should not have been reset since there is a live
   // root task, which is being held onto by its descendant task.
-  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
 
   // Finally, this should allow the click task to be GCed, which should cause
   // the heuristics to be reset.
   descendant_task_state = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_FALSE(IsDocumentTrackingSoftNavigations());
+  EXPECT_FALSE(heuristics->IsTrackingSoftNavigationsForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
@@ -288,7 +282,7 @@ TEST_F(SoftNavigationHeuristicsTest,
   }
   // At this point there is a single `SoftNavigationContext` being tracked, but
   // it wasn't propagated anywhere, so it is eligible for GC.
-  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
 
   auto* event = CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
   std::optional<SoftNavigationHeuristics::EventScope> event_scope(
@@ -302,7 +296,7 @@ TEST_F(SoftNavigationHeuristicsTest,
 
   std::optional<TaskScope> task_scope =
       tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
-  EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+  EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
