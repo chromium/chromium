@@ -150,6 +150,10 @@ executable("character_data_generator") {
     "//build/win:default_exe_manifest",
     "//third_party/icu",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # This isn't strictly necessary since we can just add the deps to "platform",
@@ -2489,6 +2493,10 @@ source_set("blink_platform_unittests_sources") {
   if (use_minikin_hyphenation) {
     defines += [ "USE_MINIKIN_HYPHENATION" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("bridge_ice_controller_tests") {
@@ -2510,6 +2518,10 @@ source_set("bridge_ice_controller_tests") {
     "//third_party/webrtc_overrides:ice_controller_test_utils",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_ios) {
