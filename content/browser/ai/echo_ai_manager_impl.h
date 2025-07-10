@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -109,8 +110,11 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 
-  // The mocked download status of an imagined foundational model.
-  bool model_downloaded_ = false;
+  // Returns whether the current mojo receiver triggered mock model download.
+  bool IsModelDownloadedForCurrentReciever() const;
+
+  // The set of mojo receivers that have triggered mock model download.
+  base::flat_set<mojo::ReceiverId> model_downloaded_receivers_;
 
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;
