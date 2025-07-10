@@ -198,6 +198,8 @@ void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
           {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
     }
     optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::A2A_MERCHANT_ALLOWLIST});
+    optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
   }
 }

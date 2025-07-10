@@ -76,10 +76,6 @@ class ChromeFacilitatedPaymentsClientTest
         std::move(pix_account_linking_manager));
   }
 
-  void TearDown() override {
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
   auto& base_client() {
     return static_cast<payments::facilitated::FacilitatedPaymentsClient&>(
         *client_);
@@ -127,6 +123,10 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
       .Times(1);
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::A2A_MERCHANT_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
       .Times(1);
 
@@ -145,6 +145,10 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_EWalletExpOff) {
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::A2A_MERCHANT_ALLOWLIST)))
       .Times(1);
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(

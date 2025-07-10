@@ -193,6 +193,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OptimizationType">
+  <variant name="A2AMerchantAllowlist"
+      summary="This optimization provides information about merchant URLs
+               that are eligible for A2A payments."/>
   <variant name="AboutThisSite"
       summary="Provides 'About this site' data about the site being visited"/>
   <variant name="AmericanExpressCreditCardFlightBenefits"

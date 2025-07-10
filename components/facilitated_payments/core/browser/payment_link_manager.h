@@ -74,7 +74,7 @@ class PaymentLinkManager {
   void RetrieveSupportedEwallets(const GURL& payment_link_url);
 
   // Performs various specific pre-checks for the A2A flow.
-  bool CanTriggerAppPaymentFlow();
+  bool CanTriggerAppPaymentFlow(const GURL& page_url);
 
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The

@@ -95,10 +95,15 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   }
 
   std::unique_ptr<FacilitatedPaymentsAppInfoList> supported_apps;
-  if (CanTriggerAppPaymentFlow()) {
+  if (CanTriggerAppPaymentFlow(page_url)) {
     supported_apps = client_->GetDeviceDelegate()->GetSupportedPaymentApps(
         PaymentLinkValidator().SanitizeForPaymentAppRetrieval(
             payment_link_url));
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          payments::facilitated::kFacilitatedPaymentsEnableA2APayment)) {
+    supported_apps.reset();
   }
 
   ShowPaymentLinkPrompt(
@@ -175,11 +180,11 @@ void PaymentLinkManager::RetrieveSupportedEwallets(
   }
 }
 
-bool PaymentLinkManager::CanTriggerAppPaymentFlow() {
-  return base::FeatureList::IsEnabled(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
-
-  // TODO(crbug.com/424264449): Add allowlist check.
+bool PaymentLinkManager::CanTriggerAppPaymentFlow(const GURL& page_url) {
+  return optimization_guide_decider_->CanApplyOptimization(
+             page_url, optimization_guide::proto::A2A_MERCHANT_ALLOWLIST,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 void PaymentLinkManager::Reset() {

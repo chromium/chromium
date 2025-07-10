@@ -872,16 +872,16 @@ TEST_F(PaymentLinkManagerTest,
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
-
-  EXPECT_CALL(
+  ON_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
           testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
-      .WillOnce(testing::Return(
+      .WillByDefault(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
+
   EXPECT_CALL(client_, ShowPaymentLinkPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -906,16 +906,16 @@ TEST_F(
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
-
-  EXPECT_CALL(
+  ON_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
           testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
-      .WillOnce(testing::Return(
+      .WillByDefault(testing::Return(
           optimization_guide::OptimizationGuideDecision::kFalse));
+
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -948,16 +948,16 @@ TEST_F(
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
-
-  EXPECT_CALL(
+  ON_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
           testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
-      .WillOnce(testing::Return(
+      .WillByDefault(testing::Return(
           optimization_guide::OptimizationGuideDecision::kUnknown));
+
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -1552,6 +1552,13 @@ class PaymentLinkManagerTestForA2AFlow : public PaymentLinkManagerTest {
         .WillByDefault(testing::Invoke([&]() {
           return std::move(mock_facilitated_payments_app_info_list_);
         }));
+    ON_CALL(optimization_guide_decider_,
+            CanApplyOptimization(
+                testing::_,
+                testing::Eq(optimization_guide::proto::A2A_MERCHANT_ALLOWLIST),
+                testing::A<optimization_guide::OptimizationMetadata*>()))
+        .WillByDefault(testing::Return(
+            optimization_guide::OptimizationGuideDecision::kTrue));
   }
 
  protected:
@@ -1567,8 +1574,9 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, FlagOff_A2APaymentPromptNotShown) {
       payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
 
-  EXPECT_CALL(*mock_device_delegate_, GetSupportedPaymentApps).Times(0);
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -1636,6 +1644,57 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
+}
+
+// A2A payment prompt is shown for websites in the allolwist.
+TEST_F(PaymentLinkManagerTestForA2AFlow, UrlInAllowlist_A2APaymentPromptShown) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL page_url("https://www.example.com");
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  GURL sanitized_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay");
+  ON_CALL(optimization_guide_decider_,
+          CanApplyOptimization(
+              testing::Eq(page_url),
+              testing::Eq(optimization_guide::proto::A2A_MERCHANT_ALLOWLIST),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
+}
+
+// A2A payment prompt is not shown for websites not in the allolwist.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       UrlNotInAllowlist_A2APaymentPromptNotShown) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL page_url("https://www.example.com");
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(optimization_guide_decider_,
+          CanApplyOptimization(
+              testing::Eq(page_url),
+              testing::Eq(optimization_guide::proto::A2A_MERCHANT_ALLOWLIST),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_CALL(*mock_device_delegate_, GetSupportedPaymentApps(testing::_))
+      .Times(0);
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 }  // namespace payments::facilitated
