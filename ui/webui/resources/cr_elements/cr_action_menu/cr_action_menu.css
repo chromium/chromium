@@ -81,6 +81,11 @@
   outline: none;
 }
 
+:host ::slotted(.dropdown-item:focus-visible) {
+  outline: solid 2px var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
 @media (forced-colors: active) {
   :host ::slotted(.dropdown-item:focus) {
     /* Use outline instead of background-color (which does not work) in
