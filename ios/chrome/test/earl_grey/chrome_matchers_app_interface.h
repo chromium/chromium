@@ -556,7 +556,8 @@
 // Returns a matcher for the group cell created just now in the Tab Groups panel
 // for the given `group_name` and `tab_count`.
 + (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
-                                        count:(NSInteger)count;
+                                        count:(NSInteger)count
+                                       shared:(BOOL)shared;
 
 // Returns a matcher for the recent activity log cell at `index` in the recent
 // activity in the tab group.

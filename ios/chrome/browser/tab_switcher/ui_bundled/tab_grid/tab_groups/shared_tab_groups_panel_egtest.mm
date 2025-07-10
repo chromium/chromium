@@ -108,13 +108,13 @@ void AddSharedGroup(BOOL owner) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroupTitle` exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1)]
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
+                                          kGroupTitle, 1, /*shared=*/true)]
       assertWithMatcher:grey_notNil()];
 
   // Long press the group.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1)]
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
+                                          kGroupTitle, 1, /*shared=*/true)]
       performAction:grey_longPress()];
 
   // Verify that the leave button is not available.
@@ -150,13 +150,13 @@ void AddSharedGroup(BOOL owner) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroupTitle` exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1)]
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
+                                          kGroupTitle, 1, /*shared=*/true)]
       assertWithMatcher:grey_notNil()];
 
   // Long press the group.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1)]
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
+                                          kGroupTitle, 1, /*shared=*/true)]
       performAction:grey_longPress()];
 
   // Verify that the delete button is not available.
@@ -194,8 +194,8 @@ void AddSharedGroup(BOOL owner) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroupTitle` exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroupTitle, 1)]
+  [[EarlGrey selectElementWithMatcher:TabGroupsPanelCellWithName(
+                                          kGroupTitle, 1, /*shared=*/true)]
       assertWithMatcher:grey_notNil()];
 
   // Check that no notification is visible.

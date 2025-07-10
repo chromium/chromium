@@ -114,6 +114,13 @@ const CGFloat kDotSize = 14;
 - (NSString*)accessibilityLabel {
   NSString* numberOfTabsString = l10n_util::GetPluralNSStringF(
       IDS_IOS_TAB_GROUP_TABS_NUMBER, _faviconsGrid.numberOfTabs);
+  if (self.facePile) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_TAB_GROUPS_PANEL_CELL_SHARED_ACCESSIBILITY_LABEL_FORMAT,
+        base::SysNSStringToUTF16(_titleLabel.text),
+        base::SysNSStringToUTF16(numberOfTabsString),
+        base::SysNSStringToUTF16(_subtitleLabel.text));
+  }
   return l10n_util::GetNSStringF(
       IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
       base::SysNSStringToUTF16(_titleLabel.text),

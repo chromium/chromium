@@ -1263,17 +1263,19 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
-                                        count:(NSInteger)count {
+                                        count:(NSInteger)count
+                                       shared:(BOOL)shared {
   NSString* numberOfTabsString =
       l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, count);
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSStringF(
-          IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
-          base::SysNSStringToUTF16(groupName),
-          base::SysNSStringToUTF16(numberOfTabsString),
-          base::SysNSStringToUTF16(@"Created just now"))),
-      grey_kindOfClassName(@"TabGroupsPanelCell"), grey_sufficientlyVisible(),
-      nil);
+  int messageID =
+      shared ? IDS_IOS_TAB_GROUPS_PANEL_CELL_SHARED_ACCESSIBILITY_LABEL_FORMAT
+             : IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT;
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSStringF(
+                        messageID, base::SysNSStringToUTF16(groupName),
+                        base::SysNSStringToUTF16(numberOfTabsString),
+                        base::SysNSStringToUTF16(@"Created just now"))),
+                    grey_kindOfClassName(@"TabGroupsPanelCell"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGroupRecentActivityCellAtIndex:(unsigned int)index {

@@ -717,9 +717,11 @@ id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index) {
 }
 
 id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
-                                           NSInteger tab_count) {
+                                           NSInteger tab_count,
+                                           bool shared) {
   return [ChromeMatchersAppInterface tabGroupsPanelCellWithName:group_name
-                                                          count:tab_count];
+                                                          count:tab_count
+                                                         shared:shared];
 }
 
 id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index) {
