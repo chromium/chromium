@@ -18,16 +18,14 @@ namespace webnn {
 class WebNNContextImpl;
 
 // GPU process implementation of the MLTensor interface exposed to script.
-// Owned by the WebNNContextImpl which created it.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
-    : public mojom::WebNNTensor,
+    : public WebNNReceiverImpl<mojom::WebNNTensor>,
       public WebNNObjectImpl<blink::WebNNTensorToken> {
  public:
   explicit WebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      WebNNContextImpl* context,
+      base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info);
-  ~WebNNTensorImpl() override;
 
   WebNNTensorImpl(const WebNNTensorImpl&) = delete;
   WebNNTensorImpl& operator=(const WebNNTensorImpl&) = delete;
@@ -57,8 +55,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   virtual void ReadTensorImpl(
       mojom::WebNNTensor::ReadTensorCallback callback) = 0;
 
-  // WebNNContextImpl owns this object.
-  const raw_ptr<WebNNContextImpl> context_;
+  base::WeakPtr<WebNNContextImpl> context_;
+
+ protected:
+  ~WebNNTensorImpl() override;
 
  private:
   // mojom::WebNNTensor
@@ -70,12 +70,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   //  developer via the WebNN API.
   //  - When the tensor is dropped by the WebNN developer where
   //  the tensor gets implicitly destroyed upon garbage collection.
-  void OnDisconnect();
+  void OnDisconnect() override;
 
   const OperandDescriptor descriptor_;
   const MLTensorUsage usage_;
-
-  mojo::AssociatedReceiver<mojom::WebNNTensor> receiver_;
 
   base::WeakPtrFactory<WebNNTensorImpl> weak_factory_{this};
 };

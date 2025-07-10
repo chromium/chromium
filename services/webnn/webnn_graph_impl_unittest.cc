@@ -84,12 +84,15 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
  public:
   FakeWebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      WebNNContextImpl* context,
+      base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info)
-      : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)) {}
-  ~FakeWebNNTensorImpl() override = default;
+      : WebNNTensorImpl(std::move(receiver),
+                        std::move(context),
+                        std::move(tensor_info)) {}
 
  private:
+  ~FakeWebNNTensorImpl() override = default;
+
   // Read/write nothing for testing the validation of inputs and outputs in
   // `WebNNGraphImpl::Dispatch()` function.
   void ReadTensorImpl(ReadTensorCallback callback) override {}
@@ -133,8 +136,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override {
-    std::move(callback).Run(std::make_unique<FakeWebNNTensorImpl>(
-        std::move(receiver), this, std::move(tensor_info)));
+    std::move(callback).Run(base::MakeRefCounted<FakeWebNNTensorImpl>(
+        std::move(receiver), AsWeakPtr(), std::move(tensor_info)));
   }
 
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};

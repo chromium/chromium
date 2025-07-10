@@ -15,10 +15,12 @@ namespace webnn::ort {
 
 TensorImplOrt::TensorImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    WebNNContextImpl* context,
+    base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
+    : WebNNTensorImpl(std::move(receiver),
+                      std::move(context),
+                      std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplOrt::~TensorImplOrt() {

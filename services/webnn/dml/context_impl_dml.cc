@@ -636,8 +636,9 @@ void ContextImplDml::CreateTensorImpl(
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
   if (g_backend_for_testing) {
-    g_backend_for_testing->CreateTensorImpl(
-        this, std::move(receiver), std::move(tensor_info), std::move(callback));
+    g_backend_for_testing->CreateTensorImpl(AsWeakPtr(), std::move(receiver),
+                                            std::move(tensor_info),
+                                            std::move(callback));
     return;
   }
 
@@ -702,8 +703,9 @@ void ContextImplDml::CreateTensorImpl(
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  std::move(callback).Run(std::make_unique<TensorImplDml>(
-      std::move(receiver), std::move(buffer), this, std::move(tensor_info)));
+  std::move(callback).Run(base::MakeRefCounted<TensorImplDml>(
+      std::move(receiver), std::move(buffer), AsWeakPtr(),
+      std::move(tensor_info)));
 }
 
 void ContextImplDml::ReadTensor(

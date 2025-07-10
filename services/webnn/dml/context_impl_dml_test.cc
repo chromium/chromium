@@ -67,23 +67,29 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
  public:
   FakeWebNNTensorImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      ContextImplDml* context,
+      base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info)
-      : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
-        context_(context) {}
-  ~FakeWebNNTensorImpl() override = default;
+      : WebNNTensorImpl(std::move(receiver),
+                        std::move(context),
+                        std::move(tensor_info)) {}
 
  private:
+  ~FakeWebNNTensorImpl() override = default;
+
   void ReadTensorImpl(ReadTensorCallback callback) override {
     std::move(callback).Run(ToError<mojom::ReadTensorResult>(
         mojom::Error::Code::kUnknownError, "Tesing for device removal."));
-    RemoveDeviceToDestroyAllContexts(context_);
+    WebNNContextImpl* context_impl = context_.get();
+    CHECK(context_impl);
+    RemoveDeviceToDestroyAllContexts(
+        static_cast<ContextImplDml*>(context_impl));
   }
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {
-    RemoveDeviceToDestroyAllContexts(context_);
+    WebNNContextImpl* context_impl = context_.get();
+    CHECK(context_impl);
+    RemoveDeviceToDestroyAllContexts(
+        static_cast<ContextImplDml*>(context_impl));
   }
-
-  raw_ptr<ContextImplDml> context_;
 };
 
 // Helper class to create the FakeWebNNGraphImpl that is intended to test
@@ -99,12 +105,12 @@ class FakeWebNNBackend final : public ContextImplDml::BackendForTesting {
   }
 
   void CreateTensorImpl(
-      ContextImplDml* context,
+      base::WeakPtr<WebNNContextImpl> context,
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
       WebNNContextImpl::CreateTensorImplCallback callback) override {
-    std::move(callback).Run(std::make_unique<FakeWebNNTensorImpl>(
-        std::move(receiver), context, std::move(tensor_info)));
+    std::move(callback).Run(base::MakeRefCounted<FakeWebNNTensorImpl>(
+        std::move(receiver), std::move(context), std::move(tensor_info)));
   }
 };
 

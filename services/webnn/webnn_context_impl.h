@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
   using CreateTensorImplCallback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
+      base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>)>;
 
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
@@ -76,8 +76,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Disassociates a `WebNNTensor` instance owned by this context by its handle.
   // Called when a `WebNNTensor` instance has a connection error. After this
   // call, it is no longer safe to use the WebNNTensorImpl.
-  void DisconnectAndDestroyWebNNTensorImpl(
-      const blink::WebNNTensorToken& handle);
+  void RemoveWebNNTensorImpl(const blink::WebNNTensorToken& handle);
 
   // Disassociates a `WebNNGraph` instance owned by this context by its handle.
   // Called when a `WebNNGraph` instance has a connection error. After this
@@ -169,7 +168,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       CreateTensorCallback callback,
       mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
       mojo_base::BigBuffer tensor_data,
-      base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
+      base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -188,7 +187,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // This cache only contains valid TensorImpls whose size is managed by the
   // lifetime of the tensors it contains.
   base::flat_set<
-      std::unique_ptr<WebNNTensorImpl>,
+      scoped_refptr<WebNNTensorImpl>,
       WebNNObjectImpl<blink::WebNNTensorToken>::Comparator<WebNNTensorImpl>>
       tensor_impls_;
 

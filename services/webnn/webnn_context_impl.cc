@@ -185,7 +185,7 @@ void WebNNContextImpl::DidCreateWebNNTensorImpl(
     mojom::WebNNContext::CreateTensorCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote,
     mojo_base::BigBuffer tensor_data,
-    base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
+    base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
     std::move(callback).Run(
         mojom::CreateTensorResult::NewError(std::move(result.error())));
@@ -209,7 +209,7 @@ void WebNNContextImpl::DidCreateWebNNTensorImpl(
   tensor_impls_.emplace(*std::move(result));
 }
 
-void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
+void WebNNContextImpl::RemoveWebNNTensorImpl(
     const blink::WebNNTensorToken& handle) {
   const auto it = tensor_impls_.find(handle);
   CHECK(it != tensor_impls_.end());

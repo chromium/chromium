@@ -135,10 +135,10 @@ MLMultiArray* CreateMultiArrayBackedByIOSurface(OperandDescriptor descriptor) {
 }  // namespace
 
 // static
-base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
 TensorImplCoreml::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    WebNNContextImpl* context,
+    base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info) {
   // TODO(crbug.com/329482489): Move this check to the renderer and throw a
   // TypeError.
@@ -175,18 +175,20 @@ TensorImplCoreml::Create(
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContent>>(
           std::move(buffer_content));
-  return base::WrapUnique(new TensorImplCoreml(
-      std::move(receiver), context, std::move(tensor_info),
-      std::move(buffer_state), base::PassKey<TensorImplCoreml>()));
+  return base::MakeRefCounted<TensorImplCoreml>(
+      std::move(receiver), std::move(context), std::move(tensor_info),
+      std::move(buffer_state), base::PassKey<TensorImplCoreml>());
 }
 
 TensorImplCoreml::TensorImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    WebNNContextImpl* context,
+    base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
+    : WebNNTensorImpl(std::move(receiver),
+                      std::move(context),
+                      std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {

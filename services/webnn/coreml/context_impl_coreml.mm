@@ -69,8 +69,8 @@ void ContextImplCoreml::CreateTensorImpl(
                           "WebGPU Interop is not supported.")));
     return;
   }
-  std::move(callback).Run(TensorImplCoreml::Create(std::move(receiver), this,
-                                                   std::move(tensor_info)));
+  std::move(callback).Run(TensorImplCoreml::Create(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info)));
 }
 
 }  // namespace webnn::coreml

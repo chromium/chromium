@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
         CreateGraphImplCallback callback) = 0;
 
     virtual void CreateTensorImpl(
-        ContextImplDml* context,
+        base::WeakPtr<WebNNContextImpl> context,
         mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
         mojom::TensorInfoPtr tensor_info,
         CreateTensorImplCallback callback) = 0;

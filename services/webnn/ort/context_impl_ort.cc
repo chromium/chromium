@@ -272,8 +272,8 @@ void ContextImplOrt::CreateTensorImpl(
   auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
           std::move(buffer_content));
-  std::move(callback).Run(std::make_unique<TensorImplOrt>(
-      std::move(receiver), this, std::move(tensor_info),
+  std::move(callback).Run(base::MakeRefCounted<TensorImplOrt>(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info),
       std::move(buffer_state)));
 }
 

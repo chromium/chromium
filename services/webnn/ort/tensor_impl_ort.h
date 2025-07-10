@@ -20,18 +20,19 @@ class TensorImplOrt final : public WebNNTensorImpl {
  public:
   TensorImplOrt(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      WebNNContextImpl* context,
+      base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
       scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
-  ~TensorImplOrt() override;
 
   const scoped_refptr<QueueableResourceState<BufferContentOrt>>&
   GetBufferState() const;
 
  private:
+  ~TensorImplOrt() override;
+
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 

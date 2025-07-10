@@ -65,8 +65,8 @@ void ContextImplTflite::CreateTensorImpl(
                           "WebGPU Interop is not supported.")));
     return;
   }
-  std::move(callback).Run(TensorImplTflite::Create(std::move(receiver), this,
-                                                   std::move(tensor_info)));
+  std::move(callback).Run(TensorImplTflite::Create(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info)));
 }
 
 }  // namespace webnn::tflite

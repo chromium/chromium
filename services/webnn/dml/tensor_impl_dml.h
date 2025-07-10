@@ -16,7 +16,6 @@
 namespace webnn::dml {
 
 class CommandQueue;
-class ContextImplDml;
 
 struct SharedFence final : public native::d3d12::WebNNSharedFence {
   SharedFence(Microsoft::WRL::ComPtr<ID3D12Fence> fence, UINT64 fence_value);
@@ -37,12 +36,11 @@ class TensorImplDml final : public WebNNTensorImpl,
  public:
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
-                ContextImplDml* context,
+                base::WeakPtr<WebNNContextImpl> context,
                 mojom::TensorInfoPtr tensor_info);
 
   TensorImplDml(const TensorImplDml&) = delete;
   TensorImplDml& operator=(const TensorImplDml&) = delete;
-  ~TensorImplDml() override;
 
   ID3D12Resource* buffer() const { return buffer_.Get(); }
 
@@ -59,6 +57,8 @@ class TensorImplDml final : public WebNNTensorImpl,
   HRESULT WaitForExternalFenceAndReset(CommandQueue* command_queue);
 
  private:
+  ~TensorImplDml() override;
+
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
