@@ -380,7 +380,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
       PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
       VideoFrame::ReleaseMailboxCB(), si_size, gfx::Rect(10, 10, 80, 80),
       gfx::Size(200, 100), base::Seconds(100));
-
+  frame->set_color_space(shared_image->color_space());
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   EXPECT_FALSE(frame->metadata().end_of_stream);
