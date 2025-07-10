@@ -6,6 +6,8 @@
 	<string>${CHROMIUM_BUNDLE_ID}.framework.AlertNotificationService</string>
 	<key>CFBundleIconFile</key>
 	<string>app.icns</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>alert</string>
 </dict>
