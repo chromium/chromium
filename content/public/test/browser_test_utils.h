@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
@@ -863,67 +864,31 @@ struct EvalJsResult {
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
   [[nodiscard]] base::Value::List ExtractList() const;
+
+  // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
+  //
+  //    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
+  //    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
+  //    ASSERT_EQ(nullptr, EvalJs(rfh, "var a = 1 + 1"))
+  //
+  // Error values are incomparable to other values (including other errors).
+  template <typename T>
+  bool operator==(const T& t) const {
+    return error.empty() && (JsLiteralHelper<T>::Convert(t) == value);
+  }
+
+  template <typename T>
+  std::partial_ordering operator<=>(const T& t) const {
+    if (!error.empty()) {
+      return std::partial_ordering::unordered;
+    }
+    return value <=> JsLiteralHelper<T>::Convert(t);
+  }
+
+  inline bool operator==(std::nullptr_t) const {
+    return error.empty() && base::Value() == value;
+  }
 };
-
-// Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
-//
-//    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
-//    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
-//    ASSERT_EQ(nullptr, EvalJs(rfh, "var a = 1 + 1"))
-//
-// Error values are incomparable to other values (including other errors).
-template <typename T>
-bool operator==(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) == b.value);
-}
-template <typename T>
-bool operator==(const EvalJsResult& a, const T& b) {
-  return b == a;
-}
-
-template <typename T>
-bool operator>=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) >= b.value);
-}
-template <typename T>
-bool operator>=(const EvalJsResult& a, const T& b) {
-  return b < a;
-}
-
-template <typename T>
-bool operator<=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) <= b.value);
-}
-template <typename T>
-bool operator<=(const EvalJsResult& a, const T& b) {
-  return b > a;
-}
-
-template <typename T>
-bool operator<(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) < b.value);
-}
-template <typename T>
-bool operator<(const EvalJsResult& a, const T& b) {
-  return b >= a;
-}
-
-template <typename T>
-bool operator>(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) > b.value);
-}
-template <typename T>
-bool operator>(const EvalJsResult& a, const T& b) {
-  return b <= a;
-}
-
-inline bool operator==(std::nullptr_t a, const EvalJsResult& b) {
-  return b.error.empty() && (base::Value() == b.value);
-}
-template <typename T>
-inline bool operator==(const EvalJsResult& a, std::nullptr_t b) {
-  return nullptr == a;
-}
 
 // Provides informative failure messages when the result of EvalJs() is
 // used in a failing ASSERT_EQ or EXPECT_EQ.
