@@ -210,7 +210,7 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
     return kSearchFieldLarge;
   }
 
-  if (ShouldEnlargeNTPFakeboxForMIA() && IsCompactWidth(trait_collection)) {
+  if (ShouldEnlargeNTPFakeboxForMIA() && !IsCompactHeight(trait_collection)) {
     return std::max(width - kMIASearchFieldMinMargin * 2, kSearchFieldSmallMin);
   }
 
