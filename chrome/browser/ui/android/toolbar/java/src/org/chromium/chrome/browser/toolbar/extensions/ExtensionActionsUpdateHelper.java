@@ -42,6 +42,9 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
          */
         ListItem createActionModel(
                 ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId);
+
+        /** Called when the helper is finished updating extension actions. */
+        void onUpdateFinished();
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -95,6 +98,8 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
                             mExtensionActionsBridge, tabId, actionId));
         }
         mModels.set(items);
+
+        mActionsUpdateDelegate.onUpdateFinished();
     }
 
     private void onProfileUpdated(@Nullable Profile profile) {

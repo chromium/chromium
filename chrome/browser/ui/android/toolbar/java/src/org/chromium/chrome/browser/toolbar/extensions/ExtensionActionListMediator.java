@@ -156,5 +156,8 @@ class ExtensionActionListMediator implements Destroyable {
                             .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                             .build());
         }
+
+        @Override
+        public void onUpdateFinished() {}
     }
 }

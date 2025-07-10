@@ -58,11 +58,10 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
         mExtensionsMenuTabSwitcherDivider = extensionsMenuTabSwitcherDivider;
 
-        mProfileSupplier = profileSupplier;
-
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(mTintObserver);
 
+        mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
         mCurrentTabSupplier = currentTabSupplier;
@@ -94,7 +93,11 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         if (mExtensionsMenuCoordinator == null) {
             mExtensionsMenuCoordinator =
                     new ExtensionsMenuCoordinator(
-                            mContext, mExtensionsMenuButton, mCurrentTabSupplier, mTabCreator);
+                            mContext,
+                            mExtensionsMenuButton,
+                            mProfileSupplier,
+                            mCurrentTabSupplier,
+                            mTabCreator);
         }
 
         mExtensionsMenuCoordinator.showMenu();
