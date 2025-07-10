@@ -128,7 +128,7 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValues(
     std::vector<AutocompleteChangeLabelSensitive>* changes) {
   const base::Time now = AutofillClock::Now();
   // Only add one new entry for each unique element name and label pair.  Use
-  // |seen_name_label_pairs| to track this.  Add up to |kMaximumUniquePairs|
+  // `seen_name_label_pairs` to track this.  Add up to `kMaximumUniquePairs`
   // unique entries per form.
   const size_t kMaximumUniquePairs = 256;
   std::set<std::pair<std::u16string, std::u16string>>
@@ -150,10 +150,10 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValues(
 }
 
 bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
-    const std::u16string& name,
-    const std::u16string& label,
-    const std::u16string& prefix,
-    int limit,
+    std::u16string_view name,
+    std::u16string_view label,
+    std::u16string_view prefix,
+    size_t limit,
     std::vector<AutocompleteSearchResultLabelSensitive>& entries) {
   // Matching type in this query is matching type enum value from
   // autofill::MatchingType enum.
@@ -193,7 +193,7 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
   // return enough entries after deduplication to satisfy the limit we need to
   // return kPossibleMatchingTypesCount times more entries.
   constexpr int kPossibleMatchingTypesCount = 3;
-  s.BindInt(3, limit * kPossibleMatchingTypesCount);
+  s.BindInt64(3, limit * kPossibleMatchingTypesCount);
 
   entries.clear();
   absl::flat_hash_set<AutocompleteSearchResultLabelSensitive> seen_results;
@@ -239,8 +239,8 @@ bool AutocompleteTableLabelSensitive::RemoveFormElementsAddedBetween(
     time_t date_created_time_t = s.ColumnInt64(4);
     time_t date_last_used_time_t = s.ColumnInt64(5);
 
-    // If *all* uses of the element were between |delete_begin| and
-    // |delete_end|, then delete the element.  Otherwise, update the use
+    // If *all* uses of the element were between `delete_begin` and
+    // `delete_end`, then delete the element.  Otherwise, update the use
     // timestamps and use count.
     AutocompleteChangeLabelSensitive::Type change_type;
     if (date_created_time_t >= delete_begin_time_t &&
@@ -334,7 +334,7 @@ bool AutocompleteTableLabelSensitive::RemoveExpiredFormElements(
       AutofillClock::Now() - kAutocompleteRetentionPolicyPeriod;
 
   // Query for the name, label and value of all form elements that were last
-  // used before the |expiration_time|.
+  // used before the `expiration_time`.
   sql::Statement select_for_delete;
   SelectBuilder(db(), select_for_delete, kAutocompleteTableLabelSensitive,
                 {kName, kLabel, kValue}, "WHERE date_last_used < ?");
@@ -365,9 +365,9 @@ bool AutocompleteTableLabelSensitive::RemoveExpiredFormElements(
 }
 
 bool AutocompleteTableLabelSensitive::RemoveFormElement(
-    const std::u16string& name,
-    const std::u16string& label,
-    const std::u16string& value) {
+    std::u16string_view name,
+    std::u16string_view label,
+    std::u16string_view value) {
   sql::Statement s;
   DeleteBuilder(db(), s, kAutocompleteTableLabelSensitive,
                 "(name = ? OR (label_normalized = ? AND "
@@ -423,9 +423,9 @@ bool AutocompleteTableLabelSensitive::GetAllAutocompleteEntries(
 
 std::optional<AutocompleteEntryLabelSensitive>
 AutocompleteTableLabelSensitive::GetAutocompleteEntryLabelSensitive(
-    const std::u16string& name,
-    const std::u16string& label,
-    const std::u16string& value) {
+    std::u16string_view name,
+    std::u16string_view label,
+    std::u16string_view value) {
   sql::Statement s;
   SelectBuilder(db(), s, kAutocompleteTableLabelSensitive,
                 {kDateCreated, kDateLastUsed},
@@ -437,7 +437,8 @@ AutocompleteTableLabelSensitive::GetAutocompleteEntryLabelSensitive(
     return std::nullopt;
   }
   AutocompleteEntryLabelSensitive entry(
-      {name, label, value}, base::Time::FromTimeT(s.ColumnInt64(0)),
+      {std::u16string(name), std::u16string(label), std::u16string(value)},
+      base::Time::FromTimeT(s.ColumnInt64(0)),
       base::Time::FromTimeT(s.ColumnInt64(1)));
   return entry;
 }
@@ -555,25 +556,6 @@ bool AutocompleteTableLabelSensitive::InitMainTable() {
                           {kName, kLabel, kValue});
   }
   return true;
-}
-
-AutocompleteTableLabelSensitive::Dropper::Dropper() = default;
-AutocompleteTableLabelSensitive::Dropper::~Dropper() = default;
-
-WebDatabaseTable::TypeKey AutocompleteTableLabelSensitive::Dropper::GetTypeKey()
-    const {
-  static int table_key = 0;
-  return reinterpret_cast<void*>(&table_key);
-}
-
-bool AutocompleteTableLabelSensitive::Dropper::CreateTablesIfNecessary() {
-  return true;
-}
-
-bool AutocompleteTableLabelSensitive::Dropper::MigrateToVersion(
-    int version,
-    bool* update_compatible_version) {
-  return DropTableIfExists(db(), kAutocompleteTableLabelSensitive);
 }
 
 }  // namespace autofill

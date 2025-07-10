@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 
 #include <string>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 
@@ -17,15 +18,17 @@ namespace autofill {
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive() = default;
 
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
-    const std::u16string& name,
-    const std::u16string& label,
-    const std::u16string& value)
-    : name_(name), label_(label), value_(value) {}
+    std::u16string name,
+    std::u16string label,
+    std::u16string value)
+    : name_(std::move(name)),
+      label_(std::move(label)),
+      value_(std::move(value)) {}
 
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
-    const std::string& name,
-    const std::string& label,
-    const std::string& value)
+    std::string_view name,
+    std::string_view label,
+    std::string_view value)
     : name_(base::UTF8ToUTF16(name)),
       label_(base::UTF8ToUTF16(label)),
       value_(base::UTF8ToUTF16(value)) {}

@@ -90,18 +90,14 @@ class AutocompleteSearchResultLabelSensitive {
 //   value              The literal contents of the text field.
 //   value_lower        The contents of the text field made lower_case.
 //   date_created       The date on which the user first entered the string
-//                      |value| into a field of name |name| and label |label|.
+//                      `value` into a field of name `name` and label `label`.
 //   date_last_used     The date on which the user last entered the string
-//                      |value| into a field of label |label|.
-//   count              How many times the user has entered the string |value|
-//                      in a field of name |name| and label |label|.
+//                      `value` into a field of label `label`.
+//   count              How many times the user has entered the string `value`
+//                      in a field of name `name` and label `label`.
 // -----------------------------------------------------------------------------
 class AutocompleteTableLabelSensitive : public WebDatabaseTable {
  public:
-  // Drops the table created by AutocompleteTableLabelSensitive.
-  // TODO(crbug.com/390473673): Remove after M143.
-  class Dropper;
-
   AutocompleteTableLabelSensitive();
 
   AutocompleteTableLabelSensitive(const AutocompleteTableLabelSensitive&) =
@@ -111,7 +107,7 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
 
   ~AutocompleteTableLabelSensitive() override;
 
-  // Retrieves the AutocompleteTableLabelSensitive* owned by |db|.
+  // Retrieves the AutocompleteTableLabelSensitive* owned by `db`.
   static AutocompleteTableLabelSensitive* FromWebDatabase(WebDatabase* db);
 
   // WebDatabaseTable:
@@ -119,26 +115,26 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
-  // Records the form elements in |elements| in the database in the
+  // Records the form elements in `elements` in the database in the
   // autocomplete table.  A list of all added and updated autocomplete entries
   // is returned in the changes out parameter.
   bool AddFormFieldValues(
-      const std::vector<FormFieldData>& elements,
+      const std::vector<autofill::FormFieldData>& elements,
       std::vector<AutocompleteChangeLabelSensitive>* changes);
 
   // Retrieves a vector of all values which have been recorded in the
-  // autocomplete table as the value in a form element with label |label|, name
-  // |name| and which start with |prefix|. The comparison of the prefix is case
+  // autocomplete table as the value in a form element with label `label`, name
+  // `name` and which start with `prefix`. The comparison of the prefix is case
   // insensitive.
   bool GetFormValuesForElementNameAndLabel(
-      const std::u16string& name,
-      const std::u16string& label,
-      const std::u16string& prefix,
-      int limit,
+      std::u16string_view name,
+      std::u16string_view label,
+      std::u16string_view prefix,
+      size_t limit,
       std::vector<AutocompleteSearchResultLabelSensitive>& entries);
 
   // Removes rows from the autocomplete table if they were created on or after
-  // |delete_begin| and last used strictly before |delete_end|. For rows where
+  // `delete_begin` and last used strictly before `delete_end`. For rows where
   // the time range [date_created, date_last_used] overlaps with [delete_begin,
   // delete_end), but is not entirely contained within the latter range, updates
   // the rows so that their resulting time range [new_date_created,
@@ -151,19 +147,19 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
       std::vector<AutocompleteChangeLabelSensitive>& changes);
 
   // Removes rows from the autocomplete table if they were last accessed
-  // strictly before |AutocompleteEntryLabelSensitive::ExpirationTime()|.
+  // strictly before `AutocompleteEntryLabelSensitive::ExpirationTime()`.
   bool RemoveExpiredFormElements(
       std::vector<AutocompleteChangeLabelSensitive>& changes);
 
-  // Removes the row from the autocomplete table for the given |name| |label|
-  // |value| triple.
-  bool RemoveFormElement(const std::u16string& name,
-                         const std::u16string& label,
-                         const std::u16string& value);
+  // Removes the row from the autocomplete table for the given `name`, `label`
+  // and `value` triple.
+  bool RemoveFormElement(std::u16string_view name,
+                         std::u16string_view label,
+                         std::u16string_view value);
 
   // Returns the number of unique values such that for all autocomplete entries
   // with that value, the interval between creation date and last usage is
-  // entirely contained between [|begin|, |end|).
+  // entirely contained between [`begin`, `end`).
   int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
 
   // Retrieves all of the entries in the autocomplete table.
@@ -172,9 +168,9 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
 
   // Retrieves a single entry from the autocomplete table.
   std::optional<AutocompleteEntryLabelSensitive>
-  GetAutocompleteEntryLabelSensitive(const std::u16string& name,
-                                     const std::u16string& label,
-                                     const std::u16string& value);
+  GetAutocompleteEntryLabelSensitive(const std::u16string_view name,
+                                     const std::u16string_view label,
+                                     const std::u16string_view value);
 
   // Replaces existing autocomplete entries with the entries supplied in
   // the argument. If the entry does not already exist, it will be added.
@@ -193,18 +189,6 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
       const AutocompleteEntryLabelSensitive& entry);
 
   bool InitMainTable();
-};
-
-class AutocompleteTableLabelSensitive::Dropper : public WebDatabaseTable {
- public:
-  Dropper();
-  Dropper(const Dropper&) = delete;
-  Dropper& operator=(const Dropper&) = delete;
-  ~Dropper() override;
-
-  TypeKey GetTypeKey() const override;
-  bool CreateTablesIfNecessary() override;
-  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

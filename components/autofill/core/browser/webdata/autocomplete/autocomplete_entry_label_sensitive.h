@@ -18,12 +18,12 @@ namespace autofill {
 class AutocompleteKeyLabelSensitive {
  public:
   AutocompleteKeyLabelSensitive();
-  AutocompleteKeyLabelSensitive(const std::u16string& name,
-                                const std::u16string& label,
-                                const std::u16string& value);
-  AutocompleteKeyLabelSensitive(const std::string& name,
-                                const std::string& label,
-                                const std::string& value);
+  AutocompleteKeyLabelSensitive(std::u16string name,
+                                std::u16string label,
+                                std::u16string value);
+  AutocompleteKeyLabelSensitive(std::string_view name,
+                                std::string_view label,
+                                std::string_view value);
   AutocompleteKeyLabelSensitive(const AutocompleteKeyLabelSensitive& key);
   virtual ~AutocompleteKeyLabelSensitive();
 
