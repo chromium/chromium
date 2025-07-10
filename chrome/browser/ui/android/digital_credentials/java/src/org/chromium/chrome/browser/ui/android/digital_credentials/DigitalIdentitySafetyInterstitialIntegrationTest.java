@@ -59,7 +59,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
      * Observes shown modal dialogs.
      *
      * <p>Presses {@link ButtonType.POSITIVE} for dialog whose {@link
-     * ModalDialogProperties.MESSAGE_PARAGRAPH1} matches the parameter passed to the constructor.
+     * ModalDialogProperties.MESSAGE_PARAGRAPHS} matches the parameter passed to the constructor.
      */
     private static class ModalDialogButtonPresser implements ModalDialogManagerObserver {
         private final String mSearchParagraph1;
@@ -85,7 +85,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         public void onDialogAdded(PropertyModel model) {
             mWasAnyDialogShown = true;
 
-            CharSequence paragraph1 = model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+            CharSequence paragraph1 = model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0);
             if (paragraph1 != null && mSearchParagraph1.equals(paragraph1.toString())) {
                 mWasDialogShown = true;
                 mDialogPropertyModel = model;

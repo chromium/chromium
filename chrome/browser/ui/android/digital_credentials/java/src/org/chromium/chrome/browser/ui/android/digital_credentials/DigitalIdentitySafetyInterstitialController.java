@@ -22,6 +22,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.Origin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Shows modal dialog asking user whether they want to share their identity with website. */
 @NullMarked
 public class DigitalIdentitySafetyInterstitialController {
@@ -73,6 +76,7 @@ public class DigitalIdentitySafetyInterstitialController {
                         bodyTextResourceId,
                         UrlFormatter.formatOriginForSecurityDisplay(
                                 mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
+        ArrayList<CharSequence> messages = new ArrayList<>(List.of(bodyText));
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
@@ -82,7 +86,7 @@ public class DigitalIdentitySafetyInterstitialController {
                                 ModalDialogProperties.TITLE,
                                 resources,
                                 R.string.digital_identity_interstitial_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
@@ -109,7 +113,14 @@ public class DigitalIdentitySafetyInterstitialController {
                         R.string.digital_identity_interstitial_request_aborted_dialog_text,
                         UrlFormatter.formatOriginForSecurityDisplay(
                                 mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
-        mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, abortedMessage);
+
+        ArrayList<CharSequence> messages =
+                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS);
+        assert messages.size() == 1
+                : "DigitalIdentitySafetyInterstitialController.abort() call was invalid.";
+        messages.add(abortedMessage);
+
+        mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 }
