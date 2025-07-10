@@ -175,7 +175,8 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get(),
+        color_space);
     frame->set_color_space(color_space);
     track_source_->OnFrameCaptured(frame);
   }

@@ -32,7 +32,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
     base::TimeDelta timestamp,
-    gpu::TestSharedImageInterface* test_sii) {
+    gpu::TestSharedImageInterface* test_sii,
+    const gfx::ColorSpace& color_space) {
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
       return media::VideoFrame::CreateZeroInitializedFrame(
@@ -77,15 +78,17 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       gpu::SharedImageMetadata metadata;
       metadata.format = viz::GetSharedImageFormat(*buffer_format);
       metadata.size = coded_size;
-      metadata.color_space = gfx::ColorSpace::CreateSRGB();
+      metadata.color_space = color_space;
       metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
       metadata.alpha_type = kOpaque_SkAlphaType;
       metadata.usage = gpu::SharedImageUsageSet();
       scoped_refptr<gpu::ClientSharedImage> shared_image =
           gpu::ClientSharedImage::CreateForTesting(metadata);
-      return media::VideoFrame::WrapSharedImage(
+      auto frame = media::VideoFrame::WrapSharedImage(
           pixel_format, shared_image, gpu::SyncToken(), base::NullCallback(),
           coded_size, visible_rect, natural_size, timestamp);
+      frame->set_color_space(color_space);
+      return frame;
     }
     default:
       NOTREACHED() << "Unsupported storage type or pixel format";

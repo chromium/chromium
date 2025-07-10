@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_VIDEO_FRAME_UTILS_H_
 
 #include "media/base/video_frame.h"
+#include "ui/gfx/color_space.h"
 
 namespace gpu {
 class TestSharedImageInterface;
@@ -27,7 +28,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
     base::TimeDelta timestamp,
-    gpu::TestSharedImageInterface* test_sii);
+    gpu::TestSharedImageInterface* test_sii,
+    const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateSRGB());
 
 }  // namespace blink
 
