@@ -302,7 +302,10 @@ impl EnclaveServer {
         let client_state = std::fs::read(CONFIDENTIAL_PATH)
             .and_then(|confidential| {
                 std::fs::read(TRANSPARENT_PATH).map(|transparent| {
-                    ClientState::Explicit(processor::StateData { transparent, confidential })
+                    ClientState::Explicit(processor::StateData {
+                        transparent,
+                        confidential,
+                    })
                 })
             })
             .unwrap_or(ClientState::Initial);
@@ -349,7 +352,10 @@ impl EnclaveServer {
             }
         };
 
-        let cmd_response = handshake_response.crypter.encrypt(&cbor_response.to_bytes()).unwrap();
+        let cmd_response = handshake_response
+            .crypter
+            .encrypt(&cbor_response.to_bytes())
+            .unwrap();
         write_msg(&conn, &cmd_response);
     }
 }
@@ -360,7 +366,9 @@ fn main() {
     // 046b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c2964fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
     let mut identity_private_key_bytes = [0u8; 32];
     identity_private_key_bytes[31] = 1;
-    let mut service = EnclaveServer { identity_private_key_bytes };
+    let mut service = EnclaveServer {
+        identity_private_key_bytes,
+    };
 
     let scalar: P256Scalar = (&identity_private_key_bytes).try_into().unwrap();
     eprintln!("Public key is {}", hex::encode(scalar.compute_public_key()));

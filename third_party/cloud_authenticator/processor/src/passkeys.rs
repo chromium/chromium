@@ -25,7 +25,8 @@ use super::{
     KEY_PURPOSE_SECURITY_DOMAIN_SECRET, PUB_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY,
     WRAPPED_PIN_DATA_KEY, WRAPPED_SECRET_KEY,
 };
-use crate::{pin, MetricsUpdate};
+use crate::pin::VaultCohortDetails;
+use crate::{pin, MetricsUpdate, CERT_XML_SERIAL_NUMBER_KEY, COHORT_PUBLIC_KEY_KEY};
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -145,7 +146,11 @@ pub(crate) fn do_assert(
     let flags = [FLAG_BACKUP_ELIGIBLE
         | FLAG_BACKED_UP
         | FLAG_USER_PRESENT
-        | if user_verification { FLAG_USER_VERIFIED } else { 0 }];
+        | if user_verification {
+            FLAG_USER_VERIFIED
+        } else {
+            0
+        }];
     let authenticator_data = [rp_id_hash.as_slice(), &flags, ZERO_SIGNATURE_COUNTER].concat();
     let signed_data = [&authenticator_data, client_data_json_hash.as_slice()].concat();
     let signature = entity_secrets
@@ -155,23 +160,29 @@ pub(crate) fn do_assert(
 
     // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
     let assertion_response_json = BTreeMap::<MapKey, Value>::from([
-        (key("clientDataJSON"), Value::String(client_data_json.clone())),
+        (
+            key("clientDataJSON"),
+            Value::String(client_data_json.clone()),
+        ),
         (key("authenticatorData"), Value::from(authenticator_data)),
         (key("signature"), Value::from(signature.as_ref())),
         (key("userHandle"), Value::from(user_id.to_vec())),
     ]);
     let mut response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
 
-    if let Some(prf_result) =
-        handle_prf(webauthn_request, &entity_secrets.hmac_secret, Some(credential_id.as_ref()))?
-    {
+    if let Some(prf_result) = handle_prf(
+        webauthn_request,
+        &entity_secrets.hmac_secret,
+        Some(credential_id.as_ref()),
+    )? {
         response.insert(key(PRF), prf_result);
     }
-    if let Some(large_blob_out) =
-        handle_large_blob(webauthn_request,
-                          &mut entity_secrets,
-                          &security_domain_secret)? {
-       response.insert(key(LARGE_BLOB), large_blob_out);
+    if let Some(large_blob_out) = handle_large_blob(
+        webauthn_request,
+        &mut entity_secrets,
+        &security_domain_secret,
+    )? {
+        response.insert(key(LARGE_BLOB), large_blob_out);
     }
     metrics.passkeys_assert += 1;
     Ok(Value::Map(response))
@@ -231,16 +242,29 @@ pub(crate) fn do_create(
         large_blob: None,
         large_blob_uncompressed_size: None,
     };
-    let ciphertext = encrypt(&security_domain_secret, pb.encode_to_vec(), ENCRYPTED_FIELD_AAD)?;
+    let ciphertext = encrypt(
+        &security_domain_secret,
+        pb.encode_to_vec(),
+        ENCRYPTED_FIELD_AAD,
+    )?;
 
     let mut result = BTreeMap::from([
-        (MapKey::String(String::from(ENCRYPTED)), Value::from(ciphertext)),
-        (MapKey::String(String::from(PUB_KEY)), Value::from(pub_key.as_ref().to_vec())),
+        (
+            MapKey::String(String::from(ENCRYPTED)),
+            Value::from(ciphertext),
+        ),
+        (
+            MapKey::String(String::from(PUB_KEY)),
+            Value::from(pub_key.as_ref().to_vec()),
+        ),
     ]);
     if let Some(prf_result) = handle_prf(webauthn_request, &hmac_secret, None)? {
         result.insert(MapKey::String(String::from(PRF)), prf_result);
     }
-    result.insert(MapKey::String(String::from(LARGE_BLOB_SUPPORTED)), Value::Boolean(true));
+    result.insert(
+        MapKey::String(String::from(LARGE_BLOB_SUPPORTED)),
+        Value::Boolean(true),
+    );
     metrics.passkeys_create += 1;
     Ok(Value::Map(result))
 }
@@ -299,8 +323,11 @@ fn entity_secrets_from_proto(
             let primary_key = EcdsaKeyPair::from_pkcs8(&plaintext)
                 .map_err(|_| RequestError::Debug("PKCS#8 parse failed"))?;
             let hmac_secret = derive_hmac_secret_from_private_key(&plaintext);
-            Ok(EntitySecrets { primary_key, hmac_secret, encrypted: None })
-
+            Ok(EntitySecrets {
+                primary_key,
+                hmac_secret,
+                encrypted: None,
+            })
         }
         EncryptedData::Encrypted(ciphertext) => {
             let plaintext = decrypt(ciphertext, security_domain_secret, ENCRYPTED_FIELD_AAD)?;
@@ -317,8 +344,14 @@ fn entity_secrets_from_proto(
                 .hmac_secret
                 .as_ref()
                 .and_then(|vec| <[u8; 32]>::try_from(vec.as_slice()).ok())
-                .unwrap_or_else(|| derive_hmac_secret_from_private_key(private_key_bytes.as_slice()));
-            Ok(EntitySecrets { primary_key, hmac_secret, encrypted: Some(encrypted) })
+                .unwrap_or_else(|| {
+                    derive_hmac_secret_from_private_key(private_key_bytes.as_slice())
+                });
+            Ok(EntitySecrets {
+                primary_key,
+                hmac_secret,
+                encrypted: Some(encrypted),
+            })
         }
     }
 }
@@ -421,7 +454,12 @@ fn validate_pin(
     let claimed_pin_hash = open_aes_256_gcm(&pin_data.claim_key, claim, PIN_CLAIM_AAD)
         .ok_or(RequestError::Debug("failed to decrypt PIN claim"))?;
     if !constant_time_compare(&claimed_pin_hash, &pin_data.pin_hash) {
-        state.get_mut().set_pin_state(device_id, PINState { attempts: attempts + 1 })?;
+        state.get_mut().set_pin_state(
+            device_id,
+            PINState {
+                attempts: attempts + 1,
+            },
+        )?;
         return Err(RequestError::IncorrectPIN);
     }
 
@@ -436,7 +474,9 @@ fn validate_pin(
     // user could probably be phished for their PIN much more effectively than
     // trying to exploit a concurrency issue, we err on the side of availability.
     if attempts > 0 {
-        state.get_mut_for_minor_change().set_pin_state(device_id, PINState { attempts: 0 })?;
+        state
+            .get_mut_for_minor_change()
+            .set_pin_state(device_id, PINState { attempts: 0 })?;
     }
 
     Ok(())
@@ -470,8 +510,38 @@ pub(crate) fn do_wrap_pin(
     else {
         return debug("vault handle required");
     };
-    let security_domain_secret =
-        state.unwrap(device_id, wrapped_secret, KEY_PURPOSE_SECURITY_DOMAIN_SECRET)?;
+    let cert_xml_serial_number = request.get(CERT_XML_SERIAL_NUMBER_KEY);
+    let cohort_public_key = request.get(COHORT_PUBLIC_KEY_KEY);
+    // If either the serial number or the cohort public is present, the other is
+    // required.
+    if cert_xml_serial_number.is_none() && cohort_public_key.is_some() {
+        return debug("cert xml serial number required");
+    }
+    if cert_xml_serial_number.is_some() && cohort_public_key.is_none() {
+        return debug("cohort public key required");
+    }
+    let cert_xml_serial_number = match cert_xml_serial_number {
+        None => None,
+        Some(Value::Int(cert_xml_serial_number)) => Some(cert_xml_serial_number),
+        _ => return debug("cert xml serial number has wrong format"),
+    };
+    let cohort_public_key = match cohort_public_key {
+        None => None,
+        Some(Value::Bytestring(cohort_public_key)) => Some(cohort_public_key),
+        _ => return debug("cohort public key has wrong format"),
+    };
+    let vault_cohort_details = match (cert_xml_serial_number, cohort_public_key) {
+        (Some(cert_xml_serial_number), Some(cohort_public_key)) => Some(VaultCohortDetails {
+            cert_xml_serial_number: *cert_xml_serial_number,
+            cohort_public_key: cohort_public_key.to_vec(),
+        }),
+        _ => None,
+    };
+    let security_domain_secret = state.unwrap(
+        device_id,
+        wrapped_secret,
+        KEY_PURPOSE_SECURITY_DOMAIN_SECRET,
+    )?;
 
     let pin_data = pin::Data {
         pin_hash: pin_hash
@@ -490,6 +560,7 @@ pub(crate) fn do_wrap_pin(
             .as_ref()
             .try_into()
             .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
+        vault_cohort_details,
     };
     metrics.passkeys_wrap_pin += 1;
     Ok(Value::from(pin_data.encrypt(&security_domain_secret)))
@@ -508,7 +579,9 @@ impl PRFValues {
     fn hmac(self, hmac_key: &[u8; 32]) -> Self {
         PRFValues {
             first: crypto::hmac_sha256(hmac_key, &self.first),
-            second: self.second.map(|second| crypto::hmac_sha256(hmac_key, &second)),
+            second: self
+                .second
+                .map(|second| crypto::hmac_sha256(hmac_key, &second)),
         }
     }
 
@@ -535,13 +608,16 @@ impl TryFrom<&Value> for PRFValues {
             let Value::String(value) = value else {
                 return debug("invalid PRF value");
             };
-            let value = base64::engine::general_purpose::URL_SAFE_NO_PAD.decode(value)
+            let value = base64::engine::general_purpose::URL_SAFE_NO_PAD
+                .decode(value)
                 .map_err(|_| RequestError::Debug("invalid PRF base64url"))?;
             Ok(hash_prf_value(&value))
         }
 
-        let first =
-            get_value(prf.get(FIRST_KEY).ok_or(RequestError::Debug("missing PRF first value"))?)?;
+        let first = get_value(
+            prf.get(FIRST_KEY)
+                .ok_or(RequestError::Debug("missing PRF first value"))?,
+        )?;
         let second = prf.get(SECOND_KEY).map(get_value).transpose()?;
 
         Ok(PRFValues { first, second })
@@ -592,7 +668,8 @@ fn prf_values_by_id(
     let Some(Value::Map(by_credential)) = prf.get(EVAL_BY_CREDENTIAL_KEY) else {
         return Ok(None);
     };
-    let base64url_credential_id = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(credential_id);
+    let base64url_credential_id =
+        base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(credential_id);
     let Some(values) = by_credential.get(&MapKey::String(base64url_credential_id)) else {
         return Ok(None);
     };
@@ -630,7 +707,8 @@ fn handle_large_blob(
 
     // Both read and write is disallowed.
     if large_blob_req.contains_key(LARGE_BLOB_READ_KEY)
-        && large_blob_req.contains_key(LARGE_BLOB_WRITE_KEY) {
+        && large_blob_req.contains_key(LARGE_BLOB_WRITE_KEY)
+    {
         return debug("invalid largeBlob request: read + write");
     }
 
@@ -641,7 +719,8 @@ fn handle_large_blob(
 
     // Write path.
     if let Some(write_resp) =
-        handle_write_large_blob(large_blob_req, entity_secrets, security_domain_secret)? {
+        handle_write_large_blob(large_blob_req, entity_secrets, security_domain_secret)?
+    {
         return Ok(Some(write_resp));
     }
 
@@ -673,8 +752,8 @@ fn handle_read_large_blob(
     };
 
     Some(Value::Map(BTreeMap::from([
-        (key(LARGE_BLOB_DATA),  data),
-        (key(LARGE_BLOB_SIZE),  size_val),
+        (key(LARGE_BLOB_DATA), data),
+        (key(LARGE_BLOB_SIZE), size_val),
     ])))
 }
 
@@ -693,11 +772,9 @@ fn handle_write_large_blob(
     security_domain_secret: &[u8; 32],
 ) -> Result<Option<Value>, RequestError> {
     let new_blob: Vec<u8> = match large_blob_req.get(LARGE_BLOB_WRITE_KEY) {
-        Some(Value::String(s)) => {
-            base64::engine::general_purpose::URL_SAFE_NO_PAD
-                .decode(s)
-                .map_err(|_| RequestError::Debug("invalid base64 in largeBlob.write"))?
-        }
+        Some(Value::String(s)) => base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .decode(s)
+            .map_err(|_| RequestError::Debug("invalid base64 in largeBlob.write"))?,
         _ => return Ok(None),
     };
 
@@ -706,15 +783,10 @@ fn handle_write_large_blob(
         return Err(RequestError::Debug("large blob write > 8KiB"));
     }
 
-    let enc = entity_secrets
-              .encrypted
-              .as_mut()
-              .unwrap();
+    let enc = entity_secrets.encrypted.as_mut().unwrap();
 
     // The caller must tell what the uncompressed length of its data is.
-    let Some(Value::Int(uncompressed_len)) =
-        large_blob_req.get(LARGE_BLOB_SIZE_KEY)
-    else {
+    let Some(Value::Int(uncompressed_len)) = large_blob_req.get(LARGE_BLOB_SIZE_KEY) else {
         return debug("largeBlobSize required");
     };
     if *uncompressed_len < 0 {
@@ -724,7 +796,11 @@ fn handle_write_large_blob(
     enc.large_blob = Some(new_blob.to_vec());
     enc.large_blob_uncompressed_size = Some(*uncompressed_len as u64);
 
-    let ciphertext = encrypt(security_domain_secret, enc.encode_to_vec(), ENCRYPTED_FIELD_AAD)?;
+    let ciphertext = encrypt(
+        security_domain_secret,
+        enc.encode_to_vec(),
+        ENCRYPTED_FIELD_AAD,
+    )?;
 
     let resp = Value::Map(BTreeMap::from([
         (key(LARGE_BLOB_WRITTEN), Value::Boolean(true)),
@@ -737,13 +813,13 @@ fn handle_write_large_blob(
 #[cfg(test)]
 pub mod tests {
     use super::*;
-    use cbor::cbor;
-    use alloc::vec;
     use crate::recovery_key_store;
     use crate::tests::{
         PROTOBUF2_BYTES, PROTOBUF_BYTES, SAMPLE_SECURITY_DOMAIN_SECRET,
         WEBAUTHN_SECRETS_ENCRYPTION_KEY,
     };
+    use alloc::vec;
+    use cbor::cbor;
 
     lazy_static! {
         static ref PROTOBUF: WebauthnCredentialSpecifics =
@@ -757,12 +833,21 @@ pub mod tests {
         let Some(EncryptedData::PrivateKey(ciphertext)) = &PROTOBUF.encrypted_data else {
             panic!("bad protobuf");
         };
-        let pkcs8 =
-            decrypt(&ciphertext, SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).unwrap();
+        let pkcs8 = decrypt(
+            &ciphertext,
+            SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &[],
+        )
+        .unwrap();
 
         assert!(EcdsaKeyPair::from_pkcs8(&pkcs8).is_ok());
 
-        assert!(decrypt(&[0u8; 8], SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).is_err());
+        assert!(decrypt(
+            &[0u8; 8],
+            SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &[]
+        )
+        .is_err());
     }
 
     #[test]
@@ -798,12 +883,19 @@ pub mod tests {
     #[test]
     fn test_encrypt() {
         let plaintext = b"hello";
-        let ciphertext =
-            encrypt(SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), plaintext.to_vec(), &[])
-                .unwrap();
+        let ciphertext = encrypt(
+            SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            plaintext.to_vec(),
+            &[],
+        )
+        .unwrap();
 
-        let plaintext2 =
-            decrypt(&ciphertext, SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).unwrap();
+        let plaintext2 = decrypt(
+            &ciphertext,
+            SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &[],
+        )
+        .unwrap();
         assert_eq!(plaintext, plaintext2.as_slice());
     }
 
@@ -825,13 +917,41 @@ pub mod tests {
             expected: bool,
         }
         let tests: &[Test] = &[
-            Test { a: b"", b: b"", expected: true },
-            Test { a: b"a", b: b"", expected: false },
-            Test { a: b"", b: b"b", expected: false },
-            Test { a: b"a", b: b"b", expected: false },
-            Test { a: b"a", b: b"a", expected: true },
-            Test { a: b"abcde", b: b"abcde", expected: true },
-            Test { a: b"abcdf", b: b"abcde", expected: false },
+            Test {
+                a: b"",
+                b: b"",
+                expected: true,
+            },
+            Test {
+                a: b"a",
+                b: b"",
+                expected: false,
+            },
+            Test {
+                a: b"",
+                b: b"b",
+                expected: false,
+            },
+            Test {
+                a: b"a",
+                b: b"b",
+                expected: false,
+            },
+            Test {
+                a: b"a",
+                b: b"a",
+                expected: true,
+            },
+            Test {
+                a: b"abcde",
+                b: b"abcde",
+                expected: true,
+            },
+            Test {
+                a: b"abcdf",
+                b: b"abcde",
+                expected: false,
+            },
         ];
 
         for (i, test) in tests.iter().enumerate() {
@@ -848,6 +968,28 @@ pub mod tests {
             claim_key: [2u8; 32],
             counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
             vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: None,
+        };
+        let pin_data2: pin::Data = pin_data.to_bytes().try_into().unwrap();
+        assert_eq!(pin_data, pin_data2);
+
+        let security_domain_secret = [3u8; 32];
+        let encrypted = pin_data.encrypt(&security_domain_secret);
+        let decrypted = pin::Data::from_wrapped(&encrypted, &security_domain_secret).unwrap();
+        assert_eq!(pin_data, decrypted);
+    }
+
+    #[test]
+    fn test_pin_data_with_cohort_details() {
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: Some(VaultCohortDetails {
+                cert_xml_serial_number: 42,
+                cohort_public_key: vec![1, 2, 3, 4],
+            }),
         };
         let pin_data2: pin::Data = pin_data.to_bytes().try_into().unwrap();
         assert_eq!(pin_data, pin_data2);
@@ -860,14 +1002,14 @@ pub mod tests {
 
     // Helper to generate large blob requests for testing.
     fn make_req(large_blob_val: Value) -> BTreeMap<MapKey, Value> {
-            let Value::Map(map) = cbor!({
-                "extensions": {
-                "largeBlob": large_blob_val
-            }}) else {
-                panic!("expected map");
-            };
-            map
-        }
+        let Value::Map(map) = cbor!({
+            "extensions": {
+            "largeBlob": large_blob_val
+        }}) else {
+            panic!("expected map");
+        };
+        map
+    }
 
     // Helper to return a fresh EntitySecrets with empty large blob fields.
     // Used to test large blob handling without pre-existing blob data.
@@ -887,14 +1029,19 @@ pub mod tests {
         let uncompressed_size = new_blob_content.len() + 10;
         let webauthn_req_write = make_req(cbor!({
            "write": (b64_blob.as_str()),
-            "largeBlobSize": (uncompressed_size as i64),
+           "largeBlobSize": (uncompressed_size as i64),
         }));
 
-        let mut secrets_for_write =
-            entity_secrets_from_proto(&SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &PROTOBUF2)
-                .unwrap();
+        let mut secrets_for_write = entity_secrets_from_proto(
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &PROTOBUF2,
+        )
+        .unwrap();
 
-        let enc = secrets_for_write.encrypted.as_mut().expect("encrypted should be present");
+        let enc = secrets_for_write
+            .encrypted
+            .as_mut()
+            .expect("encrypted should be present");
         enc.large_blob = None;
         enc.large_blob_uncompressed_size = None;
 
@@ -909,11 +1056,15 @@ pub mod tests {
         let Value::Map(response_map) = response_val else {
             panic!("expected a map response");
         };
-        assert_eq!(response_map.get(LARGE_BLOB_WRITTEN_KEY), Some(&Value::Boolean(true)));
+        assert_eq!(
+            response_map.get(LARGE_BLOB_WRITTEN_KEY),
+            Some(&Value::Boolean(true))
+        );
 
         let Value::Bytestring(new_ciphertext_bs) =
-            response_map.get(ENCRYPTED_KEY).expect("ciphertext present") else {
-                panic!("encrypted not bytestring");
+            response_map.get(ENCRYPTED_KEY).expect("ciphertext present")
+        else {
+            panic!("encrypted not bytestring");
         };
 
         let plaintext = decrypt(
@@ -945,12 +1096,11 @@ pub mod tests {
         proto_after_write.encrypted_data =
             Some(EncryptedData::Encrypted(new_ciphertext_bs.to_vec().into()));
 
-        let mut secrets_for_read =
-            entity_secrets_from_proto(
-                &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
-                &proto_after_write,
-            )
-            .unwrap();
+        let mut secrets_for_read = entity_secrets_from_proto(
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &proto_after_write,
+        )
+        .unwrap();
 
         let webauthn_req_read = make_req(cbor!({
             "read": true
@@ -964,21 +1114,23 @@ pub mod tests {
         .unwrap()
         .expect("read response");
 
-        let Value::Map(ref _read_map) = read_resp else { panic!("map"); };
+        let Value::Map(ref _read_map) = read_resp else {
+            panic!("map");
+        };
         assert_eq!(
             read_resp,
             cbor!({
                 "largeBlobData": (new_blob_content.clone()),
                 "largeBlobSize": (uncompressed_size as i64)
-            }));
-        }
+            })
+        );
+    }
 
     // Test write > 8 KiB.
     #[test]
     fn test_large_blob_write_too_large() {
         let huge_blob = vec![0u8; 8 * 1024 + 1];
-        let huge_blob_b64 =
-        base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&huge_blob);
+        let huge_blob_b64 = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&huge_blob);
         let req = make_req(cbor!({
             "write": (huge_blob_b64.as_str()),
             "largeBlobSize":  (huge_blob.len() as i64)
@@ -994,8 +1146,7 @@ pub mod tests {
     // Test simultaneous read + write.
     #[test]
     fn test_large_blob_read_and_write() {
-        let b64_blob =
-            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
+        let b64_blob = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
         let req = make_req(cbor!({
             "read":  (true),
             "write": (b64_blob.as_str()),
@@ -1012,8 +1163,7 @@ pub mod tests {
     // Test missing `largeBlobSize` on write.
     #[test]
     fn test_large_blob_write_missing_size() {
-        let b64_blob =
-            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
+        let b64_blob = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
         let req = make_req(cbor!({
             "write": (b64_blob.as_str()),
         }));
@@ -1028,8 +1178,7 @@ pub mod tests {
     // Test negative `largeBlobSize`.
     #[test]
     fn test_large_blob_negative_size() {
-        let b64_blob =
-                base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
+        let b64_blob = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b"abc");
         let req = make_req(cbor!({
             "write": (b64_blob.as_str()),
             "largeBlobSize":  (-1),
@@ -1063,7 +1212,10 @@ pub mod tests {
         )
         .unwrap();
 
-        assert!(no_blob_result.is_none(), "unexpected large blob handling when field is absent");
+        assert!(
+            no_blob_result.is_none(),
+            "unexpected large blob handling when field is absent"
+        );
     }
 
     // Test invalid base64 string.

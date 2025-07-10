@@ -52,8 +52,10 @@ use core::ops::Deref;
 
 // This code assumes that `usize` fits in a `u64` because it uses `as u64` in a
 // couple of places.
-const _: () =
-    assert!(core::mem::size_of::<usize>() <= core::mem::size_of::<u64>(), "usize too large");
+const _: () = assert!(
+    core::mem::size_of::<usize>() <= core::mem::size_of::<u64>(),
+    "usize too large"
+);
 
 /// MAX_DEPTH is the maximum "depth" of a structure that will be parsed.
 /// Each array or map increases the depth by one.
@@ -117,8 +119,9 @@ mod debug {
     use alloc::string::String;
     use core::fmt;
 
-    const HEX_CHARS: [char; 16] =
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+    const HEX_CHARS: [char; 16] = [
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+    ];
 
     fn hex_encode(bytes: &[u8]) -> String {
         let mut ret = String::with_capacity(bytes.len() * 2);
@@ -348,7 +351,7 @@ pub enum MapKey {
 }
 
 impl MapKey {
-    fn as_ref(&self) -> MapKeyRef {
+    fn as_ref(&self) -> MapKeyRef<'_> {
         match self {
             MapKey::Int(v) => MapKeyRef::Int(*v),
             MapKey::Bytestring(b) => MapKeyRef::Slice(b),
@@ -459,13 +462,14 @@ impl PartialOrd for MapKeyRef<'_> {
 
 impl Ord for MapKeyRef<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.type_arg_and_payload().cmp(&other.type_arg_and_payload())
+        self.type_arg_and_payload()
+            .cmp(&other.type_arg_and_payload())
     }
 }
 
 /// To be used with [`MapKeyRef`]. See the documentation for that type.
 pub trait MapLookupKey {
-    fn to_key(&self) -> MapKeyRef;
+    fn to_key(&self) -> MapKeyRef<'_>;
 }
 
 impl PartialEq for dyn MapLookupKey + '_ {
@@ -489,13 +493,13 @@ impl Ord for dyn MapLookupKey + '_ {
 }
 
 impl MapLookupKey for MapKey {
-    fn to_key(&self) -> MapKeyRef {
+    fn to_key(&self) -> MapKeyRef<'_> {
         self.as_ref()
     }
 }
 
 impl<'a> MapLookupKey for MapKeyRef<'a> {
-    fn to_key(&self) -> MapKeyRef {
+    fn to_key(&self) -> MapKeyRef<'_> {
         self.clone()
     }
 }
@@ -780,8 +784,14 @@ mod tests {
     fn test_macro() {
         assert_eq!(cbor!(1), Value::Int(1));
         assert_eq!(cbor!("test"), Value::String(String::from("test")));
-        assert_eq!(cbor!(b"123"), Value::Bytestring(Bytes::from(b"\x31\x32\x33".as_slice())));
-        assert_eq!(cbor!([1, 2]), Value::Array(vec![Value::Int(1), Value::Int(2)]));
+        assert_eq!(
+            cbor!(b"123"),
+            Value::Bytestring(Bytes::from(b"\x31\x32\x33".as_slice()))
+        );
+        assert_eq!(
+            cbor!([1, 2]),
+            Value::Array(vec![Value::Int(1), Value::Int(2)])
+        );
         assert_eq!(
             cbor!([1, true, "str"]),
             Value::Array(vec![
@@ -819,7 +829,10 @@ mod tests {
         );
         assert_eq!(
             cbor!({b"0": 1}),
-            Value::Map(BTreeMap::from([(MapKey::Bytestring(vec![0x30u8]), Value::Int(1)),]))
+            Value::Map(BTreeMap::from([(
+                MapKey::Bytestring(vec![0x30u8]),
+                Value::Int(1)
+            ),]))
         );
     }
 

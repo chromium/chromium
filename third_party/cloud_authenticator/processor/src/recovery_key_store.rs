@@ -330,7 +330,13 @@ mod xml {
 
     /// Parse an XML document.
     pub fn parse(xml: &[u8]) -> Option<(String, Value)> {
-        Parser { reader: ByteReader { data: xml, offset: 0 } }.top_level()
+        Parser {
+            reader: ByteReader {
+                data: xml,
+                offset: 0,
+            },
+        }
+        .top_level()
     }
 
     #[cfg(test)]
@@ -406,7 +412,10 @@ mod xml {
                     ),
                 ])),
             );
-            assert_eq!(expected, parse(crate::recovery_key_store::SAMPLE_CERTS_XML).unwrap());
+            assert_eq!(
+                expected,
+                parse(crate::recovery_key_store::SAMPLE_CERTS_XML).unwrap()
+            );
         }
 
         #[test]
@@ -414,7 +423,10 @@ mod xml {
             // `SAMPLE_CERTS_XML` doesn't have any attributes in the tags so
             // this test checks that they are ignored.
             const XML: &[u8] = br#"<?xml  ?>< a  foo="true" bar='false' >b</ a >"#;
-            assert_eq!((String::from("a"), Value::String(String::from("b"))), parse(XML).unwrap());
+            assert_eq!(
+                (String::from("a"), Value::String(String::from("b"))),
+                parse(XML).unwrap()
+            );
         }
 
         #[test]
@@ -475,7 +487,7 @@ mod x509 {
     }
 
     /// Parse a DER-encoded, X.509 certificate.
-    pub fn parse(input: &[u8]) -> Option<Certificate> {
+    pub fn parse(input: &[u8]) -> Option<Certificate<'_>> {
         // https://datatracker.ietf.org/doc/html/rfc5280#section-4.1
         let (top_level, empty) = der::next_tagged(input, der::SEQUENCE)?;
         if !empty.is_empty() {
@@ -587,8 +599,11 @@ mod x509 {
             }
             let contents = String::from_utf8(contents.to_vec()).ok()?;
             let two_digit_year = contents[0..2].parse::<u8>().ok()? as u16;
-            let year =
-                if two_digit_year >= 50 { 1900 + two_digit_year } else { 2000 + two_digit_year };
+            let year = if two_digit_year >= 50 {
+                1900 + two_digit_year
+            } else {
+                2000 + two_digit_year
+            };
             let month = contents[2..4].parse::<u8>().ok()?;
             let day = contents[4..6].parse::<u8>().ok()?;
             Some((epoch_seconds(year, month, day)?, rest))
@@ -630,7 +645,11 @@ mod x509 {
 
         let leap_year = is_leap_year(year);
         let month_idx = (month - 1) as usize;
-        let days_in_month = if leap_year && month == 2 { 29 } else { DAYS_IN_MONTH[month_idx] };
+        let days_in_month = if leap_year && month == 2 {
+            29
+        } else {
+            DAYS_IN_MONTH[month_idx]
+        };
         if day > days_in_month {
             return None;
         }
@@ -815,7 +834,12 @@ mod key_distribution {
 
         // Now that the `cert.xml` file has been validated, the cohort public keys
         // can be extracted from it.
-        get_public_keys_from_certs(cert_xml, current_time_epoch_millis, root_cert, cohort_selector)
+        get_public_keys_from_certs(
+            cert_xml,
+            current_time_epoch_millis,
+            root_cert,
+            cohort_selector,
+        )
     }
 
     /// Return an ECDH public key, a certificate path, and the serial number
@@ -847,7 +871,9 @@ mod key_distribution {
         let Some(xml::Element::Single(xml::Value::String(serial))) = metadata.get("serial") else {
             return Err("missing or incorrectly structured <serial>");
         };
-        let serial = serial.parse::<i64>().map_err(|_| "cannot parse serial number")?;
+        let serial = serial
+            .parse::<i64>()
+            .map_err(|_| "cannot parse serial number")?;
         let Some(xml::Element::Single(xml::Value::Object(endpoints))) =
             certs_value.get("endpoints")
         else {
@@ -881,8 +907,9 @@ mod key_distribution {
         if cohort_public_key_type != spki::PublicKeyType::P256 {
             return Err("leaf certificate public key is not P-256");
         }
-        let cohort_public_key: [u8; crypto::P256_X962_LENGTH] =
-            cohort_public_key.try_into().map_err(|_| "leaf certificate public key invalid")?;
+        let cohort_public_key: [u8; crypto::P256_X962_LENGTH] = cohort_public_key
+            .try_into()
+            .map_err(|_| "leaf certificate public key invalid")?;
 
         Ok((
             cohort_public_key,
@@ -891,7 +918,12 @@ mod key_distribution {
             // the certificate path is required in futher parts of the protocol.
             // Thus it might seem that checking `cert.sig.xml` is superfluous
             // but the Android implementation does it and so this code does too.
-            build_path(&endpoint_cert, certs_value, root_cert, current_time_epoch_millis)?,
+            build_path(
+                &endpoint_cert,
+                certs_value,
+                root_cert,
+                current_time_epoch_millis,
+            )?,
             serial,
         ))
     }
@@ -1063,7 +1095,9 @@ mod key_distribution {
         // the values from `intermediates_der`.
         let mut ret = vec![leaf.der.to_vec()];
         for intermediate_index in intermediate_indexes {
-            ret.push(core::mem::take(intermediates_der.get_mut(intermediate_index).unwrap()));
+            ret.push(core::mem::take(
+                intermediates_der.get_mut(intermediate_index).unwrap(),
+            ));
         }
 
         Ok(ret)
@@ -1091,8 +1125,10 @@ mod key_distribution {
 
         #[test]
         fn test_get_public_keys_expired() {
-            assert!(get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
-                .is_err())
+            assert!(
+                get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
+                    .is_err()
+            )
         }
 
         #[test]
@@ -1166,7 +1202,11 @@ mod securebox {
                 let ecdh_shared_secret =
                     crypto::p256_scalar_mult(&my_private, their_public).ok()?;
                 keying_material_storage = [&ecdh_shared_secret, shared_secret].concat();
-                (my_public_storage.as_ref(), keying_material_storage.as_ref(), ECDH_MAGIC)
+                (
+                    my_public_storage.as_ref(),
+                    keying_material_storage.as_ref(),
+                    ECDH_MAGIC,
+                )
             }
         };
 
@@ -1214,7 +1254,11 @@ mod securebox {
                         crypto::p256_scalar_mult(&my_private, their_public.try_into().unwrap())
                             .ok()?;
                     keying_material_storage = [&ecdh_shared_secret, shared_secret].concat();
-                    (keying_material_storage.as_ref(), ECDH_MAGIC, encrypted_payload)
+                    (
+                        keying_material_storage.as_ref(),
+                        ECDH_MAGIC,
+                        encrypted_payload,
+                    )
                 }
             };
 
@@ -1251,12 +1295,20 @@ mod securebox {
 
         #[test]
         fn encrypt_asymmetric() {
-            let ciphertext =
-                encrypt(Some(TEST_PUBLIC_KEY), TEST_SHARED_SECRET, TEST_HEADER, TEST_PAYLOAD)
-                    .unwrap();
-            let plaintext =
-                decrypt(Some(TEST_PRIVATE_KEY), TEST_SHARED_SECRET, TEST_HEADER, &ciphertext)
-                    .unwrap();
+            let ciphertext = encrypt(
+                Some(TEST_PUBLIC_KEY),
+                TEST_SHARED_SECRET,
+                TEST_HEADER,
+                TEST_PAYLOAD,
+            )
+            .unwrap();
+            let plaintext = decrypt(
+                Some(TEST_PRIVATE_KEY),
+                TEST_SHARED_SECRET,
+                TEST_HEADER,
+                &ciphertext,
+            )
+            .unwrap();
             assert_eq!(plaintext, TEST_PAYLOAD);
         }
 
@@ -1266,8 +1318,13 @@ mod securebox {
             const TEST_ENCRYPTED_PAYLOAD : &[u8] = b"\x02\x00\x04\xb5\xd6\xd6\x97\xe2\x8f\x35\x7b\xfe\x19\x22\xa3\xb5\x94\xaa\x32\xae\x82\x61\xfd\xef\xfa\xa8\x73\x91\xc2\x43\xd4\x0e\x53\x6a\xf0\xf1\x3b\xf7\xec\x4b\xdb\x34\x48\xeb\xf2\xa2\xf2\x81\x7e\x78\x5c\x08\x90\x45\x22\x2d\xed\xdf\x17\x12\xb4\xff\x0c\xb1\x27\x9d\x8a\x95\x1e\xc1\x46\xa8\x6b\x30\xc3\x57\xeb\x6d\xd4\xc3\xef\xb2\xc7\x02\x6d\x47\xef\x96\x75\xe4\xba\x5b\x3a\x1a\x9a\x8a\x3f\xcf\x02";
             const TEST_HEADER: &[u8] = b"\x01\x02\x03\x04";
             const TEST_PAYLOAD: &[u8] = b"\x04\x05\x06\x07";
-            let plaintext =
-                decrypt(Some(TEST_PRIVATE_KEY), b"", TEST_HEADER, TEST_ENCRYPTED_PAYLOAD).unwrap();
+            let plaintext = decrypt(
+                Some(TEST_PRIVATE_KEY),
+                b"",
+                TEST_HEADER,
+                TEST_ENCRYPTED_PAYLOAD,
+            )
+            .unwrap();
             assert_eq!(plaintext, TEST_PAYLOAD);
         }
     }
@@ -1275,7 +1332,11 @@ mod securebox {
 
 fn cohort_selector_from_handle(handle: &[u8; VAULT_HANDLE_LEN]) -> u32 {
     // unwrap: the slice will always be four bytes long, as required.
-    u32::from_le_bytes(handle[VAULT_HANDLE_LEN - 4..VAULT_HANDLE_LEN].try_into().unwrap())
+    u32::from_le_bytes(
+        handle[VAULT_HANDLE_LEN - 4..VAULT_HANDLE_LEN]
+            .try_into()
+            .unwrap(),
+    )
 }
 
 /// The maximum number of attempted guesses that the recovery key store will
@@ -1319,6 +1380,7 @@ impl From<Wrapped> for cbor::Value {
             "app_public_key": (&value.app_public_key),
             "wrapped_app_private_key": (value.wrapped_app_private_key),
             "wrapped_wrapping_key": (value.wrapped_wrapping_key),
+            "serial": (value.serial),
         })
     }
 }
@@ -1333,7 +1395,10 @@ struct Parameters {
 impl Parameters {
     /// Generate a random set of Parameters.
     fn random() -> Self {
-        let mut params = Parameters { vault_handle: [0u8; VAULT_HANDLE_LEN], counter_id: [0u8; 8] };
+        let mut params = Parameters {
+            vault_handle: [0u8; VAULT_HANDLE_LEN],
+            counter_id: [0u8; 8],
+        };
         params.vault_handle[0] = VAULT_HANDLE_FIRST_BYTE;
         crypto::rand_bytes(&mut params.vault_handle[1..]);
         crypto::rand_bytes(&mut params.counter_id);
@@ -1341,8 +1406,10 @@ impl Parameters {
     }
 
     fn from_pin_data(pin_data: &pin::Data) -> Self {
-        let mut params =
-            Parameters { counter_id: pin_data.counter_id, vault_handle: [0u8; VAULT_HANDLE_LEN] };
+        let mut params = Parameters {
+            counter_id: pin_data.counter_id,
+            vault_handle: [0u8; VAULT_HANDLE_LEN],
+        };
         params.vault_handle[0] = VAULT_HANDLE_FIRST_BYTE;
         params.vault_handle[1..].copy_from_slice(&pin_data.vault_handle_without_type);
         params
@@ -1471,9 +1538,12 @@ fn include_security_domain_member_fields(
     security_domain_secret: &[u8; 32],
 ) -> Result<cbor::Value, RequestError> {
     let header = b"V1 shared_key";
-    let Some(wrapped_sds) =
-        securebox::encrypt(Some(&wrapped.app_public_key), &[], header, security_domain_secret)
-    else {
+    let Some(wrapped_sds) = securebox::encrypt(
+        Some(&wrapped.app_public_key),
+        &[],
+        header,
+        security_domain_secret,
+    ) else {
         return debug("generated public key was invalid");
     };
     let member_proof = crypto::hmac_sha256(security_domain_secret, &wrapped.app_public_key);
@@ -1495,9 +1565,12 @@ fn enforce_cert_highwater(
     device_id: &[u8],
     serial: i64,
 ) -> Result<(), RequestError> {
-    let device = state.get_device(device_id).ok_or(RequestError::Debug("missing device"))?;
-    let current_value: Option<i64> =
-        device.get(RECOVERY_KEY_STORE_SERIAL_HIGHWATER_KEY).and_then(|v| match v {
+    let device = state
+        .get_device(device_id)
+        .ok_or(RequestError::Debug("missing device"))?;
+    let current_value: Option<i64> = device
+        .get(RECOVERY_KEY_STORE_SERIAL_HIGHWATER_KEY)
+        .and_then(|v| match v {
             Value::Int(current) => Some(*current),
             _ => None,
         });
@@ -1510,8 +1583,10 @@ fn enforce_cert_highwater(
     }
 
     // Need to update the highwater.
-    let device =
-        state.get_mut().get_mut_device(device_id).ok_or(RequestError::Debug("missing device"))?;
+    let device = state
+        .get_mut()
+        .get_mut_device(device_id)
+        .ok_or(RequestError::Debug("missing device"))?;
     device.insert(
         MapKey::String(String::from(RECOVERY_KEY_STORE_SERIAL_HIGHWATER)),
         Value::Int(serial),
@@ -1544,9 +1619,14 @@ pub(crate) fn do_wrap(
     let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
         return debug("cert.sig.xml required");
     };
-    let wrapped =
-        wrap(pin_hash, cert_xml, sig_xml, Parameters::random(), current_time_epoch_millis)
-            .map_err(RequestError::Debug)?;
+    let wrapped = wrap(
+        pin_hash,
+        cert_xml,
+        sig_xml,
+        Parameters::random(),
+        current_time_epoch_millis,
+    )
+    .map_err(RequestError::Debug)?;
     metrics.recovery_key_store_wrap += 1;
     Ok(wrapped.into())
 }
@@ -1590,12 +1670,29 @@ pub(crate) fn do_wrap_as_member(
     // they could request the security domain secret from Folsom. Getting another
     // batch of PIN attempts is less powerful than that and it allows the device to
     // use the new PIN immediately, without reregistering with the enclave.
-    state.get_mut().set_pin_state(device_id, super::PINState { attempts: 0 })?;
+    state
+        .get_mut()
+        .set_pin_state(device_id, super::PINState { attempts: 0 })?;
 
     metrics.recovery_key_store_wrap_as_member += 1;
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
+/// Re-encrypts a wrapped PIN to a Vault public key and then constructs a
+/// security domain member for that PIN. This will generate a new set of keys
+/// but the PIN will be unchanged. The Vault parameters (vault handle and
+/// counter id) will be the same. If the cert.xml file hasn't changed since the
+/// last time the PIN was wrapped, the cohort public key will also be the same,
+/// resulting in replacing the Vault.
+///
+/// This operation does not require user verification since it doesn't actually
+/// change the PIN. However, it is sensitive: creating a new Vault resets the
+/// PIN attempts counter. Thus, it's important to not allow clients to use this
+/// function to get an arbitrary number of retries. This is guaranteed by:
+/// * Enforcing a high-water mark for the cert.xml file, so that clients cannot
+///   pass different cert.xml files that are valid to get new Vault parameters.
+/// * Cryptographically associating the Vault parameters to the PIN hash, so
+///   clients cannot modify vault parameters without the enclave.
 pub(crate) fn do_rewrap(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,

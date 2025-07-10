@@ -80,7 +80,8 @@ impl Noise {
         // unwrap: only fails if the output size is too large, but the output
         // size is small and fixed here.
         crypto::hkdf_sha256(&ikm, &self.chaining_key, &[], &mut output).unwrap();
-        self.chaining_key.copy_from_slice(&output[..SYMMETRIC_KEY_SIZE]);
+        self.chaining_key
+            .copy_from_slice(&output[..SYMMETRIC_KEY_SIZE]);
         self.mix_hash(&output[SYMMETRIC_KEY_SIZE..SYMMETRIC_KEY_SIZE * 2]);
         self.initialize_key(&output[SYMMETRIC_KEY_SIZE * 2..].try_into().unwrap());
     }
@@ -182,7 +183,10 @@ mod tests {
         let mut noise = Noise::new(HandshakeType::Nk);
         noise.mix_key("encryptAndHash".as_bytes());
         let ciphertext = noise.encrypt_and_hash("plaintext".as_bytes());
-        assert_eq!(hex::encode(ciphertext), "fdf1564256dcee03b5babe81df599ec4273c95e4269d747764");
+        assert_eq!(
+            hex::encode(ciphertext),
+            "fdf1564256dcee03b5babe81df599ec4273c95e4269d747764"
+        );
         assert_eq!(
             hex::encode(noise.handshake_hash()),
             "1cf5b0af5f3365d715e9137382a5fd139a56e25bea8ecdbf3018f42af7432a75"
@@ -194,7 +198,10 @@ mod tests {
         let mut noise = Noise::new(HandshakeType::Nk);
         noise.mix_key_and_hash("encryptAndHash".as_bytes());
         let ciphertext = noise.encrypt_and_hash("plaintext".as_bytes());
-        assert_eq!(hex::encode(ciphertext), "2693c80637c7fd9e686949c46a4d189d41ba7cf74a53a85752");
+        assert_eq!(
+            hex::encode(ciphertext),
+            "2693c80637c7fd9e686949c46a4d189d41ba7cf74a53a85752"
+        );
         assert_eq!(
             hex::encode(noise.handshake_hash()),
             "b883ed0aa2303502e497c8609a979970bc6292cc316eafa7fc0c434f818b9e01"
@@ -241,7 +248,10 @@ mod tests {
         noise.mix_key("mixKey".as_bytes());
         noise.mix_key_and_hash("mixKeyAndHash".as_bytes());
         let ciphertext = noise.encrypt_and_hash("plaintext".as_bytes());
-        assert_eq!(hex::encode(ciphertext), "b7235b3d77c9cf5ebb087793b399de2c2276edae52bba5199e");
+        assert_eq!(
+            hex::encode(ciphertext),
+            "b7235b3d77c9cf5ebb087793b399de2c2276edae52bba5199e"
+        );
         assert_eq!(
             hex::encode(noise.handshake_hash()),
             "db420fd8f9b072eacca4599019303f02b1938fb9096e3b4b063afebc687c9987"
