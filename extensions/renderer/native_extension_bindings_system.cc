@@ -88,8 +88,7 @@ constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
 // This is designed to be used as a utility when iterating over a sorted map, so
 // assumes that |api| is lexicographically greater than |root_api|.
 bool IsPrefixedAPI(std::string_view api, std::string_view root_api) {
-  DCHECK_NE(api, root_api);
-  DCHECK_GT(api, root_api);
+  CHECK_GT(api, root_api);
   return base::StartsWith(api, root_api, base::CompareCase::SENSITIVE) &&
          api[root_api.size()] == '.';
 }
