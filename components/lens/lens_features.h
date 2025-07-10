@@ -722,11 +722,6 @@ extern bool HandleSidePanelTextDirectivesEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldHoldContextualQueriesUntilAck();
 
-// Whether to compress the PDF bytes using zstd before sending them to the
-// server.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldZstdCompressPdfBytes();
-
 // The compression level to use when compressing the PDF bytes using zstd.
 // Higher values mean better compression but also take longer to compress.
 // See the introduction section in third_party/zstd/src/lib/zstd.h for more

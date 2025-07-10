@@ -402,8 +402,8 @@ lens::Payload CreatePageContentPayload(
     content_data->set_content_type(
         MimeTypeToContentType(page_content.content_type_));
 
-    if (page_content.content_type_ == lens::MimeType::kPdf &&
-        lens::features::ShouldZstdCompressPdfBytes()) {
+    // Compress PDF bytes.
+    if (page_content.content_type_ == lens::MimeType::kPdf) {
       // If compression is successful, set the compression type and return.
       // Otherwise, fall back to the original bytes.
       if (ZstdCompressBytes(page_content.bytes_,
