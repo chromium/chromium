@@ -106,18 +106,21 @@ class DownloadsListTracker
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_ReferrerUrlPresent);
+                           CreateDownloadData_InitiatorOriginPresent);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_ReferrerUrlNotPresent);
+                           CreateDownloadData_InitiatorOriginNotPresent);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_InitiatorOriginOpaque);
   FRIEND_TEST_ALL_PREFIXES(
       DownloadsListTrackerTest,
-      CreateDownloadData_ReferrerUrlFormatting_OmitUserPass);
+      CreateDownloadData_InitiatorOriginRequiresUserGesture);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_ReferrerUrlFormatting_Idn);
+                           CreateDownloadData_InitiatorOriginFormatting_Idn);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_ReferrerUrlFormatting_Long);
-  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_ReferrerUrlFormatting_VeryLong);
+                           CreateDownloadData_InitiatorOriginFormatting_Long);
+  FRIEND_TEST_ALL_PREFIXES(
+      DownloadsListTrackerTest,
+      CreateDownloadData_InitiatorOriginFormatting_VeryLong);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest, RenamingProgress);
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

@@ -45,11 +45,10 @@ export function getHtml(this: DownloadsItemElement) {
       </div>
 
       <div role="gridcell">
-        <div id="referrer-url"
-            ?hidden="${!this.shouldShowReferrerUrl_()}">
-          <!-- Text populated dynamically -->
+        <div id="initiator-origin" ?hidden="${!this.showInitiatorOrigin_}">
+          ${this.computeInitiatorOriginText_()}
         </div>
-        <a id="url" ?hidden="${this.showReferrerUrl_}" target="_blank"
+        <a id="url" ?hidden="${this.showInitiatorOrigin_}" target="_blank"
           @click="${this.onUrlClick_}" focus-row-control
           focus-type="url">${this.getDisplayUrlStr_()}</a>
       </div>

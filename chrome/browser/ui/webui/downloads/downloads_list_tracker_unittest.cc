@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -119,8 +120,9 @@ class DownloadsListTrackerTest : public testing::Test {
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo.txt"))));
     ON_CALL(*new_item, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.test")));
-    ON_CALL(*new_item, GetReferrerUrl())
-        .WillByDefault(ReturnRefOfCopy(GURL("https://referrerexample.test")));
+    ON_CALL(*new_item, GetRequestInitiator())
+        .WillByDefault(ReturnRefOfCopy(std::make_optional(
+            url::Origin::Create(GURL("https://initiatorexample.test")))));
     ON_CALL(*new_item, HasUserGesture()).WillByDefault(Return(true));
 
     content::DownloadItemUtils::AttachInfoForTesting(new_item, profile(),
@@ -508,7 +510,7 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
   EXPECT_EQ(data->display_url, expected);
 }
 
-TEST_F(DownloadsListTrackerTest, CreateDownloadData_ReferrerUrlPresent) {
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_InitiatorOriginPresent) {
   MockDownloadItem* item = CreateNextItem();
 
   auto tracker = std::make_unique<DownloadsListTracker>(
@@ -516,88 +518,97 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_ReferrerUrlPresent) {
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
   EXPECT_EQ(*data->url, "https://example.test/");
-  EXPECT_EQ(*data->referrer_url, "https://referrerexample.test/");
   EXPECT_EQ(data->display_url, u"https://example.test");
-  EXPECT_EQ(data->display_referrer_url, u"https://referrerexample.test");
+  EXPECT_EQ(data->display_initiator_origin, u"https://initiatorexample.test");
 }
 
-TEST_F(DownloadsListTrackerTest, CreateDownloadData_ReferrerUrlNotPresent) {
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_InitiatorOriginNotPresent) {
   MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRefOfCopy(GURL()));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRefOfCopy(std::optional<url::Origin>()));
 
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
   EXPECT_TRUE(data->url);
-  EXPECT_FALSE(data->referrer_url);
-  EXPECT_EQ(data->display_referrer_url, u"");
+  EXPECT_EQ(data->display_initiator_origin, u"");
+}
+
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_InitiatorOriginOpaque) {
+  MockDownloadItem* item = CreateNextItem();
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRefOfCopy(std::make_optional(url::Origin())));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_TRUE(data->url);
+  EXPECT_EQ(data->display_initiator_origin, u"");
 }
 
 TEST_F(DownloadsListTrackerTest,
-       CreateDownloadData_ReferrerUrlFormatting_OmitUserPass) {
+       CreateDownloadData_InitiatorOriginRequiresUserGesture) {
   MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetReferrerUrl())
-      .WillByDefault(ReturnRefOfCopy(GURL("https://user:pass@example.test")));
+  ON_CALL(*item, HasUserGesture()).WillByDefault(Return(false));
 
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->referrer_url);
-  EXPECT_EQ(*data->referrer_url, "https://user:pass@example.test/");
-  EXPECT_EQ(data->display_referrer_url, u"https://example.test");
+  EXPECT_TRUE(data->url);
+  EXPECT_EQ(data->display_initiator_origin, u"");
 }
 
-TEST_F(DownloadsListTrackerTest, CreateDownloadData_ReferrerUrlFormatting_Idn) {
+TEST_F(DownloadsListTrackerTest,
+       CreateDownloadData_InitiatorOriginFormatting_Idn) {
   MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetReferrerUrl())
-      .WillByDefault(ReturnRefOfCopy(GURL("https://xn--6qqa088eba.test")));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRefOfCopy(std::make_optional(
+          url::Origin::Create(GURL("https://xn--6qqa088eba.test")))));
 
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->referrer_url);
-  EXPECT_EQ(*data->referrer_url, "https://xn--6qqa088eba.test/");
-  EXPECT_EQ(data->display_referrer_url,
+  EXPECT_EQ(data->display_initiator_origin,
             u"https://\u4f60\u597d\u4f60\u597d.test");
 }
 
 // URL longer than 16K but less than 2M.
 TEST_F(DownloadsListTrackerTest,
-       CreateDownloadData_ReferrerUrlFormatting_Long) {
+       CreateDownloadData_InitiatorOriginFormatting_Long) {
   std::string url = "https://" + std::string(16 * 1024, 'a') + ".test";
-  // The string should truncate the beginning to 16K.
-  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
 
   MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRefOfCopy(GURL(url)));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(
+          ReturnRefOfCopy(std::make_optional(url::Origin::Create(GURL(url)))));
 
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->referrer_url);
-  EXPECT_EQ(data->display_referrer_url, expected);
+  // The string should be omitted, not truncated.
+  EXPECT_EQ(data->display_initiator_origin, u"");
 }
 
 // URL longer than 2M.
 TEST_F(DownloadsListTrackerTest,
-       CreateDownloadData_ReferrerUrlFormatting_VeryLong) {
+       CreateDownloadData_InitiatorOriginFormatting_VeryLong) {
   std::string url = "https://" + std::string(2 * 1024 * 1024, 'a') + ".test";
-  // The string should truncate the beginning to 16K.
-  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
 
   MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetReferrerUrl()).WillByDefault(ReturnRefOfCopy(GURL(url)));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(
+          ReturnRefOfCopy(std::make_optional(url::Origin::Create(GURL(url)))));
 
   auto tracker = std::make_unique<DownloadsListTracker>(
       manager(), page_.BindAndGetRemote());
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_FALSE(data->referrer_url);
-  EXPECT_EQ(data->display_referrer_url, expected);
+  EXPECT_EQ(data->display_initiator_origin, u"");
 }
 
 TEST_F(DownloadsListTrackerTest, RenamingProgress) {

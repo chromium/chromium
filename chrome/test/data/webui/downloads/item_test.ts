@@ -63,104 +63,74 @@ suite('ItemTest', function() {
     assertEquals(displayUrl, item.$.url.text);
   });
 
-  test('referrer url is hidden when showReferrerUrl disabled', async () => {
-    loadTimeData.overrideValues({showReferrerUrl: false});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    item.data = createDownload({
-      hideDate: false,
-      state: State.kComplete,
-      referrerUrl: stringToMojoUrl('http://test.com'),
-    });
-    await microtasksFinished();
-
-    assertTrue(isVisible(item.$.url));
-    assertFalse(isVisible(item.$['referrer-url']));
-  });
-
   test(
-      'referrer url on downloads without referrer url in data isn\'t displayed',
+      'initiator origin is hidden when showInitiatorOrigin disabled',
       async () => {
-        loadTimeData.overrideValues({showReferrerUrl: true});
+        loadTimeData.overrideValues({showInitiatorOrigin: false});
         const item = document.createElement('downloads-item');
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         document.body.appendChild(item);
         item.data = createDownload({
           hideDate: false,
           state: State.kComplete,
-          referrerUrl: undefined,
-          displayReferrerUrl: stringToMojoString16(''),
+          displayInitiatorOrigin:
+              stringToMojoString16('https://initiator.test'),
         });
         await microtasksFinished();
 
-        assertFalse(isVisible(item.$.url));
-        assertFalse(isVisible(item.$['referrer-url']));
-        assertEquals(null, item.getReferrerUrlAnchorElement());
+        assertTrue(isVisible(item.$.url));
+        assertFalse(isVisible(
+            item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
       });
 
-  test('referrer url on dangerous downloads isn\'t linkable', async () => {
-    const referrerUrl = 'https://test.com';
-    const displayReferrerUrl = 'https://displaytest.com';
+  test('initiator origin empty string in data isn\'t displayed', async () => {
+    loadTimeData.overrideValues({showInitiatorOrigin: true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.data = createDownload({
+      hideDate: false,
+      state: State.kComplete,
+      displayInitiatorOrigin: stringToMojoString16(''),
+    });
+    await microtasksFinished();
+
+    assertFalse(isVisible(item.$.url));
+    assertFalse(isVisible(
+        item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
+  });
+
+  test('initiator origin on dangerous downloads is displayed', async () => {
+    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDangerousFile,
       fileExternallyRemoved: false,
       hideDate: true,
       state: State.kDangerous,
-      referrerUrl: stringToMojoUrl(referrerUrl),
-      displayReferrerUrl: stringToMojoString16(displayReferrerUrl),
+      displayInitiatorOrigin: stringToMojoString16('https://displaytest.com'),
     });
     await microtasksFinished();
 
-    const referrerUrlLink = item.getReferrerUrlAnchorElement();
-    assertTrue(!!referrerUrlLink);
-    assertTrue(isVisible(referrerUrlLink));
-    assertFalse(referrerUrlLink.hasAttribute('href'));
-    assertEquals(displayReferrerUrl, referrerUrlLink.text);
+    assertFalse(isVisible(item.$.url));
+    assertTrue(isVisible(
+        item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
-  test(
-      'referrer url display string is a link to the referrer url', async () => {
-        const url = 'https://' +
-            'b'.repeat(1000) + '.com/document.pdf';
-        const referrerUrl = 'https://' +
-            'a'.repeat(1000) + '.com/document.pdf';
-        const displayReferrerUrl = 'https://' +
-            '啊'.repeat(1000) + '.com/document.pdf';
-        item.data = createDownload({
-          hideDate: false,
-          state: State.kComplete,
-          url: stringToMojoUrl(url),
-          referrerUrl: stringToMojoUrl(referrerUrl),
-          displayReferrerUrl: stringToMojoString16(displayReferrerUrl),
-        });
-        await microtasksFinished();
-
-        assertEquals(url, item.$.url.href);
-        const referrerUrlLink = item.getReferrerUrlAnchorElement();
-        assertTrue(!!referrerUrlLink);
-        assertEquals(referrerUrl, referrerUrlLink.href);
-        assertEquals(displayReferrerUrl, referrerUrlLink.text);
-      });
-
-  test('failed deep scans aren\'t linkable', async () => {
-    loadTimeData.overrideValues({showReferrerUrl: true});
+  test('failed deep scans display initiator origin', async () => {
+    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDeepScannedFailed,
       fileExternallyRemoved: false,
       hideDate: true,
       state: State.kComplete,
       url: stringToMojoUrl('http://evil.com'),
-      referrerUrl: stringToMojoUrl('http://referrer.com'),
-      displayReferrerUrl: stringToMojoString16('http://display.com'),
+      displayInitiatorOrigin: stringToMojoString16('http://display.com'),
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$['file-link']));
-    assertFalse(item.$.url.hasAttribute('href'));
-    const referrerUrlLink = item.getReferrerUrlAnchorElement();
-    assertTrue(!!referrerUrlLink);
-    assertFalse(referrerUrlLink.hasAttribute('href'));
+    assertFalse(isVisible(item.$.url));
+    assertTrue(isVisible(
+        item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
   test('url display string is a link to the original url', async () => {

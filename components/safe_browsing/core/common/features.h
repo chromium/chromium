@@ -114,9 +114,10 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // DLP endpoint based on ChromeDataRegionSetting policy.
 BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
 
-// Show referrer URL on download item on chrome://downloads page. This will
-// replace the downloads url.
-BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
+// On downloads-related UI surfaces, attribute the download to the initiator
+// origin of the download request in UI displays, rather than the URL of the
+// download itself.
+BASE_DECLARE_FEATURE(kDownloadsDisplayInitiatorOrigin);
 
 // Enables HaTS surveys for users encountering desktop download warnings on the
 // download bubble or the downloads page.

@@ -191,13 +191,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"dangerSettingsDesc", IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED},
       {"insecureDownloadDesc", IDS_BLOCK_DOWNLOAD_REASON_INSECURE},
 
-      {"referrerLine", IDS_DOWNLOADS_PAGE_REFERRER_LINE},
+      // Format string for showing the "source" of the downloaded file as the
+      // initiator origin of the download request.
+      {"initiatorLine", IDS_DOWNLOADS_PAGE_INITIATOR_LINE},
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean(
-      "showReferrerUrl",
-      base::FeatureList::IsEnabled(safe_browsing::kDownloadsPageReferrerUrl));
+  source->AddBoolean("showInitiatorOrigin",
+                     base::FeatureList::IsEnabled(
+                         safe_browsing::kDownloadsDisplayInitiatorOrigin));
   source->AddLocalizedString(
       "dangerUncommonDesc",
       requests_ap_verdicts

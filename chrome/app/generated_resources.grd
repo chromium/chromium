@@ -2503,9 +2503,8 @@ are declared in tools/grit/grit_args.gni.
                desc="Indicates which extension downloaded this file by name and URL.">
         Downloaded by &lt;a href=&quot;<ph name="URL">$1<ex>adblock.com</ex></ph>&quot;&gt;<ph name="EXTENSION">$2<ex>The Best Chrome Extension Ever</ex></ph>&lt;/a&gt;
       </message>
-      <message name="IDS_DOWNLOADS_PAGE_REFERRER_LINE"
-        desc="Line that indicates the referrer url from which a file was downloaded and embeds a corresponding link">
-        From <ph name="BEGIN_LINK">&lt;a&gt;</ph><ph name="DISPLAY_REFERRER_URL">$1<ex>https://example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
+      <message name="IDS_DOWNLOADS_PAGE_INITIATOR_LINE" desc="Line that indicates the site that initiated a file download.">
+        From <ph name="DISPLAY_INITIATOR_ORIGIN">$1<ex>https://example.com</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_IN_INCOGNITO"
                desc="Indicates a download was started in Incognito mode.">

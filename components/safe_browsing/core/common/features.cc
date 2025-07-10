@@ -129,8 +129,8 @@ BASE_FEATURE(kDlpRegionalizedEndpoints,
              "DlpRegionalizedEndpoints",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDownloadsPageReferrerUrl,
-             "DownloadsPageReferrerUrl",
+BASE_FEATURE(kDownloadsDisplayInitiatorOrigin,
+             "DownloadsDisplayInitiatorOrigin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadWarningSurvey,

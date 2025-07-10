@@ -235,25 +235,12 @@ cr-button {
   text-align: end;
 }
 
-#referrer-url {
+#initiator-origin {
   text-overflow: ellipsis;
   white-space: nowrap;
   display: flex;
   flex-wrap: nowrap;
   margin-top: 6px;
-}
-
-#referrer-url a {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  direction: rtl;
-  text-align: end;
-  margin-left: 4px;
-  margin-right: 4px;
-  text-decoration: none;
-  min-height: 0;
-  color: inherit;
 }
 
 :host-context([dir=rtl]) #url {
@@ -269,9 +256,6 @@ cr-button {
 }
 
 .is-active #url {
-  color: var(--cr-secondary-text-color);
-}
-.is-active #referrer-url a {
   color: var(--cr-secondary-text-color);
 }
 
