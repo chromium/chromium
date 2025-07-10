@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.media.capture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.media.Image;
@@ -52,14 +54,16 @@ public class ImageHandlerTest {
     @Mock private ImageReader mImageReader;
 
     private ImageHandler mImageHandler;
+    private Handler mHandler;
 
     @Before
     public void setUp() {
+        mHandler = new Handler(Looper.getMainLooper());
         mImageHandler =
                 new ImageHandler(
                         new CaptureState(TEST_WIDTH, TEST_HEIGHT, TEST_DPI, PixelFormat.RGBA_8888),
                         mDelegate,
-                        new Handler(Looper.getMainLooper()),
+                        mHandler,
                         mImageReader);
 
         when(mImageReader.getMaxImages()).thenReturn(2);
@@ -280,6 +284,107 @@ public class ImageHandlerTest {
         verify(mImageReader).close();
         verify(mDelegate).onClose(eq(mImageHandler));
         assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testAcquireRecreatesWithYuv() throws Exception {
+        // `UnsupportedOperationException` indicates the image format is wrong.
+        when(mImageReader.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+
+        // Tell `ImageHandler` it has an image.
+        mImageHandler.onImageAvailable(mImageReader);
+
+        // We should re-create in YUV now.
+        final ArgumentCaptor<CaptureState> stateCaptor =
+                ArgumentCaptor.forClass(CaptureState.class);
+        verify(mDelegate).recreateImageHandler(stateCaptor.capture());
+
+        // New state should be the same except in YUV.
+        assertEquals(
+                new CaptureState(TEST_WIDTH, TEST_HEIGHT, TEST_DPI, ImageFormat.YUV_420_888),
+                stateCaptor.getValue());
+
+        verify(mDelegate, never()).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testAcquireThrowsWhenYuvFails() throws Exception {
+        // Create an `ImageHandler` already on YUV.
+        mImageHandler =
+                new ImageHandler(
+                        new CaptureState(
+                                TEST_WIDTH, TEST_HEIGHT, TEST_DPI, ImageFormat.YUV_420_888),
+                        mDelegate,
+                        mHandler,
+                        mImageReader);
+        when(mImageReader.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+
+        // This should now throw because there's no further fallback.
+        mImageHandler.onImageAvailable(mImageReader);
+    }
+
+    @Test
+    public void testAcquireAtMaxImagesDoesNotAcquire() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Image image2 = createMockImage(/* timestamp= */ 2L);
+        final Image image3 = createMockImage(/* timestamp= */ 3L);
+
+        // Acquire two images.
+        onImageAvailable(image1);
+        onImageAvailable(image2);
+        assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Try to acquire a third. It should skip asking the `ImageReader` for the new image.
+        onImageAvailable(image3);
+        assertEquals(2, mImageHandler.getAcquiredImageCountForTesting());
+        verify(mImageReader, times(2)).acquireLatestImage();
+        verify(mDelegate, times(2)).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testFailedAcquireDoesNotCrash() throws Exception {
+        when(mImageReader.acquireLatestImage()).thenThrow(new IllegalStateException());
+
+        mImageHandler.onImageAvailable(mImageReader);
+
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+        verify(mDelegate, never()).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void testReleaseRetriesAcquire() throws Exception {
+        final Image image1 = createMockImage(/* timestamp= */ 1L);
+        final Image image2 = createMockImage(/* timestamp= */ 2L);
+        final Plane plane1 = image1.getPlanes()[0];
+        final Plane plane2 = image2.getPlanes()[0];
+
+        when(mImageReader.acquireLatestImage()).thenReturn(image1, image2);
+
+        // Acquire the first image.
+        mImageHandler.onImageAvailable(mImageReader);
+
+        final ArgumentCaptor<Runnable> releaseCb = ArgumentCaptor.forClass(Runnable.class);
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler),
+                        releaseCb.capture(),
+                        eq(1L),
+                        eq(plane1),
+                        eq(TEST_CROP_RECT));
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Release. This should trigger an attempt to acquire another image.
+        releaseCb.getValue().run();
+
+        verify(image1).close();
+        assertEquals(1, mImageHandler.getAcquiredImageCountForTesting());
+        verify(mDelegate)
+                .onRgbaFrameAvailable(
+                        eq(mImageHandler), any(), eq(2L), eq(plane2), eq(TEST_CROP_RECT));
         verifyNoMoreInteractions(mDelegate);
     }
 }
