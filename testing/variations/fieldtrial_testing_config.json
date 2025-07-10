@@ -7684,7 +7684,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20250709",
+                    "params": {
+                        "DefaultBrowserBannerPromoImpressionLimit": "5"
+                    },
                     "enable_features": [
                         "DefaultBrowserBannerPromo"
                     ]
