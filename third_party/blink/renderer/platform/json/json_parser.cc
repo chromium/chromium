@@ -689,7 +689,7 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
     error.line = 0;
     error.column = 0;
   } else {
-    error = WTF::VisitCharacters(json, [&](auto chars) {
+    error = VisitCharacters(json, [&](auto chars) {
       return ParseJSONInternal(chars, max_depth, comment_state, &result);
     });
   }

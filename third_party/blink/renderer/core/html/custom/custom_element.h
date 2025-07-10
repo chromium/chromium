@@ -67,7 +67,7 @@ class CORE_EXPORT CustomElement {
         return false;
       }
       // name does not contain any ASCII upper alphas
-      if (!WTF::VisitCharacters(name.GetString(), [](auto characters) {
+      if (!VisitCharacters(name.GetString(), [](auto characters) {
             for (size_t i = 0; i < characters.size(); i++) {
               if (IsASCIIUpper(characters[i])) {
                 return false;

@@ -67,7 +67,7 @@ class CORE_EXPORT HTMLTokenName {
     if (local_name.empty())
       return HTMLTokenName(html_names::HTMLTag::kUnknown);
 
-    return WTF::VisitCharacters(local_name, [&local_name](auto chars) {
+    return VisitCharacters(local_name, [&local_name](auto chars) {
       return HTMLTokenName(LookupHtmlTag(chars), local_name);
     });
   }
@@ -93,7 +93,7 @@ class CORE_EXPORT HTMLTokenName {
       // If the tag is unknown, then `name` must either be empty, or not
       // identify any other HTMLTag.
       if (!name.empty()) {
-        WTF::VisitCharacters(name, [](auto chars) {
+        VisitCharacters(name, [](auto chars) {
           DCHECK_EQ(html_names::HTMLTag::kUnknown, LookupHtmlTag(chars));
         });
       }

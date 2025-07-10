@@ -109,8 +109,8 @@ static std::optional<int> ParseFontSize(const String& input) {
   if (input.empty()) {
     return std::nullopt;
   }
-  return WTF::VisitCharacters(input,
-                              [](auto chars) { return ParseFontSize(chars); });
+  return VisitCharacters(input,
+                         [](auto chars) { return ParseFontSize(chars); });
 }
 
 static const CSSValueList* CreateFontFaceValueWithPool(

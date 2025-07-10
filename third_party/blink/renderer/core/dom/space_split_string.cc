@@ -80,8 +80,7 @@ ALWAYS_INLINE void SpaceSplitString::Data::CreateVector(
 }
 
 void SpaceSplitString::Data::CreateVector(const AtomicString& string) {
-  WTF::VisitCharacters(string,
-                       [&](auto chars) { CreateVector(string, chars); });
+  VisitCharacters(string, [&](auto chars) { CreateVector(string, chars); });
 }
 
 bool SpaceSplitString::Data::ContainsAll(Data& other) {

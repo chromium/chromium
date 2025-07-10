@@ -55,7 +55,6 @@ using std::numeric_limits;
 namespace blink {
 
 using WTF::Partitions;
-using WTF::VisitCharacters;
 
 namespace {
 
@@ -526,31 +525,30 @@ using CharacterRange = std::pair<size_t, size_t>;
 template <class UCharPredicate>
 inline CharacterRange StrippedMatchedCharactersRange(const StringImpl& impl,
                                                      UCharPredicate predicate) {
-  return WTF::VisitCharacters(
-      impl, [predicate](auto characters) -> CharacterRange {
-        if (characters.empty()) {
-          return {0, 0};
-        }
+  return VisitCharacters(impl, [predicate](auto characters) -> CharacterRange {
+    if (characters.empty()) {
+      return {0, 0};
+    }
 
-        size_t start = 0;
-        size_t end = characters.size() - 1;
+    size_t start = 0;
+    size_t end = characters.size() - 1;
 
-        // Skip white space from the start.
-        while (start <= end && predicate(characters[start])) {
-          ++start;
-        }
+    // Skip white space from the start.
+    while (start <= end && predicate(characters[start])) {
+      ++start;
+    }
 
-        // String only contains matching characters.
-        if (start > end) {
-          return {0, 0};
-        }
+    // String only contains matching characters.
+    if (start > end) {
+      return {0, 0};
+    }
 
-        // Skip white space from the end.
-        while (end && predicate(characters[end])) {
-          --end;
-        }
-        return {start, end + 1};
-      });
+    // Skip white space from the end.
+    while (end && predicate(characters[end])) {
+      --end;
+    }
+    return {start, end + 1};
+  });
 }
 
 }  // namespace

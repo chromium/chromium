@@ -34,7 +34,7 @@ void StringTypeAdapter<StringView>::WriteTo(
 
 void StringTypeAdapter<StringView>::WriteTo(
     base::span<UChar> destination) const {
-  WTF::VisitCharacters(view_, [destination](auto chars) {
+  VisitCharacters(view_, [destination](auto chars) {
     StringImpl::CopyChars(destination, chars);
   });
 }

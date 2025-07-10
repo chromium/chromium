@@ -165,7 +165,7 @@ static bool ParseKeySplines(const String& string,
   result.clear();
   if (string.empty())
     return true;
-  bool parsed = WTF::VisitCharacters(string, [&](auto chars) {
+  bool parsed = VisitCharacters(string, [&](auto chars) {
     return ParseKeySplinesInternal(chars.data(), chars.data() + chars.size(),
                                    result);
   });

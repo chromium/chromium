@@ -69,7 +69,7 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   if (value.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(value, [&](auto chars) {
+  return VisitCharacters(value, [&](auto chars) {
     return ParseInternal(chars.data(), chars.data() + chars.size());
   });
 }

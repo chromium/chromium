@@ -47,7 +47,7 @@ static bool IsCSSTokenizerIdentifier(const StringView& string) {
     return false;
   }
 
-  return WTF::VisitCharacters(string, [](auto chars) {
+  return VisitCharacters(string, [](auto chars) {
     size_t index{0};
 
     // -?

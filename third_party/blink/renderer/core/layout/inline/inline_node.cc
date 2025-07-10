@@ -1839,7 +1839,7 @@ String InlineNode::TextContentForStickyImagesQuirk(
     const InlineItem& item = *items_data.items[i];
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
       auto item_span = base::span(items_data.items).subspan(i);
-      return WTF::VisitCharacters(text_content, [&](auto chars) {
+      return VisitCharacters(text_content, [&](auto chars) {
         return CreateTextContentForStickyImagesQuirk(chars, item_span);
       });
     }

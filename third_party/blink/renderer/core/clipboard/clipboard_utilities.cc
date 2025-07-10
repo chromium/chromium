@@ -47,7 +47,7 @@ String EscapeForHTML(const String& str) {
   // base::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
   // strings. This could use MarkupFormatter::AppendAttributeValue instead to
   // avoid unnecessary copying and be more aligned with Blink serialization.
-  return WTF::VisitCharacters(str, [](auto chars) {
+  return VisitCharacters(str, [](auto chars) {
     auto result = base::EscapeForHTML(base::as_string_view(chars));
     return String(result);
   });

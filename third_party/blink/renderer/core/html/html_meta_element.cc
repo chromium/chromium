@@ -168,7 +168,7 @@ float HTMLMetaElement::ParsePositiveNumber(Document* document,
                                            const String& value_string,
                                            bool* ok) {
   size_t parsed_length;
-  float value = WTF::VisitCharacters(value_string, [&](auto chars) {
+  float value = VisitCharacters(value_string, [&](auto chars) {
     return CharactersToFloat(chars, parsed_length);
   });
   if (!parsed_length) {

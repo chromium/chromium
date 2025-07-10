@@ -974,7 +974,7 @@ bool Color::ParseHexColor(base::span<const UChar> name, Color& color) {
 bool Color::ParseHexColor(const StringView& name, Color& color) {
   if (name.empty())
     return false;
-  return WTF::VisitCharacters(name, [&color](auto chars) {
+  return VisitCharacters(name, [&color](auto chars) {
     return ParseHexColorInternal(chars, color);
   });
 }
@@ -990,7 +990,7 @@ bool Color::SetFromString(const String& name) {
   // TODO(https://crbug.com/1434423): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
-  return WTF::VisitCharacters(name, [this](auto chars) {
+  return VisitCharacters(name, [this](auto chars) {
     return ParseHexColorInternal(chars.template subspan<1>(), *this);
   });
 }

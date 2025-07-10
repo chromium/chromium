@@ -92,7 +92,7 @@ void CSSPreloadScanner::Scan(
     PreloadRequestStream& requests,
     const KURL& predicted_base_element_url,
     const PreloadRequest::ExclusionInfo* exclusion_info) {
-  WTF::VisitCharacters(tag_name, [&](auto chars) {
+  VisitCharacters(tag_name, [&](auto chars) {
     ScanCommon(chars, source, requests, predicted_base_element_url,
                exclusion_info);
   });

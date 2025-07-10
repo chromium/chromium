@@ -43,7 +43,7 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   if (!length)
     return string.IsNull() ? string : g_empty_atom.GetString();
 
-  return WTF::VisitCharacters(string, [&](auto chars) {
+  return VisitCharacters(string, [&](auto chars) {
     unsigned num_leading_spaces = 0;
     unsigned num_trailing_spaces = 0;
 
@@ -78,7 +78,7 @@ Vector<String> SplitOnASCIIWhitespace(const String& input) {
   if (!length) {
     return output;
   }
-  WTF::VisitCharacters(input, [&](auto chars) {
+  VisitCharacters(input, [&](auto chars) {
     size_t cursor = 0;
     using CharacterType = std::decay_t<decltype(*chars.data())>;
     cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
@@ -182,7 +182,7 @@ bool ParseHTMLInteger(const String& input, int& value) {
   if (length == 0)
     return false;
 
-  return WTF::VisitCharacters(input, [&](auto chars) {
+  return VisitCharacters(input, [&](auto chars) {
     using CharacterType = std::decay_t<decltype(chars[0])>;
 
     // Step 4
@@ -214,7 +214,7 @@ static NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
   if (length == 0)
     return NumberParsingResult::kError;
 
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       input, [&](auto chars) {
         using CharacterType = std::decay_t<decltype(chars[0])>;
 
@@ -301,7 +301,7 @@ Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
   if (!length)
     return numbers;
 
-  WTF::VisitCharacters(input, [&](auto chars) {
+  VisitCharacters(input, [&](auto chars) {
     using CharacterType = std::decay_t<decltype(*chars.data())>;
 
     size_t position = SkipWhile<CharacterType, IsSpaceOrDelimiter>(chars, 0);

@@ -674,7 +674,7 @@ static bool IsValidElementNamePerHTMLParser(const String& name) {
   if (name.empty()) {
     return false;
   }
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       name, [](auto chars) { return IsValidElementNamePerHTMLParser(chars); });
 }
 
@@ -686,7 +686,7 @@ bool IsValidElementName(Document* document, const String& name) {
     if (name.empty()) {
       return false;
     }
-    return WTF::VisitCharacters(
+    return VisitCharacters(
         name, [](auto chars) { return !ParseElementLocalNameNewSpec(chars); });
   }
 
@@ -1983,7 +1983,7 @@ void Document::UpdateTitle(const String& title) {
   if (raw_title_.empty()) {
     title_ = String();
   } else {
-    title_ = WTF::VisitCharacters(
+    title_ = VisitCharacters(
         raw_title_, [](auto chars) { return CanonicalizedTitle(chars); });
   }
 
@@ -7115,7 +7115,7 @@ bool Document::IsValidName(const StringView& name) {
   unsigned length = name.length();
   if (!length)
     return false;
-  return WTF::VisitCharacters(name, [](auto chars) {
+  return VisitCharacters(name, [](auto chars) {
     if (IsValidNameASCII(chars)) {
       return true;
     }
@@ -7129,7 +7129,7 @@ bool Document::IsValidAttributeLocalNameNewSpec(const StringView& local_name) {
   if (local_name.empty()) {
     return false;
   }
-  return WTF::VisitCharacters(local_name, [](auto chars) {
+  return VisitCharacters(local_name, [](auto chars) {
     return !ParseAttributeLocalNameNewSpec(chars);
   });
 }
@@ -7139,7 +7139,7 @@ bool Document::IsValidElementLocalNameNewSpec(const StringView& local_name) {
   if (local_name.empty()) {
     return false;
   }
-  return WTF::VisitCharacters(local_name, [](auto chars) {
+  return VisitCharacters(local_name, [](auto chars) {
     return !ParseElementLocalNameNewSpec(chars);
   });
 }
@@ -7273,7 +7273,7 @@ bool Document::ParseQualifiedName(const AtomicString& qualified_name,
     return false;
   }
 
-  ParseQualifiedNameResult return_value = WTF::VisitCharacters(
+  ParseQualifiedNameResult return_value = VisitCharacters(
       qualified_name,
       [&qualified_name, &prefix, &local_name, &parsing_mode](auto chars) {
         if (RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()) {

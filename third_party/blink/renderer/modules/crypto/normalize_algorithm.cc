@@ -183,7 +183,7 @@ bool AlgorithmNameComparator(const AlgorithmNameMapping& a,
 
 std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
     const String& algorithm_name) {
-  auto it = WTF::VisitCharacters(algorithm_name, [&](auto algo_chars) {
+  auto it = VisitCharacters(algorithm_name, [&](auto algo_chars) {
     using CharType = decltype(algo_chars)::value_type;
     auto begin = kAlgorithmNameMappings.begin();
     auto end = kAlgorithmNameMappings.end();

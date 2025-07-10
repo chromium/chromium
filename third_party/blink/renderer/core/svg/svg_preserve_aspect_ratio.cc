@@ -184,7 +184,7 @@ SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       string, [&](auto chars) { return ParseInternal(chars, true); });
 }
 

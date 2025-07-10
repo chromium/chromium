@@ -33,7 +33,7 @@ double CSSTokenizerInputStream::GetDouble(unsigned start, unsigned end) const {
   bool is_result_ok = false;
   double result = 0.0;
   if (start < end) {
-    result = WTF::VisitCharacters(
+    result = VisitCharacters(
         StringView(string_, offset_ + start, end - start),
         [&](auto chars) { return CharactersToDouble(chars, &is_result_ok); });
   }

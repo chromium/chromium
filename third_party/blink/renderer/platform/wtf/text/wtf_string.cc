@@ -403,7 +403,7 @@ std::string String::Ascii() const {
     return std::string();
 
   std::string ascii(length, '\0');
-  WTF::VisitCharacters(*this, [&ascii](auto chars) {
+  VisitCharacters(*this, [&ascii](auto chars) {
     for (size_t i = 0; i < chars.size(); ++i) {
       const auto ch = chars[i];
       ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);

@@ -147,7 +147,7 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
                : WhitespaceMode::kNotAllWhitespace;
   }
 
-  return WTF::VisitCharacters(string_view, [](auto chars) {
+  return VisitCharacters(string_view, [](auto chars) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
     for (auto ch : chars) {
       if (ch == ' ') [[likely]] {

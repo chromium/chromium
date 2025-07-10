@@ -62,7 +62,7 @@ std::string TextEncoding::Encode(const StringView& string,
     return std::string();
 
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
-  return WTF::VisitCharacters(string, [&text_codec, handling](auto chars) {
+  return VisitCharacters(string, [&text_codec, handling](auto chars) {
     return text_codec->Encode(chars, handling);
   });
 }

@@ -73,7 +73,7 @@ const SVGViewSpec* SVGViewSpec::CreateFromAspectRatio(
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
   if (spec.empty())
     return false;
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       spec, [&](auto chars) { return ParseViewSpecInternal(chars); });
 }
 

@@ -25,7 +25,7 @@ bool IsCSPDirectiveValueCharacter(UChar c) {
 }  // namespace
 
 bool MatchesTheSerializedCSPGrammar(const String& value) {
-  return WTF::VisitCharacters(value, [](auto chars) {
+  return VisitCharacters(value, [](auto chars) {
     while (!chars.empty()) {
       // Consume any whitespaces.
       while (!chars.empty() && IsASCIISpace(chars.front())) {

@@ -65,7 +65,7 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(string, [&](auto chars) {
+  return VisitCharacters(string, [&](auto chars) {
     return Parse(chars.data(), chars.data() + chars.size());
   });
 }
@@ -129,7 +129,7 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     return SVGParseStatus::kExpectedNumberOrPercentage;
 
   float number = 0;
-  SVGParsingError error = WTF::VisitCharacters(string, [&](auto chars) {
+  SVGParsingError error = VisitCharacters(string, [&](auto chars) {
     const auto* start = chars.data();
     return ParseNumberOrPercentage(start, start + chars.size(), number);
   });

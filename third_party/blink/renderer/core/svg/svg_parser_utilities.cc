@@ -215,7 +215,7 @@ bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
     return false;
   }
 
-  return WTF::VisitCharacters(string, [&](auto chars) {
+  return VisitCharacters(string, [&](auto chars) {
     if (!ParseNumber(chars, x)) {
       return false;
     }

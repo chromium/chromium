@@ -71,7 +71,7 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
   // U+FFFD-replacement rather than ASCII fallback substitution when
   // unencodable sequences (for instance, unpaired UTF-16 surrogates)
   // are present in the input.
-  std::string result = WTF::VisitCharacters(input, [this](auto chars) {
+  std::string result = VisitCharacters(input, [this](auto chars) {
     return codec_->Encode(chars, UnencodableHandling::kNoUnencodables);
   });
   if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
@@ -94,7 +94,7 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
       TextEncoderEncodeIntoResult::Create();
 
   TextCodec::EncodeIntoResult encode_into_result_data =
-      WTF::VisitCharacters(source, [this, &destination](auto chars) {
+      VisitCharacters(source, [this, &destination](auto chars) {
         return codec_->EncodeInto(chars, destination->ByteSpan());
       });
   encode_into_result->setRead(encode_into_result_data.code_units_read);

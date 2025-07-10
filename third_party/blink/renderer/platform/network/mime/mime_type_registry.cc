@@ -52,7 +52,7 @@ std::string ToLowerASCIIInternal(base::span<const CharType> chars) {
 std::string ToLowerASCIIOrEmpty(const String& str) {
   if (str.empty() || !str.ContainsOnlyASCIIOrEmpty())
     return std::string();
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       str, [](auto chars) { return ToLowerASCIIInternal(chars); });
 }
 

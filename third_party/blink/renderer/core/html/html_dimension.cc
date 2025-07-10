@@ -105,7 +105,7 @@ static HTMLDimension ParseDimension(
 static HTMLDimension ParseDimension(const String& raw_token,
                                     size_t last_parsed_index,
                                     size_t end_of_current_token) {
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       raw_token, [last_parsed_index, end_of_current_token](auto chars) {
         return ParseDimension(chars.subspan(
             last_parsed_index, end_of_current_token - last_parsed_index));
@@ -192,7 +192,7 @@ bool ParseDimensionValue(const String& input, HTMLDimension& dimension) {
   if (input.empty()) {
     return false;
   }
-  return WTF::VisitCharacters(input, [&dimension](auto chars) {
+  return VisitCharacters(input, [&dimension](auto chars) {
     return ParseDimensionValue(chars, dimension);
   });
 }

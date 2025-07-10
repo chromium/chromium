@@ -167,7 +167,7 @@ static std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
 static SVGPoint* ParsePoint(const String& string) {
   std::optional<gfx::PointF> point;
   if (!string.empty()) {
-    point = WTF::VisitCharacters(string, [&](auto chars) {
+    point = VisitCharacters(string, [&](auto chars) {
       return ParsePointInternal(chars.data(), chars.data() + chars.size());
     });
   }

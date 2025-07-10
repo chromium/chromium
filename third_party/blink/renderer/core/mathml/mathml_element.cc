@@ -61,7 +61,7 @@ bool ParseScriptLevel(const AtomicString& attributeValue,
     value = value.Right(1);
   }
 
-  return WTF::VisitCharacters(value, [&](auto chars) {
+  return VisitCharacters(value, [&](auto chars) {
     NumberParsingResult result;
     constexpr auto kOptions =
         NumberParsingOptions().SetAcceptMinusZeroForUnsigned();

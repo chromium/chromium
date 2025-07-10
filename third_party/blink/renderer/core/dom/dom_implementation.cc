@@ -74,7 +74,7 @@ DocumentType* DOMImplementation::createDocumentType(
     ExceptionState& exception_state) {
   AtomicString prefix, local_name;
   if (RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()) {
-    if (!WTF::VisitCharacters(qualified_name, [](auto chars) {
+    if (!VisitCharacters(qualified_name, [](auto chars) {
           return IsValidDoctypeName(chars);
         })) {
       StringBuilder message;

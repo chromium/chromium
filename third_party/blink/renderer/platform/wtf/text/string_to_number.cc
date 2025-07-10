@@ -205,7 +205,7 @@ int CharactersToInt(base::span<const UChar> data,
 int CharactersToInt(const StringView& string,
                     NumberParsingOptions options,
                     bool* ok) {
-  return WTF::VisitCharacters(
+  return VisitCharacters(
       string, [&](auto chars) { return CharactersToInt(chars, options, ok); });
 }
 
