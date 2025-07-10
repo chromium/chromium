@@ -104,8 +104,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
  private:
   void Dispose() override;
 
-  Member<ImageLayerBridge> image_layer_bridge_;
-
   // This function resets the internal image resource to a image of the same
   // size than the original, with the same properties, but completely black.
   // This is used to follow the standard regarding transferToBitmap
@@ -114,6 +112,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   CanvasResourceProvider* GetOrCreateResourceProviderForOffscreenCanvas();
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 
+  Member<ImageLayerBridge> image_layer_bridge_;
   std::unique_ptr<CanvasResourceProvider>
       resource_provider_for_offscreen_canvas_;
 };
