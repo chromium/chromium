@@ -4613,6 +4613,8 @@ static_library("ui") {
       "views/user_education/browser_help_bubble.h",
       "views/user_education/browser_help_bubble_event_relay.cc",
       "views/user_education/browser_help_bubble_event_relay.h",
+      "views/user_education/browser_ntp_promos.cc",
+      "views/user_education/browser_ntp_promos.h",
       "views/user_education/browser_user_education_service.cc",
       "views/user_education/browser_user_education_service.h",
       "views/user_education/custom_webui_help_bubble.cc",

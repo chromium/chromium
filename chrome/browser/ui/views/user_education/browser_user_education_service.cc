@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/views/user_education/browser_ntp_promos.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
@@ -1838,26 +1839,6 @@ CreateUserEducationResources(BrowserView* browser_view) {
         &user_education_service->tutorial_service(),
         &user_education_service->product_messaging_controller());
   }
-}
-
-void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
-  using user_education::NtpPromoContent;
-  using user_education::NtpPromoSpecification;
-
-  if (registry.AreAnyPromosRegistered()) {
-    return;
-  }
-
-  registry.AddPromo(NtpPromoSpecification(
-      kNtpSignInPromoId, NtpPromoContent("", IDS_NTP_SIGN_IN_PROMO, 0),
-      base::BindRepeating([](Profile* profile) {
-        return NtpPromoSpecification::Eligibility::kEligible;
-      }),
-      base::BindRepeating([](Browser* browser) {}),
-      /*show_after=*/{},
-      user_education::Metadata(
-          141, "cjgrant@google.com",
-          "Promotes sign-in capability on the New Tab Page")));
 }
 
 void QueueLegalAndPrivacyNotices(Profile* profile) {

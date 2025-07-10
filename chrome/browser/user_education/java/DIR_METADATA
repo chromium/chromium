@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Mobile>UserEducation"
+}
+os: ANDROID
+buganizer_public: {
+  component_id: 1457232
+}
