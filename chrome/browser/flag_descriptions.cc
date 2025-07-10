@@ -5080,6 +5080,10 @@ const char kGridTabSwitcherUpdateName[] = "Grid tab switcher update";
 const char kGridTabSwitcherUpdateDescription[] =
     "Enables the visual changes in the grid tab switcher.";
 
+const char kHubSlideAnimationName[] = "Hub Slide Animation";
+const char kHubSlideAnimationDescription[] =
+    "Enables the slide animation on the hub when panes are switched.";
+
 const char kAndroidPinnedTabsName[] = "Android pinned tabs";
 const char kAndroidPinnedTabsDescription[] =
     "Enables the ability to pin tabs through various entry points like context "

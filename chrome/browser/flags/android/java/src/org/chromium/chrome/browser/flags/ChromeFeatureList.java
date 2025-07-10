@@ -436,6 +436,7 @@ public abstract class ChromeFeatureList {
     public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
             "HomepageIsNewTabPagePolicyAndroid";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
+    public static final String HUB_SLIDE_ANIMATION = "HubSlideAnimation";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
@@ -893,6 +894,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
             newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
+    public static final CachedFlag sHubSlideAnimation = newCachedFlag(HUB_SLIDE_ANIMATION, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLegacyTabStateDeprecation =
@@ -1132,6 +1134,7 @@ public abstract class ChromeFeatureList {
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sHomepageIsNewTabPagePolicyAndroid,
+                    sHubSlideAnimation,
                     sKeyboardEscBackNavigation,
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,

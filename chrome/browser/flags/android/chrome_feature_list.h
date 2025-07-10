@@ -38,6 +38,7 @@ BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
 BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
+BASE_DECLARE_FEATURE(kAndroidPinnedTabs);
 BASE_DECLARE_FEATURE(kAndroidTabGroupsColorUpdateGM3);
 BASE_DECLARE_FEATURE(kAndroidTabHighlighting);
 BASE_DECLARE_FEATURE(kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch);
@@ -149,10 +150,12 @@ BASE_DECLARE_FEATURE(kForceTranslucentNotificationTrampoline);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);
 BASE_DECLARE_FEATURE(kGridTabSwitcherSurfaceColorUpdate);
+BASE_DECLARE_FEATURE(kGridTabSwitcherUpdate);
 BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHeadlessTabModel);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomepageIsNewTabPagePolicyAndroid);
+BASE_DECLARE_FEATURE(kHubSlideAnimation);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kInstanceSwitcherV2);
@@ -261,8 +264,6 @@ BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);
 BASE_DECLARE_FEATURE(kUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
-BASE_DECLARE_FEATURE(kGridTabSwitcherUpdate);
-BASE_DECLARE_FEATURE(kAndroidPinnedTabs);
 
 // For FeatureParam, Alphabetical:
 constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(

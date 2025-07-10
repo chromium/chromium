@@ -12954,6 +12954,7 @@ from previous Chrome versions.
   <int value="-396496344" label="ViewsTaskManager:enabled"/>
   <int value="-396443477" label="CrOSDspBasedAecAllowed:disabled"/>
   <int value="-396046249" label="PhotoPickerVideoSupport:enabled"/>
+  <int value="-395864120" label="HubSlideAnimation:disabled"/>
   <int value="-395606844" label="enable-site-settings"/>
   <int value="-395454065" label="DisablePostScriptPrinting:disabled"/>
   <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
@@ -19349,6 +19350,7 @@ from previous Chrome versions.
   <int value="1942607039" label="NtpReducedLogoSpace:enabled"/>
   <int value="1942911276" label="enable-grouped-history"/>
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
+  <int value="1943477177" label="HubSlideAnimation:enabled"/>
   <int value="1944156526" label="sync-url"/>
   <int value="1944880313" label="ShimlessRMADynamicDeviceInfoInputs:enabled"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>

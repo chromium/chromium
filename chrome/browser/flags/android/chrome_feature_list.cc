@@ -211,6 +211,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOpenIncognitoAsWindow,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
+    &kAndroidPinnedTabs,
     &kAndroidTabGroupsColorUpdateGM3,
     &kAndroidTabHighlighting,
     &kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch,
@@ -317,11 +318,13 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGridTabSwitcherSurfaceColorUpdate,
+    &kGridTabSwitcherUpdate,
     &kGroupNewTabWithParent,
     &kHeadlessTabModel,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
     &kHomepageIsNewTabPagePolicyAndroid,
+    &kHubSlideAnimation,
     &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
     &kIncognitoScreenshot,
@@ -422,8 +425,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
-    &kGridTabSwitcherUpdate,
-    &kAndroidPinnedTabs,
+
     &network::features::kLocalNetworkAccessChecks,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -825,6 +827,10 @@ BASE_FEATURE(kGridTabSwitcherUpdate,
 
 BASE_FEATURE(kAndroidPinnedTabs,
              "AndroidPinnedTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHubSlideAnimation,
+             "HubSlideAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrewarmTab, "CCTPrewarmTab", base::FEATURE_ENABLED_BY_DEFAULT);

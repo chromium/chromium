@@ -5944,6 +5944,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPinnedTabsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabs)},
 
+    // Hub slide animation.
+    {"hub-slide-animation", flag_descriptions::kHubSlideAnimationName,
+     flag_descriptions::kHubSlideAnimationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kHubSlideAnimation)},
+
     {"tab-collection-android", flag_descriptions::kTabCollectionAndroidName,
      flag_descriptions::kTabCollectionAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabCollectionAndroid)},
