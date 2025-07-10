@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -520,6 +521,7 @@ public class ContextMenuTest {
     @Feature({"Browser"})
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisabledTest(message = "https://crbug.com/430777988")
     public void testLensChipNotShowingAfterMenuDismissed() throws Throwable {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
@@ -552,6 +554,7 @@ public class ContextMenuTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisabledTest(message = "https://crbug.com/430777988")
     public void testDismissContextMenuOnClickLensTranslateChipEnabled() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -607,6 +610,7 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @DisabledTest(message = "https://crbug.com/430777988")
     public void testDismissContextMenuOnClickShoppingLensChipEnabled() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -635,6 +639,7 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/430777988")
     public void testDismissContextMenuOnClick() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
