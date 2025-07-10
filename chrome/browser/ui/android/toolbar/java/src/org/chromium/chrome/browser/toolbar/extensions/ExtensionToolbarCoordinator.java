@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -41,6 +42,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             WindowAndroid windowAndroid,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
+            TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         ExtensionToolbarCoordinator coordinator =
                 ServiceLoaderUtil.maybeCreate(ExtensionToolbarCoordinator.class);
@@ -53,6 +55,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
                 windowAndroid,
                 profileSupplier,
                 currentTabSupplier,
+                tabCreator,
                 themeColorProvider);
         return coordinator;
     }
@@ -70,6 +73,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             WindowAndroid windowAndroid,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
+            TabCreator tabCreator,
             ThemeColorProvider themeColorProvider);
 
     /**

@@ -132,7 +132,9 @@ public class UrlConstants {
     public static final String EXPLORE_HOST = "explore";
     public static final String EXPLORE_URL = "chrome-native://explore/";
     public static final String CHROME_DINO_URL = "chrome://dino/";
+
     public static final String CHROME_EXTENSIONS_URL = "chrome://extensions/";
+    public static final String CHROME_WEBSTORE_URL = "https://chromewebstore.google.com/";
 
     public static final String LOCALHOST = "localhost";
 

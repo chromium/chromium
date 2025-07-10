@@ -20,6 +20,7 @@ android_library("java") {
     "//base:service_loader_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/theme:java",
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_full_java",

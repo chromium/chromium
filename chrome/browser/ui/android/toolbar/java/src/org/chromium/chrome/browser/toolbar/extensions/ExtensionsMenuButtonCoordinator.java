@@ -18,6 +18,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -32,6 +34,8 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final TabCreator mTabCreator;
 
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
     private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
@@ -44,7 +48,9 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
             ListMenuButton extensionsMenuButton,
             MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<Profile> profileSupplier) {
+            ObservableSupplier<Profile> profileSupplier,
+            ObservableSupplier<Tab> currentTabSupplier,
+            TabCreator tabCreator) {
         mContext = context;
 
         mExtensionsMenuButton = extensionsMenuButton;
@@ -58,6 +64,9 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         mThemeColorProvider.addTintObserver(mTintObserver);
 
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
+
+        mCurrentTabSupplier = currentTabSupplier;
+        mTabCreator = tabCreator;
     }
 
     private void onProfileUpdated(@Nullable Profile profile) {
@@ -84,7 +93,8 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     void onClick(View view) {
         if (mExtensionsMenuCoordinator == null) {
             mExtensionsMenuCoordinator =
-                    new ExtensionsMenuCoordinator(mContext, mExtensionsMenuButton);
+                    new ExtensionsMenuCoordinator(
+                            mContext, mExtensionsMenuButton, mCurrentTabSupplier, mTabCreator);
         }
 
         mExtensionsMenuCoordinator.showMenu();

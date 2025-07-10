@@ -1062,6 +1062,7 @@ public class ToolbarManager
                             windowAndroid,
                             profileSupplier,
                             tabProvider,
+                            mTabCreatorManager.getTabCreator(false),
                             browsingModeThemeColorProvider);
         }
 
