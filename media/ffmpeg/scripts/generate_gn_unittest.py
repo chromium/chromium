@@ -388,6 +388,7 @@ class SourceSetUnittest(unittest.TestCase):
                 SourceListCondition('arm', 'Chromium', 'linux'),
                 SourceListCondition('arm64', 'Chromium', 'linux'),
                 SourceListCondition('arm-neon', 'Chromium', 'linux'),
+                SourceListCondition('riscv64', 'Chromium', 'linux'),
             ]))
         gg.ReduceConditionalLogic(a)
 

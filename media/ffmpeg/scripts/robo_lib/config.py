@@ -197,6 +197,8 @@ class RoboConfiguration:
             self._host_architecture = "mips64el"
         elif platform.machine().startswith("arm"):
             self._host_architecture = "arm"
+        elif platform.machine() == "riscv64":
+            self._host_architecture = "riscv64"
         else:
             raise ValueError(
                 f"Unrecognized CPU architecture: {platform.machine()}")

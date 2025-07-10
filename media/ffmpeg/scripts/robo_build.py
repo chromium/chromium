@@ -86,7 +86,7 @@ def CopyConfigPythonTranslation(robo_configuration):
     for opsys in ("android", "linux", "linux-noasm", "mac", "win"):
         for target in ("Chromium", "Chrome"):
             for arch in ("arm", "arm-neon", "arm64", "ia32", "x64", "mipsel",
-                         "mips64el"):
+                         "mips64el", "riscv64"):
                 gen_dir = robo_configuration.target_config_directory(
                     arch, opsys, target)
                 export_dir = robo_configuration.exported_configs_directory(

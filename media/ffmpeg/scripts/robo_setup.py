@@ -210,9 +210,9 @@ def EnsureLLVMSymlinks(robo_configuration):
 
 
 def EnsureSysroots(robo_configuration):
-    """Install arm/arm64/mips/mips64 sysroots."""
+    """Install arm/arm64/mips/mips64/riscv64 sysroots."""
     robo_configuration.chdir_to_chrome_src()
-    for arch in ["arm", "arm64", "mips", "mips64el"]:
+    for arch in ["arm", "arm64", "mips", "mips64el", "riscv64"]:
         if robo_configuration.Call([
                 "build/linux/sysroot_scripts/install-sysroot.py",
                 f"--arch={arch}"
@@ -282,12 +282,13 @@ def EnsureUpstreamRemote(robo_configuration):
 
 def EnsureLinuxSysroots(robo_configuration):
     '''
-    linux arm/arm-neon/arm64/mipsel/mips64el:
-    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 ready
+    linux arm/arm-neon/arm64/mipsel/mips64el/riscv64:
+    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 or RISCV64 ready
     Chromium checkout:
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips64el
+      build/linux/sysroot_scripts/install-sysroot.py --arch=riscv64
     '''
     pass
