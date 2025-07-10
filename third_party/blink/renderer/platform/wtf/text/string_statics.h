@@ -34,14 +34,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
-class StringStatics {
-  STATIC_ONLY(StringStatics);
+WTF_EXPORT void InitStringStatics();
 
- public:
-  WTF_EXPORT static void Init();
-};
-}
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_STATICS_H_

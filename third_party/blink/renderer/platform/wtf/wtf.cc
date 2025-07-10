@@ -85,7 +85,7 @@ void InitializeWtf() {
 
   WTF::internal::InitializeMainThreadStackEstimate();
   AtomicString::Init();
-  WTF::StringStatics::Init();
+  InitStringStatics();
 }
 
 }  // namespace blink

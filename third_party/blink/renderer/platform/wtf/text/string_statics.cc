@@ -130,43 +130,37 @@ void AtomicString::Init() {
   new (base::NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
 }
 
-}  // namespace blink
-namespace WTF {
-
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
     base::span<const char> literal) {
   return base::AdoptRef(StringImpl::CreateStatic(literal));
 }
 
-void StringStatics::Init() {
-  DCHECK(blink::IsMainThread());
+void InitStringStatics() {
+  DCHECK(IsMainThread());
 
   StringImpl::InitStatics();
 
-  new (base::NotNullTag::kNotNull, const_cast<String*>(&blink::g_empty_string))
+  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_empty_string))
       String(StringImpl::empty_);
-  new (base::NotNullTag::kNotNull,
-       const_cast<String*>(&blink::g_empty_string16_bit))
+  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_empty_string16_bit))
       String(StringImpl::empty16_bit_);
-  new (base::NotNullTag::kNotNull,
-       const_cast<String*>(&blink::g_xmlns_with_colon)) String("xmlns:");
+  new (base::NotNullTag::kNotNull, const_cast<String*>(&g_xmlns_with_colon))
+      String("xmlns:");
 
-  using blink::AtomicString;
   // FIXME: These should be allocated at compile time.
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_star_atom)
-      AtomicString("*");
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_xml_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
+  new (base::NotNullTag::kNotNull, (void*)&g_xml_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xml")));
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_xmlns_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_xmlns_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xmlns")));
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_xlink_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_xlink_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xlink")));
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_http_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_http_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("http")));
-  new (base::NotNullTag::kNotNull, (void*)&blink::g_https_atom)
+  new (base::NotNullTag::kNotNull, (void*)&g_https_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("https")));
 
-  blink::NewlineThenWhitespaceStringsTable::Init();
+  NewlineThenWhitespaceStringsTable::Init();
 }
 
-}  // namespace WTF
+}  // namespace blink

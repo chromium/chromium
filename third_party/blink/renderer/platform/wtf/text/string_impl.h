@@ -947,10 +947,4 @@ struct HashTraits<scoped_refptr<StringImpl>>;
 
 }  // namespace blink
 
-namespace WTF {
-
-// TODO(crbug.com/422768753): Remove this `using` directive.
-using blink::StringImpl;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
