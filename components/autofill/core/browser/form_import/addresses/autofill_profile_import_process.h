@@ -58,9 +58,9 @@ enum class AutofillProfileImportType {
   // even if the user declines the migration.
   kProfileMigrationAndSilentUpdate = 12,
   // A superset of a Home and Work address was submitted and no other non-Home
-  // and Work profile qualified for an update. Since Home and Work is read only,
-  // no update prompt can be shown. Instead, this is treated as a special kind
-  // of new profile prompt. It is separate from kNewProfile for metrics.
+  // and Work profile qualified for an update. This will trigger an update
+  // prompt, but accepting this prompt creates a new H/W superset profile
+  // under the hood since H/W is read-only.
   kHomeAndWorkSuperset = 13,
   kMaxValue = kHomeAndWorkSuperset
 };
