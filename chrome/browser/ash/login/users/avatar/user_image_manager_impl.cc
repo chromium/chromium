@@ -94,13 +94,14 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
   return true;
 }
 
-// Returns the codec enum for the given image path's extension.
-ImageDecoder::ImageCodec ChooseCodecFromPath(const base::FilePath& image_path) {
+// Returns the image format enum for the given image path's extension.
+user_manager::UserImage::ImageFormat ChooseFormatFromPath(
+    const base::FilePath& image_path) {
   if (image_path.Extension() == FILE_PATH_LITERAL(".png")) {
-    return ImageDecoder::PNG_CODEC;
+    return user_manager::UserImage::ImageFormat::FORMAT_PNG;
   }
 
-  return ImageDecoder::DEFAULT_CODEC;
+  return user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN;
 }
 
 // Returns the suffix for the given image format, that should be JPEG or PNG.
@@ -308,7 +309,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
     DCHECK(!image_path_.empty());
     user_image_loader::StartWithFilePath(
         parent_->background_task_runner_, image_path_,
-        ChooseCodecFromPath(image_path_),
+        ChooseFormatFromPath(image_path_),
         0,  // Do not crop.
         base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
                        false));
@@ -369,7 +370,8 @@ void UserImageManagerImpl::Job::SetToImageData(
 
   user_image_loader::StartWithData(
       parent_->background_task_runner_, std::move(data),
-      ImageDecoder::DEFAULT_CODEC, login::kMaxUserImageSize,
+      user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN,
+      login::kMaxUserImageSize,
       base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(), true));
 }
 
@@ -385,7 +387,8 @@ void UserImageManagerImpl::Job::SetToPath(const base::FilePath& path,
 
   DCHECK(!path.empty());
   user_image_loader::StartWithFilePath(
-      parent_->background_task_runner_, path, ImageDecoder::DEFAULT_CODEC,
+      parent_->background_task_runner_, path,
+      user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN,
       resize ? login::kMaxUserImageSize : 0,
       base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(), true));
 }

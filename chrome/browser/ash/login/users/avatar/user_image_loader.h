@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
+#include "components/user_manager/user_image/user_image.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -40,13 +40,13 @@ using LoadedCallback =
 void StartWithFilePath(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& file_path,
-    ImageDecoder::ImageCodec image_codec,
+    user_manager::UserImage::ImageFormat image_format,
     int pixels_per_side,
     LoadedCallback loaded_cb);
 void StartWithData(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::unique_ptr<std::string> data,
-    ImageDecoder::ImageCodec image_codec,
+    user_manager::UserImage::ImageFormat image_format,
     int pixels_per_side,
     LoadedCallback loaded_cb);
 

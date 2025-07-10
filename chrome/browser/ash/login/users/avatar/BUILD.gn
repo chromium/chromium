@@ -26,7 +26,6 @@ static_library("avatar") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/image_decoder",
     "//components/session_manager/core",
     "//components/sync_preferences",
     "//components/user_manager",
@@ -82,7 +81,7 @@ static_library("test_support") {
   public_deps = [
     ":avatar",
     "//base",
-    "//chrome/browser/image_decoder",
+    "//base/test:test_support",
     "//components/user_manager",
     "//content/public/browser",
     "//testing/gmock",

@@ -19,6 +19,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
@@ -138,7 +139,8 @@ void SetCustomizedDefaultWallpaperAfterCheck(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
     user_image_loader::StartWithFilePath(
-        task_runner, file_path, ImageDecoder::DEFAULT_CODEC,
+        task_runner, file_path,
+        user_manager::UserImage::ImageFormat::FORMAT_UNKNOWN,
         0,  // Do not crop.
         base::BindOnce(&OnCustomizedDefaultWallpaperDecoded, wallpaper_url,
                        resized_small_path, resized_large_path));
