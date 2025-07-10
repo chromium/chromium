@@ -33,6 +33,7 @@ import static org.chromium.components.signin.test.util.TestAccounts.MANAGED_ACCO
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.graphics.Color;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -725,5 +726,37 @@ public class CollaborationIntegrationTest {
         memberJoinsSharedGroup(TEST_COLLABORATION_ID, MANAGED_ACCOUNT);
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
         mRenderTestRule.render(layoutManager.getChildAt(0), "tiles_group_pane_two_plus_count");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTilesBottomStripRender() throws Exception {
+        mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT1.getGaiaId(), Color.RED);
+        mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT2.getGaiaId(), Color.BLUE);
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+
+        LocalTabGroupId localTabGroupId = createTabGroup();
+        CriteriaHelper.pollUiThread(() -> cta.findViewById(R.id.tab_group_ui_toolbar_view) != null);
+        View targetView = cta.findViewById(R.id.tab_group_ui_toolbar_view);
+        // While the tiles are not within the RecyclerView, the tab favicons do have a RecyclerView.
+        CriteriaHelper.pollUiThread(
+                () -> targetView.findViewById(R.id.tab_list_recycler_view) != null);
+        RecyclerView recyclerView = targetView.findViewById(R.id.tab_list_recycler_view);
+        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
+        mRenderTestRule.render(targetView, "tiles_bottom_strip_not_shared");
+
+        linkLocalGroupToSharedIdForOwner(localTabGroupId, TEST_COLLABORATION_ID, ACCOUNT1);
+        mRenderTestRule.render(targetView, "tiles_bottom_strip_only_owner");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, ACCOUNT2);
+        mRenderTestRule.render(targetView, "tiles_bottom_strip_two_faces");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, CHILD_ACCOUNT);
+        mRenderTestRule.render(targetView, "tiles_bottom_strip_three_faces");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, MANAGED_ACCOUNT);
+        mRenderTestRule.render(targetView, "tiles_bottom_strip_two_plus_count");
     }
 }
