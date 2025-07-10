@@ -2872,7 +2872,7 @@
   {
     "name": "enable-chrome-refresh-token-binding",
     "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 139
+    "expiry_milestone": 143
   },
   {"name": "enable-chromeos-live-translate",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],
