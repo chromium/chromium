@@ -11,6 +11,8 @@
  */
 
 import './composebox/composebox.js';
+import './ntp_promo/ntp_promo_proxy.js';
+import './ntp_promo/ntp_single_promo.js';
 import './middle_slot_promo.js';
 import './voice_search_overlay.js';
 import './modules/module_descriptors.js';
@@ -54,4 +56,6 @@ export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_
 export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, ModulesElement, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
+export {NtpPromoProxy, NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
+export {NtpSinglePromoElement} from './ntp_promo/ntp_single_promo.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

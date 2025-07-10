@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -810,6 +811,15 @@ void NewTabPageUI::BindInterface(
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
+        pending_receiver) {
+  if (ntp_promo_handler_factory_receiver_.is_bound()) {
+    ntp_promo_handler_factory_receiver_.reset();
+  }
+  ntp_promo_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -879,6 +889,13 @@ void NewTabPageUI::CreateHelpBubbleHandler(
       std::vector<ui::ElementIdentifier>{
           NewTabPageUI::kCustomizeChromeButtonElementId,
           NewTabPageUI::kModulesCustomizeIPHAnchorElement});
+}
+
+void NewTabPageUI::CreateNtpPromoHandler(
+    mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
+    mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler) {
+  ntp_promo_handler_ =
+      NtpPromoHandler::Create(std::move(client), std::move(handler), profile_);
 }
 
 // OnColorProviderChanged can be called during the destruction process and

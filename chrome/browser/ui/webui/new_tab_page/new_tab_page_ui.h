@@ -18,6 +18,8 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -106,6 +108,7 @@ class NewTabPageUI
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
+      public ntp_promo::mojom::NtpPromoHandlerFactory,
       public NtpCustomBackgroundServiceObserver,
       content::WebContentsObserver {
  public:
@@ -222,6 +225,10 @@ class NewTabPageUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
+          pending_receiver);
+
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
           child_page);
@@ -258,6 +265,12 @@ class NewTabPageUI
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
+
+  // ntp_promo::mojom::NtpPromoHandlerFactory:
+  void CreateNtpPromoHandler(
+      mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
+      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler)
       override;
 
   // NtpCustomBackgroundServiceObserver:
@@ -297,6 +310,9 @@ class NewTabPageUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+  std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
+  mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
+      ntp_promo_handler_factory_receiver_{this};
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif

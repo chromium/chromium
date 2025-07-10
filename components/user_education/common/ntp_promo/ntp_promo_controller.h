@@ -17,6 +17,23 @@
 
 namespace user_education {
 
+// The contents of a promo as it will be shown in the NTP.
+struct NtpShowablePromo {
+  NtpShowablePromo();
+  NtpShowablePromo(std::string_view id_,
+                   std::string_view icon_name_,
+                   std::string_view body_text_,
+                   std::string_view action_button_text_);
+  NtpShowablePromo(const NtpShowablePromo& other);
+  NtpShowablePromo& operator=(const NtpShowablePromo& other);
+  ~NtpShowablePromo();
+
+  std::string id;
+  std::string icon_name;
+  std::string body_text;
+  std::string action_button_text;
+};
+
 // This struct provides ordered sets of pending and completed promos, intended
 // for use by the New Tab Page.
 struct NtpShowablePromos {
@@ -25,24 +42,17 @@ struct NtpShowablePromos {
   NtpShowablePromos(NtpShowablePromos&&) noexcept;
   NtpShowablePromos& operator=(NtpShowablePromos&&) noexcept;
 
-  struct Promo {
-    Promo(NtpPromoIdentifier id, const NtpPromoContent& content);
-
-    std::string id;
-    NtpPromoContent content;
-  };
-
   // Lists of promos, in descending priority order. Ie, if the UI chooses to
   // show only one promo from a list, choose the first one.
-  std::vector<Promo> pending;
-  std::vector<Promo> completed;
+  std::vector<NtpShowablePromo> pending;
+  std::vector<NtpShowablePromo> completed;
 };
 
 // Controls display of New Tab Page promos.
 class NtpPromoController {
  public:
   NtpPromoController(const NtpPromoController&) = delete;
-  ~NtpPromoController();
+  virtual ~NtpPromoController();
   void operator=(const NtpPromoController&) = delete;
 
   NtpPromoController(NtpPromoRegistry& registry,
@@ -50,13 +60,13 @@ class NtpPromoController {
 
   // Provides ordered lists of eligible and completed promos, intended to be
   // displayed by the NTP. May update prefs as a side effect.
-  NtpShowablePromos GenerateShowablePromos();
+  virtual NtpShowablePromos GenerateShowablePromos();
 
   // Called in response to an NTP promo activation.
-  void OnPromoClicked(NtpPromoIdentifier id);
+  virtual void OnPromoClicked(NtpPromoIdentifier id);
 
   // Returns the duration for which a promo can be shown after completion.
-  base::TimeDelta GetCompletedPromoShowDurationForTest() const;
+  static base::TimeDelta GetCompletedPromoShowDurationForTest();
 
  private:
   const raw_ref<NtpPromoRegistry> registry_;

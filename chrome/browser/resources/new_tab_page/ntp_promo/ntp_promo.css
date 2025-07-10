@@ -1,0 +1,16 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Display is set to block on promo loaded. */
+  display: none;
+
+  /* These are placeholder styles for visibility during testing. */
+  border: 4px solid #777;
+  padding: 8px;
+}

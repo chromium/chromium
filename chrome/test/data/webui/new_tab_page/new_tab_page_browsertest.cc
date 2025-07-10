@@ -73,6 +73,12 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
   RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
 }
 
+using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, NtpSinglePromoTest) {
+  RunTest("new_tab_page/ntp_promo/ntp_single_promo_test.js", "mocha.run()");
+}
+
 using NewTabPageModulesTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {

@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "ui/base/l10n/l10n_util.h"
 namespace user_education {
 
 namespace {
@@ -19,15 +20,25 @@ using KeyedNtpPromoData = user_education::KeyedNtpPromoData;
 
 using Eligibility = NtpPromoSpecification::Eligibility;
 
+NtpShowablePromo::NtpShowablePromo() = default;
+NtpShowablePromo::NtpShowablePromo(std::string_view id_,
+                                   std::string_view icon_name_,
+                                   std::string_view body_text_,
+                                   std::string_view action_button_text_)
+    : id(id_),
+      icon_name(icon_name_),
+      body_text(body_text_),
+      action_button_text(action_button_text_) {}
+NtpShowablePromo::NtpShowablePromo(const NtpShowablePromo& other) = default;
+NtpShowablePromo& NtpShowablePromo::operator=(const NtpShowablePromo& other) =
+    default;
+NtpShowablePromo::~NtpShowablePromo() = default;
+
 NtpShowablePromos::NtpShowablePromos() = default;
 NtpShowablePromos::~NtpShowablePromos() = default;
 NtpShowablePromos::NtpShowablePromos(NtpShowablePromos&&) noexcept = default;
 NtpShowablePromos& NtpShowablePromos::operator=(NtpShowablePromos&&) noexcept =
     default;
-
-NtpShowablePromos::Promo::Promo(NtpPromoIdentifier id,
-                                const NtpPromoContent& content)
-    : id(id), content(content) {}
 
 NtpPromoController::NtpPromoController(
     NtpPromoRegistry& registry,
@@ -69,9 +80,14 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
       continue;
     }
 
+    NtpShowablePromo promo(
+        spec->id(), spec->content().icon_name(),
+        l10n_util::GetStringUTF8(spec->content().body_text_string_id()),
+        l10n_util::GetStringUTF8(
+            spec->content().action_button_text_string_id()));
     (prefs.completed.is_null() ? showable_promos.pending
                                : showable_promos.completed)
-        .emplace_back(id, spec->content());
+        .push_back(std::move(promo));
   }
 
   return showable_promos;
@@ -81,8 +97,8 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(nullptr);
 }
 
-base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest()
-    const {
+// static
+base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest() {
   return kCompletedPromoShowDuration;
 }
 
