@@ -37,7 +37,6 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 {
   int rv = 0;
   // http://crbug.com/293736
-  // NaCl doesn't support monotonic clock based absolute deadlines.
   // On older Android platform versions, it's supported through the
   // non-standard pthread_cond_timedwait_monotonic_np. Newer platform
   // versions have pthread_condattr_setclock.
