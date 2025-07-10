@@ -257,11 +257,36 @@ BASE_FEATURE(kSignInPromoMaterialNextUI,
              "SignInPromoMaterialNextUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables surveys to measure the effectiveness of the identity model.
-// These surveys would be displayed after interactions such as signin, profile
-// switching, etc.
-BASE_FEATURE(kChromeIdentitySurvey,
-             "ChromeIdentitySurvey",
+BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninAccepted,
+             "ChromeIdentitySurveyDiceWebSigninAccepted",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninDeclined,
+             "ChromeIdentitySurveyDiceWebSigninDeclined",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyFirstRunSignin,
+             "ChromeIdentitySurveyFirstRunSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyProfilePickerAddProfileSignin,
+             "ChromeIdentitySurveyProfilePickerAddProfileSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyProfileMenuSignin,
+             "ChromeIdentitySurveyProfileMenuSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyPasswordBubbleSignin,
+             "ChromeIdentitySurveyPasswordBubbleSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyAddressBubbleSignin,
+             "ChromeIdentitySurveyAddressBubbleSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation,
+             "ChromeIdentitySurveySigninInterceptProfileSeparation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

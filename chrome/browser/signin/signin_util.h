@@ -176,6 +176,10 @@ SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 // TODO(crbug.com/419741847): Consider using also on mobile and moving the
 // method as necessary.
 bool ShouldShowHistorySyncOptinScreen(Profile& profile);
+
+// Returns true if the HaTS survey associated with the given `trigger` is
+// enabled via its corresponding feature flag.
+bool IsFeatureEnabledForHatsTrigger(const std::string& trigger);
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
 }  // namespace signin_util

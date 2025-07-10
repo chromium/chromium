@@ -611,13 +611,19 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
 class DiceWebSigninInterceptorWithHatsSurveyBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
+  DiceWebSigninInterceptorWithHatsSurveyBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {{switches::kChromeIdentitySurveyDiceWebSigninAccepted,
+          switches::kChromeIdentitySurveyDiceWebSigninDeclined}},
+        /*disabled_features=*/{});
+  }
+
   void SetUpOnMainThread() override {
     DiceWebSigninInterceptorBrowserTest::SetUpOnMainThread();
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
-    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
-        .WillRepeatedly(testing::Return(true));
   }
 
   void TearDownOnMainThread() override {
@@ -629,7 +635,7 @@ class DiceWebSigninInterceptorWithHatsSurveyBrowserTest
 
  private:
   raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
-  base::test::ScopedFeatureList feature_list{switches::kChromeIdentitySurvey};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a HaTS survey is launched when users accept the intercept signin
@@ -644,8 +650,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   ASSERT_FALSE(IsChromeSignedIn());
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerDiceWebSigninAccepted, _, _,
-                           IsEmpty(), IsEmpty(), _, _));
+              LaunchSurvey(kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _,
+                           _, _, _, _, _));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(IsChromeSignedIn());
@@ -663,8 +669,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   ASSERT_FALSE(IsChromeSignedIn());
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerDiceWebSigninDeclined, _, _,
-                           IsEmpty(), IsEmpty(), _, _));
+              LaunchSurvey(kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _,
+                           _, _, _, _, _));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(IsChromeSignedIn());

@@ -151,6 +151,10 @@ class ChromeSigninClient : public SigninClient {
   // pref.
   static void RegisterSyntheticTrialsFromPrefs();
 
+  // Attempts to launch a HaTS survey for users who signed in from the specified
+  // access point. The survey may be deferred if no browser is active.
+  void LaunchHatsSurveyForAccessPoint(signin_metrics::AccessPoint access_point);
+
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
   raw_ptr<Profile, DanglingUntriaged> profile_;

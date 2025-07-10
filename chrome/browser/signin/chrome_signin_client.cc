@@ -25,6 +25,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -34,6 +35,10 @@
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -231,6 +236,61 @@ void RecordExtensionsCounts(signin_metrics::AccessPoint access_point,
       extensions_count);
 }
 #endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+// Returns the HaTS survey trigger corresponding to the given AccessPoint, or
+// the empty string if there is no such survey.
+std::string HatsSurveyTriggerForAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+  std::string trigger;
+  switch (access_point) {
+    case signin_metrics::AccessPoint::kAddressBubble:
+      trigger = kHatsSurveyTriggerIdentityAddressBubbleSignin;
+      break;
+    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
+    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+      trigger = kHatsSurveyTriggerIdentityProfileMenuSignin;
+      break;
+    case signin_metrics::AccessPoint::kForYouFre:
+      trigger = kHatsSurveyTriggerIdentityFirstRunSignin;
+      break;
+    case signin_metrics::AccessPoint::kPasswordBubble:
+      trigger = kHatsSurveyTriggerIdentityPasswordBubbleSignin;
+      break;
+    case signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience:
+      trigger = kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation;
+      break;
+    case signin_metrics::AccessPoint::kUserManager:
+      trigger = kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin;
+      break;
+    default:
+      // No HaTS survey is defined for the rest of the access point.
+      break;
+  }
+  return trigger;
+}
+
+// Launches a HaTS survey for the given trigger.
+void LaunchHatsSurvey(std::string trigger, Profile* profile, Browser* browser) {
+  CHECK(!trigger.empty());
+  CHECK(profile);
+
+  // A browser is required to launch the survey.
+  CHECK(browser);
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  // TODO(crbug.com/427971911): add product-specific data.
+  hats_service->LaunchSurvey(trigger);
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -473,6 +533,10 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
         CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
         signin_metrics::AccessPoint access_point =
             event_details.GetSetPrimaryAccountAccessPoint().value();
+
+        if (consent_level == signin::ConsentLevel::kSignin) {
+          LaunchHatsSurveyForAccessPoint(access_point);
+        }
 
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
         std::optional<size_t> bar_bookmarks_count =
@@ -757,4 +821,28 @@ void ChromeSigninClient::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref, "");
   registry->RegisterStringPref(
       kBookmarksBubblePromoShownSyntheticTrialGroupNamePref, "");
+}
+
+void ChromeSigninClient::LaunchHatsSurveyForAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  std::string trigger = HatsSurveyTriggerForAccessPoint(access_point);
+  if (trigger.empty() ||
+      !signin_util::IsFeatureEnabledForHatsTrigger(trigger)) {
+    return;
+  }
+
+  Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+  if (browser) {
+    // Launch the HaTS survey immediately if a browser is active for the
+    // profile.
+    LaunchHatsSurvey(trigger, profile_, browser);
+  } else {
+    // If no browser is active, defer the survey launch until a browser becomes
+    // available.
+    // TODO(crbug.com/427971911): Fix test crashes due to the dangling pointer.
+    new profiles::BrowserAddedForProfileObserver(
+        profile_, base::BindOnce(&LaunchHatsSurvey, trigger, profile_));
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }

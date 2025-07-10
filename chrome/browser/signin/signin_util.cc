@@ -5,9 +5,11 @@
 #include "chrome/browser/signin/signin_util.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -57,6 +61,33 @@ enum ForceSigninPolicyCache {
 void SetForceSigninPolicy(bool enable) {
   g_is_force_signin_enabled_cache = enable ? ENABLE : DISABLE;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+struct ChromeIdentityHatsTriggerFeatureMappingEntry {
+  const char* trigger;
+  const raw_ptr<const base::Feature> feature;
+};
+
+const ChromeIdentityHatsTriggerFeatureMappingEntry
+    kChromeIdentityHatsTriggerFeatureMapping[] = {
+        {kHatsSurveyTriggerIdentityAddressBubbleSignin,
+         &switches::kChromeIdentitySurveyAddressBubbleSignin},
+        {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+         &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
+        {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+         &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
+        {kHatsSurveyTriggerIdentityFirstRunSignin,
+         &switches::kChromeIdentitySurveyFirstRunSignin},
+        {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+         &switches::kChromeIdentitySurveyPasswordBubbleSignin},
+        {kHatsSurveyTriggerIdentityProfileMenuSignin,
+         &switches::kChromeIdentitySurveyProfileMenuSignin},
+        {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
+         &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
+        {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
+         &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace
 
@@ -383,6 +414,17 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
   }
   return true;
 }
+
+bool IsFeatureEnabledForHatsTrigger(const std::string& trigger) {
+  for (const auto& entry : kChromeIdentityHatsTriggerFeatureMapping) {
+    if (trigger == entry.trigger) {
+      return base::FeatureList::IsEnabled(*entry.feature);
+    }
+  }
+  // No matching feature for the given trigger.
+  return false;
+}
+
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
 }  // namespace signin_util

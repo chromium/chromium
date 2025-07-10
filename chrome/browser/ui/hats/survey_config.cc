@@ -56,10 +56,22 @@ constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
     "autofill-password-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
-constexpr char kHatsSurveyTriggerDiceWebSigninAccepted[] =
-    "dice-web-signin-accepted";
-constexpr char kHatsSurveyTriggerDiceWebSigninDeclined[] =
-    "dice-web-signin-declined";
+constexpr char kHatsSurveyTriggerIdentityAddressBubbleSignin[] =
+    "identity-address-bubble-signin";
+constexpr char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[] =
+    "identity-dice-web-signin-accepted";
+constexpr char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[] =
+    "identity-dice-web-signin-declined";
+constexpr char kHatsSurveyTriggerIdentityFirstRunSignin[] =
+    "identity-first-run-signin";
+constexpr char kHatsSurveyTriggerIdentityPasswordBubbleSignin[] =
+    "identity-password-bubble-signin";
+constexpr char kHatsSurveyTriggerIdentityProfileMenuSignin[] =
+    "identity-profile-menu-signin";
+constexpr char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[] =
+    "identity-profile-picker-add-profile-signin";
+constexpr char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
+    "identity-signin-intercept-profile-separation";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
     "download-warning-bubble-bypass";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
@@ -473,10 +485,28 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerWallpaperSearch);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  survey_configs.emplace_back(&switches::kChromeIdentitySurvey,
-                              kHatsSurveyTriggerDiceWebSigninAccepted);
-  survey_configs.emplace_back(&switches::kChromeIdentitySurvey,
-                              kHatsSurveyTriggerDiceWebSigninDeclined);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyAddressBubbleSignin,
+      kHatsSurveyTriggerIdentityAddressBubbleSignin);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyDiceWebSigninAccepted,
+      kHatsSurveyTriggerIdentityDiceWebSigninAccepted);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyDiceWebSigninDeclined,
+      kHatsSurveyTriggerIdentityDiceWebSigninDeclined);
+  survey_configs.emplace_back(&switches::kChromeIdentitySurveyFirstRunSignin,
+                              kHatsSurveyTriggerIdentityFirstRunSignin);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyPasswordBubbleSignin,
+      kHatsSurveyTriggerIdentityPasswordBubbleSignin);
+  survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
+                              kHatsSurveyTriggerIdentityProfileMenuSignin);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin,
+      kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
+      kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

@@ -8,9 +8,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -26,6 +31,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #endif
+
+using testing::_;
+using testing::Not;
 
 class ChromeSigninClientBrowserTest : public InProcessBrowserTest {};
 
@@ -294,3 +302,87 @@ IN_PROC_BROWSER_TEST_F(
           kSigninFromBookmarksBubbleSyntheticTrialGroupNamePrefForTesting),
       "scoped_feature_list_trial_group");
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
+ public:
+  ChromeSigninClientHatsSurveyBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {{switches::kChromeIdentitySurveyPasswordBubbleSignin,
+          switches::kChromeIdentitySurveyFirstRunSignin}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  }
+
+  void TearDownOnMainThread() override { mock_hats_service_ = nullptr; }
+
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
+
+ private:
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a HaTS survey is launched when a user signs in through an eligible
+// access point.
+IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
+                       HatsSurveyLaunchedOnSignin) {
+  // Expect the HaTS service to launch the password bubble sign-in survey.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _,
+                           _, _, _, _));
+  // Expect that the surveys for other access point will NOT be launched.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(Not(kHatsSurveyTriggerIdentityPasswordBubbleSignin),
+                           _, _, _, _, _, _))
+      .Times(0);
+
+  // Simulate a user signing in via the password bubble, which should trigger
+  // the survey.
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kPasswordBubble)
+          .Build("alice@example.com"));
+}
+
+// Tests that if a user signs in when no browser is open, the HaTS survey is
+// launched immediately when a browser is subsequently created for that profile.
+IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
+                       HatsSurveyLaunchedOnBrowserCreationAfterSignin) {
+  // Keep the profile alive and close all existing browsers.
+  Profile* profile = browser()->profile();
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kProfilePickerView);
+  CloseAllBrowsers();
+
+  // Sign in to Chrome. The survey won't launch yet, as it requires an active
+  // browser.
+  signin::MakeAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kForYouFre)
+          .Build("alice@example.com"));
+
+  // Expect the HaTS service to launch the first run sign-in survey.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerIdentityFirstRunSignin, _, _, _, _, _, _));
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(Not(kHatsSurveyTriggerIdentityFirstRunSignin), _, _,
+                           _, _, _, _))
+      .Times(0);
+
+  // Create a new browser for the signed-in profile, which should now trigger
+  // the survey.
+  CreateBrowser(profile);
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
