@@ -575,14 +575,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall.OnNavigation2"
+    name="ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall.OnNavigation2{StorageKeyIsFirstParty}"
     enum="BooleanSkipped" expires_after="2026-05-20">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     Whether FindRegistrationForClientUrl() could skip calling mojo API. This is
-    recorded only when FindRegistrationForClientUrl() is used for navigation.
+    recorded only when FindRegistrationForClientUrl() is used for navigation,
+    and when the {StorageKeyIsFirstParty}.
   </summary>
+  <token key="StorageKeyIsFirstParty">
+    <variant name="" summary="StorageKey is a first-party or third-party"/>
+    <variant name=".StorageKeyIsFirstParty"
+        summary="StorageKey is a first-party"/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.FindRegistrationForClientUrl.Time" units="ms"

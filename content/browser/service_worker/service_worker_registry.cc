@@ -344,13 +344,19 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   base::ScopedClosureRunner run_at_return(
       purpose == Purpose::kNavigation
           ? base::BindOnce(
-                [](bool* is_mojo_called) {
+                [](bool* is_mojo_called, bool storage_key_is_first_party) {
                   base::UmaHistogramBoolean(
                       "ServiceWorker.FindRegistrationForClientUrl."
                       "SkippedMojoCall.OnNavigation2",
                       !(*is_mojo_called));
+                  if (storage_key_is_first_party) {
+                    base::UmaHistogramBoolean(
+                        "ServiceWorker.FindRegistrationForClientUrl."
+                        "SkippedMojoCall.OnNavigation2.StorageKeyIsFirstParty",
+                        !(*is_mojo_called));
+                  }
                 },
-                base::Unretained(&is_mojo_called))
+                base::Unretained(&is_mojo_called), key.IsFirstPartyContext())
           : base::DoNothing());
 
   // The following code implements a performance optimization: it retrieves the
