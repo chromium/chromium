@@ -475,17 +475,17 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
-TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
+TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_MappableSI) {
   // Attributes for the original input frame.
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(1280, 720);
   const double kFrameRate = 30.0;
-  auto gmb_frame = CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   test_sii_.get());
+  auto mappable_si_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii_.get());
 
-  // Initialize the VideoTrackAdapter to handle GpuMemoryBuffer. NV12 is the
+  // Initialize the VideoTrackAdapter to handle MappableSI. NV12 is the
   // only pixel format supported at the moment.
   const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
                                                 media::PIXEL_FORMAT_NV12);
@@ -500,14 +500,13 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-        EXPECT_EQ(frame->shared_image()->mailbox(),
-                  gmb_frame->shared_image()->mailbox());
+        EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
         EXPECT_EQ(frame->natural_size(), kNaturalSize);
       };
   SetFrameValidationCallback(base::BindLambdaForTesting(check_nonscaled));
-  DeliverAndValidateFrame(gmb_frame, base::TimeTicks());
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
 
   // Scale the original frame by a factor of 0.5x.
   const gfx::Size kDesiredSize(640, 360);
@@ -520,14 +519,13 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
         // |kDesiredSize| exposed as natural size of the wrapped frame.
         EXPECT_EQ(frame->storage_type(),
                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-        EXPECT_EQ(frame->shared_image()->mailbox(),
-                  gmb_frame->shared_image()->mailbox());
+        EXPECT_EQ(frame->shared_image(), mappable_si_frame->shared_image());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
         EXPECT_EQ(frame->natural_size(), kDesiredSize);
       };
   SetFrameValidationCallback(base::BindLambdaForTesting(check_scaled));
-  DeliverAndValidateFrame(gmb_frame, base::TimeTicks());
+  DeliverAndValidateFrame(mappable_si_frame, base::TimeTicks());
 }
 
 TEST_F(VideoTrackAdapterFixtureTest,
