@@ -6,6 +6,7 @@ source_set("ui") {
   sources = [
     "safari_data_import_entry_point_view_controller.h",
     "safari_data_import_entry_point_view_controller.mm",
+    "safari_data_import_import_stage_consumer.h",
     "safari_data_import_import_view_controller.h",
     "safari_data_import_import_view_controller.mm",
   ]
@@ -17,6 +18,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/ui/resources",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",

@@ -5,10 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_IMPORT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_IMPORT_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+enum class SafariDataImportStage;
+
 /// Main screen presented for `SafariDataImportImportCoordinator`.
-@interface SafariDataImportImportViewController : PromoStyleViewController
+@interface SafariDataImportImportViewController
+    : PromoStyleViewController <SafariDataImportImportStageConsumer>
+
+/// The current import stage.
+@property(nonatomic, readonly) SafariDataImportStage importStage;
 
 @end
 

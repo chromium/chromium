@@ -19,16 +19,17 @@
 
 @implementation SafariDataImportImportViewController
 
+@synthesize importStage = _importStage;
+
 - (void)viewDidLoad {
-  /// TODO(crbug.com/420703283): Replace `SafariDataImportStage::kNotStarted`
-  /// with dynamically set value once stage transition technique is implemented.
+  _importStage = SafariDataImportStage::kNotStarted;
   self.bannerName = @"safari_data_import";
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   self.titleText = l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_SUBTITLE);
-  self.primaryActionString =
-      [self actionButtonStringForStage:SafariDataImportStage::kNotStarted];
+  self.primaryActionString = l10n_util::GetNSString(
+      IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
@@ -36,6 +37,36 @@
   [super viewDidLoad];
   [self makeBannerImageVisibilityAdaptive];
   [self showInstructionView];
+}
+
+#pragma mark - SafariDataImportImportStageConsumer
+
+- (void)transitionToImportStage:(SafariDataImportStage)stage {
+  switch (stage) {
+    case SafariDataImportStage::kNotStarted:
+      CHECK_EQ(_importStage, SafariDataImportStage::kFileLoading)
+          << "Can only transition to kNotStarted stage from kFileLoading, "
+             "which happens when file loading has failed. The current stage is "
+          << static_cast<int>(_importStage);
+      self.primaryActionString = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE);
+      self.primaryButtonSpinnerEnabled = NO;
+      break;
+    case SafariDataImportStage::kFileLoading:
+      CHECK_EQ(_importStage, SafariDataImportStage::kNotStarted)
+          << "Can only transition to kFileLoading stage from kNotStarted. The "
+             "current stage is "
+          << static_cast<int>(_importStage);
+      self.primaryButtonSpinnerEnabled = YES;
+      break;
+    case SafariDataImportStage::kReadyForImport:
+    case SafariDataImportStage::kImporting:
+    case SafariDataImportStage::kImported:
+    default:
+      /// TODO(crbug.com/420703283): Implement.
+      break;
+  }
+  _importStage = stage;
 }
 
 #pragma mark - Private
@@ -51,22 +82,6 @@
     weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
   };
   [self registerForTraitChanges:traits withHandler:handler];
-}
-
-/// Returns the action button string for the given `stage`.
-- (NSString*)actionButtonStringForStage:(SafariDataImportStage)stage {
-  int messageId;
-  switch (stage) {
-    case SafariDataImportStage::kNotStarted:
-      messageId = IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_SELECT_YOUR_FILE;
-      break;
-    case SafariDataImportStage::kFileLoading:
-    case SafariDataImportStage::kReadyForImport:
-    case SafariDataImportStage::kImporting:
-    case SafariDataImportStage::kImported:
-      NOTREACHED() << "Not implemented yet.";
-  }
-  return l10n_util::GetNSString(messageId);
 }
 
 /// Adds an instructional view to show import steps  to the view hierarchy and

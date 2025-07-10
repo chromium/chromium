@@ -46,12 +46,15 @@ source_set("import_coordinator") {
   sources = [
     "safari_data_import_import_coordinator.h",
     "safari_data_import_import_coordinator.mm",
+    "safari_data_import_import_mediator.h",
+    "safari_data_import_import_mediator.mm",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
     ":coordinator_delegate",
     "//base",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/common/ui/promo_style",
