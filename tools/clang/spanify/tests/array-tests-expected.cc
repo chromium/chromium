@@ -156,28 +156,109 @@ void test_with_mutable() {
   info.filename_offsets[UnsafeIndex()] = 0xdead;
 }
 
-void test_for_loop() {
+void test_for_loop_with_c_array() {
   int arr[] = {1, 2, 3};
 
   // Expected rewrite:
-  //   for (base::span<int> it = std::begin(arr); it != std::end(arr);
-  //        base::PreIncrementSpan(it)) {
-  //   }
-  for (base::span<int> it = std::begin(arr); it != std::end(arr);
-       base::PreIncrementSpan(it)) {
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
   }
   // Expected rewrite:
-  //   for (base::span<int> it = std::begin(arr); it != std::end(arr);
-  //        base::PreIncrementSpan(it)) {
-  //   }
-  for (base::span<int> it = std::begin(arr); it != std::end(arr);
-       base::PreIncrementSpan(it)) {
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
   }
   // TODO(yukishiino): Support `auto` + `cbegin/cend`.
   for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
-  // TODO(yukishiino): Support `auto*` + `cbegin/cend`.
-  for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  // Expected rewrite:
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Note that reverse_iterator (rbegin, rend, crbegin, crend) won't be
+  // supported because reverse_iterator never be of a pointer type (`it++`
+  // cannot move backward if `it` is a raw pointer), hence they're out of
+  // scope of the spanification.
+}
+
+void test_for_loop_with_std_array() {
+  // Except for the arrayfication of `arr` below, the expected rewrites are
+  // completely the same with the C array cases.
+  //
+  // Expected rewrite:
+  // auto arr = std::to_array<int>({1, 2, 3});
+  auto arr = std::to_array<int>({1, 2, 3});
+  std::ignore = arr[UnsafeIndex()];
+
+  // Expected rewrite:
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Expected rewrite:
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
+  //      it != base::SpanificationArrayEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<int> it = base::SpanificationArrayBegin(arr);
+       it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
+  }
+  // TODO(yukishiino): Support `auto` + `cbegin/cend`.
+  for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  }
+  // Expected rewrite:
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
   }
   // Note that reverse_iterator (rbegin, rend, crbegin, crend) won't be
   // supported because reverse_iterator never be of a pointer type (`it++`

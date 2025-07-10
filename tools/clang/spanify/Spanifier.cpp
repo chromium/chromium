@@ -1347,8 +1347,8 @@ static void EmitSingleVariableSpan(const std::string& key,
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static std::string GetNodeFromUnsafeCxxMethodCall(
-    const clang::Expr* size_expr,
+static void EmitUnsafeCxxMethodCall(
+    const std::string& key,
     const clang::CXXMemberCallExpr* member_call_expr,
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -1367,9 +1367,6 @@ static std::string GetNodeFromUnsafeCxxMethodCall(
   const clang::MemberExpr* member_expr =
       clang::dyn_cast<clang::MemberExpr>(member_call_expr->getCallee());
   assert(member_expr);
-
-  // `key` is compatible with getNodeFromSizeExpr.
-  const std::string& key = NodeKey(size_expr, source_manager);
 
   // Rewrite a method call into a macro call in two steps. The total rewrite we
   // want is the following. Note that the receiver expression moves into the
@@ -1406,11 +1403,9 @@ static std::string GetNodeFromUnsafeCxxMethodCall(
                                  : member_call_expr->getRParenLoc()),
           has_arg ? ", " : "", source_manager));
 
-  EmitReplacement(
-      key, GetIncludeDirective(size_expr->getSourceRange(), source_manager,
-                               kBaseAutoSpanificationHelperIncludePath));
-  EmitSink(key);
-  return key;
+  EmitReplacement(key, GetIncludeDirective(
+                           member_call_expr->getSourceRange(), source_manager,
+                           kBaseAutoSpanificationHelperIncludePath));
 }
 
 // Rewrites unsafe third-party free function calls to helper macro calls.
@@ -1428,10 +1423,9 @@ static std::string GetNodeFromUnsafeCxxMethodCall(
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static std::string GetNodeFromUnsafeFreeFuncCall(
-    const clang::Expr* size_expr,
-    const clang::CallExpr* call_expr,
-    const MatchFinder::MatchResult& result) {
+static void EmitUnsafeFreeFuncCall(const std::string& key,
+                                   const clang::CallExpr* call_expr,
+                                   const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* function_decl = GetNodeOrCrash<clang::FunctionDecl>(
@@ -1443,9 +1437,6 @@ static std::string GetNodeFromUnsafeFreeFuncCall(
   const UnsafeFreeFuncToMacro entry =
       FindUnsafeFreeFuncToBeRewrittenToMacro(function_decl).value();
 
-  // `key` is compatible with getNodeFromSizeExpr.
-  const std::string& key = NodeKey(size_expr, source_manager);
-
   // Replace the function name with the macro name.
   const clang::SourceLocation& func_loc = call_expr->getCallee()->getBeginLoc();
   EmitReplacement(
@@ -1455,27 +1446,92 @@ static std::string GetNodeFromUnsafeFreeFuncCall(
                std::string(entry.macro_name), source_manager));
 
   EmitReplacement(
-      key, GetIncludeDirective(size_expr->getSourceRange(), source_manager,
+      key, GetIncludeDirective(call_expr->getSourceRange(), source_manager,
                                kBaseAutoSpanificationHelperIncludePath));
-  EmitSink(key);
-  return key;
 }
 
-static std::string GetNodeFromUnsafeFunctionCall(
-    const clang::Expr* size_expr,
-    const clang::CallExpr* call_expr,
-    const MatchFinder::MatchResult& result) {
+static void EmitUnsafeFunctionCall(const std::string& key,
+                                   const clang::CallExpr* call_expr,
+                                   const MatchFinder::MatchResult& result) {
   if (const clang::CXXMemberCallExpr* member_call_expr =
           clang::dyn_cast<clang::CXXMemberCallExpr>(call_expr)) {
-    return GetNodeFromUnsafeCxxMethodCall(size_expr, member_call_expr, result);
+    EmitUnsafeCxxMethodCall(key, member_call_expr, result);
+    return;
   }
-  return GetNodeFromUnsafeFreeFuncCall(size_expr, call_expr, result);
+  EmitUnsafeFreeFuncCall(key, call_expr, result);
+}
+
+// Rewrites:
+//     auto it = std::begin(c_array);
+//     it == std::end(c_array)
+// To:
+//     auto it = base::SpanificationArrayBegin(c_array);
+//     it == base::SpanificationArrayEnd(c_array)
+//
+// Note that `auto it = ...` is rewritten to `base::span<T> it = ...`
+// separately.
+//
+// Tests are in: array-tests-original.cc
+static void EmitCArrayIterCallExpr(const std::string& key,
+                                   const clang::CallExpr* call_expr,
+                                   const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+
+  const auto* func_decl =
+      clang::dyn_cast<clang::FunctionDecl>(call_expr->getCalleeDecl());
+  assert(func_decl);
+  const std::string& function_name = func_decl->getQualifiedNameAsString();
+
+  struct FuncMapping {
+    const std::string_view function_name;
+    const std::string_view replacement_function_name;
+  };
+  static constexpr FuncMapping func_mapping_table[] = {
+      {"std::begin", "base::SpanificationArrayBegin"},
+      {"std::end", "base::SpanificationArrayEnd"},
+      {"std::cbegin", "base::SpanificationArrayCBegin"},
+      {"std::cend", "base::SpanificationArrayCEnd"},
+  };
+  std::string replacement_function_name;
+  for (const auto& entry : func_mapping_table) {
+    if (function_name == entry.function_name) {
+      replacement_function_name = entry.replacement_function_name;
+      break;
+    }
+  }
+  assert(!replacement_function_name.empty());
+
+  const clang::SourceRange replacement_range(
+      call_expr->getCallee()->getBeginLoc(),
+      clang::Lexer::getLocForEndOfToken(call_expr->getCallee()->getEndLoc(), 0u,
+                                        source_manager, lang_opts));
+  EmitReplacement(
+      key, GetReplacementDirective(replacement_range, replacement_function_name,
+                                   source_manager));
+  EmitReplacement(key,
+                  GetIncludeDirective(replacement_range, source_manager,
+                                      kBaseAutoSpanificationHelperIncludePath));
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
                                        const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string key = NodeKey(size_expr, source_manager);
+
+  // "size_node" assumes that third party functions that return a buffer
+  // provide some way to know the size, however special handling is required
+  // to extract that, thus here we add support for functions returning a
+  // buffer that also have size support.
+  if (const auto* unsafe_call_expr = result.Nodes.getNodeAs<clang::CallExpr>(
+          "unsafe_function_call_expr")) {
+    EmitUnsafeFunctionCall(key, unsafe_call_expr, result);
+  }
+
+  if (const auto* c_array_iter_call_expr =
+          result.Nodes.getNodeAs<clang::CallExpr>("c_array_iter_call_expr")) {
+    EmitCArrayIterCallExpr(key, c_array_iter_call_expr, result);
+  }
 
   auto replacement_range =
       clang::SourceRange(size_expr->getSourceRange().getBegin(),
@@ -1499,6 +1555,7 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
     // In this case, we will rewrite `&bar` to `base::span<float, 1>(&bar)`.
     EmitSingleVariableSpan(key, result);
   }
+
   if (result.Nodes.getNodeAs<clang::UnaryOperator>("container_buff_address")) {
     EmitContainerPointerRewrites(result, key);
   }
@@ -2357,6 +2414,24 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
   assert(false && "Unexpected match in getArrayNode()");
 }
 
+// Handles comparison expressions between a will-be-span object and a C array
+// iterator.
+//   it == std::begin(c_array)
+//   it != std::end(c_array)
+// Tests are in: array-tests-original.cc
+static void RewriteComparisonWithCArrayIter(
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::CallExpr* call_expr = GetNodeOrCrash<clang::CallExpr>(
+      result, "c_array_iter_call_expr",
+      "std::c?{begin,end} for a C array is expected");
+  const std::string& lhs = GetLHS(result);
+  const std::string& rhs = NodeKey(call_expr, source_manager);
+  EmitCArrayIterCallExpr(rhs, call_expr, result);
+  EmitEdge(lhs, rhs);
+  EmitEdge(rhs, lhs);
+}
+
 // Spanifies the matched function parameter/return type, and connects relevant
 // function declarations (forward declarations and overridden methods) to each
 // other bidirectionally per the matched function parameter/return type. Note
@@ -2611,14 +2686,6 @@ std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
 
   if (const clang::Expr* size_expr =
           result.Nodes.getNodeAs<clang::Expr>("size_node")) {
-    // "size_node" assumes that third party functions that return a buffer
-    // provide some way to know the size, however special handling is required
-    // to extract that, thus here we add support for functions returning a
-    // buffer that also have size support.
-    if (const auto* unsafe_call_expr = result.Nodes.getNodeAs<clang::CallExpr>(
-            "unsafe_function_call_expr")) {
-      return GetNodeFromUnsafeFunctionCall(size_expr, unsafe_call_expr, result);
-    }
     return getNodeFromSizeExpr(size_expr, result);
   }
 
@@ -2872,6 +2939,13 @@ class Spanifier {
                     .bind("address_expr_operand"))))
             .bind("address_expr");
 
+    // Matches `std::c?{begin,end}(c_array)`, which will be rewritten to
+    // `SpanificationArrayC?{Begin,End}`.
+    auto c_array_iter_call_expr =
+        callExpr(callee(functionDecl(matchesName("std::c?(begin|end)"))),
+                 hasArgument(0, hasType(arrayType())))
+            .bind("c_array_iter_call_expr");
+
     // Used to look "outward" one layer from other expressions matched
     // below s.t. we can remove `reinterpret_cast` from spanified
     // things.
@@ -2922,6 +2996,7 @@ class Spanifier {
                                            unsafeFunctionToBeRewrittenToMacro())
                                            .bind("unsafe_function_decl")))
                            .bind("unsafe_function_call_expr"),
+                       c_array_iter_call_expr,
                        callExpr(callee(functionDecl(
                            hasReturnTypeLoc(pointer_type_loc),
                            anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
@@ -3072,12 +3147,13 @@ class Spanifier {
     auto buffer_to_external_func = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(anyOf(
-            callExpr(callee(functionDecl(
-                         frontier_exclusions,
-                         unless(matchesName(
-                             "std::(size|begin|end|empty|swap|ranges::)")))),
-                     forEachArgumentWithParam(
-                         expr(rhs_exprs_without_size_nodes), parmVarDecl())),
+            callExpr(
+                callee(functionDecl(
+                    frontier_exclusions,
+                    unless(matchesName(
+                        "std::(size|c?r?begin|c?r?end|empty|swap|ranges::)")))),
+                forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
+                                         parmVarDecl())),
             cxxConstructExpr(
                 hasDeclaration(cxxConstructorDecl(frontier_exclusions)),
                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
@@ -3178,6 +3254,17 @@ class Spanifier {
                                              rhs_expr_variations))))))))),
             unless(isExpansionInSystemHeader())));
     Match(var_construction, MatchAdjacency);
+
+    // Supports:
+    // it == std::begin(c_array)
+    // it != std::end(c_array)
+    auto equality_op =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 binaryOperation(
+                     anyOf(hasOperatorName("=="), hasOperatorName("!=")),
+                     hasOperands(ignoringParenCasts(lhs_expr_variations),
+                                 ignoringParenCasts(c_array_iter_call_expr))));
+    Match(equality_op, RewriteComparisonWithCArrayIter);
 
     // Creates the edge from lhs to false_expr in a ternary conditional
     // operator.

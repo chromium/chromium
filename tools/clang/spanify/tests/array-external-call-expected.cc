@@ -55,6 +55,12 @@ void fct3() {
   std::ignore = std::size(data);
   std::ignore = std::begin(data);
   std::ignore = std::end(data);
+  std::ignore = std::cbegin(data);
+  std::ignore = std::cend(data);
+  std::ignore = std::rbegin(data);
+  std::ignore = std::rend(data);
+  std::ignore = std::crbegin(data);
+  std::ignore = std::crend(data);
   std::ignore = std::empty(data);
   std::swap(data, data);
   std::ranges::find(data, 'a');

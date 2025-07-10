@@ -12,6 +12,57 @@
 
 namespace base {
 
+// SpanificationArray{Begin,End,CBegin,CEnd} were introduced temporarily in
+// order to help the auto spanification tool (//tools/clang/spanify), and not
+// meant to be used widely.
+template <typename Element, size_t N>
+constexpr span<Element> SpanificationArrayBegin(
+    Element (&array LIFETIME_BOUND)[N]) {
+  return span(array);
+}
+
+template <typename Element, size_t N>
+constexpr span<Element> SpanificationArrayEnd(
+    Element (&array LIFETIME_BOUND)[N]) {
+  return span(array).last(0u);
+}
+
+template <typename Element, size_t N>
+constexpr span<const Element> SpanificationArrayCBegin(
+    const Element (&array LIFETIME_BOUND)[N]) {
+  return span(array);
+}
+
+template <typename Element, size_t N>
+constexpr span<const Element> SpanificationArrayCEnd(
+    const Element (&array LIFETIME_BOUND)[N]) {
+  return span(array).last(0u);
+}
+
+template <typename Element, size_t N>
+constexpr span<Element> SpanificationArrayBegin(
+    std::array<Element, N>& array LIFETIME_BOUND) {
+  return span(array);
+}
+
+template <typename Element, size_t N>
+constexpr span<Element> SpanificationArrayEnd(
+    std::array<Element, N>& array LIFETIME_BOUND) {
+  return span(array).last(0u);
+}
+
+template <typename Element, size_t N>
+constexpr span<const Element> SpanificationArrayCBegin(
+    const std::array<Element, N>& array LIFETIME_BOUND) {
+  return span(array);
+}
+
+template <typename Element, size_t N>
+constexpr span<const Element> SpanificationArrayCEnd(
+    const std::array<Element, N>& array LIFETIME_BOUND) {
+  return span(array).last(0u);
+}
+
 // SpanificationSizeofForStdArray was introduced temporarily in order to help
 // the auto spanification tool (//tools/clang/spanify), and not meant to be
 // used widely.

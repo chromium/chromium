@@ -15,6 +15,54 @@
 namespace base {
 namespace {
 
+TEST(AutoSpanificationHelperTest, SpanificationCArrayBeginAndEnd) {
+  int array[] = {1, 2, 3};
+  int count = 0;
+  for (base::span<int> it = SpanificationArrayBegin(array);
+       it != SpanificationArrayEnd(array); PreIncrementSpan(it)) {
+    ++count;
+  }
+  EXPECT_EQ(count, 3);
+}
+
+TEST(AutoSpanificationHelperTest, SpanificationCArrayCBeginAndCEnd) {
+  const int array[] = {1, 2, 3};
+  int count = 0;
+  for (base::span<const int> it = SpanificationArrayCBegin(array);
+       it != SpanificationArrayCEnd(array); PreIncrementSpan(it)) {
+    ++count;
+  }
+  EXPECT_EQ(count, 3);
+}
+
+TEST(AutoSpanificationHelperTest, SpanificationStdArrayBeginAndEnd) {
+  std::array<int, 3> array = {1, 2, 3};
+  int count = 0;
+  for (base::span<int> it = SpanificationArrayBegin(array);
+       it != SpanificationArrayEnd(array); PreIncrementSpan(it)) {
+    ++count;
+  }
+  EXPECT_EQ(count, 3);
+}
+
+TEST(AutoSpanificationHelperTest, SpanificationStdArrayCBeginAndCEnd) {
+  std::array<int, 3> array = {1, 2, 3};
+  int count = 0;
+  for (base::span<const int> it = SpanificationArrayCBegin(array);
+       it != SpanificationArrayCEnd(array); PreIncrementSpan(it)) {
+    ++count;
+  }
+  EXPECT_EQ(count, 3);
+}
+
+TEST(AutoSpanificationHelperTest, SpanificationSizeofForStdArray) {
+  std::array<char, 7> char_array;
+  EXPECT_EQ(SpanificationSizeofForStdArray(char_array), 7);
+
+  std::array<uint16_t, 3> uint16_array;
+  EXPECT_EQ(SpanificationSizeofForStdArray(uint16_array), sizeof(uint16_t) * 3);
+}
+
 TEST(AutoSpanificationIncrementTest, PreIncrementSpan) {
   std::vector<int> data = {1, 2, 3, 4, 5};
   span<int> s(data);
@@ -112,14 +160,6 @@ TEST(AutoSpanificationIncrementTest, PostIncrementConstSpan) {
 namespace base::internal::spanification {
 
 namespace {
-
-TEST(AutoSpanificationHelperTest, SpanificationSizeofForStdArray) {
-  std::array<char, 7> char_array;
-  EXPECT_EQ(SpanificationSizeofForStdArray(char_array), 7);
-
-  std::array<uint16_t, 3> uint16_array;
-  EXPECT_EQ(SpanificationSizeofForStdArray(uint16_array), sizeof(uint16_t) * 3);
-}
 
 // Minimized mock of SkBitmap class defined in
 // //third_party/skia/include/core/SkBitmap.h
