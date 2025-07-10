@@ -46,8 +46,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.List;
-
 /** Mediator of the single tab switcher in the new tab page on tablet. */
 @NullMarked
 public class SingleTabSwitcherOnNtpMediator {
@@ -254,9 +252,8 @@ public class SingleTabSwitcherOnNtpMediator {
         }
 
         mThumbnailProvider.getTabThumbnailWithCallback(
-                new MultiThumbnailMetadata(
+                MultiThumbnailMetadata.createMetadataWithoutUrls(
                         mMostRecentTab.getId(),
-                        List.of(mMostRecentTab.getUrl()),
                         mMostRecentTab.getTabGroupId() != null,
                         mMostRecentTab.isIncognitoBranded(),
                         /* tabGroupColor= */ null),

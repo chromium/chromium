@@ -131,7 +131,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -3168,9 +3167,8 @@ class TabListMediator implements TabListNotificationHandler {
             newFetcher =
                     new ThumbnailFetcher(
                             mThumbnailProvider,
-                            new MultiThumbnailMetadata(
+                            MultiThumbnailMetadata.createMetadataWithoutUrls(
                                     tabId,
-                                    Collections.emptyList(),
                                     isInTabGroup,
                                     filter.getTabModel().isIncognitoBranded(),
                                     tabGroupColor));
@@ -3192,7 +3190,7 @@ class TabListMediator implements TabListNotificationHandler {
         ThumbnailFetcher newFetcher =
                 new ThumbnailFetcher(
                         mThumbnailProvider,
-                        new MultiThumbnailMetadata(
+                        MultiThumbnailMetadata.createMetadataWithUrls(
                                 Tab.INVALID_TAB_ID,
                                 urlList,
                                 /* isInTabGroup= */ true,

@@ -46,7 +46,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 /** Render tests for PriceCardView. */
@@ -72,8 +71,8 @@ public class TabGridViewRenderTest {
     private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
                     (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
-                    new MultiThumbnailMetadata(
-                            Tab.INVALID_TAB_ID, Collections.emptyList(), false, false, null));
+                    MultiThumbnailMetadata.createMetadataWithoutUrls(
+                            Tab.INVALID_TAB_ID, false, false, null));
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =

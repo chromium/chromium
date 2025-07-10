@@ -119,7 +119,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -211,8 +210,8 @@ public class TabListViewHolderTest {
                             callback.onResult(new BitmapDrawable(bitmap));
                         }
                     },
-                    new MultiThumbnailMetadata(
-                            Tab.INVALID_TAB_ID, Collections.emptyList(), false, false, null));
+                    MultiThumbnailMetadata.createMetadataWithoutUrls(
+                            Tab.INVALID_TAB_ID, false, false, null));
     private final AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
     private final TabListMediator.TabActionListener mMockCloseListener =
@@ -697,7 +696,7 @@ public class TabListViewHolderTest {
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList unselectedColorStateList =
                 TabCardThemeUtil.getActionButtonTintList(
-                        sActivity, isIncognito, isSelected, /* colorId */ null);
+                        sActivity, isIncognito, isSelected, /* colorId= */ null);
 
         Assert.assertEquals(
                 unselectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
@@ -706,7 +705,7 @@ public class TabListViewHolderTest {
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList selectedColorStateList =
                 TabCardThemeUtil.getActionButtonTintList(
-                        sActivity, isIncognito, isSelected, /* colorId */ null);
+                        sActivity, isIncognito, isSelected, /* colorId= */ null);
         Assert.assertEquals(
                 selectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
     }

@@ -48,8 +48,6 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
-
 public class StripDragShadowView extends FrameLayout {
     private static final FloatProperty<StripDragShadowView> PROGRESS =
             new FloatProperty<>("progress") {
@@ -203,9 +201,8 @@ public class StripDragShadowView extends FrameLayout {
         prepareForDrag(
                 mSingleThumbnailCardProvider,
                 tab,
-                new MultiThumbnailMetadata(
+                MultiThumbnailMetadata.createMetadataWithoutUrls(
                         tab.getId(),
-                        Collections.emptyList(),
                         /* isInTabGroup= */ false,
                         isIncognito,
                         /* tabGroupColor= */ null),
@@ -259,12 +256,8 @@ public class StripDragShadowView extends FrameLayout {
         prepareForDrag(
                 mMultiThumbnailCardProvider,
                 tab,
-                new MultiThumbnailMetadata(
-                        tab.getId(),
-                        Collections.emptyList(),
-                        /* isInTabGroup= */ true,
-                        isIncognito,
-                        colorId),
+                MultiThumbnailMetadata.createMetadataWithoutUrls(
+                        tab.getId(), /* isInTabGroup= */ true, isIncognito, colorId),
                 sourceWidthPx);
     }
 
@@ -306,7 +299,7 @@ public class StripDragShadowView extends FrameLayout {
                     mShadowUpdateHost.requestUpdate();
                 });
         mThumbnailView.updateThumbnailPlaceholder(
-                tab.isIncognitoBranded(), /* isSelected= */ false, /* colorId */ null);
+                tab.isIncognitoBranded(), /* isSelected= */ false, /* colorId= */ null);
     }
 
     /** Clear state on tab drag end. */

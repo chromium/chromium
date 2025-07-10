@@ -446,12 +446,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mEmptyThumbnailPaint.setAntiAlias(true);
         mEmptyThumbnailPaint.setColor(
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
-                        context, false, false, /* colorId */ null));
+                        context, false, false, /* colorId= */ null));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
         mSelectedEmptyThumbnailPaint.setColor(
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
-                        context, false, true, /* colorId */ null));
+                        context, false, true, /* colorId= */ null));
 
         mColordEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
 
@@ -468,8 +468,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mThumbnailFramePaint.setAntiAlias(true);
 
         // TODO(crbug.com/41477335): Use pre-defined styles to avoid style out of sync if any
-        // text/color styles
-        // changes.
+        // text/color styles changes.
         mTextPaint = new Paint();
         mTextPaint.setTextSize(resources.getDimension(R.dimen.compositor_tab_title_text_size));
         mTextPaint.setFakeBoldText(true);
@@ -477,12 +476,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(
                 TabCardThemeUtil.getTabGroupNumberTextColor(
-                        context, false, false, /* colorId */ null));
+                        context, false, false, /* colorId= */ null));
 
         mSelectedTextPaint = new Paint(mTextPaint);
         mSelectedTextPaint.setColor(
                 TabCardThemeUtil.getTabGroupNumberTextColor(
-                        context, false, true, /* colorId */ null));
+                        context, false, true, /* colorId= */ null));
 
         mFaviconBackgroundPaint = new Paint();
         mFaviconBackgroundPaint.setAntiAlias(true);
@@ -510,13 +509,13 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         boolean isIncognito = filter.getTabModel().isIncognitoBranded();
         mMiniThumbnailPlaceholderColor =
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
-                        mContext, isIncognito, false, /* colorId */ null);
+                        mContext, isIncognito, false, /* colorId= */ null);
         if (mGroupTintedMiniThumbnailPlaceholderColor == null) {
             mEmptyThumbnailPaint.setColor(mMiniThumbnailPlaceholderColor);
         }
         mTextPaint.setColor(
                 TabCardThemeUtil.getTabGroupNumberTextColor(
-                        mContext, isIncognito, false, /* colorId */ null));
+                        mContext, isIncognito, false, /* colorId= */ null));
         mThumbnailFramePaint.setColor(
                 TabUiThemeProvider.getMiniThumbnailFrameColor(mContext, isIncognito));
         mFaviconBackgroundPaint.setColor(
@@ -524,10 +523,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
         mSelectedEmptyThumbnailPaint.setColor(
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
-                        mContext, isIncognito, true, /* colorId */ null));
+                        mContext, isIncognito, true, /* colorId= */ null));
         mSelectedTextPaint.setColor(
                 TabCardThemeUtil.getTabGroupNumberTextColor(
-                        mContext, isIncognito, true, /* colorId */ null));
+                        mContext, isIncognito, true, /* colorId= */ null));
     }
 
     /**

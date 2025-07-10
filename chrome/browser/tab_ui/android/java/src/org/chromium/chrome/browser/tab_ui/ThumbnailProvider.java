@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +34,7 @@ public interface ThumbnailProvider {
         public final boolean isIncognito;
         public final @Nullable @TabGroupColorId Integer tabGroupColor;
 
-        public MultiThumbnailMetadata(
+        private MultiThumbnailMetadata(
                 int tabId,
                 List<GURL> urlList,
                 boolean isInTabGroup,
@@ -44,6 +45,27 @@ public interface ThumbnailProvider {
             this.isInTabGroup = isInTabGroup;
             this.isIncognito = isIncognito;
             this.tabGroupColor = tabGroupColor;
+        }
+
+        /** Create a {@link MultiThumbnailMetadata} object with a urlList. */
+        public static MultiThumbnailMetadata createMetadataWithUrls(
+                int tabId,
+                List<GURL> urlList,
+                boolean isInTabGroup,
+                boolean isIncognito,
+                @Nullable @TabGroupColorId Integer tabGroupColor) {
+            return new MultiThumbnailMetadata(
+                    tabId, urlList, isInTabGroup, isIncognito, tabGroupColor);
+        }
+
+        /** Create a {@link MultiThumbnailMetadata} object without requiring a urlList. */
+        public static MultiThumbnailMetadata createMetadataWithoutUrls(
+                int tabId,
+                boolean isInTabGroup,
+                boolean isIncognito,
+                @Nullable @TabGroupColorId Integer tabGroupColor) {
+            return new MultiThumbnailMetadata(
+                    tabId, Collections.emptyList(), isInTabGroup, isIncognito, tabGroupColor);
         }
 
         @Override
