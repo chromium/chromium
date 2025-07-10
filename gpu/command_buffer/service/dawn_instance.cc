@@ -112,13 +112,12 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   // Create the instance with all the previous descriptors chained.
   wgpu::InstanceDescriptor instance_desc;
   instance_desc.nextInChain = &dawn_instance_desc;
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
-  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
-  instance_desc.requiredFeatureCount = 1;
-  instance_desc.requiredFeatures = &kTimedWaitAny;
-#else
-  instance_desc.capabilities.timedWaitAnyEnable = true;
-#endif
+  static constexpr auto kInstanceFeatures = std::array{
+      wgpu::InstanceFeatureName::MultipleDevicesPerAdapter,
+      wgpu::InstanceFeatureName::TimedWaitAny,
+  };
+  instance_desc.requiredFeatureCount = kInstanceFeatures.size();
+  instance_desc.requiredFeatures = kInstanceFeatures.data();
 
   auto instance = std::make_unique<DawnInstance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));

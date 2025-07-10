@@ -343,20 +343,14 @@ class IOSurfaceImageBackingFactoryDawnTest
     return std::make_pair(std::move(src_rep), std::move(src_scoped_access));
   }
 
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
-  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
-  static constexpr wgpu::InstanceDescriptor instance_desc_ = {
-      .requiredFeatureCount = 1,
-      .requiredFeatures = &kTimedWaitAny,
+  static constexpr auto kInstanceFeatures = std::array{
+      wgpu::InstanceFeatureName::MultipleDevicesPerAdapter,
+      wgpu::InstanceFeatureName::TimedWaitAny,
   };
-#else
   static constexpr wgpu::InstanceDescriptor instance_desc_ = {
-      .capabilities =
-          {
-              .timedWaitAnyEnable = true,
-          },
+      .requiredFeatureCount = kInstanceFeatures.size(),
+      .requiredFeatures = kInstanceFeatures.data(),
   };
-#endif
   dawn::native::Instance instance_ = dawn::native::Instance(&instance_desc_);
   wgpu::Adapter adapter_;
 };
