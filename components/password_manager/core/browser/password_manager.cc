@@ -128,6 +128,35 @@ bool AreChangePasswordFieldsEmpty(const FormData& form_data,
   return true;
 }
 
+bool AreLoginFieldsIdentical(const PasswordForm& form,
+                             const FormData& observed_form) {
+  // Form render ids must match.
+  if (form.form_data.renderer_id() != observed_form.renderer_id()) {
+    return false;
+  }
+
+  autofill::FieldRendererId username_id = form.username_element_renderer_id;
+  autofill::FieldRendererId password_id = form.password_element_renderer_id;
+  // Not a login form. Skip.
+  if (!username_id && !password_id) {
+    return false;
+  }
+
+  if (password_id &&
+      !std::ranges::count(observed_form.fields(), password_id,
+                          &autofill::FormFieldData::renderer_id)) {
+    return false;
+  }
+  if (username_id &&
+      !std::ranges::count(observed_form.fields(), username_id,
+                          &autofill::FormFieldData::renderer_id)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      features::kCheckIfSubmittedFormIdenticalToObserved);
+}
+
 // Returns true if the user needs to be prompted before a password can be
 // saved (instead of automatically saving the password), based on inspecting
 // the state of |manager|.
@@ -1422,16 +1451,25 @@ void PasswordManager::OnPasswordFormsRendered(
     return;
   }
 
-  // If we see the login form again, then the login failed.
   if (submitted_manager->GetPendingCredentials().scheme ==
       PasswordForm::Scheme::kHtml) {
     for (const FormData& form_data : visible_forms_data) {
       if (submitted_manager->IsEqualToSubmittedForm(form_data)) {
+        // The submitted form is still on the page, the form was marked as
+        // submitted before the loading on a page has finished. It makes no
+        // sense to try to detect submission at this moment.
+        if (AreLoginFieldsIdentical(*submitted_manager->GetSubmittedForm(),
+                                    form_data)) {
+          return;
+        }
+
         if (submitted_manager->HasLikelyChangeOrResetFormSubmitted() &&
             AreChangePasswordFieldsEmpty(
                 form_data, *submitted_manager->GetSubmittedForm())) {
           continue;
         }
+
+        // If we see the login form again, then the login failed.
         if (logger) {
           logger->LogFormData(Logger::STRING_PASSWORD_FORM_REAPPEARED,
                               form_data);

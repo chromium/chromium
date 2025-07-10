@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 
+// Checks if submitted form is identical to an observed form before evaluating
+// login success/failure.
+BASE_DECLARE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved);
+
 // Delete undecryptable passwords from the login database.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 
@@ -188,6 +192,7 @@ inline constexpr base::FeatureParam<std::string>
         /*default_value=*/""};
 
 // All features parameters in alphabetical order.
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

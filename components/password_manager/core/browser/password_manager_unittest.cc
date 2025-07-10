@@ -563,7 +563,7 @@ class PasswordManagerTestBase : public testing::Test {
     form_data.set_url(test_form_url_);
     form_data.set_action(test_form_action_);
     form_data.set_name(u"the-form-name");
-    form_data.set_renderer_id(FormRendererId(10));
+    form_data.set_renderer_id(autofill::test::MakeFormRendererId());
 
     FormFieldData field;
     field.set_name(u"Email");
@@ -571,7 +571,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.set_name_attribute(field.name());
     field.set_value(u"googleuser");
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    field.set_renderer_id(FieldRendererId(2));
+    field.set_renderer_id(autofill::test::MakeFieldRendererId());
     test_api(form_data).Append(field);
 
     field.set_name(u"Passwd");
@@ -579,7 +579,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.set_name_attribute(field.name());
     field.set_value(u"p4ssword");
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
-    field.set_renderer_id(FieldRendererId(3));
+    field.set_renderer_id(autofill::test::MakeFieldRendererId());
     test_api(form_data).Append(field);
 
     return form_data;
@@ -825,6 +825,8 @@ class PasswordManagerTestBase : public testing::Test {
   const std::string test_signon_realm_ = "https://www.google.com/";
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_{
+      {.disable_server_communication = true}};
   affiliations::FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
@@ -1770,9 +1772,9 @@ TEST_P(PasswordManagerTest,
   task_environment_.RunUntilIdle();
 
   manager()->OnPasswordFormSubmitted(&driver_, observed_form);
-  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {MakeSimpleFormData()});
   manager()->DidNavigateMainFrame(true);
-  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsParsed(&driver_, {MakeSimpleFormData()});
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LogInWithPasswordChangeSubmission", false, 1);
 
@@ -2094,14 +2096,9 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   observed.clear();
   // Simulate form reapperance with different path in url and different
   // renderer ids.
-  FormData form_data_after_navigation = form_data;
-  form_data_after_navigation.set_renderer_id(
-      FormRendererId(form_data_after_navigation.renderer_id().value() + 1000));
+  FormData form_data_after_navigation = MakeSimpleFormData();
   form_data_after_navigation.set_url(
       GURL("https://accounts.google.com/login/error?redirect_after_login"));
-  for (auto& field : test_api(form_data_after_navigation).fields()) {
-    field.set_value({});
-  }
   observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
@@ -2117,6 +2114,28 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
 
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(), testing::IsEmpty());
+}
+
+TEST_P(PasswordManagerTest, FormInteractedBeforePageloadFinishes) {
+  std::vector<FormData> observed;
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+
+  // Check that OnLoginSuccessful() wasn't invoked
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
+  // Check that OnLoginFailed() wasn't invoked.
+  EXPECT_CALL(client_, ResetSubmissionTrackingAfterTouchToFill).Times(0);
+
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
 }
 
 TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
@@ -6312,7 +6331,7 @@ TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnFailedLogin) {
 
   EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey(
                            "Credentials were filled manually, without typing"));
-  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {MakeSimpleFormData()});
 }
 
 // Check that a happiness surney is not triggered after the user has submitted
