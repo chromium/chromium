@@ -575,4 +575,18 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno) {
       .Else(CrashSIGSYS());
 }
 
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate() {
+  const Arg<int> flags(1);
+  return If((flags & ~(MFD_CLOEXEC | MFD_ALLOW_SEALING)) == 0, Allow())
+      // ChromeOS uses ~0 as the flags to check if memfd_create exists (will
+      // return -EINVAL).
+      // https://source.chromium.org/chromium/chromium/src/+/main:mojo/core/channel_linux.cc;drc=c4987dbe36be309f8db36cba174310cb8a23e989;l=918
+      // Instead of doing something fancy to avoid this, just allow the syscall.
+      // ~0 will always be invalid; even if every flag bit gets a usage in the
+      // future, `flags` still encodes the huge page size which must be a power
+      // of 2, which it will not be if every bit is set.
+      .ElseIf(flags == ~0, Allow())
+      .Else(CrashSIGSYS());
+}
+
 }  // namespace sandbox.

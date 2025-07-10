@@ -136,6 +136,10 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockRecvFlags(int sysno);
 // particular, this denies MSG_OOB.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno);
 
+// Restrict the flags of memfd_create(). The flags are allowlistred, but in
+// particular, this denies MFD_HUGETLB.
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate();
+
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_

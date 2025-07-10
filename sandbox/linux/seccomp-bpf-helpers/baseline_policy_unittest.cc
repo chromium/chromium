@@ -686,6 +686,34 @@ BPF_DEATH_TEST_C(BaselinePolicy,
 
 #endif  // !defined(i386)
 
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 MemfdCreateSuccess,
+                 DEATH_SUCCESS(),
+                 BaselinePolicy) {
+  int fd = syscall(__NR_memfd_create, "test_shared_memory", MFD_CLOEXEC);
+#if BUILDFLAG(IS_ANDROID)
+  if (fd == -1 && errno == ENOSYS) {
+    // Older version of Android that doesn't support memfds. Skip this test.
+    return;
+  }
+#endif
+  BPF_ASSERT_NE(fd, -1);
+
+  fd = syscall(__NR_memfd_create, "test_shared_memory2",
+               MFD_CLOEXEC | MFD_ALLOW_SEALING);
+  BPF_ASSERT_NE(fd, -1);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 MemfdCreateCrash,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  // This should crash
+  [[maybe_unused]] int fd =
+      syscall(__NR_memfd_create, "should_never_be_allocated",
+              MFD_CLOEXEC | MFD_HUGETLB);
+}
+
 }  // namespace
 
 }  // namespace sandbox
