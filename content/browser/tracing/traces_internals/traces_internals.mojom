@@ -107,7 +107,9 @@ interface PageHandler {
   // `perfetto.protos.TraceConfig`. This isn't using ProtoWrapper
   // because it's not compatible with cppgen proto headers used by perfetto.
   // PageHandler supports only one tracing session at a time.
-  StartTraceSession(mojo_base.mojom.BigBuffer config_pb) => (bool success);
+  StartTraceSession(
+      mojo_base.mojom.BigBuffer config_pb,
+      bool enable_privacy_filters) => (bool success);
 
   // Clones the current tracing session in read-only mode and returns the
   // captured trace snapshot, or null if the operation fails.

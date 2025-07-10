@@ -5,6 +5,22 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TraceRecorderElement} from './trace_recorder.js';
 
+function getPrivacyFilterHtml(this: TraceRecorderElement) {
+  return html`
+    <div class="config-toggle-container">
+      <div class="config-toggle-description">
+        <em>Enable privacy filters</em>
+        <span>Remove untyped and sensitive data like URLs from local scenarios.
+        </span>
+      </div>
+      <cr-toggle
+          class="config-toggle"
+          ?checked="${this.privacyFilterEnabled_}"
+          @change="${this.privacyFilterDidChange_}">
+      </cr-toggle>
+    </div>`;
+}
+
 export function getHtml(this: TraceRecorderElement) {
   // clang-format off
   return html`
@@ -41,6 +57,8 @@ export function getHtml(this: TraceRecorderElement) {
         </cr-button>
       </div>
     </div>
+
+    ${getPrivacyFilterHtml.bind(this)()}
 
      <div class="card">
       <cr-expand-button class="cr-row" ?expanded="${this.tagsExpanded_}"

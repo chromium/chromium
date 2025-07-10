@@ -157,9 +157,10 @@ TEST_F(TracesInternalsHandlerTest, TracingStartStop) {
           .SerializeAsString();
   base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
-  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
-                                  base::span<const char>(trace_config))),
-                              start_callback.Get());
+  handler_->StartTraceSession(
+      mojo_base::BigBuffer(
+          base::as_bytes(base::span<const char>(trace_config))),
+      /*enable_privacy_filters=*/false, start_callback.Get());
 
   {
     base::RunLoop run_loop_start;
@@ -192,9 +193,10 @@ TEST_F(TracesInternalsHandlerTest, TracingTimer) {
                         data_sources: { config: { name: "Stop" } }
                       )pb")
                           .SerializeAsString();
-  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
-                                  base::span<const char>(trace_config))),
-                              base::DoNothing());
+  handler_->StartTraceSession(
+      mojo_base::BigBuffer(
+          base::as_bytes(base::span<const char>(trace_config))),
+      /*enable_privacy_filters=*/false, base::DoNothing());
 
   base::RunLoop run_loop;
 
@@ -216,9 +218,10 @@ TEST_F(TracesInternalsHandlerTest, TracingStartFail) {
                           .SerializeAsString();
   base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
-  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
-                                  base::span<const char>(trace_config))),
-                              start_callback.Get());
+  handler_->StartTraceSession(
+      mojo_base::BigBuffer(
+          base::as_bytes(base::span<const char>(trace_config))),
+      /*enable_privacy_filters=*/false, start_callback.Get());
 
   {
     base::RunLoop run_loop_stop;
@@ -236,9 +239,10 @@ TEST_F(TracesInternalsHandlerTest, TracingClone) {
           .SerializeAsString();
   base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
-  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
-                                  base::span<const char>(trace_config))),
-                              start_callback.Get());
+  handler_->StartTraceSession(
+      mojo_base::BigBuffer(
+          base::as_bytes(base::span<const char>(trace_config))),
+      /*enable_privacy_filters=*/false, start_callback.Get());
 
   {
     base::RunLoop run_loop_start;
@@ -273,9 +277,10 @@ TEST_F(TracesInternalsHandlerTest, TracingBufferUsage) {
           .SerializeAsString();
   base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
-  handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
-                                  base::span<const char>(trace_config))),
-                              start_callback.Get());
+  handler_->StartTraceSession(
+      mojo_base::BigBuffer(
+          base::as_bytes(base::span<const char>(trace_config))),
+      /*enable_privacy_filters=*/false, start_callback.Get());
 
   {
     base::RunLoop run_loop_start;

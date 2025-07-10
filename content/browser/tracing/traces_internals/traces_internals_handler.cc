@@ -192,6 +192,7 @@ void TracesInternalsHandler::DownloadTrace(const base::Token& uuid,
 
 void TracesInternalsHandler::StartTraceSession(
     mojo_base::BigBuffer config_pb,
+    bool enable_privacy_filters,
     StartTraceSessionCallback callback) {
   if (tracing_session_) {
     std::move(callback).Run(false);
@@ -202,8 +203,8 @@ void TracesInternalsHandler::StartTraceSession(
   tracing_session_ = CreateTracingSession();
 
   auto trace_config = ParseSerializedTraceConfig(base::span(config_pb));
-  if (!trace_config ||
-      !tracing::AdaptPerfettoConfigForChrome(&(*trace_config))) {
+  if (!trace_config || !tracing::AdaptPerfettoConfigForChrome(
+                           &(*trace_config), enable_privacy_filters)) {
     std::move(start_callback_).Run(false);
     return;
   }

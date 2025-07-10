@@ -6,8 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./config_toggle.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit
+ * #include=cr-shared-style-lit config-toggle
  * #css_wrapper_metadata_end */
 
 :host {

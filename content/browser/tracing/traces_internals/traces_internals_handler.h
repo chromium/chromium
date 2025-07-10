@@ -36,6 +36,7 @@ class CONTENT_EXPORT TracesInternalsHandler
   // trace_report::mojom::TracesInternalsHandler:
   // Get all the trace report currently stored locally
   void StartTraceSession(mojo_base::BigBuffer config_pb,
+                         bool enable_privacy_filters,
                          StartTraceSessionCallback callback) override;
   void CloneTraceSession(CloneTraceSessionCallback callback) override;
   void StopTraceSession(StopTraceSessionCallback callback) override;

@@ -52,6 +52,7 @@ export class TraceRecorderElement extends CrLitElement {
       tracingState: {type: String},
       trackEventCategories: {type: Array},
       trackEventTags: {type: Array},
+      privacyFilterEnabled_: {type: Boolean},
       traceConfig: {type: Object},
       trackEventConfig: {type: Object},
       enabledCategories: {type: Object},
@@ -85,6 +86,8 @@ export class TraceRecorderElement extends CrLitElement {
 
   protected accessor trackEventCategories: TraceCategory[] = [];
   protected accessor trackEventTags: string[] = [];
+
+  protected accessor privacyFilterEnabled_: boolean = false;
 
   protected accessor traceConfig: TraceConfig|undefined;
   protected accessor trackEventConfig: TrackEventConfig|undefined;
@@ -162,8 +165,8 @@ export class TraceRecorderElement extends CrLitElement {
     // Set state to RECORDING immediately to disable start button.
     this.tracingState = TracingState.STARTING;
 
-    const {success} =
-        await this.browserProxy_.handler.startTraceSession(bigBufferConfig);
+    const {success} = await this.browserProxy_.handler.startTraceSession(
+        bigBufferConfig, this.privacyFilterEnabled_);
 
     if (!success) {
       this.showToast_('Failed to start tracing.');
@@ -195,6 +198,13 @@ export class TraceRecorderElement extends CrLitElement {
   protected async cloneTraceSession_(): Promise<void> {
     const {trace} = await this.browserProxy_.handler.cloneTraceSession();
     this.downloadData_(trace);
+  }
+
+  protected privacyFilterDidChange_(event: CustomEvent<boolean>) {
+    if (this.privacyFilterEnabled_ === event.detail) {
+      return;
+    }
+    this.privacyFilterEnabled_ = event.detail;
   }
 
   protected onCategoriesExpandedChanged_(e: CustomEvent<{value: boolean}>) {
