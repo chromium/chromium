@@ -315,7 +315,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
     return keys;
   }
 
-  base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>&
+  base::LRUCache<std::pair<GURL, blink::StorageKey>, int64_t>&
   registration_id_cache() {
     return registry().registration_id_cache_;
   }
@@ -323,7 +323,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
   std::set<GURL> registration_id_cache_urls() {
     std::set<GURL> set;
     for (const auto& it : registry().registration_id_cache_) {
-      set.insert(std::get<0>(it.first));
+      set.insert(it.first.first);
     }
     return set;
   }
@@ -1467,7 +1467,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
         registration_scope_cache_for_testing(/*max_size=*/2);
     registration_scope_cache().Swap(registration_scope_cache_for_testing);
 
-    base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>
+    base::LRUCache<std::pair<GURL, blink::StorageKey>, int64_t>
         registration_id_cache_for_testing(/*max_size=*/1);
     registration_id_cache().Swap(registration_id_cache_for_testing);
   }

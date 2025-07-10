@@ -131,7 +131,7 @@ void CheckForClientWriteFailure(
 }
 
 void EraseRegistrationIdCacheEntry(
-    base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>&
+    base::LRUCache<std::pair<GURL, blink::StorageKey>, int64_t>&
         registration_id_cache,
     const GURL& scope,
     const blink::StorageKey& key) {
