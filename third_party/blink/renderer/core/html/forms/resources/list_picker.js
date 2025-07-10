@@ -365,7 +365,7 @@ class ListPicker extends Picker {
       optionUnderMouse =
           elementUnderMouse && elementUnderMouse.closest('option');
     }
-    if (optionUnderMouse)
+    if (optionUnderMouse && !optionUnderMouse.disabled)
       optionUnderMouse.selected = true;
     else
       this.selectElement_.value = oldValue;
