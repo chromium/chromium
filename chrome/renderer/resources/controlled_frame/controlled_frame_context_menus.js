@@ -136,6 +136,24 @@ function createEventInfo(contextMenusEventName) {
   };
 }
 
+function unwebifyContextMenusProperties(properties) {
+  renameObjectKeys(properties, {
+    __proto__: null,
+    documentURLPatterns: 'documentUrlPatterns',
+    targetURLPatterns: 'targetUrlPatterns',
+  });
+  return properties;
+}
+
+function unwebifyContextMenusCreateProperties(properties) {
+  renameObjectKeys(properties, {
+    __proto__: null,
+    documentURLPatterns: 'documentUrlPatterns',
+    targetURLPatterns: 'targetUrlPatterns',
+  });
+  return properties;
+}
+
 function webifyClickEventDetails(details) {
   const webDetails = extractAndMapValues(details, {
     frameId: identity,
@@ -191,15 +209,31 @@ class ControlledFrameContextMenus extends EventTarget {
         new ControlledFrameContextMenusImpl(webView, viewInstanceId);
   }
 
-  // TODO(crbug.com/429109311): Implement enum mappings.
   create(...args) {
-    return this.#contextMenusImpl.create(...args);
+    const [properties, ...remainingArgs] = args;
+    if (properties === undefined) {
+      return Promise.reject(
+          new Error('Cannot create context menu without properties.'));
+    }
+    return this.#contextMenusImpl.create(
+        unwebifyContextMenusCreateProperties(properties), ...remainingArgs);
   }
   update(...args) {
-    return this.#contextMenusImpl.update(...args);
+    const [id, properties, ...remainingArgs] = args;
+    if (id === undefined || properties === undefined) {
+      return Promise.reject(
+          new Error('Cannot update context menu without id and properties.'));
+    }
+    return this.#contextMenusImpl.update(
+        id, unwebifyContextMenusProperties(properties), ...remainingArgs);
   }
   remove(...args) {
-    return this.#contextMenusImpl.remove(...args);
+    const [id, ...remainingArgs] = args;
+    if (id === undefined) {
+      return Promise.reject(
+          new Error('Cannot remove entry context menu without id.'));
+    }
+    return this.#contextMenusImpl.remove(id, ...remainingArgs);
   }
   removeAll(...args) {
     return this.#contextMenusImpl.removeAll(...args);
