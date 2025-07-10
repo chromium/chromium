@@ -70,6 +70,10 @@ const frameLoadedPromise = new Promise(resolve => {
           display: inline-block;
         }
       </style>
+      <script>
+        // Prevent opening contextmenu.
+        addEventListener("contextmenu", e => e.preventDefault());
+      </script>
       <body>
         <div id="square2"></div>
       </body>
