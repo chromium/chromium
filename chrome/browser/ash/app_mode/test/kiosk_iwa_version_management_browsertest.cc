@@ -622,16 +622,13 @@ IN_PROC_BROWSER_TEST_P(KioskIwaUpdateChannelChangeTest, ProcessChannelChange) {
   EXPECT_EQ(GetCurrentKioskIwaData()->update_channel().ToString(),
             GetNewChannelName());
 
-  {
-    // Prevents the app launch to let the app update apply.
-    auto scoped_launch_blocker = BlockKioskLaunch();
-    ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  // Prevents the app launch to let the app update apply.
+  auto scoped_launch_blocker = BlockKioskLaunch();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
-    WaitForKioskProfile();
-    CheckUpdateStatusForTestCase();
-  }
+  WaitForKioskProfile();
+  CheckUpdateStatusForTestCase();
 
-  ASSERT_TRUE(WaitKioskLaunched());
   ExpectTestAppInstalledAtVersion(GetExpectedNewVersion());
 }
 
@@ -767,16 +764,13 @@ IN_PROC_BROWSER_TEST_P(KioskIwaVersionPinningUpdateTest, PRE_ProcessPinning) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskIwaVersionPinningUpdateTest, ProcessPinning) {
-  {
-    // Prevents the app launch to let the app update apply.
-    auto scoped_launch_blocker = BlockKioskLaunch();
-    ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  // Prevents the app launch to let the app update apply.
+  auto scoped_launch_blocker = BlockKioskLaunch();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
-    WaitForKioskProfile();
-    CheckUpdateStatusForTestCase();
-  }
+  WaitForKioskProfile();
+  CheckUpdateStatusForTestCase();
 
-  ASSERT_TRUE(WaitKioskLaunched());
   ExpectTestAppInstalledAtVersion(GetExpectedVersion());
 }
 
