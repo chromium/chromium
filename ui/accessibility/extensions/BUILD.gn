@@ -4,6 +4,9 @@
 
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 if (is_chromeos) {
   import("//chrome/test/base/ash/js2gtest.gni")
@@ -22,7 +25,6 @@ group("extension_tests") {
   if (is_chromeos) {
     deps = [
       ":colorenhancer_tests",
-      ":highcontrast_tests",
     ]
   }
 }
@@ -188,9 +190,24 @@ if (is_chromeos) {
 # High Contrast
 #
 
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+tsc_out_dir = "$target_gen_dir/tsc"
+base_bundle_out_dir = "$target_gen_dir/bundle"
+final_out_dir = "$root_out_dir/highcontrast"
+
+ts_modules = [
+  "highcontrast/common.ts",
+  "highcontrast/highcontrast.ts",
+  "highcontrast/popup.ts",
+  "highcontrast/service_worker.ts",
+]
+
 group("highcontrast") {
   deps = [
-    ":highcontrast_copy",
+    ":copy_service_worker_bundle",
+    ":copy_popup_bundle",
+    ":copy_highcontrast_bundle",
+    ":highcontrast_assets",
     ":highcontrast_strings",
   ]
 }
@@ -198,26 +215,88 @@ group("highcontrast") {
 grit("highcontrast_strings") {
   source = "strings/accessibility_extensions_strings.grd"
   outputs = locale_files
-  output_dir = "$root_out_dir/highcontrast"
+  output_dir = final_out_dir
   resource_ids = ""
 }
 
-highcontrast_files = [
-  "highcontrast/manifest.json",
-  "highcontrast/background.js",
-  "highcontrast/common.js",
-  "highcontrast/highcontrast-16.png",
-  "highcontrast/highcontrast-19.png",
-  "highcontrast/highcontrast-48.png",
-  "highcontrast/highcontrast-128.png",
-  "highcontrast/highcontrast.js",
-  "highcontrast/popup.html",
-  "highcontrast/popup.js",
-  "highcontrast/storage.js",
-]
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}
 
-copy("highcontrast_copy") {
-  sources = highcontrast_files
+ts_library("highcontrast_ts_lib") {
+  root_dir = ts_build_staging_dir
+  out_dir = tsc_out_dir
+  composite = true
+  extra_deps = [ ":stage_ts_build" ]
+
+  definitions = [
+    "//tools/typescript/definitions/action.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/i18n.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/scripting.d.ts",
+    "//tools/typescript/definitions/storage.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+
+  in_files = ts_modules
+  tsconfig_base = "tsconfig.base.json"
+}
+
+bundle_js("bundle_service_worker") {
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/highcontrast", root_build_dir)
+  js_module_in_files = [ "service_worker.js" ]
+  out_folder = "$base_bundle_out_dir/service_worker"
+  deps = [ ":highcontrast_ts_lib" ]
+}
+
+copy("copy_service_worker_bundle") {
+  sources = [ "$base_bundle_out_dir/service_worker/service_worker.rollup.js" ]
+  outputs = [ "$root_out_dir/highcontrast/service_worker.js" ]
+  deps = [ ":bundle_service_worker" ]
+}
+
+bundle_js("bundle_popup") {
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/highcontrast", root_build_dir)
+  js_module_in_files = [ "popup.js" ]
+  out_folder = "$base_bundle_out_dir/popup"
+  deps = [ ":highcontrast_ts_lib" ]
+}
+
+copy("copy_popup_bundle") {
+  sources = [ "$base_bundle_out_dir/popup/popup.rollup.js" ]
+  outputs = [ "$root_out_dir/highcontrast/popup.js" ]
+  deps = [ ":bundle_popup" ]
+}
+
+bundle_js("bundle_highcontrast") {
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir/highcontrast", root_build_dir)
+  js_module_in_files = [ "highcontrast.js" ]
+  out_folder = "$base_bundle_out_dir/highcontrast"
+  deps = [ ":highcontrast_ts_lib" ]
+}
+
+copy("copy_highcontrast_bundle") {
+  sources = [ "$base_bundle_out_dir/highcontrast/highcontrast.rollup.js" ]
+  outputs = [ "$root_out_dir/highcontrast/highcontrast.js" ]
+  deps = [ ":bundle_highcontrast" ]
+}
+
+copy("highcontrast_assets") {
+  sources = [
+    "highcontrast/manifest.json",
+    "highcontrast/popup.html",
+    "highcontrast/popup.css",
+    "highcontrast/highcontrast-16.png",
+    "highcontrast/highcontrast-19.png",
+    "highcontrast/highcontrast-48.png",
+    "highcontrast/highcontrast-128.png",
+  ]
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
@@ -288,26 +367,4 @@ caretbrowsing_files = [
 copy("caretbrowsing_copy") {
   sources = caretbrowsing_files
   outputs = [ "$root_out_dir/caretbrowsing/{{source_file_part}}" ]
-}
-
-if (is_chromeos) {
-  test("highcontrast_tests") {
-    deps = [ ":highcontrast_webui_js_tests" ]
-    deps += webui_test_deps
-
-    data = js2gtest_js_libraries
-  }
-
-  js2gtest("highcontrast_webui_js_tests") {
-    test_type = "webui"
-    sources = [ "highcontrast/storage_test.js" ]
-    gen_include_files = [
-      "highcontrast/storage.js",
-      "testing/webstore_extension_test_base.js",
-      "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
-      "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
-    ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
 }

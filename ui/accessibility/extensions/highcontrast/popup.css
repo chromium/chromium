@@ -1,0 +1,70 @@
+/*
+* Copyright (c) 2025 The Chromium Authors. All rights reserved.
+* Use of this source code is governed by a BSD-style license that can be
+* found in the LICENSE file.
+*/
+
+html {
+  border-radius: 6px;
+}
+
+body {
+  width: 18em;
+  padding: 0.75em;
+  border-radius: 6px;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+}
+
+#title {
+  outline: none;
+}
+
+.kb {
+  font-weight: normal;
+  font-style: italic;
+  font-size: 10pt;
+}
+
+button {
+  width: 100%;
+  margin: 0.75em 0 0.25em 0;
+  padding: 0.5em 1.5em;
+}
+
+button#toggle {
+  font-size: 12pt;
+}
+
+body.disabled h3,
+body.disabled a,
+body.disabled label {
+  color: #aaa;
+}
+
+h2 {
+  font-size: 12pt;
+  text-align: center;
+}
+
+label {
+  display: block;
+}
+
+fieldset {
+  border: none;
+  margin: 0 0 1em 0;
+  padding: 0;
+}
+
+legend {
+  padding-top: 1em;
+  padding-bottom: 0.5em;
+}
+
+input[type="radio"] {
+  margin-left: 1em;
+}

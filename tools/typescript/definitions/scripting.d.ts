@@ -14,6 +14,7 @@ declare namespace chrome {
     }
 
     interface ScriptInjection {
+      injectImmediately?: boolean;
       files?: string[];
       target: InjectionTarget;
     }

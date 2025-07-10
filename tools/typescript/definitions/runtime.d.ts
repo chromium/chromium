@@ -78,6 +78,19 @@ declare global {
         incognito?: boolean;
       }
 
+      export enum OnInstalledReason {
+        INSTALL = 'install',
+        UPDATE = 'update',
+        CHROME_UPDATE = 'chrome_update',
+        SHARED_MODULE_UPDATE = 'shared_module_update',
+      }
+
+      export interface OnInstalledDetails {
+        reason: OnInstalledReason;
+        previousVersion?: string;
+        id?: string;
+      }
+
       export function getURL(path: string): string;
 
       export function reload(): void;
@@ -110,6 +123,8 @@ declare global {
       export const onMessage: ChromeEvent<
           (message: any|undefined, sender: MessageSender,
            sendResponse: () => void) => boolean>;
+
+      export const onInstalled: ChromeEvent<(details: OnInstalledDetails) => void>;
     }
   }
 }
