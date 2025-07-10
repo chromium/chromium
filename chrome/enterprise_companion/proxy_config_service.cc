@@ -33,6 +33,7 @@
 #include "base/win/shlwapi.h"
 #include "base/win/windows_types.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/icu_util.h"
 #define UPDATER_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\Update\\"
 #endif
@@ -254,6 +255,18 @@ class ProxyConfigService final : public net::ProxyConfigService,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     fallback_->OnLazyPoll();
     std::optional<net::ProxyConfig> new_config = GetEffectiveConfig();
+
+#if BUILDFLAG(IS_WIN)
+    // ICU data may be needed to canonicalize hostnames sourced from PAC scripts
+    // in cases where the URL contains non-ASCII Unicode code points. However,
+    // ICU initialization is a known contributor to instability. Lazy
+    // initialization is used to optimistically avoid crashy code paths when PAC
+    // proxies are not used. See: https://crbug.com/420737997,
+    // https://crbug.com/422974907, and https://crbug.com/428983277.
+    if (new_config && new_config->has_pac_url()) {
+      InitializeICU();
+    }
+#endif
 
     if ((last_config_.has_value() != new_config.has_value()) ||
         (last_config_ && new_config &&
