@@ -360,6 +360,11 @@ struct SplitTabChange {
     kDetachedToAnotherTabstrip
   };
 
+  enum class SplitVisualChangeReason {
+    kLayoutUpdated,
+    kRatioUpdated,
+  };
+
   // Base class for all changes. Similar to TabStripModelChange::Delta.
   struct Delta {
     virtual ~Delta() = default;
@@ -388,7 +393,8 @@ struct SplitTabChange {
 
   struct VisualsChange : public Delta {
     VisualsChange(const split_tabs::SplitTabVisualData& old_visual_data,
-                  const split_tabs::SplitTabVisualData& new_visual_data);
+                  const split_tabs::SplitTabVisualData& new_visual_data,
+                  SplitVisualChangeReason reason);
     ~VisualsChange() override;
 
     const split_tabs::SplitTabVisualData& old_visual_data() const {
@@ -398,9 +404,12 @@ struct SplitTabChange {
       return new_visual_data_;
     }
 
+    SplitVisualChangeReason reason() const { return reason_; }
+
    private:
     split_tabs::SplitTabVisualData old_visual_data_;
     split_tabs::SplitTabVisualData new_visual_data_;
+    SplitVisualChangeReason reason_;
   };
 
   struct ContentsChange : public Delta {

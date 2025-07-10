@@ -698,6 +698,7 @@ class Browser : public TabStripModelObserver,
                               tabs::TabInterface* tab,
                               int index) override;
   void TabStripEmpty() override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;
@@ -1251,6 +1252,12 @@ class Browser : public TabStripModelObserver,
   void UpdateTabGroupSessionDataForTab(
       tabs::TabInterface* tab,
       std::optional<tab_groups::TabGroupId> group);
+
+  void UpdateSplitTabSessionData(
+      tabs::TabInterface* tab,
+      std::optional<split_tabs::SplitTabId> split_id);
+
+  void UpdateSplitTabSessionVisualData(const split_tabs::SplitTabId& split_id);
 
   // Create `FindBarController` if it does not exist.
   // TODO(crbug.com/423956131): Convert to `GetFindBarController` which returns

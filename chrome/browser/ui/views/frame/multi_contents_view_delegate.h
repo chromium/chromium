@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 
 class TabStripModel;
+class Browser;
 
 namespace content {
 class WebContents;
@@ -19,26 +20,30 @@ class MultiContentsViewDelegate
   ~MultiContentsViewDelegate() override = default;
 
   virtual void WebContentsFocused(content::WebContents* contents) = 0;
-  virtual void ResizeWebContents(double ratio) = 0;
+  virtual void ResizeWebContents(double ratio, bool done_resizing) = 0;
   virtual void ReverseWebContents() = 0;
 };
 
 class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
  public:
-  explicit MultiContentsViewDelegateImpl(TabStripModel& tab_strip_model);
+  explicit MultiContentsViewDelegateImpl(TabStripModel& tab_strip_model,
+                                         Browser& browser);
   MultiContentsViewDelegateImpl(const MultiContentsViewDelegateImpl&) = delete;
   MultiContentsViewDelegateImpl& operator=(
       const MultiContentsViewDelegateImpl&) = delete;
   ~MultiContentsViewDelegateImpl() override = default;
 
   void WebContentsFocused(content::WebContents* contents) override;
-  void ResizeWebContents(double ratio) override;
+  void ResizeWebContents(double ratio, bool done_resizing) override;
   void ReverseWebContents() override;
   void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
                       const std::vector<GURL>& urls) override;
 
  private:
   const raw_ref<TabStripModel> tab_strip_model_;
+
+  // TODO(crbug.com/431000266): Use a browser window feature instead.
+  const raw_ref<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DELEGATE_H_

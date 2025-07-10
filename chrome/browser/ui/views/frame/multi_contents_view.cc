@@ -218,7 +218,7 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
                         contents_container_views_[0]->GetInsets().width() +
                         static_cast<double>(resize_amount)) /
                        total_width;
-  delegate_->ResizeWebContents(start_ratio);
+  delegate_->ResizeWebContents(start_ratio, done_resizing);
 
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;

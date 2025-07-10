@@ -922,7 +922,8 @@ class TabStripModel {
   void NotifySplitTabVisualsChanged(
       split_tabs::SplitTabId split_id,
       const split_tabs::SplitTabVisualData& old_visual_data,
-      const split_tabs::SplitTabVisualData& new_visual_data);
+      const split_tabs::SplitTabVisualData& new_visual_data,
+      const SplitTabChange::SplitVisualChangeReason reason);
 
   // Notify observers that contents of a split has been reordered.
   void NotifySplitTabContentsUpdated(

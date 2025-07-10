@@ -1740,6 +1740,70 @@ void Browser::TabStripEmpty() {
   window_->Close();
 }
 
+void Browser::OnSplitTabChanged(const SplitTabChange& change) {
+  switch (change.type) {
+    case SplitTabChange::Type::kAdded: {
+      for (std::pair<tabs::TabInterface*, int> split_tabs :
+           change.GetAddedChange()->tabs()) {
+        UpdateSplitTabSessionData(split_tabs.first, change.split_id);
+      }
+
+      UpdateSplitTabSessionVisualData(change.split_id);
+      break;
+    }
+    case SplitTabChange::Type::kVisualsChanged: {
+      // Update for ratio is done from resize from multicontent view delegate.
+      if (change.GetVisualsChange()->reason() !=
+          SplitTabChange::SplitVisualChangeReason::kRatioUpdated) {
+        UpdateSplitTabSessionVisualData(change.split_id);
+      }
+      break;
+    }
+
+    case SplitTabChange::Type::kContentsChanged: {
+      // No need to do anything here since split is still present and no visual
+      // information changed.
+      break;
+    }
+
+    case SplitTabChange::Type::kRemoved: {
+      for (std::pair<tabs::TabInterface*, int> split_tabs :
+           change.GetRemovedChange()->tabs()) {
+        UpdateSplitTabSessionData(split_tabs.first, std::nullopt);
+      }
+      break;
+    }
+  }
+}
+
+void Browser::UpdateSplitTabSessionData(
+    tabs::TabInterface* tab,
+    std::optional<split_tabs::SplitTabId> split_id) {
+  DCHECK(!IsRelevantToAppSessionService(type_));
+  SessionService* const session_service =
+      SessionServiceFactory::GetForProfile(profile_);
+  if (!session_service) {
+    return;
+  }
+
+  session_service->SetSplitTab(
+      session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
+      std::move(split_id));
+}
+
+void Browser::UpdateSplitTabSessionVisualData(
+    const split_tabs::SplitTabId& split_id) {
+  SessionService* const session_service =
+      SessionServiceFactory::GetForProfile(profile());
+  if (!session_service) {
+    return;
+  }
+
+  const split_tabs::SplitTabVisualData* visual_data =
+      tab_strip_model()->GetSplitData(split_id)->visual_data();
+  session_service->SetSplitTabData(session_id(), split_id, visual_data);
+}
+
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
                                        float ratio) {
   window_->SetTopControlsShownRatio(web_contents, ratio);

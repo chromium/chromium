@@ -1014,7 +1014,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto multi_contents_view = std::make_unique<MultiContentsView>(
         this, std::make_unique<MultiContentsViewDelegateImpl>(
-                  *browser_->tab_strip_model()));
+                  *browser_->tab_strip_model(), *browser_));
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
     multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
