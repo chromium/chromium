@@ -24,10 +24,6 @@
 - (void)accountPickerConfirmationScreenCoordinatorSubmit:
     (AccountPickerConfirmationScreenCoordinator*)coordinator;
 
-// Called when the user wants to sign in without an existing account.
-- (void)accountPickerConfirmationScreenCoordinatorOpenAddAccount:
-    (AccountPickerConfirmationScreenCoordinator*)coordinator;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_ACCOUNT_PICKER_UI_BUNDLED_ACCOUNT_PICKER_CONFIRMATION_ACCOUNT_PICKER_CONFIRMATION_SCREEN_COORDINATOR_DELEGATE_H_

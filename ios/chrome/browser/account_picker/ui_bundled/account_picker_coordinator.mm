@@ -329,11 +329,6 @@
   [self startValidation];
 }
 
-- (void)accountPickerConfirmationScreenCoordinatorOpenAddAccount:
-    (AccountPickerConfirmationScreenCoordinator*)coordinator {
-  [self openAddAccountCoordinator];
-}
-
 #pragma mark - UIViewControllerTransitioningDelegate
 
 - (UIPresentationController*)
