@@ -871,7 +871,7 @@ struct EvalJsResult {
 //    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
 //    ASSERT_EQ(nullptr, EvalJs(rfh, "var a = 1 + 1"))
 //
-// Error values never return true for any comparison operator.
+// Error values are incomparable to other values (including other errors).
 template <typename T>
 bool operator==(const T& a, const EvalJsResult& b) {
   return b.error.empty() && (JsLiteralHelper<T>::Convert(a) == b.value);
@@ -879,15 +879,6 @@ bool operator==(const T& a, const EvalJsResult& b) {
 template <typename T>
 bool operator==(const EvalJsResult& a, const T& b) {
   return b == a;
-}
-
-template <typename T>
-bool operator!=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) != b.value);
-}
-template <typename T>
-bool operator!=(const EvalJsResult& a, const T& b) {
-  return b != a;
 }
 
 template <typename T>

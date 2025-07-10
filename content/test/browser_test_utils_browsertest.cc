@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsErrors) {
     EXPECT_FALSE(0 == result);
     EXPECT_FALSE(1 == result);
     EXPECT_FALSE("}}" == result);  // EXPECT_EQ should fail
-    EXPECT_FALSE("}}" != result);  // As should EXPECT_NE
+    EXPECT_TRUE("}}" != result);
     EXPECT_FALSE(nullptr == result);
 
     std::string expected_error =
