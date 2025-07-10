@@ -10,9 +10,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/channel_info.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/browser/webui/json_generation.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -79,5 +85,35 @@ JsonGenerationParams GetChromeMetadataParams(
     params.with_platform_name(platform_name.value());
   }
   return params;
+}
+
+std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
+CreatePromotionEligibilityChecker(Profile* profile,
+                                  bool dismissed_banner_pref,
+                                  bool feature_enabled) {
+  if (!feature_enabled || profile->IsIncognitoProfile() ||
+      profile->IsGuestSession() || !profile->GetCloudPolicyManager() ||
+      !profile->GetCloudPolicyManager()->core()->client()) {
+    return nullptr;
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
+
+  if (!profile_id_service->GetProfileId().has_value()) {
+    return nullptr;
+  }
+
+  std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker> promotion_eligibility_checker =
+      std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
+          /*profile_id=*/profile_id_service->GetProfileId().value(),
+          /*client=*/
+          profile->GetCloudPolicyManager()->core()->client(),
+          /*identity_manager=*/std::move(identity_manager),
+          /*locale=*/g_browser_process->GetApplicationLocale(),
+          /*dismissed_banner_pref=*/dismissed_banner_pref);
+
+  return promotion_eligibility_checker;
 }
 }  // namespace policy

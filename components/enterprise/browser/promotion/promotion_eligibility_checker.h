@@ -26,12 +26,11 @@ class PromotionEligibilityChecker {
   using PromotionEligibilityCallback = base::OnceCallback<void(
       enterprise_management::GetUserEligiblePromotionsResponse)>;
 
-  explicit PromotionEligibilityChecker(
-      const std::string& profile_id,
-      policy::CloudPolicyClient* client,
-      signin::IdentityManager* identity_manager,
-      std::string locale,
-      bool dismissed_banner_pref);
+  PromotionEligibilityChecker(const std::string& profile_id,
+                              policy::CloudPolicyClient* client,
+                              signin::IdentityManager* identity_manager,
+                              std::string locale,
+                              bool dismissed_banner_pref);
 
   PromotionEligibilityChecker(const PromotionEligibilityChecker&) = delete;
   PromotionEligibilityChecker& operator=(const PromotionEligibilityChecker&) =
@@ -40,7 +39,6 @@ class PromotionEligibilityChecker {
   ~PromotionEligibilityChecker();
 
   void MaybeCheckPromotionEligibility(
-      const CoreAccountId account_id,
       PromotionEligibilityChecker::PromotionEligibilityCallback callback);
 
   void OnAuthTokenFetched(GoogleServiceAuthError error,

@@ -49,12 +49,13 @@ PromotionEligibilityChecker::PromotionEligibilityChecker(
 PromotionEligibilityChecker::~PromotionEligibilityChecker() = default;
 
 void PromotionEligibilityChecker::MaybeCheckPromotionEligibility(
-    const CoreAccountId account_id,
     PromotionEligibilityChecker::PromotionEligibilityCallback callback) {
   DCHECK(!access_token_fetcher_);
   // The caller must supply a username.
   DCHECK(callback);
   callback_ = std::move(callback);
+  auto account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (account_id.empty() ||
       !identity_manager_->HasAccountWithRefreshToken(account_id) ||
@@ -66,7 +67,6 @@ void PromotionEligibilityChecker::MaybeCheckPromotionEligibility(
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
   scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id, kOauthConsumerName, scopes,
       base::BindOnce(&PromotionEligibilityChecker::OnAuthTokenFetched,

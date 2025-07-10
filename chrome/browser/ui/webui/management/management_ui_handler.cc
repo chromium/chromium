@@ -34,6 +34,7 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -733,41 +734,23 @@ void ManagementUIHandler::HandleShouldShowPromotion(
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string callback_id = args[0].GetString();
 
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableManagementPromotionBanner) ||
-      profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+  bool dismissed_banner_pref = false;  // TODO: austinzzr - Add pref
+                                       // checking mechanism when
+                                       // implementing UI elements for the
+                                       // promotion banner.
+
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kEnableManagementPromotionBanner);
+
+  promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
+      profile, dismissed_banner_pref, feature_enabled);
+  if (!promotion_eligibility_checker_) {
     OnPromotionEligibilityFetched(
         callback_id,
         enterprise_management::GetUserEligiblePromotionsResponse());
     return;
   }
-
-  auto* profile_id_service =
-      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
-  if (!profile_id_service->GetProfileId().has_value()) {
-    OnPromotionEligibilityFetched(
-        callback_id,
-        enterprise_management::GetUserEligiblePromotionsResponse());
-    return;
-  }
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
-  std::string locale = g_browser_process->GetApplicationLocale();
-
-  promotion_eligibility_checker_ =
-      std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
-          /*profile_id=*/profile_id_service->GetProfileId().value(),
-          /*client=*/
-          profile->GetCloudPolicyManager()->core()->client(),
-          /*identity_manager=*/identity_manager,
-          /*locale=*/locale,
-          /*dismissed_banner_pref=*/false);  // TODO: austinzzr - Add pref
-                                             // checking mechanism when
-                                             // implementing UI elements for the
-                                             // promotion banner.
   promotion_eligibility_checker_->MaybeCheckPromotionEligibility(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       base::BindOnce(&ManagementUIHandler::OnPromotionEligibilityFetched,
                      weak_factory_.GetWeakPtr(), callback_id));
   return;

@@ -49,10 +49,8 @@ class PromotionEligibilityCheckerTest : public testing::Test {
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
     client_->SetDMToken(kNonEmptyDMToken);
     client_->SetClientId(kClientId);
-    account_id_ = identity_test_env()
-                      ->MakePrimaryAccountAvailable(
-                          "test@example.com", signin::ConsentLevel::kSignin)
-                      .account_id;
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
 
     checker_ = std::make_unique<PromotionEligibilityChecker>(
         kProfileId, client_.get(), identity_test_env()->identity_manager(),
@@ -62,7 +60,6 @@ class PromotionEligibilityCheckerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  CoreAccountId account_id_;
   std::unique_ptr<PromotionEligibilityChecker> checker_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
@@ -76,7 +73,7 @@ TEST_F(PromotionEligibilityCheckerTest, FetchAccessTokenSuccess) {
 
   client_ptr->SetDMToken(kNonEmptyDMToken);
 
-  checker_->MaybeCheckPromotionEligibility(account_id_, base::DoNothing());
+  checker_->MaybeCheckPromotionEligibility(base::DoNothing());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kExpectedAccessToken, base::Time::Max());
@@ -111,7 +108,7 @@ TEST_F(PromotionEligibilityCheckerTest, DeterminePromotionEligibilitySuccess) {
 
   client_ptr->SetDMToken(kNonEmptyDMToken);
 
-  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+  checker_->MaybeCheckPromotionEligibility(callback.Get());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kExpectedAccessToken, base::Time::Max());
@@ -134,7 +131,7 @@ TEST_F(PromotionEligibilityCheckerTest,
               Run(EqualsProto(
                   enterprise_management::GetUserEligiblePromotionsResponse())));
 
-  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+  checker_->MaybeCheckPromotionEligibility(callback.Get());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "", base::Time::Max());
@@ -156,7 +153,7 @@ TEST_F(PromotionEligibilityCheckerTest,
   EXPECT_CALL(callback,
               Run(EqualsProto(
                   enterprise_management::GetUserEligiblePromotionsResponse())));
-  checker_->MaybeCheckPromotionEligibility(account_id_, callback.Get());
+  checker_->MaybeCheckPromotionEligibility(callback.Get());
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
@@ -181,8 +178,7 @@ TEST_F(PromotionEligibilityCheckerTest,
       identity_test_env()->identity_manager(), kValidLocale,
       !kDismissedBannerPref);
 
-  checker_no_dm_token.MaybeCheckPromotionEligibility(account_id_,
-                                                     callback.Get());
+  checker_no_dm_token.MaybeCheckPromotionEligibility(callback.Get());
 }
 
 TEST_F(PromotionEligibilityCheckerTest,
@@ -203,7 +199,7 @@ TEST_F(PromotionEligibilityCheckerTest,
                                       identity_test_env()->identity_manager(),
                                       kValidLocale, kDismissedBannerPref);
 
-  checker.MaybeCheckPromotionEligibility(account_id_, callback.Get());
+  checker.MaybeCheckPromotionEligibility(callback.Get());
 }
 
 TEST_F(PromotionEligibilityCheckerTest,
@@ -225,12 +221,15 @@ TEST_F(PromotionEligibilityCheckerTest,
       identity_test_env()->identity_manager(), kInvalidLocale,
       !kDismissedBannerPref);
 
-  checker_invalid_locale.MaybeCheckPromotionEligibility(account_id_,
-                                                        callback.Get());
+  checker_invalid_locale.MaybeCheckPromotionEligibility(callback.Get());
 }
 
+// Will not test this scenario on ChromeOS because the account is very unlikely
+// to be empty.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PromotionEligibilityCheckerTest,
        DeterminePromotionEligibilityNoAccount) {
+  identity_test_env()->ClearPrimaryAccount();
   base::MockCallback<base::OnceCallback<void(
       enterprise_management::GetUserEligiblePromotionsResponse)>>
       callback;
@@ -249,8 +248,8 @@ TEST_F(PromotionEligibilityCheckerTest,
       identity_test_env()->identity_manager(), kValidLocale,
       !kDismissedBannerPref);
 
-  checker_no_account.MaybeCheckPromotionEligibility(CoreAccountId(),
-                                                    callback.Get());
+  checker_no_account.MaybeCheckPromotionEligibility(callback.Get());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_promotion

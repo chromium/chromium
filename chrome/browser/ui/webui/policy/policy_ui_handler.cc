@@ -525,42 +525,22 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   const std::string& callback_id = args[0].GetString();
 
-  if (!base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner) ||
-      profile->IsIncognitoProfile() || profile->IsGuestSession() ||
-      !profile->GetCloudPolicyManager() ||
-      !profile->GetCloudPolicyManager()->core()->client()) {
-    OnPromotionEligibilityFetched(
-        callback_id,
-        enterprise_management::GetUserEligiblePromotionsResponse());
-    return;
-  }
-
-  auto* profile_id_service =
-      enterprise::ProfileIdServiceFactory::GetForProfile(profile);
-  if (!profile_id_service->GetProfileId().has_value()) {
-    OnPromotionEligibilityFetched(
-        callback_id,
-        enterprise_management::GetUserEligiblePromotionsResponse());
-    return;
-  }
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
-  std::string locale = g_browser_process->GetApplicationLocale();
-
   bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner);
+
   promotion_eligibility_checker_ =
-      std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
-          /*profile_id=*/profile_id_service->GetProfileId().value(),
-          /*client=*/
-          profile->GetCloudPolicyManager()->core()->client(),
-          /*identity_manager=*/identity_manager,
-          /*locale=*/locale,
-          /*dismissed_banner_pref=*/dismissed_banner_pref);
+      policy::CreatePromotionEligibilityChecker(
+          profile, dismissed_banner_pref, feature_enabled);
+  if (!promotion_eligibility_checker_) {
+    OnPromotionEligibilityFetched(
+        callback_id,
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
   promotion_eligibility_checker_->MaybeCheckPromotionEligibility(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       base::BindOnce(&PolicyUIHandler::OnPromotionEligibilityFetched,
                      weak_factory_.GetWeakPtr(), callback_id));
   return;
@@ -603,7 +583,6 @@ void PolicyUIHandler::OnPromotionEligibilityFetched(
     const std::string& callback_id,
     enterprise_management::GetUserEligiblePromotionsResponse response) {
   AllowJavascript();
-
   bool should_show_promotion = response.promotions().policy_page_promotion() ==
                                enterprise_management::CHROME_ENTERPRISE_CORE;
   // Log the UMA metric for the promotion banner displayed.
