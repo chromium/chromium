@@ -75,8 +75,6 @@ static_library("test_support") {
   sources = [
     "command_buffer/client/client_test_helper.cc",
     "command_buffer/client/client_test_helper.h",
-    "command_buffer/client/test_gpu_memory_buffer_manager.cc",
-    "command_buffer/client/test_gpu_memory_buffer_manager.h",
     "command_buffer/client/test_shared_image_interface.cc",
     "command_buffer/client/test_shared_image_interface.h",
     "command_buffer/client/webgpu_interface_stub.cc",

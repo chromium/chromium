@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
@@ -184,10 +183,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   }
 
   void UseTestGMBInSharedImageCreationWithBufferUsage() {
-    // Create |test_gmb_manager_| only if it doesn't already exist.
-    if (!test_gmb_manager_) {
-      test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
-    }
+    use_test_gmb_ = true;
   }
 
   void emulate_client_provided_native_buffer() {
@@ -225,9 +221,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   SharedImageCapabilities shared_image_capabilities_;
   bool fail_shared_image_creation_with_buffer_usage_ = false;
 
-  // If non-null, this will be used to back mappable SharedImages with test
-  // GpuMemoryBuffers.
-  std::unique_ptr<TestGpuMemoryBufferManager> test_gmb_manager_;
+  bool use_test_gmb_ = false;
 
   // This is used to simply keep the SharedImagePoolClientInterface alive for
   // the duration of the SharedImagePool. Not keeping it alive and bound
