@@ -2512,6 +2512,10 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoDetailsContent:
       webdx_feature = WebDXFeature::kDetailsContent;
       break;
+    case CSSSelector::kPseudoPastCue:
+    case CSSSelector::kPseudoFutureCue:
+      webdx_feature = WebDXFeature::kTimeRelativeSelectors;
+      break;
     default:
       break;
   }
