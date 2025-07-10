@@ -3675,6 +3675,10 @@ component("ash") {
       "//chromeos/ash/resources/internal/strings",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 action("dbus_service_files") {
@@ -4895,6 +4899,10 @@ test("ash_unittests") {
       "//chromeos/ash/resources/internal/strings",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("ash_pixeltests") {
@@ -5018,6 +5026,10 @@ test("ash_pixeltests") {
     "//ui/touch_selection",
     "//ui/views:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # TODO(oshima): Remove or migrate to new ash_ui_perftests
@@ -5564,4 +5576,8 @@ static_library("test_support") {
     "//ui/wm",
     "//ui/wm/public",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
