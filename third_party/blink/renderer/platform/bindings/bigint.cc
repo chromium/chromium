@@ -14,6 +14,37 @@
 
 namespace blink {
 
+// This implementation is based on `v8::internal::BigInt::AsInt64`.
+// https://source.chromium.org/chromium/chromium/src/+/main:v8/src/objects/bigint.cc;drc=17252ebab8c8f8977b19616706fa98dcf4d9d7ae;l=1443
+std::optional<int64_t> BigInt::ToInt64() const {
+  if (words_.empty()) {
+    return 0;
+  }
+  if (words_.size() != 1) {
+    return std::nullopt;
+  }
+  uint64_t raw = words_[0];
+  // Simulate two's complement.
+  raw = IsNegative() ? ((~raw) + 1u) : raw;
+  int64_t result = static_cast<int64_t>(raw);
+  if ((result < 0) != IsNegative()) {
+    return std::nullopt;
+  }
+  return result;
+}
+
+// This implementation is based on `v8::Internal::BigInt::AsUint64`.
+// https://source.chromium.org/chromium/chromium/src/+/main:v8/src/objects/bigint.cc;drc=17252ebab8c8f8977b19616706fa98dcf4d9d7ae;l=1450
+std::optional<uint64_t> BigInt::ToUInt64() const {
+  if (words_.empty()) {
+    return 0;
+  }
+  if (IsNegative() || words_.size() != 1) {
+    return std::nullopt;
+  }
+  return words_[0];
+}
+
 BigInt ToBigIntSlow(v8::Isolate* isolate,
                     v8::Local<v8::Value> value,
                     ExceptionState& exception_state) {
