@@ -68,10 +68,7 @@
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
   if (self.baseViewController.presentedViewController) {
-    // If there is no completion block, stop the coordinator immediately by
-    // skipping the animation.
-    const BOOL animated = completion != nil;
-    [self.baseViewController dismissViewControllerAnimated:animated
+    [self.baseViewController dismissViewControllerAnimated:YES
                                                 completion:completion];
   }
   _viewController = nil;

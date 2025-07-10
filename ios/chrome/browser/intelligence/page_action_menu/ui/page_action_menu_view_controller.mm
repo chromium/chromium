@@ -36,8 +36,11 @@ const CGFloat kButtonHeight = 60;
 // The point size of the icons for the small buttons.
 const CGFloat kSmallButtonIconSize = 18;
 
-// The padding of the small button.
+// The padding of the small buttons.
 const CGFloat kSmallButtonPadding = 8;
+
+// The opacity of the small buttons.
+const CGFloat kSmallButtonOpacity = 0.95;
 
 // The corner radius of the menu and its elements.
 const CGFloat kMenuCornerRadius = 20;
@@ -283,6 +286,8 @@ const CGFloat kLargeButtonImagePadding = 8;
   buttonConfiguration.image = [self askGeminiIcon];
   buttonConfiguration.imagePlacement = NSDirectionalRectEdgeLeading;
   buttonConfiguration.imagePadding = kLargeButtonImagePadding;
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kSolidWhiteColor];
 
   // Set the font and text color as attributes.
   UIFont* font = PreferredFontForTextStyle(UIFontTextStyleHeadline);
@@ -313,7 +318,9 @@ const CGFloat kLargeButtonImagePadding = 8;
   // Create the background config.
   UIBackgroundConfiguration* backgroundConfig =
       [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfig.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  backgroundConfig.backgroundColor =
+      [[UIColor colorNamed:kPrimaryBackgroundColor]
+          colorWithAlphaComponent:kSmallButtonOpacity];
   backgroundConfig.cornerRadius = kButtonsCornerRadius;
 
   // Create the button config.
