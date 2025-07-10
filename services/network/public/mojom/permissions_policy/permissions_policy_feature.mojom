@@ -335,6 +335,9 @@ enum PermissionsPolicyFeature {
   // See https://github.com/webmachinelearning/prompt-api
   kLanguageModel = 139,
 
+  // Controls use of ARIA notify for accessibility notifications in iframes.
+  kAriaNotify = 140,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

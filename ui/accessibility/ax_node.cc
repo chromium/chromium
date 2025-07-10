@@ -1576,9 +1576,10 @@ bool AXNode::IsGenerated() const {
       GetRole() == ax::mojom::Role::kTableHeaderContainer;
   DCHECK_EQ(is_generated_node, is_extra_mac_node_role);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  //  On Linux, generated nodes are always children of the root.
+  // On Linux and Windows, generated nodes are always children of the root, but
+  // not necessarily the root tree.
   if (GetParent() && GetParent()->GetManager()) {
-    DCHECK(GetParent()->GetManager()->IsRoot());
+    DCHECK_EQ(GetParent(), GetManager()->GetRoot());
   }
 #endif
 #endif  // DCHECK_IS_ON()

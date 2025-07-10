@@ -288,8 +288,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
             this, ax::mojom::AriaNotificationPriority::kHigh);
     CHECK(high_priority_node);
     if (high_priority_node->GetIndexInParent() == child_index) {
-      LOG(ERROR) << "Extra announcement node with high priority found at index "
-                 << child_index;
       return high_priority_node;
     }
     BrowserAccessibility* normal_priority_node =
@@ -297,9 +295,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
             this, ax::mojom::AriaNotificationPriority::kNormal);
     CHECK(normal_priority_node);
     if (normal_priority_node->GetIndexInParent() == child_index) {
-      LOG(ERROR)
-          << "Extra announcement node with normal priority found at index "
-          << child_index;
       return normal_priority_node;
     }
   }

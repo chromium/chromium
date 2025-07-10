@@ -4254,9 +4254,16 @@ void AXObjectCacheImpl::HandleAriaNotification(
     const Node* node,
     const String& announcement,
     const AriaNotificationOptions* options) {
+  CHECK(node);
   auto* obj = Get(node);
-
   if (!obj) {
+    return;
+  }
+
+  // Check if aria-notify permission policy allows this feature.
+  if (!node->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kAriaNotify,
+          ReportOptions::kReportOnFailure)) {
     return;
   }
 

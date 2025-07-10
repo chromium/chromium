@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<body>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/permissions-policy/resources/permissions-policy.js"></script>
+  <script src="/common/get-host-info.sub.js"></script>
+  <script>
+  "use strict";
+
+  const same_origin_src =
+    '/wpt_internal/aria-notify/resources/permissions-policy-aria-notify.html';
+  const cross_origin_src = get_host_info().HTTPS_REMOTE_ORIGIN + same_origin_src;
+  const header = 'permissions policy header "aria-notify=()"';
+  const attribute = 'allow="aria-notify" attribute';
+
+  async_test(t => {
+    test_feature_availability(
+      'document.ariaNotify()',
+      t,
+      same_origin_src,
+      expect_feature_unavailable_default
+    );
+  }, `${header} disallows same-origin iframes (feature would be allowed by default).`);
+
+  async_test(t => {
+    test_feature_availability(
+      'document.ariaNotify()',
+      t,
+      cross_origin_src,
+      expect_feature_unavailable_default
+    );
+  }, `${header} disallows cross-origin iframes (feature would be allowed by default).`);
+
+  async_test(t => {
+    test_feature_availability(
+      'document.ariaNotify()',
+      t,
+      same_origin_src,
+      expect_feature_unavailable_default,
+      'aria-notify'
+    );
+  }, `${header} disallows same-origin iframes despite the ${attribute} (feature would be allowed by default).`);
+  </script>
+</body>
