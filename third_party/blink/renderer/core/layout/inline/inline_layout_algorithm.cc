@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/fit_text.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -235,6 +236,17 @@ void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
   }
 }
 
+// Show a console message with ConsoleMessage::Source::kRendering and
+// discard_duplicates==true.
+void AddConsoleMessage(const InlineNode node,
+                       ConsoleMessage::Level level,
+                       const String& message) {
+  node.GetDocument().AddConsoleMessage(
+      MakeGarbageCollected<ConsoleMessage>(ConsoleMessage::Source::kRendering,
+                                           level, message),
+      /* discard_duplicates */ true);
+}
+
 // Returns true if LogicalLineBuilder needs to scale line-height.
 bool ScaleLine(bool is_grow,
                float scale_factor,
@@ -315,8 +327,18 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
                        /* is_scaled_inline_only */ true, limit, line_info);
 
     case FitTextMethod::kFontSize:
+      AddConsoleMessage(
+          node, ConsoleMessage::Level::kInfo,
+          StrCat({"`text-", is_grow ? StringView("grow") : StringView("shrink"),
+                  ": ... font-size` is not implemented yet."}));
+      break;
+
     case FitTextMethod::kLetterSpacing:
-      NOTREACHED();
+      AddConsoleMessage(
+          node, ConsoleMessage::Level::kInfo,
+          StrCat({"`text-", is_grow ? StringView("grow") : StringView("shrink"),
+                  ": ... letter-spacing` is not implemented yet."}));
+      break;
   }
   return false;
 }
@@ -1226,15 +1248,22 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
           apply_text_grow = false;
         }
         if (apply_text_shrink) {
-          Node().GetDocument().AddConsoleMessage(
-              MakeGarbageCollected<ConsoleMessage>(
-                  ConsoleMessage::Source::kRendering,
-                  ConsoleMessage::Level::kInfo,
-                  "Disable `text-shrink` due to `float`, `initial-letter`, or "
-                  "ruby annotations."),
-              /* discard_duplicates */ true);
+          AddConsoleMessage(Node(), ConsoleMessage::Level::kInfo,
+                            "Disable `text-shrink` due to `float`, "
+                            "`initial-letter`, or ruby annotations.");
           apply_text_shrink = false;
         }
+      }
+
+      if (style.TextGrow().Target() == FitTextTarget::kConsistent) {
+        AddConsoleMessage(Node(), ConsoleMessage::Level::kInfo,
+                          "`text-grow: consistent` is not implemented yet.");
+        apply_text_grow = false;
+      }
+      if (style.TextShrink().Target() == FitTextTarget::kConsistent) {
+        AddConsoleMessage(Node(), ConsoleMessage::Level::kInfo,
+                          "`text-shrink: consistent` is not implemented yet.");
+        apply_text_shrink = false;
       }
     }
     apply_fit_text_ = apply_text_grow || apply_text_shrink;
