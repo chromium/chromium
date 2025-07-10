@@ -279,8 +279,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                                     drawFavicon(thumbnail, index, lastFavicon, thumbnailItem);
                                 });
                     } else {
-                        // TODO(crbug.com/412776442): Implement when SavedTabGroups are included.
-                        assert false : "Not reached.";
+                        drawFavicon(/* thumbnail= */ null, index, lastFavicon, thumbnailItem);
                     }
                 } else {
                     drawThumbnailBitmapOnCanvasWithFrame(null, i);
@@ -380,8 +379,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                     thumbnailItems.add(new ThumbnailItemMetadata(tab, tab.getUrl()));
                 }
             } else {
-                // TODO(crbug.com/412776442): Implement when SavedTabGroups are included.
-                assert false : "Not reached.";
+                // Populate just the URLs for SavedTabGroupTabs.
+                for (GURL url : metadata.urlList) {
+                    thumbnailItems.add(new ThumbnailItemMetadata(/* tab= */ null, url));
+                }
             }
 
             return thumbnailItems;
@@ -399,10 +400,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             } else {
                 mTabListFaviconProvider.getFaviconDrawableForTabAsync(
                         new TabFaviconMetadata(
-                                assumeNonNull(tab),
+                                tab,
                                 thumbnailItem.url,
-                                tab.isIncognitoBranded(),
-                                tab.getTabGroupId() != null),
+                                mMultiThumbnailMetadata.isIncognito,
+                                mMultiThumbnailMetadata.isInTabGroup),
                         (Drawable favicon) -> {
                             if (tab != null) {
                                 if (tab.isClosing() || tab.isDestroyed()) return;

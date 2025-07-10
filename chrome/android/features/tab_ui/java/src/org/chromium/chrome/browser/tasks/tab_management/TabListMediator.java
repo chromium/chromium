@@ -110,6 +110,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -2168,6 +2169,10 @@ class TabListMediator implements TabListNotificationHandler {
         tabGroupInfo.set(
                 TabProperties.GRID_CARD_SIZE,
                 new Size(mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+
+        if (mThumbnailProvider != null) {
+            updateThumbnailFetcher(tabGroupInfo, savedTabGroup);
+        }
     }
 
     private String getDomainForTab(Tab tab) {
@@ -3170,6 +3175,29 @@ class TabListMediator implements TabListNotificationHandler {
                                     filter.getTabModel().isIncognitoBranded(),
                                     tabGroupColor));
         }
+        model.set(THUMBNAIL_FETCHER, newFetcher);
+    }
+
+    private void updateThumbnailFetcher(PropertyModel model, SavedTabGroup savedTabGroup) {
+        ThumbnailFetcher oldFetcher = model.get(THUMBNAIL_FETCHER);
+        if (oldFetcher != null) oldFetcher.cancel();
+
+        List<GURL> urlList = new ArrayList<>();
+        for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
+            urlList.add(savedTab.url);
+        }
+
+        boolean isIncognito =
+                mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognitoBranded();
+        ThumbnailFetcher newFetcher =
+                new ThumbnailFetcher(
+                        mThumbnailProvider,
+                        new MultiThumbnailMetadata(
+                                Tab.INVALID_TAB_ID,
+                                urlList,
+                                /* isInTabGroup= */ true,
+                                isIncognito,
+                                savedTabGroup.color));
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 
