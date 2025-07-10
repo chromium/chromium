@@ -3,6 +3,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
 declare_args() {
-  # Enable encoding and decoding AV1 video files.
-  enable_libaom = !is_android && !is_castos
+  # Enable encoding AV1 video files.
+  enable_libaom = !(is_android && current_cpu != "arm64" &&
+                    current_cpu != "x64") && !is_castos
 }
