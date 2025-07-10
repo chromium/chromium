@@ -3069,11 +3069,7 @@ config("symbols") {
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
     _enable_gdb_index =
         symbol_level == 2 && !is_apple && current_cpu != "x86" &&
-        current_os != "zos" && use_lld && !is_wasm &&
-        # Disable on non-fission 32-bit Android because it pushes
-        # libcomponents_unittests over the 4gb size limit.
-        !(is_android && !use_debug_fission && current_cpu != "x64" &&
-          current_cpu != "arm64")
+        current_os != "zos" && use_lld && !is_wasm
     if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
