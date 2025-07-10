@@ -1447,10 +1447,15 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
   if (BorderShapePainter::Paint(info.context, rect, style)) {
     return;
   }
+
   // border-image is not affected by border-radius.
-  if (NinePieceImagePainter::Paint(info.context, obj, document, node, rect,
-                                   style, style.BorderImage())) {
-    return;
+  WTF::String failing_url;
+  if (!(info.IsPrivacyPreserving() && style.BorderImage().GetImage() &&
+        !style.BorderImage().GetImage()->IsAccessAllowed(failing_url))) {
+    if (NinePieceImagePainter::Paint(info.context, obj, document, node, rect,
+                                     style, style.BorderImage())) {
+      return;
+    }
   }
 
   BoxBorderPainter::PaintBorder(info.context, rect, style, bleed_avoidance,
@@ -1469,9 +1474,13 @@ void BoxPainterBase::PaintMaskImages(
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
                   paint_rect, bg_paint_context);
-  NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,
-                               paint_rect, style_, style_.MaskBoxImage(),
-                               sides_to_include);
+  WTF::String failing_url;
+  if (!(paint_info.IsPrivacyPreserving() && style_.MaskBoxImage().GetImage() &&
+        !style_.MaskBoxImage().GetImage()->IsAccessAllowed(failing_url))) {
+    NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,
+                                 paint_rect, style_, style_.MaskBoxImage(),
+                                 sides_to_include);
+  }
 }
 
 bool BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(
