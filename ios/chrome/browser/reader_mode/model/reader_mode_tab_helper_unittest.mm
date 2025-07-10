@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import "base/scoped_observation.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -244,11 +246,12 @@ TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlEligibilityResult) {
 }
 
 // Tests that ReaderModeTabHelper observers are notified when the Reader mode
-// WebState becomes available, unavailable, and when the tab helper is
-// destroyed.
-TEST_F(ReaderModeTabHelperTest, NotifiesObservers) {
+// WebState becomes available, and unavailable.
+TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
   MockReaderModeTabHelperObserver mock_observer;
-  reader_mode_tab_helper()->AddObserver(&mock_observer);
+  base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
+      observation(&mock_observer);
+  observation.Observe(reader_mode_tab_helper());
 
   // Set a non-empty DOM Distiller result.
   GURL test_url("https://test.url/");
@@ -273,6 +276,13 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObservers) {
                                  reader_mode_tab_helper()));
   reader_mode_tab_helper()->SetActive(false);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
+// Tests that ReaderModeTabHelper observers are notified when the tab helper is
+// destroyed.
+TEST_F(ReaderModeTabHelperTest, NotifiesObserverOfDestruction) {
+  MockReaderModeTabHelperObserver mock_observer;
+  reader_mode_tab_helper()->AddObserver(&mock_observer);
 
   // When the tab helper is destroyed, ReaderModeTabHelperDestroyed should be
   // called.
@@ -283,6 +293,43 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObservers) {
             tab_helper->RemoveObserver(&mock_observer);
           }));
   ReaderModeTabHelper::RemoveFromWebState(web_state_.get());
+}
+
+// Tests that the WebViewProxy is updated when reader mode is toggled.
+TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
+  WebViewProxyTabHelper::CreateForWebState(web_state());
+  WebViewProxyTabHelper* web_view_proxy_tab_helper =
+      WebViewProxyTabHelper::FromWebState(web_state());
+
+  id<CRWWebViewProxy> original_proxy =
+      web_view_proxy_tab_helper->GetWebViewProxy();
+
+  // Set a non-empty DOM Distiller result.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  WaitForReaderModeContentReady();
+
+  MockReaderModeTabHelperObserver mock_observer;
+  base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
+      observation(&mock_observer);
+  observation.Observe(reader_mode_tab_helper());
+
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateDidBecomeAvailable(reader_mode_tab_helper()));
+  reader_mode_tab_helper()->SetActive(true);
+  WaitForReaderModeContentReady();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  id<CRWWebViewProxy> reader_mode_proxy =
+      reader_mode_tab_helper()->GetReaderModeWebState()->GetWebViewProxy();
+  EXPECT_EQ(reader_mode_proxy, web_view_proxy_tab_helper->GetWebViewProxy());
+
+  EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
+                                 reader_mode_tab_helper()));
+  reader_mode_tab_helper()->SetActive(false);
+  EXPECT_EQ(original_proxy, web_view_proxy_tab_helper->GetWebViewProxy());
 }
 
 // Tests that ReaderMode WebState has the correct TabHelpers attached for edit

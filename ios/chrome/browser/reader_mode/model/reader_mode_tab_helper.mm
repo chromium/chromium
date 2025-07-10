@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -344,6 +345,12 @@ void ReaderModeTabHelper::PageDistillationCompleted(
       for (auto& observer : observers_) {
         observer.ReaderModeWebStateDidBecomeAvailable(this);
       }
+      WebViewProxyTabHelper* tab_helper =
+          WebViewProxyTabHelper::FromWebState(web_state_);
+      if (tab_helper) {
+        tab_helper->SetOverridingWebViewProxy(
+            reader_mode_web_state_->GetWebViewProxy());
+      }
     } else {
       // If the page could not be distilled, deactivate Reader mode in this tab.
       SetActive(false);
@@ -375,6 +382,11 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
 }
 
 void ReaderModeTabHelper::DestroyReaderModeWebState() {
+  WebViewProxyTabHelper* tab_helper =
+      WebViewProxyTabHelper::FromWebState(web_state_);
+  if (tab_helper) {
+    tab_helper->SetOverridingWebViewProxy(nil);
+  }
   for (auto& observer : observers_) {
     observer.ReaderModeWebStateWillBecomeUnavailable(this);
   }
