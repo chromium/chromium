@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The file defines the symbols from OpenSLES that android is using. It then
 // loads the library dynamically on first use.
 
@@ -24,6 +19,9 @@
 // untouched.
 #include <stdint.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 #define const
@@ -71,23 +69,25 @@ base::NativeLibrary IntializeLibraryHandle() {
   };
 
   // The list of defined symbols.
-  const SymbolDefinition kSymbols[] = {
-      {"SL_IID_ENGINE", &SL_IID_ENGINE},
-      {"SL_IID_ANDROIDSIMPLEBUFFERQUEUE", &SL_IID_ANDROIDSIMPLEBUFFERQUEUE},
-      {"SL_IID_ANDROIDCONFIGURATION", &SL_IID_ANDROIDCONFIGURATION},
-      {"SL_IID_RECORD", &SL_IID_RECORD},
-      {"SL_IID_BUFFERQUEUE", &SL_IID_BUFFERQUEUE},
-      {"SL_IID_VOLUME", &SL_IID_VOLUME},
-      {"SL_IID_PLAY", &SL_IID_PLAY}};
+  auto kSymbols = std::to_array<const SymbolDefinition>(
+      {{"SL_IID_ENGINE", &SL_IID_ENGINE},
+       {"SL_IID_ANDROIDSIMPLEBUFFERQUEUE", &SL_IID_ANDROIDSIMPLEBUFFERQUEUE},
+       {"SL_IID_ANDROIDCONFIGURATION", &SL_IID_ANDROIDCONFIGURATION},
+       {"SL_IID_RECORD", &SL_IID_RECORD},
+       {"SL_IID_BUFFERQUEUE", &SL_IID_BUFFERQUEUE},
+       {"SL_IID_VOLUME", &SL_IID_VOLUME},
+       {"SL_IID_PLAY", &SL_IID_PLAY}});
 
-  for (size_t i = 0; i < sizeof(kSymbols) / sizeof(kSymbols[0]); ++i) {
+  for (auto& symbol : kSymbols) {
     void* func_ptr =
-        base::GetFunctionPointerFromNativeLibrary(handle, kSymbols[i].name);
+        base::GetFunctionPointerFromNativeLibrary(handle, symbol.name);
     if (!func_ptr) {
-      DLOG(ERROR) << "Unable to find symbol for " << kSymbols[i].name;
+      DLOG(ERROR) << "Unable to find symbol for " << symbol.name;
       return nullptr;
     }
-    memcpy(kSymbols[i].sl_iid, func_ptr, sizeof(SLInterfaceID));
+    base::byte_span_from_ref(*symbol.sl_iid)
+        .copy_from(base::byte_span_from_ref(
+            *reinterpret_cast<SLInterfaceID*>(func_ptr)));
   }
   return handle;
 }

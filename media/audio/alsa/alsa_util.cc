@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/audio/alsa/alsa_util.h"
 
 #include <stddef.h>
@@ -364,17 +359,18 @@ snd_mixer_elem_t* LoadCaptureMixerElement(media::AlsaWrapper* wrapper,
 
   snd_mixer_elem_t* elem = nullptr;
   snd_mixer_elem_t* mic_elem = nullptr;
-  const char kCaptureElemName[] = "Capture";
-  const char kMicElemName[] = "Mic";
+  static constexpr std::string_view kCaptureElemName = "Capture";
+  static constexpr std::string_view kMicElemName = "Mic";
   for (elem = wrapper->MixerFirstElem(mixer);
        elem;
        elem = wrapper->MixerNextElem(elem)) {
     if (wrapper->MixerSelemIsActive(elem)) {
-      const char* elem_name = wrapper->MixerSelemName(elem);
-      if (strcmp(elem_name, kCaptureElemName) == 0)
+      auto elem_name = wrapper->MixerSelemName(elem);
+      if (kCaptureElemName == elem_name) {
         return elem;
-      else if (strcmp(elem_name, kMicElemName) == 0)
+      } else if (kMicElemName == elem_name) {
         mic_elem = elem;
+      }
     }
   }
 
