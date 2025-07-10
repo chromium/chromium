@@ -1,5 +1,6 @@
 caption: Allow Google Assistant to access screen context
 default: null
+deprecated: true
 desc: |-
   Setting the policy to Enabled lets Google Assistant access screen context and send that data to a server. Setting the policy to Disabled keeps Google Assistant from screen context.
 
@@ -20,7 +21,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:74-
+- chrome_os:74-137
 tags:
 - google-sharing
 type: main

@@ -204,7 +204,6 @@
 #include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -1491,18 +1490,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPluginVmRequiredFreeDiskSpace,
     plugin_vm::prefs::kPluginVmRequiredFreeDiskSpaceGB,
     base::Value::Type::INTEGER },
-  { key::kAssistantOnboardingMode,
-    ash::assistant::prefs::kAssistantOnboardingMode,
-    base::Value::Type::STRING },
-  { key::kAssistantVoiceMatchEnabledDuringOobe,
-    ash::assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe,
-    base::Value::Type::BOOLEAN },
-  { key::kVoiceInteractionContextEnabled,
-    ash::assistant::prefs::kAssistantContextEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kVoiceInteractionHotwordEnabled,
-    ash::assistant::prefs::kAssistantHotwordEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kDevicePowerPeakShiftEnabled,
     ash::prefs::kPowerPeakShiftEnabled,
     base::Value::Type::BOOLEAN },

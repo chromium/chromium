@@ -434,7 +434,6 @@ source_set("browser_tests") {
   if (is_chromeos) {
     sources += [
       "test/arc_policy_browsertest.cc",
-      "test/assistant_policy_browsertest.cc",
       "test/audio_output_allowed_browsertest.cc",
       "test/gen_ai_vc_background_policy_browsertest.cc",
       "test/gen_ai_wallpaper_policy_browsertest.cc",
