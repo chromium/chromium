@@ -8,15 +8,16 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from '//resources/js/assert.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import {TraceConfig, TraceConfig_BufferConfig_FillPolicy} from './perfetto_config.js';
 import type {TrackEventConfig} from './perfetto_config.js';
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
+import {downloadTraceData} from './trace_util.js';
 import {TracesBrowserProxy} from './traces_browser_proxy.js';
 import type {TraceCategory} from './traces_internals.mojom-webui.js';
 
@@ -196,8 +197,8 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   protected async cloneTraceSession_(): Promise<void> {
-    const {trace} = await this.browserProxy_.handler.cloneTraceSession();
-    this.downloadData_(trace);
+    const {trace, uuid} = await this.browserProxy_.handler.cloneTraceSession();
+    this.downloadData_(trace, uuid);
   }
 
   protected privacyFilterDidChange_(event: CustomEvent<boolean>) {
@@ -284,44 +285,13 @@ export class TraceRecorderElement extends CrLitElement {
     this.updateUrlFromConfig_();
   }
 
-  private getArrayFromBigBuffer(bigBuffer: BigBuffer): Uint8Array {
-    if (Array.isArray(bigBuffer.bytes)) {
-      return new Uint8Array(bigBuffer.bytes);
-    }
-    assert(!!bigBuffer.sharedMemory, 'sharedMemory must be defined here');
-    const sharedMemory = bigBuffer.sharedMemory;
-    const {buffer, result} =
-        sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
-    assert(result === Mojo.RESULT_OK, 'Could not map buffer');
-    return new Uint8Array(buffer);
-  }
-
-  private downloadData_(traceData: BigBuffer|null): void {
-    if (!traceData) {
+  private downloadData_(traceData: BigBuffer|null, uuid: Token|null): void {
+    if (!traceData || !uuid) {
       this.showToast_('Failed to download trace or no trace data.');
       return;
     }
     try {
-      const traceArray = this.getArrayFromBigBuffer(traceData);
-      const blob = new Blob([traceArray], {
-        type: 'application/octet-stream',
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-
-      const now = new Date();
-      a.download = `${
-          now.toLocaleString(
-              /*locales=*/ undefined, {
-                hour: 'numeric',
-                minute: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour12: true,
-              })}.gz`;
-      a.click();
+      downloadTraceData(traceData, uuid);
     } catch (e) {
       this.showToast_(`Error downloading trace: ${e}`);
     }
@@ -393,7 +363,7 @@ export class TraceRecorderElement extends CrLitElement {
     return bigBuffer;
   }
 
-  private onTraceComplete_(trace: BigBuffer|null): void {
+  private onTraceComplete_(trace: BigBuffer|null, uuid: Token|null): void {
     if (this.bufferPollIntervalId_ !== null) {
       window.clearInterval(this.bufferPollIntervalId_);
       this.bufferPollIntervalId_ = null;
@@ -401,7 +371,7 @@ export class TraceRecorderElement extends CrLitElement {
     this.bufferUsage = 0;
     this.hadDataLoss = false;
 
-    this.downloadData_(trace);
+    this.downloadData_(trace, uuid);
 
     // Crucially, only set to IDLE here after the trace has been
     // processed/handled.

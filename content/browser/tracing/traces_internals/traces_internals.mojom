@@ -111,9 +111,11 @@ interface PageHandler {
       mojo_base.mojom.BigBuffer config_pb,
       bool enable_privacy_filters) => (bool success);
 
-  // Clones the current tracing session in read-only mode and returns the
-  // captured trace snapshot, or null if the operation fails.
-  CloneTraceSession() => (mojo_base.mojom.BigBuffer? trace);
+  // Clones the current tracing session in read-only mode and returns `trace`
+  // as the captured trace snapshot along with its `uuid`, or null if the
+  // operation fails.
+  CloneTraceSession()
+      => (mojo_base.mojom.BigBuffer? trace, mojo_base.mojom.Token? uuid);
 
   // Stops the current tracing session. If successful, this will read the trace
   // payload and return it via Page::OnTraceComplete().
@@ -192,6 +194,9 @@ interface PageHandler {
 // WebUI-side handler for requests from the browser.
 interface Page {
   // When a tracing session completes, either from calling PageHandler::Stop()
-  // or by itself, this is invoked with the serialized trace payload.
-  OnTraceComplete(mojo_base.mojom.BigBuffer? trace);
+  // or by itself, this is invoked with `trace` as the serialized trace payload
+  // and `uuid` the trace uuid.
+  OnTraceComplete(
+      mojo_base.mojom.BigBuffer? trace,
+      mojo_base.mojom.Token? uuid);
 };

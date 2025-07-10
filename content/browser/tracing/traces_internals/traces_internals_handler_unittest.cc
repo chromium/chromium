@@ -74,7 +74,8 @@ class MockTracePage : public traces_internals::mojom::Page {
 
   MOCK_METHOD(void,
               OnTraceComplete,
-              (std::optional<mojo_base::BigBuffer>),
+              (std::optional<mojo_base::BigBuffer>,
+               const std::optional<base::Token>&),
               (override));
 
   mojo::Receiver<traces_internals::mojom::Page> receiver_{this};
@@ -177,11 +178,13 @@ TEST_F(TracesInternalsHandlerTest, TracingStartStop) {
     EXPECT_CALL(stop_callback, Run(true)).Times(1);
 
     EXPECT_CALL(mock_page_,
-                OnTraceComplete(testing::Truly(
-                    [](const std::optional<mojo_base::BigBuffer>& trace) {
-                      return base::as_string_view(base::as_chars(
-                                 base::span(*trace))) == "this is a trace";
-                    })))
+                OnTraceComplete(
+                    testing::Truly(
+                        [](const std::optional<mojo_base::BigBuffer>& trace) {
+                          return base::as_string_view(base::as_chars(
+                                     base::span(*trace))) == "this is a trace";
+                        }),
+                    _))
         .WillOnce(base::test::RunOnceClosure(run_loop_stop.QuitClosure()));
 
     run_loop_stop.Run();
@@ -206,7 +209,8 @@ TEST_F(TracesInternalsHandlerTest, TracingTimer) {
           testing::Truly([](const std::optional<mojo_base::BigBuffer>& trace) {
             return base::as_string_view(base::as_chars(base::span(*trace))) ==
                    "this is a trace";
-          })))
+          }),
+          _))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -259,10 +263,11 @@ TEST_F(TracesInternalsHandlerTest, TracingClone) {
 
     EXPECT_CALL(clone_callback,
                 Run(testing::Truly(
-                    [](const std::optional<mojo_base::BigBuffer>& trace) {
-                      return base::as_string_view(base::as_chars(
-                                 base::span(*trace))) == "this is a trace";
-                    })))
+                        [](const std::optional<mojo_base::BigBuffer>& trace) {
+                          return base::as_string_view(base::as_chars(
+                                     base::span(*trace))) == "this is a trace";
+                        }),
+                    _))
         .WillOnce(base::test::RunOnceClosure(run_loop_clone.QuitClosure()));
 
     run_loop_clone.Run();

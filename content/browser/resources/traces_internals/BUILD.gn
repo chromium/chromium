@@ -59,6 +59,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "trace_util.ts",
     "trace_report.html.ts",
     "trace_report.ts",
     "traces_browser_proxy.ts",

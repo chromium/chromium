@@ -5,6 +5,7 @@
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TraceReportElement} from './trace_report.js';
+import {getTokenAsUuidString} from './trace_util.js';
 import {ReportUploadState} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportElement) {
@@ -14,9 +15,9 @@ export function getHtml(this: TraceReportElement) {
     html`
     <div>
       <button class="clickable-field copiable"
-          title="${this.getTokenAsUuidString_()}"
+          title="${getTokenAsUuidString(this.trace.uuid)}"
           @click="${this.onCopyUuidClick_}">
-        ${this.getTokenAsUuidString_()}
+        ${getTokenAsUuidString(this.trace.uuid)}
       </button>
       <div class="info">Trace ID</div>
     </div>

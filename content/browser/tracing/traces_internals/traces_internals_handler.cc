@@ -59,7 +59,8 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
  public:
   explicit TraceReader(
       std::unique_ptr<perfetto::TracingSession> tracing_session,
-      base::OnceCallback<void(std::optional<mojo_base::BigBuffer>)>
+      base::OnceCallback<void(std::optional<mojo_base::BigBuffer>,
+                              const std::optional<base::Token>&)>
           on_trace_data_complete,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : tracing_session(std::move(tracing_session)),
@@ -68,13 +69,16 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
 
   std::unique_ptr<perfetto::TracingSession> tracing_session;
   std::string serialized_trace;
-  base::OnceCallback<void(std::optional<mojo_base::BigBuffer>)>
+  base::OnceCallback<void(std::optional<mojo_base::BigBuffer>,
+                          const std::optional<base::Token>&)>
       on_trace_data_complete;
   scoped_refptr<base::SequencedTaskRunner> task_runner;
 
-  static void ReadTrace(scoped_refptr<TraceReader> reader) {
+  static void ReadTrace(scoped_refptr<TraceReader> reader,
+                        const base::Token& uuid) {
     reader->tracing_session->ReadTrace(
-        [reader](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
+        [reader,
+         uuid](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
           if (args.size) {
             reader->serialized_trace.append(args.data, args.size);
           }
@@ -84,13 +88,16 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
                 FROM_HERE,
                 base::BindOnce(
                     [](base::OnceCallback<void(
-                           std::optional<mojo_base::BigBuffer>)> callback,
+                           std::optional<mojo_base::BigBuffer>,
+                           const std::optional<base::Token>&)> callback,
+                       const base::Token& uuid,
                        std::string&& serialized_trace) {
                       base::span<const char> trace_span(serialized_trace);
                       std::move(callback).Run(
-                          mojo_base::BigBuffer(base::as_bytes(trace_span)));
+                          mojo_base::BigBuffer(base::as_bytes(trace_span)),
+                          uuid);
                     },
-                    std::move(reader->on_trace_data_complete),
+                    std::move(reader->on_trace_data_complete), uuid,
                     std::move(reader->serialized_trace)));
           }
         });
@@ -208,6 +215,9 @@ void TracesInternalsHandler::StartTraceSession(
     std::move(start_callback_).Run(false);
     return;
   }
+  session_id_ = base::Token::CreateRandom();
+  trace_config->set_trace_uuid_lsb(session_id_.high());
+  trace_config->set_trace_uuid_msb(session_id_.low());
   session_unguessable_name_ = base::UnguessableToken::Create();
   trace_config->set_unique_session_name(session_unguessable_name_.ToString());
   tracing_session_->Setup(*trace_config);
@@ -236,7 +246,7 @@ void TracesInternalsHandler::StartTraceSession(
 void TracesInternalsHandler::CloneTraceSession(
     CloneTraceSessionCallback callback) {
   if (!tracing_session_) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   auto cloned_session = CreateTracingSession();
@@ -248,10 +258,12 @@ void TracesInternalsHandler::CloneTraceSession(
       args,
       [trace_reader](perfetto::TracingSession::CloneTraceCallbackArgs args) {
         if (!args.success) {
-          std::move(trace_reader->on_trace_data_complete).Run(std::nullopt);
+          std::move(trace_reader->on_trace_data_complete)
+              .Run(std::nullopt, base::Token());
           return;
         }
-        TraceReader::ReadTrace(std::move(trace_reader));
+        TraceReader::ReadTrace(std::move(trace_reader),
+                               base::Token(args.uuid_lsb, args.uuid_msb));
       });
 }
 
@@ -309,7 +321,7 @@ void TracesInternalsHandler::OnTracingError(perfetto::TracingError error) {
   if (stop_callback_) {
     std::move(stop_callback_).Run(false);
   }
-  page_->OnTraceComplete(std::nullopt);
+  page_->OnTraceComplete(std::nullopt, std::nullopt);
 }
 
 void TracesInternalsHandler::OnTracingStop() {
@@ -321,7 +333,7 @@ void TracesInternalsHandler::OnTracingStop() {
       base::BindOnce(&TracesInternalsHandler::OnTraceComplete,
                      weak_factory_.GetWeakPtr()),
       task_runner_);
-  TraceReader::ReadTrace(std::move(trace_reader));
+  TraceReader::ReadTrace(std::move(trace_reader), session_id_);
 }
 
 void TracesInternalsHandler::OnTracingStart() {
@@ -331,8 +343,9 @@ void TracesInternalsHandler::OnTracingStart() {
 }
 
 void TracesInternalsHandler::OnTraceComplete(
-    std::optional<mojo_base::BigBuffer> serialized_trace) {
-  page_->OnTraceComplete(std::move(serialized_trace));
+    std::optional<mojo_base::BigBuffer> serialized_trace,
+    const std::optional<base::Token>& uuid) {
+  page_->OnTraceComplete(std::move(serialized_trace), uuid);
 }
 
 void TracesInternalsHandler::GetAllTraceReports(
