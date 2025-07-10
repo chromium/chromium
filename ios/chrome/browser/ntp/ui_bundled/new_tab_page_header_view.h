@@ -11,6 +11,7 @@
 @class TabGroupIndicatorView;
 @protocol NewTabPageShortcutsHandler;
 @class OmniboxContainerView;
+@class NewTabPageColorPalette;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
@@ -130,6 +131,10 @@
 
 // Whether MIA is allowed from a policy perspective.
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;
+
+// Updates the NTP’s header view background using the given color palette.
+// Pass `nil` to clear any previously applied background colors.
+- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette;
 
 @end
 

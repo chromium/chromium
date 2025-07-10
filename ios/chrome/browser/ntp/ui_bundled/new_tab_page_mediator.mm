@@ -306,8 +306,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     _backgroundCustomizationServiceObserverBridge =
         std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
             _backgroundCustomizationService, self);
-    // Make sure the intial background is set.
-    [self updateBackground];
   }
 
   BOOL miaPolicyAllowed = omnibox::IsAimAllowedByPolicy(_prefService);
@@ -381,6 +379,45 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   _placeholderServiceObserver =
       std::make_unique<PlaceholderServiceObserverBridge>(self,
                                                          placeholderService);
+}
+
+- (void)updateBackground {
+  std::optional<sync_pb::NtpCustomBackground> background =
+      _backgroundCustomizationService->GetCurrentCustomBackground();
+
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+
+  if (colorTheme && colorTheme->color()) {
+    [self.consumer
+        updateBackgroundWithColorPalette:CreateColorPaletteFromSeedColor(
+                                             skia::UIColorFromSkColor(
+                                                 colorTheme->color()))];
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  [self.consumer updateBackgroundWithColorPalette:nil];
+  if (!background) {
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  GURL imageURL = GURL(background->url());
+
+  image_fetcher::ImageFetcher* imageFetcher =
+      _imageFetcherService->GetImageFetcher(
+          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+
+  __weak __typeof(self) weakSelf = self;
+  imageFetcher->FetchImage(
+      imageURL,
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf handleBackgroundImageFetch:image];
+      }),
+      // TODO (crbug.com/417234848): Add annotation.
+      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
 }
 
 #pragma mark - BrowserViewVisibilityObserving
@@ -540,45 +577,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       updateADPBadgeWithErrorFound:primaryIdentityHasError
                               name:_signedInIdentity.userFullName
                              email:_signedInIdentity.userEmail];
-}
-
-- (void)updateBackground {
-  std::optional<sync_pb::NtpCustomBackground> background =
-      _backgroundCustomizationService->GetCurrentCustomBackground();
-
-  std::optional<sync_pb::UserColorTheme> colorTheme =
-      _backgroundCustomizationService->GetCurrentColorTheme();
-
-  if (colorTheme && colorTheme->color()) {
-    [self.consumer
-        updateBackgroundWithColorPalette:CreateColorPaletteFromSeedColor(
-                                             skia::UIColorFromSkColor(
-                                                 colorTheme->color()))];
-    [self.consumer setBackgroundImage:nil];
-    return;
-  }
-
-  [self.consumer updateBackgroundWithColorPalette:nil];
-  if (!background) {
-    [self.consumer setBackgroundImage:nil];
-    return;
-  }
-
-  GURL imageURL = GURL(background->url());
-
-  image_fetcher::ImageFetcher* imageFetcher =
-      _imageFetcherService->GetImageFetcher(
-          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
-
-  __weak __typeof(self) weakSelf = self;
-  imageFetcher->FetchImage(
-      imageURL,
-      base::BindOnce(^(const gfx::Image& image,
-                       const image_fetcher::RequestMetadata& metadata) {
-        [weakSelf handleBackgroundImageFetch:image];
-      }),
-      // TODO (crbug.com/417234848): Add annotation.
-      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
 }
 
 // Helper method to handle the image response after fetching the background

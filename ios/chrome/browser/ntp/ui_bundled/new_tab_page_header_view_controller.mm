@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -51,6 +52,7 @@
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -914,6 +916,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
   [_headerView setMIAAllowedByPolicy:policyAllowed];
   _MIAAllowedByPolicy = policyAllowed;
+}
+
+- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
+  [_headerView updateBackgroundWithColorPalette:colorPalette];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate

@@ -829,7 +829,7 @@ CGFloat SpaceBetweenModules() {
 }
 
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
-  // TODO(crbug.com/421925819): Apply color palette to NTP UI elements.
+  [_headerViewController updateBackgroundWithColorPalette:colorPalette];
 }
 
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {

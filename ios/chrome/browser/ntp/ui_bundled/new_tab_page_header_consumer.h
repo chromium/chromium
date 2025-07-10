@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol LogoVendor;
+@class NewTabPageColorPalette;
 
 // Handles updates to the NTP header.
 @protocol NewTabPageHeaderConsumer <NSObject>
@@ -34,6 +35,10 @@
 
 // Whether MIA is allowed from a policy perspective.
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;
+
+// Updates the NTP’s background using the given color palette.
+// Pass `nil` to clear any previously applied background colors.
+- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette;
 
 @end
 

@@ -116,6 +116,9 @@ class UrlLoadingBrowserAgent;
 // Restores the current state of the NTP.
 - (void)restoreNTPStateForWebState:(web::WebState*)webState;
 
+// Update the background of the NTP.
+- (void)updateBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_MEDIATOR_H_

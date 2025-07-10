@@ -374,6 +374,12 @@
   [self configureNTPViewController];
   [self configureTabGroupIndicator];
 
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    // Ensure the initial background is applied after all components have been
+    // set up.
+    [self.NTPMediator updateBackground];
+  }
+
   self.started = YES;
 }
 
