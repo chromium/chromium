@@ -42,7 +42,7 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
           optimization_target,
           request_type,
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+              {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
           std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
 
 void PermissionsAiv3Handler::OnModelUpdated(
