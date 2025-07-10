@@ -1353,6 +1353,35 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(1);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testTabListEditorTabGroupTitleUpdated_OnRemoteModification() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+        ThreadUtils.runOnUiThreadBlocking(() -> notifyTabGroupSyncObserversWithInitialization());
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        // Assert that there are 2 items consisting of a tab group and 1 tab.
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
+        onView(withText(GROUP_TITLE1)).check(matches(isDisplayed()));
+
+        // Mock an external event emitted which updates the tab group title.
+        savedTabGroup.title = GROUP_TITLE2;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+
+        // Verify that the new group title is now showing.
+        onView(withText(GROUP_TITLE2)).check(matches(isDisplayed()));
+    }
+
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
