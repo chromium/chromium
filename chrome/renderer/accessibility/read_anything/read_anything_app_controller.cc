@@ -800,6 +800,11 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // we should recompute the display nodes again.
     bool should_recompute_display_nodes =
         !model_.content_node_ids().empty() && model_.display_node_ids().empty();
+    VLOG(1) << "In OnAXTreeDistilled content node size: "
+            << model_.content_node_ids().size()
+            << " and display node size: " << model_.display_node_ids().size()
+            << " and selection node size: "
+            << model_.selection_node_ids().size();
     Draw(should_recompute_display_nodes);
   }
 
@@ -853,6 +858,11 @@ bool ReadAnythingAppController::PostProcessSelection() {
       // in the main panel, don't re-draw with the updated selection until
       // Read Aloud is paused.
       bool should_recompute_display_nodes = !model_.content_node_ids().empty();
+      VLOG(1) << "In PostProcessSelection content node size: "
+              << model_.content_node_ids().size()
+              << " and display node size: " << model_.display_node_ids().size()
+              << " and selection node size: "
+              << model_.selection_node_ids().size();
       Draw(should_recompute_display_nodes);
     }
   }
@@ -880,6 +890,9 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
     if (IsReadAloudEnabled()) {
       read_aloud_model_.ResetReadAloudState();
     }
+  } else {
+    VLOG(1) << "Not recomputing display nodes, content node size: "
+            << model_.content_node_ids().size();
   }
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
