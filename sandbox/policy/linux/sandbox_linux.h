@@ -171,12 +171,12 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Stop |thread| in a way that can be trusted by the sandbox.
   void StopThread(base::Thread* thread);
 
-  // Returns the status of the renderer, worker and ppapi sandbox. Can only
-  // be queried after going through PreinitializeSandbox(). This is a bitmask
-  // and uses the constants defined in "enum Status" above. Since the
-  // status needs to be provided before the sandboxes are actually started,
-  // this returns what will actually happen once InitializeSandbox()
-  // is called from inside these processes.
+  // Returns the status of the renderer and worker sandbox. Can only be queried
+  // after going through PreinitializeSandbox(). This is a bitmask and uses the
+  // constants defined in "enum Status" above. Since the status needs to be
+  // provided before the sandboxes are actually started, this returns what will
+  // actually happen once InitializeSandbox() is called from inside these
+  // processes.
   int GetStatus();
 
   // Returns true if the current process is single-threaded or if the number

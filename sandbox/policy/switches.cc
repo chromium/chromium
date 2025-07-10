@@ -69,7 +69,6 @@ const char kDisableMetalShaderCache[] = "disable-metal-shader-cache";
 const char kProcessType[] = "type";
 const char kGpuProcess[] = "gpu-process";
 const char kNaClLoaderProcess[] = "nacl-loader";
-const char kPpapiPluginProcess[] = "ppapi";
 const char kRendererProcess[] = "renderer";
 const char kUtilityProcess[] = "utility";
 const char kZygoteProcessType[] = "zygote";

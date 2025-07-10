@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,12 +58,6 @@ TEST(SandboxTypeTest, Utility) {
   base::CommandLine command_line4(command_line);
   SetCommandLineFlagsForSandboxType(&command_line4, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line4));
-
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-  base::CommandLine command_line5(command_line);
-  SetCommandLineFlagsForSandboxType(&command_line5, Sandbox::kPpapi);
-  EXPECT_EQ(Sandbox::kPpapi, SandboxTypeFromCommandLine(command_line5));
-#endif
 
   base::CommandLine command_line6(command_line);
   SetCommandLineFlagsForSandboxType(&command_line6, Sandbox::kService);
@@ -154,22 +147,6 @@ TEST(SandboxTypeTest, GPU) {
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
-
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-TEST(SandboxTypeTest, PPAPIPlugin) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kProcessType,
-                                 switches::kPpapiPluginProcess);
-  SetCommandLineFlagsForSandboxType(&command_line, Sandbox::kPpapi);
-  EXPECT_EQ(Sandbox::kPpapi, SandboxTypeFromCommandLine(command_line));
-
-  command_line.AppendSwitchASCII(switches::kServiceSandboxType, "network");
-  EXPECT_EQ(Sandbox::kPpapi, SandboxTypeFromCommandLine(command_line));
-
-  command_line.AppendSwitch(switches::kNoSandbox);
-  EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 TEST(SandboxTypeTest, Nonesuch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);

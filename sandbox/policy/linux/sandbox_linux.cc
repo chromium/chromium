@@ -32,7 +32,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/services/credentials.h"
@@ -271,8 +270,8 @@ int SandboxLinux::GetStatus() {
         sandbox_status_flags_ |= kNetNS;
     }
 
-    // We report whether the sandbox will be activated when renderers, workers
-    // and PPAPI plugins go through sandbox initialization.
+    // We report whether the sandbox will be activated when renderers and
+    // workers go through sandbox initialization.
     if (seccomp_bpf_supported()) {
       sandbox_status_flags_ |= kSeccompBPF;
     }
@@ -608,11 +607,7 @@ void SandboxLinux::SealSandbox() {
 
 void SandboxLinux::CheckForBrokenPromises(
     sandbox::mojom::Sandbox sandbox_type) {
-  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer
-#if BUILDFLAG(ENABLE_PPAPI)
-      && sandbox_type != sandbox::mojom::Sandbox::kPpapi
-#endif
-  ) {
+  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer) {
     return;
   }
   // Make sure that any promise made with GetStatus() wasn't broken.

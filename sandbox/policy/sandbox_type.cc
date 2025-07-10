@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
@@ -37,10 +36,6 @@ constexpr char kAudioSandbox[] = "audio";
 constexpr char kServiceSandbox[] = "service";
 constexpr char kServiceSandboxWithJit[] = "service_with_jit";
 constexpr char kSpeechRecognitionSandbox[] = "speech_recognition";
-
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-constexpr char kPpapiSandbox[] = "ppapi";
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -132,18 +127,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kGpuProcess);
       break;
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-    case Sandbox::kPpapi:
-      if (command_line->GetSwitchValueASCII(switches::kProcessType) ==
-          switches::kUtilityProcess) {
-        command_line->AppendSwitchASCII(switches::kServiceSandboxType,
-                                        kPpapiSandbox);
-      } else {
-        DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
-               switches::kPpapiPluginProcess);
-      }
-      break;
-#endif
     case Sandbox::kService:
     case Sandbox::kServiceWithJit:
     case Sandbox::kUtility:
@@ -230,11 +213,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
     return Sandbox::kGpu;
   }
 
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-  if (process_type == switches::kPpapiPluginProcess)
-    return Sandbox::kPpapi;
-#endif
-
   // NaCl tests on all platforms use the loader process.
   if (process_type == switches::kNaClLoaderProcess) {
     return Sandbox::kUtility;
@@ -270,10 +248,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kNetworkSandbox;
     case Sandbox::kOnDeviceModelExecution:
       return kOnDeviceModelExecutionSandbox;
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-    case Sandbox::kPpapi:
-      return kPpapiSandbox;
-#endif
     case Sandbox::kCdm:
       return kCdmSandbox;
     case Sandbox::kPrintCompositor:
@@ -388,11 +362,6 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kOnDeviceModelExecutionSandbox) {
     return Sandbox::kOnDeviceModelExecution;
   }
-#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
-  if (sandbox_string == kPpapiSandbox) {
-    return Sandbox::kPpapi;
-  }
-#endif
   if (sandbox_string == kCdmSandbox) {
     return Sandbox::kCdm;
   }

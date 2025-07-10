@@ -40,7 +40,6 @@ SANDBOX_POLICY_EXPORT extern const char kDisableMetalShaderCache[];
 SANDBOX_POLICY_EXPORT extern const char kProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kGpuProcess[];
 SANDBOX_POLICY_EXPORT extern const char kNaClLoaderProcess[];
-SANDBOX_POLICY_EXPORT extern const char kPpapiPluginProcess[];
 SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];

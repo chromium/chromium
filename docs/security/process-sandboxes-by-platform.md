@@ -47,7 +47,6 @@ Last updated for M128.
 * kPrintCompositor
 * kSpeechRecognition
 * kScreenAI
-* kPpapi
 * kPrintBackend
 * kVideoCapture (Fuchsia only)
 * kIconReader (Windows only)

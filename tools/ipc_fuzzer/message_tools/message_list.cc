@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_start.h"
-#include "ppapi/buildflags/buildflags.h"
 
 // Include once to get the type definitions
 #include "tools/ipc_fuzzer/message_lib/all_messages.h"
@@ -37,11 +36,7 @@ static msginfo msgtable[] = {
 };
 #define MSGTABLE_SIZE (sizeof(msgtable)/sizeof(msgtable[0]))
 
-#if !BUILDFLAG(ENABLE_PPAPI)
 static_assert(MSGTABLE_SIZE == 0, "There should be no messages");
-#else
-static_assert(MSGTABLE_SIZE, "check your headers for an extra semicolon");
-#endif
 
 static bool check_msgtable() {
   bool result = true;
