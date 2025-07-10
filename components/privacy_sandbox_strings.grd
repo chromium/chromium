@@ -1044,7 +1044,7 @@
         Tracking protections
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>.
+        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP_A11Y_LABEL" desc="" translateable="false">
         Learn more about managing Incognito tracking protections
