@@ -725,6 +725,10 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     if (!is_fuchsia) {
       data_deps = [ ":goldctl" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -910,6 +914,10 @@ static_library("test_support") {
       "//ui/base/ime/ash:typing_session_manager",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
@@ -1328,6 +1336,10 @@ test("ui_base_unittests") {
       "//ui/base/accelerators/global_accelerator_listener",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_mac) {
