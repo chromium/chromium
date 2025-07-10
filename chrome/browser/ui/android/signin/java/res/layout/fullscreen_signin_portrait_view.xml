@@ -124,7 +124,6 @@ found in the LICENSE file.
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading"
             android:visibility="gone"/>
     </FrameLayout>
