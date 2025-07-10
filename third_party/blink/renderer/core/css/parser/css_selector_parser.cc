@@ -2402,6 +2402,10 @@ static void RecordUsageAndDeprecationsOneSelector(
     const CSSSelector* selector,
     const CSSParserContext* context,
     bool* has_visited_pseudo) {
+  // Both the classic WebFeature and the newer WebDXFeature use counters can be
+  // recorded. Some WebFeature counters are mapped to WebDXFeature counters in
+  // webdx_feature_maps.cc. For new features, it's OK to only add a WebDXFeature
+  // counter instead of adding a classic counter and mapping it.
   std::optional<WebFeature> feature;
   std::optional<WebDXFeature> webdx_feature;
   switch (selector->GetPseudoType()) {
@@ -2504,6 +2508,9 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoAutofill:
       webdx_feature = WebDXFeature::kAutofill;
+      break;
+    case CSSSelector::kPseudoDetailsContent:
+      webdx_feature = WebDXFeature::kDetailsContent;
       break;
     default:
       break;

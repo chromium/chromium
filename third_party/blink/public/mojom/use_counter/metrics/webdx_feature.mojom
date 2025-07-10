@@ -413,6 +413,7 @@ enum WebDXFeature {
   kFontFamilyMath = 351,
   kAutofill = 352,
   kFontMetricOverrides = 353,
+  kDetailsContent = 354,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

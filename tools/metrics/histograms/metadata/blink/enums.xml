@@ -8327,6 +8327,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="351" label="FontFamilyMath"/>
   <int value="352" label="Autofill"/>
   <int value="353" label="FontMetricOverrides"/>
+  <int value="354" label="DetailsContent"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
