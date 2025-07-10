@@ -66,27 +66,44 @@ void ActorTask::Act(const optimization_guide::proto::BrowserAction& action,
     return;
   }
   SetState(State::kActing);
-  execution_engine_->Act(action, base::BindOnce(&ActorTask::OnFinishedAct,
-                                                weak_ptr_factory_.GetWeakPtr(),
-                                                std::move(callback)));
+  execution_engine_->Act(
+      action,
+      base::BindOnce(&ActorTask::OnFinishedActDeprecated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ActorTask::Act(const optimization_guide::proto::Actions& actions,
-                    ActionResultCallback callback) {
-  SetState(State::kActing);
-  execution_engine_->Act(actions, base::BindOnce(&ActorTask::OnFinishedAct,
-                                                 weak_ptr_factory_.GetWeakPtr(),
-                                                 std::move(callback)));
-}
-
-void ActorTask::OnFinishedAct(ActionResultCallback callback,
-                              mojom::ActionResultPtr result) {
+void ActorTask::OnFinishedActDeprecated(ActionResultCallback callback,
+                                        mojom::ActionResultPtr result) {
   if (state_ != State::kActing) {
     std::move(callback).Run(MakeErrorResult());
     return;
   }
   SetState(State::kReflecting);
   std::move(callback).Run(std::move(result));
+}
+
+void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+                    ActCallback callback) {
+  if (state_ == State::kPausedByClient) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
+                            std::nullopt);
+    return;
+  }
+  SetState(State::kActing);
+  execution_engine_->Act(actions, base::BindOnce(&ActorTask::OnFinishedAct,
+                                                 weak_ptr_factory_.GetWeakPtr(),
+                                                 std::move(callback)));
+}
+
+void ActorTask::OnFinishedAct(ActCallback callback,
+                              mojom::ActionResultPtr result,
+                              std::optional<size_t> index_of_failed_action) {
+  if (state_ != State::kActing) {
+    std::move(callback).Run(MakeErrorResult(), std::nullopt);
+    return;
+  }
+  SetState(State::kReflecting);
+  std::move(callback).Run(std::move(result), std::nullopt);
 }
 
 void ActorTask::Stop() {

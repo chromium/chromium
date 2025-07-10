@@ -12,6 +12,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -244,34 +246,29 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   ASSERT_TRUE(button1_id);
   ASSERT_TRUE(button2_id);
 
-  optimization_guide::proto::Actions actions;
-  actions.set_task_id(actor_task().id().value());
-
-  ClickAction* click1 = actions.add_actions()->mutable_click();
-  click1->mutable_target()->set_content_node_id(button1_id.value());
-  click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
+  std::string document_identifier =
       *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken()));
-  click1->set_click_type(ClickAction::LEFT);
-  click1->set_click_count(ClickAction::SINGLE);
-  click1->set_tab_id(tab_handle.raw_value());
+          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken());
 
-  ClickAction* click2 = actions.add_actions()->mutable_click();
-  click2->set_tab_id(tab_handle.raw_value());
-  click2->mutable_target()->set_content_node_id(button2_id.value());
-  click2->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken()));
-  click2->set_click_type(ClickAction::LEFT);
-  click2->set_click_count(ClickAction::SINGLE);
-  click2->set_tab_id(tab_handle.raw_value());
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+
+  std::unique_ptr<ToolRequest> click1 = std::make_unique<ClickToolRequest>(
+      tab_handle, PageTarget(DomNode{*button1_id, document_identifier}),
+      MouseClickType::kLeft, MouseClickCount::kSingle);
+
+  std::unique_ptr<ToolRequest> click2 = std::make_unique<ClickToolRequest>(
+      tab_handle, PageTarget(DomNode{*button2_id, document_identifier}),
+      MouseClickType::kLeft, MouseClickCount::kSingle);
+
+  actions.push_back(std::move(click1));
+  actions.push_back(std::move(click2));
 
   // Execute the actions.
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
   actor_task().Act(actions, result.GetCallback());
 
   // Check that the action succeeded.
-  ExpectOkResult(result);
+  ExpectOkResult(*result.Get<0>());
 
   // Check background color changed to green in the background tab.
   EXPECT_EQ("green", EvalJs(tab->GetContents(), "document.body.bgColor"));

@@ -10,8 +10,11 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -102,10 +105,11 @@ void ActorKeyedService::ResetForTesting() {
 }
 
 void ActorKeyedService::ExecuteAction(
-    optimization_guide::proto::BrowserAction action,
+    TaskId task_id,
+    std::vector<std::unique_ptr<ToolRequest>>& actions,
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback) {
-  auto* task = GetTask(actor::TaskId(action.task_id()));
+  auto* task = GetTask(task_id);
   bool always_fail = false;
 #if !BUILDFLAG(ENABLE_GLIC)
   // The current implementation relies on glic::FetchPageContext().
@@ -119,10 +123,9 @@ void ActorKeyedService::ExecuteAction(
     return;
   }
 #if BUILDFLAG(ENABLE_GLIC)
-  task->Act(std::move(action),
-            base::BindOnce(&ActorKeyedService::OnActionFinished,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           action.task_id()));
+  task->Act(actions, base::BindOnce(&ActorKeyedService::OnActionFinished,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), task_id.value()));
 #endif
 }
 
@@ -240,7 +243,8 @@ void ActorKeyedService::OnActionFinished(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
     int task_id,
-    actor::mojom::ActionResultPtr action_result) {
+    actor::mojom::ActionResultPtr action_result,
+    std::optional<size_t> index_of_failed_action) {
   auto* task = GetTask(actor::TaskId(task_id));
   CHECK(task);
   tabs::TabInterface* tab = task->GetTabForObservation();
@@ -263,30 +267,39 @@ void ActorKeyedService::OnActionFinished(
 #endif
 
 void ActorKeyedService::PerformActions(
-    optimization_guide::proto::Actions actions,
-    base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
-        callback) {
-  auto* task = GetTask(actor::TaskId(actions.task_id()));
+    TaskId task_id,
+    std::vector<std::unique_ptr<ToolRequest>>& actions,
+    PerformActionsCallback callback) {
+  auto* task = GetTask(task_id);
   if (!task) {
     VLOG(1) << "PerformActions failed: Task not found.";
-    optimization_guide::proto::ActionsResult result;
-    result.set_action_result(
-        static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
+    RunLater(base::BindOnce(std::move(callback),
+                            mojom::ActionResultCode::kTaskWentAway,
+                            std::nullopt));
     return;
   }
-  task->Act(
-      std::move(actions),
-      base::BindOnce(&ActorKeyedService::OnActionsFinished,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  if (actions.empty()) {
+    VLOG(1) << "PerformActions failed: No actions provided.";
+    RunLater(base::BindOnce(std::move(callback),
+                            mojom::ActionResultCode::kEmptyActionSequence,
+                            std::nullopt));
+    return;
+  }
+
+  task->Act(actions, base::BindOnce(&ActorKeyedService::OnActionsFinished,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback)));
 }
 
 void ActorKeyedService::OnActionsFinished(
-    base::OnceCallback<void(optimization_guide::proto::ActionsResult)> callback,
-    actor::mojom::ActionResultPtr action_result) {
-  optimization_guide::proto::ActionsResult result;
-  result.set_action_result(static_cast<int32_t>(action_result->code));
-  RunLater(base::BindOnce(std::move(callback), std::move(result)));
+    PerformActionsCallback callback,
+    mojom::ActionResultPtr result,
+    std::optional<size_t> index_of_failed_action) {
+  // If the result if Ok then we must not have a failed action.
+  CHECK(!IsOk(*result) || !index_of_failed_action);
+  RunLater(base::BindOnce(std::move(callback), result->code,
+                          index_of_failed_action));
 }
 
 void ActorKeyedService::StopTask(TaskId task_id) {

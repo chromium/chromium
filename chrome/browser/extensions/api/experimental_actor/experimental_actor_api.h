@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/task_id.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "extensions/browser/extension_function.h"
+
+class Browser;
 
 namespace extensions {
 
@@ -37,8 +43,11 @@ class ExperimentalActorStartTaskFunction : public ExperimentalActorApiFunction {
  protected:
   ~ExperimentalActorStartTaskFunction() override;
   ResponseAction Run() override;
-  void OnTaskStarted(
-      optimization_guide::proto::BrowserStartTaskResult response);
+  void OnTaskStarted(actor::TaskId task_id, int32_t tab_id);
+  void OnTabCreated(base::WeakPtr<Browser> browser,
+                    actor::TaskId task_id,
+                    actor::mojom::ActionResultCode result_code,
+                    std::optional<size_t> index_of_failed_action);
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.startTask",
                              EXPERIMENTALACTOR_STARTTASK)
@@ -111,7 +120,8 @@ class ExperimentalActorPerformActionsFunction
  protected:
   ~ExperimentalActorPerformActionsFunction() override;
   ResponseAction Run() override;
-  void OnActionsFinished(optimization_guide::proto::ActionsResult result);
+  void OnActionsFinished(actor::mojom::ActionResultCode result_code,
+                         std::optional<size_t> index_of_failed_action);
   DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",
                              EXPERIMENTALACTOR_PERFORMACTIONS)
 };

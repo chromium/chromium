@@ -213,10 +213,14 @@ BrowserAction MakeAttemptLogin() {
   return action;
 }
 
-void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
-  const auto& result = *(future.Get());
+void ExpectOkResult(const mojom::ActionResult& result) {
   EXPECT_TRUE(IsOk(result))
       << "Expected OK result, got " << ToDebugString(result);
+}
+
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
+  const auto& result = *(future.Get());
+  ExpectOkResult(result);
 }
 
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,

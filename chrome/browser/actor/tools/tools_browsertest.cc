@@ -21,6 +21,8 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -2483,15 +2485,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2,
 
   const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
 
-  Actions actions;
-  actions.set_task_id(actor_task().id().GetUnsafeValue());
-  CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
-  create_tab->set_foreground(true);
-  create_tab->set_window_id(browser()->session_id().id());
+  std::unique_ptr<ToolRequest> action = std::make_unique<CreateTabToolRequest>(
+      browser()->session_id().id(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::move(action));
 
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
   execution_engine().Act(actions, result.GetCallback());
-  ExpectOkResult(result);
+  ExpectOkResult(*result.Get<0>());
 
   EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
   EXPECT_EQ(GURL("about:blank"),
@@ -2507,15 +2508,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2,
 
   const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
 
-  Actions actions;
-  actions.set_task_id(actor_task().id().GetUnsafeValue());
-  CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
-  create_tab->set_foreground(false);
-  create_tab->set_window_id(browser()->session_id().id());
+  std::unique_ptr<ToolRequest> action = std::make_unique<CreateTabToolRequest>(
+      browser()->session_id().id(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::move(action));
 
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
   execution_engine().Act(actions, result.GetCallback());
-  ExpectOkResult(result);
+  ExpectOkResult(*result.Get<0>());
 
   EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
   EXPECT_EQ(start_tab_url,
@@ -2529,15 +2529,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2, TabManagementTool_RecordActingOnTask) {
 
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
-    Actions actions;
-    actions.set_task_id(actor_task().id().GetUnsafeValue());
-    CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
-    create_tab->set_foreground(false);
-    create_tab->set_window_id(browser()->session_id().id());
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<CreateTabToolRequest>(
+            browser()->session_id().id(),
+            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+    std::vector<std::unique_ptr<ToolRequest>> actions;
+    actions.push_back(std::move(action));
 
-    TestFuture<mojom::ActionResultPtr> result;
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
     execution_engine().Act(actions, result.GetCallback());
-    ExpectOkResult(result);
+    ExpectOkResult(*result.Get<0>());
 
     EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
 
@@ -2548,15 +2549,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestV2, TabManagementTool_RecordActingOnTask) {
 
   // Create a second tab, ensure it too is added to the set of acted on tabs.
   {
-    Actions actions;
-    actions.set_task_id(actor_task().id().GetUnsafeValue());
-    CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
-    create_tab->set_foreground(true);
-    create_tab->set_window_id(browser()->session_id().id());
+    std::unique_ptr<ToolRequest> action =
+        std::make_unique<CreateTabToolRequest>(
+            browser()->session_id().id(),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    std::vector<std::unique_ptr<ToolRequest>> actions;
+    actions.push_back(std::move(action));
 
-    TestFuture<mojom::ActionResultPtr> result;
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
     execution_engine().Act(actions, result.GetCallback());
-    ExpectOkResult(result);
+    ExpectOkResult(*result.Get<0>());
 
     EXPECT_EQ(actor_task().GetTabs().size(), 2ul);
 

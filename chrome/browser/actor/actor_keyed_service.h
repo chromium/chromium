@@ -38,6 +38,8 @@ namespace ui {
 class ActorUiStateManagerInterface;
 }
 
+class ToolRequest;
+
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
 class ActorKeyedService : public KeyedService {
@@ -57,27 +59,28 @@ class ActorKeyedService : public KeyedService {
 
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
   const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
+
   // Stop and clear all active and inactive tasks for testing only.
   void ResetForTesting();
 
   // Starts a new task with an execution engine and returns the new task's id.
   TaskId CreateTask();
 
-  // Executes the given actions using the execution engine. The actions proto
-  // must explicitly specify the task_id of an existing task started using
-  // CreateTask. Once all actions have been completed, returns the ActionsResult
-  // proto which includes new observations and an error code for the first
-  // failed action.
-  // TODO(crbug.com/411462297): The result doesn't yet include observations.
-  void PerformActions(
-      optimization_guide::proto::Actions actions,
-      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
-          callback);
+  // Executes the given ToolRequest actions using the execution engine for the
+  // given task id. The given actions vector reference is consumed as a result
+  // of calling this method.
+  using PerformActionsCallback = base::OnceCallback<void(
+      mojom::ActionResultCode /*result_code*/,
+      std::optional<size_t> /*index_of_failing_action*/)>;
+  void PerformActions(TaskId task_id,
+                      std::vector<std::unique_ptr<ToolRequest>>& actions,
+                      PerformActionsCallback callback);
 
   // TODO(crbug.com/411462297): DEPRECATED - to be replaced with PerformActions.
   // Executes an actor action.
   void ExecuteAction(
-      optimization_guide::proto::BrowserAction action,
+      TaskId task_id,
+      std::vector<std::unique_ptr<ToolRequest>>& actions,
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 
@@ -136,13 +139,14 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
       int task_id,
-      actor::mojom::ActionResultPtr action_result);
+      actor::mojom::ActionResultPtr action_result,
+      std::optional<size_t> index_of_failed_action);
 #endif
 
-  void OnActionsFinished(
-      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>
-          callback,
-      actor::mojom::ActionResultPtr action_result);
+  // The callback used for ExecutorEngine::Act.
+  void OnActionsFinished(PerformActionsCallback callback,
+                         actor::mojom::ActionResultPtr action_result,
+                         std::optional<size_t> index_of_failed_action);
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
   // Stores completed tasks. May want to add cancelled tasks in the future.

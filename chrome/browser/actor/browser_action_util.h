@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_
 
 #include <memory>
+#include <vector>
+
+#include "base/types/expected.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
@@ -13,6 +18,8 @@
 
 namespace optimization_guide::proto {
 class Action;
+class Actions;
+class BrowserAction;
 }  // namespace optimization_guide::proto
 
 namespace tabs {
@@ -34,6 +41,44 @@ class ToolRequest;
 std::unique_ptr<ToolRequest> CreateToolRequest(
     const optimization_guide::proto::Action& action,
     tabs::TabInterface* deprecated_fallback_tab);
+
+// Input type used for ActorKeyedService acting APIs, created from
+// BuildToolRequest functions below. Aliased for convenience.
+using ToolRequestList = std::vector<std::unique_ptr<ToolRequest>>;
+
+// Result type returned from the BuildToolRequest functions below. Aliased for
+// convenience. on failure, the error value contains the index of the action in
+// the list that failed to convert.
+using BuildToolRequestResult =
+    base::expected<ToolRequestList, size_t /*index_of_failed_action*/>;
+
+// Builds a vector of ToolRequests usable for ActorKeyedService::PerformActions
+// out of the given proto::Actions proto. If an action failed to convert,
+// returns the index of the failing action.
+BuildToolRequestResult BuildToolRequest(
+    const optimization_guide::proto::Actions& actions);
+
+// Builds the ActionsResult proto from the output of a call to the
+// ActorKeyedService::PerformActions API.
+optimization_guide::proto::ActionsResult BuildActionsResult(
+    mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action);
+
+// Builds a vector of ToolRequests usable for ActorKeyedService::ActInFocusedTab
+// out of the given proto::BrowserAction proto.
+// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
+// removed.
+BuildToolRequestResult BuildToolRequest(
+    const optimization_guide::proto::BrowserAction& actions,
+    tabs::TabInterface* deprecated_fallback_tab);
+
+// Builds the BrowserActionResult proto from the output of a call to the
+// ActorKeyedService::ActInFocusedTab API.
+// TODO(https://crbug.com/411462297): Remove this once the BrowserAction path is
+// removed.
+optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
+    mojom::ActionResultCode result_code,
+    int32_t tab_id);
 
 }  // namespace actor
 

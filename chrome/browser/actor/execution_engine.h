@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
@@ -99,12 +100,14 @@ class ExecutionEngine {
   void FailCurrentTool(mojom::ActionResultCode reason);
 
   // Performs the next action in the current task.
+  // TODO(crbug.com/411462297): Deprecated, this will be removed soon.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
 
-  // Performs the next action in the current task.
-  void Act(const optimization_guide::proto::Actions& actions,
-           ActionResultCallback callback);
+  // Performs the given tool actions and invokes the callback when completed.
+  // The actions argument is consumed by this call.
+  void Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+           ActorTask::ActCallback callback);
 
   // Gets called when a new observation is made for the actor task.
   void DidObserveContext(const mojo_base::ProtoWrapper&);
@@ -127,9 +130,9 @@ class ExecutionEngine {
 
   void SetState(State state);
 
-  // If there are no actions remaining, calls CompleteActions.
-  // Otherwise, calls SafetyChecksForNextAction().
-  void KickOffNextAction(mojom::ActionResultPtr previous_action_result);
+  // Starts the next action by calling SafetyChecksForNextAction(). Must only be
+  // called if there is a next action.
+  void KickOffNextAction(mojom::ActionResultPtr init_hooks_result);
 
   // Performs safety checks for next action. This is asynchronous.
   void SafetyChecksForNextAction();
@@ -148,7 +151,8 @@ class ExecutionEngine {
   void FinishedToolController(mojom::ActionResultPtr result);
   void FinishedUiPostTool(mojom::ActionResultPtr result);
 
-  void CompleteActions(mojom::ActionResultPtr result);
+  void CompleteActions(mojom::ActionResultPtr result,
+                       std::optional<size_t> action_index);
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -159,8 +163,9 @@ class ExecutionEngine {
   // reached.
   const ToolRequest& GetNextAction() const;
 
-  // Returns the action that was last executed and is still in progress. It is
-  // an error to call this when an action is not in progress.
+  // Returns the index / action that was last executed and is still in progress.
+  // It is an error to call this when an action is not in progress.
+  size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
   State state_ = State::kInit;
@@ -186,7 +191,7 @@ class ExecutionEngine {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   std::vector<std::unique_ptr<ToolRequest>> action_sequence_;
-  ActionResultCallback act_callback_;
+  ActorTask::ActCallback act_callback_;
 
   // The index of the next action that will be started when ExecuteNextAction is
   // reached.

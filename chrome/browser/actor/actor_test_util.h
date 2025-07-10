@@ -59,6 +59,7 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
 optimization_guide::proto::BrowserAction MakeWait();
 optimization_guide::proto::BrowserAction MakeAttemptLogin();
 
+void ExpectOkResult(const mojom::ActionResult& result);
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
                        mojom::ActionResultCode expected_code);

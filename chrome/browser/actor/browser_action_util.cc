@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -493,6 +496,61 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
   }
 
   return nullptr;
+}
+
+base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
+BuildToolRequest(const optimization_guide::proto::Actions& actions) {
+  std::vector<std::unique_ptr<ToolRequest>> requests;
+  requests.reserve(actions.actions_size());
+  for (int i = 0; i < actions.actions_size(); ++i) {
+    std::unique_ptr<actor::ToolRequest> request = actor::CreateToolRequest(
+        actions.actions().at(i), /*deprecated_fallback_tab=*/nullptr);
+    if (request) {
+      requests.push_back(std::move(request));
+    } else {
+      return base::unexpected(base::checked_cast<size_t>(i));
+    }
+  }
+
+  return requests;
+}
+
+optimization_guide::proto::ActionsResult BuildActionsResult(
+    mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action) {
+  optimization_guide::proto::ActionsResult response;
+  response.set_action_result(static_cast<int32_t>(result_code));
+  if (index_of_failed_action) {
+    response.set_index_of_failed_action(*index_of_failed_action);
+  }
+  return response;
+}
+
+base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
+BuildToolRequest(const optimization_guide::proto::BrowserAction& actions,
+                 tabs::TabInterface* deprecated_fallback_tab) {
+  std::vector<std::unique_ptr<actor::ToolRequest>> requests;
+  requests.reserve(actions.actions_size());
+  for (int i = 0; i < actions.actions_size(); ++i) {
+    std::unique_ptr<actor::ToolRequest> request = actor::CreateToolRequest(
+        actions.actions().at(i), deprecated_fallback_tab);
+    if (request) {
+      requests.push_back(std::move(request));
+    } else {
+      return base::unexpected(base::checked_cast<size_t>(i));
+    }
+  }
+
+  return requests;
+}
+
+optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
+    mojom::ActionResultCode result_code,
+    int32_t tab_id) {
+  optimization_guide::proto::BrowserActionResult response;
+  response.set_action_result(static_cast<int32_t>(result_code));
+  response.set_tab_id(tab_id);
+  return response;
 }
 
 }  // namespace actor

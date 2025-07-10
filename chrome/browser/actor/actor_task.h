@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -27,6 +28,8 @@ class ExecutionEngine;
 class ActorTask {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  using ActCallback =
+      base::OnceCallback<void(mojom::ActionResultPtr, std::optional<size_t>)>;
 
   ActorTask() = delete;
   explicit ActorTask(std::unique_ptr<ExecutionEngine> execution_engine);
@@ -56,11 +59,13 @@ class ActorTask {
 
   base::Time GetEndTime() const;
 
+  // TODO(crbug.com/411462297): Deprecated, new callers should use the
+  // ToolRequest version below.
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
 
-  void Act(const optimization_guide::proto::Actions& actions,
-           ActionResultCallback callback);
+  void Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+           ActCallback callback);
 
   // Sets State to kFinished and cancels any pending actions.
   void Stop();
@@ -102,8 +107,11 @@ class ActorTask {
   }
 
  private:
-  void OnFinishedAct(ActionResultCallback callback,
-                     mojom::ActionResultPtr result);
+  void OnFinishedAct(ActCallback callback,
+                     mojom::ActionResultPtr result,
+                     std::optional<size_t> index_of_failed_action);
+  void OnFinishedActDeprecated(ActionResultCallback callback,
+                               mojom::ActionResultPtr result);
 
   State state_ = State::kCreated;
 
