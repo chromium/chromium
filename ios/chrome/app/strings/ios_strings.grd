@@ -3812,9 +3812,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_DISABLE_SNACKBAR_MESSAGE" desc="The test shown in the snackbar message when sign-in promo is trigger when sign-in is disabled. [iOS only]">
         Not available on your device
       </message>
-      <message name="IDS_IOS_OFFER_TO_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled allowing users to be prompted if they want to save their passwords when logging into webpages. [Length: 25em] [iOS only]">
-        Offer to save passwords
-      </message>
       <message name="IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS" desc="Title for the switch item in Settings that can be toggled allowing users to be prompted if they want to save their passwords and passkeys when logging into webpages. Refer to Glossary when translating 'passkeys'. [Length: 25em] [iOS only]">
         Offer to save passwords &amp; passkeys
       </message>
@@ -5832,14 +5829,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING" desc="The title for a list of sites where passwords will not be saved. These items are already saved by the browser and can only be deleted. [Length: one line] [iOS only]">
       Never saved
       </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS" desc="The title of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
-        Passwords in other Apps
-      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below subtitle of the view that teaches users to turn off iOS AutoFill from Chrome password manager">
         To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to AutoFill Passwords.
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16" desc="The caption label below subtitle of the view that teaches users to turn off iOS AutoFill from Chrome password manager on iOS 16 and above">
-        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to Password Options.
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS17" desc="The caption label below subtitle of the view that teaches users to turn off iOS AutoFill from Chrome password manager. 'Password Options' is the name of an iOS setting (iOS settings &gt; Passwords &gt; Password Options). The translation and capitalization should match that of the iOS setting. [iOS only]" meaning="Translation and capitalization of 'Password Options' should match that of the iOS setting.">
         To turn off, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>Password Options<ph name="END_LINK">END_LINK</ph>
@@ -5885,9 +5876,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING" desc="The title for a list of items, with each entry consisting of a password or a passkey, and a corresponding username and website. These items are already saved by the browser and can be deleted/edited. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [Length: one line] [iOS only]">
         Saved passwords &amp; passkeys
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited. [Length: one line] [iOS only]">
-      Saved passwords
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION" desc="Footer text shown when the user is trying to add or edit a credential manually via settings and the note typed by user is too long. [iOS only]">
         Notes can save up to <ph name="CHARACTER_LIMIT">$1<ex>1000</ex></ph> characters.

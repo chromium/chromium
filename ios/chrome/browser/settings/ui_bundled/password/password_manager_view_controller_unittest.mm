@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -1533,9 +1532,7 @@ TEST_F(PasswordManagerViewControllerTest, ManageAccountHeaderIsBeingUpdated) {
   [GetPasswordManagerViewController() setSavingPasswordsToAccount:YES];
 
   EXPECT_NSEQ(l10n_util::GetNSString(
-                  IOSPasskeysM2Enabled()
-                      ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
-                      : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER),
+                  IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER),
               header.text);
   EXPECT_EQ(1U, [header.urls count]);
   CrURL* expectedHeaderUrl = [[CrURL alloc]

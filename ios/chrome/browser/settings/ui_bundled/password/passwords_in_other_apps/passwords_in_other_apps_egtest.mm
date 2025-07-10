@@ -69,21 +69,19 @@ id<GREYMatcher> OpenSettingsButton() {
       kPasswordsInOtherAppsActionAccessibilityIdentifier);
 }
 
-// Returns whether the Passkeys M2 feature is on and the device is running on
-// iOS 18+.
-BOOL IsIOS18WithPasskeysM2() {
+// Returns whether the device is running on iOS 18+.
+BOOL IsIOS18() {
   if (@available(iOS 18, *)) {
-    return [PasswordManagerAppInterface isPasskeysM2FeatureEnabled];
+    return YES;
   }
   return NO;
 }
 
 // Action to open the Passwords in Other Apps modal from Chrome root view.
 void OpensPasswordsInOtherApps() {
-  // The autofill status needs to be set to "on" on iOS 18+ when the Passkeys M2
-  // feature is enabled as the Passwords in Other Apps screen isn't accessible
-  // otherwise.
-  if (IsIOS18WithPasskeysM2()) {
+  // The autofill status needs to be set to "on" on iOS 18+ as the Passwords in
+  // Other Apps screen isn't accessible otherwise.
+  if (IsIOS18()) {
     [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
   }
 
@@ -139,11 +137,9 @@ void OpensPasswordsInOtherApps() {
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsTitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  BOOL subtitleShouldBeVisible =
-      !autofillOn || ![PasswordManagerAppInterface isPasskeysM2FeatureEnabled];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsSubtitleMatcher()]
-      assertWithMatcher:subtitleShouldBeVisible ? grey_sufficientlyVisible()
-                                                : grey_notVisible()];
+      assertWithMatcher:autofillOn ? grey_notVisible()
+                                   : grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
 }
@@ -205,7 +201,7 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps first shows instructions when auto-fill is off,
 // then shows the caption label after auto-fill is turned on.
 - (void)testTurnOnPasswordsInOtherApps {
-  if (IsIOS18WithPasskeysM2()) {
+  if (IsIOS18()) {
     EARL_GREY_TEST_SKIPPED(@"The Password in Other Apps screen isn't "
                            @"accessible as of iOS 18 when autofill is off.");
   }
@@ -254,7 +250,7 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps shows instructions when auto-fill is off with
 // short instruction.
 - (void)testShowPasswordsInOtherAppsWithShortInstruction {
-  if (IsIOS18WithPasskeysM2()) {
+  if (IsIOS18()) {
     EARL_GREY_TEST_SKIPPED(@"The Password in Other Apps screen isn't "
                            @"accessible as of iOS 18 when autofill is off.");
   }
@@ -278,9 +274,7 @@ void OpensPasswordsInOtherApps() {
     l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
     l10n_util::GetNSString(
-        [PasswordManagerAppInterface isPasskeysM2FeatureEnabled]
-            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
-            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2)
   ];
   for (NSString* step in steps) {
     [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(step)]
@@ -290,40 +284,11 @@ void OpensPasswordsInOtherApps() {
       assertWithMatcher:grey_interactable()];
 }
 
-// Tests Passwords In Other Apps shows instructions when auto-fill state is
-// unknown.
-- (void)testOpenPasswordsInOtherAppsWithAutoFillUnknown {
-  if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The autofill state can't be unknown as it's defaulted to `off` when "
-        @"the Passkeys M2 feature is enabled.");
-  }
-
-  OpensPasswordsInOtherApps();
-
-  [self checkThatCommonElementsAreVisibleWithAutofillOn:NO];
-  [self checkThatTurnOffInstructionsAreNotVisible];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
-                                              @"UIActivityIndicatorView"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
-
-  // Simulate status retrieved.
-  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
-                                              @"UIActivityIndicatorView"),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-}
-
 // Tests Passwords In Other Apps dismisses itself when top right "done" button
 // is tapped.
 - (void)testTapPasswordsInOtherAppsDoneButtonToDismiss {
   OpensPasswordsInOtherApps();
-  [self checkThatCommonElementsAreVisibleWithAutofillOn:
-            (NO || IsIOS18WithPasskeysM2())];
+  [self checkThatCommonElementsAreVisibleWithAutofillOn:IsIOS18()];
   // Taps done button and check settings dismissed.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
@@ -336,8 +301,7 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps dismisses itself when the user swipes down.
 - (void)testSwipeDownPasswordsInOtherAppsToDismiss {
   OpensPasswordsInOtherApps();
-  [self checkThatCommonElementsAreVisibleWithAutofillOn:
-            (NO || IsIOS18WithPasskeysM2())];
+  [self checkThatCommonElementsAreVisibleWithAutofillOn:IsIOS18()];
   // Swipes down and check settings dismissed.
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];

@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -40,32 +39,8 @@ CGFloat const kContentOptimalWidth = 327;
 CGFloat const kCheckmarkIconSize = 18;
 CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
 
-// Helper method that returns the green checkmark image.
-UIImage* GetCheckmarkImage(bool passkeys_m2_enabled) {
-  if (passkeys_m2_enabled) {
-    return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                      kCheckmarkIconSize);
-  } else {
-    return [[UIImage imageNamed:@"settings_safe_state"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
-}
-
-// Helper method that returns the height of the `subtitleMarginLayoutGuide`.
-CGFloat GetSubtitleMarginLayoutGuideHeight(bool passkeys_m2_enabled) {
-  if (passkeys_m2_enabled) {
-    return kSubtitleMarginLayoutGuideHeight;
-  } else {
-    return kDefaultMargin;
-  }
-}
-
 // Helper method that returns the string to use as title.
-NSString* GetTitleString(bool passkeys_m2_enabled) {
-  if (!passkeys_m2_enabled) {
-    return l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
-  }
-
+NSString* GetTitleString() {
   if (@available(iOS 18.0, *)) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
@@ -77,12 +52,7 @@ NSString* GetTitleString(bool passkeys_m2_enabled) {
 
 // Helper method that returns the string to use in the caption view that
 // provides instructions on how to turn off autofill in other apps.
-NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
-  if (!passkeys_m2_enabled) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
-  }
-
+NSString* GetTurnOffCaptionTitleString() {
   if (@available(iOS 18.0, *)) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
@@ -139,29 +109,15 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 
 @end
 
-@implementation PasswordsInOtherAppsViewController {
-  // Whether the Passkeys M2 feature is enabled.
-  BOOL _passkeysM2Enabled;
-}
+@implementation PasswordsInOtherAppsViewController
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _passkeysM2Enabled = IOSPasskeysM2Enabled();
-    _titleText = GetTitleString(_passkeysM2Enabled);
+    _titleText = GetTitleString();
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
-
-    UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    if (_passkeysM2Enabled) {
-      _subtitleText = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
-    } else if (idiom == UIUserInterfaceIdiomPad) {
-      _subtitleText = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
-    } else {
-      _subtitleText = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
-    }
+    _subtitleText = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
     _bannerName = kGoogleSettingsPasswordsInOtherAppsBannerImage;
@@ -286,8 +242,7 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
     [subtitleMarginLayoutGuide.topAnchor
         constraintEqualToAnchor:titleStackView.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
-        constraintEqualToConstant:GetSubtitleMarginLayoutGuideHeight(
-                                      _passkeysM2Enabled)],
+        constraintEqualToConstant:kSubtitleMarginLayoutGuideHeight],
     [self.specificContentView.topAnchor
         constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor],
     [self.specificContentView.leadingAnchor
@@ -608,10 +563,10 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    UIImage* checkmark = GetCheckmarkImage(_passkeysM2Enabled);
+    UIImage* checkmark = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                                    kCheckmarkIconSize);
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-    checkmarkView.tintColor =
-        [UIColor colorNamed:_passkeysM2Enabled ? kGreen500Color : kGreenColor];
+    checkmarkView.tintColor = [UIColor colorNamed:kGreen500Color];
     checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _turnOffInstructionView = [[UIView alloc] init];
@@ -664,10 +619,7 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
       [PasswordAutoFillStatusManager sharedManager];
   BOOL shouldShowTurnOffInstructions =
       sharedManager.ready && sharedManager.autoFillEnabled;
-
-  if (_passkeysM2Enabled) {
     self.subtitleLabel.hidden = shouldShowTurnOffInstructions;
-  }
 
   UIView* viewToRemove = shouldShowTurnOffInstructions
                              ? _turnOnInstructionView
@@ -699,9 +651,7 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
       l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
       l10n_util::GetNSString(
-          _passkeysM2Enabled
-              ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
-              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+          IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
   }
   return @[
@@ -751,7 +701,7 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 // Returns caption text that shows below the subtitle in `turnOffInstructions`.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  text = GetTurnOffCaptionTitleString(_passkeysM2Enabled);
+  text = GetTurnOffCaptionTitleString();
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :

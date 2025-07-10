@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -571,9 +570,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
     headerItem.text = l10n_util::GetNSString(
-        IOSPasskeysM2Enabled()
-            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING
-            : IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING);
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING);
     [model setHeader:headerItem
         forSectionWithIdentifier:SectionIdentifierSavedPasswords];
   }
@@ -1256,10 +1253,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
   if (_savingPasswordsToAccount) {
     _manageAccountLinkItem.text = l10n_util::GetNSString(
-        IOSPasskeysM2Enabled()
-            ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
-            : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
-
+        IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER);
     _manageAccountLinkItem.urls = @[ [[CrURL alloc]
         initWithGURL:
             google_util::AppendGoogleLocaleParam(
