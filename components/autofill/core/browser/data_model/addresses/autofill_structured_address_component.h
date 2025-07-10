@@ -509,11 +509,10 @@ class AddressComponent {
   // |GetAdditionalSupportedFieldTypes()| to add computed field types.
   virtual FieldTypeSet GetTypes(bool storable_only) const;
 
- private:
-  friend class AddressComponentTestApi;
-
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
+ private:
+  friend class AddressComponentTestApi;
 
   // Unsets the children of a node.
   void UnsetSubcomponents();

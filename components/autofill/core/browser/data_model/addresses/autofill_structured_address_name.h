@@ -170,6 +170,8 @@ class NameLast : public AddressComponent {
 //
 class NameFull : public AddressComponent {
  public:
+  using AddressComponent::UnsetAddressComponentAndItsSubcomponents;
+
   NameFull();
   NameFull(const NameFull& other);
   ~NameFull() override;

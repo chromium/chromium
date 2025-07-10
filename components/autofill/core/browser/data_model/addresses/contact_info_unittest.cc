@@ -36,6 +36,20 @@ struct FullAlternativeNameTestCase {
   std::u16string family_name_output;
 };
 
+// Profiles are considered migrated if the regular name fields are empty and the
+// alternative name fields are populated with regular name original values.
+MATCHER_P(NameIsMigrated, original_profile, "") {
+  return arg.record_type() == original_profile.record_type() &&
+         original_profile.GetRawInfo(NAME_FULL) ==
+             arg.GetRawInfo(ALTERNATIVE_FULL_NAME) &&
+         original_profile.GetRawInfo(NAME_LAST) ==
+             arg.GetRawInfo(ALTERNATIVE_FAMILY_NAME) &&
+         original_profile.GetRawInfo(NAME_FIRST) ==
+             arg.GetRawInfo(ALTERNATIVE_GIVEN_NAME) &&
+         arg.GetRawInfo(NAME_FULL).empty() &&
+         arg.GetNameInfo().GetStructuredName().AllDescendantsAreEmpty();
+}
+
 class SetFullNameTest : public testing::TestWithParam<FullNameTestCase> {};
 
 TEST_P(SetFullNameTest, SetFullName) {
@@ -493,6 +507,71 @@ INSTANTIATE_TEST_SUITE_P(
                          "Ignatius Conan", "Doyle"},
         FullNameTestCase{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
                          "Ruiz y Picasso"}));
+
+struct NameMigrationTestCase {
+  std::string name;
+  bool should_migrate;
+};
+
+class NameInfoNameMigrationTest
+    : public NameInfoTest,
+      public testing::WithParamInterface<NameMigrationTestCase> {};
+
+// Profiles that contain phonetic names stored in regular name fields should,
+// migrate them to the alternative name fields. Those that do have other
+// characters than phonetic symbols should not be migrated.
+TEST_P(NameInfoNameMigrationTest, NameMigration) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile profile(AddressCountryCode("JP"));
+
+  profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16(GetParam().name));
+  profile.FinalizeAfterImport();
+  EXPECT_EQ(profile.GetNameInfo().HasNameEligibleForPhoneticNameMigration(),
+            GetParam().should_migrate);
+
+  if (GetParam().should_migrate) {
+    AutofillProfile migrated_profile = profile;
+    migrated_profile.MigrateRegularNameToPhoneticName();
+    EXPECT_THAT(migrated_profile, NameIsMigrated(profile));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NameInfoNameMigrationTest,
+                         testing::Values(
+                             // Only katakana.
+                             NameMigrationTestCase{"メタワ", true},
+                             NameMigrationTestCase{"ワ 　タシ", true},
+                             NameMigrationTestCase{"メタ-ワ", true},
+                             NameMigrationTestCase{"メタ・ ワ", true},
+                             // Only hiragana.
+                             NameMigrationTestCase{"ねこです", true},
+                             NameMigrationTestCase{"ねこ です", true},
+                             NameMigrationTestCase{"ねこ-です", true},
+                             NameMigrationTestCase{"ねこ・です", true},
+                             NameMigrationTestCase{"ねこ・ 　です", true},
+                             // The following names should not be migrated
+                             // because they contain Latin characters.
+                             NameMigrationTestCase{"John Doe", false},
+                             NameMigrationTestCase{"John-Doe", false},
+                             NameMigrationTestCase{"John・Doe", false},
+                             NameMigrationTestCase{"abcメタワ", false},
+                             NameMigrationTestCase{"abcワ 　タシ", false},
+                             NameMigrationTestCase{"abc-ワ", false},
+                             NameMigrationTestCase{"メタ・ ワab", false},
+                             NameMigrationTestCase{"abcねこです", false},
+                             NameMigrationTestCase{"abcねこ です", false},
+                             NameMigrationTestCase{"ねこ-ですabc", false},
+                             NameMigrationTestCase{"abcねこ・です", false},
+                             NameMigrationTestCase{"ねこ・ 　ですabc", false},
+                             // The following names should not be migrated
+                             // because they contain Kanji characters.
+                             NameMigrationTestCase{"静夢メタワ", false},
+                             NameMigrationTestCase{"静夢ワ 　タシ", false},
+                             NameMigrationTestCase{"a静夢-ワ", false},
+                             NameMigrationTestCase{"メタ・ ワ静夢", false},
+                             NameMigrationTestCase{"a静ねこです", false}));
 
 TEST(CompanyTest, SetRawInfo) {
   CompanyInfo company;

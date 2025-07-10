@@ -82,6 +82,17 @@ class NameInfo : public FormGroup {
   // status is updated to the higher one.
   void MergeStructuredNameValidationStatuses(const NameInfo& newer);
 
+  // Returns true if the regular name should be migrated to a phonetic name.
+  // The incorrect assignment happened in the past when we did not have proper
+  // support for phonetic names.
+  // TODO(crbug.com/359768803): Remove this method once the migration is done.
+  bool HasNameEligibleForPhoneticNameMigration() const;
+
+  // Moves the regular name data to the phonetic name fields and clears the
+  // regular name tree.
+  // TODO(crbug.com/359768803): Remove this method once the migration is done.
+  void MigrateRegularNameToPhoneticName();
+
   // Returns a constant reference to the structured name tree.
   const AddressComponent& GetStructuredName() const { return *name_; }
 

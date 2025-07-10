@@ -353,6 +353,13 @@ class AutofillProfile : public FormGroup {
   // Clears all specified |fields| from the profile.
   void ClearFields(const FieldTypeSet& fields);
 
+  // If a regular name is written in phonetic spelling, the contents
+  // of the regular name tree should be moved to the phonetic name tree and the
+  // regular name tree should be cleared. The incorrect assignment happened in
+  // the past when we did not have proper support for phonetic names.
+  // TODO(crbug.com/359768803): Remove this method once the migration is done.
+  void MigrateRegularNameToPhoneticName();
+
   const ProfileTokenQuality& token_quality() const { return token_quality_; }
   ProfileTokenQuality& token_quality() { return token_quality_; }
 
