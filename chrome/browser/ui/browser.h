@@ -835,6 +835,7 @@ class Browser : public TabStripModelObserver,
   BrowserActions* GetActions() override;
   Type GetType() const override;
   web_app::AppBrowserController* GetAppBrowserController() override;
+  const web_app::AppBrowserController* GetAppBrowserController() const override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
   bool IsTabModalPopupDeprecated() const override;

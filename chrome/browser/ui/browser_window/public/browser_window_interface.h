@@ -271,6 +271,8 @@ class BrowserWindowInterface : public content::PageNavigator {
   virtual Type GetType() const = 0;
 
   virtual web_app::AppBrowserController* GetAppBrowserController() = 0;
+  virtual const web_app::AppBrowserController* GetAppBrowserController()
+      const = 0;
 
   // This is used by features that need to operate on most or all tabs in the
   // browser window. Do not use this method to find a specific tab.

@@ -70,6 +70,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (override));
   MOCK_METHOD(BrowserActions*, GetActions, (), (override));
   MOCK_METHOD(Type, GetType, (), (const, override));
+  MOCK_METHOD(const web_app::AppBrowserController*,
+              GetAppBrowserController,
+              (),
+              (const, override));
   MOCK_METHOD(web_app::AppBrowserController*,
               GetAppBrowserController,
               (),
