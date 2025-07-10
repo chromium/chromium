@@ -244,6 +244,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/common:features",
+    "//components/feature_engagement/test:test_support",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
     "//content/public/browser",
