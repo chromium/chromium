@@ -39,6 +39,7 @@ WebStateList::ScopedBatchOperation::ScopedBatchOperation(
     WebStateList* web_state_list)
     : web_state_list_(web_state_list) {
   CHECK(web_state_list_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(web_state_list_->sequence_checker_);
   CHECK(!web_state_list_->batch_operation_in_progress_);
   web_state_list_->batch_operation_in_progress_ = true;
   for (auto& observer : web_state_list_->observers_) {
@@ -48,6 +49,7 @@ WebStateList::ScopedBatchOperation::ScopedBatchOperation(
 
 WebStateList::ScopedBatchOperation::~ScopedBatchOperation() {
   if (web_state_list_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(web_state_list_->sequence_checker_);
     CHECK(web_state_list_->batch_operation_in_progress_);
     web_state_list_->batch_operation_in_progress_ = false;
     for (auto& observer : web_state_list_->observers_) {
@@ -761,6 +763,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 }
 
 bool WebStateList::ShouldInsertWebState(const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!group) {
     return false;
   }
@@ -1287,6 +1290,7 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
 }
 
 void WebStateList::SetActiveIndex(int active_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_index_ == active_index) {
     return;
   }
@@ -1303,6 +1307,7 @@ void WebStateList::SetActiveIndex(int active_index) {
 }
 
 void WebStateList::OnActiveWebStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web::WebState* active_web_state = GetActiveWebState();
   if (active_web_state) {
     delegate_->WillActivateWebState(active_web_state);
