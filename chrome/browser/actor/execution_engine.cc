@@ -209,7 +209,29 @@ void ExecutionEngine::Act(const BrowserAction& action,
     return;
   }
 
+  if (action.actions_size() <= 0) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
+                  "Unable to perform action: proto contains no actions");
+    PostTaskForActCallback(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kEmptyActionSequence,
+                   "The BrowserAction proto had no actions"));
+    return;
+  }
+
+  BuildToolRequestResult result = BuildToolRequest(action, tab_);
+  if (!result.has_value()) {
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
+                  "Failed to convert BrowserAction proto to ToolRequest");
+    PostTaskForActCallback(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                   "Failed to convert BrowserAction proto to ToolRequest"));
+    return;
+  }
+
   next_action_index_ = 0;
+  action_sequence_ = std::move(result.value());
 
   // Adapt the callback in this path to the one used by the ToolRequest taking
   // Act.
@@ -217,25 +239,6 @@ void ExecutionEngine::Act(const BrowserAction& action,
       [](ActionResultCallback callback, mojom::ActionResultPtr result,
          std::optional<size_t>) { std::move(callback).Run(std::move(result)); },
       std::move(callback));
-
-  absl::flat_hash_set<int32_t> acting_tab_handles;
-
-  BuildToolRequestResult result = BuildToolRequest(action, tab_);
-  if (!result.has_value()) {
-    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
-                  "Failed to convert ActionInformation proto to ToolRequest");
-    CompleteActions(MakeResult(mojom::ActionResultCode::kArgumentsInvalid),
-                    result.error());
-    return;
-  }
-
-  action_sequence_ = std::move(result.value());
-
-  for (const std::unique_ptr<ToolRequest>& request : action_sequence_) {
-    if (request->GetTabHandle() != tabs::TabHandle::Null()) {
-      acting_tab_handles.insert(request->GetTabHandle().raw_value());
-    }
-  }
 
   if (state_ == State::kInit) {
     // This is the first Act() by this ExecutionEngine, so we should notify
@@ -248,6 +251,13 @@ void ExecutionEngine::Act(const BrowserAction& action,
     // TODO(crbug.com/420669167): This needs to support taking multiple tabs. Is
     // it even the right interface? Different sets of tabs might be acted on in
     // followup sequences...
+    absl::flat_hash_set<int32_t> acting_tab_handles;
+    for (const std::unique_ptr<ToolRequest>& request : action_sequence_) {
+      if (request->GetTabHandle() != tabs::TabHandle::Null()) {
+        acting_tab_handles.insert(request->GetTabHandle().raw_value());
+      }
+    }
+
     ui_event_dispatcher_->OnPreFirstAct(
         profile_,
         ui::UiEventDispatcher::FirstActInfo{
