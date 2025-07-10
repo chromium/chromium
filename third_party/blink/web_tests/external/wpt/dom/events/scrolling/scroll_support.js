@@ -16,7 +16,7 @@ async function waitForScrollendEvent(test, target, timeoutMs = 500) {
 
 async function waitForScrollendEventNoTimeout(target) {
   return new Promise((resolve) => {
-    target.addEventListener("scrollend", resolve);
+    target.addEventListener("scrollend", resolve, {once: true});
   });
 }
 
@@ -89,16 +89,23 @@ async function waitForPointercancelEvent(test, target, timeoutMs = 500) {
 }
 
 // Resets the scroll position to (0,0).  If a scroll is required, then the
-// promise is not resolved until the scrollend event is received.
+// promise is not resolved until the scrollend event is received. Resolves
+// without waiting if scrollend is not available.
 async function waitForScrollReset(test, scroller, x = 0, y = 0) {
   return new Promise(resolve => {
     if (scroller.scrollLeft == x && scroller.scrollTop == y) {
       resolve();
     } else {
-      const eventTarget =
-        scroller == document.scrollingElement ? document : scroller;
       scroller.scrollTo(x, y);
-      waitForScrollendEventNoTimeout(eventTarget).then(resolve);
+
+      if (window.onscrollend !== undefined) {
+        const eventTarget =
+          scroller == document.scrollingElement ? document : scroller;
+        waitForScrollendEventNoTimeout(eventTarget).then(resolve);
+      } else {
+        assert_true( scroller.scrollLeft == x && scroller.scrollTop == y);
+        resolve();
+      }
     }
   });
 }

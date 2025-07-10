@@ -6,7 +6,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="support/common.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <style>
 html {
   margin: 0px;
@@ -61,8 +61,6 @@ var start_x = window.scrollX;
 var start_y = window.scrollY;
 var actions_promise;
 
-scrollTop = () => window.scrollY;
-
 window.onscroll = function() {
   if (scrolled_x && scrolled_y) {
     body.style.backgroundColor = "yellow";
@@ -101,11 +99,10 @@ const pos_x = 20;
 const pos_y = 20;
 const scroll_delta_x = 100;
 const scroll_delta_y = 100;
+const scrollCompletePromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(window);
 actions_promise = new test_driver.Actions()
     .scroll(pos_x, pos_y, scroll_delta_x, scroll_delta_y)
-    .send().then(() => {
-  return waitForAnimationEnd(scrollTop);
-}).then(() => {
+    .send().then(() => scrollCompletePromise).then(() => {
   return test_driver.click(button);
 });
 </script>

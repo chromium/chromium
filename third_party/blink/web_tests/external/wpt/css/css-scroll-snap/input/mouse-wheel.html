@@ -27,6 +27,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <script src="../support/common.js"></script>
 <div id="scroller">
   <div class="box"></div>
@@ -36,33 +37,33 @@
 <script>
 promise_test(async t => {
   const scroller = document.getElementById("scroller");
-  scroller.scrollTo(0, 0);
+  await waitForScrollReset(t, scroller);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
-  const scrollTop = () => {
-    return scroller.scrollTop;
-  };
-  const scrollPromise = waitForScrollEvent(scroller);
-  const wheelPromise = waitForWheelEvent(scroller);
-  const actions = new test_driver.Actions()
-       .scroll(50, 50, 0, 50, {origin: scroller, duration: 100});
-  await actions.send();
-  await wheelPromise;
-  await scrollPromise;
+
   let scrollEndTime;
-  let snapEndTime;
-  // Detect first pause in scrolling.
   const scrollStabilizedPromise =
-      waitForAnimationEnd(scrollTop).then((timestamp) => {
-        scrollEndTime = timestamp;
+      waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller).then(() => {
+        scrollEndTime = performance.now();
       });
+  let snapEndTime;
   const snapEndPromise =
       waitForScrollTo(scroller, () => {
         return scroller.scrollTop;
-      }, 110).then((evt) => {
-    snapEndTime = evt.timestamp;
+      // 110 is the y pos of the 2nd box ie. box height + box bottom margin.
+      }, 110).then(() => {
+    snapEndTime = performance.now();
   });
+  const wheelPromise = waitForWheelEvent(scroller);
+
+  const actions = new test_driver.Actions()
+        // Scroll more than half the distance to the 2nd box to trigger a snap.
+       .scroll(0, 0, 0, 56, {origin: scroller, duration: 100});
+  await actions.send();
+  await wheelPromise;
+
   await Promise.all([scrollStabilizedPromise, snapEndPromise]);
-  assert_equals(scroller.scrollTop, 110,
+  // 110 is the y pos of the 2nd box ie. box height + box bottom margin.
+  assert_approx_equals(scroller.scrollTop, 110, 0.5,
                 'Failed to advance to next snap target');
   assert_true(snapEndTime < scrollEndTime,
               'Detected pause in scrolling before reaching snap target');

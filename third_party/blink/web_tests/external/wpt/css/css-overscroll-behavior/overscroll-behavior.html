@@ -5,6 +5,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/css/css-scroll-snap/support/common.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <link rel="help" href="https://drafts.csswg.org/css-overscroll-behavior">
 
 <style>
@@ -68,9 +69,6 @@ var instruction2 = document.getElementById("i2");
 var instruction3 = document.getElementById("i3");
 var instruction4 = document.getElementById("i4");
 var actions_promise;
-
-scrollTop = () => container.scrollTop;
-scrollLeft = () => container.scrollLeft;
 
 function smoothScrollByXY(xPosition, yPosition, xScrollOffset, yScrollOffset) {
   return new test_driver.Actions()
@@ -182,15 +180,25 @@ const test_cases = [
 
 actions_promise = new Promise( (resolve) => {resolve();} );
 for (let action of test_cases) {
-  actions_promise = actions_promise.then(() => {
-    return smoothScrollByXY(action.x, action.y, 0, action.dy);
-  }).then(() => {
-    return waitForAnimationEnd(scrollTop);
-  }).then(() => {
-    return smoothScrollByXY(action.x, action.y, action.dx, 0);
-  }).then(() => {
-    return waitForAnimationEnd(scrollLeft);
-  }).then(() => {
+  let scrollCompletePromise;
+  actions_promise = actions_promise
+  .then(() => {
+    if (container.style.overscrollBehaviorX == 'none') {
+      return smoothScrollByXY(action.x, action.y, 0, action.dy);
+    } else {
+      scrollCompletePromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(root);
+      return smoothScrollByXY(action.x, action.y, 0, action.dy).then(scrollCompletePromise);
+    }
+  })
+  .then(() => {
+    if (container.style.overscrollBehaviorY == 'none') {
+      return smoothScrollByXY(action.x, action.y, action.dx, 0);
+    } else {
+      scrollCompletePromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(root);
+      return smoothScrollByXY(action.x, action.y, action.dx, 0).then(scrollCompletePromise);
+    }
+  })
+  .then(() => {
     return test_driver.click(btnDone);
   });
 }
