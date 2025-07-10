@@ -255,13 +255,18 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("webrtc").SetTags("audio", "video"),
     perfetto::Category("webrtc_stats"),
     perfetto::Category("xr"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("animation-worklet")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio.latency")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio.latency"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))
-        .SetTags("audio"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("base")),
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("base"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug"))
         .SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))
@@ -270,13 +275,19 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         .SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.invalidation")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("identifiability")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("identifiability"))
+        .SetTags("slow"),
     perfetto::Category(
-        TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc")),
+        TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug")).SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"))
         .SetTags("debug"),
@@ -292,102 +303,158 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         .SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.now"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("content.verbose")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cpu_profiler")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("content.verbose"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("crypto.dpapi")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("crypto.dpapi"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"))
+        .SetTags("slow"),
     perfetto::Category(
-        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown")),
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown"))
+        .SetTags("slow"),
     perfetto::Category(
-        TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown-sources")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("file")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("fonts")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.dawn")),
+        TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown-sources"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("file")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("fonts")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.dawn")).SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.debug")).SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.decoder")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.device")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.service")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("histogram_samples")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("java-heap-profiler")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("layer-element")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.device"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.service"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("histogram_samples"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("layer-element"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("layout_shift.debug"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("lifecycles")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("loading")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("lifecycles"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("loading")).SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mediastream"))
-        .SetTags("audio"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mojom")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("navigation")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("net")),
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mojom")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("navigation")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("net")).SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("netlog.sensitive")).SetTags(
-      "navigation", "sensitive").SetDescription(
+      "navigation", "sensitive", "slow").SetDescription(
       "NetLog events and metadata, including sensitive information such as "
       "hostnames, URLs, HTTP headers and other identifiable information. "
       "Describes the operation of the //net network stack, e.g. HTTP requests, "
       "TLS, DNS, connections, sockets, etc."),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("network")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("paint-worklet")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("power")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_metrics")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("network")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("paint-worklet"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("power"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_metrics"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("sequence_manager")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"))
         .SetTags("debug"),
     perfetto::Category(
-        TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.shaders")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skottie")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_power")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics")),
+        TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.shaders"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skottie"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_power"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"))
-        .SetTags("ipc"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("user_action_samples")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.compile")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.inspector")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling")),
+        .SetTags("ipc", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("user_action_samples"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.compile"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.inspector"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"))
-        .SetTags("video"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("display.framedisplayed")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time")),
+        .SetTags("video", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"))
         .SetTags("debug"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.overdraw")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.quads")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.triangles")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger")),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.overdraw"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.quads"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))
-        .SetTags("audio"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webgpu")),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webnn")),
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webgpu")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webnn")).SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webrtc"))
-        .SetTags("audio", "video"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("worker.scheduler")),
+        .SetTags("audio", "video", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))
+        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("xr.debug")).SetTags("debug"),
     perfetto::Category::Group("android_webview,toplevel"),
     perfetto::Category::Group("android_webview.timeline,android.ui.jank"),
