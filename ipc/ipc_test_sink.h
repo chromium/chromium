@@ -34,7 +34,7 @@ class Message;
 //   EXPECT_FALSE(test_sink.GetFirstMessageMatching(ViewHostMsg_Start::ID));
 //
 //   // Now inspect a message. This assumes a message that was declared like
-//   // this: IPC_MESSAGE_ROUTED2(ViewMsg_Foo, bool, int)
+//   // this: IPC_MESSAGE_CONTROL2(ViewMsg_Foo, bool, int)
 //   IPC::Message* msg = test_sink.GetFirstMessageMatching(ViewMsg_Foo::ID));
 //   ASSERT_TRUE(msg);
 //   bool first_param;

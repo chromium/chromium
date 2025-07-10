@@ -203,8 +203,6 @@
 //     IPC_MESSAGE_CONTROL(FooMsg, int, float)
 #define IPC_MESSAGE_CONTROL(msg_class, ...) \
   IPC_MESSAGE_DECL(msg_class, CONTROL, IPC_TUPLE(__VA_ARGS__), void)
-#define IPC_MESSAGE_ROUTED(msg_class, ...) \
-  IPC_MESSAGE_DECL(msg_class, ROUTED, IPC_TUPLE(__VA_ARGS__), void)
 
 // Synchronous messages have both in and out parameters, so the lists need to
 // be parenthesized to disambiguate:
@@ -215,8 +213,6 @@
 // so "IPC_TUPLE in" and "IPC_TUPLE out" are intentional.
 #define IPC_SYNC_MESSAGE_CONTROL(msg_class, in, out) \
   IPC_MESSAGE_DECL(msg_class, CONTROL, IPC_TUPLE in, IPC_TUPLE out)
-#define IPC_SYNC_MESSAGE_ROUTED(msg_class, in, out) \
-  IPC_MESSAGE_DECL(msg_class, ROUTED, IPC_TUPLE in, IPC_TUPLE out)
 
 #define IPC_TUPLE(...) IPC::CheckedTuple<__VA_ARGS__>::Tuple
 
@@ -388,14 +384,6 @@
 #define IPC_MESSAGE_CONTROL5(msg, a, b, c, d, e) \
   IPC_MESSAGE_CONTROL(msg, a, b, c, d, e)
 
-#define IPC_MESSAGE_ROUTED0(msg) IPC_MESSAGE_ROUTED(msg)
-#define IPC_MESSAGE_ROUTED1(msg, a) IPC_MESSAGE_ROUTED(msg, a)
-#define IPC_MESSAGE_ROUTED2(msg, a, b) IPC_MESSAGE_ROUTED(msg, a, b)
-#define IPC_MESSAGE_ROUTED3(msg, a, b, c) IPC_MESSAGE_ROUTED(msg, a, b, c)
-#define IPC_MESSAGE_ROUTED4(msg, a, b, c, d) IPC_MESSAGE_ROUTED(msg, a, b, c, d)
-#define IPC_MESSAGE_ROUTED5(msg, a, b, c, d, e) \
-  IPC_MESSAGE_ROUTED(msg, a, b, c, d, e)
-
 #define IPC_SYNC_MESSAGE_CONTROL0_0(msg) IPC_SYNC_MESSAGE_CONTROL(msg, (), ())
 #define IPC_SYNC_MESSAGE_CONTROL0_1(msg, a) \
   IPC_SYNC_MESSAGE_CONTROL(msg, (), (a))
@@ -455,66 +443,6 @@
   IPC_SYNC_MESSAGE_CONTROL(msg, (a, b, c, d, e), (f, g, h))
 #define IPC_SYNC_MESSAGE_CONTROL5_4(msg, a, b, c, d, e, f, g, h, i) \
   IPC_SYNC_MESSAGE_CONTROL(msg, (a, b, c, d, e), (f, g, h, i))
-
-#define IPC_SYNC_MESSAGE_ROUTED0_0(msg) IPC_SYNC_MESSAGE_ROUTED(msg, (), ())
-#define IPC_SYNC_MESSAGE_ROUTED0_1(msg, a) IPC_SYNC_MESSAGE_ROUTED(msg, (), (a))
-#define IPC_SYNC_MESSAGE_ROUTED0_2(msg, a, b) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (), (a, b))
-#define IPC_SYNC_MESSAGE_ROUTED0_3(msg, a, b, c) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (), (a, b, c))
-#define IPC_SYNC_MESSAGE_ROUTED0_4(msg, a, b, c, d) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (), (a, b, c, d))
-#define IPC_SYNC_MESSAGE_ROUTED1_0(msg, a) IPC_SYNC_MESSAGE_ROUTED(msg, (a), ())
-#define IPC_SYNC_MESSAGE_ROUTED1_1(msg, a, b) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a), (b))
-#define IPC_SYNC_MESSAGE_ROUTED1_2(msg, a, b, c) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a), (b, c))
-#define IPC_SYNC_MESSAGE_ROUTED1_3(msg, a, b, c, d) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a), (b, c, d))
-#define IPC_SYNC_MESSAGE_ROUTED1_4(msg, a, b, c, d, e) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a), (b, c, d, e))
-#define IPC_SYNC_MESSAGE_ROUTED2_0(msg, a, b) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b), ())
-#define IPC_SYNC_MESSAGE_ROUTED2_1(msg, a, b, c) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b), (c))
-#define IPC_SYNC_MESSAGE_ROUTED2_2(msg, a, b, c, d) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b), (c, d))
-#define IPC_SYNC_MESSAGE_ROUTED2_3(msg, a, b, c, d, e) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b), (c, d, e))
-#define IPC_SYNC_MESSAGE_ROUTED2_4(msg, a, b, c, d, e, f) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b), (c, d, e, f))
-#define IPC_SYNC_MESSAGE_ROUTED3_0(msg, a, b, c) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), ())
-#define IPC_SYNC_MESSAGE_ROUTED3_1(msg, a, b, c, d) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d))
-#define IPC_SYNC_MESSAGE_ROUTED3_2(msg, a, b, c, d, e) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e))
-#define IPC_SYNC_MESSAGE_ROUTED3_3(msg, a, b, c, d, e, f) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f))
-#define IPC_SYNC_MESSAGE_ROUTED3_4(msg, a, b, c, d, e, f, g) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f, g))
-#define IPC_SYNC_MESSAGE_ROUTED3_5(msg, a, b, c, d, e, f, g, h) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f, g, h))
-#define IPC_SYNC_MESSAGE_ROUTED4_0(msg, a, b, c, d) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), ())
-#define IPC_SYNC_MESSAGE_ROUTED4_1(msg, a, b, c, d, e) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), (e))
-#define IPC_SYNC_MESSAGE_ROUTED4_2(msg, a, b, c, d, e, f) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), (e, f))
-#define IPC_SYNC_MESSAGE_ROUTED4_3(msg, a, b, c, d, e, f, g) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), (e, f, g))
-#define IPC_SYNC_MESSAGE_ROUTED4_4(msg, a, b, c, d, e, f, g, h) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), (e, f, g, h))
-#define IPC_SYNC_MESSAGE_ROUTED5_0(msg, a, b, c, d, e) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d, e), ())
-#define IPC_SYNC_MESSAGE_ROUTED5_1(msg, a, b, c, d, e, f) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d, e), (f))
-#define IPC_SYNC_MESSAGE_ROUTED5_2(msg, a, b, c, d, e, f, g) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d, e), (f, g))
-#define IPC_SYNC_MESSAGE_ROUTED5_3(msg, a, b, c, d, e, f, g, h) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d, e), (f, g, h))
-#define IPC_SYNC_MESSAGE_ROUTED5_4(msg, a, b, c, d, e, f, g, h, i) \
-  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d, e), (f, g, h, i))
 
 #endif  // IPC_IPC_MESSAGE_MACROS_H_
 

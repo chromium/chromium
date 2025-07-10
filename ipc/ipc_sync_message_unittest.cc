@@ -146,19 +146,6 @@ class TestMessageReceiver {
       IPC_MESSAGE_HANDLER(Msg_C_3_2, On_3_2)
       IPC_MESSAGE_HANDLER(Msg_C_3_3, On_3_3)
       IPC_MESSAGE_HANDLER(Msg_C_3_4, On_3_4)
-      IPC_MESSAGE_HANDLER(Msg_R_0_1, On_0_1)
-      IPC_MESSAGE_HANDLER(Msg_R_0_2, On_0_2)
-      IPC_MESSAGE_HANDLER(Msg_R_0_3, On_0_3)
-      IPC_MESSAGE_HANDLER(Msg_R_1_1, On_1_1)
-      IPC_MESSAGE_HANDLER(Msg_R_1_2, On_1_2)
-      IPC_MESSAGE_HANDLER(Msg_R_1_3, On_1_3)
-      IPC_MESSAGE_HANDLER(Msg_R_2_1, On_2_1)
-      IPC_MESSAGE_HANDLER(Msg_R_2_2, On_2_2)
-      IPC_MESSAGE_HANDLER(Msg_R_2_3, On_2_3)
-      IPC_MESSAGE_HANDLER(Msg_R_3_1, On_3_1)
-      IPC_MESSAGE_HANDLER(Msg_R_3_2, On_3_2)
-      IPC_MESSAGE_HANDLER(Msg_R_3_3, On_3_3)
-      IPC_MESSAGE_HANDLER(Msg_R_3_4, On_3_4)
     IPC_END_MESSAGE_MAP()
     return true;
   }
@@ -254,64 +241,6 @@ TEST(IPCSyncMessageTest, Main) {
   DCHECK(bool1);
   DCHECK_EQ("3_4", string1);
   DCHECK(!bool2);
-
-  // Routed messages, just a copy of the above but with extra routing paramater
-  Send(new Msg_R_0_1(0, &bool1));
-  DCHECK(!bool1);
-
-  Send(new Msg_R_0_2(0, &bool1, &int1));
-  DCHECK(bool1);
-  DCHECK_EQ(2, int1);
-
-  Send(new Msg_R_0_3(0, &bool1, &int1, &string1));
-  DCHECK(!bool1);
-  DCHECK_EQ(3, int1);
-  DCHECK_EQ("0_3", string1);
-
-  bool1 = false;
-  Send(new Msg_R_1_1(0, 1, &bool1));
-  DCHECK(bool1);
-
-  bool1 = false;
-  Send(new Msg_R_1_2(0, false, &bool1, &int1));
-  DCHECK(bool1);
-  DCHECK_EQ(12, int1);
-
-  bool1 = true;
-  Send(new Msg_R_1_3(0, 3, &string1, &int1, &bool1));
-  DCHECK_EQ("1_3", string1);
-  DCHECK_EQ(13, int1);
-  DCHECK(!bool1);
-
-  bool1 = false;
-  Send(new Msg_R_2_1(0, 1, false, &bool1));
-  DCHECK(bool1);
-
-  bool1 = false;
-  Send(new Msg_R_2_2(0, false, 2, &bool1, &int1));
-  DCHECK(bool1);
-  DCHECK_EQ(22, int1);
-
-  bool1 = true;
-  Send(new Msg_R_2_3(0, 3, true, &string1, &int1, &bool1));
-  DCHECK(!bool1);
-  DCHECK_EQ("2_3", string1);
-  DCHECK_EQ(23, int1);
-
-  bool1 = false;
-  Send(new Msg_R_3_1(0, 1, false, "3_1", &bool1));
-  DCHECK(bool1);
-
-  bool1 = false;
-  Send(new Msg_R_3_2(0, "3_2", false, 2, &bool1, &int1));
-  DCHECK(bool1);
-  DCHECK_EQ(32, int1);
-
-  bool1 = true;
-  Send(new Msg_R_3_3(0, 3, "3_3", true, &string1, &int1, &bool1));
-  DCHECK_EQ("3_3", string1);
-  DCHECK_EQ(33, int1);
-  DCHECK(!bool1);
 }
 
 }  // namespace
