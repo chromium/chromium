@@ -4470,9 +4470,6 @@ extern const char kNearbyPresenceDescription[];
 extern const char kNotificationsIgnoreRequireInteractionName[];
 extern const char kNotificationsIgnoreRequireInteractionDescription[];
 
-extern const char kOfflineItemsInNotificationsName[];
-extern const char kOfflineItemsInNotificationsDescription[];
-
 extern const char kOnDeviceAppControlsName[];
 extern const char kOnDeviceAppControlsDescription[];
 

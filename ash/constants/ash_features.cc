@@ -2032,11 +2032,6 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables showing OfflineItems in Notifications.
-BASE_FEATURE(kOfflineItemsInNotifications,
-             "OfflineItemsInNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -4143,10 +4138,6 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsNssDbClientCertsRollbackEnabled() {
   return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
-}
-
-bool IsOfflineItemsInNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kOfflineItemsInNotifications);
 }
 
 bool AreOngoingProcessesEnabled() {

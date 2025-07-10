@@ -7623,12 +7623,6 @@ const char kNotificationsIgnoreRequireInteractionDescription[] =
     "Always timeout notifications, even if they are set with "
     "requireInteraction.";
 
-const char kOfflineItemsInNotificationsName[] =
-    "Background fetched items in Notifications";
-const char kOfflineItemsInNotificationsDescription[] =
-    "Show background fetched items in notifications instead of the download "
-    "shelf.";
-
 const char kOnDeviceAppControlsName[] = "On-device controls for apps";
 const char kOnDeviceAppControlsDescription[] =
     "Enables the on-device controls UI for blocking apps.";

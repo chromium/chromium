@@ -16,22 +16,14 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#endif
-
 using offline_items_collection::OfflineContentAggregator;
 using offline_items_collection::OfflineItemState;
 
 DownloadNotificationManager::DownloadNotificationManager(Profile* profile)
-    : profile_(profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::features::IsOfflineItemsInNotificationsEnabled()) {
-    aggregator_ =
-        OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
-    observation_.Observe(aggregator_.get());
-  }
-#endif
+    : profile_(profile),
+      aggregator_(OfflineContentAggregatorFactory::GetForKey(
+          profile_->GetProfileKey())) {
+  observation_.Observe(aggregator_.get());
 }
 
 DownloadNotificationManager::~DownloadNotificationManager() {
