@@ -725,6 +725,26 @@ TEST_P(PaintPropertyTreeBuilderTest,
       perspective_properties->Transform()->HasDirectCompositingReasons());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, SkipRenderSurfaceDueToPreserves3D) {
+  SetBodyInnerHTML(R"HTML(
+    <style> body { margin: 0 } </style>
+    <div id='target' style='transform: scale(0.5); transform-style: preserve-3d'>
+      <div></div>
+    </div>
+  )HTML");
+
+  EXPECT_FALSE(PaintPropertiesForElement("target")->Effect());
+
+  SetBodyInnerHTML(R"HTML(
+    <style> body { margin: 0 } </style>
+    <div id='target' style='transform: scale(0.5)'>
+      <div></div>
+    </div>
+  )HTML");
+
+  EXPECT_TRUE(PaintPropertiesForElement("target")->Effect());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest,
        TransformNodeWithActiveAnimationHasDirectCompositingReason) {
   LoadTestData("transform-animation.html");
