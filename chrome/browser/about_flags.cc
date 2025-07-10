@@ -1601,7 +1601,7 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kOmniboxToolbeltAggressive[] = {
     {"KeepToolbeltAfterInput", "true"}, {"AlwaysIncludeLensAction", "false"},
-    {"ShowAiSearchAction", "true"},     {"ShowLensAction", "true"},
+    {"ShowAiModeAction", "true"},       {"ShowLensAction", "true"},
     {"ShowBookmarksAction", "true"},    {"ShowTabsAction", "true"},
     {"ShowHistoryAction", "true"},
 };

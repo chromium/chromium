@@ -245,7 +245,7 @@ struct Toolbelt : Config<Toolbelt> {
 
   // Some of the variants we want to experiment with want a subset of actions.
   // For flexibility, may as well make all the actions finch params.
-  bool show_ai_search_action;
+  bool show_ai_mode_action;
   // Disabling `show_lens_action` takes precedence over
   // `always_include_lens_action`.
   bool show_lens_action;

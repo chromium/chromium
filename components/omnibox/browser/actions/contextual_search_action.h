@@ -88,4 +88,19 @@ class StarterPackTabsAction : public OmniboxAction {
   ~StarterPackTabsAction() override;
 };
 
+class StarterPackAiModeAction : public OmniboxAction {
+ public:
+  StarterPackAiModeAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override;
+#endif
+
+ protected:
+  ~StarterPackAiModeAction() override;
+};
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_CONTEXTUAL_SEARCH_ACTION_H_

@@ -33,13 +33,13 @@ enum class OmniboxActionId {
   CONTEXTUAL_SEARCH_OPEN_LENS,
 
   // Keyword mode entry actions for builtin keywords, a.k.a. starter packs.
-  // These are specified concretely instead of with one abstract keyword
-  // entry action because most of the implementation consists of specifying
-  // details like the labels, icons, etc. This also avoids the need for
-  // metric slicing.
+  // These are specified concretely instead of with one abstract keyword entry
+  // action because most of the implementation consists of specifying details
+  // like the labels, icons, etc. This also avoids the need for metric slicing.
   STARTER_PACK_BOOKMARKS,
   STARTER_PACK_HISTORY,
   STARTER_PACK_TABS,
+  STARTER_PACK_AI_MODE,
 
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
