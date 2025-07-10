@@ -808,14 +808,11 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   prefetch_request->url = kTestUrl;
   prefetch_request->method = "GET";
 
-  base::RunLoop on_receive_redirect_loop;
+  OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
   base::RunLoop on_follow_redirect_loop;
   base::RunLoop on_response_received_loop;
   base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
-
-  net::RedirectInfo redirect_info;
-  network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto redirect_response_reader =
@@ -836,8 +833,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
             on_response_complete_loop->Quit();
           },
           &on_response_complete_loop),
-      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                            &redirect_info, &redirect_head),
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect),
       GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       redirect_response_reader->GetWeakPtr());
 
@@ -848,7 +844,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // Simulate a redirect that should be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(kRedirectUrl,
                                               net::HTTP_PERMANENT_REDIRECT);
-  on_receive_redirect_loop.Run();
+  auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
@@ -972,11 +968,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   prefetch_request->url = kTestUrl;
   prefetch_request->method = "GET";
 
-  base::RunLoop on_receive_redirect_loop;
+  OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
   base::RunLoop on_head_received_loop;
-
-  net::RedirectInfo redirect_info;
-  network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
@@ -991,15 +984,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
           [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
           }),
-      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                            &redirect_info, &redirect_head),
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect),
       GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
                                               net::HTTP_PERMANENT_REDIRECT);
-  on_receive_redirect_loop.Run();
+  auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFail, redirect_info,
@@ -1033,10 +1025,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   prefetch_request->url = kTestUrl;
   prefetch_request->method = "GET";
 
-  base::RunLoop on_receive_redirect_loop;
-
-  net::RedirectInfo redirect_info;
-  network::mojom::URLResponseHeadPtr redirect_head;
+  OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
@@ -1051,8 +1040,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
           [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
           }),
-      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                            &redirect_info, &redirect_head),
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect),
       // When a redirect causes a change in network context, the
       // on_receive_head_callback_ is not called, and is passed to the
       // follow up PrefetchStreamingURLLoader that will follow the redirect
@@ -1063,7 +1051,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
                                               net::HTTP_PERMANENT_REDIRECT);
-  on_receive_redirect_loop.Run();
+  auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
   // Simulate an eligible redirect that requires a change in the network
   // context. When this happens the streaming_loader will stop the fetch, and a
@@ -1135,12 +1123,9 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   prefetch_request->url = kTestUrl;
   prefetch_request->method = "GET";
 
-  base::RunLoop on_receive_redirect_loop;
+  OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
   base::RunLoop on_head_received_loop;
   base::RunLoop on_deletion_scheduled_loop;
-
-  net::RedirectInfo redirect_info;
-  network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
@@ -1155,8 +1140,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
           [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
           }),
-      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                            &redirect_info, &redirect_head),
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect),
       GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
   streaming_loader->SetOnDeletionScheduledForTests(
@@ -1166,7 +1150,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   // loader needs to pause until the eligibility check is complete.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
                                               net::HTTP_PERMANENT_REDIRECT);
-  on_receive_redirect_loop.Run();
+  ASSERT_TRUE(on_receive_redirect.Wait());
 
   // Simulate the result of the eligibility check is done after the network URL
   // loader stops and before streaming loader is deleted.

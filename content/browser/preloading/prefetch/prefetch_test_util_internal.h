@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
@@ -45,10 +46,12 @@ network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container);
 
+using OnPrefetchReceiveRedirectTestFuture =
+    base::test::TestFuture<net::RedirectInfo,
+                           network::mojom::URLResponseHeadPtr>;
+
 OnPrefetchRedirectCallback CreatePrefetchRedirectCallbackForTest(
-    base::RunLoop* on_receive_redirect_loop,
-    net::RedirectInfo* out_redirect_info,
-    network::mojom::URLResponseHeadPtr* out_redirect_head);
+    OnPrefetchReceiveRedirectTestFuture* on_receive_redirect);
 
 void MakeServableStreamingURLLoaderWithRedirectForTest(
     PrefetchContainer* prefetch_container,
