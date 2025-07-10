@@ -284,6 +284,38 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
   return metadata;
 }
 
+std::vector<std::string_view> StartRecordRangeQuery(
+    std::string_view command,
+    const blink::IndexedDBKeyRange& key_range) {
+  std::vector<std::string_view> query_pieces{command};
+  query_pieces.push_back(
+      " FROM records"
+      " WHERE object_store_id = ?");
+  if (key_range.lower().IsValid()) {
+    query_pieces.push_back(key_range.lower_open() ? " AND key > ?"
+                                                  : " AND key >= ?");
+  }
+  if (key_range.upper().IsValid()) {
+    query_pieces.push_back(key_range.upper_open() ? " AND key < ?"
+                                                  : " AND key <= ?");
+  }
+  return query_pieces;
+}
+// Returns the next index for binding subsequent parameters.
+int BindRecordRangeQueryParams(sql::Statement& statement,
+                               int64_t object_store_id,
+                               const blink::IndexedDBKeyRange& key_range) {
+  int param_index = 0;
+  statement.BindInt64(param_index++, object_store_id);
+  if (key_range.lower().IsValid()) {
+    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
+  }
+  if (key_range.upper().IsValid()) {
+    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
+  }
+  return param_index;
+}
+
 class ObjectStoreRecordIterator : public RecordIterator {
  public:
   ObjectStoreRecordIterator(base::WeakPtr<DatabaseConnection> db, bool key_only)
@@ -300,17 +332,8 @@ class ObjectStoreRecordIterator : public RecordIterator {
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,
       bool ascending_order) {
-    std::vector<std::string_view> query_pieces{
-        "SELECT ", key_only_ ? "key" : "key, value, row_id",
-        " FROM records WHERE object_store_id = @object_store_id"};
-    if (key_range.lower().IsValid()) {
-      query_pieces.push_back(key_range.lower_open() ? " AND key > @lower"
-                                                    : " AND key >= @lower");
-    }
-    if (key_range.upper().IsValid()) {
-      query_pieces.push_back(key_range.upper_open() ? " AND key < @upper"
-                                                    : " AND key <= @upper");
-    }
+    std::vector<std::string_view> query_pieces = StartRecordRangeQuery(
+        key_only_ ? "SELECT key" : "SELECT key, value, row_id", key_range);
     if (ascending_order) {
       query_pieces.push_back(
           " AND (@is_first_seek = 1 OR key > @position)"
@@ -330,16 +353,8 @@ class ObjectStoreRecordIterator : public RecordIterator {
     sql::Statement* statement;
     std::tie(statement_id_, statement) =
         db_->CreateLongLivedStatement(base::StrCat(query_pieces));
-    int param_index = 0;
-    statement->BindInt64(param_index++, object_store_id);
-    if (key_range.lower().IsValid()) {
-      statement->BindBlob(param_index++,
-                          EncodeSortableIDBKey(key_range.lower()));
-    }
-    if (key_range.upper().IsValid()) {
-      statement->BindBlob(param_index++,
-                          EncodeSortableIDBKey(key_range.upper()));
-    }
+    int param_index =
+        BindRecordRangeQueryParams(*statement, object_store_id, key_range);
 
     // Store the variable parameter indexes and attempt to find the initial
     // record in the range.
@@ -1251,30 +1266,10 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 Status DatabaseConnection::DeleteRange(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range) {
-  // TODO(crbug.com/40253999): share code with GetObjectStoreKeyCount() and
-  // others.
-  std::vector<std::string_view> query_pieces{
-      "DELETE FROM records WHERE object_store_id = ?"};
-  if (key_range.lower().IsValid()) {
-    query_pieces.insert(
-        query_pieces.end(),
-        {" AND key ", key_range.lower_open() ? ">" : ">=", " ?"});
-  }
-  if (key_range.upper().IsValid()) {
-    query_pieces.insert(
-        query_pieces.end(),
-        {" AND key ", key_range.upper_open() ? "<" : "<=", " ?"});
-  }
-
+  std::vector<std::string_view> query_pieces =
+      StartRecordRangeQuery("DELETE", key_range);
   sql::Statement statement(db_->GetUniqueStatement(base::StrCat(query_pieces)));
-  int param_index = 0;
-  statement.BindInt64(param_index++, object_store_id);
-  if (key_range.lower().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
-  }
-  if (key_range.upper().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
-  }
+  BindRecordRangeQueryParams(statement, object_store_id, key_range);
   TRANSIENT_CHECK(statement.Run());
   return Status::OK();
 }
@@ -1293,29 +1288,13 @@ StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id,
     blink::IndexedDBKeyRange key_range) {
-  std::vector<std::string_view> query_pieces{
-      "SELECT COUNT() FROM records WHERE object_store_id = ?"};
-  if (key_range.lower().IsValid()) {
-    query_pieces.push_back(key_range.lower_open() ? " AND key > ?"
-                                                  : " AND key >= ?");
-  }
-  if (key_range.upper().IsValid()) {
-    query_pieces.push_back(key_range.upper_open() ? " AND key < ?"
-                                                  : " AND key <= ?");
-  }
-
+  std::vector<std::string_view> query_pieces =
+      StartRecordRangeQuery("SELECT COUNT()", key_range);
   // TODO(crbug.com/40253999): Evaluate performance benefit of using
   // `GetCachedStatement()` instead.
   sql::Statement statement(
       db_->GetReadonlyStatement(base::StrCat(query_pieces)));
-  int param_index = 0;
-  statement.BindInt64(param_index++, object_store_id);
-  if (key_range.lower().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
-  }
-  if (key_range.upper().IsValid()) {
-    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
-  }
+  BindRecordRangeQueryParams(statement, object_store_id, key_range);
   TRANSIENT_CHECK(statement.Step());
   return statement.ColumnInt(0);
 }
