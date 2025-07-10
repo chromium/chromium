@@ -31,6 +31,8 @@ class HomeAndWorkMetadataStoreTest : public testing::Test {
 
   PrefService* pref_service() { return prefs_.get(); }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -133,6 +135,35 @@ TEST_F(HomeAndWorkMetadataStoreTest, MetadataChangeThroughSync) {
   HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
   EXPECT_CALL(on_change, Run());
   pref_service()->SetDict(prefs::kAutofillHomeMetadata, base::DictValue());
+}
+
+// Tests that for H/W addresses, metadata is default initialized to boost it
+// above other addresses in terms of frecency.
+TEST_F(HomeAndWorkMetadataStoreTest, DefaultValues) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), base::DoNothing());
+  AutofillProfile home = test::GetFullProfile();
+  test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile work = test::GetFullProfile();
+  test_api(work).set_record_type(AutofillProfile::RecordType::kAccountWork);
+  AutofillProfile other = test::GetFullCanadianProfile();
+  other.usage_history().set_use_count(123);
+  task_environment().FastForwardBy(base::Minutes(2));
+
+  std::vector<AutofillProfile> profiles =
+      metadata_store.ApplyMetadata({home, work, other});
+  // Note that `AutofillProfile::operator==` doesn't compare usage information.
+  ASSERT_THAT(profiles, testing::ElementsAre(home, work, other));
+  base::Time comparison_time = base::Time::Now();
+  EXPECT_TRUE(profiles[0].HasGreaterRankingThan(&profiles[1], comparison_time));
+  EXPECT_TRUE(profiles[1].HasGreaterRankingThan(&profiles[2], comparison_time));
+
+  // Further calls of `ApplyMetadata()` shouldn't boost H/W. By using the
+  // `other` addresses sufficiently often, it becomes the top ranked address.
+  other.usage_history().set_use_count(321);
+  profiles = metadata_store.ApplyMetadata({home, work, other});
+  ASSERT_THAT(profiles, testing::ElementsAre(home, work, other));
+  EXPECT_TRUE(profiles[0].HasGreaterRankingThan(&profiles[1], comparison_time));
+  EXPECT_TRUE(profiles[2].HasGreaterRankingThan(&profiles[0], comparison_time));
 }
 
 }  // namespace

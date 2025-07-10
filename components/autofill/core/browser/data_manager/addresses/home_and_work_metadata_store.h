@@ -59,8 +59,10 @@ class HomeAndWorkMetadataStore {
   // Applies any metadata stored to all Home and Work profiles in `profiles`.
   // If the address was removed from Chrome, it is dropped.
   // Non Home and Work profiles are returned unmodified.
+  // Conceptually const, but during the initial integration, this populates H/W
+  // metadata with default values.
   std::vector<AutofillProfile> ApplyMetadata(
-      std::vector<AutofillProfile> profiles) const;
+      std::vector<AutofillProfile> profiles);
 
   // Persists the `change` in prefs, if it applies to a Home and Work profile.
   void ApplyChange(const AutofillProfileChange& change);
@@ -68,7 +70,10 @@ class HomeAndWorkMetadataStore {
  private:
   // Applies metadata to a single profile, returning the modified profile.
   // If the profile was removed from Chrome, nullopt is returned.
-  std::optional<AutofillProfile> ApplyMetadata(AutofillProfile profiles) const;
+  // If there is no metadata for the profile, it is initialized to defaults,
+  // ranking H/W above other addresses based on `max_use_count`.
+  std::optional<AutofillProfile> ApplyMetadata(AutofillProfile profiles,
+                                               int max_use_count);
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar change_registrar_;

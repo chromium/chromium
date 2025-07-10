@@ -54,7 +54,12 @@ HomeAndWorkMetadataStore::HomeAndWorkMetadataStore(
 }
 
 std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
-    std::vector<AutofillProfile> profiles) const {
+    std::vector<AutofillProfile> profiles) {
+  size_t max_use_count = 0;
+  for (const AutofillProfile& profile : profiles) {
+    max_use_count =
+        std::max(max_use_count, profile.usage_history().use_count());
+  }
   std::vector<AutofillProfile> result;
   result.reserve(profiles.size());
   for (AutofillProfile& profile : profiles) {
@@ -63,7 +68,7 @@ std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
       continue;
     }
     if (std::optional<AutofillProfile> modified_profile =
-            ApplyMetadata(std::move(profile))) {
+            ApplyMetadata(std::move(profile), max_use_count)) {
       result.push_back(std::move(*modified_profile));
     }
   }
@@ -71,12 +76,20 @@ std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
 }
 
 std::optional<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
-    AutofillProfile profile) const {
-  const base::DictValue& metadata =
-      pref_service_->GetDict(GetPrefName(profile.record_type()));
-  // TODO(crbug.com/354706653): Handle the case where metadata.empty() and set
-  // the pref to default values for the initial integration, so it is ranked
-  // above other profiles.
+    AutofillProfile profile,
+    int max_use_count) {
+  const std::string_view pref_name = GetPrefName(profile.record_type());
+  if (pref_service_->GetDict(pref_name).empty()) {
+    base::DictValue defaults;
+    // Like all new address, set the last use date to the current time.
+    defaults.Set(kLastUseDate, base::TimeToValue(base::Time::Now()));
+    // Boost the use count to rank Home > Work > other addresses.
+    defaults.Set(kUseCount,
+                 max_use_count + (profile.record_type() ==
+                                  AutofillProfile::RecordType::kAccountHome));
+    pref_service_->SetDict(pref_name, std::move(defaults));
+  }
+  const base::DictValue& metadata = pref_service_->GetDict(pref_name);
   UsageHistoryInformation& usage = profile.usage_history();
   const base::Value* removal_date = metadata.Find(kRemovalModificationDate);
   if (removal_date &&
