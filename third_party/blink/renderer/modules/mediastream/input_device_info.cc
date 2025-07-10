@@ -12,11 +12,13 @@
 #include "media/webrtc/constants.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
@@ -95,7 +97,10 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
   capabilities->setGroupId(groupId());
 
   if (DeviceType() == mojom::blink::MediaDeviceType::kMediaAudioInput) {
-    capabilities->setEchoCancellation({true, false});
+    capabilities->setEchoCancellation(
+        {MakeGarbageCollected<V8UnionBooleanOrString>(true),
+         MakeGarbageCollected<V8UnionBooleanOrString>(false)});
+
     capabilities->setAutoGainControl({true, false});
     capabilities->setNoiseSuppression({true, false});
     capabilities->setVoiceIsolation({true, false});

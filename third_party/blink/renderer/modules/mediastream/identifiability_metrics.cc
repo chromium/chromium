@@ -5,10 +5,13 @@
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_or_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
@@ -19,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_mediatrackconstraints.h"
@@ -189,6 +193,58 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainPoint2D* p) {
     }
     case V8ConstrainPoint2D::ContentType::kPoint2DSequence:
       return Visit(builder, p->GetAsPoint2DSequence());
+  }
+  NOTREACHED();
+}
+
+void Visit(IdentifiableTokenBuilder& builder, const V8UnionBooleanOrString* s) {
+  if (!s) {
+    builder.AddToken(IdentifiableToken());
+    return;
+  }
+  switch (s->GetContentType()) {
+    case blink::V8UnionBooleanOrString::ContentType::kBoolean: {
+      builder.AddToken(s->GetAsBoolean());
+      return;
+    }
+    case blink::V8UnionBooleanOrString::ContentType::kString: {
+      builder.AddToken(IdentifiabilityBenignStringToken(s->GetAsString()));
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
+void Visit(
+    IdentifiableTokenBuilder& builder,
+    const V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString* s) {
+  if (!s) {
+    builder.AddToken(IdentifiableToken());
+    return;
+  }
+  switch (s->GetContentType()) {
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kBoolean: {
+      builder.AddToken(s->GetAsBoolean());
+      return;
+    }
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kConstrainBooleanOrDOMStringParameters: {
+      ConstrainBooleanOrDOMStringParameters* boolean_or_dom_string =
+          s->GetAsConstrainBooleanOrDOMStringParameters();
+      if (boolean_or_dom_string->hasExact()) {
+        Visit(builder, boolean_or_dom_string->exact());
+      }
+      if (boolean_or_dom_string->hasIdeal()) {
+        Visit(builder, boolean_or_dom_string->ideal());
+      }
+      return;
+    }
+    case V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString::
+        ContentType::kString: {
+      builder.AddToken(IdentifiabilityBenignStringToken(s->GetAsString()));
+      return;
+    }
   }
   NOTREACHED();
 }

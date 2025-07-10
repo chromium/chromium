@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -117,7 +118,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     return platform_source_.get();
   }
 
-  void SetAudioProcessingProperties(bool echo_cancellation,
+  void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation,
                                     bool auto_gain_control,
                                     bool noise_supression,
                                     bool voice_isolation);
@@ -125,13 +126,15 @@ class PLATFORM_EXPORT MediaStreamSource final
   void GetSettings(MediaStreamTrackPlatform::Settings&);
 
   struct Capabilities {
-    // Vector is used to store an optional range for the below numeric
-    // fields. All of them should have 0 or 2 values representing min/max.
+    // Vector is used to store an optional range for the below fields.
+    // Numeric fields should have 0 or 2 values representing min/max.
+    // Boolean or enum fields can have 0 or more entries representing supported
+    // values.
     Vector<uint32_t> width;
     Vector<uint32_t> height;
     Vector<double> aspect_ratio;
     Vector<double> frame_rate;
-    Vector<bool> echo_cancellation;
+    Vector<EchoCancellationMode> echo_cancellation;
     Vector<bool> auto_gain_control;
     Vector<bool> noise_suppression;
     Vector<bool> voice_isolation;
@@ -179,7 +182,7 @@ class PLATFORM_EXPORT MediaStreamSource final
   HeapHashSet<WeakMember<Observer>> observers_;
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
-  std::optional<bool> echo_cancellation_;
+  std::optional<EchoCancellationMode> echo_cancellation_;
   std::optional<bool> auto_gain_control_;
   std::optional<bool> noise_supression_;
   std::optional<bool> voice_isolation_;

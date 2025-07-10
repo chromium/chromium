@@ -9,7 +9,7 @@ dictionary MediaTrackCapabilities {
     DoubleRange frameRate;
     sequence<DOMString> facingMode;
     sequence<DOMString> resizeMode;
-    sequence<boolean> echoCancellation;
+    sequence<(boolean or DOMString)> echoCancellation;
     sequence<boolean> autoGainControl;
     sequence<boolean> noiseSuppression;
     sequence<boolean> voiceIsolation;

@@ -150,8 +150,12 @@ bool RequestUsesDiscreteConstraint(
           StringConstraint MediaTrackConstraintSetPlatform::*>::value ||
           std::is_same<
               decltype(field),
-              BooleanConstraint MediaTrackConstraintSetPlatform::*>::value,
-      "Must use StringConstraint or BooleanConstraint");
+              BooleanConstraint MediaTrackConstraintSetPlatform::*>::value ||
+          std::is_same<decltype(field),
+                       BooleanOrStringConstraint
+                           MediaTrackConstraintSetPlatform::*>::value,
+      "Must use StringConstraint, BooleanConstraint or "
+      "BooleanOrStringConstraint");
   if (SetUsesDiscreteConstraint(constraints.Basic(), field))
     return true;
   for (const auto& advanced_set : constraints.Advanced()) {

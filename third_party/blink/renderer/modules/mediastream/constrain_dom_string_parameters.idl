@@ -8,3 +8,8 @@ dictionary ConstrainDOMStringParameters {
     (DOMString or sequence<DOMString>) exact;
     (DOMString or sequence<DOMString>) ideal;
 };
+
+dictionary ConstrainBooleanOrDOMStringParameters {
+    (boolean or DOMString) exact;
+    (boolean or DOMString) ideal;
+};

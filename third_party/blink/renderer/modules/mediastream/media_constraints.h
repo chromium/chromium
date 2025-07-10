@@ -259,6 +259,59 @@ class MODULES_EXPORT BooleanConstraint : public BaseConstraint {
   unsigned has_exact_ : 1;
 };
 
+class MODULES_EXPORT BooleanOrStringConstraint : public BaseConstraint {
+ public:
+  explicit BooleanOrStringConstraint(const char* name);
+
+  bool HasExactBoolean() const { return has_exact_boolean_; }
+  bool ExactBoolean() const { return exact_boolean_; }
+  bool HasIdealBoolean() const { return has_ideal_boolean_; }
+  bool IdealBoolean() const { return ideal_boolean_; }
+
+  void SetExactBoolean(bool value) {
+    exact_boolean_ = value;
+    has_exact_boolean_ = true;
+  }
+
+  void SetIdealBoolean(bool value) {
+    ideal_boolean_ = value;
+    has_ideal_boolean_ = true;
+  }
+
+  bool HasExactString() const { return has_exact_string_; }
+  String ExactString() const { return exact_string_; }
+  bool HasIdealString() const { return has_ideal_string_; }
+  String IdealString() const { return ideal_string_; }
+
+  void SetExactString(const String& value) {
+    exact_string_ = value;
+    has_exact_string_ = true;
+  }
+
+  void SetIdealString(const String& value) {
+    ideal_string_ = value;
+    has_ideal_string_ = true;
+  }
+
+  // BaseConstraint overrides
+  bool HasExact() const override;
+  bool IsUnconstrained() const override;
+  void ResetToUnconstrained() override;
+  String ToString() const override;
+
+  bool HasIdeal() const;
+
+ private:
+  unsigned exact_boolean_ : 1 = false;
+  unsigned ideal_boolean_ : 1 = false;
+  unsigned has_exact_boolean_ : 1 = false;
+  unsigned has_ideal_boolean_ : 1 = false;
+  unsigned has_exact_string_ : 1 = false;
+  unsigned has_ideal_string_ : 1 = false;
+  String exact_string_;
+  String ideal_string_;
+};
+
 struct MediaTrackConstraintSetPlatform {
  public:
   MODULES_EXPORT MediaTrackConstraintSetPlatform();
@@ -272,7 +325,7 @@ struct MediaTrackConstraintSetPlatform {
   DoubleConstraint volume;
   LongConstraint sample_rate;
   LongConstraint sample_size;
-  BooleanConstraint echo_cancellation;
+  BooleanOrStringConstraint echo_cancellation;
   BooleanConstraint auto_gain_control;
   BooleanConstraint noise_suppression;
   BooleanConstraint voice_isolation;

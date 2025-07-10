@@ -26,14 +26,14 @@ MediaConstraints MockConstraintFactory::CreateMediaConstraints() const {
 }
 
 void MockConstraintFactory::DisableDefaultAudioConstraints() {
-  basic_.echo_cancellation.SetExact(false);
+  basic_.echo_cancellation.SetExactBoolean(false);
   basic_.auto_gain_control.SetExact(false);
   basic_.noise_suppression.SetExact(false);
   basic_.voice_isolation.SetExact(false);
 }
 
 void MockConstraintFactory::DisableAecAudioConstraints() {
-  basic_.echo_cancellation.SetExact(false);
+  basic_.echo_cancellation.SetExactBoolean(false);
 }
 
 void MockConstraintFactory::Reset() {

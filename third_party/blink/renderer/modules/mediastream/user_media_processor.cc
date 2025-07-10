@@ -208,9 +208,11 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
     CHECK(properties);
 
     source->SetAudioProcessingProperties(
-        properties->echo_cancellation_type !=
-            AudioProcessingProperties::EchoCancellationType::
-                kEchoCancellationDisabled,
+        properties->echo_cancellation_type ==
+                AudioProcessingProperties::EchoCancellationType::
+                    kEchoCancellationDisabled
+            ? EchoCancellationMode::kDisabled
+            : EchoCancellationMode::kBrowserDecides,
         properties->auto_gain_control, properties->noise_suppression,
         properties->voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
@@ -225,8 +227,10 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
     // cancellation or voice. Surface that if it does.
     media::AudioParameters params = source_impl->GetAudioParameters();
     source->SetAudioProcessingProperties(
-        params.IsValid() &&
-            (params.effects() & media::AudioParameters::ECHO_CANCELLER),
+        (params.IsValid() &&
+                 (params.effects() & media::AudioParameters::ECHO_CANCELLER)
+             ? EchoCancellationMode::kBrowserDecides
+             : EchoCancellationMode::kDisabled),
         false, false,
         params.IsValid() &&
             (params.effects() &
@@ -1793,7 +1797,8 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 #endif  // DCHECK_IS_ON()
 
   MediaStreamSource::Capabilities capabilities;
-  capabilities.echo_cancellation = {true, false};
+  capabilities.echo_cancellation = {EchoCancellationMode::kDisabled,
+                                    EchoCancellationMode::kBrowserDecides};
   capabilities.auto_gain_control = {true, false};
   capabilities.noise_suppression = {true, false};
   capabilities.voice_isolation = {true, false};

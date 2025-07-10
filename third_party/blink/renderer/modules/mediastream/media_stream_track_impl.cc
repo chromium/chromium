@@ -29,6 +29,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -77,6 +80,19 @@
 namespace blink {
 
 namespace {
+
+V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
+    EchoCancellationMode mode) {
+  switch (mode) {
+    case EchoCancellationMode::kDisabled:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(false);
+    case EchoCancellationMode::kBrowserDecides:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(true);
+    case EchoCancellationMode::kRemoteOnly:
+    case EchoCancellationMode::kAll:
+      NOTREACHED();
+  }
+}
 
 // The set of constrainable properties for image capture is available at
 // https://w3c.github.io/mediacapture-image/#constrainable-properties
@@ -485,12 +501,13 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
   }
 
   if (component_->GetSourceType() == MediaStreamSource::kTypeAudio) {
-    Vector<bool> echo_cancellation, auto_gain_control, noise_suppression,
-        voice_isolation, restrict_own_audio;
-    for (bool value : platform_capabilities.echo_cancellation) {
-      echo_cancellation.push_back(value);
+    HeapVector<Member<V8UnionBooleanOrString>> echo_cancellation;
+    for (EchoCancellationMode value : platform_capabilities.echo_cancellation) {
+      echo_cancellation.push_back(EchoCancellationModeToBooleanOrString(value));
     }
     capabilities->setEchoCancellation(echo_cancellation);
+    Vector<bool> auto_gain_control, noise_suppression, voice_isolation,
+        restrict_own_audio;
     for (bool value : platform_capabilities.auto_gain_control) {
       auto_gain_control.push_back(value);
     }
@@ -655,7 +672,9 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   }
 
   if (platform_settings.echo_cancellation) {
-    settings->setEchoCancellation(*platform_settings.echo_cancellation);
+    auto* echo_cancellation = EchoCancellationModeToBooleanOrString(
+        *platform_settings.echo_cancellation);
+    settings->setEchoCancellation(echo_cancellation);
   }
   if (platform_settings.auto_gain_control) {
     settings->setAutoGainControl(*platform_settings.auto_gain_control);

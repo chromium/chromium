@@ -13,7 +13,7 @@ dictionary MediaTrackSettings {
     DOMString resizeMode;
     long sampleRate;
     long sampleSize;
-    boolean echoCancellation;
+    (boolean or DOMString) echoCancellation;
     boolean autoGainControl;
     boolean noiseSuppression;
     boolean voiceIsolation;

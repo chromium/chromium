@@ -50,19 +50,27 @@ namespace {
 using BoolSetFunction = void (blink::BooleanConstraint::*)(bool);
 using StringSetFunction =
     void (blink::StringConstraint::*)(const blink::WebString&);
+using BoolOrStringSetBooleanFunction =
+    void (blink::BooleanOrStringConstraint::*)(bool);
 using MockFactoryAccessor =
     MediaTrackConstraintSetPlatform& (blink::MockConstraintFactory::*)();
 
-const BoolSetFunction kBoolSetFunctions[] = {
+const std::array<BoolSetFunction, 2> kBoolSetFunctions = {
     &blink::BooleanConstraint::SetExact,
     &blink::BooleanConstraint::SetIdeal,
 };
 
-const MockFactoryAccessor kFactoryAccessors[] = {
+const std::array<BoolOrStringSetBooleanFunction, 2>
+    kBoolOrStringSetBooleanFunctions = {
+        &blink::BooleanOrStringConstraint::SetExactBoolean,
+        &blink::BooleanOrStringConstraint::SetIdealBoolean,
+};
+
+const std::array<MockFactoryAccessor, 2> kFactoryAccessors = {
     &blink::MockConstraintFactory::basic,
     &blink::MockConstraintFactory::AddAdvanced};
 
-const bool kBoolValues[] = {true, false};
+const std::array<bool, 2> kBoolValues = {true, false};
 
 const int kMinChannels = 1;
 
@@ -336,21 +344,21 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
                               double max_latency) {
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetExact(0.0);
     auto result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetMin(max_latency + 0.001);
     result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetMax(min_latency - 0.001);
     result = SelectSettings();
     EXPECT_FALSE(result.HasValue());
@@ -367,7 +375,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
       int expected_buffer_size) {
     constraint_factory_.Reset();
     constraint_factory_.basic().device_id.SetExact(device->DeviceID());
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
     constraint_factory_.basic().latency.SetIdeal(requested_latency);
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
@@ -803,7 +811,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
 
   ResetFactory();
   constraint_factory_.basic().device_id.SetExact("default_device");
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   EXPECT_EQ(result.device_id(), "default_device");
@@ -1278,12 +1286,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExactGroupID) {
 // Tests the echoCancellation constraint with a device without system echo
 // cancellation.
 TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
-  for (auto set_function : kBoolSetFunctions) {
+  for (auto set_function : kBoolOrStringSetBooleanFunctions) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
+      if (set_function == kBoolOrStringSetBooleanFunctions[1] &&
           accessor == kFactoryAccessors[1]) {
         continue;
       }
@@ -1333,12 +1341,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
   if (!IsDeviceCapture())
     return;
 
-  for (auto set_function : kBoolSetFunctions) {
+  for (auto set_function : kBoolOrStringSetBooleanFunctions) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
+      if (set_function == kBoolOrStringSetBooleanFunctions[1] &&
           accessor == kFactoryAccessors[1]) {
         continue;
       }
@@ -1387,22 +1395,25 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
 
   ASSERT_EQ(GetAudioProcessingProperties().size(),
             kAudioProcessingConstraints.size());
-  for (auto set_function : kBoolSetFunctions) {
+  for (size_t function_idx = 0; function_idx < kBoolSetFunctions.size();
+       ++function_idx) {
     for (auto accessor : kFactoryAccessors) {
       // Ideal advanced is ignored by the SelectSettings algorithm.
       // Using array elements instead of pointer values due to the comparison
       // failing on some build configurations.
-      if (set_function == kBoolSetFunctions[1] &&
-          accessor == kFactoryAccessors[1]) {
+      if (function_idx == 1 && accessor == kFactoryAccessors[1]) {
         continue;
       }
+      auto set_bool_function = kBoolSetFunctions[function_idx];
+      auto set_bool_or_string_function =
+          kBoolOrStringSetBooleanFunctions[function_idx];
       for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
            ++i) {
         ResetFactory();
         ((constraint_factory_.*accessor)().echo_cancellation.*
-         set_function)(false);
+         set_bool_or_string_function)(false);
         (((constraint_factory_.*accessor)().*kAudioProcessingConstraints[i]).*
-         set_function)(true);
+         set_bool_function)(true);
         auto result = SelectSettings();
         EXPECT_TRUE(result.HasValue());
         CheckProcessingType(result);
@@ -1447,14 +1458,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.Reset();
   constraint_factory_.basic().device_id.SetExact(
       system_echo_canceller_with_source->DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   auto result = SelectSettings(true, capabilities);
   EXPECT_TRUE(result.HasValue());
 
   constraint_factory_.Reset();
   constraint_factory_.basic().device_id.SetExact(
       system_echo_canceller_with_source->DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExact(false);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
   result = SelectSettings(true, capabilities);
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS supports reopening a device with a different system AEC setting.
@@ -1576,7 +1587,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithNoAudioProcessing) {
     const WTF::Vector<
         blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kConstraints = {
-            &MediaTrackConstraintSetPlatform::echo_cancellation,
             &MediaTrackConstraintSetPlatform::disable_local_echo,
             &MediaTrackConstraintSetPlatform::render_to_associated_sink,
         };
@@ -1674,7 +1684,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
 
     // Test same as above but for echo cancellation.
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
         properties.echo_cancellation_type ==
         EchoCancellationType::kEchoCancellationAec3);
     auto result = SelectSettingsAudioCapture(
@@ -1682,7 +1692,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
         properties.echo_cancellation_type !=
         EchoCancellationType::kEchoCancellationAec3);
     result = SelectSettingsAudioCapture(
@@ -1690,13 +1700,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(false);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
@@ -1739,25 +1749,26 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
 
     // Test same as above for echo cancellation.
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(use_defaults);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(use_defaults);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(!use_defaults);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(
+        !use_defaults);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_FALSE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
 
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetIdeal(false);
+    constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
     result = SelectSettingsAudioCapture(
         source.get(), constraint_factory_.CreateMediaConstraints());
     EXPECT_TRUE(result.HasValue());
@@ -1784,7 +1795,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
 
   {
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(false);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
 
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
@@ -1798,7 +1809,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
 
   {
     constraint_factory_.Reset();
-    constraint_factory_.basic().echo_cancellation.SetExact(true);
+    constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
         GetMediaStreamType(),
@@ -1848,7 +1859,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
       media::AudioParameters::kAudioCDSampleRate);
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
 
   EXPECT_FALSE(result.HasValue());
@@ -1862,7 +1873,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
       media::WebRtcAudioProcessingSampleRateHz());
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   result = SelectSettings();
 
   EXPECT_TRUE(result.HasValue());

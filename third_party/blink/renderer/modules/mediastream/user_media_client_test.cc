@@ -1275,7 +1275,7 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
   factory.basic().disable_local_echo.SetExact(true);
   factory.basic().render_to_associated_sink.SetExact(true);
-  factory.basic().echo_cancellation.SetExact(false);
+  factory.basic().echo_cancellation.SetExactBoolean(false);
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
   // Request contains only audio
   UserMediaRequest* request =

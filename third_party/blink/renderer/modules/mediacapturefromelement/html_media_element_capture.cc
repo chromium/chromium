@@ -123,7 +123,7 @@ void CreateHTMLAudioElementCapturer(
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = track_id;
-  capabilities.echo_cancellation.emplace_back(false);
+  capabilities.echo_cancellation.emplace_back(EchoCancellationMode::kDisabled);
   capabilities.auto_gain_control.emplace_back(false);
   capabilities.noise_suppression.emplace_back(false);
   capabilities.voice_isolation.emplace_back(false);

@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -168,10 +169,11 @@ void MediaStreamSource::AddObserver(MediaStreamSource::Observer* observer) {
   observers_.insert(observer);
 }
 
-void MediaStreamSource::SetAudioProcessingProperties(bool echo_cancellation,
-                                                     bool auto_gain_control,
-                                                     bool noise_supression,
-                                                     bool voice_isolation) {
+void MediaStreamSource::SetAudioProcessingProperties(
+    EchoCancellationMode echo_cancellation,
+    bool auto_gain_control,
+    bool noise_supression,
+    bool voice_isolation) {
   SendLogMessage(
       String::Format("%s({echo_cancellation=%d}, {auto_gain_control=%d}, "
                      "{noise_supression=%d}, {voice_isolation=%d})",

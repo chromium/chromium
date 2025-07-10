@@ -43,10 +43,10 @@ namespace blink {
 namespace {
 
 template <typename T>
-void MaybeEmitNamedValue(StringBuilder& builder,
-                         bool emit,
-                         const char* name,
-                         T value) {
+void MaybeEmitNamedNumber(StringBuilder& builder,
+                          bool emit,
+                          const char* name,
+                          T value) {
   if (!emit) {
     return;
   }
@@ -56,6 +56,22 @@ void MaybeEmitNamedValue(StringBuilder& builder,
   builder.Append(name);
   builder.Append(": ");
   builder.AppendNumber(value);
+}
+
+template <typename T>
+void MaybeEmitNamedString(StringBuilder& builder,
+                          bool emit,
+                          const char* name,
+                          T value) {
+  if (!emit) {
+    return;
+  }
+  if (builder.length() > 1) {
+    builder.Append(", ");
+  }
+  builder.Append(name);
+  builder.Append(": ");
+  builder.Append(value);
 }
 
 void MaybeEmitNamedBoolean(StringBuilder& builder,
@@ -210,10 +226,10 @@ void LongConstraint::ResetToUnconstrained() {
 String LongConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
-  MaybeEmitNamedValue(builder, has_min_, "min", min_);
-  MaybeEmitNamedValue(builder, has_max_, "max", max_);
-  MaybeEmitNamedValue(builder, has_exact_, "exact", exact_);
-  MaybeEmitNamedValue(builder, has_ideal_, "ideal", ideal_);
+  MaybeEmitNamedNumber(builder, has_min_, "min", min_);
+  MaybeEmitNamedNumber(builder, has_max_, "max", max_);
+  MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
+  MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
   return builder.ToString();
 }
@@ -256,10 +272,10 @@ void DoubleConstraint::ResetToUnconstrained() {
 String DoubleConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
-  MaybeEmitNamedValue(builder, has_min_, "min", min_);
-  MaybeEmitNamedValue(builder, has_max_, "max", max_);
-  MaybeEmitNamedValue(builder, has_exact_, "exact", exact_);
-  MaybeEmitNamedValue(builder, has_ideal_, "ideal", ideal_);
+  MaybeEmitNamedNumber(builder, has_min_, "min", min_);
+  MaybeEmitNamedNumber(builder, has_max_, "max", max_);
+  MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
+  MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
   return builder.ToString();
 }
@@ -415,6 +431,36 @@ String BooleanConstraint::ToString() const {
   builder.Append('{');
   MaybeEmitNamedBoolean(builder, has_exact_, "exact", Exact());
   MaybeEmitNamedBoolean(builder, has_ideal_, "ideal", Ideal());
+  builder.Append('}');
+  return builder.ToString();
+}
+
+BooleanOrStringConstraint::BooleanOrStringConstraint(const char* name)
+    : BaseConstraint(name) {}
+
+bool BooleanOrStringConstraint::HasExact() const {
+  return HasExactBoolean() || HasExactString();
+}
+
+bool BooleanOrStringConstraint::HasIdeal() const {
+  return HasIdealBoolean() || HasIdealString();
+}
+
+bool BooleanOrStringConstraint::IsUnconstrained() const {
+  return !HasExact() && !HasIdeal();
+}
+
+void BooleanOrStringConstraint::ResetToUnconstrained() {
+  *this = BooleanOrStringConstraint(GetName());
+}
+
+String BooleanOrStringConstraint::ToString() const {
+  StringBuilder builder;
+  builder.Append('{');
+  MaybeEmitNamedBoolean(builder, HasExactBoolean(), "exact", ExactBoolean());
+  MaybeEmitNamedString(builder, HasExactString(), "exact", ExactString());
+  MaybeEmitNamedBoolean(builder, HasIdealBoolean(), "ideal", IdealBoolean());
+  MaybeEmitNamedString(builder, HasIdealString(), "exact", IdealString());
   builder.Append('}');
   return builder.ToString();
 }

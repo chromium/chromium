@@ -16,6 +16,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,7 +52,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     String group_id;
     FacingMode facing_mode = FacingMode::kNone;
     String resize_mode;
-    std::optional<bool> echo_cancellation;
+    std::optional<EchoCancellationMode> echo_cancellation;
     std::optional<bool> auto_gain_control;
     std::optional<bool> noise_supression;
     std::optional<bool> voice_isolation;

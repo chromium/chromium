@@ -5,10 +5,13 @@
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_or_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanordomstringparameters_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -76,7 +79,7 @@ TEST(MediaTrackConstraintsTest, ConstraintSetEmpty) {
   test::TaskEnvironment task_environment;
   MediaTrackConstraintSetPlatform the_set;
   EXPECT_TRUE(the_set.IsUnconstrained());
-  the_set.echo_cancellation.SetExact(false);
+  the_set.auto_gain_control.SetExact(false);
   EXPECT_FALSE(the_set.IsUnconstrained());
 }
 
@@ -100,7 +103,7 @@ TEST(MediaTrackConstraintsTest, MandatoryChecks) {
   EXPECT_FALSE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"height"}, found_name));
   EXPECT_EQ("width", found_name);
-  the_set.echo_cancellation.SetExact(true);
+  the_set.echo_cancellation.SetExactBoolean(true);
   EXPECT_TRUE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
   EXPECT_EQ("echoCancellation", found_name);
 }
@@ -111,7 +114,7 @@ TEST(MediaTrackConstraintsTest, SetToString) {
   EXPECT_EQ("", the_set.ToString());
   the_set.width.SetMax(240);
   EXPECT_EQ("width: {max: 240}", the_set.ToString().Utf8());
-  the_set.echo_cancellation.SetIdeal(true);
+  the_set.echo_cancellation.SetIdealBoolean(true);
   EXPECT_EQ("width: {max: 240}, echoCancellation: {ideal: true}",
             the_set.ToString().Utf8());
 }
@@ -122,7 +125,7 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
   MediaTrackConstraintSetPlatform basic;
   Vector<MediaTrackConstraintSetPlatform> advanced(static_cast<size_t>(1));
   basic.width.SetMax(240);
-  advanced[0].echo_cancellation.SetExact(true);
+  advanced[0].echo_cancellation.SetExactBoolean(true);
   the_constraints.Initialize(basic, advanced);
   EXPECT_EQ(
       "{width: {max: 240}, advanced: [{echoCancellation: {exact: true}}]}",
@@ -242,6 +245,235 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   ASSERT_TRUE(recycled->hasFacingMode());
   ASSERT_TRUE(recycled->facingMode()->IsString());
   ASSERT_EQ("foo", recycled->facingMode()->GetAsString());
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintNakedBoolean) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(true);
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdealBoolean());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdealString());
+  EXPECT_TRUE(output.Basic().echo_cancellation.IdealBoolean());
+
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(recycled->echoCancellation()->IsBoolean());
+  EXPECT_TRUE(recycled->echoCancellation()->GetAsBoolean());
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintNakedString) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      String("foo"));
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdealBoolean());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdealString());
+  EXPECT_EQ(output.Basic().echo_cancellation.IdealString(), "foo");
+
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(recycled->echoCancellation()->IsString());
+  EXPECT_EQ(recycled->echoCancellation()->GetAsString(), "foo");
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintExactBoolean) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* exact_boolean = ConstrainBooleanOrDOMStringParameters::Create();
+  exact_boolean->setExact(MakeGarbageCollected<V8UnionBooleanOrString>(false));
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      exact_boolean);
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasExactBoolean());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasExactString());
+  EXPECT_FALSE(output.Basic().echo_cancellation.ExactBoolean());
+
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(
+      recycled->echoCancellation()->IsConstrainBooleanOrDOMStringParameters());
+  EXPECT_TRUE(recycled->echoCancellation()
+                  ->GetAsConstrainBooleanOrDOMStringParameters()
+                  ->hasExact());
+  EXPECT_TRUE(recycled->echoCancellation()
+                  ->GetAsConstrainBooleanOrDOMStringParameters()
+                  ->exact()
+                  ->IsBoolean());
+  EXPECT_FALSE(recycled->echoCancellation()
+                   ->GetAsConstrainBooleanOrDOMStringParameters()
+                   ->exact()
+                   ->GetAsBoolean());
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintIdealBoolean) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* ideal_boolean = ConstrainBooleanOrDOMStringParameters::Create();
+  ideal_boolean->setIdeal(MakeGarbageCollected<V8UnionBooleanOrString>(false));
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      ideal_boolean);
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdealBoolean());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdealString());
+  EXPECT_FALSE(output.Basic().echo_cancellation.IdealBoolean());
+
+  // Ideal is converted back to naked.
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(recycled->echoCancellation()->IsBoolean());
+  EXPECT_FALSE(recycled->echoCancellation()->GetAsBoolean());
+}
+
+TEST(MediaTrackConstraintsTest,
+     ConvertBooleanOrStringConstraintNakedAdvancedBoolean) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  HeapVector<Member<MediaTrackConstraintSet>> advanced(
+      1, MediaTrackConstraintSet::Create());
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(false);
+  advanced[0]->setEchoCancellation(parameter);
+  input->setAdvanced(advanced);
+
+  MediaConstraints output;
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Advanced()[0].echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Advanced()[0].echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Advanced()[0].echo_cancellation.HasExactBoolean());
+  EXPECT_FALSE(output.Advanced()[0].echo_cancellation.HasExactString());
+  EXPECT_FALSE(output.Advanced()[0].echo_cancellation.ExactBoolean());
+}
+
+TEST(MediaTrackConstraintsTest,
+     ConvertBooleanOrStringConstraintNakedAdvancedString) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  HeapVector<Member<MediaTrackConstraintSet>> advanced(
+      1, MediaTrackConstraintSet::Create());
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      String("foo"));
+  advanced[0]->setEchoCancellation(parameter);
+  input->setAdvanced(advanced);
+
+  MediaConstraints output;
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Advanced()[0].echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Advanced()[0].echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Advanced()[0].echo_cancellation.HasExactString());
+  EXPECT_FALSE(output.Advanced()[0].echo_cancellation.HasExactBoolean());
+  EXPECT_EQ(output.Advanced()[0].echo_cancellation.ExactString(), "foo");
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintExactString) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* exact_string = ConstrainBooleanOrDOMStringParameters::Create();
+  exact_string->setExact(
+      MakeGarbageCollected<V8UnionBooleanOrString>(String("foo")));
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      exact_string);
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasExactString());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasExactBoolean());
+  EXPECT_EQ(output.Basic().echo_cancellation.ExactString(), "foo");
+
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(
+      recycled->echoCancellation()->IsConstrainBooleanOrDOMStringParameters());
+  EXPECT_TRUE(recycled->echoCancellation()
+                  ->GetAsConstrainBooleanOrDOMStringParameters()
+                  ->hasExact());
+  EXPECT_TRUE(recycled->echoCancellation()
+                  ->GetAsConstrainBooleanOrDOMStringParameters()
+                  ->exact()
+                  ->IsString());
+  EXPECT_EQ(recycled->echoCancellation()
+                ->GetAsConstrainBooleanOrDOMStringParameters()
+                ->exact()
+                ->GetAsString(),
+            "foo");
+}
+
+TEST(MediaTrackConstraintsTest, ConvertBooleanOrStringConstraintIdealString) {
+  test::TaskEnvironment task_environment;
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  MediaConstraints output;
+  auto* ideal_string = ConstrainBooleanOrDOMStringParameters::Create();
+  ideal_string->setIdeal(
+      MakeGarbageCollected<V8UnionBooleanOrString>(String("foo")));
+  auto* parameter = MakeGarbageCollected<
+      V8UnionBooleanOrConstrainBooleanOrDOMStringParametersOrString>(
+      ideal_string);
+  input->setEchoCancellation(parameter);
+  String error_message;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_message);
+  EXPECT_TRUE(error_message.empty());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasExact());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdeal());
+  EXPECT_FALSE(output.Basic().echo_cancellation.HasIdealBoolean());
+  EXPECT_TRUE(output.Basic().echo_cancellation.HasIdealString());
+  EXPECT_EQ(output.Basic().echo_cancellation.IdealString(), "foo");
+
+  // Ideal is converted back to naked.
+  MediaTrackConstraints* recycled =
+      media_constraints_impl::ConvertConstraints(output);
+  ASSERT_TRUE(recycled->hasEchoCancellation());
+  EXPECT_TRUE(recycled->echoCancellation()->IsString());
+  EXPECT_EQ(recycled->echoCancellation()->GetAsString(), "foo");
 }
 
 TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
