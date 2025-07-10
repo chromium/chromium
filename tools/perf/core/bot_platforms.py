@@ -766,7 +766,6 @@ _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(125),
     _views_perftests(),
 ])
-_WIN_11_LOW_END_BENCHMARK_CONFIGS = _WIN_ARM64_BENCHMARK_CONFIGS
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -960,13 +959,6 @@ WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      3,
                                      'win',
                                      pinpoint_only=True)
-WIN_11_LOW_END = PerfPlatform('win-11_laptop_low_end-perf',
-                              'Low end windows 11 laptops.'
-                              'SSD, 4GB RAM.',
-                              _WIN_11_LOW_END_BENCHMARK_CONFIGS,
-                              2,
-                              'win',
-                              crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_11 = PerfPlatform('win-11-perf',
                       'Windows Dell PowerEdge R350',
                       _WIN_11_BENCHMARK_CONFIGS,
