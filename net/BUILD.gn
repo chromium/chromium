@@ -2307,34 +2307,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (enable_websockets || (is_cronet_build && !is_ios)) {
-    sources += [
-      "test/spawned_test_server/base_test_server.cc",
-      "test/spawned_test_server/base_test_server.h",
-      "test/spawned_test_server/spawned_test_server.h",
-    ]
-  }
-
   public_configs = [ ":net_test_config" ]
-
-  if (use_remote_test_server) {
-    sources += [
-      "test/spawned_test_server/remote_test_server.cc",
-      "test/spawned_test_server/remote_test_server.h",
-      "test/spawned_test_server/remote_test_server_spawner_request.cc",
-      "test/spawned_test_server/remote_test_server_spawner_request.h",
-    ]
-  } else if (!is_ios) {
-    sources += [
-      "test/spawned_test_server/local_test_server.cc",
-      "test/spawned_test_server/local_test_server.h",
-    ]
-    if (is_win) {
-      sources += [ "test/spawned_test_server/local_test_server_win.cc" ]
-    } else if (is_posix || is_fuchsia) {
-      sources += [ "test/spawned_test_server/local_test_server_posix.cc" ]
-    }
-  }
 
   if (enable_python_utils) {
     sources += [
@@ -3237,15 +3210,6 @@ target(_test_target_type, "net_unittests") {
   ]
   data_deps = [ "//testing/buildbot/filters:net_unittests_filters" ]
 
-  if (is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
-    deps += [ "//third_party/pywebsocket3/" ]
-    data_deps += [ "//third_party/pywebsocket3/" ]
-    data += [
-      "tools/testserver/",
-      "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [ "tools/quic/quic_simple_server_test.cc" ]
   }
@@ -3334,6 +3298,7 @@ target(_test_target_type, "net_unittests") {
       "websockets/websocket_deflate_predictor_impl_test.cc",
       "websockets/websocket_deflate_stream_test.cc",
       "websockets/websocket_deflater_test.cc",
+      "websockets/websocket_end_to_end_test.cc",
       "websockets/websocket_errors_test.cc",
       "websockets/websocket_extension_parser_test.cc",
       "websockets/websocket_extension_test.cc",
@@ -3349,14 +3314,6 @@ target(_test_target_type, "net_unittests") {
       "websockets/websocket_test_util.cc",
       "websockets/websocket_test_util.h",
     ]
-
-    if (!is_ios) {
-      # TODO(crbug.com/40812029): iOS does not have support for the spawned test
-      # server, which is used by this test. The long term plan is to add
-      # websocket support to the embedded test server and when that happens,
-      # this test could be enabled.
-      sources += [ "websockets/websocket_end_to_end_test.cc" ]
-    }
   }
 
   if (!disable_file_support) {
@@ -3426,7 +3383,6 @@ target(_test_target_type, "net_unittests") {
   }
 
   if (is_android) {
-    data_deps += [ "//net/tools/testserver:testserver_py" ]
     deps += [
       ":net_jni_headers",
       "//base:base_unittest_support_java",
