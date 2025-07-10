@@ -17,11 +17,13 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/units/timestamp.h"
 
 namespace blink {
 
 static constexpr char kRTCEncodedAudioFrameDetachKey[] = "RTCEncodedAudioFrame";
+static constexpr int kAcceptableCaptureTimeDeltaMs = 1;
 
 const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
@@ -126,8 +128,22 @@ RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
     capture_time =
         webrtc::Timestamp::Micros(capture_time_delta.InMicroseconds());
   }
-  if (capture_time != webrtc_frame_->CaptureTime() &&
-      !webrtc_frame_->CanSetCaptureTime()) {
+
+  bool capture_time_is_different = false;
+  if (!webrtc_frame_->CanSetCaptureTime() && capture_time.has_value()) {
+    if (!webrtc_frame_->CaptureTime().has_value()) {
+      capture_time_is_different = true;
+    } else {
+      // Ignore small differences in capture time.
+      webrtc::TimeDelta delta = *capture_time - *webrtc_frame_->CaptureTime();
+      if (delta.Abs() >
+          webrtc::TimeDelta::Millis(kAcceptableCaptureTimeDeltaMs)) {
+        capture_time_is_different = true;
+      }
+    }
+  }
+
+  if (capture_time_is_different && !webrtc_frame_->CanSetCaptureTime()) {
     return base::unexpected("captureTime cannot be modified");
   }
 

@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -93,6 +95,8 @@ void MockReceiverMetadata(MockTransformableAudioFrame* frame,
   ON_CALL(*frame, SequenceNumber()).WillByDefault(Return(kSequenceNumber));
   ON_CALL(*frame, GetTimestamp()).WillByDefault(Return(kRtpTimestamp));
   ON_CALL(*frame, GetMimeType()).WillByDefault(Return("image"));
+  ON_CALL(*frame, CaptureTime())
+      .WillByDefault(Return(webrtc::Timestamp::Millis(kCaptureTimeMillis)));
   // Mark frame as a receiver frame and set a receive time.
   ON_CALL(*frame, GetDirection())
       .WillByDefault(Return(
@@ -156,6 +160,68 @@ TEST_F(RTCEncodedAudioFrameTest, GetMetadataReturnsCorrectMetadata) {
             0.2);
   EXPECT_EQ(ToLinearAudioLevel(kAudioLevel_dBov),
             retrieved_metadata->audioLevel());
+}
+
+TEST_F(RTCEncodedAudioFrameTest, SetCaptureTimeOnReceiverFrame) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockReceiverMetadata(frame.get(), v8_scope.GetWindow());
+  ASSERT_FALSE(frame->CanSetCaptureTime());
+
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  RTCEncodedAudioFrameMetadata* new_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+  ASSERT_TRUE(new_metadata->hasCaptureTime());
+  double original_capture_time = new_metadata->captureTime();
+
+  // Small differences in captureTime are ignored.
+  new_metadata->setCaptureTime(original_capture_time + 0.01);
+  base::expected<void, String> result =
+      encoded_frame->SetMetadata(v8_scope.GetExecutionContext(), new_metadata);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext())->captureTime(),
+      original_capture_time);
+
+  new_metadata->setCaptureTime(original_capture_time - 0.01);
+  result =
+      encoded_frame->SetMetadata(v8_scope.GetExecutionContext(), new_metadata);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext())->captureTime(),
+      original_capture_time);
+
+  // Significantly different capture times cannot be set.
+  new_metadata->setCaptureTime(1234);
+  result =
+      encoded_frame->SetMetadata(v8_scope.GetExecutionContext(), new_metadata);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(RTCEncodedAudioFrameTest,
+       SetCaptureTimeOnReceiverFrameWithoutCaptureTime) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockReceiverMetadata(frame.get(), v8_scope.GetWindow());
+  ON_CALL(*frame, CaptureTime()).WillByDefault(Return(std::nullopt));
+  ASSERT_FALSE(frame->CanSetCaptureTime());
+
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  RTCEncodedAudioFrameMetadata* new_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+  ASSERT_FALSE(new_metadata->hasCaptureTime());
+
+  base::expected<void, String> result =
+      encoded_frame->SetMetadata(v8_scope.GetExecutionContext(), new_metadata);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_FALSE(encoded_frame->getMetadata(v8_scope.GetExecutionContext())
+                   ->hasCaptureTime());
 }
 
 TEST_F(RTCEncodedAudioFrameTest, SetMetadataOnEmptyFrameFails) {
